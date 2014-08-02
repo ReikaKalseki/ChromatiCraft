@@ -26,4 +26,8 @@ public class ElementTag {
 		return value+"x"+element.getEnglishName();
 	}
 
+	public ElementTag copy() {
+		return new ElementTag(element, value);
+	}
+
 }

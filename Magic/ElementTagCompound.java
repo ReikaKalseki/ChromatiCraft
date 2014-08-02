@@ -66,4 +66,22 @@ public class ElementTagCompound {
 		}
 	}
 
+	public void maximizeWith(ElementTag tag) {
+		this.setTag(tag.element, Math.max(this.getValue(tag.element), tag.value));
+	}
+
+	public void minimizeWith(ElementTag tag) {
+		this.setTag(tag.element, Math.min(this.getValue(tag.element), tag.value));
+	}
+
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
+
+	public ElementTagCompound copy() {
+		ElementTagCompound e = new ElementTagCompound();
+		e.data.putAll(data);
+		return e;
+	}
+
 }
