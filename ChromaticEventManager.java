@@ -12,10 +12,15 @@ package Reika.ChromatiCraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.event.Event.Result;
 import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import Reika.ChromatiCraft.Items.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 
 public class ChromaticEventManager {
@@ -46,5 +51,23 @@ public class ChromaticEventManager {
 			}
 		}
 	}
+
+	@ForgeSubscribe
+	public void onBucketUse(FillBucketEvent event) {
+		World world = event.world;
+		MovingObjectPosition pos = event.target;
+		int x = pos.blockX;
+		int y = pos.blockY;
+		int z = pos.blockZ;
+		int id = world.getBlockId(x, y, z);
+		if (id == ChromaBlocks.CHROMA.getBlockID()) {
+			world.setBlock(x, y, z, 0);
+			event.setResult(Result.ALLOW);
+			event.result = ChromaItems.BUCKET.getStackOf();
+			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
+		}
+	}
+
+
 
 }

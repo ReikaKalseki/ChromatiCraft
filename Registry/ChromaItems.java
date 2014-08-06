@@ -210,7 +210,7 @@ public enum ChromaItems implements RegistryEnum {
 	}
 
 	public int getTextureSheet() {
-		return texturesheet;
+		return index/256;
 	}
 
 	public int getNumberMetadatas() {

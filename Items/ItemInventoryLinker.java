@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromatiGuis;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -75,25 +76,27 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
 			if (is.stackTagCompound.hasKey("link")) {
-				NBTTagCompound nbt = is.stackTagCompound.getCompoundTag("link");
-				int x = nbt.getInteger("x");
-				int y = nbt.getInteger("y");
-				int z = nbt.getInteger("z");
-				if (ep.worldObj != null) {
-					int id = ep.worldObj.getBlockId(x, y, z);
-					if (id != 0 && ep.worldObj.getBlockTileEntity(x, y, z) instanceof IInventory)
-						li.add("Linked to "+Block.blocksList[id].getLocalizedName()+" at "+x+", "+y+", "+z);
-					else if (id != 0) {
-						li.add("Linked block "+Block.blocksList[id].getLocalizedName());
-						li.add("at "+x+", "+y+", "+z+" is invalid.");
+				WorldLocation loc = WorldLocation.readFromNBT("link", is.stackTagCompound);
+				if (loc != null) {
+					if (loc.getWorld() != null) {
+						int id = loc.getBlockID();
+						if (id != 0 && loc.getTileEntity() instanceof IInventory)
+							li.add("Linked to "+Block.blocksList[id].getLocalizedName()+" at "+loc);
+						else if (id != 0) {
+							li.add("Linked block "+Block.blocksList[id].getLocalizedName());
+							li.add("at "+loc+" is invalid.");
+						}
+						else {
+							li.add("Linked block at "+loc);
+							li.add("is missing.");
+						}
 					}
 					else {
-						li.add("Linked block at "+x+", "+y+", "+z);
-						li.add("is missing.");
+						li.add("Linked to "+loc);
 					}
 				}
 				else {
-					li.add("Linked to "+x+", "+y+", "+z);
+					li.add("Invalid link");
 				}
 			}
 			else {
@@ -156,12 +159,9 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 			return null;
 		if (!is.stackTagCompound.hasKey("link"))
 			return null;
-		NBTTagCompound link = is.stackTagCompound.getCompoundTag("link");
-		if (link != null) {
-			int x = link.getInteger("x");
-			int y = link.getInteger("y");
-			int z = link.getInteger("z");
-			TileEntity te = world.getBlockTileEntity(x, y, z);
+		WorldLocation loc = WorldLocation.readFromNBT("link", is.stackTagCompound);
+		if (loc != null) {
+			TileEntity te = loc.getTileEntity();
 			return te instanceof IInventory ? (IInventory)te : null;
 		}
 		return null;
@@ -170,11 +170,8 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 	private void link(ItemStack is, TileEntity te) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
-		NBTTagCompound link = new NBTTagCompound();
-		link.setInteger("x", te.xCoord);
-		link.setInteger("y", te.yCoord);
-		link.setInteger("z", te.zCoord);
-		is.stackTagCompound.setCompoundTag("link", link);
+		WorldLocation loc = new WorldLocation(te);
+		loc.writeToNBT("link", is.stackTagCompound);
 	}
 
 }

@@ -131,7 +131,7 @@ public abstract class ChromatiPackets implements IPacketHandler {
 			break;
 		case SPAWNERPROGRAM:
 			TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
-			prog.setMobID(data[0]);
+			prog.setMobType(stringdata);
 			break;
 		}
 	}

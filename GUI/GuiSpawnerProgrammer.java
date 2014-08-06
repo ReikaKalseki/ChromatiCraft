@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.EntityList;
@@ -19,6 +18,9 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
+
+import org.lwjgl.input.Keyboard;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
@@ -35,15 +37,11 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	private int selectedMob;
 	private static final ArrayList<String> validMobs = new ArrayList();
 	static {
-		TreeMap<Integer, String> mobs = new TreeMap(); //To sort by ID
 		for (Object key : EntityList.stringToClassMapping.keySet()) {
 			String name = (String)key;
 			if (TileEntitySpawnerReprogrammer.isMobAllowed(name)) {
-				mobs.put(ReikaEntityHelper.mobNameToID(name), name);
+				validMobs.add(name);
 			}
-		}
-		for (int id : mobs.keySet()) {
-			validMobs.add(mobs.get(id));
 		}
 	}
 
@@ -53,7 +51,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		prog = tile;
 		ySize = 166;
 		selectedMob = Math.max(validMobs.indexOf(tile.getSelectedMob()), 0);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), prog, this.getID());
+		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
 	}
 
 	@Override
@@ -82,7 +80,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 				selectedMob++;
 			break;
 		}
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), prog, this.getID());
+		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
 		this.initGui();
 	}
 
@@ -106,10 +104,6 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		return f+ReikaEntityHelper.getEntityDisplayName(label);
 	}
 
-	private int getID() {
-		return ReikaEntityHelper.mobNameToID(this.getMobLabel());
-	}
-
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
@@ -127,7 +121,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 			this.drawTexturedModelRectFromIcon(35, 70-h, ico, 16, h);
 		}*/
 
-		String display = this.getMobDisplayName();
+		String display = Keyboard.isKeyDown(Keyboard.KEY_TAB) ? this.getMobLabel() : this.getMobDisplayName();
 		ReikaGuiAPI.instance.drawCenteredString(fontRenderer, display, xSize/2, 55, 0xffffff);
 	}
 

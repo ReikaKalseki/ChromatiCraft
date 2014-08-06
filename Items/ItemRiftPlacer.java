@@ -137,7 +137,7 @@ public class ItemRiftPlacer extends Item {
 	public final String getUnlocalizedName(ItemStack is)
 	{
 		int d = is.getItemDamage();
-		return super.getUnlocalizedName() + "." + String.valueOf(d);
+		return super.getUnlocalizedName();// + "." + String.valueOf(d);
 	}
 
 	@Override

@@ -152,7 +152,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		ChromaBlocks.loadMappings();
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
-		tabChromaTools.setIcon(ReikaItemHelper.cactusDye);
+		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ReikaItemHelper.redDye);
 
 		if (!this.isLocked()) {
@@ -218,6 +218,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		ReikaRegistryHelper.instantiateAndRegisterBlocks(instance, ChromaBlocks.blockList, blocks);
 		ReikaRegistryHelper.instantiateAndRegisterItems(instance, ChromaItems.itemList, items);
 		setupLiquidContainers();
+
+		//Block b = Block.mobSpawner;
+		//Item.itemsList[b.blockID] = new ItemNBTSpawner(b.blockID).setUnlocalizedName(Item.itemsList[b.blockID].getUnlocalizedName());
 	}
 
 	private static void setupLiquids() {

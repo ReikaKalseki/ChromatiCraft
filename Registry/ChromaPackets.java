@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.DragonAPI.Auxiliary.PacketTypes;
+
 public enum ChromaPackets {
 
 	REACH(1),
@@ -16,13 +18,19 @@ public enum ChromaPackets {
 	SPAWNERPROGRAM(1);
 
 	public final int numInts;
+	public final PacketTypes type;
 
 	private ChromaPackets() {
 		this(0);
 	}
 
 	private ChromaPackets(int size) {
+		this(size, PacketTypes.DATA);
+	}
+
+	private ChromaPackets(int size, PacketTypes t) {
 		numInts = size;
+		type = t;
 	}
 
 	public static final ChromaPackets getPacket(int id) {

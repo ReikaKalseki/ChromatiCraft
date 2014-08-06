@@ -36,6 +36,11 @@ public abstract class BlockDyeTypes extends Block {
 	}
 
 	@Override
+	public int damageDropped(int meta) {
+		return meta;
+	}
+
+	@Override
 	public void registerIcons(IconRegister ico) {
 		String base = "chromaticraft:";
 		for (int i = 0; i < 16; i++) {

@@ -46,7 +46,47 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 		addDisallowedMob(EntityLiving.class);
 		addDisallowedMob(EntityMob.class);
 		//addDisallowedMob(EntityIronGolem.class);
+
 		addDisallowedMob("Void Monster");
+
+		addDisallowedMob("TaintedCow");
+		addDisallowedMob("TaintedSheep");
+		addDisallowedMob("TaintedCreeper");
+		addDisallowedMob("TaintSpider");
+		addDisallowedMob("TaintedChicken");
+		addDisallowedMob("TaintedPig");
+		addDisallowedMob("TaintedVillager");
+		addDisallowedMob("TaintVillager");
+		addDisallowedMob("Thaumcraft.TaintacleTiny");
+		addDisallowedMob("Thaumcraft.TaintSpore");
+		addDisallowedMob("Thaumcraft.Golem");
+		addDisallowedMob("Thaumcraft.TaintSwarmer");
+		addDisallowedMob("Thaumcraft.TravelingTrunk");
+		addDisallowedMob("Thaumcraft.TaintedVillager");
+		addDisallowedMob("Thaumcraft.TaintSpider");
+		addDisallowedMob("Thaumcraft.TaintedChicken");
+		addDisallowedMob("Thaumcraft.TaintedSheep");
+		addDisallowedMob("Thaumcraft.TaintedCow");
+		addDisallowedMob("Thaumcraft.TaintedPig");
+		addDisallowedMob("Thaumcraft.TaintedCreeper");
+
+		addDisallowedMob("TwilightForest.Hydra");
+		addDisallowedMob("TwilightForest.Naga");
+		addDisallowedMob("TwilightForest.HydraHead");
+		addDisallowedMob("TwilightForest.Lich Minion");
+		//addDisallowedMob("TwilightForest.Questing Ram");
+		addDisallowedMob("TwilightForest.Knight Phantom");
+		addDisallowedMob("TwilightForest.Twilight Lich");
+		addDisallowedMob("TwilightForest.Tower Boss");
+		addDisallowedMob("TwilightForest.Loyal Zombie");
+		addDisallowedMob("TwilightForest.Minoshroom");
+		addDisallowedMob("TwilightForest.Boggard");
+
+		addDisallowedMob("OpenBlocks.Luggage");
+
+		addDisallowedMob("Linkbook");
+
+		addDisallowedMob("Robit");
 	}
 
 	private static void addDisallowedMob(String name) {
@@ -58,7 +98,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 	}
 
 	public static boolean isMobAllowed(String mob) {
-		return ReikaEntityHelper.hasID(mob) && ReikaEntityHelper.isLivingMob(mob, false) && !disallowedMobs.contains(mob);
+		return !ReikaEntityHelper.isTameHostile(mob) && ReikaEntityHelper.isLivingMob(mob, false) && !disallowedMobs.contains(mob);
 	}
 
 	public static boolean isMobAllowed(Class<? extends EntityLiving> mob) {
@@ -95,7 +135,10 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 		ItemStack is = ReikaItemHelper.getSizedItemStack(inv[0], 1);
 		ReikaInventoryHelper.decrStack(0, inv);
 		if (is.itemID == Block.mobSpawner.blockID) {
-
+			if (ReikaEntityHelper.hasID(selectedMob)) {
+				int id = ReikaEntityHelper.mobNameToID(selectedMob);
+				is.setItemDamage(id);
+			}
 		}
 		else if (is.getItem() instanceof ItemSpawner) {
 			ReikaSpawnerHelper.setSpawnerItemNBT(is, selectedMob, true);
@@ -112,10 +155,6 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 
 	public void setMobType(String type) {
 		selectedMob = type;
-	}
-
-	public void setMobID(int id) {
-		this.setMobType(EntityList.getStringFromID(id));
 	}
 
 	@Override

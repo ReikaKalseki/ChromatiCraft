@@ -69,7 +69,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	public void setDirection(ForgeDirection dir) {
-		if (target != null) {
+		if (this.isLinked()) {
 			singleDirection = dir;
 			this.getOther().singleDirection = dir.getOpposite();
 		}
@@ -80,7 +80,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	public void passThrough() {
-		if (target != null) {
+		if (this.isLinked()) {
 			TileEntityRift te = this.getOther();
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = dirs[i];
@@ -147,7 +147,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 				((BlockTEBase)b).updateTileCache(worldObj, dx, dy, dz);
 			}
 		}
-		if (other) {
+		if (other && this.isLinked()) {
 			this.getOther().onLink(false);
 		}
 	}
@@ -166,7 +166,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	public void resetOther() {
-		if (target != null) {
+		if (this.isLinked()) {
 			TileEntityRift te = this.getOther();
 			if (te != null) {
 				te.target = null;
@@ -189,34 +189,34 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	private TileEntityRift getOther() {
-		return target != null ? ((TileEntityRift)target.getTileEntity()) : null;
+		return this.isLinked() ? ((TileEntityRift)target.getTileEntity()) : null;
 	}
 
 	public WorldLocation getBlockFrom(ForgeDirection from) {
-		return target != null ? target.move(from.getOpposite(), 1) : null;
+		return this.isLinked() ? target.move(from.getOpposite(), 1) : null;
 	}
 
 	private TileEntity getAdjacentTargetTile(ForgeDirection dir) {
-		return target != null && this.getOther() != null ? this.getOther().getAdjacentTileEntity(dir) : null;
+		return this.isLinked() && this.getOther() != null ? this.getOther().getAdjacentTileEntity(dir) : null;
 	}
 
 	private TileEntity getSingleDirTile() {
-		return singleDirection != null && target != null ? this.getOther().getAdjacentTileEntity(singleDirection.getOpposite()) : null;
+		return singleDirection != null && this.isLinked() ? this.getOther().getAdjacentTileEntity(singleDirection.getOpposite()) : null;
 	}
 
 	@Override
 	public int getBlockIDFrom(ForgeDirection dir) {
-		return target != null ? this.getBlockFrom(dir).getBlockID() : -1;
+		return this.isLinked() ? this.getBlockFrom(dir).getBlockID() : -1;
 	}
 
 	@Override
 	public int getBlockMetadataFrom(ForgeDirection dir) {
-		return target != null ? this.getBlockFrom(dir).getBlockMetadata() : -1;
+		return this.isLinked() ? this.getBlockFrom(dir).getBlockMetadata() : -1;
 	}
 
 	@Override
 	public TileEntity getTileEntityFrom(ForgeDirection dir) {
-		return target != null ? this.getAdjacentTargetTile(dir) : null;
+		return this.isLinked() ? this.getAdjacentTargetTile(dir) : null;
 	}
 
 	@Override
@@ -229,7 +229,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	{
 		super.writeSyncTag(NBT);
 
-		if (target != null)
+		if (this.isLinked())
 			target.writeToNBT("target", NBT);
 		NBT.setInteger("color", color);
 		NBT.setIntArray("redstone", redstoneCache);
@@ -381,7 +381,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 
 	@Override
 	public World getWorld() {
-		return target != null ? target.getWorld() : null;
+		return this.isLinked() ? target.getWorld() : null;
 	}
 
 	@Override
