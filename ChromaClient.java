@@ -9,22 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import java.util.HashMap;
-
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.CrystalPlantRenderer;
+import Reika.ChromatiCraft.Render.CrystalRenderer;
+import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
+
+import java.util.HashMap;
+
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ChromaClient extends ChromaCommon {
 
@@ -40,9 +45,13 @@ public class ChromaClient extends ChromaCommon {
 
 	private static final ChromaItemRenderer placer = new ChromaItemRenderer();
 
+	private static final CrystalRenderer crystal = new CrystalRenderer();
+
+	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
+
 	@Override
 	public void registerSounds() {
-		MinecraftForge.EVENT_BUS.register(new SoundLoader(ChromatiCraft.instance, ChromaSounds.soundList, ChromaSounds.SOUND_FOLDER));
+		new SoundLoader(ChromatiCraft.class, ChromaSounds.soundList).register();
 	}
 
 	@Override
@@ -102,9 +111,22 @@ public class ChromaClient extends ChromaCommon {
 				ClientRegistry.bindTileEntitySpecialRenderer(m.getTEClass(), render);
 			}
 		}
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
 
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getShiftedID(), placer);
-		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getShiftedID(), placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
+
+		crystalRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(crystalRender, crystal);
+
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
+		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAccelerator.class, new AcceleratorRenderer());
+
+		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.GUARDIAN.getItem(), teibr);
+		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.ACCELERATOR.getItem(), teibr);
+
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
 	}
 
 
@@ -114,9 +136,9 @@ public class ChromaClient extends ChromaCommon {
 
 	private void registerSpriteSheets() {
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
-			//ReikaJavaLibrary.pConsole("Registering Item Spritesheet for "+ChromatiItems.itemList[i].name()+" at ID "+(ChromatiItems.itemList[i].getShiftedID()+256)+" with sheet "+ChromatiItems.itemList[i].getTextureSheet());
-			if (ChromaItems.itemList[i] != ChromaItems.PLACER && ChromaItems.itemList[i] != ChromaItems.RIFT)
-				MinecraftForgeClient.registerItemRenderer(ChromaItems.itemList[i].getShiftedID(), items[ChromaItems.itemList[i].getTextureSheet()]);
+			ChromaItems c = ChromaItems.itemList[i];
+			if (!c.isPlacer() && c != ChromaItems.POTION)
+				MinecraftForgeClient.registerItemRenderer(ChromaItems.itemList[i].getItemInstance(), items[ChromaItems.itemList[i].getTextureSheet()]);
 		}
 	}
 

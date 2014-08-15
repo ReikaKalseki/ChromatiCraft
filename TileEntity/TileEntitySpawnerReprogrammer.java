@@ -9,18 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.ArrayList;
-
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.boss.EntityWither;
-import net.minecraft.entity.monster.EntityGiantZombie;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.ProgrammableSpawner;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -30,6 +18,19 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
+import java.util.ArrayList;
+
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.monster.EntityGiantZombie;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 
@@ -134,7 +135,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 	private void programSpawner() {
 		ItemStack is = ReikaItemHelper.getSizedItemStack(inv[0], 1);
 		ReikaInventoryHelper.decrStack(0, inv);
-		if (is.itemID == Block.mobSpawner.blockID) {
+		if (ReikaItemHelper.matchStackWithBlock(is, Blocks.mob_spawner)) {
 			if (ReikaEntityHelper.hasID(selectedMob)) {
 				int id = ReikaEntityHelper.mobNameToID(selectedMob);
 				is.setItemDamage(id);
@@ -180,7 +181,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 	private boolean isValidSpawner(ItemStack is) {
 		if (is == null)
 			return false;
-		return is.itemID == Block.mobSpawner.blockID || is.getItem() instanceof ItemSpawner || is.getItem() instanceof ProgrammableSpawner;
+		return ReikaItemHelper.matchStackWithBlock(is, Blocks.mob_spawner) || is.getItem() instanceof ItemSpawner || is.getItem() instanceof ProgrammableSpawner;
 	}
 
 	@Override

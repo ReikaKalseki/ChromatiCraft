@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.ChromatiCraft.API.ElementController;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,9 +25,6 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import Reika.ChromatiCraft.API.ElementController;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class ItemElementCalculator {
 
@@ -92,7 +93,7 @@ public class ItemElementCalculator {
 	public ElementTagCompound getTagForItem(ItemStack is) {
 		if (is == null)
 			return null;
-		List key = Arrays.asList(is.itemID, is.getItemDamage());
+		List key = Arrays.asList(is.getItem(), is.getItemDamage());
 		if (cache.containsKey(key)) {
 			return cache.get(key);
 		}

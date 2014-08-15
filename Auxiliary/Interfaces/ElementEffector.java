@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import java.util.Collection;
-
 import Reika.ChromatiCraft.Registry.CrystalElement;
+
+import java.util.Collection;
 
 public interface ElementEffector {
 

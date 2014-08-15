@@ -9,27 +9,29 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.EntityRuneFX;
-import Reika.ChromatiCraft.Base.BlockDyeTypes;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCrystalRune extends BlockDyeTypes {
 
-	public BlockCrystalRune(int par1, Material par2Material) {
-		super(par1, par2Material);
+	public BlockCrystalRune(Material par2Material) {
+		super(par2Material);
 		blockHardness = 2;
 		blockResistance = 5;
 	}
@@ -44,7 +46,7 @@ public class BlockCrystalRune extends BlockDyeTypes {
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, int id, int meta) {
+	public void breakBlock(World world, int x, int y, int z, Block id, int meta) {
 		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(meta);
 		if (world.isRemote)
 			ReikaParticleHelper.spawnColoredParticles(world, x, y, z, dye, 256);

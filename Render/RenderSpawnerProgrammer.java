@@ -9,21 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelSpawnerProgram;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.opengl.GL11;
 
 public class RenderSpawnerProgrammer extends ChromaRenderBase {
 
@@ -55,7 +55,7 @@ public class RenderSpawnerProgrammer extends ChromaRenderBase {
 	private void renderSpawner() {
 		Tessellator v5 = Tessellator.instance;
 		ReikaTextureHelper.bindTerrainTexture();
-		Icon ico = Block.mobSpawner.getIcon(0, 0);
+		IIcon ico = Blocks.mob_spawner.getIcon(0, 0);
 		float u = ico.getMinU();
 		float du = ico.getMaxU();
 		float v = ico.getMinV();

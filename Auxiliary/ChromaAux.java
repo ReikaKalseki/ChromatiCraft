@@ -9,6 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import Reika.ChromatiCraft.ChromaGuiHandler;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import java.awt.Color;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -16,10 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromaGuiHandler;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 

@@ -9,15 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import java.awt.Color;
-
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Icon;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -25,6 +16,15 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+
+import java.awt.Color;
+
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class ChromaFlowerRenderer extends ChromaRenderBase {
 
@@ -49,13 +49,13 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 			int[][] colors = new int[][]{rgb, rgb2, rgb3};
 			Tessellator v5 = Tessellator.instance;
 			ReikaTextureHelper.bindTerrainTexture();
-			Icon ico2 = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockVariable()).getPlantTexture(0, 4);
+			IIcon ico2 = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockInstance()).getPlantTexture(0, 4);
 			float u2 = ico2.getMinU();
 			float du2 = ico2.getMaxU();
 			float v2 = ico2.getMinV();
 			float dv2 = ico2.getMaxV();
 			for (int k = 0; k < 3; k++) {
-				Icon ico = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockVariable()).getPlantTexture(0, k+1);
+				IIcon ico = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockInstance()).getPlantTexture(0, k+1);
 				float u = ico.getMinU();
 				float du = ico.getMaxU();
 				float v = ico.getMinV();

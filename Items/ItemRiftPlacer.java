@@ -9,40 +9,42 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemRiftPlacer extends Item {
 
-	public ItemRiftPlacer(int ID, int tex) {
-		super(ID);
+	public ItemRiftPlacer(int tex) {
+		super();
 		maxStackSize = 64;
 		this.setCreativeTab(ChromatiCraft.instance.isLocked() ? null : ChromatiCraft.tabChroma);
 	}
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float par8, float par9, float par10) {
-		if (!ReikaWorldHelper.softBlocks(world, x, y, z) && world.getBlockMaterial(x, y, z) != Material.water && world.getBlockMaterial(x, y, z) != Material.lava) {
+		if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava) {
 			if (side == 0)
 				--y;
 			if (side == 1)
@@ -55,7 +57,7 @@ public class ItemRiftPlacer extends Item {
 				--x;
 			if (side == 5)
 				++x;
-			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && world.getBlockMaterial(x, y, z) != Material.water && world.getBlockMaterial(x, y, z) != Material.lava)
+			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava)
 				return false;
 		}
 		if (!this.checkValidBounds(is, ep, world, x, y, z))
@@ -70,11 +72,11 @@ public class ItemRiftPlacer extends Item {
 		{
 			if (!ep.capabilities.isCreativeMode)
 				--is.stackSize;
-			world.setBlock(x, y, z, ChromaBlocks.RIFT.getBlockID());
+			world.setBlock(x, y, z, ChromaBlocks.RIFT.getBlockInstance());
 		}
-		ReikaSoundHelper.playPlaceSound(world, x, y, z, Block.cloth);
-		TileEntityRift te = (TileEntityRift)world.getBlockTileEntity(x, y, z);
-		te.placer = ep.getEntityName();
+		ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.wool);
+		TileEntityRift te = (TileEntityRift)world.getTileEntity(x, y, z);
+		te.setPlacer(ep);
 		if (is.stackTagCompound == null) {
 			this.saveRiftLocation(world, x, y, z, is);
 		}
@@ -117,7 +119,7 @@ public class ItemRiftPlacer extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
 		for (int i = 0; i < 1; i++) {
 			ItemStack item = new ItemStack(par1, 1, i);
 			par3List.add(item);
@@ -141,6 +143,12 @@ public class ItemRiftPlacer extends Item {
 	}
 
 	@Override
-	public final void registerIcons(IconRegister ico) {}
+	public final void registerIcons(IIconRegister ico) {}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack is) {
+		ChromaItems ir = ChromaItems.getEntry(is);
+		return ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
+	}
 
 }

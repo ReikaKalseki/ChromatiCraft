@@ -15,7 +15,9 @@ public enum ChromaPackets {
 
 	REACH(1),
 	ENCHANTER(2),
-	SPAWNERPROGRAM(1);
+	SPAWNERPROGRAM(1),
+	CRYSTALEFFECT(),
+	PLANTUPDATE();
 
 	public final int numInts;
 	public final PacketTypes type;
@@ -37,6 +39,10 @@ public enum ChromaPackets {
 		ChromaPackets[] list = values();
 		id = Math.max(0, Math.min(id, list.length-1));
 		return list[id];
+	}
+
+	public boolean hasData() {
+		return numInts > 0;
 	}
 
 }

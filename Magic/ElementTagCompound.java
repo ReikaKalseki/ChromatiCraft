@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.HashMap;
-
 import Reika.ChromatiCraft.Registry.CrystalElement;
+
+import java.util.HashMap;
 
 public class ElementTagCompound {
 

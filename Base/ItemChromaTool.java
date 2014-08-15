@@ -9,14 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import net.minecraft.creativetab.CreativeTabs;
 import Reika.ChromatiCraft.ChromatiCraft;
+
+import net.minecraft.creativetab.CreativeTabs;
 
 
 public abstract class ItemChromaTool extends ItemChromaBasic {
 
-	public ItemChromaTool(int id, int index) {
-		super(id, index);
+	public ItemChromaTool(int index) {
+		super(index);
 		maxStackSize = 1;
 		this.setNoRepair();
 	}

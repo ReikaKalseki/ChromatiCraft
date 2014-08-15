@@ -9,17 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Icon;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiCollector extends GuiChromaBase {
 
@@ -41,7 +41,7 @@ public class GuiCollector extends GuiChromaBase {
 		int level = coll.getInputLevel();
 		if (level > 0) {
 			Fluid f = coll.getFluidInInput();
-			Icon ico = f.getStillIcon();
+			IIcon ico = f.getStillIcon();
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / coll.getCapacity();
@@ -51,7 +51,7 @@ public class GuiCollector extends GuiChromaBase {
 		level = coll.getOutputLevel();
 		if (level > 0) {
 			Fluid f = FluidRegistry.getFluid("chroma");
-			Icon ico = f.getStillIcon();
+			IIcon ico = f.getStillIcon();
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / coll.getCapacity();

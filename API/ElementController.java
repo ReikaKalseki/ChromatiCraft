@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
+import net.minecraft.item.ItemStack;
 
 public class ElementController {
 

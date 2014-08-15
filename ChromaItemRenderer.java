@@ -9,16 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
-
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class ChromaItemRenderer implements IItemRenderer {
 
@@ -49,12 +51,18 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		if (item.getItemDamage() >= ChromaTiles.TEList.length)
 			return;
-		ChromaTiles machine = item.itemID == ChromaItems.RIFT.getShiftedID() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
-		if (machine.hasRender())
-			TileEntityRenderer.instance.renderTileEntityAt(machine.createTEInstanceForRender(), a, -0.1D, b, 0.0F);
+		ChromaTiles machine = item.getItem() == ChromaItems.RIFT.getItemInstance() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
+		if (machine.hasRender()) {
+			TileEntity te = machine.createTEInstanceForRender();
+			if (machine == ChromaTiles.ACCELERATOR && item.stackTagCompound != null) {
+				int tier = item.stackTagCompound.getInteger("tier");
+				((TileEntityAccelerator)te).setTier(item);
+			}
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, 0.0F);
+		}
 		else {
 			ReikaTextureHelper.bindTerrainTexture();
-			rb.renderBlockAsItem(machine.getBlockVariable(), machine.getBlockMetadata(), 1);
+			rb.renderBlockAsItem(machine.getBlock(), machine.getBlockMetadata(), 1);
 		}
 	}
 }

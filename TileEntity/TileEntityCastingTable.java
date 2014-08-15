@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.ArrayList;
-
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneLocation;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+
+import java.util.ArrayList;
+
+import net.minecraft.world.World;
 
 public class TileEntityCastingTable extends TileEntityChromaticBase {
 

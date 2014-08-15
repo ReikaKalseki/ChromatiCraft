@@ -9,25 +9,26 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.FakePlayer;
-import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import Reika.ChromatiCraft.EntityRuneFX;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -76,10 +77,10 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 	}
 
 	private void internalizeXP() {
-		if (inv[0] != null && inv[0].itemID == Item.expBottle.itemID && (inv[1] == null || inv[1].stackSize < inv[1].getMaxStackSize())) {
+		if (inv[0] != null && inv[0].getItem() == Items.experience_bottle && (inv[1] == null || inv[1].stackSize < inv[1].getMaxStackSize())) {
 			ReikaInventoryHelper.decrStack(0, inv);
 			output.addLiquid(XP_PER_BOTTLE, FluidRegistry.getFluid("chroma"));
-			ReikaInventoryHelper.addOrSetStack(Item.glassBottle.itemID, 1, 0, inv, 1);
+			ReikaInventoryHelper.addOrSetStack(Items.glass_bottle, 1, 0, inv, 1);
 		}
 	}
 
@@ -137,7 +138,7 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
-		return i == 0 && itemstack.itemID == Item.expBottle.itemID;
+		return i == 0 && itemstack.getItem() == Items.experience_bottle;
 	}
 
 	@Override

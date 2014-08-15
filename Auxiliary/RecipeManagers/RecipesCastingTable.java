@@ -9,13 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
-import java.util.ArrayList;
-
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+
+import java.util.ArrayList;
+
+import net.minecraft.item.ItemStack;
 
 public class RecipesCastingTable {
 

@@ -9,13 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
 
-/** Specifies the magic elements present in each "fundamental" item. */
+/** Specifies the magic elements present in each "fundamental" Items. */
 public class ItemMagicRegistry {
 
 	public static final ItemMagicRegistry instance = new ItemMagicRegistry();
@@ -23,17 +26,17 @@ public class ItemMagicRegistry {
 	private final HashMap<Item, ElementTagCompound> data = new HashMap();
 
 	private ItemMagicRegistry() {
-		this.addTag(Block.stone, CrystalElement.RED, 10);
+		this.addTag(Blocks.stone, CrystalElement.RED, 10);
 
-		this.addTag(Item.coal, CrystalElement.ORANGE, 10);
-		this.addTag(Item.coal, CrystalElement.YELLOW, 10);
+		this.addTag(Items.coal, CrystalElement.ORANGE, 10);
+		this.addTag(Items.coal, CrystalElement.YELLOW, 10);
 
-		this.addTag(Item.ingotIron, CrystalElement.RED, 10);
-		this.addTag(Item.ingotIron, CrystalElement.ORANGE, 3);
+		this.addTag(Items.iron_ingot, CrystalElement.RED, 10);
+		this.addTag(Items.iron_ingot, CrystalElement.ORANGE, 3);
 	}
 
 	private void addTag(Block b, CrystalElement color, int value) {
-		this.addTag(Item.itemsList[b.blockID], color, value);
+		this.addTag(Item.getItemFromBlock(b), color, value);
 	}
 
 	private void addTag(Item item, CrystalElement color, int value) {

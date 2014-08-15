@@ -1,0 +1,143 @@
+package Reika.ChromatiCraft.Auxiliary;
+
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+public final class ProtectionZone {
+
+	public final String creator;
+	public final int dimensionID;
+	public final int originX;
+	public final int originY;
+	public final int originZ;
+	public final int range;
+
+	public ProtectionZone(World world, EntityPlayer ep, int x, int y, int z, int r) {
+		creator = ep.getCommandSenderName();
+		dimensionID = world.provider.dimensionId;
+		originX = x;
+		originY = y;
+		originZ = z;
+		range = r;
+	}
+
+	public boolean hasTile(World world) {
+		return ChromaTiles.getTile(world, originX, originY, originZ) == ChromaTiles.GUARDIAN;
+	}
+
+	public boolean canPlayerEditIn(EntityPlayer ep) {
+		if (ep.getCommandSenderName().equals(creator))
+			return true;
+		return this.isPlayerOnAuxList(ep);
+	}
+
+	private boolean isPlayerOnAuxList(EntityPlayer ep) {
+		TileEntityGuardianStone te = this.getControllingGuardianStone();
+		return te != null ? te.isPlayerInList(ep) : false;
+	}
+
+	private ProtectionZone(String player, int id, int x, int y, int z, int r) {
+		creator = player;
+		dimensionID = id;
+		originX = x;
+		originY = y;
+		originZ = z;
+		range = r;
+	}
+
+	public boolean isBlockInZone(int x, int y, int z) {
+		double dd = ReikaMathLibrary.py3d(x-originX, y-originY, z-originZ);
+		return dd <= range+0.5;
+	}
+
+	@Override
+	public String toString() {
+		return "Zone by "+creator+" in world "+dimensionID+" at "+originX+", "+originY+", "+originZ+" (Radius "+range+")";
+	}
+
+	public TileEntityGuardianStone getControllingGuardianStone() {
+		World world = DimensionManager.getWorld(dimensionID);
+		int x = originX;
+		int y = originY;
+		int z = originZ;
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c != ChromaTiles.GUARDIAN)
+			return null;
+		TileEntity te = world.getTileEntity(x, y, z);
+		return (TileEntityGuardianStone)te;
+	}
+
+	public String getSerialString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("P:");
+		sb.append(creator);
+		sb.append(";");
+
+		sb.append("W:");
+		sb.append(String.valueOf(dimensionID));
+		sb.append(";");
+
+		sb.append("X:");
+		sb.append(String.valueOf(originX));
+		sb.append(";");
+
+		sb.append("Y:");
+		sb.append(String.valueOf(originY));
+		sb.append(";");
+
+		sb.append("Z:");
+		sb.append(String.valueOf(originZ));
+		sb.append(";");
+
+		sb.append("R:");
+		sb.append(String.valueOf(range));
+		return sb.toString();
+	}
+
+	protected static ProtectionZone getFromSerialString(String sg) {
+		try {
+			String[] s = sg.split(";");
+			if (s == null || s.length != 6)
+				return null;
+			for (int i = 0; i < 6; i++)
+				s[i] = s[i].substring(2);
+			int w = Integer.parseInt(s[1]);
+			int x = Integer.parseInt(s[2]);
+			int y = Integer.parseInt(s[3]);
+			int z = Integer.parseInt(s[4]);
+			int r = Integer.parseInt(s[5]);
+			return new ProtectionZone(s[0], w, x, y, z, r);
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ProtectionZone) {
+			ProtectionZone p = (ProtectionZone)o;
+			if (!creator.equals(p.creator))
+				return false;
+			if (p.dimensionID != dimensionID)
+				return false;
+			if (p.range != range)
+				return false;
+			if (p.originX != originX)
+				return false;
+			if (p.originY != originY)
+				return false;
+			if (p.originZ != originZ)
+				return false;
+			return true;
+		}
+		return false;
+	}
+
+}

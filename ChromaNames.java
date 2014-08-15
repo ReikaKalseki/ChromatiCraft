@@ -18,7 +18,13 @@ public class ChromaNames {
 	};
 
 	private static final String[] fluidNames = {
-		"fluid.chroma"
+		"fluid.chroma", "fluid.ender"
+	};
+
+	public static final String[] clusterNames = {
+		"crystal.redgroup", "crystal.greengroup", "crystal.orangegroup", "crystal.whitegroup",
+		"crystal.bunch0", "crystal.bunch1", "crystal.bunch2", "crystal.bunch3",
+		"crystal.cluster0", "crystal.cluster1", "crystal.core", "crystal.star", "crystal.multi"
 	};
 
 	public static void addNames() {

@@ -1,19 +1,21 @@
 package Reika.ChromatiCraft.Items;
 
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 
 public class ItemNBTSpawner extends ItemBlock {
 
-	public ItemNBTSpawner(int par1) {
-		super(par1);
+	public ItemNBTSpawner(Block b) {
+		super(b);
 	}
 
 	@Override
@@ -29,7 +31,7 @@ public class ItemNBTSpawner extends ItemBlock {
 	{
 		boolean flag = super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
 		if (flag && stack.stackTagCompound != null) {
-			TileEntityMobSpawner te = (TileEntityMobSpawner)world.getBlockTileEntity(x, y, z);
+			TileEntityMobSpawner te = (TileEntityMobSpawner)world.getTileEntity(x, y, z);
 			ReikaSpawnerHelper.setSpawnerFromItemNBT(stack, te);
 		}
 		return flag;

@@ -9,39 +9,40 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public abstract class BlockDyeTypes extends Block {
 
-	private final Icon[][] icons = new Icon[16][6];
+	private final IIcon[][] icons = new IIcon[16][6];
 
-	public BlockDyeTypes(int par1, Material par2Material) {
-		super(par1, par2Material);
+	public BlockDyeTypes(Material par2Material) {
+		super(par2Material);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 	}
 
 	@Override
-	public Icon getIcon(int s, int meta) {
+	public final IIcon getIcon(int s, int meta) {
 		return icons[meta][s%this.subIconCount(meta)];
 	}
 
 	@Override
-	public int damageDropped(int meta) {
+	public final int damageDropped(int meta) {
 		return meta;
 	}
 
 	@Override
-	public void registerIcons(IconRegister ico) {
+	public final void registerBlockIcons(IIconRegister ico) {
 		String base = "chromaticraft:";
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < this.subIconCount(i); k++) {
@@ -61,7 +62,7 @@ public abstract class BlockDyeTypes extends Block {
 
 	@Override
 	public final ItemStack getPickBlock(MovingObjectPosition mov, World world, int x, int y, int z) {
-		return new ItemStack(blockID, 1, world.getBlockMetadata(x, y, z));
+		return new ItemStack(this, 1, world.getBlockMetadata(x, y, z));
 	}
 
 	protected abstract String getIconFolder();

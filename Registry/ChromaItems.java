@@ -9,38 +9,58 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import net.minecraft.item.EnumArmorMaterial;
+import Reika.ChromatiCraft.ChromaNames;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.ItemChromaPlacer;
+import Reika.ChromatiCraft.Items.ItemCluster;
+import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
+import Reika.ChromatiCraft.Items.ItemCrystalShard;
+import Reika.ChromatiCraft.Items.ItemRiftPlacer;
+import Reika.ChromatiCraft.Items.ItemTreeDye;
+import Reika.ChromatiCraft.Items.Tools.ItemAbilityTool;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
+import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
+import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
+import Reika.ChromatiCraft.Items.Tools.ItemPendant;
+import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Interfaces.ItemEnum;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.StatCollector;
-import Reika.ChromatiCraft.ChromaNames;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemChromaBucket;
-import Reika.ChromatiCraft.Items.ItemChromaPlacer;
-import Reika.ChromatiCraft.Items.ItemInventoryLinker;
-import Reika.ChromatiCraft.Items.ItemManipulator;
-import Reika.ChromatiCraft.Items.ItemRiftPlacer;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Exception.RegistrationException;
-import Reika.DragonAPI.Interfaces.RegistryEnum;
-import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public enum ChromaItems implements RegistryEnum {
+public enum ChromaItems implements ItemEnum {
 
 	BUCKET(16, true, 		"chroma.bucket", 		ItemChromaBucket.class),
 	PLACER(0, true,			"chroma.placer",		ItemChromaPlacer.class),
 	LINK(0,	false,			"chroma.invlink",		ItemInventoryLinker.class),
 	RIFT(0, false,			"chroma.rift",			ItemRiftPlacer.class),
-	TOOL(32, false,			"chroma.tool",			ItemManipulator.class);
+	TOOL(32, false,			"chroma.tool",			ItemManipulator.class),
+	SHARD(64, true, 		"crystal.shard", 		ItemCrystalShard.class),
+	POTION(0, true, 		"crystal.potion", 		ItemCrystalPotion.class),
+	CLUSTER(80, true, 		"crystal.cluster", 		ItemCluster.class),
+	PENDANT(96, true, 		"crystal.pendant", 		ItemPendant.class),
+	PENDANT3(112, true, 	"crystal.pendant3", 	ItemPendant.class),
+	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
+	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
+	DYE(48, true,			"dye.item", 			ItemTreeDye.class),
+	ABILITY(33, false,		"chroma.ability",		ItemAbilityTool.class),
+	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class);
 
-	private int index;
-	private boolean hasSubtypes;
-	private String name;
-	private Class itemClass;
+	private final int index;
+	private final boolean hasSubtypes;
+	private final String name;
+	private final Class itemClass;
 	private int texturesheet;
 	private ModList condition;
 
@@ -93,22 +113,22 @@ public enum ChromaItems implements RegistryEnum {
 	@Override
 	public Class[] getConstructorParamTypes() {
 		if (this.isArmor()) {
-			return new Class[]{int.class, int.class, int.class}; // ID, Sprite index, Armor render
+			return new Class[]{int.class, int.class}; // ID, Sprite index, Armor render
 		}
 
-		return new Class[]{int.class, int.class}; // ID, Sprite index
+		return new Class[]{int.class}; // ID, Sprite index
 	}
 
 	@Override
 	public Object[] getConstructorParams() {
 		if (this.isArmor()) {
-			return new Object[]{ChromatiCraft.config.getItemID(this.ordinal()), this.getTextureIndex(), this.getArmorRender()};
+			return new Object[]{this.getTextureIndex(), this.getArmorRender()};
 		}
 		else
-			return new Object[]{ChromatiCraft.config.getItemID(this.ordinal()), this.getTextureIndex()};
+			return new Object[]{this.getTextureIndex()};
 	}
 
-	private EnumArmorMaterial getArmorMaterial() {
+	private ArmorMaterial getArmorMaterial() {
 		return null;
 	}
 
@@ -124,20 +144,20 @@ public enum ChromaItems implements RegistryEnum {
 	}
 
 	public static boolean isRegistered(ItemStack is) {
-		return isRegistered(is.itemID);
+		return isRegistered(is.getItem());
 	}
 
-	public static boolean isRegistered(int id) {
+	public static boolean isRegistered(Item id) {
 		for (int i = 0; i < itemList.length; i++) {
-			if (itemList[i].getShiftedID() == id)
+			if (itemList[i].getItemInstance() == id)
 				return true;
 		}
 		return false;
 	}
 
-	public static ChromaItems getEntryByID(int id) {
+	public static ChromaItems getEntryByID(Item id) {
 		for (int i = 0; i < itemList.length; i++) {
-			if (itemList[i].getShiftedID() == id)
+			if (itemList[i].getItemInstance() == id)
 				return itemList[i];
 		}
 		//throw new RegistrationException(ChromatiCraft.instance, "Item ID "+id+" was called to the item registry but does not exist there!");
@@ -147,7 +167,7 @@ public enum ChromaItems implements RegistryEnum {
 	public static ChromaItems getEntry(ItemStack is) {
 		if (is == null)
 			return null;
-		return getEntryByID(is.itemID);
+		return getEntryByID(is.getItem());
 	}
 
 	public String getName(int dmg) {
@@ -157,18 +177,29 @@ public enum ChromaItems implements RegistryEnum {
 	}
 
 	public String getBasicName() {
-		String sg = name;
-		return StatCollector.translateToLocal(sg);
+		return StatCollector.translateToLocal(name);
 	}
 
-	public String getMultiValuedName(int dmg) {
+	public String getMultiValuedName(int meta) {
 		if (!this.hasMultiValuedName())
 			throw new RuntimeException("Item "+name+" was called for a multi-name, yet does not have one!");
 		switch(this) {
 		case PLACER:
-			return ChromaTiles.TEList[dmg].getName();
+			return ChromaTiles.TEList[meta].getName();
 		case BUCKET:
-			return StatCollector.translateToLocal(ChromaNames.getFluidName(dmg))+" "+this.getBasicName();
+			return StatCollector.translateToLocal(ChromaNames.getFluidName(meta))+" "+this.getBasicName();
+		case SHARD:
+		case POTION:
+		case PENDANT:
+		case PENDANT3:
+		case DYE:
+			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
+		case CLUSTER:
+			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
+		case SEED:
+			return ReikaDyeHelper.dyes[meta%16].colorName+" "+this.getBasicName();
+		case ENDERCRYSTAL:
+			return this.getBasicName();
 		default:
 			break;
 		}
@@ -183,14 +214,6 @@ public enum ChromaItems implements RegistryEnum {
 
 	public String getUnlocalizedName() {
 		return ReikaStringParser.stripSpaces(name).toLowerCase();
-	}
-
-	public int getID() {
-		return ChromatiCraft.config.getItemID(this.ordinal());
-	}
-
-	public int getShiftedID() {
-		return ChromatiCraft.config.getItemID(this.ordinal())+256;
 	}
 
 	public Item getItemInstance() {
@@ -218,9 +241,21 @@ public enum ChromaItems implements RegistryEnum {
 			return 1;
 		switch(this) {
 		case BUCKET:
-			return 1;
+			return 2;
 		case PLACER:
 			return ChromaTiles.TEList.length;
+		case SHARD:
+		case PENDANT:
+		case PENDANT3:
+		case POTION:
+		case DYE:
+			return ReikaDyeHelper.dyes.length;
+		case CLUSTER:
+			return ChromaNames.clusterNames.length;
+		case SEED:
+			return 32;
+		case ENDERCRYSTAL:
+			return 2;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}
@@ -234,11 +269,11 @@ public enum ChromaItems implements RegistryEnum {
 	}
 
 	public ItemStack getCraftedProduct(int amt) {
-		return new ItemStack(this.getShiftedID(), amt, 0);
+		return new ItemStack(this.getItemInstance(), amt, 0);
 	}
 
 	public ItemStack getCraftedMetadataProduct(int amt, int meta) {
-		return new ItemStack(this.getShiftedID(), amt, meta);
+		return new ItemStack(this.getItemInstance(), amt, meta);
 	}
 
 	public ItemStack getStackOf() {
@@ -261,43 +296,6 @@ public enum ChromaItems implements RegistryEnum {
 	@Override
 	public Class getObjectClass() {
 		return itemClass;
-	}
-
-	@Override
-	public Class<? extends ItemBlock> getItemBlock() {
-		return null;
-	}
-
-	@Override
-	public boolean hasItemBlock() {
-		return false;
-	}
-
-	@Override
-	public String getConfigName() {
-		return this.getBasicName();
-	}
-
-	@Override
-	public int getDefaultID() {
-		return 21500+this.ordinal();
-	}
-
-	@Override
-	public boolean isBlock() {
-		return false;
-	}
-
-	@Override
-	public boolean isItem() {
-		return true;
-	}
-
-	@Override
-	public String getCategory() {
-		if (this.isTool())
-			return "Tool Item IDs";
-		return "Item IDs";
 	}
 
 	public boolean isDummiedOut() {
@@ -413,6 +411,21 @@ public enum ChromaItems implements RegistryEnum {
 		switch(this) {
 		default:
 			return true;
+		}
+	}
+
+	public boolean matchWith(ItemStack is) {
+		return is.getItem() == this.getItemInstance();
+	}
+
+	public boolean isPlacer() {
+		switch(this) {
+		case PLACER:
+		case RIFT:
+		case ENDERCRYSTAL:
+			return true;
+		default:
+			return false;
 		}
 	}
 }

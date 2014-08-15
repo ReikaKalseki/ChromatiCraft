@@ -15,11 +15,12 @@
 
 package Reika.ChromatiCraft.Models;
 
+import Reika.ChromatiCraft.Base.ChromaModelBase;
+import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
+
 import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
-import Reika.ChromatiCraft.Base.ChromaModelBase;
-import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
 public class ModelSpawnerProgram extends ChromaModelBase
 {

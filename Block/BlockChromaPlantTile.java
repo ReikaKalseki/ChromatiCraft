@@ -9,26 +9,29 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import java.util.Random;
-
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.Icon;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
 public class BlockChromaPlantTile extends BlockChromaTile {
 
-	private final Icon[][] icons = new Icon[16][8];
+	private final IIcon[][] icons = new IIcon[16][8];
 
-	public BlockChromaPlantTile(int par1, Material xMaterial) {
-		super(par1, xMaterial);
-		this.setLightValue(0.5F);
-		stepSound = soundGrassFootstep;
+	public BlockChromaPlantTile(Material xMaterial) {
+		super(xMaterial);
+		this.setLightLevel(0.5F);
+		stepSound = soundTypeGrass;
 		blockHardness = 0;
 		blockResistance = 0.5F;
 	}
@@ -54,7 +57,7 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 	}
 
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, int par5)
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block par5)
 	{
 		super.onNeighborBlockChange(world, x, y, z, par5);
 		this.checkFlowerChange(world, x, y, z);
@@ -68,7 +71,7 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 	private final void checkFlowerChange(World world, int x, int y, int z) {
 		if (!this.canBlockStay(world, x, y, z)) {
 			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
-			world.setBlock(x, y, z, 0, 0, 2);
+			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		}
 	}
 
@@ -94,17 +97,17 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 	}
 
 	@Override
-	public Icon getIcon(int s, int meta) {
+	public IIcon getIcon(int s, int meta) {
 		return icons[meta][0];
 	}
 
-	public Icon getPlantTexture(int meta, int offset) {
+	public IIcon getPlantTexture(int meta, int offset) {
 		return icons[meta][offset];
 	}
 
 	@Override
-	public void registerIcons(IconRegister ico) {
-		for (int i = 0; i < 16; i++) {
+	public void registerBlockIcons(IIconRegister ico) {
+		for (int i = 0; i < 1; i++) {
 			for (int k = 0; k < 8; k++) {
 				icons[i][k] = ico.registerIcon("chromaticraft:plant/"+i+"_"+k);
 			}

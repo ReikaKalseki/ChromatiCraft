@@ -9,12 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import Reika.DragonAPI.Auxiliary.PlayerHandler.PlayerTracker;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-import cpw.mods.fml.common.IPlayerTracker;
 
-public final class ChromaLock implements IPlayerTracker {
+public final class ChromaLock implements PlayerTracker {
 
 	public static final ChromaLock instance = new ChromaLock();
 
@@ -51,7 +52,7 @@ public final class ChromaLock implements IPlayerTracker {
 	}
 
 	@Override
-	public void onPlayerChangedDimension(EntityPlayer player) {
+	public void onPlayerChangedDimension(EntityPlayer player, int from, int to) {
 
 	}
 

@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Aura.AuraSource;
+import Reika.ChromatiCraft.Magic.Aura.AuraSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class CrystalAura implements AuraSource {

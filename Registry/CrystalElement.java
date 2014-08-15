@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
 
 
 public enum CrystalElement {
@@ -35,7 +36,7 @@ public enum CrystalElement {
 
 	public final ReikaDyeHelper color;
 	public final String displayName;
-	private Icon glowIcon;
+	private IIcon glowIcon;
 
 	public static final CrystalElement[] elements = values();
 
@@ -78,16 +79,16 @@ public enum CrystalElement {
 		return this.getLevel() == 0;
 	}
 
-	public void setIcons(IconRegister ico) {
+	public void setIcons(IIconRegister ico) {
 		glowIcon = ico.registerIcon("chromaticraft:runes/glow/tile"+this.ordinal()+"_0");
 	}
 
-	public Icon getGlowRune() {
+	public IIcon getGlowRune() {
 		return glowIcon;
 	}
 
-	public Icon getBlockRune() {
-		return ChromaBlocks.RUNE.getBlockVariable().getIcon(0, this.ordinal());
+	public IIcon getBlockRune() {
+		return ChromaBlocks.RUNE.getBlockInstance().getIcon(0, this.ordinal());
 	}
 
 	public static CrystalElement randomElement() {

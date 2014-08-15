@@ -9,87 +9,126 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import java.net.URL;
-import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.stats.Achievement;
-import net.minecraft.util.Icon;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
+import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
+import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
+import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.ChromatiOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.ColorizableSlimeModel;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.World.BiomeEnderForest;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.ColorTreeGenerator;
+import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.CompatibilityTracker;
 import Reika.DragonAPI.Auxiliary.IntegrityChecker;
+import Reika.DragonAPI.Auxiliary.PlayerHandler;
+import Reika.DragonAPI.Auxiliary.SuggestedModsTracker;
+import Reika.DragonAPI.Auxiliary.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ThermalHandler;
+import Reika.RotaryCraft.API.BlockColorInterface;
+
+import java.net.URL;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.stats.Achievement;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+import ttftcuts.atg.api.ATGBiomes;
+import ttftcuts.atg.api.ATGBiomes.BiomeType;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
-import cpw.mods.fml.common.network.NetworkMod;
-import cpw.mods.fml.common.network.NetworkMod.SidedPacketHandler;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version="Gamma", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
-@NetworkMod(clientSideRequired = true, serverSideRequired = true,
-clientPacketHandlerSpec = @SidedPacketHandler(channels = { "ChromatiData" }, packetHandler = ClientPackets.class),
-serverPacketHandlerSpec = @SidedPacketHandler(channels = { "ChromatiData" }, packetHandler = ServerPackets.class))
+@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version="Alpha", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
 
 public class ChromatiCraft extends DragonAPIMod {
-	public static final String packetChannel = "ChromatiData";
+	public static final String packetChannel = "ChromaData";
 
 	public static final TabChromatiCraft tabChroma = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft");
 	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Tools");
 	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Items");
 
-	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(400).setDensity(300);
-
 	static final Random rand = new Random();
 
 	private boolean isLocked = false;
+
+	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(400).setDensity(300);
+	public static EnhancedFluid crystal = (EnhancedFluid)new EnhancedFluid("potion crystal").setColor(0x66aaff).setGameName("Crystal").setLuminosity(15).setTemperature(500);
+	public static final Fluid ender = new Fluid("ender").setViscosity(2000).setDensity(1500).setTemperature(270).setUnlocalizedName("endere");
 
 	public static final Block[] blocks = new Block[ChromaBlocks.blockList.length];
 	public static final Item[] items = new Item[ChromaItems.itemList.length];
 
 	public static Achievement[] achievements;
 
+	public static final Material enderMat = new Material(MapColor.ironColor);
+
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
 
-	public static final ChromatiConfig config = new ChromatiConfig(instance, ChromatiOptions.optionList, ChromaBlocks.blockList, ChromaItems.itemList, null, 0);
+	public static final ChromaConfig config = new ChromaConfig(instance, ChromaOptions.optionList, null, 0);
 
 	public static ModLogger logger;
+
+	public static BiomeRainbowForest rainbowforest;
+	public static BiomeEnderForest enderforest;
 
 	//private String version;
 
@@ -104,7 +143,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems r = ChromaItems.itemList[i];
 			if (!r.isDummiedOut()) {
-				int id = r.getShiftedID();
+				Item id = r.getItemInstance();
 				if (BannedItemReader.instance.containsID(id))
 					return true;
 			}
@@ -112,7 +151,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 			ChromaBlocks r = ChromaBlocks.blockList[i];
 			if (!r.isDummiedOut()) {
-				int id = r.getBlockID();
+				Block id = r.getBlockInstance();
 				if (BannedItemReader.instance.containsID(id))
 					return true;
 			}
@@ -123,7 +162,10 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void preload(FMLPreInitializationEvent evt) {
+		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
 
 		config.loadSubfolderedConfigFile(evt);
 		config.initProps(evt);
@@ -147,9 +189,15 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		logger = new ModLogger(instance, false);
 
+		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.RAINBOWFORESTID.getValue(), BiomeRainbowForest.class);
+		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.ENDERFORESTID.getValue(), BiomeEnderForest.class);
+
 		this.setupClassFiles();
 		ChromaTiles.loadMappings();
 		ChromaBlocks.loadMappings();
+		//DimensionManager.registerProviderType(1, CustomEndProvider.class, false); if ASM turns out to be impossible
+
+		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
@@ -170,40 +218,150 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		ChromaRecipes.loadDictionary();
 		if (this.isLocked())
-			GameRegistry.registerPlayerTracker(ChromaLock.instance);
+			PlayerHandler.instance.registerTracker(ChromaLock.instance);
 		if (!this.isLocked()) {
 			proxy.addArmorRenders();
 			proxy.registerRenderers();
 		}
+
+		rainbowforest = new BiomeRainbowForest(ChromaOptions.RAINBOWFORESTID.getValue());
+		BiomeManager.addSpawnBiome(rainbowforest);
+		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
+
+		enderforest = new BiomeEnderForest(ChromaOptions.ENDERFORESTID.getValue());
+		BiomeManager.addSpawnBiome(enderforest);
+		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
+
+		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
+		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
+
 		if (!this.isLocked())
 			;//RotaryNames.addNames();
-		NetworkRegistry.instance().registerGuiHandler(this, new ChromaGuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ChromaGuiHandler());
 		this.addTileEntities();
 		;//RotaryRegistration.addEntities();
 
 		if (!this.isLocked()) {
-			ChromatiRecipes.addRecipes();
+			ChromaRecipes.addRecipes();
 		}
 
 		if (!this.isLocked())
 			IntegrityChecker.instance.addMod(instance, ChromaBlocks.blockList, ChromaItems.itemList);
 
 		if (!this.isLocked())
-			TickRegistry.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
+			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
 
 		//if (ConfigRegistry.HANDBOOK.getState())
 		;//PlayerFirstTimeTracker.addTracker(new ChromatiBookTracker());
 
 		ReikaMystcraftHelper.disableFluidPage("chroma");
+
+		for (int i = 0; i < 16; i++) {
+			ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
+			ItemStack used = ChromaOptions.isVanillaDyeMoreCommon() ? dye.getStackOf() : ChromaItems.DYE.getStackOfMetadata(i);
+			ItemStack sapling = new ItemStack(ChromaBlocks.DYESAPLING.getBlockInstance(), 1, i);
+			ItemStack flower = new ItemStack(ChromaBlocks.DYEFLOWER.getBlockInstance(), 1, i);
+			GameRegistry.addRecipe(new ItemStack(ChromaBlocks.DYE.getBlockInstance(), 1, i), "ddd", "ddd", "ddd", 'd', used);
+			GameRegistry.addShapelessRecipe(used, flower);
+			OreDictionary.registerOre(dye.getOreDictName(), ChromaItems.DYE.getStackOfMetadata(i));
+			OreDictionary.registerOre("treeSapling", sapling);
+			OreDictionary.registerOre("plant"+dye.colorNameNoSpaces, flower);
+			OreDictionary.registerOre("flower"+dye.colorNameNoSpaces, flower);
+		}
+
+		if (ChromaOptions.doesVanillaDyeDrop()) {
+
+		}
+		else {/*
+			logger.log("Configs were set such that trees do not drop vanilla dyes! Loading interface recipes to ensure farmability!");
+			for (int i = 0; i < 16; i++) {
+				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
+				Object[] in = this.getIntercraft(dye);
+				Object[] sub = new Object[in.length-1];
+				System.arraycopy(in, 1, sub, 0, sub.length);
+				boolean shaped = (Boolean)in[0];
+				if (shaped) {
+					GameRegistry.addRecipe(dye.getStackOf(), sub);
+				}
+				else {
+					GameRegistry.addShapelessRecipe(dye.getStackOf(), sub);
+				}
+			}*/
+		}
+
+		this.addDyeCompat();
+
+		ATGBiomes.addBiome(BiomeType.LAND, "Forest", rainbowforest, 1.0);
+		ATGBiomes.addBiome(BiomeType.LAND, "Forest", enderforest, 1.0);
+
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values");
+	}
+
+	private void addDyeCompat() {
+		if (ModList.TREECAPITATOR.isLoaded()) {
+			TreeCapitatorHandler.register();
+		}
+
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
+				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.DECAY.getBlockInstance(), i, dye.color);
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYELEAF.getBlockInstance(), i, dye.color);
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYE.getBlockInstance(), i, dye.color);
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.DYESAPLING.getBlockInstance(), i, dye.color);
+			}
+		}
+
+		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
+			ItemStack is = new ItemStack(ChromaBlocks.DYE.getBlockInstance(), 1, i);
+			FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", is);
+		}
 	}
 
 	@Override
 	@EventHandler
 	public void postload(FMLPostInitializationEvent evt) {
 
-		if (!this.isLocked())
-			;//RotaryRecipes.addPostLoadRecipes();
+		if (!this.isLocked()) {
+			ChromaRecipes.addPostLoadRecipes();
+		}
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
+			slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);
+			logger.log("Overriding Slime Renderer Edge Model.");
+		}
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			CrystalDyeAspectManager.register();
+		}
+
+		if (ModList.FORESTRY.isLoaded()) {
+			CrystalBees.register();
+		}
+	}
+
+	public static boolean isRainbowForest(BiomeGenBase b) {
+		return b instanceof BiomeRainbowForest || b.biomeName.equals("Rainbow Forest");
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void textureHook(TextureStitchEvent.Pre event) {
+		if (event.map.getTextureType() == 0) {
+			logger.log("Loading Liquid Icons");
+			IIcon cry = event.map.registerIcon("ChromatiCraft:fluid/liqcrystal3");
+			crystal.setIcons(cry);
+		}
+	}
+
+	@EventHandler
+	public void registerCommands(FMLServerStartingEvent evt) {
+		evt.registerServerCommand(new GuardianCommand());
 	}
 
 	@EventHandler
@@ -219,44 +377,65 @@ public class ChromatiCraft extends DragonAPIMod {
 		ReikaRegistryHelper.instantiateAndRegisterItems(instance, ChromaItems.itemList, items);
 		setupLiquidContainers();
 
-		//Block b = Block.mobSpawner;
-		//Item.itemsList[b.blockID] = new ItemNBTSpawner(b.blockID).setUnlocalizedName(Item.itemsList[b.blockID].getUnlocalizedName());
+		//Block b = Blocks.mob_spawner;
+		//Items.itemsList[b.blockID] = new ItemNBTSpawner(b.blockID).setUnlocalizedName(Items.itemsList[b.blockID].getUnlocalizedName());
 	}
 
 	private static void setupLiquids() {
 		logger.log("Loading And Registering Liquids");
 		FluidRegistry.registerFluid(chroma);
+		FluidRegistry.registerFluid(crystal);
+		FluidRegistry.registerFluid(ender);
 	}
 
 	private static void setupLiquidContainers() {
 		logger.log("Loading And Registering Liquid Containers");
-		FluidContainerRegistry.registerFluidContainer(new FluidStack(chroma, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOf(), new ItemStack(Item.bucketEmpty));
+		FluidContainerRegistry.registerFluidContainer(new FluidStack(chroma, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOf(), new ItemStack(Items.bucket));
+		if (!ModList.THERMALEXPANSION.isLoaded())
+			FluidContainerRegistry.registerFluidContainer(new FluidStack(ender, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(1), new ItemStack(Items.bucket));
 	}
 
 	@SideOnly(Side.CLIENT)
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void setupExtraIcons(TextureStitchEvent.Pre event) {
 		if (!this.isLocked()) {
 			logger.log("Loading Additional Icons");
 
-			if (event.map.textureType == 0) {
-				Icon sicon = event.map.registerIcon("ChromatiCraft:fluid/chroma");
-				Icon ficon = event.map.registerIcon("ChromatiCraft:fluid/chroma_flowing");
+			if (event.map.getTextureType() == 0) {
+				IIcon sicon = event.map.registerIcon("ChromatiCraft:fluid/chroma");
+				IIcon ficon = event.map.registerIcon("ChromatiCraft:fluid/chroma_flowing");
 				chroma.setIcons(sicon, ficon);
+
+				IIcon cry = event.map.registerIcon("GeoStrata:fluid/liqcrystal3");
+				crystal.setIcons(cry);
+
+				IIconRegister ico = event.map;
+				ender.setStillIcon(ico.registerIcon("chromaticraft:fluid/ender"));
+				ender.setFlowingIcon(ico.registerIcon("chromaticraft:fluid/flowingender"));
+				ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 
 				for (int i = 0; i < CrystalElement.elements.length; i++) {
 					CrystalElement.elements[i].setIcons(event.map);
 				}
+				ChromaIcons.registerAll(event.map);
 			}
 		}
 	}
 
+	public Block getEnderBlockToGenerate() {
+		if (ModList.THERMALEXPANSION.isLoaded()) {
+			return ThermalHandler.getInstance().enderID;
+		}
+		return ChromaBlocks.ENDER.getBlockInstance();
+	}
+
 	private void addTileEntities() {
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
-			String label = "CC"+ChromaTiles.TEList[i].getDefaultName().toLowerCase().replaceAll("\\s","");
+			String label = "CC"+ChromaTiles.TEList[i].getUnlocalizedName().toLowerCase().replaceAll("\\s","");
 			GameRegistry.registerTileEntity(ChromaTiles.TEList[i].getTEClass(), label);
 			ReikaJavaLibrary.initClass(ChromaTiles.TEList[i].getTEClass());
 		}
+		GameRegistry.registerTileEntity(TileEntityCrystalPlant.class, "CCCrystalPlant");
 	}
 
 	@Override

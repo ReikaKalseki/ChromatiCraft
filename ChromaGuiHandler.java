@@ -9,21 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCollector;
+import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCollector;
+import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromatiGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Base.ContainerBasicStorage;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -31,6 +30,11 @@ import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Interfaces.InertIInv;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ChromaGuiHandler implements IGuiHandler {
@@ -43,7 +47,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case LINK:
 			return new ContainerInventoryLinker(player, world);
 		case TILE:
-			TileEntity te = world.getBlockTileEntity(x, y, z);
+			TileEntity te = world.getTileEntity(x, y, z);
 
 			if (te instanceof TileEntityAutoEnchanter)
 				return new ContainerAutoEnchanter(player, (TileEntityAutoEnchanter)te);
@@ -51,6 +55,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerCollector(player, (TileEntityCollector)te);
 			if (te instanceof TileEntitySpawnerReprogrammer)
 				return new ContainerSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
+			if (te instanceof TileEntityCrystalBrewer)
+				return new ContainerCrystalBrewer(player, (TileEntityCrystalBrewer) te);
 
 			if (te instanceof OneSlotMachine)
 				return new OneSlotContainer(player, te);
@@ -71,7 +77,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case LINK:
 			return new GuiInventoryLinker(player, world);
 		case TILE:
-			TileEntity te = world.getBlockTileEntity(x, y, z);
+			TileEntity te = world.getTileEntity(x, y, z);
 
 			if (te instanceof TileEntityAutoEnchanter)
 				return new GuiAutoEnchanter(player, (TileEntityAutoEnchanter)te);
@@ -79,6 +85,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiCollector(player, (TileEntityCollector)te);
 			if (te instanceof TileEntitySpawnerReprogrammer)
 				return new GuiSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
+			if (te instanceof TileEntityCrystalBrewer)
+				return new GuiCrystalBrewer(player, (TileEntityCrystalBrewer) te);
 
 			/*
 		if (te instanceof OneSlotMachine) {

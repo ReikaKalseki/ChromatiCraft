@@ -9,23 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered {
 
@@ -81,7 +82,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return (is.getItem().getItemEnchantability() > 0 || is.itemID == Item.book.itemID) && !ReikaEnchantmentHelper.hasEnchantments(is);
+		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && !ReikaEnchantmentHelper.hasEnchantments(is);
 	}
 
 	private void applyEnchants() {

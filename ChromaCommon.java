@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 
 public class ChromaCommon {
 
+	public static int crystalRender;
+
 	public void registerRenderers()
 	{
 		//unused server side. -- see ClientProxy for implementation

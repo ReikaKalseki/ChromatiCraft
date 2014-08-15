@@ -9,16 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Interfaces.IndexedItemSprites;
+
 import java.util.Random;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.IndexedItemSprites;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -28,15 +30,21 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 
 	private int index;
 
-	public ItemChromaBasic(int ID, int tex) {
-		super(ID);
+	public ItemChromaBasic(int tex) {
+		super();
 		maxStackSize = 64;
-		this.setCreativeTab(this.isAvailableInCreativeMode() ? this.getCreativePage() : null);
 		this.setIndex(tex);
+		this.setCreativeTab(this.isAvailableInCreativeMode() ? this.getCreativePage() : null);
 	}
 
-	public ItemChromaBasic(int ID, int tex, int max) {
-		super(ID);
+	private boolean isAvailableInCreativeMode() {
+		if (ChromatiCraft.instance.isLocked())
+			return false;
+		return true;
+	}
+
+	public ItemChromaBasic(int tex, int max) {
+		super();
 		maxStackSize = max;
 		if (max == 1);
 		hasSubtypes = true;
@@ -51,12 +59,6 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		return ChromatiCraft.tabChromaItems;
 	}
 
-	private boolean isAvailableInCreativeMode() {
-		if (ChromatiCraft.instance.isLocked())
-			return false;
-		return true;
-	}
-
 	public int getItemSpriteIndex(ItemStack item) {
 		return index;
 	}
@@ -67,7 +69,7 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final void registerIcons(IconRegister ico) {}
+	public final void registerIcons(IIconRegister ico) {}
 
 	@Override
 	public void onCreated(ItemStack is, World world, EntityPlayer ep) {
@@ -86,6 +88,12 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 	public String getTexture(ItemStack is) {
 		int i = this.getItemSpriteIndex(is)%256;
 		return i > 0 ? "/Reika/ChromatiCraft/Textures/Items/items"+i+".png" : "/Reika/ChromatiCraft/Textures/Items/items.png";
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack is) {
+		ChromaItems ir = ChromaItems.getEntry(is);
+		return ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
 	}
 
 }

@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
 import java.util.ArrayList;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,8 +20,6 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Items.ItemInventoryLinker;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerInventoryLinker extends Container {
 

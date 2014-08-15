@@ -9,14 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
-import li.cil.oc.api.network.Visibility;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
+
+import li.cil.oc.api.network.Visibility;
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
 
@@ -33,8 +35,8 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
-	public int getTileEntityBlockID() {
-		return ChromaTiles.TEList[this.getIndex()].getBlockID();
+	public final Block getTileEntityBlockID() {
+		return ChromaTiles.TEList[this.getIndex()].getBlock();
 	}
 
 	public final int getIndex() {
@@ -42,7 +44,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
-	protected String getTEName() {
+	protected final String getTEName() {
 		return ChromaTiles.TEList[this.getIndex()].getName();
 	}
 
@@ -78,7 +80,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	}
 
-	public boolean isThisTE(int id, int meta) {
+	public boolean isThisTE(Block id, int meta) {
 		return id == this.getTileEntityBlockID() && meta == this.getIndex();
 	}
 

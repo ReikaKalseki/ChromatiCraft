@@ -9,27 +9,29 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraVaporizer;
+import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
+import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Data.BlockMap;
+
+import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraVaporizer;
-import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
-import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
-import Reika.DragonAPI.Exception.RegistrationException;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public enum ChromaTiles {
 
@@ -40,7 +42,10 @@ public enum ChromaTiles {
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", ChromaBlocks.TILEENTITY, TileEntityCollector.class, 4),
 	TABLE("chroma.table", ChromaBlocks.TILEENTITY, TileEntityCastingTable.class, 5),
-	RIFT("chroma.rift", ChromaBlocks.RIFT, TileEntityRift.class, 0, "RenderRift");
+	RIFT("chroma.rift", ChromaBlocks.RIFT, TileEntityRift.class, 0, "RenderRift"),
+	BREWER("chroma.brewer", ChromaBlocks.TILEENTITY, TileEntityCrystalBrewer.class, 6),
+	GUARDIAN("chroma.guardian", ChromaBlocks.TILECRYSTAL, TileEntityGuardianStone.class, 0, "GuardianStoneRenderer"),
+	ACCELERATOR("chroma.accelerator", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 0, "AcceleratorRenderer");
 
 	private final Class tile;
 	private final String name;
@@ -51,7 +56,7 @@ public enum ChromaTiles {
 
 	public static final ChromaTiles[] TEList = values();
 
-	private static final HashMap<List<Integer>, ChromaTiles> chromaMappings = new HashMap();
+	private static final BlockMap<ChromaTiles> chromaMappings = new BlockMap();
 
 	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta) {
 		this(n, b, c, meta, null);
@@ -65,12 +70,8 @@ public enum ChromaTiles {
 		renderer = r;
 	}
 
-	public int getBlockID() {
-		return this.getBlockVariable().blockID;
-	}
-
-	public Block getBlockVariable() {
-		return block.getBlockVariable();
+	public Block getBlock() {
+		return block.getBlockInstance();
 	}
 
 	public int getBlockMetadata() {
@@ -81,7 +82,7 @@ public enum ChromaTiles {
 		return StatCollector.translateToLocal(name);
 	}
 
-	public String getDefaultName() {
+	public String getUnlocalizedName() {
 		return name;
 	}
 
@@ -126,19 +127,18 @@ public enum ChromaTiles {
 	}
 
 	public static ChromaTiles getTile(IBlockAccess iba, int x, int y, int z) {
-		int id = iba.getBlockId(x, y, z);
+		Block id = iba.getBlock(x, y, z);
 		int meta = iba.getBlockMetadata(x, y, z);
-		return getMachineFromIDandMetadata(id, meta);
+		return getTileFromIDandMetadata(id, meta);
 	}
 
-	public static ChromaTiles getMachineFromIDandMetadata(int id, int meta) {
-		return chromaMappings.get(Arrays.asList(id, meta));
+	public static ChromaTiles getTileFromIDandMetadata(Block id, int meta) {
+		return chromaMappings.get(id, meta);
 	}
 
-	public static TileEntity createTEFromIDAndMetadata(int id, int meta) {
-		ChromaTiles index = getMachineFromIDandMetadata(id, meta);
+	public static TileEntity createTEFromIDAndMetadata(Block id, int meta) {
+		ChromaTiles index = getTileFromIDandMetadata(id, meta);
 		if (index == null) {
-			ReikaJavaLibrary.pConsole(chromaMappings);
 			ChromatiCraft.logger.logError("ID "+id+" and metadata "+meta+" are not a valid tile identification pair!");
 			return null;
 		}
@@ -156,13 +156,22 @@ public enum ChromaTiles {
 		}
 	}
 
+	public static ArrayList<ChromaTiles> getTilesForBlock(Block b) {
+		ArrayList<ChromaTiles> li = new ArrayList();
+		for (int i = 0; i < 16; i++) {
+			ChromaTiles c = getTileFromIDandMetadata(b, i);
+			if (c != null)
+				li.add(c);
+		}
+		return li;
+	}
+
 	public static void loadMappings() {
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
 			ChromaTiles r = ChromaTiles.TEList[i];
-			int id = r.getBlockID();
+			Block id = r.getBlock();
 			int meta = r.getBlockMetadata();
-			List<Integer> li = Arrays.asList(id, meta);
-			chromaMappings.put(li, r);
+			chromaMappings.put(id, meta, r);
 		}
 	}
 

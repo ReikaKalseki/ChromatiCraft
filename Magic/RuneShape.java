@@ -9,13 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.HashMap;
-
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+
+import java.util.HashMap;
+
+import net.minecraft.block.Block;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 
 public class RuneShape {
 
@@ -41,8 +43,8 @@ public class RuneShape {
 			int dx = x+c.posX-xref;
 			int dy = y+c.posY-yref;
 			int dz = z+c.posZ-zref;
-			int id = world.getBlockId(dx, dy, dz);
-			if (id == ChromaBlocks.RUNE.getBlockID()) {
+			Block b = world.getBlock(dx, dy, dz);
+			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
 				int meta = world.getBlockMetadata(dx, dy, dz);
 				if (meta == runes.get(c).ordinal()) {
 

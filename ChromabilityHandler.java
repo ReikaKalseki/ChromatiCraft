@@ -9,35 +9,38 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+
 import java.util.ArrayList;
-import java.util.EnumSet;
 
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.Registry.Chromabilities;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-public class ChromabilityHandler implements ITickHandler {
+public class ChromabilityHandler implements TickHandler {
 
 	public static final ChromabilityHandler instance = new ChromabilityHandler();
 
 	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {
-
-	}
-
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+	public void tick(Object... tickData) {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
 		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
 		for (int i = 0; i < li.size(); i++) {
-			li.get(i).apply(ep);
+			Chromabilities c = li.get(i);
+			if (c.tickBased)
+				c.apply(ep);
 		}
 	}
 
 	@Override
-	public EnumSet<TickType> ticks() {
-		return EnumSet.of(TickType.PLAYER);
+	public TickType getType() {
+		return TickType.PLAYER;
+	}
+
+	@Override
+	public Phase getPhase() {
+		return Phase.END;
 	}
 
 	@Override

@@ -10,11 +10,12 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 
 public class BlockModelledChromaTile extends BlockChromaTile {
 
-	public BlockModelledChromaTile(int par1, Material par2Material) {
-		super(par1, par2Material);
+	public BlockModelledChromaTile(Material par2Material) {
+		super(par2Material);
 	}
 
 	@Override
@@ -30,6 +31,11 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	@Override
 	public final boolean isOpaqueCube() {
 		return false;
+	}
+
+	@Override
+	public void registerBlockIcons(IIconRegister ico) {
+		blockIcon = ico.registerIcon("chromaticraft:transparent");
 	}
 
 }

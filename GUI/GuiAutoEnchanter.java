@@ -9,18 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import java.util.ArrayList;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Icon;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
@@ -30,6 +18,18 @@ import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+
+import java.util.ArrayList;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiAutoEnchanter extends GuiChromaBase {
 
@@ -114,7 +114,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int level = ench.getLevel();
 		if (level > 0) {
 			Fluid f = FluidRegistry.getFluid("chroma");
-			Icon ico = f.getStillIcon();
+			IIcon ico = f.getStillIcon();
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / ench.getCapacity();
@@ -122,7 +122,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		}
 
 		String display = this.getEnchantDisplayString();
-		ReikaGuiAPI.instance.drawCenteredString(fontRenderer, display, xSize/2, 75, 0xffffff);
+		ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);
 	}
 
 	@Override

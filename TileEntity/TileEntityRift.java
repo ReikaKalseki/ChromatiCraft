@@ -9,6 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import Reika.ChromatiCraft.API.SpaceRift;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Base.BlockTEBase;
+import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+
 import java.awt.Color;
 
 import li.cil.oc.api.network.Arguments;
@@ -19,13 +28,14 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
@@ -34,14 +44,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
-import Reika.ChromatiCraft.API.SpaceRift;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Base.BlockTEBase;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.WorldLocation;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -91,13 +93,12 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 				int ddx = xCoord-dir.offsetX;
 				int ddy = yCoord-dir.offsetY;
 				int ddz = zCoord-dir.offsetZ;
-				int id = worldObj.getBlockId(dx, dy, dz);
-				int id2 = worldObj.getBlockId(ddx, ddy, ddz);
+				Block id = worldObj.getBlock(dx, dy, dz);
+				Block id2 = worldObj.getBlock(ddx, ddy, ddz);
 				int pwr = worldObj.getIndirectPowerLevelTo(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ, opp.ordinal());
 				te.redstoneCache[i] = pwr;
-				if (id != 0) {
-					Block b = Block.blocksList[id];
-					b.onNeighborBlockChange(worldObj, dx, dy, dz, id2);
+				if (id != Blocks.air) {
+					id.onNeighborBlockChange(worldObj, dx, dy, dz, id2);
 				}
 				TileEntity tile = this.getAdjacentTileEntity(dir);
 				if (tile instanceof TileEntityBase) {
@@ -142,7 +143,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			int dx = xCoord+dir.offsetX;
 			int dy = yCoord+dir.offsetY;
 			int dz = zCoord+dir.offsetZ;
-			Block b = Block.blocksList[worldObj.getBlockId(dx, dy, dz)];
+			Block b = worldObj.getBlock(dx, dy, dz);
 			if (b instanceof BlockTEBase) {
 				((BlockTEBase)b).updateTileCache(worldObj, dx, dy, dz);
 			}
@@ -185,7 +186,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	private boolean canLinkTo(World world, int x, int y, int z) {
-		return new WorldLocation(world, x, y, z).getBlockID() == ChromaBlocks.RIFT.getBlockID();
+		return new WorldLocation(world, x, y, z).getBlock() == ChromaBlocks.RIFT.getBlockInstance();
 	}
 
 	private TileEntityRift getOther() {
@@ -205,8 +206,8 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public int getBlockIDFrom(ForgeDirection dir) {
-		return this.isLinked() ? this.getBlockFrom(dir).getBlockID() : -1;
+	public Block getBlockIDFrom(ForgeDirection dir) {
+		return this.isLinked() ? this.getBlockFrom(dir).getBlock() : null;
 	}
 
 	@Override
@@ -472,17 +473,17 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IInventory) {
-			return ((IInventory)this.getSingleDirTile()).getInvName();
+			return ((IInventory)this.getSingleDirTile()).getInventoryName();
 		}
 		return null;
 	}
 
 	@Override
-	public boolean isInvNameLocalized() {
+	public boolean hasCustomInventoryName() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IInventory) {
-			return ((IInventory)this.getSingleDirTile()).isInvNameLocalized();
+			return ((IInventory)this.getSingleDirTile()).hasCustomInventoryName();
 		}
 		return false;
 	}
@@ -504,16 +505,16 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public void openChest() {
+	public void openInventory() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IInventory) {
-			((IInventory)this.getSingleDirTile()).openChest();
+			((IInventory)this.getSingleDirTile()).openInventory();
 		}
 	}
 
 	@Override
-	public void closeChest() {
+	public void closeInventory() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IInventory) {
-			((IInventory)this.getSingleDirTile()).closeChest();
+			((IInventory)this.getSingleDirTile()).closeInventory();
 		}
 	}
 

@@ -9,6 +9,26 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.ChromatiGuis;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Base.BlockTEBase;
+import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.DartItemHandler;
+
 import java.util.List;
 import java.util.Random;
 
@@ -17,46 +37,31 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.ChromatiGuis;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.DartItemHandler;
 
-public class BlockChromaTile extends Block implements IWailaBlock {
+public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 
 	private static final Random par5Random = new Random();
 
-	private final Icon[][] icons = new Icon[16][6];
+	private final IIcon[][] icons = new IIcon[16][6];
 
-	public BlockChromaTile(int par1, Material par2Material) {
-		super(par1, par2Material);
+	public BlockChromaTile(Material par2Material) {
+		super(par2Material);
 		this.setCreativeTab(null);
 		blockHardness = 5;
 		blockResistance = 10;
@@ -69,22 +74,29 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 
 	@Override
 	public final TileEntity createTileEntity(World world, int meta) {
-		TileEntity te = ChromaTiles.createTEFromIDAndMetadata(blockID, meta);
+		TileEntity te = ChromaTiles.createTEFromIDAndMetadata(this, meta);
 		return te;
 	}
 
 	@Override
-	public Icon getIcon(int s, int meta) {
+	public IIcon getIcon(int s, int meta) {
 		return icons[meta][0];
 	}
 
 	@Override
-	public void registerIcons(IconRegister ico) {
-		for (int i = 0; i < 16; i++) {
+	public void registerBlockIcons(IIconRegister ico) {
+		int num = ChromaTiles.getTilesForBlock(this).size();
+		for (int i = 0; i < num; i++) {
 			for (int k = 0; k < 6; k++) {
 				icons[i][k] = ico.registerIcon("chromaticraft:tile/"+i+"_"+k);
 			}
 		}
+	}
+
+	@Override
+	public final boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z)
+	{
+		return false;
 	}
 
 	@Override
@@ -93,7 +105,7 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 		if (ChromatiCraft.instance.isLocked())
 			return false;
 		world.markBlockForUpdate(x, y, z);
-		TileEntity te = world.getBlockTileEntity(x, y, z);
+		TileEntity te = world.getTileEntity(x, y, z);
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		ItemStack is = ep.getCurrentEquippedItem();
 
@@ -121,14 +133,11 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 
 	@Override
 	public final ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
-		int id = this.idPicked(world, x, y, z);
 		int meta = world.getBlockMetadata(target.blockX, target.blockY, target.blockZ);
-		if (id == 0)
-			return null;
-		ChromaTiles m = ChromaTiles.getMachineFromIDandMetadata(id, meta);
+		ChromaTiles m = ChromaTiles.getTileFromIDandMetadata(this, meta);
 		if (m == null)
 			return null;
-		TileEntity tile = world.getBlockTileEntity(target.blockX, target.blockY, target.blockZ);
+		TileEntity tile = world.getTileEntity(target.blockX, target.blockY, target.blockZ);
 		ItemStack core = m.getCraftedProduct();/*
 		if (m.isEnchantable()) {
 			HashMap<Enchantment, Integer> ench = ((EnchantableMachine)tile).getEnchantments();
@@ -149,11 +158,11 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 	}
 
 	@Override
-	public boolean removeBlockByPlayer(World world, EntityPlayer player, int x, int y, int z)
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harvest)
 	{
 		if (this.canHarvest(world, player, x, y, z))
 			this.harvestBlock(world, player, x, y, z, 0);
-		return world.setBlock(x, y, z, 0);
+		return world.setBlockToAir(x, y, z);
 	}
 
 	private boolean canHarvest(World world, EntityPlayer ep, int x, int y, int z) {
@@ -163,11 +172,11 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 	}
 
 	@Override
-	public final void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta)
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta)
 	{
 		if (!this.canHarvest(world, ep, x, y, z))
 			return;
-		TileEntity te = world.getBlockTileEntity(x, y, z);
+		TileEntity te = world.getTileEntity(x, y, z);
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m != null) {
 			ItemStack is = m.getCraftedProduct();
@@ -187,18 +196,20 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 	}
 
 	@Override
-	public final void breakBlock(World world, int x, int y, int z, int par5, int par6) {
-		TileEntity te = world.getBlockTileEntity(x, y, z);
+	public final void breakBlock(World world, int x, int y, int z, Block par5, int par6) {
+		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof IInventory)
 			ReikaItemHelper.dropInventory(world, x, y, z);
 		if (te instanceof TileEntityRift) {
 			((TileEntityRift)te).resetOther();
 		}
+		if (te instanceof TileEntityGuardianStone)
+			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
 		super.breakBlock(world, x, y, z, par5, par6);
 	}
 
 	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) {
-		return ChromaTiles.getMachineFromIDandMetadata(blockID, accessor.getMetadata()).getCraftedProduct();
+		return ChromaTiles.getTileFromIDandMetadata(this, accessor.getMetadata()).getCraftedProduct();
 	}
 
 	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
@@ -247,7 +258,7 @@ public class BlockChromaTile extends Block implements IWailaBlock {
 				for (int i = 0; i < tanks.length; i++) {
 					FluidTankInfo info = tanks[i];
 					FluidStack fs = info.fluid;
-					String input = fs != null ? String.format("%d/%d mB of %s", fs.amount, info.capacity, fs.getFluid().getLocalizedName()) : "Empty";
+					String input = fs != null ? String.format("%d/%d mB of %s", fs.amount, info.capacity, fs.getFluid().getLocalizedName(fs)) : "Empty";
 					currenttip.add("Tank "+i+": "+input);
 				}
 			}

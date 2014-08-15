@@ -9,29 +9,31 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+
 import java.awt.Color;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLiquidChroma extends BlockFluidClassic {
 
-	public Icon[] theIcon = new Icon[2];
+	public IIcon[] theIcon = new IIcon[2];
 
-	public BlockLiquidChroma(int id, Fluid fluid, Material material) {
-		super(id, fluid, material);
+	public BlockLiquidChroma(Fluid fluid, Material material) {
+		super(fluid, material);
 		this.setCreativeTab(null);
 
 		this.setHardness(100F);
@@ -41,21 +43,21 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	}
 
 	@Override
-	public Icon getIcon(int s, int meta) {
+	public IIcon getIcon(int s, int meta) {
 		renderPass = 1;
-		this.setLightValue(1);
+		this.setLightLevel(1);
 		return s <= 1 ? theIcon[0] : theIcon[1];
 	}
 
 	@Override
-	public boolean isBlockReplaceable(World world, int x, int y, int z) {
+	public boolean isReplaceable(IBlockAccess world, int x, int y, int z) {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IconRegister ico) {
-		theIcon = new Icon[]{ico.registerIcon("chromaticraft:fluid/chroma"), ico.registerIcon("chromaticraft:fluid/chroma_flowing")};
+	public void registerBlockIcons(IIconRegister ico) {
+		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/chroma"), ico.registerIcon("chromaticraft:fluid/chroma_flowing")};
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 
 	@Override
 	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
-		world.setBlock(x, y, z, 0);
+		world.setBlockToAir(x, y, z);
 		return new FluidStack(FluidRegistry.getFluid("chroma"), 1000);
 	}
 

@@ -9,40 +9,33 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
+import Reika.DragonAPI.Interfaces.IPacketHandler;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import cpw.mods.fml.common.network.IPacketHandler;
-import cpw.mods.fml.common.network.Player;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public abstract class ChromatiPackets implements IPacketHandler {
+import java.io.DataInputStream;
+import java.io.IOException;
 
-	protected PacketTypes packetType;
+import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+public class ChromatiPackets implements IPacketHandler {
+
 	protected ChromaPackets pack;
 
-	@Override
-	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-		this.process(packet, (EntityPlayer)player);
-	}
-
-	public abstract void process(Packet250CustomPayload packet, EntityPlayer ep);
-
-	public void handleData(Packet250CustomPayload packet, World world) {
-		DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
+	public void handleData(PacketObj packet, World world, EntityPlayer ep) {
+		DataInputStream inputStream = packet.getDataIn();
 		int control = Integer.MIN_VALUE;
 		int len;
 		int[] data = new int[0];
@@ -52,23 +45,32 @@ public abstract class ChromatiPackets implements IPacketHandler {
 		String stringdata = null;
 		//System.out.print(packet.length);
 		try {
-			packetType = PacketTypes.getPacketType(inputStream.readInt());
+			PacketTypes packetType = packet.getType();
 			switch(packetType) {
 			case SOUND:
-				ChromaSounds.playSoundPacket(inputStream);
+				control = inputStream.readInt();
+				ChromaSounds s = ChromaSounds.soundList[control];
+				double sx = inputStream.readDouble();
+				double sy = inputStream.readDouble();
+				double sz = inputStream.readDouble();
+				float v = inputStream.readFloat();
+				float p = inputStream.readFloat();
+				ReikaSoundHelper.playSound(s, sx, sy, sz, v, p);
 				return;
 			case STRING:
+				stringdata = packet.readString();
 				control = inputStream.readInt();
 				pack = ChromaPackets.getPacket(control);
-				stringdata = Packet.readString(inputStream, Short.MAX_VALUE);
 				break;
 			case DATA:
 				control = inputStream.readInt();
 				pack = ChromaPackets.getPacket(control);
 				len = pack.numInts;
-				data = new int[len];
-				for (int i = 0; i < len; i++)
-					data[i] = inputStream.readInt();
+				if (pack.hasData()) {
+					data = new int[len];
+					for (int i = 0; i < len; i++)
+						data[i] = inputStream.readInt();
+				}
 				break;
 			case UPDATE:
 				control = inputStream.readInt();
@@ -77,18 +79,18 @@ public abstract class ChromatiPackets implements IPacketHandler {
 			case FLOAT:
 				break;
 			case SYNC:
+				String name = packet.readString();
 				x = inputStream.readInt();
 				y = inputStream.readInt();
 				z = inputStream.readInt();
-				String name = Packet.readString(inputStream, Short.MAX_VALUE);
 				int value = inputStream.readInt();
 				ReikaPacketHelper.updateTileEntityData(world, x, y, z, name, value);
 				return;
 			case TANK:
+				String tank = packet.readString();
 				x = inputStream.readInt();
 				y = inputStream.readInt();
 				z = inputStream.readInt();
-				String tank = Packet.readString(inputStream, Short.MAX_VALUE);
 				int level = inputStream.readInt();
 				ReikaPacketHelper.updateTileEntityTankData(world, x, y, z, tank, level);
 				return;
@@ -101,7 +103,7 @@ public abstract class ChromatiPackets implements IPacketHandler {
 					data[i] = inputStream.readInt();
 				break;
 			}
-			if (packetType != PacketTypes.RAW) {
+			if (packetType.hasCoordinates()) {
 				x = inputStream.readInt();
 				y = inputStream.readInt();
 				z = inputStream.readInt();
@@ -111,7 +113,7 @@ public abstract class ChromatiPackets implements IPacketHandler {
 			e.printStackTrace();
 			return;
 		}
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = world.getTileEntity(x, y, z);
 		switch (pack) {
 		case REACH:
 			if (world.isRemote) {
@@ -132,6 +134,17 @@ public abstract class ChromatiPackets implements IPacketHandler {
 		case SPAWNERPROGRAM:
 			TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
 			prog.setMobType(stringdata);
+			break;
+		case CRYSTALEFFECT:
+			Block b = world.getBlock(x, y, z);
+			if (b instanceof CrystalBlock) {
+				CrystalBlock cb = (CrystalBlock)b;
+				cb.updateEffects(world, x, y, z);
+			}
+			break;
+		case PLANTUPDATE:
+			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+			te.updateLight();
 			break;
 		}
 	}
