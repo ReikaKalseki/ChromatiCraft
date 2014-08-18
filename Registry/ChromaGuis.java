@@ -9,11 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-public enum ChromatiGuis {
+public enum ChromaGuis {
 
 	TILE(),
-	LINK();
+	LINK(),
+	ABILITY();
 
-	public static final ChromatiGuis[] guiList = values();
+	public static final ChromaGuis[] guiList = values();
 
 }

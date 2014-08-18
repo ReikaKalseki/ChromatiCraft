@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Items;
 
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
-import Reika.ChromatiCraft.Registry.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 import java.util.List;

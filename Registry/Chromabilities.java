@@ -10,11 +10,14 @@
 package Reika.ChromatiCraft.Registry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.AbilityVariables;
+import Reika.ChromatiCraft.Auxiliary.ControllableReachPlayer;
 import Reika.DragonAPI.Instantiable.MultiBlockBlueprint;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,15 +40,17 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public enum Chromabilities {
 
-	REACH(true),
-	MAGNET(true),
-	SONIC(false),
-	SHIFT(false);
+	REACH(false, true),
+	MAGNET(true, false),
+	SONIC(false, false),
+	SHIFT(false, false);
 
 	public final boolean tickBased;
+	public final boolean actOnClient;
 
-	private Chromabilities(boolean tick) {
+	private Chromabilities(boolean tick, boolean client) {
 		tickBased = tick;
+		actOnClient = client;
 	}
 
 	private static final String NBT_TAG = "chromabilities";
@@ -54,9 +60,6 @@ public enum Chromabilities {
 
 	public void apply(EntityPlayer ep) {
 		switch(this) {
-		case REACH:
-			this.setReachDistance(ep, 128);
-			break;
 		case MAGNET:
 			this.attractItemsAndXP(ep, 24);
 			break;
@@ -65,17 +68,36 @@ public enum Chromabilities {
 		}
 	}
 
-	public void trigger(EntityPlayer ep, int... data) {
-		switch(this) {
-		case SONIC:
-			this.destroyBlocksAround(ep, data[0]);
-			break;
-		case SHIFT:
-			BlockBox box = new BlockBox(data[0], data[1], data[2], data[3], data[4], data[5]);
-			this.shiftArea(ep.worldObj, box, ForgeDirection.VALID_DIRECTIONS[data[6]], data[7]);
-			break;
-		default:
-			break;
+	public void trigger(EntityPlayer ep, ArrayList<Integer> data) {
+		if (ep.worldObj.isRemote) {
+			data.add(0, this.ordinal());
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), ep.worldObj, 0, 0, 0, data);
+
+			if (!actOnClient)
+				return;
+		}
+
+		boolean flag = this.enabledOn(ep);
+		this.setToPlayer(ep, !flag);
+
+		if (tickBased) {
+
+		}
+		else {
+			switch(this) {
+			case REACH:
+				this.setReachDistance(ep, this.enabledOn(ep) ? 128 : -1); //use data?
+				break;
+			case SONIC:
+				this.destroyBlocksAround(ep, data.get(0));
+				break;
+			case SHIFT:
+				BlockBox box = new BlockBox(data.get(0), data.get(1), data.get(2), data.get(3), data.get(4), data.get(5));
+				this.shiftArea(ep.worldObj, box, ForgeDirection.VALID_DIRECTIONS[data.get(6)], data.get(7));
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -171,12 +193,21 @@ public enum Chromabilities {
 	private static void setReachDistance(EntityPlayer player, int dist) {
 		if (!player.worldObj.isRemote && player instanceof EntityPlayerMP) {
 			EntityPlayerMP ep = (EntityPlayerMP)player;
-			ep.theItemInWorldManager.setBlockReachDistance(dist);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.REACH.ordinal(), ep, dist);
+			ep.theItemInWorldManager.setBlockReachDistance(dist > 0 ? dist : 5);
+			//ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.REACH.ordinal(), ep, dist);
+		}
+		else {
+			//Minecraft.getMinecraft().playerController.setReachDistance(data[0]); //set reach with ASM'd method
+			AbilityVariables.playerReach = dist;
+
+			//until asm method is working, temporary application
+			Minecraft.getMinecraft().playerController = new ControllableReachPlayer(Minecraft.getMinecraft().playerController);
 		}
 	}
 
 	private static void destroyBlocksAround(EntityPlayer ep, int power) {
+		if (power <= 0)
+			return;
 		int x = MathHelper.floor_double(ep.posX);
 		int y = MathHelper.floor_double(ep.posY)+1;
 		int z = MathHelper.floor_double(ep.posZ);
@@ -187,11 +218,14 @@ public enum Chromabilities {
 					int dx = x+i;
 					int dy = y+j;
 					int dz = z+k;
-					Block b = ep.worldObj.getBlock(dx, dy, dz);
-					if (b != Blocks.air && b.isOpaqueCube()) {
-						if (power > b.blockResistance/6F) {
-							b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
-							ep.worldObj.setBlockToAir(dx, dy, dz);
+					if (ReikaMathLibrary.py3d(i, j, k) <= r+0.5) {
+						Block b = ep.worldObj.getBlock(dx, dy, dz);
+						if (b != Blocks.air && b.isOpaqueCube()) {
+							if (power > b.blockResistance/6F) {
+								b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
+								ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
+								ep.worldObj.setBlockToAir(dx, dy, dz);
+							}
 						}
 					}
 				}

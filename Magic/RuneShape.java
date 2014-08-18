@@ -96,6 +96,11 @@ public class RuneShape {
 		return blocks.getSizeZ();
 	}
 
+	@Override
+	public String toString() {
+		return runes.toString();
+	}
+
 	public static class RuneLocation {
 
 		public final CrystalElement color;

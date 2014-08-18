@@ -17,12 +17,16 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import java.util.ArrayList;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class RecipesCastingTable {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
+	private final ArrayList<CastingRecipe> recipes = new ArrayList();
 
 	private RecipesCastingTable() {
+
+
 
 	}
 
@@ -31,8 +35,8 @@ public class RecipesCastingTable {
 		private final ItemStack main;
 		private final ItemStack out;
 		private final ArrayList<ItemStack> inputs = new ArrayList();
-		private final ElementTagCompound aura = new ElementTagCompound();
-		private final ArrayList<RuneShape> runes = new ArrayList();
+		private final ElementTagCompound elements = new ElementTagCompound();
+		private final RuneShape runes = new RuneShape();
 
 		private CastingRecipe(ItemStack main, ItemStack out, ItemStack... in) {
 			this.main = main;
@@ -46,12 +50,12 @@ public class RecipesCastingTable {
 		}
 
 		private CastingRecipe addAuraRequirement(ElementTag e) {
-			aura.maximizeWith(e);
+			elements.maximizeWith(e);
 			return this;
 		}
 
-		private CastingRecipe addRuneShape(RuneShape rune) {
-			runes.add(rune);
+		private CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
+			runes.addRune(color, rx, ry, rz);
 			return this;
 		}
 
@@ -70,15 +74,21 @@ public class RecipesCastingTable {
 		}
 
 		public ElementTagCompound getRequiredAura() {
-			return aura.copy();
+			return elements.copy();
 		}
 
-		public ArrayList<RuneShape> getRequiredRunes() {
-			ArrayList<RuneShape> li = new ArrayList();
-			li.addAll(runes);
-			return li;
+		public boolean matchRunes(World world, int x, int y, int z) {
+			return runes.matchAt(world, x, y, z, 0, 0, 0);
 		}
 
+		public void drawInParticlesTo(World world, int x, int y, int z) {
+
+		}
+
+	}
+
+	public static CastingRecipe getRecipe(ItemStack main, ItemStack... aux) {
+		return null;
 	}
 
 }

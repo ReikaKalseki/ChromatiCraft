@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;

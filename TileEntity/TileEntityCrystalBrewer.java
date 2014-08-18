@@ -10,12 +10,12 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalPotionController;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -109,11 +109,6 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
-	}
-
-	@Override
-	public boolean shouldRenderInPass(int pass) {
-		return pass == 0;
 	}
 
 	@Override

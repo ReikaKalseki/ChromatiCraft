@@ -12,7 +12,8 @@ public enum ChromaIcons {
 	SPARKLEPARTICLE("sparkle-particle"),
 	SPARKLE("sparkle2"),
 	GLOWSECTION("glowsections"),
-	RADIATE("plant_glow");
+	RADIATE("plant_glow"),
+	FLARE("flare");
 
 	private IIcon icon;
 	private final String iconName;

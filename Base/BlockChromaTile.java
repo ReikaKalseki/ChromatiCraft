@@ -16,9 +16,10 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.ChromatiGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
@@ -123,7 +124,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 		}
 
 		if (te != null && ChromaAux.hasGui(world, x, y, z, ep) && ((TileEntityBase)te).isPlayerAccessible(ep)) {
-			ep.openGui(ChromatiCraft.instance, ChromatiGuis.TILE.ordinal(), world, x, y, z);
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
 			return true;
 		}
 
@@ -203,8 +204,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 		if (te instanceof TileEntityRift) {
 			((TileEntityRift)te).resetOther();
 		}
-		if (te instanceof TileEntityGuardianStone)
+		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
+		}
+		if (te instanceof TileEntityCrystalTile) {
+			((TileEntityCrystalTile)te).removeFromCache();
+		}
 		super.breakBlock(world, x, y, z, par5, par6);
 	}
 

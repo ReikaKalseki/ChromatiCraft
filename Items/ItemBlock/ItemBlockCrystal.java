@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Items.ItemBlock;
 
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.CrystalPotionController;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 

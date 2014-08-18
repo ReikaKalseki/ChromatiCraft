@@ -11,16 +11,17 @@ package Reika.ChromatiCraft.Registry;
 
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.ItemChromaCrafting;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemTreeDye;
-import Reika.ChromatiCraft.Items.Tools.ItemAbilityTool;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
+import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
@@ -54,8 +55,9 @@ public enum ChromaItems implements ItemEnum {
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemTreeDye.class),
-	ABILITY(33, false,		"chroma.ability",		ItemAbilityTool.class),
-	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class);
+	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
+	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class),
+	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -71,22 +73,14 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	private ChromaItems(int tex, boolean sub, String n, Class <?extends Item> iCl, ModList api) {
-		texturesheet = 1;
-		if (tex < 0) {
-			tex = -tex;
-			texturesheet = 0;
-		}
-		if (tex > 255) {
-			texturesheet = tex/256;
-			tex -= texturesheet*256;
-		}
-		index = tex;
+		index = tex%256;
+		texturesheet = tex/256;
 		hasSubtypes = sub;
 		name = n;
 		itemClass = iCl;
 		condition = api;
 	}
-
+	/*
 	private ChromaItems(int lotex, int hitex, boolean sub, String n, Class <?extends Item> iCl) {
 		if (lotex > hitex)
 			throw new RegistrationException(ChromatiCraft.instance, "Invalid item sprite registration for "+n+"! Backwards texture bounds?");
@@ -106,7 +100,7 @@ public enum ChromaItems implements ItemEnum {
 		hasSubtypes = sub;
 		name = n;
 		itemClass = iCl;
-	}
+	}*/
 
 	public static final ChromaItems[] itemList = values();
 
@@ -200,6 +194,8 @@ public enum ChromaItems implements ItemEnum {
 			return ReikaDyeHelper.dyes[meta%16].colorName+" "+this.getBasicName();
 		case ENDERCRYSTAL:
 			return this.getBasicName();
+		case CRAFTING:
+			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
 		default:
 			break;
 		}
@@ -233,7 +229,7 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public int getTextureSheet() {
-		return index/256;
+		return texturesheet;
 	}
 
 	public int getNumberMetadatas() {
@@ -256,6 +252,8 @@ public enum ChromaItems implements ItemEnum {
 			return 32;
 		case ENDERCRYSTAL:
 			return 2;
+		case CRAFTING:
+			return ChromaNames.craftingNames.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

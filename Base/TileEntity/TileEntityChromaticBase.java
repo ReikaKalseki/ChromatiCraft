@@ -90,7 +90,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
-	public boolean shouldRenderInPass(int pass) {
+	public final boolean shouldRenderInPass(int pass) {
 		ChromaTiles r = ChromaTiles.TEList[this.getIndex()];
 		return pass == 0 || (r.renderInPass1() && pass == 1);
 	}

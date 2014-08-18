@@ -76,20 +76,25 @@ public class BlockCrystalTile extends BlockChromaTile {
 	@Override
 	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
-		boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
-		TileEntity tile = world.getTileEntity(x, y, z);
-		if (silk) {
-			ItemStack is = c.getCraftedProduct();
-			if (tile instanceof TileEntityAccelerator) {
-				TileEntityAccelerator te = (TileEntityAccelerator)tile;
-				if (is.stackTagCompound == null)
-					is.stackTagCompound = new NBTTagCompound();
-				is.stackTagCompound.setInteger("tier", te.getTier());
-			}
-			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
+		if (c == ChromaTiles.PYLON) {
+
 		}
 		else {
-			ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, this.getPieces(world, x, y, z));
+			boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
+			TileEntity tile = world.getTileEntity(x, y, z);
+			if (silk) {
+				ItemStack is = c.getCraftedProduct();
+				if (tile instanceof TileEntityAccelerator) {
+					TileEntityAccelerator te = (TileEntityAccelerator)tile;
+					if (is.stackTagCompound == null)
+						is.stackTagCompound = new NBTTagCompound();
+					is.stackTagCompound.setInteger("tier", te.getTier());
+				}
+				ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
+			}
+			else {
+				ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, this.getPieces(world, x, y, z));
+			}
 		}
 	}
 
@@ -107,11 +112,6 @@ public class BlockCrystalTile extends BlockChromaTile {
 		if (id == this)
 			return false;
 		return !id.isOpaqueCube();
-	}
-
-	@Override
-	public boolean canSilkHarvest() {
-		return true;
 	}
 
 	@Override

@@ -115,11 +115,6 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 	}
 
 	@Override
-	public boolean shouldRenderInPass(int pass) {
-		return pass == 0;
-	}
-
-	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.GUARDIAN;
 	}

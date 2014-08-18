@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Registry;
+package Reika.ChromatiCraft.Magic;
 
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 

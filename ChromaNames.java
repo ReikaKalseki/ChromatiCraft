@@ -27,13 +27,9 @@ public class ChromaNames {
 		"crystal.cluster0", "crystal.cluster1", "crystal.core", "crystal.star", "crystal.multi"
 	};
 
-	public static void addNames() {
-
-		for (int i = 0; i < blockNames.length; i++) {
-			//ItemStack blockStack = new ItemStack(RotaryCraft.decoblock, 1, i);
-			//LanguageRegistry.addName(blockStack, getName(blockNames[i], false));
-		}
-	}
+	public static final String[] craftingNames = {
+		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror"
+	};
 
 	public static String getFluidName(int i) {
 		return fluidNames[i];

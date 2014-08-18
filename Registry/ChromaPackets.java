@@ -13,11 +13,11 @@ import Reika.DragonAPI.Auxiliary.PacketTypes;
 
 public enum ChromaPackets {
 
-	REACH(1),
 	ENCHANTER(2),
 	SPAWNERPROGRAM(1),
 	CRYSTALEFFECT(),
-	PLANTUPDATE();
+	PLANTUPDATE(),
+	ABILITY(9);
 
 	public final int numInts;
 	public final PacketTypes type;

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
@@ -23,6 +24,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -115,11 +117,6 @@ public class ChromatiPackets implements IPacketHandler {
 		}
 		TileEntity tile = world.getTileEntity(x, y, z);
 		switch (pack) {
-		case REACH:
-			if (world.isRemote) {
-				;//Minecraft.getMinecraft().thePlayer.setReachDistance(data[0]); //set reach with ASM'd method
-			}
-			break;
 		case ENCHANTER:
 			Enchantment e = Enchantment.enchantmentsList[data[0]];
 			boolean incr = data[1] > 0;
@@ -145,6 +142,13 @@ public class ChromatiPackets implements IPacketHandler {
 		case PLANTUPDATE:
 			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
 			te.updateLight();
+			break;
+		case ABILITY:
+			ArrayList<Integer> li = new ArrayList();
+			for (int i = 1; i < data.length; i++) {
+				li.add(data[i]);
+			}
+			Chromabilities.abilities[data[0]].trigger(ep, li);
 			break;
 		}
 	}

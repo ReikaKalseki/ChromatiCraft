@@ -13,7 +13,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Items.AuraPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.ChromatiGuis;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -56,7 +56,7 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 			is.setItemDamage(1-is.getItemDamage());
 		}
 		else {
-			ep.openGui(ChromatiCraft.instance, ChromatiGuis.LINK.ordinal(), world, 0, 0, 0);
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.LINK.ordinal(), world, 0, 0, 0);
 		}
 		return is;
 	}

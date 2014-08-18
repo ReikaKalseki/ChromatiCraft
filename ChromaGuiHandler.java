@@ -15,11 +15,12 @@ import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
+import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.GUI.GuiCollector;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
-import Reika.ChromatiCraft.Registry.ChromatiGuis;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
@@ -42,7 +43,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 	public static final ChromaGuiHandler instance = new ChromaGuiHandler();
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-		ChromatiGuis gui = ChromatiGuis.guiList[id];
+		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {
 		case LINK:
 			return new ContainerInventoryLinker(player, world);
@@ -65,6 +66,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			if (te instanceof IInventory && !(te instanceof InertIInv))
 				return new ContainerBasicStorage(player, te);
 			break;
+		case ABILITY:
+			return null;
 		}
 		return null;
 	}
@@ -72,7 +75,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 	//returns an instance of the Gui you made earlier
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-		ChromatiGuis gui = ChromatiGuis.guiList[id];
+		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {
 		case LINK:
 			return new GuiInventoryLinker(player, world);
@@ -96,6 +99,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiBasicStorage(player, (RotaryCraftTileEntity)te);
 			 */
 			break;
+		case ABILITY:
+			return new GuiChromability(player);
 		}
 		return null;
 	}

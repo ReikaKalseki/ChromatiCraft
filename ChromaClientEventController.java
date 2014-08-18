@@ -49,7 +49,7 @@ public class ChromaClientEventController {
 
 	@SubscribeEvent
 	public void drawHighlight(DrawBlockHighlightEvent evt) {
-		if (evt.currentItem != null && ChromaItems.ABILITY.matchWith(evt.currentItem)) {
+		if (evt.currentItem != null && ChromaItems.EXCAVATOR.matchWith(evt.currentItem)) {
 
 		}
 	}

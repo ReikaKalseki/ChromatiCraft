@@ -13,6 +13,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
@@ -250,8 +251,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!this.isLocked())
 			IntegrityChecker.instance.addMod(instance, ChromaBlocks.blockList, ChromaItems.itemList);
 
-		if (!this.isLocked())
+		if (!this.isLocked()) {
 			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
+			TickRegistry.instance.registerTickHandler(ChromaTriggerHandler.instance, Side.CLIENT);
+			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
+		}
 
 		//if (ConfigRegistry.HANDBOOK.getState())
 		;//PlayerFirstTimeTracker.addTracker(new ChromatiBookTracker());
@@ -423,7 +427,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	public Block getEnderBlockToGenerate() {
-		if (ModList.THERMALEXPANSION.isLoaded()) {
+		if (ModList.THERMALEXPANSION.isLoaded() && ThermalHandler.getInstance().enderID != null) {
 			return ThermalHandler.getInstance().enderID;
 		}
 		return ChromaBlocks.ENDER.getBlockInstance();

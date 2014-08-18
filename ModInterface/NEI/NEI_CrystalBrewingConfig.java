@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.ModInterface.NEI;
 
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.CrystalPotionController;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
