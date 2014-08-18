@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 import java.awt.Color;
 
@@ -22,6 +22,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {
@@ -106,6 +109,9 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//xu = u = xv = v = 0;
 
 		Tessellator v5 = Tessellator.instance;
+		v5.draw();
+		v5.startDrawingQuads();
+		GL11.glDisable(GL11.GL_CULL_FACE);
 
 		double maxx = b.getBlockBoundsMaxX();
 		double minx = b.getBlockBoundsMinX();

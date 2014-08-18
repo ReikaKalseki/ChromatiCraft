@@ -38,12 +38,14 @@ public class CrystalTarget {
 	}
 
 	public static CrystalTarget readFromNBT(String name, NBTTagCompound NBT) {
+		if (!NBT.hasKey(name))
+			return null;
 		NBTTagCompound tag = NBT.getCompoundTag(name);
 		if (tag == null)
 			return null;
 		WorldLocation loc = WorldLocation.readFromNBT("loc", tag);
 		CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
-		return new CrystalTarget(loc, e);
+		return loc != null && e != null ? new CrystalTarget(loc, e) : null;
 	}
 
 	@Override

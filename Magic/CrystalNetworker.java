@@ -38,6 +38,10 @@ public class CrystalNetworker implements TickHandler {
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		this.clear();
+		for (int i = 0; i < tiles.size(); i++) {
+			CrystalNetworkTile te = tiles.get(i);
+			te.clearTarget();
+		}
 		tiles.clear();
 	}
 
@@ -96,6 +100,18 @@ public class CrystalNetworker implements TickHandler {
 				it.remove();
 			}
 		}
+	}
+
+	public void breakPaths(CrystalReceiver te) {
+		Iterator<CrystalFlow> it = flows.iterator();
+		while (it.hasNext()) {
+			CrystalFlow p = it.next();
+			if (p.receiver.equals(te)) {
+				p.resetTiles();
+				it.remove();
+			}
+		}
+		te.onPathBroken();
 	}
 
 	ArrayList<CrystalNetworkTile> getTilesWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -86,7 +87,7 @@ public abstract class CrystalBlock extends Block {
 		double[] v = ReikaDyeHelper.getColorFromDamage(color).getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 1);
 		if (rand.nextInt(3) == 0)
-			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, 0, world, x, y, z);
+			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
 	}
 
 	@Override
@@ -102,14 +103,17 @@ public abstract class CrystalBlock extends Block {
 		double[] v = dye.getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
 		if (dye != ReikaDyeHelper.PURPLE) //prevent an XP exploit
-			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, 0, world, x, y, z);
+			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
 		return false;
 	}
 
 	public void updateEffects(World world, int x, int y, int z) {
 		if (!world.isRemote) {
-			if (this.shouldMakeNoise())
-				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, 0.5F * ((rand.nextFloat() - rand.nextFloat()) * 0.7F + 1.8F));
+			if (this.shouldMakeNoise()) {
+				float f1 = rand.nextFloat();
+				float f2 = rand.nextFloat();
+				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, 0.5F*((f1-f2)*0.7F+1.8F));
+			}
 			if (this.shouldGiveEffects()) {
 				int r = this.getRange();
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);

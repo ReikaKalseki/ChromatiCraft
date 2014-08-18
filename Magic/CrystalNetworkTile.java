@@ -38,9 +38,9 @@ public interface CrystalNetworkTile {
 
 	public boolean canConduct();
 
-	public void addTarget(WorldLocation loc, CrystalElement e);
+	public void markTarget(WorldLocation loc, CrystalElement e);
 
-	public void removeTarget(WorldLocation loc, CrystalElement e);
+	public void clearTarget();
 
 	//public void markSource(WorldLocation loc);
 

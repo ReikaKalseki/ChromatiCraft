@@ -55,6 +55,7 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 	public IIcon getIcon(int s, int meta) {
 		switch(meta) {
 		case 0:
+		case 1:
 			return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);

@@ -17,8 +17,6 @@ import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
@@ -36,31 +34,31 @@ public abstract class CrystalTileRender extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		if (tile.worldObj != null) {
 			TileEntityCrystalTile te = (TileEntityCrystalTile)tile;
-			ArrayList<CrystalTarget> li = te.getTargets();
+			CrystalTarget ct = te.getTarget();
+			if (ct != null) {
 
-			double t = (System.currentTimeMillis()/600D)%360;
-			t /= 30D;
+				double t = (System.currentTimeMillis()/600D)%360;
+				t /= 30D;
 
-			byte sides = 6;
-			double r = 0.35+0.025*Math.sin(t*12);
+				byte sides = 6;
+				double r = 0.35+0.025*Math.sin(t*12);
 
-			GL11.glPushMatrix();
-			GL11.glTranslated(par2, par4, par6);
+				GL11.glPushMatrix();
+				GL11.glTranslated(par2, par4, par6);
 
-			WorldLocation src = new WorldLocation(te);
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
-			ReikaRenderHelper.disableLighting();
-			//GL11.glDisable(GL11.GL_CULL_FACE);
-			//GL11.glEnable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			Tessellator v5 = Tessellator.instance;
+				WorldLocation src = new WorldLocation(te);
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
+				ReikaRenderHelper.disableLighting();
+				//GL11.glDisable(GL11.GL_CULL_FACE);
+				//GL11.glEnable(GL11.GL_BLEND);
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				Tessellator v5 = Tessellator.instance;
 
-			GL11.glTranslated(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
+				GL11.glTranslated(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 
-			for (int k = 0; k < li.size(); k++) {
-				CrystalTarget ct = li.get(k);
-				if (ct.location == null || ct.color == null)
-					continue;
+				//			for (int k = 0; k < li.size(); k++) {
+				//				CrystalTarget ct = li.get(k);
+
 				WorldLocation tgt = ct.location;
 
 
@@ -94,13 +92,14 @@ public abstract class CrystalTileRender extends ChromaRenderBase {
 				v5.draw();
 
 				GL11.glPopMatrix();
-			}
+				//			}
 
-			//GL11.glDisable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			ReikaRenderHelper.enableLighting();
-			GL11.glPopMatrix();
+				//GL11.glDisable(GL11.GL_BLEND);
+				GL11.glShadeModel(GL11.GL_FLAT);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				ReikaRenderHelper.enableLighting();
+				GL11.glPopMatrix();
+			}
 		}
 	}
 

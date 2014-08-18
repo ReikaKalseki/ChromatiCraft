@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.TileEntity;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements CrystalRepeater {
@@ -45,11 +47,19 @@ public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements 
 
 	@Override
 	public boolean canConduct() {
-		return true || this.checkForStructure(worldObj, xCoord, yCoord, zCoord);
+		return this.checkForStructure(worldObj, xCoord, yCoord, zCoord);
 	}
 
 	private boolean checkForStructure(World world, int x, int y, int z) {
-		return false;
+		if (world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance())
+			return false;
+		for (int i = 2; i < 4; i++) {
+			Block id = world.getBlock(x, y-i, z);
+			int meta = world.getBlockMetadata(x, y-i, z);
+			if (id != ChromaBlocks.BASIC.getBlockInstance() || meta != 0)
+				return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -59,7 +69,7 @@ public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements 
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return true;
+		return e.ordinal() == worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord);
 	}
 
 }

@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
@@ -49,7 +50,8 @@ public enum ChromaTiles {
 	GUARDIAN("chroma.guardian", ChromaBlocks.TILECRYSTAL, TileEntityGuardianStone.class, 0, "GuardianStoneRenderer"),
 	ACCELERATOR("chroma.accelerator", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 0, "AcceleratorRenderer"),
 	PYLON("chroma.pylon", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCrystalPylon.class, 1, "RenderCrystalPylon"),
-	REPEATER("chroma.repeater", ChromaBlocks.TILECRYSTAL, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater");
+	REPEATER("chroma.repeater", ChromaBlocks.TILECRYSTAL, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
+	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1);
 
 	private final Class tile;
 	private final String name;
@@ -93,7 +95,7 @@ public enum ChromaTiles {
 	public boolean renderInPass1() {
 		switch(this) {
 		case RIFT:
-			//case PYLON:
+		case PYLON:
 			//case REPEATER:
 			return true;
 		default:

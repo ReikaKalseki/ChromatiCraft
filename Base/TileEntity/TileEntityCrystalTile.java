@@ -15,33 +15,31 @@ import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.WorldLocation;
 
-import java.util.ArrayList;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public abstract class TileEntityCrystalTile extends TileEntityChromaticBase implements CrystalNetworkTile {
 
-	private ArrayList<CrystalTarget> targets = new ArrayList();
+	private CrystalTarget target; //need to reset some way
+	public int renderAlpha;
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
-		/*
 		if (renderAlpha > 0)
 			renderAlpha -= 4;
 		if (renderAlpha < 0)
-			renderAlpha = 0;*/
+			renderAlpha = 0;
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (this.getTicksExisted() == 0) {
 			this.cachePosition();
-		}/*
+		}
 		if (target != null && world.isRemote) {
 			//this.spawnParticle();
-		}*/
+		}
 	}
 	/*
 	private void spawnParticle() {
@@ -64,48 +62,24 @@ public abstract class TileEntityCrystalTile extends TileEntityChromaticBase impl
 	}*/
 
 	@Override
-	public void addTarget(WorldLocation loc, CrystalElement e) {
-		targets.add(new CrystalTarget(loc, e));
-		//renderAlpha = 512;
+	public void markTarget(WorldLocation loc, CrystalElement e) {
+		target = new CrystalTarget(loc, e);
+		this.onTargetChanged();
+	}
+
+	private void onTargetChanged() {
+		renderAlpha = 512;
 		this.syncAllData(true);
 	}
 
-	@Override
-	public void removeTarget(WorldLocation loc, CrystalElement e) {
-		targets.remove(new CrystalTarget(loc, e));
-		//renderAlpha = 512;
-		this.syncAllData(true);
+	public void clearTarget() {
+		target = null;
+		this.onTargetChanged();
 	}
 
-	public ArrayList<CrystalTarget> getTargets() {
-		return targets;
+	public CrystalTarget getTarget() {
+		return target;
 	}
-
-	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
-		super.readSyncTag(NBT);
-
-		int size = NBT.getInteger("num");
-		for (int i = 0; i < size; i++) {
-			CrystalTarget tg = CrystalTarget.readFromNBT("target"+i, NBT);
-			if (tg != null)
-				targets.add(tg);
-		}
-
-		//renderAlpha = NBT.getInteger("alpha");
-	}
-
-	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
-		super.writeSyncTag(NBT);
-
-		NBT.setInteger("num", targets.size());
-		for (int i = 0; i < targets.size(); i++)
-			targets.get(i).writeToNBT("target"+i, NBT);
-
-		//NBT.setInteger("alpha", renderAlpha);
-	}
-
 	/*
 	@Override
 	public void markSource(WorldLocation loc) {
@@ -149,8 +123,27 @@ public abstract class TileEntityCrystalTile extends TileEntityChromaticBase impl
 	}
 
 	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		target = CrystalTarget.readFromNBT("target", NBT);
+
+		renderAlpha = NBT.getInteger("alpha");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		if (target != null)
+			target.writeToNBT("target", NBT);
+
+		NBT.setInteger("alpha", renderAlpha);
+	}
+
+	@Override
 	public final AxisAlignedBB getRenderBoundingBox() {
-		return !targets.isEmpty() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
+		return target != null ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
 	}
 
 }

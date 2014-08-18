@@ -22,7 +22,9 @@ public enum ChromaIcons {
 	SPARKLE("sparkle2"),
 	GLOWSECTION("glowsections"),
 	RADIATE("plant_glow"),
-	FLARE("flare");
+	FLARE("flare"),
+	REPEATER("repeater"),
+	PULSINGFLARE("rotating flare_pulse");
 
 	private IIcon icon;
 	private final String iconName;

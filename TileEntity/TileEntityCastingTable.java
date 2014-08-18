@@ -35,7 +35,8 @@ public class TileEntityCastingTable extends InventoriedChromaticBase implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && this.getTicksExisted() == 0) {
-			this.requestEnergy(CrystalElement.elements[Math.abs(z)%16], 50000);
+			this.requestEnergy(CrystalElement.RED, 50000);
+			this.requestEnergy(CrystalElement.BLUE, 50000);
 		}
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
 	}

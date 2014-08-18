@@ -14,10 +14,12 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
+import Reika.ChromatiCraft.Block.BlockChromaBasic;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
+import Reika.ChromatiCraft.Block.BlockCrystalPylon;
 import Reika.ChromatiCraft.Block.BlockCrystalRune;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
@@ -38,6 +40,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -79,8 +82,9 @@ public enum ChromaBlocks implements BlockEnum {
 	RAINBOWSAPLING(BlockRainbowSapling.class, 	ItemBlockRainbowSapling.class, 	"rainbow.sapling"),
 	DYEFLOWER(BlockDyeFlower.class, 			ItemBlockDyeTypes.class, 		"dye.flower"),
 	ENDER(BlockLiquidEnder.class, 				ChromatiCraft.ender,			"Liquid Ender"),
-	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass");
-	//LASER(null, null, null, false);
+	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
+	BASIC(BlockChromaBasic.class,				ItemBlockMultiType.class,		"block.basiccrystal"),
+	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon");
 
 	private Class blockClass;
 	private String blockName;
@@ -201,6 +205,10 @@ public enum ChromaBlocks implements BlockEnum {
 			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
 		case HIVE:
 			return meta == 0 ? "Crystal Hive" : "Pure Hive";
+		case PYLON:
+			return this.getBasicName();
+		case BASIC:
+			return StatCollector.translateToLocal("chromablock.basic."+meta);
 		default:
 			return "";
 		}
@@ -225,6 +233,10 @@ public enum ChromaBlocks implements BlockEnum {
 			return 16;
 		case HIVE:
 			return 2;
+		case PYLON:
+			return 2;
+		case BASIC:
+			return 1;
 		default:
 			return 1;
 		}

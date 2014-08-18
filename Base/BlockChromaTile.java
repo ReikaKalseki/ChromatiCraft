@@ -16,7 +16,9 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
+import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -207,8 +209,11 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
 		}
-		if (te instanceof TileEntityCrystalTile) {
-			((TileEntityCrystalTile)te).removeFromCache();
+		if (te instanceof CrystalNetworkTile) {
+			((CrystalNetworkTile)te).removeFromCache();
+		}
+		if (te instanceof CrystalReceiver) {
+			CrystalNetworker.instance.breakPaths((CrystalReceiver)te);
 		}
 		super.breakBlock(world, x, y, z, par5, par6);
 	}

@@ -31,24 +31,24 @@ public class CrystalFlow extends CrystalPath {
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalTransmitter)nodes.getLast().getTileEntity()).addTarget(nodes.get(nodes.size()-2), element);
+		((CrystalTransmitter)nodes.getLast().getTileEntity()).markTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			WorldLocation src = nodes.get(i+1);
 			WorldLocation tg = nodes.get(i-1);
 			//te.markSource(src);
-			te.addTarget(tg, element);
+			te.markTarget(tg, element);
 		}
 	}
 
 	public void resetTiles() {
-		((CrystalTransmitter)nodes.getLast().getTileEntity()).removeTarget(nodes.get(nodes.size()-2), element);
+		((CrystalTransmitter)nodes.getLast().getTileEntity()).clearTarget();
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			WorldLocation src = nodes.get(i+1);
 			WorldLocation tg = nodes.get(i-1);
 			//te.markSource(null);
-			te.removeTarget(tg, element);
+			te.clearTarget();
 		}
 	}
 

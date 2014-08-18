@@ -14,12 +14,14 @@ import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 public class TileEntityCrystalPylon extends TileEntityCrystalTile implements CrystalTransmitter {
 
 	public boolean hasMultiblock = false;
-	private CrystalElement color = CrystalElement.LIME;
+	private CrystalElement color = CrystalElement.elements[rand.nextInt(16)];
+	public int randomOffset = rand.nextInt(360);
 
 	@Override
 	public ChromaTiles getTile() {
@@ -28,12 +30,30 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return true || e == color;
+		return e == color;
+	}
+
+	public CrystalElement getColor() {
+		return color;
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		color = CrystalElement.elements[NBT.getInteger("color")];
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("color", color.ordinal());
 	}
 
 	@Override
