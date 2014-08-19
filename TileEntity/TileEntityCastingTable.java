@@ -9,23 +9,23 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable.CastingRecipe;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalBase;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.RuneShape.RuneLocation;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class TileEntityCastingTable extends InventoriedChromaticBase implements CrystalReceiver {
+public class TileEntityCastingTable extends InventoriedCrystalBase implements CrystalReceiver {
 
-	private ArrayList<RuneLocation> runes = new ArrayList();
-	private EnumMap<CrystalElement, Integer> energy = new EnumMap(CrystalElement.class);
+	private ElementTagCompound energy = new ElementTagCompound();
+	private CastingRecipe activeRecipe = null;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -34,15 +34,64 @@ public class TileEntityCastingTable extends InventoriedChromaticBase implements 
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (!world.isRemote && this.getTicksExisted() == 0) {
-			this.requestEnergy(CrystalElement.RED, 50000);
-			this.requestEnergy(CrystalElement.BLUE, 50000);
+		super.updateEntity(world, x, y, z, meta);
+		if (!world.isRemote && this.getTicksExisted() == 1) {
+			for (int i = 0; i < 16; i++)
+				this.requestEnergy(CrystalElement.elements[i], 50000);
+			;//this.evaluateRecipeAndRequest();
 		}
+
+		if (activeRecipe != null) {
+
+		}
+		else {
+
+		}
+
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
 	}
 
+	@Override
+	public void markDirty() {
+		super.markDirty();
+
+		CastingRecipe r = this.getValidRecipe();
+		this.changeRequests(r);
+	}
+
+	private void changeRequests(CastingRecipe r) {
+		if (r == null) {
+			CrystalNetworker.instance.breakPaths(this);
+		}
+		else if (r != activeRecipe) {
+			ElementTagCompound tag = r.getRequiredAura();
+			tag.subtract(energy);
+			for (CrystalElement e : tag.elementSet()) {
+				this.requestEnergy(e, tag.getValue(e));
+			}
+		}
+		activeRecipe = r;
+	}
+
+	private CastingRecipe getValidRecipe() {
+		ItemStack[] items = new ItemStack[0];
+		CastingRecipe r = RecipesCastingTable.instance.getRecipe(inv[0], items);
+		return r != null && r.matchRunes(worldObj, xCoord, yCoord, zCoord) ? r : null;
+	}
+
+	private void evaluateRecipeAndRequest() {
+		CastingRecipe r = this.getValidRecipe();
+		if (r != null && r != activeRecipe) {
+			ElementTagCompound tag = r.getRequiredAura();
+			tag.subtract(energy);
+			for (CrystalElement e : tag.elementSet()) {
+				this.requestEnergy(e, tag.getValue(e));
+			}
+		}
+	}
+
 	private void requestEnergy(CrystalElement e, int amount) {
-		CrystalNetworker.instance.makeRequest(this, e, amount, worldObj, xCoord, yCoord, zCoord, 24);
+		CrystalNetworker.instance.makeRequest(this, e, amount, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange());
 	}
 
 	@Override
@@ -72,22 +121,50 @@ public class TileEntityCastingTable extends InventoriedChromaticBase implements 
 
 	@Override
 	public void receiveElement(CrystalElement e, int amt) {
-		this.addKey(e, amt);
+		energy.addValueToColor(e, amt);
 	}
 
-	private void addKey(CrystalElement e, int amt) {
-		if (energy.containsKey(e)) {
-			int sum = energy.get(e)+amt;
-			energy.put(e, sum);
-		}
-		else {
-			energy.put(e, amt);
-		}
+	public int getEnergy(CrystalElement e) {
+		return energy.getValue(e);
 	}
 
 	@Override
 	public void onPathBroken() {
 
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		energy.readFromNBT("energy", NBT);
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		energy.writeToNBT("energy", NBT);
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return e != null;
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 10;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return true;
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 32;
 	}
 
 }

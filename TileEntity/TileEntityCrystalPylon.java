@@ -9,18 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
-import Reika.ChromatiCraft.Magic.CrystalTransmitter;
+import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
-public class TileEntityCrystalPylon extends TileEntityCrystalTile implements CrystalTransmitter {
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource {
 
 	public boolean hasMultiblock = false;
-	private CrystalElement color = CrystalElement.elements[rand.nextInt(16)];
+	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
 
 	@Override
@@ -40,6 +43,19 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		if (hasMultiblock && world.isRemote) {
+			this.spawnParticle(world, x, y, z);
+		}
+	}
+
+	private void spawnParticle(World world, int x, int y, int z) {
+		double d = 1.25;
+		double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
+		double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, d);
+		double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
+		EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@Override
@@ -47,6 +63,7 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 		super.readSyncTag(NBT);
 
 		color = CrystalElement.elements[NBT.getInteger("color")];
+		hasMultiblock = NBT.getBoolean("multi");
 	}
 
 	@Override
@@ -54,6 +71,7 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("color", color.ordinal());
+		NBT.setBoolean("multi", hasMultiblock);
 	}
 
 	@Override
@@ -63,7 +81,7 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 
 	@Override
 	public boolean canConduct() {
-		return true || hasMultiblock;
+		return hasMultiblock;
 	}
 
 	@Override
@@ -74,6 +92,10 @@ public class TileEntityCrystalPylon extends TileEntityCrystalTile implements Cry
 	@Override
 	public int getTransmissionStrength() {
 		return 100;
+	}
+
+	public void setColor(CrystalElement e) {
+		color = e;
 	}
 
 }

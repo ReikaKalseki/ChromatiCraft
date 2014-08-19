@@ -31,6 +31,8 @@ public class CrystalNetworker implements TickHandler {
 	private final ArrayList<CrystalNetworkTile> tiles = new ArrayList();
 	private final ArrayList<CrystalFlow> flows = new ArrayList();
 
+	private int losTimer = 0;
+
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -40,7 +42,8 @@ public class CrystalNetworker implements TickHandler {
 		this.clear();
 		for (int i = 0; i < tiles.size(); i++) {
 			CrystalNetworkTile te = tiles.get(i);
-			te.clearTarget();
+			if (te instanceof CrystalTransmitter)
+				((CrystalTransmitter)te).clearTarget();
 		}
 		tiles.clear();
 	}
@@ -65,6 +68,25 @@ public class CrystalNetworker implements TickHandler {
 				int amt = p.drain();
 				p.receiver.receiveElement(p.element, amt);
 				if (p.isComplete()) {
+					p.resetTiles();
+					it.remove();
+				}
+			}
+			else {
+				p.receiver.onPathBroken();
+				p.resetTiles();
+				it.remove();
+			}
+		}
+
+		losTimer++;
+		if (losTimer >= 40) {
+			losTimer = 0;
+			it = flows.iterator();
+			while (it.hasNext()) {
+				CrystalFlow p = it.next();
+				if (!p.checkLineOfSight()) {
+					p.receiver.onPathBroken();
 					p.resetTiles();
 					it.remove();
 				}
@@ -114,17 +136,20 @@ public class CrystalNetworker implements TickHandler {
 		te.onPathBroken();
 	}
 
-	ArrayList<CrystalNetworkTile> getTilesWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
+	ArrayList<CrystalNetworkTile> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
 		dist = dist*dist;
 		ArrayList<CrystalNetworkTile> li = new ArrayList();
 		for (int i = 0; i < tiles.size(); i++) {
-			CrystalNetworkTile te = tiles.get(i);
-			if (te.canConduct()) {
-				if (e == null || te.isConductingElement(e)) {
-					double send = te.getSendRange()*te.getSendRange();
-					double d = te.getDistanceSqTo(x, y, z);
-					if (d <= Math.min(dist, send)) {
-						li.add(te);
+			CrystalNetworkTile tile = tiles.get(i);
+			if (tile instanceof CrystalTransmitter) {
+				CrystalTransmitter te = (CrystalTransmitter)tile;
+				if (te.canConduct()) {
+					if (e == null || te.isConductingElement(e)) {
+						double send = te.getSendRange()*te.getSendRange();
+						double d = te.getDistanceSqTo(x, y, z);
+						if (d <= Math.min(dist, send)) {
+							li.add(te);
+						}
 					}
 				}
 			}
@@ -133,7 +158,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	ArrayList<CrystalNetworkTile> getTilesWithinDofXYZ(World world, int x, int y, int z, double dist) {
-		return this.getTilesWithinDofXYZ(world, x, y, z, dist, null);
+		return this.getTransmittersWithinDofXYZ(world, x, y, z, dist, null);
 	}
 
 	@Override

@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.CrystalTileRender;
+import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -26,7 +26,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
-public class RenderCrystalPylon extends CrystalTileRender {
+public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
@@ -54,12 +54,15 @@ public class RenderCrystalPylon extends CrystalTileRender {
 			if (te.getTarget() != null) {
 				s += 1;
 			}
+			if (!te.hasMultiblock) {
+				s = 0.5;
+			}
 			GL11.glScaled(s, s, s);
 			RenderManager rm = RenderManager.instance;
 			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 
-			Color c = te.getColor().color.getJavaColor().brighter().brighter();
+			Color c = te.getColor().color.getJavaColor().brighter();
 
 			v5.startDrawingQuads();
 			v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());

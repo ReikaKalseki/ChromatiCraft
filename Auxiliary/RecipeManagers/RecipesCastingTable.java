@@ -87,7 +87,7 @@ public class RecipesCastingTable {
 
 	}
 
-	public static CastingRecipe getRecipe(ItemStack main, ItemStack... aux) {
+	public CastingRecipe getRecipe(ItemStack main, ItemStack... aux) {
 		return null;
 	}
 

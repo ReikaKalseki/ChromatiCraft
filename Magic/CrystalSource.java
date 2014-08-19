@@ -9,16 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public interface CrystalReceiver extends CrystalNetworkTile {
 
-	public void receiveElement(CrystalElement e, int amt);
 
-	public void onPathBroken();
+public interface CrystalSource extends CrystalTransmitter {
 
-	public int getReceiveRange();
-
-	//public void markSource(WorldLocation loc);
+	public int getTransmissionStrength();
 
 }

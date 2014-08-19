@@ -21,6 +21,10 @@ import org.lwjgl.opengl.GL11;
 
 public class EntityRuneFX extends EntityFX {
 
+	public EntityRuneFX(World world, double x, double y, double z, CrystalElement e) {
+		this(world, x, y, z, 0, 0, 0, e);
+	}
+
 	public EntityRuneFX(World world, double x, double y, double z, double vx, double vy, double vz, CrystalElement e) {
 		super(world, x, y, z);
 		particleMaxAge = 30;

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Base;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
@@ -123,6 +124,13 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 			return false;
 		if (is != null && ChromaItems.isRegistered(is) && ChromaItems.getEntry(is).overridesRightClick(is)) {
 			return false;
+		}
+
+		if (te instanceof ItemOnRightClick) {
+			((ItemOnRightClick)te).onRightClickWith(is);
+			((TileEntityBase)te).syncAllData(true);
+			ep.setCurrentItemOrArmor(0, null);
+			return true;
 		}
 
 		if (te != null && ChromaAux.hasGui(world, x, y, z, ep) && ((TileEntityBase)te).isPlayerAccessible(ep)) {

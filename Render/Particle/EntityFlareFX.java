@@ -27,11 +27,12 @@ public class EntityFlareFX extends EntityFX {
 
 	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z) {
 		super(world, x, y, z);
-		particleMaxAge = 10;
+		particleMaxAge = 30+rand.nextInt(30);
 		noClip = true;
 		particleIcon = ChromaIcons.FLARE.getIcon();
 		particleScale = 3F;
 		color = e;
+		particleGravity = rand.nextInt(3) == 0 ? 0.6F : -0.6F;
 	}
 
 	public EntityFlareFX(CrystalElement e, World world, WorldLocation start, WorldLocation target, float rx, float ry, float rz) {

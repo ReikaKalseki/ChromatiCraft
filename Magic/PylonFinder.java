@@ -52,7 +52,7 @@ public class PylonFinder {
 	}
 
 	public boolean isComplete() {
-		return nodes.size() >= 2 && nodes.getLast().getTileEntity() instanceof CrystalTransmitter;
+		return nodes.size() >= 2 && nodes.getLast().getTileEntity() instanceof CrystalSource;
 	}
 
 	private void findFrom(int x, int y, int z) {
@@ -60,11 +60,11 @@ public class PylonFinder {
 			return;
 		}
 		nodes.add(new WorldLocation(world, x, y, z));
-		ArrayList<CrystalNetworkTile> li = net.getTilesWithinDofXYZ(world, x, y, z, stepRange, element);
+		ArrayList<CrystalNetworkTile> li = net.getTransmittersWithinDofXYZ(world, x, y, z, stepRange, element);
 		for (int i = 0; i < li.size(); i++) {
 			CrystalNetworkTile te = li.get(i);
 			if (this.lineOfSight(world, x, y, z, te)) {
-				if (te instanceof CrystalTransmitter) {
+				if (te instanceof CrystalSource) {
 					nodes.add(new WorldLocation(world, te.getX(), te.getY(), te.getZ()));
 					return;
 				}
@@ -78,7 +78,11 @@ public class PylonFinder {
 	}
 
 	private boolean lineOfSight(World world, int x, int y, int z, CrystalNetworkTile te) {
-		RayTracer ray = tracer.setOrigins(x, y, z, te.getX(), te.getY(), te.getZ());
+		return lineOfSight(world, x, y, z, te.getX(), te.getY(), te.getZ());
+	}
+
+	public static boolean lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
+		RayTracer ray = tracer.setOrigins(x1, y1, z1, x2, y2, z2);
 		return ray.isClearLineOfSight(world);
 	}
 

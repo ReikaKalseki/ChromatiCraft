@@ -86,7 +86,7 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 
 	@Override
 	public String getTexture(ItemStack is) {
-		int i = this.getItemSpriteIndex(is)%256;
+		int i = this.getItemSpriteIndex(is)/256;
 		return i > 0 ? "/Reika/ChromatiCraft/Textures/Items/items"+i+".png" : "/Reika/ChromatiCraft/Textures/Items/items.png";
 	}
 

@@ -10,9 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 
-public interface CrystalRepeater extends CrystalNetworkTile {
-
-	public int getReceiveRange();
+public interface CrystalRepeater extends CrystalReceiver, CrystalTransmitter {
 
 	public int getSignalDegradation();
 

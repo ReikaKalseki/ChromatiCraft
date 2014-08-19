@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.BiomeCollisionTracker;
@@ -237,6 +238,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
+		GameRegistry.registerWorldGenerator(new PylonGenerator(), Integer.MIN_VALUE);
 
 		if (!this.isLocked())
 			;//RotaryNames.addNames();

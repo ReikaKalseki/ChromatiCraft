@@ -17,14 +17,14 @@ import java.util.LinkedList;
 public class CrystalPath {
 
 	protected final LinkedList<WorldLocation> nodes;
-	public final CrystalTransmitter transmitter;
+	public final CrystalSource transmitter;
 	public final WorldLocation origin;
 	public final CrystalElement element;
 	private int attenuation;
 
 	public CrystalPath(CrystalElement e, LinkedList<WorldLocation> li) {
 		nodes = li;
-		transmitter = (CrystalTransmitter)nodes.getLast().getTileEntity();
+		transmitter = (CrystalSource)nodes.getLast().getTileEntity();
 		origin = nodes.getFirst();
 		element = e;
 		this.initialize();

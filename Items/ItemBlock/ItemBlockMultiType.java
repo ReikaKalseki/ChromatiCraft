@@ -35,4 +35,14 @@ public class ItemBlockMultiType extends ItemBlock {
 		}
 	}
 
+	@Override
+	public int getMetadata(int meta) {
+		return meta;
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack is) {
+		return ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
+	}
+
 }

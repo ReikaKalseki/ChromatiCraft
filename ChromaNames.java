@@ -31,6 +31,10 @@ public class ChromaNames {
 		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror"
 	};
 
+	public static final String[] lensNames = {
+		"",
+	};
+
 	public static String getFluidName(int i) {
 		return fluidNames[i];
 	}

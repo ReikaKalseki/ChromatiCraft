@@ -14,7 +14,6 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
-import Reika.ChromatiCraft.Block.BlockChromaBasic;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
@@ -25,6 +24,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockLiquidChroma;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
+import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
@@ -83,7 +83,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DYEFLOWER(BlockDyeFlower.class, 			ItemBlockDyeTypes.class, 		"dye.flower"),
 	ENDER(BlockLiquidEnder.class, 				ChromatiCraft.ender,			"Liquid Ender"),
 	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
-	BASIC(BlockChromaBasic.class,				ItemBlockMultiType.class,		"block.basiccrystal"),
+	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon");
 
 	private Class blockClass;
@@ -207,8 +207,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return meta == 0 ? "Crystal Hive" : "Pure Hive";
 		case PYLON:
 			return this.getBasicName();
-		case BASIC:
-			return StatCollector.translateToLocal("chromablock.basic."+meta);
+		case PYLONSTRUCT:
+			return StatCollector.translateToLocal("chromablock.pylon."+meta);
 		default:
 			return "";
 		}
@@ -235,8 +235,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return 2;
 		case PYLON:
 			return 2;
-		case BASIC:
-			return 1;
+		case PYLONSTRUCT:
+			return 10;
 		default:
 			return 1;
 		}

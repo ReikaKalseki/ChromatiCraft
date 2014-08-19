@@ -10,15 +10,12 @@
 package Reika.ChromatiCraft.Magic;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.WorldLocation;
 
 import net.minecraft.world.World;
 
 public interface CrystalNetworkTile {
 
 	public boolean isConductingElement(CrystalElement e);
-
-	public int getSendRange();
 
 	public void cachePosition();
 
@@ -37,11 +34,5 @@ public interface CrystalNetworkTile {
 	public int maxThroughput();
 
 	public boolean canConduct();
-
-	public void markTarget(WorldLocation loc, CrystalElement e);
-
-	public void clearTarget();
-
-	//public void markSource(WorldLocation loc);
 
 }

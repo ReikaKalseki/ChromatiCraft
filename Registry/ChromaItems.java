@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Registry;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
+import Reika.ChromatiCraft.Items.ItemChromaLens;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
@@ -57,7 +58,8 @@ public enum ChromaItems implements ItemEnum {
 	DYE(48, true,			"dye.item", 			ItemTreeDye.class),
 	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
 	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class),
-	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class);
+	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
+	LENS(1, true,			"chroma.lens",			ItemChromaLens.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -196,6 +198,8 @@ public enum ChromaItems implements ItemEnum {
 			return this.getBasicName();
 		case CRAFTING:
 			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
+		case LENS:
+			return StatCollector.translateToLocal(ChromaNames.lensNames[meta]);
 		default:
 			break;
 		}
@@ -254,6 +258,8 @@ public enum ChromaItems implements ItemEnum {
 			return 2;
 		case CRAFTING:
 			return ChromaNames.craftingNames.length;
+		case LENS:
+			return ChromaNames.lensNames.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

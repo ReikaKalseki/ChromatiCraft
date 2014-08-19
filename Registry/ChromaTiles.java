@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
@@ -49,9 +50,10 @@ public enum ChromaTiles {
 	BREWER("chroma.brewer", ChromaBlocks.TILEENTITY, TileEntityCrystalBrewer.class, 6),
 	GUARDIAN("chroma.guardian", ChromaBlocks.TILECRYSTAL, TileEntityGuardianStone.class, 0, "GuardianStoneRenderer"),
 	ACCELERATOR("chroma.accelerator", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 0, "AcceleratorRenderer"),
-	PYLON("chroma.pylon", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCrystalPylon.class, 1, "RenderCrystalPylon"),
-	REPEATER("chroma.repeater", ChromaBlocks.TILECRYSTAL, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
-	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1);
+	PYLON("chroma.pylon", ChromaBlocks.PYLON, TileEntityCrystalPylon.class, 0, "RenderCrystalPylon"),
+	REPEATER("chroma.repeater", ChromaBlocks.PYLON, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
+	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1, "RenderCrystalLaser"),
+	STAND("chroma.stand", ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand");
 
 	private final Class tile;
 	private final String name;
@@ -96,7 +98,7 @@ public enum ChromaTiles {
 		switch(this) {
 		case RIFT:
 		case PYLON:
-			//case REPEATER:
+		case REPEATER:
 			return true;
 		default:
 			return false;
@@ -197,6 +199,15 @@ public enum ChromaTiles {
 		if (this == RIFT)
 			return false;
 		return true;
+	}
+
+	public boolean canBeVertical() {
+		switch(this) {
+		case LASER:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 }

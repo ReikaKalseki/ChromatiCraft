@@ -211,8 +211,6 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void addLeafColors(HarvestDropsEvent evt) {
 		World world = evt.world;
-		if (ChromaOptions.NORMAL.getState())
-			return;
 		int x = evt.x;
 		int y = evt.y;
 		int z = evt.z;

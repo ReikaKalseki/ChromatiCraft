@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
+import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.DragonAPI.Instantiable.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
@@ -23,7 +23,7 @@ import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-public abstract class CrystalTileRender extends ChromaRenderBase {
+public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 
 	@Override
 	public final String getImageFileName(RenderFetcher te) {
@@ -33,7 +33,7 @@ public abstract class CrystalTileRender extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		if (tile.worldObj != null) {
-			TileEntityCrystalTile te = (TileEntityCrystalTile)tile;
+			CrystalTransmitterBase te = (CrystalTransmitterBase)tile;
 			CrystalTarget ct = te.getTarget();
 			if (ct != null) {
 

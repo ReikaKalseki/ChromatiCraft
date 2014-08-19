@@ -102,7 +102,10 @@ public class ItemChromaPlacer extends Item {
 		}
 		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 		te.setPlacer(ep);
-		te.setBlockMetadata(ChromaAux.get4SidedMetadataFromPlayerLook(ep));
+		if (m.canBeVertical())
+			te.setBlockMetadata(ChromaAux.get6SidedMetadataFromPlayerLook(ep));
+		else
+			te.setBlockMetadata(ChromaAux.get4SidedMetadataFromPlayerLook(ep));
 		if (m == ChromaTiles.ACCELERATOR) {
 			((TileEntityAccelerator)te).setTier(is);
 		}

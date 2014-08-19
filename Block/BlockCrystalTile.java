@@ -148,8 +148,6 @@ public class BlockCrystalTile extends BlockChromaTile {
 		switch(meta) {
 		case 0:
 			return ChromaIcons.GUARDIANOUTER.getIcon();
-		case 1:
-			return ChromaIcons.REPEATER.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

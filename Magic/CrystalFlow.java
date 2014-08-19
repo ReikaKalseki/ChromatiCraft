@@ -31,24 +31,30 @@ public class CrystalFlow extends CrystalPath {
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalTransmitter)nodes.getLast().getTileEntity()).markTarget(nodes.get(nodes.size()-2), element);
+		((CrystalSource)nodes.getLast().getTileEntity()).markTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
-			WorldLocation src = nodes.get(i+1);
-			WorldLocation tg = nodes.get(i-1);
-			//te.markSource(src);
-			te.markTarget(tg, element);
+			if (te instanceof CrystalTransmitter) {
+				WorldLocation tg = nodes.get(i-1);
+				((CrystalTransmitter)te).markTarget(tg, element);
+			}/*
+			if (te instanceof CrystalReceiver) {
+				WorldLocation src = nodes.get(i+1);
+				te.markSource(src);
+			}*/
 		}
 	}
 
 	public void resetTiles() {
-		((CrystalTransmitter)nodes.getLast().getTileEntity()).clearTarget();
+		((CrystalSource)nodes.getLast().getTileEntity()).clearTarget();
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
-			WorldLocation src = nodes.get(i+1);
-			WorldLocation tg = nodes.get(i-1);
-			//te.markSource(null);
-			te.clearTarget();
+			if (te instanceof CrystalTransmitter) {
+				((CrystalTransmitter)te).clearTarget();
+			}/*
+			if (te instanceof CrystalReceiver) {
+				te.clearSource();
+			}*/
 		}
 	}
 
@@ -71,6 +77,17 @@ public class CrystalFlow extends CrystalPath {
 			return 0;
 		remainingAmount -= ret;
 		return ret;
+	}
+
+	public boolean checkLineOfSight() {
+		for (int i = 0; i < nodes.size()-1; i++) {
+			WorldLocation src = nodes.get(i);
+			WorldLocation tgt = nodes.get(i+1);
+			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

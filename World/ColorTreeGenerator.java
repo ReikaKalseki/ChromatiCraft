@@ -13,8 +13,6 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 
 import java.util.Random;
 
@@ -28,25 +26,22 @@ import cpw.mods.fml.common.IWorldGenerator;
 
 public class ColorTreeGenerator implements IWorldGenerator {
 
-	public static final int CHANCE = 24;
+	public static final int CHANCE = 64;
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider cg, IChunkProvider cp) {
 		chunkX *= 16;
 		chunkZ *= 16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(chunkX, chunkZ);
-		if (biome != ChromatiCraft.rainbowforest && !ChromaOptions.NORMAL.getState())
-			return;
 		int trees = this.getTreeCount(biome);
 		int x = chunkX+r.nextInt(16);
 		int z = chunkZ+r.nextInt(16);
 		if (this.canGenerateTree(world, x, z)) {
 			for (int i = 0; i < trees; i++) {
-				if (r.nextInt(this.getTreeChance()) == 0) {
+				if (r.nextInt(CHANCE) == 0) {
 					int y = world.getTopSolidOrLiquidBlock(x, z);
 					Block b = world.getBlock(x, y, z);
-					;
-					if (ChromaOptions.GENRAINBOW.getState() && r.nextInt(this.getRainbowChance(world)) == 0) {
+					if (r.nextInt(this.getRainbowChance(world)) == 0) {
 						if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
 							RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z);
 						}
@@ -63,17 +58,7 @@ public class ColorTreeGenerator implements IWorldGenerator {
 	}
 
 	private int getRainbowChance(World world) {
-		return world.provider.dimensionId == ReikaTwilightHelper.getDimensionID() ? 8 : 16;
-	}
-
-	private int getTreeChance() {
-		return (int)(CHANCE/this.getScaledTreeCount());
-	}
-
-	private float getScaledTreeCount() {
-		int scale = Math.max(1, Math.min(3, ChromaOptions.DENSITY.getValue()));
-		float factor = scale/2F;
-		return factor;
+		return world.provider.dimensionId == ReikaTwilightHelper.getDimensionID() ? 16 : 32;
 	}
 
 	public static int getTreeCount(BiomeGenBase biome) {

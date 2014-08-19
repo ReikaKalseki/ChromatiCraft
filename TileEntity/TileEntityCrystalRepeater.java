@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalTile;
+import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
-public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements CrystalRepeater {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater {
 
 	@Override
 	public ChromaTiles getTile() {
@@ -56,7 +56,7 @@ public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements 
 		for (int i = 2; i < 4; i++) {
 			Block id = world.getBlock(x, y-i, z);
 			int meta = world.getBlockMetadata(x, y-i, z);
-			if (id != ChromaBlocks.BASIC.getBlockInstance() || meta != 0)
+			if (id != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0)
 				return false;
 		}
 		return true;
@@ -70,6 +70,16 @@ public class TileEntityCrystalRepeater extends TileEntityCrystalTile implements 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
 		return e.ordinal() == worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord);
+	}
+
+	@Override
+	public void receiveElement(CrystalElement e, int amt) {
+
+	}
+
+	@Override
+	public void onPathBroken() {
+
 	}
 
 }
