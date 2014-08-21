@@ -9,19 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
+import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCollector;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
+import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.GUI.GuiCollector;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
@@ -58,6 +63,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 			if (te instanceof TileEntityCrystalBrewer)
 				return new ContainerCrystalBrewer(player, (TileEntityCrystalBrewer) te);
+			if (te instanceof TileEntityCastingTable)
+				return new ContainerCastingTable(player, te);
 
 			if (te instanceof OneSlotMachine)
 				return new OneSlotContainer(player, te);
@@ -90,13 +97,15 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 			if (te instanceof TileEntityCrystalBrewer)
 				return new GuiCrystalBrewer(player, (TileEntityCrystalBrewer) te);
+			if (te instanceof TileEntityCastingTable)
+				return new GuiCastingTable(player, (TileEntityCastingTable) te);
 
-			/*
-		if (te instanceof OneSlotMachine) {
-			return new GuiOneSlotInv(player, new OneSlotContainer(player, te), (RotaryCraftTileEntity)te);
-		}
-		if (te instanceof IInventory && !(te instanceof InertIInv))
-			return new GuiBasicStorage(player, (RotaryCraftTileEntity)te);
+
+			if (te instanceof OneSlotMachine) {
+				return new GuiOneSlot(player, (TileEntityChromaticBase)te);
+			}/*
+			if (te instanceof IInventory && !(te instanceof InertIInv))
+				return new GuiBasicStorage(player, (RotaryCraftTileEntity)te);
 			 */
 			break;
 		case ABILITY:

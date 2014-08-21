@@ -14,6 +14,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -159,6 +160,7 @@ public class PylonGenerator implements IWorldGenerator {
 	private void generatePylon(Random rand, World world, int x, int y, int z) {
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		CrystalElement e = CrystalElement.elements[rand.nextInt(16)];
+		FilledBlockArray array = this.getPylonStructure(world, x, y, z, e);
 
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
@@ -168,39 +170,52 @@ public class PylonGenerator implements IWorldGenerator {
 					int dx = x+dir.offsetX*k;
 					int dz = z+dir.offsetZ*k;
 					if (ReikaWorldHelper.softBlocks(world, dx, dy, dz))
-						world.setBlock(dx, dy, dz, b, 0, 3);
+						array.setBlock(dx, dy, dz, b, 0);
 					if (dir.offsetX == 0) {
 						if (ReikaWorldHelper.softBlocks(world, dx+dir.offsetZ, dy, dz))
-							world.setBlock(dx+dir.offsetZ, dy, dz, b, 0, 3);
+							array.setBlock(dx+dir.offsetZ, dy, dz, b, 0);
 						if (ReikaWorldHelper.softBlocks(world, dx-dir.offsetZ, dy, dz))
-							world.setBlock(dx-dir.offsetZ, dy, dz, b, 0, 3);
+							array.setBlock(dx-dir.offsetZ, dy, dz, b, 0);
 					}
 					else if (dir.offsetZ == 0) {
 						if (ReikaWorldHelper.softBlocks(world, dx, dy, dz+dir.offsetX))
-							world.setBlock(dx, dy, dz+dir.offsetX, b, 0, 3);
+							array.setBlock(dx, dy, dz+dir.offsetX, b, 0);
 						if (ReikaWorldHelper.softBlocks(world, dx, dy, dz-dir.offsetX))
-							world.setBlock(dx, dy, dz-dir.offsetX, b, 0, 3);
+							array.setBlock(dx, dy, dz-dir.offsetX, b, 0);
 					}
 				}
 			}
 		}
 
-		for (int n = 0; n <= 12; n++) {
+		array.place();
+
+		//TileEntity
+		world.setBlock(x, y+9, z, ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata(), 3);
+		TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
+		te.setColor(e);
+		te.validateMultiblock();
+		world.func_147451_t(x, y+9, z);
+	}
+
+	public static FilledBlockArray getPylonStructure(World world, int x, int y, int z, CrystalElement e) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		for (int n = 0; n <= 9; n++) {
 			int dy = y+n;
 			Block b2 = n == 0 ? b : Blocks.air;
 			for (int i = 2; i < 6; i++) {
-				ForgeDirection dir = dirs[i];
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				for (int k = 0; k <= 3; k++) {
 					int dx = x+dir.offsetX*k;
 					int dz = z+dir.offsetZ*k;
-					world.setBlock(dx, dy, dz, b2, 0, 3);
+					array.setBlock(dx, dy, dz, b2, 0);
 					if (dir.offsetX == 0) {
-						world.setBlock(dx+dir.offsetZ, dy, dz, b2, 0, 3);
-						world.setBlock(dx-dir.offsetZ, dy, dz, b2, 0, 3);
+						array.setBlock(dx+dir.offsetZ, dy, dz, b2, 0);
+						array.setBlock(dx-dir.offsetZ, dy, dz, b2, 0);
 					}
 					else if (dir.offsetZ == 0) {
-						world.setBlock(dx, dy, dz+dir.offsetX, b2, 0, 3);
-						world.setBlock(dx, dy, dz-dir.offsetX, b2, 0, 3);
+						array.setBlock(dx, dy, dz+dir.offsetX, b2, 0);
+						array.setBlock(dx, dy, dz-dir.offsetX, b2, 0);
 					}
 				}
 			}
@@ -212,17 +227,17 @@ public class PylonGenerator implements IWorldGenerator {
 			int meta = (i == 2 || i == 3) ? 2 : (i == 4 ? 7 : 8);
 			if (i == 5) //rune
 				meta = e.ordinal();
-			world.setBlock(x-3, dy, z+1, b2, meta, 3);
-			world.setBlock(x-3, dy, z-1, b2, meta, 3);
+			array.setBlock(x-3, dy, z+1, b2, meta);
+			array.setBlock(x-3, dy, z-1, b2, meta);
 
-			world.setBlock(x+3, dy, z+1, b2, meta, 3);
-			world.setBlock(x+3, dy, z-1, b2, meta, 3);
+			array.setBlock(x+3, dy, z+1, b2, meta);
+			array.setBlock(x+3, dy, z-1, b2, meta);
 
-			world.setBlock(x-1, dy, z+3, b2, meta, 3);
-			world.setBlock(x-1, dy, z-3, b2, meta, 3);
+			array.setBlock(x-1, dy, z+3, b2, meta);
+			array.setBlock(x-1, dy, z-3, b2, meta);
 
-			world.setBlock(x+1, dy, z+3, b2, meta, 3);
-			world.setBlock(x+1, dy, z-3, b2, meta, 3);
+			array.setBlock(x+1, dy, z+3, b2, meta);
+			array.setBlock(x+1, dy, z-3, b2, meta);
 		}
 
 		for (int n = 1; n <= 7; n++) {
@@ -232,35 +247,32 @@ public class PylonGenerator implements IWorldGenerator {
 				for (int k = -1; k <= 1; k += 2) {
 					int dz = z+k;
 					int meta = n == 5 ? 3 : (n == 7 ? 5 : 2);
-					world.setBlock(dx, dy, dz, b, meta, 3);
+					array.setBlock(dx, dy, dz, b, meta);
 				}
 			}
 		}
 
-		world.setBlock(x-3, y+4, z, b, 4, 3);
-		world.setBlock(x+3, y+4, z, b, 4, 3);
-		world.setBlock(x, y+4, z-3, b, 4, 3);
-		world.setBlock(x, y+4, z+3, b, 4, 3);
+		array.setBlock(x-3, y+4, z, b, 4);
+		array.setBlock(x+3, y+4, z, b, 4);
+		array.setBlock(x, y+4, z-3, b, 4);
+		array.setBlock(x, y+4, z+3, b, 4);
 
 
-		world.setBlock(x-2, y+3, z+1, b, 1, 3);
-		world.setBlock(x-2, y+3, z-1, b, 1, 3);
+		array.setBlock(x-2, y+3, z+1, b, 1);
+		array.setBlock(x-2, y+3, z-1, b, 1);
 
-		world.setBlock(x+2, y+3, z+1, b, 1, 3);
-		world.setBlock(x+2, y+3, z-1, b, 1, 3);
+		array.setBlock(x+2, y+3, z+1, b, 1);
+		array.setBlock(x+2, y+3, z-1, b, 1);
 
-		world.setBlock(x-1, y+3, z+2, b, 1, 3);
-		world.setBlock(x-1, y+3, z-2, b, 1, 3);
+		array.setBlock(x-1, y+3, z+2, b, 1);
+		array.setBlock(x-1, y+3, z-2, b, 1);
 
-		world.setBlock(x+1, y+3, z+2, b, 1, 3);
-		world.setBlock(x+1, y+3, z-2, b, 1, 3);
+		array.setBlock(x+1, y+3, z+2, b, 1);
+		array.setBlock(x+1, y+3, z-2, b, 1);
 
-		//TileEntity
-		world.setBlock(x, y+9, z, ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata(), 3);
-		TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
-		te.setColor(e);
-		te.hasMultiblock = true;
-		world.func_147451_t(x, y+9, z);
+		array.remove(x, y+9, z);
+
+		return array;
 	}
 
 }

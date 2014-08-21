@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
@@ -53,7 +54,8 @@ public enum ChromaTiles {
 	PYLON("chroma.pylon", ChromaBlocks.PYLON, TileEntityCrystalPylon.class, 0, "RenderCrystalPylon"),
 	REPEATER("chroma.repeater", ChromaBlocks.PYLON, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
 	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1, "RenderCrystalLaser"),
-	STAND("chroma.stand", ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand");
+	STAND("chroma.stand", ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand"),
+	CHARGER("chroma.charger", ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3);
 
 	private final Class tile;
 	private final String name;
@@ -99,6 +101,7 @@ public enum ChromaTiles {
 		case RIFT:
 		case PYLON:
 		case REPEATER:
+		case LASER:
 			return true;
 		default:
 			return false;

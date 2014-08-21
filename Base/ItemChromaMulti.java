@@ -29,7 +29,7 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) //Adds the metadata blocks to the creative inventory
+	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
 		int min = this.getMinimumCreativeMeta();
 		int max = min+this.getNumberTypes();

@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public abstract class ItemCrystalBasic extends ItemChromaMulti {
+public class ItemCrystalBasic extends ItemChromaMulti {
 
 	public ItemCrystalBasic(int tex) {
 		super(tex);

@@ -42,7 +42,7 @@ public enum CrystalElement {
 
 	private CrystalElement(String n) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
-		displayName = n;
+		displayName = this.name();//n;
 	}
 
 	public String getEnglishName() {

@@ -9,12 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -25,24 +33,26 @@ public class RecipesCastingTable {
 	private final ArrayList<CastingRecipe> recipes = new ArrayList();
 
 	private RecipesCastingTable() {
-
-
-
+		CastingRecipe crystal = new CastingRecipe(ChromaStacks.rawCrystal, ChromaItems.STORAGE.getStackOf(), ChromaStacks.shards);
+		crystal.addAuraRequirement(ElementTagCompound.getUniformTag(250));
+		recipes.add(crystal);
 	}
 
 	public static class CastingRecipe {
 
 		private final ItemStack main;
 		private final ItemStack out;
-		private final ArrayList<ItemStack> inputs = new ArrayList();
+		private final HashMap<List<Integer>, ItemStack> inputs = new HashMap();
 		private final ElementTagCompound elements = new ElementTagCompound();
 		private final RuneShape runes = new RuneShape();
 
-		private CastingRecipe(ItemStack main, ItemStack out, ItemStack... in) {
+		private CastingRecipe(ItemStack main, ItemStack out) {
 			this.main = main;
 			this.out = out;
-			for (int i = 0; i < in.length; i++)
-				inputs.add(in[i]);
+		}
+
+		private void addAuxItem(ItemStack is, int dx, int dz) {
+			inputs.put(Arrays.asList(dx, dz), is);
 		}
 
 		private CastingRecipe addAuraRequirement(CrystalElement e, int amt) {
@@ -50,6 +60,11 @@ public class RecipesCastingTable {
 		}
 
 		private CastingRecipe addAuraRequirement(ElementTag e) {
+			elements.maximizeWith(e);
+			return this;
+		}
+
+		private CastingRecipe addAuraRequirement(ElementTagCompound e) {
 			elements.maximizeWith(e);
 			return this;
 		}
@@ -67,10 +82,17 @@ public class RecipesCastingTable {
 			return out.copy();
 		}
 
-		public ArrayList<ItemStack> getOtherInputs() {
-			ArrayList<ItemStack> li = new ArrayList();
-			li.addAll(inputs);
-			return li;
+		public HashMap<WorldLocation, ItemStack> getOtherInputs(World world, int x, int y, int z) {
+			HashMap<WorldLocation, ItemStack> map = new HashMap();
+			for (List<Integer> li : inputs.keySet()) {
+				ItemStack is = inputs.get(li);
+				int dx = li.get(0);
+				int dz = li.get(1);
+				int dy = y+(Math.abs(dx) != 4 && Math.abs(dz) != 4 ? 0 : 1);
+				WorldLocation loc = new WorldLocation(world, x+dx, dy, z+dz);
+				map.put(loc, is);
+			}
+			return map;
 		}
 
 		public ElementTagCompound getRequiredAura() {
@@ -87,7 +109,23 @@ public class RecipesCastingTable {
 
 	}
 
-	public CastingRecipe getRecipe(ItemStack main, ItemStack... aux) {
+	public CastingRecipe getRecipe(ItemStack main) {
+		for (int i = 0; i < recipes.size(); i++) {
+			CastingRecipe r = recipes.get(i);
+			ItemStack ctr = r.main;
+			if (ReikaItemHelper.matchStacks(main, ctr) && ItemStack.areItemStackTagsEqual(main, ctr)) {
+				ArrayList<ItemStack> other = r.inputs;
+				if (other.size() == aux.length) {
+					for (int k = 0; k < other.size(); k++) {
+						ItemStack is = other.get(k);
+						if (!ReikaInventoryHelper.checkForItemStack(is, aux, false)) {
+							break;
+						}
+					}
+					return r;
+				}
+			}
+		}
 		return null;
 	}
 

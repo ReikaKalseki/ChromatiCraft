@@ -34,7 +34,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
 			TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
-			IIcon ico = ChromaIcons.PULSINGFLARE.getIcon();
+			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();
 			float v = ico.getMinV();
@@ -54,7 +54,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			if (te.getTarget() != null) {
 				s += 1;
 			}
-			if (!te.hasMultiblock) {
+			if (!te.canConduct()) {
 				s = 0.5;
 			}
 			GL11.glScaled(s, s, s);

@@ -17,7 +17,7 @@ import java.util.EnumMap;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ElementTagCompound {
+public final class ElementTagCompound {
 
 	private final EnumMap<CrystalElement, Integer> data = new EnumMap(CrystalElement.class);
 
@@ -40,7 +40,7 @@ public class ElementTagCompound {
 	}
 
 	public void setTag(CrystalElement e, int value) {
-		if (value > 0)
+		if (value >= 0)
 			data.put(e, value);
 	}
 
@@ -61,6 +61,7 @@ public class ElementTagCompound {
 		return data.toString();
 	}
 
+	/** Map.keySet() */
 	public Collection<CrystalElement> elementSet() {
 		ArrayList<CrystalElement> c = new ArrayList();
 		c.addAll(data.keySet());
@@ -97,7 +98,7 @@ public class ElementTagCompound {
 		this.clearEmptyKeys();
 	}
 
-	private void clearEmptyKeys() {
+	public void clearEmptyKeys() {
 		for (CrystalElement e : data.keySet()) {
 			if (data.containsKey(e) && data.get(e) == 0)
 				data.remove(e);
@@ -112,6 +113,12 @@ public class ElementTagCompound {
 		ElementTagCompound e = new ElementTagCompound();
 		e.data.putAll(data);
 		return e;
+	}
+
+	public void subtract(CrystalElement e, int amt) {
+		int has = this.getValue(e);
+		this.setTag(e, Math.max(0, has-amt));
+		this.clearEmptyKeys();
 	}
 
 	public void subtract(ElementTagCompound energy) {
@@ -146,6 +153,23 @@ public class ElementTagCompound {
 				tag.setInteger(e.name(), amt);
 		}
 		NBT.setTag(name, tag);
+	}
+
+	public static ElementTagCompound getUniformTag(int level) {
+		ElementTagCompound tag = new ElementTagCompound();
+		for (int i = 0; i < CrystalElement.elements.length; i++)
+			tag.addTag(CrystalElement.elements[i], level);
+		return tag;
+	}
+
+	public boolean containsAtLeast(ElementTagCompound tag) {
+		for (CrystalElement e : tag.data.keySet()) {
+			int val = tag.getValue(e);
+			int has = this.getValue(e);
+			if (val > has)
+				return false;
+		}
+		return true;
 	}
 
 }

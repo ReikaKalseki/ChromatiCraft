@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -70,8 +79,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}*/
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
-		super.readSyncTag(NBT);
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
 
 		target = CrystalTarget.readFromNBT("target", NBT);
 
@@ -79,8 +88,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
-		super.writeSyncTag(NBT);
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
 
 		if (target != null)
 			target.writeToNBT("target", NBT);

@@ -28,11 +28,11 @@ public class ChromaNames {
 	};
 
 	public static final String[] craftingNames = {
-		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror"
+		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror", "chromacraft.storagecore"
 	};
 
-	public static final String[] lensNames = {
-		"",
+	public static final String[] storageNames = {
+		"", "", "", "", "", "", ""
 	};
 
 	public static String getFluidName(int i) {

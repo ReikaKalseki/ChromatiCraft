@@ -11,20 +11,20 @@ package Reika.ChromatiCraft.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable.CastingRecipe;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalBase;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
+import java.util.ArrayList;
+
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-public class TileEntityCastingTable extends InventoriedCrystalBase implements CrystalReceiver {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver {
 
-	private ElementTagCompound energy = new ElementTagCompound();
 	private CastingRecipe activeRecipe = null;
 
 	@Override
@@ -36,19 +36,34 @@ public class TileEntityCastingTable extends InventoriedCrystalBase implements Cr
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		if (!world.isRemote && this.getTicksExisted() == 1) {
-			for (int i = 0; i < 16; i++)
-				this.requestEnergy(CrystalElement.elements[i], 50000);
-			;//this.evaluateRecipeAndRequest();
+			this.evaluateRecipeAndRequest();
 		}
 
 		if (activeRecipe != null) {
+			if (worldObj.isRemote) {
+				this.spawnParticles(world, x, y, z);
+			}
 
+			ElementTagCompound req = activeRecipe.getRequiredAura();
+			if (energy.containsAtLeast(req)) {
+				this.craft();
+				energy.subtract(req);
+			}
 		}
 		else {
 
 		}
 
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
+	}
+
+	private void craft() {
+		inv[0] = activeRecipe.getOutput();
+
+	}
+
+	private void spawnParticles(World world, int x, int y, int z) {
+
 	}
 
 	@Override
@@ -90,18 +105,30 @@ public class TileEntityCastingTable extends InventoriedCrystalBase implements Cr
 		}
 	}
 
-	private void requestEnergy(CrystalElement e, int amount) {
-		CrystalNetworker.instance.makeRequest(this, e, amount, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange());
+	public static ArrayList<TileEntityItemStand> getOtherStands(TileEntityCastingTable tile) {
+		World world = tile.worldObj;
+		int x = tile.xCoord;
+		int y = tile.yCoord;
+		int z = tile.zCoord;
+		ArrayList<TileEntityItemStand> li = new ArrayList();
+		for (int i = -4; i <= 4; i += 2) {
+			for (int k = -4; k <= 4; k += 2) {
+				int dx = x+i;
+				int dz = z+k;
+				int dy = y+(Math.abs(i) != 4 && Math.abs(k) != 4 ? 0 : 1);
+				ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
+				if (c == ChromaTiles.STAND) {
+					TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(dx, dy, dz);
+					li.add(te);
+				}
+			}
+		}
+		return li;
 	}
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
-	}
-
-	@Override
-	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return false;
 	}
 
 	@Override
@@ -120,31 +147,13 @@ public class TileEntityCastingTable extends InventoriedCrystalBase implements Cr
 	}
 
 	@Override
-	public void receiveElement(CrystalElement e, int amt) {
-		energy.addValueToColor(e, amt);
-	}
-
-	public int getEnergy(CrystalElement e) {
-		return energy.getValue(e);
+	public boolean canExtractItem(int slot, ItemStack is, int side) {
+		return false;
 	}
 
 	@Override
 	public void onPathBroken() {
 
-	}
-
-	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
-		super.readSyncTag(NBT);
-
-		energy.readFromNBT("energy", NBT);
-	}
-
-	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
-		super.writeSyncTag(NBT);
-
-		energy.writeToNBT("energy", NBT);
 	}
 
 	@Override
@@ -165,6 +174,20 @@ public class TileEntityCastingTable extends InventoriedCrystalBase implements Cr
 	@Override
 	public int getReceiveRange() {
 		return 32;
+	}
+
+	@Override
+	protected int getMaxStorage() {
+		return 400;
+	}
+
+	public boolean isCrafting() {
+		return activeRecipe != null;
+	}
+
+	public ArrayList<CrystalTarget> getTargets() {
+		ArrayList<CrystalTarget> li = new ArrayList();
+		return li;
 	}
 
 }

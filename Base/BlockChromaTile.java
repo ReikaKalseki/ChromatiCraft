@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
@@ -130,6 +131,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 			((ItemOnRightClick)te).onRightClickWith(is);
 			((TileEntityBase)te).syncAllData(true);
 			ep.setCurrentItemOrArmor(0, null);
+			return true;
+		}
+
+		if (ChromaItems.LENS.matchWith(is) && te instanceof TileEntityCrystalLaser) {
+			ItemStack ret = ((TileEntityCrystalLaser)te).swapLens(is);
+			ep.setCurrentItemOrArmor(0, ret);
 			return true;
 		}
 

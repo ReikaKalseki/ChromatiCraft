@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -50,6 +51,9 @@ public class BlockCrystalRune extends BlockDyeTypes {
 		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(meta);
 		if (world.isRemote)
 			ReikaParticleHelper.spawnColoredParticles(world, x, y, z, dye, 256);
+		if (world.getBlock(x, y-1, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+			((BlockPylonStructure)ChromaBlocks.PYLONSTRUCT.getBlockInstance()).triggerBreakCheck(world, x, y-1, z);
+		}
 		super.breakBlock(world, x, y, z, id, meta);
 	}
 

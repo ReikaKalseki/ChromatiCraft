@@ -24,7 +24,12 @@ public enum ChromaIcons {
 	RADIATE("plant_glow"),
 	FLARE("flare"),
 	REPEATER("repeater"),
-	PULSINGFLARE("rotating flare_pulse");
+	SPINFLARE("rotating flare_pulse"),
+	LASER("laser_2"),
+	LASEREND("laser_end_2"),
+	BIGFLARE("bigflare"),
+	ROUNDFLARE("roundflare"),
+	RINGS("rings_blur");
 
 	private IIcon icon;
 	private final String iconName;

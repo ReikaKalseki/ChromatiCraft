@@ -11,13 +11,14 @@ package Reika.ChromatiCraft.Registry;
 
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
-import Reika.ChromatiCraft.Items.ItemChromaLens;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
+import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTreeDye;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
@@ -59,7 +60,8 @@ public enum ChromaItems implements ItemEnum {
 	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
 	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class),
 	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
-	LENS(1, true,			"chroma.lens",			ItemChromaLens.class);
+	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
+	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -189,6 +191,7 @@ public enum ChromaItems implements ItemEnum {
 		case PENDANT:
 		case PENDANT3:
 		case DYE:
+		case LENS:
 			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
 		case CLUSTER:
 			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
@@ -198,8 +201,8 @@ public enum ChromaItems implements ItemEnum {
 			return this.getBasicName();
 		case CRAFTING:
 			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
-		case LENS:
-			return StatCollector.translateToLocal(ChromaNames.lensNames[meta]);
+		case STORAGE:
+			return StatCollector.translateToLocal(ChromaNames.storageNames[meta]);
 		default:
 			break;
 		}
@@ -249,7 +252,8 @@ public enum ChromaItems implements ItemEnum {
 		case PENDANT3:
 		case POTION:
 		case DYE:
-			return ReikaDyeHelper.dyes.length;
+		case LENS:
+			return CrystalElement.elements.length;
 		case CLUSTER:
 			return ChromaNames.clusterNames.length;
 		case SEED:
@@ -258,8 +262,8 @@ public enum ChromaItems implements ItemEnum {
 			return 2;
 		case CRAFTING:
 			return ChromaNames.craftingNames.length;
-		case LENS:
-			return ChromaNames.lensNames.length;
+		case STORAGE:
+			return ChromaNames.storageNames.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}
@@ -419,6 +423,8 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public boolean matchWith(ItemStack is) {
+		if (is == null)
+			return false;
 		return is.getItem() == this.getItemInstance();
 	}
 

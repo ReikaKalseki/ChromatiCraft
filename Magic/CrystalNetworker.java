@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,12 +49,22 @@ public class CrystalNetworker implements TickHandler {
 		tiles.clear();
 	}
 
+	public boolean checkConnectivity(CrystalElement e, WorldLocation loc, int range) {
+		return this.checkConnectivity(e, loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord, range);
+	}
+
 	public boolean checkConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
 		CrystalPath p = new PylonFinder(e, world, x, y, z, range).findPylon();
 		return p != null && p.canTransmit();
 	}
 
+	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
+		this.makeRequest(r, e, amount, r.getWorld(), r.getX(), r.getY(), r.getZ(), range);
+	}
+
 	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int x, int y, int z, int range) {
+		if (amount <= 0)
+			return;
 		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
 		if (p != null) {
 			flows.add(p);

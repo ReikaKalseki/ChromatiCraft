@@ -7,19 +7,21 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Models;
+package Reika.ChromatiCraft.Container;
 
-import Reika.ChromatiCraft.Base.ChromaModelBase;
+import Reika.DragonAPI.Base.CoreContainer;
 
-import java.util.ArrayList;
-
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 
-public class ModelCrystalLaser extends ChromaModelBase {
+public class ContainerCastingTable extends CoreContainer {
 
-	@Override
-	public void renderAll(TileEntity te, ArrayList conditions) {
+	public ContainerCastingTable(EntityPlayer player, TileEntity te) {
+		super(player, te);
 
+		this.addSlot(0, 80, 55);
+
+		this.addPlayerInventoryWithOffset(player, 0, 43);
 	}
 
 }

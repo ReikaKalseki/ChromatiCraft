@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class ElementTag {
+public final class ElementTag {
 
 	public final int value;
 	public final CrystalElement element;

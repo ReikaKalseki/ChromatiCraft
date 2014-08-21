@@ -33,5 +33,25 @@ public class ChromaStacks {
 	public static final ItemStack crystalLens = ChromaItems.CRAFTING.getStackOfMetadata(1);
 	public static final ItemStack crystalFocus = ChromaItems.CRAFTING.getStackOfMetadata(2);
 	public static final ItemStack crystalMirror = ChromaItems.CRAFTING.getStackOfMetadata(3);
+	public static final ItemStack rawCrystal = ChromaItems.CRAFTING.getStackOfMetadata(4);
+
+	public static final ItemStack[] shards = {
+		ChromaItems.SHARD.getStackOfMetadata(0),
+		ChromaItems.SHARD.getStackOfMetadata(1),
+		ChromaItems.SHARD.getStackOfMetadata(2),
+		ChromaItems.SHARD.getStackOfMetadata(3),
+		ChromaItems.SHARD.getStackOfMetadata(4),
+		ChromaItems.SHARD.getStackOfMetadata(5),
+		ChromaItems.SHARD.getStackOfMetadata(6),
+		ChromaItems.SHARD.getStackOfMetadata(7),
+		ChromaItems.SHARD.getStackOfMetadata(8),
+		ChromaItems.SHARD.getStackOfMetadata(9),
+		ChromaItems.SHARD.getStackOfMetadata(10),
+		ChromaItems.SHARD.getStackOfMetadata(11),
+		ChromaItems.SHARD.getStackOfMetadata(12),
+		ChromaItems.SHARD.getStackOfMetadata(13),
+		ChromaItems.SHARD.getStackOfMetadata(14),
+		ChromaItems.SHARD.getStackOfMetadata(15),
+	};
 
 }

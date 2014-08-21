@@ -1,0 +1,119 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
+package Reika.ChromatiCraft.Items;
+
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+
+import java.util.List;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class ItemStorageCrystal extends ItemChromaTool {
+
+	public ItemStorageCrystal(int tex) {
+		super(tex);
+		hasSubtypes = true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
+	{
+		for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
+			ItemStack item = new ItemStack(par1, 1, i);
+			for (int k = 0; k < CrystalElement.elements.length; k++)
+				this.addEnergy(item, CrystalElement.elements[k], this.getCapacity(item));
+			par3List.add(item);
+		}
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			if (CrystalNetworker.instance.checkConnectivity(e, new WorldLocation(ep), 8)) {
+				this.addEnergy(is, e, 4);
+			}
+		}
+		return is;
+	}
+
+	@Override
+	public void onUsingTick(ItemStack is, EntityPlayer ep, int count) {
+
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		ElementTagCompound tag = this.getTag(is);
+		for (CrystalElement e : tag.elementSet()) {
+			li.add(String.format("%s: %d", e.displayName, tag.getValue(e)));
+		}
+	}
+
+	public int getCapacity(ItemStack is) {
+		return (int)(1000*Math.pow(4, is.getItemDamage()-1));
+	}
+
+	public void addEnergy(ItemStack is, CrystalElement e, int value) {
+		ElementTagCompound etg = this.getTag(is);
+		int amt = this.getStoredEnergy(is, e);
+		int sum = Math.min(this.getCapacity(is), amt+value);
+		etg.setTag(e, sum);
+		this.writeTag(is, etg);
+	}
+
+	public void removeEnergy(ItemStack is, CrystalElement e, int value) {
+		ElementTagCompound etg = this.getTag(is);
+		etg.subtract(e, value);
+		this.writeTag(is, etg);
+	}
+
+	private ElementTagCompound getTag(ItemStack is) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		ElementTagCompound etg = new ElementTagCompound();
+		etg.readFromNBT("energy", is.stackTagCompound);
+		etg.clearEmptyKeys();
+		return etg;
+	}
+
+	private void writeTag(ItemStack is, ElementTagCompound etg) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		etg.writeToNBT("energy", is.stackTagCompound);
+	}
+
+
+	public int getStoredEnergy(ItemStack is, CrystalElement e) {
+		return this.getTag(is).getValue(e);
+	}
+
+	public ElementTagCompound getStoredTags(ItemStack is) {
+		return this.getTag(is).copy();
+	}
+
+	public int getSpace(CrystalElement e, ItemStack is) {
+		return this.getCapacity(is)-this.getStoredEnergy(is, e);
+	}
+
+}

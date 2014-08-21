@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.TileEntity;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalSource;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import net.minecraft.client.Minecraft;
@@ -22,7 +24,7 @@ import net.minecraft.world.World;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource {
 
-	public boolean hasMultiblock = false;
+	private boolean hasMultiblock = false;
 	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
 
@@ -47,6 +49,33 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (hasMultiblock && world.isRemote) {
 			this.spawnParticle(world, x, y, z);
 		}
+	}
+
+	public void invalidateMultiblock() {
+		if (hasMultiblock) {
+			ChromaSounds.POWERDOWN.playSoundAtBlock(this);
+			ChromaSounds.POWERDOWN.playSound(worldObj, xCoord, yCoord, zCoord, 1F, 2F);
+			ChromaSounds.POWERDOWN.playSound(worldObj, xCoord, yCoord, zCoord, 1F, 0.5F);
+
+			double d = 1.25;
+			int n = 64+rand.nextInt(64);
+			for (int i = 0; i < n; i++) {
+				double rx = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, d);
+				double ry = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, d);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, d);
+				double vx = rand.nextDouble()-0.5;
+				double vy = rand.nextDouble()-0.5;
+				double vz = rand.nextDouble()-0.5;
+				EntityRuneFX fx = new EntityRuneFX(worldObj, rx, ry, rz, vx, vy, vz, color);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+		hasMultiblock = false;
+		//play sounds, particle effects
+	}
+
+	public void validateMultiblock() {
+		hasMultiblock = true;
 	}
 
 	private void spawnParticle(World world, int x, int y, int z) {
