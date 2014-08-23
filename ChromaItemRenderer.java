@@ -9,9 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import net.minecraft.client.renderer.RenderBlocks;
@@ -54,9 +54,8 @@ public class ChromaItemRenderer implements IItemRenderer {
 		ChromaTiles machine = item.getItem() == ChromaItems.RIFT.getItemInstance() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
 		if (machine.hasRender()) {
 			TileEntity te = machine.createTEInstanceForRender();
-			if (machine == ChromaTiles.ACCELERATOR && item.stackTagCompound != null) {
-				int tier = item.stackTagCompound.getInteger("tier");
-				((TileEntityAccelerator)te).setTier(item);
+			if (machine.hasNBTVariants() && item.stackTagCompound != null) {
+				((NBTTile)te).setDataFromItemStackTag(item);
 			}
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, 0.0F);
 		}

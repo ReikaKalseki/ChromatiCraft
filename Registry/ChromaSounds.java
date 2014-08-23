@@ -26,7 +26,12 @@ import cpw.mods.fml.relauncher.Side;
 public enum ChromaSounds implements SoundEnum {
 
 	RIFT("rift", SoundCategory.BLOCKS),
-	POWERDOWN("powerdown-2", SoundCategory.BLOCKS);
+	POWERDOWN("powerdown-2", SoundCategory.BLOCKS),
+	DISCHARGE("discharge", SoundCategory.BLOCKS),
+	CAST("cast3", SoundCategory.BLOCKS),
+	CRAFT("craft", SoundCategory.BLOCKS),
+	POWER("ambient", SoundCategory.AMBIENT),
+	CRAFTING3("ambient1_short", SoundCategory.MASTER);
 
 	public static final ChromaSounds[] soundList = values();
 

@@ -73,7 +73,7 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 		}
 
 		CrystalElement e = CrystalElement.randomElement();
-		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, x+dx+0.5, y+dy+0.5, z+dz+0.5, 0, 0, 0, e));
+		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, x+dx+0.5, y+dy+0.5, z+dz+0.5, e));
 	}
 
 	private void internalizeXP() {

@@ -34,7 +34,7 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return "lasertex.png";
+		return "laser.png";
 	}
 
 	@Override
@@ -43,8 +43,50 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 		if (te.hasWorldObj()) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
+
 			int rot = 0;
 			int rotx = 0;
+
+			GL11.glPushMatrix();
+			int dx = 0;
+			int dz = 0;
+			int dy = 0;
+			switch(tile.getBlockMetadata()) {
+			case 0:
+				rot = 270;
+				dx = 1;
+				break;
+			case 1:
+				rot = 90;
+				dz = 1;
+				break;
+			case 2:
+				rot = 180;
+				dx = 1;
+				dz = 1;
+				break;
+			case 3:
+				rot = 0;
+				break;
+			case 4:
+				rotx = 270;
+				dz = 1;
+				break;
+			case 5:
+				rotx = 90;
+				dy = 1;
+				break;
+			}
+			GL11.glTranslated(dx, dy, dz);
+			GL11.glRotated(rot, 0, 1, 0);
+			GL11.glRotated(rotx, 1, 0, 0);
+			this.renderModel(te, model);
+
+			GL11.glPopMatrix();
+
+			GL11.glPushMatrix();
+			rot = 0;
+			rotx = 0;
 			switch(tile.getBlockMetadata()) {
 			case 0:
 				rot = 180;
@@ -94,9 +136,14 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 				GL11.glPopMatrix();
 			}
 
-			GL11.glTranslated(-0.5, 0, -0.5);
-			this.renderModel(te, model);
+			GL11.glPopMatrix();
 
+			GL11.glPopMatrix();
+		}
+		else {
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, -0.2, 0);
+			this.renderModel(te, model);
 			GL11.glPopMatrix();
 		}
 	}

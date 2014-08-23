@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
+import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -44,7 +45,7 @@ public class EnderCrystalRenderer implements IItemRenderer {
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		World world = Minecraft.getMinecraft().theWorld;
 		if (crystal == null) {
-			crystal = new EntityEnderCrystal(world);
+			crystal = new EntityChromaEnderCrystal(world);
 		}
 		crystal.ticksExisted++;
 		if (crystal.ticksExisted%30 == 0)

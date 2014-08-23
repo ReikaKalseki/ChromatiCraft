@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -31,7 +32,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAccelerator extends TileEntityChromaticBase {
+public class TileEntityAccelerator extends TileEntityChromaticBase implements NBTTile {
 
 	public static final long MAX_LAG = calculateLagLimit(); //1ms; make configurable?
 
@@ -172,12 +173,19 @@ public class TileEntityAccelerator extends TileEntityChromaticBase {
 		NBT.setInteger("tier", tier);
 	}
 
-	public void setTier(ItemStack is) {
+	public void setDataFromItemStackTag(ItemStack is) {
 		if (ChromaItems.PLACER.matchWith(is)) {
 			if (is.stackTagCompound != null) {
 				tier = is.stackTagCompound.getInteger("tier");
 			}
 		}
+	}
+
+	@Override
+	public NBTTagCompound getTagsToWriteToStack() {
+		NBTTagCompound NBT = new NBTTagCompound();
+		NBT.setInteger("tier", this.getTier());
+		return NBT;
 	}
 
 }

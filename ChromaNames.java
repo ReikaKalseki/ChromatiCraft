@@ -28,7 +28,7 @@ public class ChromaNames {
 	};
 
 	public static final String[] craftingNames = {
-		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror", "chromacraft.storagecore"
+		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror", "chromacraft.rawcrystal"
 	};
 
 	public static final String[] storageNames = {

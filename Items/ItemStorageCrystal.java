@@ -40,9 +40,11 @@ public class ItemStorageCrystal extends ItemChromaTool {
 	{
 		for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
 			ItemStack item = new ItemStack(par1, 1, i);
-			for (int k = 0; k < CrystalElement.elements.length; k++)
-				this.addEnergy(item, CrystalElement.elements[k], this.getCapacity(item));
 			par3List.add(item);
+			ItemStack item2 = item.copy();
+			for (int k = 0; k < CrystalElement.elements.length; k++)
+				this.addEnergy(item2, CrystalElement.elements[k], this.getCapacity(item2));
+			par3List.add(item2);
 		}
 	}
 
@@ -108,12 +110,26 @@ public class ItemStorageCrystal extends ItemChromaTool {
 		return this.getTag(is).getValue(e);
 	}
 
+	public int getTotalEnergy(ItemStack is) {
+		return this.getTag(is).getTotalEnergy();
+	}
+
 	public ElementTagCompound getStoredTags(ItemStack is) {
 		return this.getTag(is).copy();
 	}
 
 	public int getSpace(CrystalElement e, ItemStack is) {
 		return this.getCapacity(is)-this.getStoredEnergy(is, e);
+	}
+
+	public boolean isFull(ItemStack is) {
+		int max = this.getCapacity(is);
+		ElementTagCompound tag = this.getTag(is);
+		for (CrystalElement e : tag.elementSet()) {
+			if (this.getSpace(e, is) > 0)
+				return false;
+		}
+		return true;
 	}
 
 }

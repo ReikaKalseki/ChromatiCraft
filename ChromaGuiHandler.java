@@ -14,6 +14,7 @@ import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCollector;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
+import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
@@ -21,6 +22,7 @@ import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.GUI.GuiCollector;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
+import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
@@ -29,6 +31,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Base.ContainerBasicStorage;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -65,6 +68,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerCrystalBrewer(player, (TileEntityCrystalBrewer) te);
 			if (te instanceof TileEntityCastingTable)
 				return new ContainerCastingTable(player, te);
+			if (te instanceof TileEntityCrystalCharger)
+				return new ContainerCrystalCharger(player, (TileEntityCrystalCharger) te);
 
 			if (te instanceof OneSlotMachine)
 				return new OneSlotContainer(player, te);
@@ -99,6 +104,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiCrystalBrewer(player, (TileEntityCrystalBrewer) te);
 			if (te instanceof TileEntityCastingTable)
 				return new GuiCastingTable(player, (TileEntityCastingTable) te);
+			if (te instanceof TileEntityCrystalCharger)
+				return new GuiCrystalCharger(player, (TileEntityCrystalCharger) te);
 
 
 			if (te instanceof OneSlotMachine) {

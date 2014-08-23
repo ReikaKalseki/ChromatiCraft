@@ -1,0 +1,51 @@
+package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
+
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+
+import net.minecraft.item.ItemStack;
+
+public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
+
+	public StorageCrystalRecipe(ItemStack main, ItemStack out) {
+		super(main, out);
+		//this.addAuraRequirement(ElementTagCompound.getUniformTag(4000));
+		for (int i = 0; i < 16; i++) {
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(0), -4, -4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(1), -2, -4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(2), 0, -4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(3), 2, -4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(4), 4, -4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(5), 4, -2);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(6), 4, 0);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(7), 4, 2);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(8), 4, 4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(9), 2, 4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(10), 0, 4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(11), -2, 4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(12), -4, 4);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(13), -4, 2);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(14), -4, 0);
+			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, -2);
+		}
+		this.addRune(CrystalElement.BLUE, 4, 0, 1);
+		this.addRune(CrystalElement.BLUE, 4, 0, -1);
+		this.addRune(CrystalElement.GREEN, -4, 0, 1);
+		this.addRune(CrystalElement.GREEN, -4, 0, -1);
+		this.addRune(CrystalElement.RED, 1, 0, -4);
+		this.addRune(CrystalElement.RED, -1, 0, -4);
+		this.addRune(CrystalElement.YELLOW, 1, 0, 4);
+		this.addRune(CrystalElement.YELLOW, -1, 0, 4);
+		this.addRune(CrystalElement.WHITE, 4, 0, -4);
+		this.addRune(CrystalElement.WHITE, -4, 0, 4);
+		this.addRune(CrystalElement.BLACK, -4, 0, -4);
+		this.addRune(CrystalElement.BLACK, 4, 0, 4);
+	}
+
+	@Override
+	public int getDuration() {
+		return 800;
+	}
+
+}

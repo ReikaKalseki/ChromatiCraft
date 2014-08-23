@@ -10,9 +10,13 @@
 package Reika.ChromatiCraft.Block;
 
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -54,6 +58,10 @@ public class BlockCrystalRune extends BlockDyeTypes {
 		if (world.getBlock(x, y-1, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
 			((BlockPylonStructure)ChromaBlocks.PYLONSTRUCT.getBlockInstance()).triggerBreakCheck(world, x, y-1, z);
 		}
+		if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.REPEATER) {
+			ReikaJavaLibrary.pConsole(this);
+			CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)world.getTileEntity(x, y+1, z));
+		}
 		super.breakBlock(world, x, y, z, id, meta);
 	}
 
@@ -78,7 +86,7 @@ public class BlockCrystalRune extends BlockDyeTypes {
 		}
 
 		CrystalElement e = CrystalElement.elements[meta];
-		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, x+dx+0.5, y+dy+0.5, z+dz+0.5, 0, 0, 0, e));
+		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, x+dx+0.5, y+dy+0.5, z+dz+0.5, e));
 	}
 
 	@Override

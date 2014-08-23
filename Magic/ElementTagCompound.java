@@ -172,4 +172,13 @@ public final class ElementTagCompound {
 		return true;
 	}
 
+	public int getTotalEnergy() {
+		int amt = 0;
+		for (CrystalElement e : data.keySet()) {
+			int val = this.getValue(e);
+			amt += val;
+		}
+		return amt;
+	}
+
 }

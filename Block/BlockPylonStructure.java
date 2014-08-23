@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Block;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
@@ -91,6 +93,13 @@ public class BlockPylonStructure extends Block {
 		TileEntity te = world.getTileEntity(mx, my+9, mz);
 		if (te instanceof TileEntityCrystalPylon) {
 			((TileEntityCrystalPylon)te).invalidateMultiblock();
+		}
+
+		for (int i = 2; i <= 3; i++) {
+			te = world.getTileEntity(x, y+i, z);
+			if (te instanceof TileEntityCrystalRepeater) {
+				CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)te);
+			}
 		}
 	}
 

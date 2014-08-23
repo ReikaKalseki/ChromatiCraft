@@ -15,24 +15,28 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class TileEntityCrystalCharger extends InventoriedCrystalReceiver {
+public class TileEntityCrystalCharger extends InventoriedCrystalReceiver implements OneSlotMachine {
 
 	private StepTimer checkTimer = new StepTimer(40);
+	private float angle;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (this.canConduct()) {
-			if (!world.isRemote && this.getCooldown() == 0) {
-				this.checkAndRequest();
-			}
+		checkTimer.update();
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
 
+		if (this.hasItem()) {
 			for (CrystalElement e : energy.elementSet()) {
 				int max = this.getMaxTransfer(e);
 				int amt = this.getEnergy(e);
@@ -46,6 +50,10 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver {
 		}
 	}
 
+	public float getAngle() {
+		return angle;
+	}
+
 	private ItemStorageCrystal item() {
 		return ((ItemStorageCrystal)inv[0].getItem());
 	}
@@ -55,14 +63,12 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver {
 	}
 
 	private void checkAndRequest() {
-		if (this.canConduct()) {
-			ElementTagCompound tag = this.item().getStoredTags(inv[0]);
-			int capacity = this.item().getCapacity(inv[0]);
-			for (CrystalElement e : tag.elementSet()) {
-				int space = capacity-tag.getValue(e)-this.getEnergy(e);
-				if (space > 0) {
-					this.requestEnergy(e, space);
-				}
+		int capacity = this.getMaxStorage();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int space = capacity-this.getEnergy(e);
+			if (space > 0) {
+				this.requestEnergy(e, space);
 			}
 		}
 	}
@@ -79,27 +85,27 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver {
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return this.canConduct() && e != null && e.ordinal() == inv[0].getItemDamage();
+		return e != null;
 	}
 
 	@Override
 	public int maxThroughput() {
-		return 60;
+		return 250;
 	}
 
 	@Override
 	public boolean canConduct() {
-		return inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0]);
+		return true;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return false;
+		return ChromaItems.STORAGE.matchWith(is);
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return false;
+		return ChromaItems.STORAGE.matchWith(is) && this.item().isFull(is);
 	}
 
 	@Override
@@ -119,12 +125,25 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver {
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
-
+		int energy = this.energy.getTotalEnergy();
+		if (this.hasItem()) {
+			ElementTagCompound tag = this.item().getStoredTags(inv[0]);
+			energy += tag.getTotalEnergy();
+		}
+		angle += ReikaMathLibrary.logbase2(energy);
+		if (angle >= 180) {
+			//ReikaSoundHelper.playSound(ChromaSounds., x+0.5, y+0.5, z+0.5, 1, 1);
+			angle -= 180;
+		}
 	}
 
 	@Override
-	protected int getMaxStorage() {
-		return 1000;
+	public int getMaxStorage() {
+		return 120000;
+	}
+
+	public boolean hasItem() {
+		return inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0]);
 	}
 
 }

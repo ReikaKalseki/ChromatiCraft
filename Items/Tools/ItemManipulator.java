@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Items.Tools;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,8 +31,12 @@ public class ItemManipulator extends ItemChromaTool {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (t == ChromaTiles.RIFT) {
-			TileEntityRift te = (TileEntityRift)tile;
-			te.setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
+			((TileEntityRift)tile).setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
+			return true;
+		}
+		if (t == ChromaTiles.TABLE) {
+			boolean flag = ((TileEntityCastingTable)tile).triggerCrafting();
+			return flag;
 		}
 		return false;
 	}

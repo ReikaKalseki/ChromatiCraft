@@ -9,23 +9,31 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.OneSlotMachine;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityCrystalLaser extends InventoriedChromaticBase implements OneSlotMachine {
+public class TileEntityCrystalLaser extends ChargedCrystalPowered implements OneSlotMachine {
+
+	private int range;
+	private StepTimer rangeTimer = new StepTimer(20);
 
 	@Override
 	public ChromaTiles getTile() {
@@ -36,27 +44,46 @@ public class TileEntityCrystalLaser extends InventoriedChromaticBase implements 
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		ForgeDirection dir = this.getFacing();
 
+		if (DragonAPICore.debugtest) {
+			ItemStack is = ChromaItems.STORAGE.getStackOfMetadata(4);
+			((ItemStorageCrystal)is.getItem()).addEnergy(is, CrystalElement.WHITE, 20000);
+			inv[0] = is;
+			inv[1] = ChromaItems.LENS.getStackOfMetadata(CrystalElement.WHITE.ordinal());
+		}
+
+		rangeTimer.update();
+		if (rangeTimer.checkCap()) {
+			range = this.updateRange(dir);
+		}
+
 		if (this.isActive()) {
 			this.applyEffects(world, x, y, z, dir);
 
-			if (world.isRemote) {
+			int c = 4+4*Minecraft.getMinecraft().gameSettings.particleSetting;
+			if (world.isRemote && rand.nextInt(c) == 0) {
 				this.spawnParticle(world, x, y, z, dir);
 			}
 		}
 	}
 
-	public boolean isActive() {
-		return ChromaItems.LENS.matchWith(inv[1]) && this.getStoredEnergy(this.getColor()) > 0;
+	private int updateRange(ForgeDirection dir) {
+		if (!this.isActive())
+			return 0;
+		int energy = ((ItemStorageCrystal)inv[0].getItem()).getStoredEnergy(inv[0], this.getColor());
+		int max = (int)Math.min(Math.sqrt(energy), 128);
+		for (int i = 1; i <= max; i++) {
+			int dx = xCoord+dir.offsetX*i;
+			int dy = yCoord+dir.offsetY*i;
+			int dz = zCoord+dir.offsetZ*i;
+			Block b = worldObj.getBlock(dx, dy, dz);
+			if (b != Blocks.air && b.isOpaqueCube())
+				return i;
+		}
+		return max;
 	}
 
-	private int getStoredEnergy(CrystalElement e) {
-		if (e == null)
-			return 0;
-		if (ChromaItems.STORAGE.matchWith(inv[0])) {
-			ItemStack is = inv[0];
-			return ((ItemStorageCrystal)is.getItem()).getStoredEnergy(is, e);
-		}
-		return 0;
+	public boolean isActive() {
+		return ChromaItems.LENS.matchWith(inv[1]) && this.getStoredEnergy(this.getColor()) > 0;
 	}
 
 	private void applyEffects(World world, int x, int y, int z, ForgeDirection dir) {
@@ -70,15 +97,18 @@ public class TileEntityCrystalLaser extends InventoriedChromaticBase implements 
 	}
 
 	private void spawnParticle(World world, int x, int y, int z, ForgeDirection dir) {
-		double r = rand.nextDouble()*this.getRange();
-		double rx = x+0.5+r*dir.offsetX;
-		double ry = y+0.5+r*dir.offsetY;
-		double rz = z+0.5+r*dir.offsetZ;
-		double px = ReikaRandomHelper.getRandomPlusMinus(rx, 0.25);
-		double py = ReikaRandomHelper.getRandomPlusMinus(ry, 0.25);
-		double pz = ReikaRandomHelper.getRandomPlusMinus(rz, 0.25);
-		EntityLaserFX fx = new EntityLaserFX(this.getColor(), world, px, py, pz);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		int num = 1+this.getRange()/32;
+		for (int i = 0; i < num; i++) {
+			double r = rand.nextDouble()*this.getRange();
+			double rx = x+0.5+r*dir.offsetX;
+			double ry = y+0.5+r*dir.offsetY;
+			double rz = z+0.5+r*dir.offsetZ;
+			double px = ReikaRandomHelper.getRandomPlusMinus(rx, 0.25);
+			double py = ReikaRandomHelper.getRandomPlusMinus(ry, 0.25);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(rz, 0.25);
+			EntityLaserFX fx = new EntityLaserFX(this.getColor(), world, px, py, pz);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	public ForgeDirection getFacing() {
@@ -110,10 +140,7 @@ public class TileEntityCrystalLaser extends InventoriedChromaticBase implements 
 	}
 
 	public int getRange() {
-		if (!this.isActive())
-			return 0;
-		int energy = ((ItemStorageCrystal)inv[0].getItem()).getStoredEnergy(inv[0], this.getColor());
-		return (int)Math.min(Math.sqrt(energy), 128);
+		return range;
 	}
 
 	@Override
@@ -156,6 +183,20 @@ public class TileEntityCrystalLaser extends InventoriedChromaticBase implements 
 		int fy = f.offsetY;
 		int fz = f.offsetZ;
 		return r > 0 ? ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(fx*r, fy*r, fz*r) : super.getRenderBoundingBox();
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		range = NBT.getInteger("range");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("range", range);
 	}
 
 }

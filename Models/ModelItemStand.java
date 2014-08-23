@@ -162,24 +162,24 @@ public class ModelItemStand extends ChromaModelBase
 	@Override
 	public void renderAll(TileEntity te, ArrayList li)
 	{
-		Shape1.render(f5);
-		Shape1a.render(f5);
-		Shapbe1d.render(f5);
-		Shape1c.render(f5);
-		Shape1e.render(f5);
-		Shape2.render(f5);
-		Shape3.render(f5);
-		Shape3a.render(f5);
-		Shape3b.render(f5);
-		Shape3c.render(f5);
-		Shape4.render(f5);
-		Shape4a.render(f5);
-		Shape4b.render(f5);
-		Shape4c.render(f5);
-		Shape3d.render(f5);
-		Shape3e.render(f5);
-		Shape3f.render(f5);
-		Shape3g.render(f5);
+		Shape1.render(te, f5);
+		Shape1a.render(te, f5);
+		Shapbe1d.render(te, f5);
+		Shape1c.render(te, f5);
+		Shape1e.render(te, f5);
+		Shape2.render(te, f5);
+		Shape3.render(te, f5);
+		Shape3a.render(te, f5);
+		Shape3b.render(te, f5);
+		Shape3c.render(te, f5);
+		Shape4.render(te, f5);
+		Shape4a.render(te, f5);
+		Shape4b.render(te, f5);
+		Shape4c.render(te, f5);
+		Shape3d.render(te, f5);
+		Shape3e.render(te, f5);
+		Shape3f.render(te, f5);
+		Shape3g.render(te, f5);
 	}
 
 	@Override

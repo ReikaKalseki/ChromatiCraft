@@ -16,7 +16,9 @@ public interface CrystalTransmitter extends CrystalNetworkTile {
 
 	public int getSendRange();
 
-	public void markTarget(WorldLocation loc, CrystalElement e);
+	public void addTarget(WorldLocation loc, CrystalElement e);
 
-	public void clearTarget();
+	public void removeTarget(WorldLocation loc, CrystalElement e);
+
+	public void clearTargets();
 }

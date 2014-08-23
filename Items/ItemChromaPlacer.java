@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Items;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -106,10 +107,13 @@ public class ItemChromaPlacer extends Item {
 			te.setBlockMetadata(ChromaAux.get6SidedMetadataFromPlayerLook(ep));
 		else
 			te.setBlockMetadata(ChromaAux.get4SidedMetadataFromPlayerLook(ep));
+		/*
 		if (m == ChromaTiles.ACCELERATOR) {
 			((TileEntityAccelerator)te).setTier(is);
+		}*/
+		if (te instanceof NBTTile && is.stackTagCompound != null) {
+			((NBTTile)te).setDataFromItemStackTag(is);
 		}
-
 		return true;
 	}
 

@@ -35,6 +35,13 @@ public class EntityFlareFX extends EntityFX {
 		particleGravity = rand.nextInt(3) == 0 ? 0.6F : -0.6F;
 	}
 
+	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z, double vx, double vy, double vz) {
+		this(e, world, x, y, z);
+		motionX = vx;
+		motionY = vy;
+		motionZ = vz;
+	}
+
 	public EntityFlareFX(CrystalElement e, World world, WorldLocation start, WorldLocation target, float rx, float ry, float rz) {
 		this(e, world, start.xCoord+0.5+rx, start.yCoord+0.5+ry, start.zCoord+0.5+rz);
 		double dd = target.getDistanceTo(start);

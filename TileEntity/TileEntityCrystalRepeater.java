@@ -42,7 +42,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSignalDegradation() {
-		return 0;
+		return 1;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int maxThroughput() {
-		return 2;
+		return 500;
 	}
 
 	@Override

@@ -9,10 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.WorldLocation;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -20,7 +24,7 @@ import net.minecraft.world.World;
 
 public abstract class CrystalTransmitterBase extends TileEntityCrystalBase implements CrystalTransmitter {
 
-	private CrystalTarget target; //need to reset some way
+	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
 	public int renderAlpha;
 
 	@Override
@@ -32,15 +36,25 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	public void markTarget(WorldLocation loc, CrystalElement e) {
-		target = new CrystalTarget(loc, e);
+	public final void addTarget(WorldLocation loc, CrystalElement e) {
+		CrystalTarget tg = new CrystalTarget(loc, e);
+		if (!targets.contains(tg))
+			targets.add(tg);
 		this.onTargetChanged();
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-		if (target != null && world.isRemote) {
+		if (this.getTicksExisted() == 0) {
+			Iterator<CrystalTarget> it = targets.iterator();
+			while (it.hasNext()) {
+				CrystalTarget c = it.next();
+				if (!(c.location.getTileEntity() instanceof CrystalNetworkTile))
+					it.remove();
+			}
+		}
+		if (!targets.isEmpty() && world.isRemote) {
 			//this.spawnParticle();
 		}
 	}
@@ -50,13 +64,28 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		this.syncAllData(true);
 	}
 
-	public void clearTarget() {
-		target = null;
+	@Override
+	public final int getUpdatePacketRadius() {
+		return 128;
+	}
+
+	public final void removeTarget(WorldLocation loc, CrystalElement e) {
+		//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+		targets.remove(new CrystalTarget(loc, e));
+		this.onTargetChanged();
+		//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+	}
+
+
+	public final void clearTargets() {
+		targets.clear();
 		this.onTargetChanged();
 	}
 
-	public CrystalTarget getTarget() {
-		return target;
+	public final ArrayList<CrystalTarget> getTargets() {
+		ArrayList<CrystalTarget> li = new ArrayList();
+		li.addAll(targets);
+		return li;
 	}
 	/*
 	private void spawnParticle(World world, int x, int y, int z) {
@@ -82,7 +111,11 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		target = CrystalTarget.readFromNBT("target", NBT);
+		targets = new ArrayList();
+		int num = NBT.getInteger("targetcount");
+		for (int i = 0; i < num; i++) {
+			targets.add(CrystalTarget.readFromNBT("target"+i, NBT));
+		}
 
 		renderAlpha = NBT.getInteger("alpha");
 	}
@@ -91,15 +124,16 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		if (target != null)
-			target.writeToNBT("target", NBT);
+		NBT.setInteger("targetcount", targets.size());
+		for (int i = 0; i < targets.size(); i++)
+			targets.get(i).writeToNBT("target"+i, NBT);
 
 		NBT.setInteger("alpha", renderAlpha);
 	}
 
 	@Override
 	public final AxisAlignedBB getRenderBoundingBox() {
-		return target != null ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
+		return !targets.isEmpty() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
 	}
 
 	public double getMaxRenderDistance() {

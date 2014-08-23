@@ -23,20 +23,20 @@ public class CrystalFlow extends CrystalPath {
 	public CrystalFlow(CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li) {
 		super(e, li);
 		remainingAmount = amt;
-		maxFlow = this.getMaxFlow();
 		receiver = r;
+		maxFlow = this.getMaxFlow();
 	}
 
 	@Override
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalSource)nodes.getLast().getTileEntity()).markTarget(nodes.get(nodes.size()-2), element);
+		((CrystalSource)nodes.getLast().getTileEntity()).addTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				((CrystalTransmitter)te).markTarget(tg, element);
+				((CrystalTransmitter)te).addTarget(tg, element);
 			}/*
 			if (te instanceof CrystalReceiver) {
 				WorldLocation src = nodes.get(i+1);
@@ -46,11 +46,12 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	public void resetTiles() {
-		((CrystalSource)nodes.getLast().getTileEntity()).clearTarget();
+		((CrystalSource)nodes.getLast().getTileEntity()).removeTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
-				((CrystalTransmitter)te).clearTarget();
+				WorldLocation tg = nodes.get(i-1);
+				((CrystalTransmitter)te).removeTarget(tg, element);
 			}/*
 			if (te instanceof CrystalReceiver) {
 				te.clearSource();
@@ -59,7 +60,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	private int getMaxFlow() {
-		int max = transmitter.maxThroughput();
+		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			max = Math.min(max, te.maxThroughput());

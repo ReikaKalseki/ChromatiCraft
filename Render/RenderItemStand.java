@@ -27,7 +27,7 @@ public class RenderItemStand extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return "itemstand";
+		return "itemstand.png";
 	}
 
 	@Override

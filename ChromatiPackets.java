@@ -15,6 +15,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
@@ -140,7 +141,7 @@ public class ChromatiPackets implements IPacketHandler {
 			}
 			break;
 		case PLANTUPDATE:
-			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+			TileEntityCrystalPlant te = (TileEntityCrystalPlant)tile;
 			te.updateLight();
 			break;
 		case ABILITY:
@@ -149,6 +150,9 @@ public class ChromatiPackets implements IPacketHandler {
 				li.add(data[i]);
 			}
 			Chromabilities.abilities[data[0]].trigger(ep, li);
+			break;
+		case PYLONATTACK:
+			((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2]);
 			break;
 		}
 	}

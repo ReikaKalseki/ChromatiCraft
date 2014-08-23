@@ -17,6 +17,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick {
@@ -35,8 +36,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (inv[0] != null && this.getTicksExisted() == 0) {
-			item = new InertItem(world, inv[0]);
+		if (this.getTicksExisted() == 0) {
+			this.updateItem();
 		}
 	}
 
@@ -54,7 +55,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	public void onRightClickWith(ItemStack item) {
 		this.dropSlot();
 		inv[0] = item != null ? item.copy() : null;
-		this.item = item != null ? new InertItem(worldObj, item) : null;
+		this.updateItem();
+	}
+
+	private void updateItem() {
+		item = inv[0] != null ? new InertItem(worldObj, inv[0]) : null;
 	}
 
 	public EntityItem getItem() {
@@ -74,6 +79,13 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		this.updateItem();
 	}
 
 }

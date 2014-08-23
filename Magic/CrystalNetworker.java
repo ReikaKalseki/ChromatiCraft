@@ -44,7 +44,7 @@ public class CrystalNetworker implements TickHandler {
 		for (int i = 0; i < tiles.size(); i++) {
 			CrystalNetworkTile te = tiles.get(i);
 			if (te instanceof CrystalTransmitter)
-				((CrystalTransmitter)te).clearTarget();
+				((CrystalTransmitter)te).clearTargets();
 		}
 		tiles.clear();
 	}
@@ -135,16 +135,16 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	public void breakPaths(CrystalReceiver te) {
+	public void breakPaths(CrystalNetworkTile te) {
 		Iterator<CrystalFlow> it = flows.iterator();
 		while (it.hasNext()) {
 			CrystalFlow p = it.next();
-			if (p.receiver.equals(te)) {
+			if (p.contains(te)) {
+				p.receiver.onPathBroken();
 				p.resetTiles();
 				it.remove();
 			}
 		}
-		te.onPathBroken();
 	}
 
 	ArrayList<CrystalNetworkTile> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {

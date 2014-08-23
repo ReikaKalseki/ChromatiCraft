@@ -62,4 +62,9 @@ public class CrystalTarget {
 		return location.hashCode()+color.ordinal();
 	}
 
+	@Override
+	public String toString() {
+		return color.displayName+": "+location.getTileEntity();
+	}
+
 }

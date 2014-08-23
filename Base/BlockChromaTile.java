@@ -13,6 +13,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
@@ -46,6 +47,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -86,6 +88,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		return icons[meta][0];
+	}
+
+	@Override
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == ChromaTiles.LASER)
+			return 15;
+		return 0;
 	}
 
 	@Override
@@ -203,11 +213,11 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 			if (m.isEnchantable()) {
 				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
 				ReikaEnchantmentHelper.applyEnchantments(is, map);
-			}
-			if (m.hasNBTVariants()) {
-				NBTTagCompound nbt = ((NBTMachine)te).getTagsToWriteToStack();
-				is.stackTagCompound = (NBTTagCompound)(nbt != null ? nbt.copy() : null);
 			}*/
+			if (m.hasNBTVariants()) {
+				NBTTagCompound nbt = ((NBTTile)te).getTagsToWriteToStack();
+				is.stackTagCompound = (NBTTagCompound)(nbt != null ? nbt.copy() : null);
+			}
 			li = ReikaJavaLibrary.makeListFrom(is);
 			ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
 		}

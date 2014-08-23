@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -96,7 +97,7 @@ public class ItemEnderCrystal extends ItemChromaTool {
 			//world.setBlock(x, y, z, RedstoneBlocks.WIRE.getBlock());
 			if (!world.isRemote) {
 				world.setBlock(x, y, z, Blocks.bedrock);
-				EntityEnderCrystal cry = new EntityEnderCrystal(world);
+				EntityChromaEnderCrystal cry = new EntityChromaEnderCrystal(world);
 				world.spawnEntityInWorld(cry);
 				cry.setPosition(x+0.5, y+1, z+0.5);
 			}

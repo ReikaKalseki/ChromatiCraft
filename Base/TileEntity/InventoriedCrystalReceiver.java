@@ -34,7 +34,11 @@ public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase 
 		return receiveCooldown;
 	}
 
-	protected abstract int getMaxStorage();
+	public abstract int getMaxStorage();
+
+	public final int getEnergyScaled(CrystalElement e, int a) {
+		return a * this.getEnergy(e) / this.getMaxStorage();
+	}
 
 	protected final void requestEnergy(CrystalElement e, int amount) {
 		int amt = Math.min(amount, this.getRemainingSpace(e));
@@ -79,6 +83,10 @@ public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase 
 		int max = this.getMaxStorage();
 		if (this.getEnergy(e) > max)
 			energy.setTag(e, max);
+	}
+
+	public void setEnergy(CrystalElement e, int lvl) {
+		energy.setTag(e, lvl);
 	}
 
 }

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Render;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 import java.awt.Color;
@@ -57,14 +58,14 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
-		this.renderXAngledSpike(v5, u, v, xu, xv, 0.1875, w);
+		this.renderXAngledSpike(u, v, xu, xv, 0.1875, w);
 		v5.draw();
 
 		v5.startDrawingQuads();
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
-		this.renderZAngledSpike(v5, u, v, xu, xv, 0.1875, w);
+		this.renderZAngledSpike(u, v, xu, xv, 0.1875, w);
 		v5.draw();
 		//GL11.glEnable(GL11.GL_LIGHTING);
 
@@ -109,9 +110,10 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//xu = u = xv = v = 0;
 
 		Tessellator v5 = Tessellator.instance;
-		v5.draw();
-		v5.startDrawingQuads();
+		//v5.draw();
 		GL11.glDisable(GL11.GL_CULL_FACE);
+		//GL11.glEnable(GL11.GL_BLEND);
+		//v5.startDrawingQuads();
 
 		double maxx = b.getBlockBoundsMaxX();
 		double minx = b.getBlockBoundsMinX();
@@ -134,13 +136,13 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		if (val > 15 || ((CrystalBlock)b).renderAllArms())
 			val = 15;
 		if ((val & 8) == 8)
-			this.renderXAngledSpike(v5, u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
+			this.renderXAngledSpike(u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
 		if ((val & 4) == 4)
-			this.renderXAngledSpike(v5, u, v, xu, xv, -0.1875, w); //4,5,6,7,12,13,14,15
+			this.renderXAngledSpike(u, v, xu, xv, -0.1875, w); //4,5,6,7,12,13,14,15
 		if ((val & 2) == 2)
-			this.renderZAngledSpike(v5, u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
+			this.renderZAngledSpike(u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
 		if ((val & 1) == 1)
-			this.renderZAngledSpike(v5, u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
+			this.renderZAngledSpike(u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
 
 		//v5.setColorOpaque(0, 0, 0);
 		//this.renderOutline(v5);
@@ -150,6 +152,16 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		}
 
 		v5.addTranslation(-x, -y, -z);
+
+		//v5.draw();
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		//GL11.glDisable(GL11.GL_BLEND);
+		//v5.startDrawingQuads();
+		//v5.addVertex(0, 0, 0);
+		//v5.addVertex(0, 0, 0);
+		//v5.addVertex(0, 0, 0);
+		//v5.addVertex(0, 0, 0);
+
 		return true;
 	}
 
@@ -302,6 +314,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		double core = 0.15;
 		double vl = 0.8;
 
+		// Top point
 		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
 		v5.addVertexWithUV(0.5-core, vl, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
@@ -312,48 +325,50 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 
-		v5.addVertexWithUV(0.5+core, vl, 0.5-core, u, v);
+		v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
+		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
-		v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
+		v5.addVertexWithUV(0.5+core, vl, 0.5-core, u, v);
 
-		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, v);
-		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
 		v5.addVertexWithUV(0.5, 1, 0.5, u, xv);
+		v5.addVertexWithUV(0.5, 1, 0.5, xu, xv);
+		v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, v);
+		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, v);
 
 		xv -= (xv-v)/w;
 		v += (xv-v)/(w*1.2);
 		u += (xu-u)/(w*2);
 		xu -= (xu-u)/(w*2);
 
-		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core, 0, 0.5-core, xu, v);
-		v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, xv);
+		//columns
 		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core, vl, 0.5-core, xu, xv);
+		v5.addVertexWithUV(0.5+core, 0, 0.5-core, xu, v);
+		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
 
 		v5.addVertexWithUV(0.5-core, 0, 0.5+core, u, v);
 		v5.addVertexWithUV(0.5+core, 0, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5-core, vl, 0.5+core, u, xv);
 
-		v5.addVertexWithUV(0.5+core, 0, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core, 0, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5+core, vl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core, vl, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core, 0, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core, 0, 0.5-core, u, v);
 
 		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
 		v5.addVertexWithUV(0.5-core, 0, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5-core, vl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5-core, vl, 0.5-core, u, xv);
 
-		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5-core, 0, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core, 0, 0.5+core, xu, xv);
+		//bottom
 		v5.addVertexWithUV(0.5+core, 0, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core, 0, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5-core, 0, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5-core, 0, 0.5-core, u, v);
 	}
 
-	private void renderXAngledSpike(Tessellator v5, double u, double v, double xu, double xv, double out, int w) {
+	private void renderXAngledSpike(double u, double v, double xu, double xv, double out, int w) {
 		double core = 0.12;
 		double vl = 0.55;
 		double dvl = vl/6D;
@@ -362,20 +377,22 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		double htip = 0.1;
 		int dir = out > 0 ? 1 : -1;
 
+		TessellatorVertexList v5 = new TessellatorVertexList();
+
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, u, v);
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, xu, v);
 		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv); //tip
 		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv);
 
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, u, v);
+		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, u, xv);
+		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv); //tip
 		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv); //tip
-		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, u, xv);
+		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, u, v);
 
-		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, u, v);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv); //tip
 		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, u, xv);
+		v5.addVertexWithUV(0.5+core*dir+out+tout, dy+vl+dvl+htip, 0.5, xu, xv); //tip
+		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, u, v);
 
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, u, v);
 		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, xu, v);
@@ -387,33 +404,39 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		u += (xu-u)/(w*2);
 		xu -= (xu-u)/(w*2);
 
+		//panels
 		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5-core, u, v);
 		v5.addVertexWithUV(0.5+core*dir*3, dy+0, 0.5-core, xu, v);
 		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, xu, xv);
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, u, xv);
 
-		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5+core, u, v);
-		v5.addVertexWithUV(0.5+core*dir*3, dy+0, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir*3, dy+0, 0.5+core, xu, v);
+		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5+core, u, v);
 
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5-core, u, xv);
 		v5.addVertexWithUV(0.5+core*dir+out, dy+vl+dvl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5+core*dir, dy+dvl, 0.5-core, u, v);
 
-		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5-core, u, v);
+		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5+core, xu, xv);
+		v5.addVertexWithUV(0.5+core*dir*3+out, dy+vl, 0.5-core, u, xv);
+
+		//base
+		v5.addVertexWithUV(0.5-core*dir*3+out*2.56, dy+dvl, 0.5-core, u, xv);
+		v5.addVertexWithUV(0.5-core*dir*3+out*2.56, dy+dvl, 0.5+core, xu, xv);
 		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5+core, xu, v);
 		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5-core, u, v);
 
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5-core, u, v);
-		v5.addVertexWithUV(0.5+core*dir*3, dy, 0.5+core, xu, v);
-		v5.addVertexWithUV(0.5-core*dir*3+out*2, dy+dvl+0.04, 0.5+core, xu, xv);
-		v5.addVertexWithUV(0.5-core*dir*3+out*2, dy+dvl+0.04, 0.5-core, u, xv);
+		if (out > 0)
+			v5.reverse();
+		v5.render();
 	}
 
-	private void renderZAngledSpike(Tessellator v5, double u, double v, double xu, double xv, double out, int w) {
+	private void renderZAngledSpike(double u, double v, double xu, double xv, double out, int w) {
 		double core = 0.12;
 		double vl = 0.55;
 		double dvl = vl/6D;
@@ -422,20 +445,22 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		double htip = 0.1;
 		int dir = out > 0 ? 1 : -1;
 
-		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, u, xv);
-		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv); //tip
-		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, xu, v);
+		TessellatorVertexList v5 = new TessellatorVertexList();
+
 		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, u, v);
+		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, xu, v);
+		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv); //tip
+		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, u, xv);
 
 		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv);
 		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv); //tip
 		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, xu, v);
 		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, u, v);
 
-		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, u, v);
-		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, v);
-		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv); //tip
 		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv);
+		v5.addVertexWithUV(0.5, dy+vl+dvl+htip, 0.5+core*dir+out+tout, xu, xv); //tip
+		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, v);
+		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, u, v);
 
 		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, v);
 		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, xu, v);
@@ -447,30 +472,36 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		u += (xu-u)/(w*2);
 		xu -= (xu-u)/(w*2);
 
-		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
-		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, xu, xv);
-		v5.addVertexWithUV(0.5-core, dy+0, 0.5+core*dir*3, xu, v);
+		//panels
 		v5.addVertexWithUV(0.5-core, dy+dvl, 0.5+core*dir, u, v);
+		v5.addVertexWithUV(0.5-core, dy+0, 0.5+core*dir*3, xu, v);
+		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, xu, xv);
+		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
 
 		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
 		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, xv);
 		v5.addVertexWithUV(0.5+core, dy+0, 0.5+core*dir*3, xu, v);
 		v5.addVertexWithUV(0.5+core, dy+dvl, 0.5+core*dir, u, v);
 
-		v5.addVertexWithUV(0.5-core, dy+dvl, 0.5+core*dir, u, v);
-		v5.addVertexWithUV(0.5+core, dy+dvl, 0.5+core*dir, xu, v);
-		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, xu, xv);
 		v5.addVertexWithUV(0.5-core, dy+vl+dvl, 0.5+core*dir+out, u, xv);
+		v5.addVertexWithUV(0.5+core, dy+vl+dvl, 0.5+core*dir+out, xu, xv);
+		v5.addVertexWithUV(0.5+core, dy+dvl, 0.5+core*dir, xu, v);
+		v5.addVertexWithUV(0.5-core, dy+dvl, 0.5+core*dir, u, v);
 
 		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*3, u, v);
 		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*3, xu, v);
 		v5.addVertexWithUV(0.5+core, dy+vl, 0.5+core*dir*3+out, xu, xv);
 		v5.addVertexWithUV(0.5-core, dy+vl, 0.5+core*dir*3+out, u, xv);
 
-		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*3, u, v);
-		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*3, xu, v);
-		v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, xu, xv);
+		//base
 		v5.addVertexWithUV(0.5-core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, u, xv);
+		v5.addVertexWithUV(0.5+core, dy+dvl+0.0025, 0.5-core*dir*3+out*2.56, xu, xv);
+		v5.addVertexWithUV(0.5+core, dy, 0.5+core*dir*3, xu, v);
+		v5.addVertexWithUV(0.5-core, dy, 0.5+core*dir*3, u, v);
+
+		if (out < 0)
+			v5.reverse();
+		v5.render();
 	}
 
 	@Override

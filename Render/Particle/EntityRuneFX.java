@@ -23,6 +23,7 @@ public class EntityRuneFX extends EntityFX {
 
 	public EntityRuneFX(World world, double x, double y, double z, CrystalElement e) {
 		this(world, x, y, z, 0, 0, 0, e);
+		particleGravity = 0.05F;
 	}
 
 	public EntityRuneFX(World world, double x, double y, double z, double vx, double vy, double vz, CrystalElement e) {
@@ -34,7 +35,17 @@ public class EntityRuneFX extends EntityFX {
 		motionZ = vz;
 		particleIcon = e.getGlowRune();
 		particleScale = 1F;
-		particleGravity = 0.05F;
+		particleGravity = 0;
+	}
+
+	public EntityRuneFX setScale(float sc) {
+		particleScale = sc;
+		return this;
+	}
+
+	public EntityRuneFX setLife(int life) {
+		particleMaxAge = life;
+		return this;
 	}
 
 	@Override
@@ -50,6 +61,23 @@ public class EntityRuneFX extends EntityFX {
 		v5.draw();
 		BlendMode.DEFAULT.apply();
 		v5.startDrawingQuads();
+	}
+
+	@Override
+	public void onUpdate()
+	{
+		if (particleGravity == 0) {
+			double mx = motionX;
+			double my = motionY;
+			double mz = motionZ;
+			super.onUpdate();
+			motionX = mx;
+			motionY = my;
+			motionZ = mz;
+		}
+		else {
+			super.onUpdate();
+		}
 	}
 
 	@Override

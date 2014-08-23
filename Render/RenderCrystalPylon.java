@@ -51,7 +51,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			double t = (te.randomOffset+System.currentTimeMillis()/2000D)%360;
 			double s = 1.75+0.5*Math.sin(t);
-			if (te.getTarget() != null) {
+			if (!te.getTargets().isEmpty()) {
 				s += 1;
 			}
 			if (!te.canConduct()) {
