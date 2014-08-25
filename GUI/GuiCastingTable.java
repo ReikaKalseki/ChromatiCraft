@@ -9,17 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable.RecipeType;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.Container.ContainerCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
-
 import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Container.ContainerCastingTable;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 
 public class GuiCastingTable extends GuiChromaBase {
 
@@ -30,6 +33,7 @@ public class GuiCastingTable extends GuiChromaBase {
 
 		tile = te;
 		ySize = this.isMultiForm() ? 240 : 209;
+		//xSize = 219;
 	}
 
 	@Override
@@ -54,12 +58,51 @@ public class GuiCastingTable extends GuiChromaBase {
 				int x1 = a+dx-1;
 				int x2 = a+dx+17;
 				int y1 = b+dy-1;
-				int y2 = b+dy+17;
+				int y2 = b+dy+17;/*
 				if (api.isMouseInBox(x1, x2, y1, y2)) {
-					api.drawTooltip(fontRendererObj, is.getDisplayName());
+					int mx = api.getMouseRealX();
+					int my = api.getMouseRealY();
+					String s = is.getDisplayName();
+					api.drawTooltipAt(fontRendererObj, s, mx-fontRendererObj.getStringWidth(s)/2, my);
+				}*/
+			}
+		}
+
+		CastingRecipe r = tile.getActiveRecipe();
+		if (r != null) {
+			ItemStack out = r.getOutput();
+			api.drawItemStack(itemRender, out, 189, 12);
+			if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {
+				int mx = api.getMouseRealX();
+				int my = api.getMouseRealY();
+				api.drawTooltipAt(fontRendererObj, out.getDisplayName(), mx-30, my);
+			}
+			//this.drawRect(188, 11, 188+18, 29, 0xffABABAB);
+
+			if (r instanceof PylonRecipe) {
+				PylonRecipe p = (PylonRecipe)r;
+				ElementTagCompound tag = p.getRequiredAura();
+				for (CrystalElement e : tag.elementSet()) {
+					int energy = tile.getEnergy(e);
+					int w = 4;
+					int x = 183+e.ordinal()%4*w*2;
+					int h = energy*35/tag.getValue(e);
+					int dy = 35-h;
+					int y1 = 33+e.ordinal()/4*38;
+					int y = 68+e.ordinal()/4*38;
+					this.drawRect(x, y1, x+w, y, 0xff000000+e.color.getJavaColor().darker().darker().getRGB());
+					this.drawRect(x, y1+dy, x+w, y, 0xff000000+e.color.getJavaColor().getRGB());
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float f, int a, int b) {
+		super.drawGuiContainerBackgroundLayer(f, a, b);
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+		this.drawTexturedModalRect(j+xSize, k, 176, 0, 43, ySize);
 	}
 
 	@Override
@@ -73,7 +116,7 @@ public class GuiCastingTable extends GuiChromaBase {
 	}
 
 	private boolean isMultiForm() {
-		return tile.getTier().isAtLeast(RecipeType.MULTIBLOCK);
+		return tile.isAtLeast(RecipeType.MULTIBLOCK);
 	}
 
 	@Override

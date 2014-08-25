@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.RayTracer;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 
 public class PylonFinder {
 

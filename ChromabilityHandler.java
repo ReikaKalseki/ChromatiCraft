@@ -9,13 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import Reika.ChromatiCraft.Registry.Chromabilities;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
-
 import java.util.ArrayList;
 
 import net.minecraft.entity.player.EntityPlayer;
+import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ChromabilityHandler implements TickHandler {

@@ -9,16 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class EntityLaserFX extends EntityFX {
 
@@ -42,6 +42,11 @@ public class EntityLaserFX extends EntityFX {
 		particleRed = e.color.getRed()/192F;
 		particleGreen = e.color.getGreen()/192F;
 		particleBlue = e.color.getBlue()/192F;
+	}
+
+	public EntityLaserFX setScale(float f) {
+		particleScale = f;
+		return this;
 	}
 
 	@Override

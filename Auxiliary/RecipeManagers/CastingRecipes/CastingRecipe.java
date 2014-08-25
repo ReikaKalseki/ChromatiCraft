@@ -1,16 +1,5 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable.RecipeType;
-import Reika.ChromatiCraft.Magic.ElementTag;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.RuneShape;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
-import Reika.DragonAPI.Instantiable.RecipePattern;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +7,17 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Magic.ElementTag;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.RuneShape;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
+import Reika.DragonAPI.Instantiable.RecipePattern;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class CastingRecipe {
@@ -26,14 +26,14 @@ public class CastingRecipe {
 	public final RecipeType type;
 	private IRecipe recipe;
 
-	protected CastingRecipe(ItemStack main, ItemStack out, IRecipe recipe) {
-		this(main, out, RecipeType.CRAFTING);
-		this.recipe = recipe;
+	public CastingRecipe(ItemStack out, IRecipe recipe) {
+		this(out, RecipeType.CRAFTING, recipe);
 	}
 
-	private CastingRecipe(ItemStack main, ItemStack out, RecipeType type) {
+	private CastingRecipe(ItemStack out, RecipeType type, IRecipe recipe) {
 		this.out = out;
 		this.type = type;
+		this.recipe = recipe;
 	}
 
 	public final ItemStack getOutput() {
@@ -52,7 +52,13 @@ public class CastingRecipe {
 		return 5;
 	}
 
+	protected static final ItemStack getShard(CrystalElement e) {
+		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());
+	}
+
 	public boolean match(TileEntityCastingTable table) {
+		if (recipe == null)
+			return true;
 		ItemStack[] items = new ItemStack[9];
 		for (int i = 0; i < 9; i++)
 			items[i] = table.getStackInSlot(i);
@@ -64,12 +70,12 @@ public class CastingRecipe {
 
 		private final RuneShape runes = new RuneShape();
 
-		protected TempleCastingRecipe(ItemStack main, ItemStack out) {
-			this(main, out, RecipeType.TEMPLE);
+		public TempleCastingRecipe(ItemStack out, IRecipe recipe) {
+			this(out, RecipeType.TEMPLE, recipe);
 		}
 
-		private TempleCastingRecipe(ItemStack main, ItemStack out, RecipeType type) {
-			super(main, out, type);
+		private TempleCastingRecipe(ItemStack out, RecipeType type, IRecipe recipe) {
+			super(out, type, recipe);
 		}
 
 		protected boolean matchRunes(World world, int x, int y, int z) {
@@ -98,12 +104,12 @@ public class CastingRecipe {
 		private final HashMap<List<Integer>, ItemStack> inputs = new HashMap();
 		private final ItemStack main;
 
-		protected MultiBlockCastingRecipe(ItemStack main, ItemStack out) {
-			this(main, out, RecipeType.MULTIBLOCK);
+		protected MultiBlockCastingRecipe(ItemStack out, ItemStack main) {
+			this(out, main, RecipeType.MULTIBLOCK);
 		}
 
-		private MultiBlockCastingRecipe(ItemStack main, ItemStack out, RecipeType type) {
-			super(main, out, type);
+		private MultiBlockCastingRecipe(ItemStack out, ItemStack main, RecipeType type) {
+			super(out, type, null);
 			this.main = main;
 		}
 
@@ -144,7 +150,7 @@ public class CastingRecipe {
 					ItemStack at = (stands.get(key).getStackInSlot(0));
 					ItemStack is = inputs.get(key);
 					if (!ReikaItemHelper.matchStacks(at, is) || !ItemStack.areItemStackTagsEqual(at, is)) {
-						//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at);
+						ReikaJavaLibrary.pConsole(key+": "+is+" & "+at);
 						return false;
 					}
 				}
@@ -165,8 +171,8 @@ public class CastingRecipe {
 
 		private final ElementTagCompound elements = new ElementTagCompound();
 
-		protected PylonRecipe(ItemStack main, ItemStack out) {
-			super(main, out, RecipeType.PYLON);
+		public PylonRecipe(ItemStack out, ItemStack main) {
+			super(out, main, RecipeType.PYLON);
 		}
 
 		public ElementTagCompound getRequiredAura() {
@@ -195,6 +201,39 @@ public class CastingRecipe {
 		@Override
 		public int getDuration() {
 			return 400;
+		}
+	}
+
+	public static enum RecipeType {
+		CRAFTING(5, 250),
+		TEMPLE(40, 2000),
+		MULTIBLOCK(200, 15000),
+		PYLON(500, Integer.MAX_VALUE);
+
+		public final int experience;
+		public final int levelUp;
+
+		public static final RecipeType[] typeList = values();
+
+		private RecipeType(int xp, int lvl) {
+			experience = xp;
+			levelUp = lvl;
+		}
+
+		public int getRequiredXP() {
+			return this == CRAFTING ? 0 : typeList[this.ordinal()-1].levelUp;
+		}
+
+		public RecipeType next() {
+			return this == PYLON ? this : typeList[this.ordinal()+1];
+		}
+
+		public boolean isAtLeast(RecipeType r) {
+			return this.ordinal() >= r.ordinal();
+		}
+
+		public boolean isMoreThan(RecipeType r) {
+			return this.ordinal() > r.ordinal();
 		}
 	}
 

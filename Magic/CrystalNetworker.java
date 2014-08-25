@@ -9,17 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -77,10 +76,12 @@ public class CrystalNetworker implements TickHandler {
 			CrystalFlow p = it.next();
 			if (p.transmitter.canConduct() && p.canTransmit()) {
 				int amt = p.drain();
-				p.receiver.receiveElement(p.element, amt);
-				if (p.isComplete()) {
-					p.resetTiles();
-					it.remove();
+				if (amt > 0) {
+					p.receiver.receiveElement(p.element, amt);
+					if (p.isComplete()) {
+						p.resetTiles();
+						it.remove();
+					}
 				}
 			}
 			else {

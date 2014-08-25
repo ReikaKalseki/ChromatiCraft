@@ -9,6 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalSource;
@@ -22,16 +31,6 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.World;
 import codechicken.lib.math.MathHelper;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource {
@@ -57,10 +56,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-
 		/*
-		FilledBlockArray b = PylonGenerator.getPylonStructure(world, x, y-9, z, color);
-		b.place();*/
+		if (!hasMultiblock) {
+			color = CrystalElement.YELLOW;
+			FilledBlockArray b = PylonGenerator.getPylonStructure(world, x, y-9, z, color);
+			b.place();
+		}*/
 
 		if (hasMultiblock) {
 			if (world.isRemote) {

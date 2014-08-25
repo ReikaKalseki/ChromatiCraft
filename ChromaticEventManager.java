@@ -9,19 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
-import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
-import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.World.BiomeRainbowForest;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -51,6 +38,18 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;

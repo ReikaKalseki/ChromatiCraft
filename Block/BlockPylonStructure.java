@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.World.PylonGenerator;
-import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -23,6 +16,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
 public class BlockPylonStructure extends Block {
 
@@ -118,6 +118,11 @@ public class BlockPylonStructure extends Block {
 			if (PylonGenerator.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
 				((TileEntityCrystalPylon)te).validateMultiblock();
 			}
+		}
+
+		te = world.getTileEntity(mx, my+1, mz);
+		if (te instanceof TileEntityCastingTable) {
+			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
 		}
 
 		super.onBlockAdded(world, x, y, z);

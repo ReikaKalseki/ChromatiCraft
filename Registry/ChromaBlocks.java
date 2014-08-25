@@ -9,6 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import java.util.HashMap;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockSapling;
+import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+import net.minecraftforge.fluids.Fluid;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
@@ -47,17 +57,6 @@ import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
-import java.util.HashMap;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.fluids.Fluid;
 
 public enum ChromaBlocks implements BlockEnum {
 
@@ -276,6 +275,10 @@ public enum ChromaBlocks implements BlockEnum {
 
 	public boolean match(ItemStack is) {
 		return is.getItem() == Item.getItemFromBlock(this.getBlockInstance());
+	}
+
+	public ItemStack getStackOf() {
+		return new ItemStack(this.getBlockInstance());
 	}
 
 }

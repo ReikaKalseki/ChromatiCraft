@@ -9,22 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 public class BlockRift extends BlockModelledChromaTile {
-
-	private IIcon halo;
 
 	public BlockRift(Material par2Material) {
 		super(par2Material);
@@ -69,16 +65,5 @@ public class BlockRift extends BlockModelledChromaTile {
 	{
 		return ((TileEntityRift)iba.getTileEntity(x, y, z)).getRedstoneLevel(ForgeDirection.VALID_DIRECTIONS[s]);
 	}
-
-	@Override
-	public void registerBlockIcons(IIconRegister ico) {
-		blockIcon = ico.registerIcon("chromaticraft:rift");
-		halo = ico.registerIcon("chromaticraft:rift_halo");
-	}
-
-	public IIcon getHalo() {
-		return halo;
-	}
-
 
 }

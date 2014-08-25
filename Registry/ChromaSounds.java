@@ -9,17 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-import Reika.DragonAPI.Interfaces.SoundEnum;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-
 import java.net.URL;
 
 import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Interfaces.SoundEnum;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
@@ -29,9 +28,10 @@ public enum ChromaSounds implements SoundEnum {
 	POWERDOWN("powerdown-2", SoundCategory.BLOCKS),
 	DISCHARGE("discharge", SoundCategory.BLOCKS),
 	CAST("cast3", SoundCategory.BLOCKS),
-	CRAFT("craft", SoundCategory.BLOCKS),
 	POWER("ambient", SoundCategory.AMBIENT),
-	CRAFTING3("ambient1_short", SoundCategory.MASTER);
+	CRAFTING("ambient1_short", SoundCategory.MASTER),
+	CRAFTDONE("craftdone", SoundCategory.BLOCKS),
+	UPGRADE("upgrade", SoundCategory.BLOCKS);
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -55,7 +55,7 @@ public enum ChromaSounds implements SoundEnum {
 			n = n.substring(1);
 		}
 		name = n;
-		path = SOUND_FOLDER+name+SOUND_EXT;
+		path = PREFIX+SOUND_FOLDER+name+SOUND_EXT;
 		category = cat;
 	}
 

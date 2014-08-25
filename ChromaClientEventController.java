@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Render.ColorizableSlimeModel;
-
 import java.util.Random;
 
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
@@ -19,6 +16,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Render.ColorizableSlimeModel;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

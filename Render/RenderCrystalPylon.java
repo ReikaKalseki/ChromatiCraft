@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
 import java.awt.Color;
 
 import net.minecraft.client.renderer.Tessellator;
@@ -26,6 +19,13 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
 public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 	@Override
@@ -34,7 +34,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
 			TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
-			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
+			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();
 			float v = ico.getMinV();
@@ -50,12 +50,12 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			Tessellator v5 = Tessellator.instance;
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			double t = (te.randomOffset+System.currentTimeMillis()/2000D)%360;
-			double s = 1.75+0.5*Math.sin(t);
+			double s = 2.5+0.5*Math.sin(t);
 			if (!te.getTargets().isEmpty()) {
 				s += 1;
 			}
 			if (!te.canConduct()) {
-				s = 0.5;
+				s = 0.75;
 			}
 			GL11.glScaled(s, s, s);
 			RenderManager rm = RenderManager.instance;

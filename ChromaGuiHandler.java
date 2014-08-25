@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
@@ -39,11 +43,6 @@ import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Interfaces.InertIInv;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ChromaGuiHandler implements IGuiHandler {

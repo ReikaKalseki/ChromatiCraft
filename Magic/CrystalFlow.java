@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.LinkedList;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.WorldLocation;
-
-import java.util.LinkedList;
 
 public class CrystalFlow extends CrystalPath {
 
@@ -22,9 +22,9 @@ public class CrystalFlow extends CrystalPath {
 
 	public CrystalFlow(CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li) {
 		super(e, li);
-		remainingAmount = amt;
+		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
-		maxFlow = this.getMaxFlow();
+		maxFlow = this.getMaxFlow()-this.getSignalLoss();
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	int drain() {
-		int ret = Math.min(maxFlow, remainingAmount)-this.getSignalLoss();
+		int ret = Math.min(maxFlow, remainingAmount);
 		if (ret <= 0)
 			return 0;
 		remainingAmount -= ret;

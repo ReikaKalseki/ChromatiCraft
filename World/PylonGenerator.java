@@ -9,15 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
-import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -31,6 +22,15 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class PylonGenerator implements IWorldGenerator {
@@ -41,6 +41,8 @@ public class PylonGenerator implements IWorldGenerator {
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider gen, IChunkProvider p) {
+		if (!this.canGenerateIn(world))
+			return;
 		chunkX *= 16;
 		chunkZ *= 16;
 		int x = chunkX+r.nextInt(16);
@@ -65,6 +67,16 @@ public class PylonGenerator implements IWorldGenerator {
 				this.generatePylon(r, world, x, y, z);
 			}
 		}
+	}
+
+	private boolean canGenerateIn(World world) {
+		if (Math.abs(world.provider.dimensionId) == 1)
+			return false;
+		if (world.provider.isHellWorld || world.provider.hasNoSky)
+			return false;
+		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
+			return false;
+		return true;
 	}
 
 	private boolean canGenerateAt(World world, int x, int y, int z) {

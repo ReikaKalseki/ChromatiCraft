@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
-import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
-
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.input.Keyboard;
 
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
+import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class ChromaTriggerHandler implements TickHandler {

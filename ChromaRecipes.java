@@ -9,28 +9,25 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
-import Reika.RotaryCraft.API.BlockColorInterface;
-import Reika.RotaryCraft.API.GrinderAPI;
-
 import java.util.ArrayList;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.api.aspects.Aspect;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import Reika.RotaryCraft.API.BlockColorInterface;
+import Reika.RotaryCraft.API.GrinderAPI;
 import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -50,7 +47,6 @@ public class ChromaRecipes {
 			GameRegistry.addRecipe(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
 			GameRegistry.addRecipe(pendant, "GSG", "QCQ", "EDE", 'E', Items.ender_pearl, 'D', Items.diamond, 'G', Blocks.glowstone, 'Q', Items.quartz, 'C', cave, 'S', Items.string);
 			GameRegistry.addRecipe(pendant3, "DSD", "GCG", "ETE", 'E', Items.ender_eye, 'D', Items.diamond, 'G', Items.gold_ingot, 'T', Items.ghast_tear, 'C', supercry, 'S', Items.string);
-			GameRegistry.addRecipe(seed, "GSG", "SsS", "GSG", 'G', Items.glowstone_dust, 'S', shard, 's', Items.wheat_seeds);
 		}
 
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
@@ -61,14 +57,14 @@ public class ChromaRecipes {
 			GameRegistry.addRecipe(potion, "RlG", "SDS", 'l', lamp, 'S', Blocks.obsidian, 'D', Blocks.gold_block, 'R', Blocks.redstone_block, 'G', Blocks.glowstone);
 		}
 
-		GameRegistry.addRecipe(ChromaTiles.BREWER.getCraftedProduct(), "NNN", "NBN", "SSS", 'N', Items.quartz, 'S', Blocks.stone, 'B', Items.brewing_stand);
-		GameRegistry.addRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), "BBB", "BPB", "BBB", 'B', getShard(ReikaDyeHelper.WHITE), 'P', ChromaItems.CLUSTER.getStackOfMetadata(11));
-		GameRegistry.addRecipe(ChromaTiles.ACCELERATOR.getCraftedProduct(), "DCD", "CSC", "DCD", 'D', Items.diamond, 'S', ChromaItems.CLUSTER.getStackOfMetadata(11), 'C', getShard(ReikaDyeHelper.BLUE));
-		GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));
-
+		//GameRegistry.addRecipe(ChromaTiles.BREWER.getCraftedProduct(), "NNN", "NBN", "SSS", 'N', Items.quartz, 'S', Blocks.stone, 'B', Items.brewing_stand);
+		//GameRegistry.addRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), "BBB", "BPB", "BBB", 'B', getShard(ReikaDyeHelper.WHITE), 'P', ChromaItems.CLUSTER.getStackOfMetadata(11));
+		//GameRegistry.addRecipe(ChromaTiles.ACCELERATOR.getCraftedProduct(), "DCD", "CSC", "DCD", 'D', Items.diamond, 'S', ChromaItems.CLUSTER.getStackOfMetadata(11), 'C', getShard(ReikaDyeHelper.BLUE));
+		//GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));
+		/*
 		Item[] upgrade = {Items.iron_ingot, Items.gold_ingot, Items.diamond, Items.emerald, Items.nether_star};
 		int[] index = {0, 0, 1, 1, 2, 3, 4};
-		/*
+
 		for (int i = 0; i < TileEntityAccelerator.MAX_TIER; i++) {
 			ItemStack s1 = getShard(ReikaDyeHelper.getColorFromDamage(i%4*4));
 			ItemStack s2 = getShard(ReikaDyeHelper.getColorFromDamage(1+i%4*4));

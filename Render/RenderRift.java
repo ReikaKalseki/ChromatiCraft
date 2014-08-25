@@ -9,15 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.BlockRift;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -25,6 +16,14 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderRift extends ChromaRenderBase {
 
@@ -114,7 +113,7 @@ public class RenderRift extends ChromaRenderBase {
 
 	private void drawBlackBox(TileEntityRift te) {
 		Tessellator v5 = Tessellator.instance;
-		IIcon ico = ChromaBlocks.RIFT.getBlockInstance().getIcon(0, 0);
+		IIcon ico = ChromaIcons.RIFT.getIcon();
 		ReikaTextureHelper.bindTerrainTexture();
 		float u = ico.getMinU();
 		float du = ico.getMaxU();
@@ -159,7 +158,7 @@ public class RenderRift extends ChromaRenderBase {
 
 	private void renderAura(TileEntityRift te) {
 		Tessellator v5 = Tessellator.instance;
-		IIcon ico = ((BlockRift)ChromaBlocks.RIFT.getBlockInstance()).getHalo();
+		IIcon ico = ChromaIcons.RIFTHALO.getIcon();
 		ReikaTextureHelper.bindTerrainTexture();
 		float max = te.hasWorldObj() ? 0.05F : 0.025F;
 		float incr = 0.0125F;

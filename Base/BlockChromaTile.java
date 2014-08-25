@@ -9,32 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
-import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalReceiver;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Base.BlockTEBase;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.DartItemHandler;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -60,6 +35,31 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.CrystalReceiver;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Base.BlockTEBase;
+import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.DartItemHandler;
 
 public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 
@@ -87,7 +87,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta][0];
+		return icons[meta][s];
 	}
 
 	@Override
@@ -100,10 +100,13 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		int num = ChromaTiles.getTilesForBlock(this).size();
-		for (int i = 0; i < num; i++) {
+		ArrayList<ChromaTiles> tiles = ChromaTiles.getTilesForBlock(this);
+		for (int i = 0; i < tiles.size(); i++) {
+			ChromaTiles c = tiles.get(i);
 			for (int k = 0; k < 6; k++) {
-				icons[i][k] = ico.registerIcon("chromaticraft:tile/"+i+"_"+k);
+				String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
+				String path = c.name().toLowerCase()+"_"+s;
+				icons[c.getBlockMetadata()][k] = ico.registerIcon("chromaticraft:tile/"+path);
 			}
 		}
 	}
@@ -140,7 +143,10 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 		if (te instanceof ItemOnRightClick) {
 			((ItemOnRightClick)te).onRightClickWith(is);
 			((TileEntityBase)te).syncAllData(true);
-			ep.setCurrentItemOrArmor(0, null);
+			if (is != null && is.stackSize > 1)
+				is.stackSize--;
+			else
+				ep.setCurrentItemOrArmor(0, null);
 			return true;
 		}
 

@@ -9,14 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 
 public class BlockCrystalTileNonCube extends BlockCrystalTile {
 
@@ -58,6 +58,11 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 			return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
+	}
+
+	@Override
+	public final void registerBlockIcons(IIconRegister ico) {
+		blockIcon = ico.registerIcon("chromaticraft:transparent");
 	}
 
 }

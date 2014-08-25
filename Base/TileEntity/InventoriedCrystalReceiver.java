@@ -9,23 +9,25 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
+import Reika.DragonAPI.Instantiable.StepTimer;
 
 public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase implements CrystalReceiver {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = 40;
+	protected StepTimer checkTimer = new StepTimer(40);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
+		checkTimer.update();
 		if (receiveCooldown > 0)
 			receiveCooldown--;
 	}

@@ -29,7 +29,9 @@ public enum ChromaIcons {
 	LASEREND("laser_end_2"),
 	BIGFLARE("bigflare"),
 	ROUNDFLARE("roundflare"),
-	RINGS("rings_blur");
+	RINGS("rings_blur"),
+	RIFT("rift"),
+	RIFTHALO("rift_halo");
 
 	private IIcon icon;
 	private final String iconName;

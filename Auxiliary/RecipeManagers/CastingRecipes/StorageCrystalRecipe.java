@@ -1,16 +1,14 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
+import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-import net.minecraft.item.ItemStack;
-
 public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
-	public StorageCrystalRecipe(ItemStack main, ItemStack out) {
-		super(main, out);
-		//this.addAuraRequirement(ElementTagCompound.getUniformTag(4000));
+	public StorageCrystalRecipe(ItemStack out, ItemStack main) {
+		super(out, main);
 		for (int i = 0; i < 16; i++) {
 			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(0), -4, -4);
 			this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(1), -2, -4);

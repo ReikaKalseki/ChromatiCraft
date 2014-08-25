@@ -9,18 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
-import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
-import Reika.ChromatiCraft.Magic.CrystalTarget;
-import Reika.ChromatiCraft.Magic.CrystalTransmitter;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.CrystalTransmitter;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public abstract class CrystalTransmitterBase extends TileEntityCrystalBase implements CrystalTransmitter {
 
@@ -38,24 +38,33 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	@Override
 	public final void addTarget(WorldLocation loc, CrystalElement e) {
 		CrystalTarget tg = new CrystalTarget(loc, e);
-		if (!targets.contains(tg))
-			targets.add(tg);
-		this.onTargetChanged();
+		if (!worldObj.isRemote) {
+			if (!targets.contains(tg))
+				targets.add(tg);
+			this.onTargetChanged();
+		}
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		if (this.getTicksExisted() == 0) {
-			Iterator<CrystalTarget> it = targets.iterator();
-			while (it.hasNext()) {
-				CrystalTarget c = it.next();
-				if (!(c.location.getTileEntity() instanceof CrystalNetworkTile))
-					it.remove();
-			}
+			targets.clear();
 		}
 		if (!targets.isEmpty() && world.isRemote) {
-			//this.spawnParticle();
+			for (int i = 0; i < targets.size(); i++) {
+				CrystalTarget tg = targets.get(i);
+				int dx = tg.location.xCoord-x;
+				int dy = tg.location.yCoord-y;
+				int dz = tg.location.zCoord-z;
+				double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+				double dr = rand.nextDouble();
+				double px = dx*dr+x+0.5;
+				double py = dy*dr+y+0.5;
+				double pz = dz*dr+z+0.5;
+				EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 	}
 
@@ -70,16 +79,20 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	public final void removeTarget(WorldLocation loc, CrystalElement e) {
-		//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
-		targets.remove(new CrystalTarget(loc, e));
-		this.onTargetChanged();
-		//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+		if (!worldObj.isRemote) {
+			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+			targets.remove(new CrystalTarget(loc, e));
+			this.onTargetChanged();
+			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+		}
 	}
 
 
 	public final void clearTargets() {
-		targets.clear();
-		this.onTargetChanged();
+		if (!worldObj.isRemote) {
+			targets.clear();
+			this.onTargetChanged();
+		}
 	}
 
 	public final ArrayList<CrystalTarget> getTargets() {

@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.util.HashMap;
+
+import net.minecraft.world.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -22,11 +26,6 @@ import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
-
-import java.util.HashMap;
-
-import net.minecraft.world.World;
-import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -51,7 +50,7 @@ public class ChromaClient extends ChromaCommon {
 
 	@Override
 	public void registerSounds() {
-		new SoundLoader(ChromatiCraft.class, ChromaSounds.soundList).register();
+		new SoundLoader(ChromaSounds.soundList).register();
 	}
 
 	@Override

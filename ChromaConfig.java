@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.util.ArrayList;
+
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.ConfigList;
@@ -17,8 +19,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-
-import java.util.ArrayList;
 
 public class ChromaConfig extends ControlledConfig {
 

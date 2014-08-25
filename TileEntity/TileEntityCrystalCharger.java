@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -16,22 +18,14 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.OneSlotMachine;
-import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-
 public class TileEntityCrystalCharger extends InventoriedCrystalReceiver implements OneSlotMachine {
-
-	private StepTimer checkTimer = new StepTimer(40);
 	private float angle;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-
-		checkTimer.update();
 		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}

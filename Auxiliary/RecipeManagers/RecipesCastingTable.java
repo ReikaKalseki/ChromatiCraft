@@ -9,18 +9,30 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalStarRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StorageCrystalRecipe;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalSeedRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalStarRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RuneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StorageCrystalRecipe;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class RecipesCastingTable {
 
@@ -28,8 +40,38 @@ public class RecipesCastingTable {
 	private final HashMap<RecipeType, ArrayList<CastingRecipe>> recipes = new HashMap();
 
 	private RecipesCastingTable() {
-		this.addRecipe(new CrystalStarRecipe(new ItemStack(Items.nether_star), ChromaStacks.crystalStar));
-		this.addRecipe(new StorageCrystalRecipe(ChromaStacks.rawCrystal, ChromaItems.STORAGE.getStackOf()));
+		this.addRecipe(new CrystalStarRecipe(ChromaStacks.crystalStar, new ItemStack(Items.nether_star)));
+		this.addRecipe(new StorageCrystalRecipe(ChromaItems.STORAGE.getStackOf(), ChromaStacks.rawCrystal));
+		for (int i = 0; i < 16; i++) {
+			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i), i));
+			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
+			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
+			ItemStack block = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, 0);
+			ShapedOreRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
+			this.addRecipe(new CastingRecipe(block, sr));
+
+			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i]));
+		}
+		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		ShapedRecipes sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 1), "S", "S", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 1), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "SS", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 2), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, 7), " S ", "S S", " S ", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 4, 7), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, 8), " S ", "SSS", " S ", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 5, 8), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, 6), "SSS", "S  ", "S  ", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 5, 6), sr));
+
+		this.addRecipe(new GuardianStoneRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), ChromaStacks.crystalStar));
+
+		for (int i = 0; i <= TileEntityAccelerator.MAX_TIER; i++)
+			this.addRecipe(new AcceleratorRecipe(i));
 	}
 
 	private void addRecipe(CastingRecipe r) {
@@ -39,39 +81,6 @@ public class RecipesCastingTable {
 			recipes.put(r.type, li);
 		}
 		li.add(r);
-	}
-
-	public static enum RecipeType {
-		CRAFTING(5, 250),
-		TEMPLE(40, 2000),
-		MULTIBLOCK(200, 15000),
-		PYLON(500, Integer.MAX_VALUE);
-
-		public final int experience;
-		public final int levelUp;
-
-		public static final RecipeType[] typeList = values();
-
-		private RecipeType(int xp, int lvl) {
-			experience = xp;
-			levelUp = lvl;
-		}
-
-		public int getRequiredXP() {
-			return this == CRAFTING ? 0 : typeList[this.ordinal()-1].levelUp;
-		}
-
-		public RecipeType next() {
-			return this == PYLON ? this : typeList[this.ordinal()+1];
-		}
-
-		public boolean isAtLeast(RecipeType r) {
-			return this.ordinal() >= r.ordinal();
-		}
-
-		public boolean isMoreThan(RecipeType r) {
-			return this.ordinal() > r.ordinal();
-		}
 	}
 
 	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {

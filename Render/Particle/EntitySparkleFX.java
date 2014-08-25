@@ -9,12 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class EntitySparkleFX extends EntityFX {
 
@@ -27,6 +26,11 @@ public class EntitySparkleFX extends EntityFX {
 		motionZ = vz;
 		particleIcon = ChromaIcons.SPARKLEPARTICLE.getIcon();
 		particleScale = 0.5F;
+	}
+
+	public EntitySparkleFX setScale(float f) {
+		particleScale = f;
+		return this;
 	}
 
 	@Override
