@@ -9,6 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -20,15 +28,6 @@ import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityCrystalLaser extends ChargedCrystalPowered implements OneSlotMachine {
 
@@ -92,6 +91,40 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 			int dx = x+dir.offsetX*i;
 			int dy = y+dir.offsetY*i;
 			int dz = z+dir.offsetZ*i;
+			switch(this.getColor()) {
+			case BLACK:
+				break;
+			case BLUE:
+				break;
+			case BROWN:
+				break;
+			case CYAN:
+				break;
+			case GRAY:
+				break;
+			case GREEN:
+				break;
+			case LIGHTBLUE:
+				break;
+			case LIGHTGRAY:
+				break;
+			case LIME:
+				break;
+			case MAGENTA:
+				break;
+			case ORANGE:
+				break;
+			case PINK:
+				break;
+			case PURPLE:
+				break;
+			case RED:
+				break;
+			case WHITE:
+				break;
+			case YELLOW:
+				break;
+			}
 		}
 		((ItemStorageCrystal)inv[0].getItem()).removeEnergy(inv[0], this.getColor(), 1);
 	}

@@ -1,8 +1,13 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
-
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
@@ -10,13 +15,22 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+
 public class EntityGlobeFX extends EntityFX {
 
 	public EntityGlobeFX(World world, double x, double y, double z) {
-		this(world, x, y, z, 0, 0, 0);
+		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
 	}
 
 	public EntityGlobeFX(World world, double x, double y, double z, double vx, double vy, double vz) {
+		this(CrystalElement.WHITE, world, x, y, z, vx, vy, vz);
+	}
+
+	public EntityGlobeFX(CrystalElement e, World world, double x, double y, double z, double vx, double vy, double vz) {
 		super(world, x, y, z, vx, vy, vz);
 		particleGravity = 0;
 		noClip = true;
@@ -25,6 +39,14 @@ public class EntityGlobeFX extends EntityFX {
 		motionY = vy;
 		motionZ = vz;
 		particleScale = 1F;
+		particleRed = e.getRed()/192F;
+		particleGreen = e.getGreen()/192F;
+		particleBlue = e.getBlue()/192F;
+	}
+
+	public EntityGlobeFX setScale(float f) {
+		particleScale = f;
+		return this;
 	}
 
 	@Override

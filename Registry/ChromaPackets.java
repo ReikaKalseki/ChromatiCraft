@@ -17,8 +17,9 @@ public enum ChromaPackets {
 	SPAWNERPROGRAM(1),
 	CRYSTALEFFECT(),
 	PLANTUPDATE(),
-	ABILITY(9),
-	PYLONATTACK(3);
+	ABILITY(2),
+	PYLONATTACK(3),
+	ABILITYCHOOSE(1);
 
 	public final int numInts;
 	public final PacketTypes type;

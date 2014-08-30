@@ -149,7 +149,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		return !targets.isEmpty() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
 	}
 
-	public double getMaxRenderDistance() {
-		return super.getMaxRenderDistanceSquared()*8;
+	@Override
+	public double getMaxRenderDistanceSquared() {
+		return super.getMaxRenderDistanceSquared()*16;
 	}
 }

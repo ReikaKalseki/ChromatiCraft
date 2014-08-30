@@ -48,7 +48,7 @@ public class ControllableReachPlayer extends PlayerControllerMP {
 	public float getBlockReachDistance()
 	{
 		float prev = super.getBlockReachDistance();
-		return Math.max(prev, AbilityVariables.playerReach);
+		return Math.max(prev, AbilityHelper.instance.playerReach);
 	}
 
 }

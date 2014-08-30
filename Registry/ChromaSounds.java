@@ -31,7 +31,9 @@ public enum ChromaSounds implements SoundEnum {
 	POWER("ambient", SoundCategory.AMBIENT),
 	CRAFTING("ambient1_short", SoundCategory.MASTER),
 	CRAFTDONE("craftdone", SoundCategory.BLOCKS),
-	UPGRADE("upgrade", SoundCategory.BLOCKS);
+	UPGRADE("upgrade", SoundCategory.BLOCKS),
+	ABILITY("ability", SoundCategory.MASTER),
+	ERROR("error", SoundCategory.MASTER);
 
 	public static final ChromaSounds[] soundList = values();
 

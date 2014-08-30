@@ -9,17 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Models.ModelCrystalLaser;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
-import java.awt.Color;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -27,6 +16,16 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Models.ModelCrystalLaser;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderCrystalLaser extends ChromaRenderBase {
 
@@ -142,7 +141,7 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 		}
 		else {
 			GL11.glPushMatrix();
-			GL11.glTranslated(0, -0.2, 0);
+			GL11.glTranslated(-0.5, -0.6, -0.5);
 			this.renderModel(te, model);
 			GL11.glPopMatrix();
 		}
@@ -169,7 +168,7 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 
 		int r = te.getRange();
 		v5.startDrawingQuads();
-		Color c = te.getColor().color.getJavaColor().brighter();
+		CrystalElement c = te.getColor();
 		v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());
 		for (int i = 0; i < r-1; i++) {
 			v5.addVertexWithUV(i, 0, 0, u, v);

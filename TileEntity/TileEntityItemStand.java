@@ -63,9 +63,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	private void updateItem() {
 		item = inv[0] != null ? new InertItem(worldObj, inv[0]) : null;
-		TileEntity te = worldObj.getTileEntity(tileX, tileY, tileZ);
-		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).markDirty();
+		if (worldObj != null) {
+			TileEntity te = worldObj.getTileEntity(tileX, tileY, tileZ);
+			if (te instanceof TileEntityCastingTable) {
+				((TileEntityCastingTable)te).markDirty();
+			}
 		}
 	}
 

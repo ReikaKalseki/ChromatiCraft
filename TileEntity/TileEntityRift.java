@@ -9,15 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.API.SpaceRift;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Base.BlockTEBase;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.WorldLocation;
-
 import java.awt.Color;
 
 import li.cil.oc.api.network.Arguments;
@@ -44,6 +35,14 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import Reika.ChromatiCraft.API.SpaceRift;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Base.BlockTEBase;
+import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -84,25 +83,27 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	public void passThrough() {
 		if (this.isLinked()) {
 			TileEntityRift te = this.getOther();
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = dirs[i];
-				ForgeDirection opp = dir.getOpposite();
-				int dx = target.xCoord+dir.offsetX;
-				int dy = target.yCoord+dir.offsetY;
-				int dz = target.zCoord+dir.offsetZ;
-				int ddx = xCoord-dir.offsetX;
-				int ddy = yCoord-dir.offsetY;
-				int ddz = zCoord-dir.offsetZ;
-				Block id = worldObj.getBlock(dx, dy, dz);
-				Block id2 = worldObj.getBlock(ddx, ddy, ddz);
-				int pwr = worldObj.getIndirectPowerLevelTo(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ, opp.ordinal());
-				te.redstoneCache[i] = pwr;
-				if (id != Blocks.air) {
-					id.onNeighborBlockChange(worldObj, dx, dy, dz, id2);
-				}
-				TileEntity tile = this.getAdjacentTileEntity(dir);
-				if (tile instanceof TileEntityBase) {
-					((TileEntityBase)tile).updateCache(dir.getOpposite());
+			if (te != null) {
+				for (int i = 0; i < 6; i++) {
+					ForgeDirection dir = dirs[i];
+					ForgeDirection opp = dir.getOpposite();
+					int dx = target.xCoord+dir.offsetX;
+					int dy = target.yCoord+dir.offsetY;
+					int dz = target.zCoord+dir.offsetZ;
+					int ddx = xCoord-dir.offsetX;
+					int ddy = yCoord-dir.offsetY;
+					int ddz = zCoord-dir.offsetZ;
+					Block id = worldObj.getBlock(dx, dy, dz);
+					Block id2 = worldObj.getBlock(ddx, ddy, ddz);
+					int pwr = worldObj.getIndirectPowerLevelTo(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ, opp.ordinal());
+					te.redstoneCache[i] = pwr;
+					if (id != Blocks.air) {
+						id.onNeighborBlockChange(worldObj, dx, dy, dz, id2);
+					}
+					TileEntity tile = this.getAdjacentTileEntity(dir);
+					if (tile != this && tile instanceof TileEntityBase) {
+						((TileEntityBase)tile).updateCache(dir.getOpposite());
+					}
 				}
 			}
 			target.triggerBlockUpdate(true);

@@ -9,13 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public final class ElementTagCompound {
 
@@ -115,6 +114,11 @@ public final class ElementTagCompound {
 		return e;
 	}
 
+	public ElementTagCompound clear() {
+		data.clear();
+		return this;
+	}
+
 	public void subtract(CrystalElement e, int amt) {
 		int has = this.getValue(e);
 		this.setTag(e, Math.max(0, has-amt));
@@ -179,6 +183,18 @@ public final class ElementTagCompound {
 			amt += val;
 		}
 		return amt;
+	}
+
+	public void intersectWith(ElementTagCompound tag) {
+		ElementTagCompound temp = new ElementTagCompound();
+		for (CrystalElement e : tag.data.keySet()) {
+			if (data.containsKey(e))
+				temp.addTag(e, this.getValue(e));
+		}
+		data.clear();
+		for (CrystalElement e : temp.data.keySet()) {
+			this.setTag(e, temp.getValue(e));
+		}
 	}
 
 }

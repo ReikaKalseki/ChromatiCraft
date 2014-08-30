@@ -56,11 +56,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
 		/*
 		if (!hasMultiblock) {
-			color = CrystalElement.YELLOW;
-			FilledBlockArray b = PylonGenerator.getPylonStructure(world, x, y-9, z, color);
+			color = CrystalElement.BLACK;
+			FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y-9, z, color);
 			b.place();
+			hasMultiblock = true;
 		}*/
 
 		if (hasMultiblock) {

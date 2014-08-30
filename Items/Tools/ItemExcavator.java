@@ -9,14 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 
 public class ItemExcavator extends ItemChromaTool {
+
+	public static final int MAX_DEPTH = 12;
 
 	public ItemExcavator(int index) {
 		super(index);

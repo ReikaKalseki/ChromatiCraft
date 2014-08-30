@@ -9,19 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Base.BlockDyeTypes;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -30,6 +17,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDyeTypes;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -59,7 +58,6 @@ public class BlockCrystalRune extends BlockDyeTypes {
 			((BlockPylonStructure)ChromaBlocks.PYLONSTRUCT.getBlockInstance()).triggerBreakCheck(world, x, y-1, z);
 		}
 		if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.REPEATER) {
-			ReikaJavaLibrary.pConsole(this);
 			CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)world.getTileEntity(x, y+1, z));
 		}
 		super.breakBlock(world, x, y, z, id, meta);
@@ -91,12 +89,17 @@ public class BlockCrystalRune extends BlockDyeTypes {
 
 	@Override
 	public String getIconFolder() {
-		return "runes/real/";
+		return "runes/backpng/";
 	}
 
 	@Override
 	public boolean useNamedIcons() {
 		return false;
+	}
+
+	@Override
+	public int getRenderType() {
+		return ChromatiCraft.proxy.runeRender;
 	}
 
 }

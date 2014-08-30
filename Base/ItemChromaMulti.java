@@ -31,16 +31,10 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 	@SideOnly(Side.CLIENT)
 	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
-		int min = this.getMinimumCreativeMeta();
-		int max = min+this.getNumberTypes();
-		for (int i = min; i < max; i++) {
+		for (int i = 0; i < this.getNumberTypes(); i++) {
 			ItemStack item = new ItemStack(par1, 1, i);
 			par3List.add(item);
 		}
-	}
-
-	protected int getMinimumCreativeMeta() {
-		return 0;
 	}
 
 	@Override

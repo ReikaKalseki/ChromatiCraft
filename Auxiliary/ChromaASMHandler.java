@@ -1,19 +1,24 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
-
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.classloading.FMLForgePlugin;
 
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
 
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
 public class ChromaASMHandler implements IFMLLoadingPlugin {
@@ -49,8 +54,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 		private static final HashMap<String, ClassPatch> classes = new HashMap();
 
 		private static enum ClassPatch {
-			ENDERCRYSTALGEN("net.minecraft.world.gen.feature.WorldGenSpikes", ""),
-			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", ""),
+			//ENDERCRYSTALGEN("net.minecraft.world.gen.feature.WorldGenSpikes", ""),
+			//ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", ""),
+			//ENDPROVIDER2("net.minecraft.world.WorldProviderEnd", ""),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "");
 
 			private final String obfName;
@@ -64,34 +70,72 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			}
 
 			private byte[] apply(byte[] data) {
-				ClassNode classNode = new ClassNode();
+				ClassNode cn = new ClassNode();
 				ClassReader classReader = new ClassReader(data);
-				classReader.accept(classNode, 0);
-				switch(this) {
-				case ENDERCRYSTALGEN:
-					String method = ReikaObfuscationHelper.isDeObfEnvironment() ? "generate" : "";
-					Iterator<MethodNode> methods = classNode.methods.iterator();
-					while(methods.hasNext()) {
-						MethodNode m = methods.next();
-						int instantiate_index = -1;
-						if ((m.name.equals(method) && m.desc.equals("(Lnet.minecraft.world.World;Ljava.util.Random;III)Z"))) {
-							AbstractInsnNode currentNode = null;
-							AbstractInsnNode targetNode = null;
-							Iterator<AbstractInsnNode> iter = m.instructions.iterator();
-							int index = -1;
-							while (iter.hasNext()) {
-								index++;
-								currentNode = iter.next();
-								if (currentNode.getOpcode() == -34/*<< placeholder for NEW*/) {
-									targetNode = currentNode;
-									instantiate_index = index;
+				classReader.accept(cn, 0);
+				switch(this) {/*
+				case ENDERCRYSTALGEN: {
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "generate", "(Lnet/minecraft/world/World;Ljava/util/Random;III)Z");
+					if (m == null) {
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
+					}
+					else {
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
+								MethodInsnNode min = (MethodInsnNode)ain;
+								if (min.name.equals("<init>")) {
+									String c = "Reika/ChromatiCraft/Entity/EntityChromaEnderCrystal";
+									m.instructions.insert(min, new MethodInsnNode(Opcodes.INVOKESPECIAL, c, min.name, m.desc));
+									m.instructions.remove(min);
+									ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 								}
 							}
 						}
 					}
-					break;
-				case ENDPROVIDER:
-					break;
+				}
+				break;*/
+				/*
+				case ENDPROVIDER2: {
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "createChunkGenerator", "()Lnet/minecraft/world/chunk/IChunkProvider;");
+					if (m == null) {
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
+					}
+					else {
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.NEW) {
+								TypeInsnNode min = (TypeInsnNode)ain;
+								String c = "Reika/ChromatiCraft/World/CustomEndProvider";
+								m.instructions.insert(min, new TypeInsnNode(Opcodes.NEW, c));
+								m.instructions.remove(min);
+								ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler part 1!");
+							}
+							if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
+								MethodInsnNode min = (MethodInsnNode)ain;
+								if (min.name.equals("<init>")) {
+									String c = "Reika/ChromatiCraft/World/CustomEndProvider";
+									m.instructions.insert(min, new MethodInsnNode(Opcodes.INVOKESPECIAL, c, min.name, m.desc));
+									m.instructions.remove(min);
+									ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler part 2!");
+								}
+							}
+						}
+					}
+				}
+				break;*/
+				/*
+				case ENDPROVIDER: {
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "initializeNoiseField", "([DIIIIII)[D");
+					if (m == null) {
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
+					}
+					else {
+						ReikaASMHelper.removeCodeLine(m, 330);
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+					}
+				}
+				break;*/
 				case REACHDIST:
 					break;
 				}
@@ -104,7 +148,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			if (!classes.isEmpty()) {
 				ClassPatch p = classes.get(className);
 				if (p != null) {
-					ChromatiCraft.logger.log("Patching class "+className);
+					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Patching class "+className);
 					opcodes = p.apply(opcodes);
 					classes.remove(className); //for maximizing performance
 				}
@@ -115,7 +159,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 		static {
 			for (int i = 0; i < ClassPatch.list.length; i++) {
 				ClassPatch p = ClassPatch.list[i];
-				String s = ReikaObfuscationHelper.isDeObfEnvironment() ? p.deobfName : p.obfName;
+				String s = !FMLForgePlugin.RUNTIME_DEOBF ? p.deobfName : p.obfName;
 				classes.put(s, p);
 			}
 		}

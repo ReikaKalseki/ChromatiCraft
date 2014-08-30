@@ -79,7 +79,7 @@ public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 					GL11.glRotated(ang2, 1.0F, 0.0F, 0.0F);
 
 					v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-					v5.setColorOpaque_I(ct.color.color.getJavaColor().brighter().getRGB());
+					v5.setColorOpaque_I(ct.color.getColor());
 					for (int i = 0; i <= sides; i++) {
 						double f11 = r*MathHelper.sin(i % sides * (float)Math.PI * 2.0F / sides) * 0.75F;
 						double f12 = r*MathHelper.cos(i % sides * (float)Math.PI * 2.0F / sides) * 0.75F;

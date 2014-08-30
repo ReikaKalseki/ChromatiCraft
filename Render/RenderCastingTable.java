@@ -9,12 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Magic.CrystalTarget;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-
 import java.awt.Color;
 import java.util.ArrayList;
 
@@ -22,6 +16,12 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class RenderCastingTable extends ChromaRenderBase {
 
@@ -42,11 +42,7 @@ public class RenderCastingTable extends ChromaRenderBase {
 			v5.startDrawing(GL11.GL_LINES);
 			for (int i = 0; i < li.size(); i++) {
 				CrystalTarget tg = li.get(i);
-				Color c = tg.color.color.getJavaColor().brighter();
-				int r = c.getRed();
-				int g = c.getGreen();
-				int b = c.getBlue();
-				v5.setColorOpaque(r, g, b);/*
+				v5.setColorOpaque(tg.color.getRed(), tg.color.getGreen(), tg.color.getBlue());/*
 				v5.addVertex(0, 0, 0);
 				v5.addVertex(tg.location.xCoord-te.xCoord, tg.location.yCoord-te.yCoord, tg.location.zCoord-te.zCoord);*/
 

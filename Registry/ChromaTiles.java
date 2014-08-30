@@ -9,6 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import java.util.ArrayList;
+
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -24,21 +31,15 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
-
-import java.util.ArrayList;
-
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.IBlockAccess;
 
 public enum ChromaTiles {
 
@@ -58,7 +59,9 @@ public enum ChromaTiles {
 	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1, "RenderCrystalLaser"),
 	STAND("chroma.stand", ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand"),
 	CHARGER("chroma.charger", ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3, "RenderCrystalCharger"),
-	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7);
+	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
+	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
+	TANK("chroma.tank", ChromaBlocks.TILEMODELLED, TileEntityCrystalTank.class, 4);
 
 	private final Class tile;
 	private final String name;

@@ -46,7 +46,8 @@ public class BlockRift extends BlockModelledChromaTile {
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block id) {
-		((TileEntityRift)world.getTileEntity(x, y, z)).passThrough();
+		if (id != this)
+			((TileEntityRift)world.getTileEntity(x, y, z)).passThrough();
 	}
 
 	@Override

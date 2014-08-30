@@ -9,17 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
-import Reika.ChromatiCraft.Base.ItemCrystalBasic;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class ItemCrystalSeeds extends ItemCrystalBasic {
 
@@ -27,10 +26,6 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 		super(tex);
 	}
 
-	@Override
-	protected int getMinimumCreativeMeta() {
-		return 16;
-	}
 	/*
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {

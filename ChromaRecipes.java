@@ -11,8 +11,6 @@ package Reika.ChromatiCraft;
 
 import java.util.ArrayList;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -38,41 +36,11 @@ public class ChromaRecipes {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
-			ItemStack cave = new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i);
-			ItemStack supercry = new ItemStack(ChromaBlocks.SUPER.getBlockInstance(), 1, i);
-			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
-			ItemStack pendant = ChromaItems.PENDANT.getStackOfMetadata(i);
-			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOfMetadata(i);
-
 			GameRegistry.addRecipe(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
-			GameRegistry.addRecipe(pendant, "GSG", "QCQ", "EDE", 'E', Items.ender_pearl, 'D', Items.diamond, 'G', Blocks.glowstone, 'Q', Items.quartz, 'C', cave, 'S', Items.string);
-			GameRegistry.addRecipe(pendant3, "DSD", "GCG", "ETE", 'E', Items.ender_eye, 'D', Items.diamond, 'G', Items.gold_ingot, 'T', Items.ghast_tear, 'C', supercry, 'S', Items.string);
-		}
-
-		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
-			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
-			ItemStack potion = new ItemStack(ChromaBlocks.SUPER.getBlockInstance(), 1, i);
-			GameRegistry.addRecipe(potion, "RsG", "sss", "SDS", 's', shard, 'S', Blocks.obsidian, 'D', Blocks.gold_block, 'R', Blocks.redstone_block, 'G', Blocks.glowstone);
-			GameRegistry.addRecipe(potion, "RlG", "SDS", 'l', lamp, 'S', Blocks.obsidian, 'D', Blocks.gold_block, 'R', Blocks.redstone_block, 'G', Blocks.glowstone);
 		}
 
 		//GameRegistry.addRecipe(ChromaTiles.BREWER.getCraftedProduct(), "NNN", "NBN", "SSS", 'N', Items.quartz, 'S', Blocks.stone, 'B', Items.brewing_stand);
-		//GameRegistry.addRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), "BBB", "BPB", "BBB", 'B', getShard(ReikaDyeHelper.WHITE), 'P', ChromaItems.CLUSTER.getStackOfMetadata(11));
-		//GameRegistry.addRecipe(ChromaTiles.ACCELERATOR.getCraftedProduct(), "DCD", "CSC", "DCD", 'D', Items.diamond, 'S', ChromaItems.CLUSTER.getStackOfMetadata(11), 'C', getShard(ReikaDyeHelper.BLUE));
 		//GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));
-		/*
-		Item[] upgrade = {Items.iron_ingot, Items.gold_ingot, Items.diamond, Items.emerald, Items.nether_star};
-		int[] index = {0, 0, 1, 1, 2, 3, 4};
-
-		for (int i = 0; i < TileEntityAccelerator.MAX_TIER; i++) {
-			ItemStack s1 = getShard(ReikaDyeHelper.getColorFromDamage(i%4*4));
-			ItemStack s2 = getShard(ReikaDyeHelper.getColorFromDamage(1+i%4*4));
-			ItemStack s3 = getShard(ReikaDyeHelper.getColorFromDamage(2+i%4*4));
-			ItemStack s4 = getShard(ReikaDyeHelper.getColorFromDamage(3+i%4*4));
-			ItemStack prev = new ItemStack(ChromaBlocks.ACCELERATOR.getBlockInstance(), 1, i);
-			GameRegistry.addRecipe(new ItemStack(ChromaBlocks.ACCELERATOR.getBlockInstance(), 1, i+1), "D1D", "2A3", "D4D", 'D', upgrade[index[i]], 'A', prev, '1', s1, '2', s2, '3', s3, '4', s4);
-		}*/
 
 		if (ModList.THERMALEXPANSION.isLoaded()) {
 			FluidStack crystal = FluidRegistry.getFluidStack("potion crystal", 8000);
@@ -88,17 +56,15 @@ public class ChromaRecipes {
 			}
 		}
 
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(0), " R ", "B P", " M ", 'B', getShard(ReikaDyeHelper.BLUE), 'R', getShard(ReikaDyeHelper.RED), 'P', getShard(ReikaDyeHelper.PURPLE), 'M', getShard(ReikaDyeHelper.MAGENTA));
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(1), " Y ", "C L", " G ", 'G', getShard(ReikaDyeHelper.GREEN), 'Y', getShard(ReikaDyeHelper.YELLOW), 'C', getShard(ReikaDyeHelper.CYAN), 'L', getShard(ReikaDyeHelper.LIME));
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(2), " B ", "P O", " L ", 'B', getShard(ReikaDyeHelper.BROWN), 'P', getShard(ReikaDyeHelper.PINK), 'O', getShard(ReikaDyeHelper.ORANGE), 'L', getShard(ReikaDyeHelper.LIGHTBLUE));
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(3), " B ", "G L", " W ", 'B', getShard(ReikaDyeHelper.BLACK), 'G', getShard(ReikaDyeHelper.GRAY), 'L', getShard(ReikaDyeHelper.LIGHTGRAY), 'W', getShard(ReikaDyeHelper.WHITE));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(0), " R ", "B P", " M ", 'B', getShard(ReikaDyeHelper.BLUE), 'R', getShard(ReikaDyeHelper.RED), 'P', getShard(ReikaDyeHelper.PURPLE), 'M', getShard(ReikaDyeHelper.MAGENTA));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(1), " Y ", "C L", " G ", 'G', getShard(ReikaDyeHelper.GREEN), 'Y', getShard(ReikaDyeHelper.YELLOW), 'C', getShard(ReikaDyeHelper.CYAN), 'L', getShard(ReikaDyeHelper.LIME));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(2), " B ", "P O", " L ", 'B', getShard(ReikaDyeHelper.BROWN), 'P', getShard(ReikaDyeHelper.PINK), 'O', getShard(ReikaDyeHelper.ORANGE), 'L', getShard(ReikaDyeHelper.LIGHTBLUE));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(3), " B ", "G L", " W ", 'B', getShard(ReikaDyeHelper.BLACK), 'G', getShard(ReikaDyeHelper.GRAY), 'L', getShard(ReikaDyeHelper.LIGHTGRAY), 'W', getShard(ReikaDyeHelper.WHITE));
 
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(8), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(2), 'G', ChromaItems.CLUSTER.getStackOfMetadata(3));
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(9), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(0), 'G', ChromaItems.CLUSTER.getStackOfMetadata(1));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(8), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(2), 'G', ChromaItems.CLUSTER.getStackOfMetadata(3));
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(9), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(0), 'G', ChromaItems.CLUSTER.getStackOfMetadata(1));
 
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(10), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(8), 'G', ChromaItems.CLUSTER.getStackOfMetadata(9));
-
-		GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(11), " B ", "BPB", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(10), 'P', Items.nether_star);
+		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(10), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(8), 'G', ChromaItems.CLUSTER.getStackOfMetadata(9));
 	}
 
 	private static ItemStack getShard(ReikaDyeHelper color) {

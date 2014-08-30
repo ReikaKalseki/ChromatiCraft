@@ -48,6 +48,17 @@ public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase 
 			CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
 	}
 
+	protected final void requestEnergy(ElementTagCompound tag) {
+		for (CrystalElement e : tag.elementSet()) {
+			this.requestEnergy(e, tag.getValue(e));
+		}
+	}
+
+	protected final void requestEnergyDifference(ElementTagCompound tag) {
+		tag.subtract(energy);
+		this.requestEnergy(tag);
+	}
+
 	public final int getRemainingSpace(CrystalElement e) {
 		return this.getMaxStorage()-this.getEnergy(e);
 	}

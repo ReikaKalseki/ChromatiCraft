@@ -9,10 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-
-import net.minecraft.world.World;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 

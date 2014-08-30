@@ -14,40 +14,26 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderEnd;
-import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.ChunkProviderEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class CustomEndProvider extends WorldProviderEnd {
 
-	public CustomEndProvider() {
-
-	}
-
 	@Override
 	public IChunkProvider createChunkGenerator()
 	{
-		return new CustomEndChunkGen(worldObj, worldObj.getSeed());
+		return new CustomEndChunkProvider(worldObj, worldObj.getSeed());
 	}
 
-	private static class CustomEndChunkGen extends ChunkProviderEnd {
+	public static class CustomEndChunkProvider extends ChunkProviderEnd {
 
-		/** All of these are placeholders */
-		private double[] noiseData1;
-		private double[] noiseData2;
-		private double[] noiseData3;
-		private double[] noiseData4;
-		private double[] noiseData5;
-		private NoiseGeneratorOctaves noiseGen1;
-		private NoiseGeneratorOctaves noiseGen2;
-		private NoiseGeneratorOctaves noiseGen3;
-
-		public CustomEndChunkGen(World world, long seed) {
+		public CustomEndChunkProvider(World world, long seed) {
 			super(world, seed);
 		}
 
-		private double[] initializeNoiseField(double[] p_73187_1_, int p_73187_2_, int p_73187_3_, int p_73187_4_, int p_73187_5_, int p_73187_6_, int p_73187_7_)
+		@Override
+		protected double[] initializeNoiseField(double[] p_73187_1_, int p_73187_2_, int p_73187_3_, int p_73187_4_, int p_73187_5_, int p_73187_6_, int p_73187_7_)
 		{
 			ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField(this, p_73187_1_, p_73187_2_, p_73187_3_, p_73187_4_, p_73187_5_, p_73187_6_, p_73187_7_);
 			MinecraftForge.EVENT_BUS.post(event);
@@ -148,7 +134,10 @@ public class CustomEndProvider extends WorldProviderEnd {
 						}
 
 						d5 -= 8.0D;
-						//d5 += f2; the island genning code right here
+
+						//d5 += f2;
+						//ReikaJavaLibrary.pConsole(f2);
+
 						byte b0 = 2;
 						double d10;
 
@@ -187,5 +176,4 @@ public class CustomEndProvider extends WorldProviderEnd {
 		}
 
 	}
-
 }

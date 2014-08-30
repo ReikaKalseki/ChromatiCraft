@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import java.util.Arrays;
@@ -16,7 +25,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 import Reika.DragonAPI.Instantiable.RecipePattern;
 import Reika.DragonAPI.Instantiable.WorldLocation;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
@@ -50,6 +59,16 @@ public class CastingRecipe {
 
 	public int getDuration() {
 		return 5;
+	}
+
+	public ItemStack[] getArrayForDisplay() {
+		ItemStack[] iss = new ItemStack[9];
+		ReikaRecipeHelper.copyRecipeToItemStackArray(iss, recipe);
+		return iss;
+	}
+
+	public boolean usesItem(ItemStack is) {
+		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is);
 	}
 
 	protected static final ItemStack getShard(CrystalElement e) {
@@ -121,6 +140,12 @@ public class CastingRecipe {
 			inputs.put(Arrays.asList(dx, dz), is);
 		}
 
+		public HashMap<List<Integer>, ItemStack> getAuxItems() {
+			HashMap map = new HashMap();
+			map.putAll(inputs);
+			return map;
+		}
+
 		public HashMap<WorldLocation, ItemStack> getOtherInputs(World world, int x, int y, int z) {
 			HashMap<WorldLocation, ItemStack> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {
@@ -150,7 +175,7 @@ public class CastingRecipe {
 					ItemStack at = (stands.get(key).getStackInSlot(0));
 					ItemStack is = inputs.get(key);
 					if (!ReikaItemHelper.matchStacks(at, is) || !ItemStack.areItemStackTagsEqual(at, is)) {
-						ReikaJavaLibrary.pConsole(key+": "+is+" & "+at);
+						//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput());
 						return false;
 					}
 				}
@@ -164,6 +189,25 @@ public class CastingRecipe {
 		@Override
 		public int getDuration() {
 			return 100;
+		}
+
+		@Override
+		public boolean usesItem(ItemStack is) {
+			if (ReikaItemHelper.matchStacks(is, main) && ItemStack.areItemStackTagsEqual(is, main))
+				return true;
+			for (List<Integer> key : inputs.keySet()) {
+				ItemStack item = inputs.get(key);
+				if (ReikaItemHelper.matchStacks(is, item) && ItemStack.areItemStackTagsEqual(is, item))
+					return true;
+			}
+			return false;
+		}
+
+		@Override
+		public ItemStack[] getArrayForDisplay() {
+			ItemStack[] iss = new ItemStack[9];
+			iss[4] = main;
+			return iss;
 		}
 	}
 

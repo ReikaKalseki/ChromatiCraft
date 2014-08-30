@@ -179,8 +179,8 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	@Override
-	public Phase getPhase() {
-		return Phase.START;
+	public boolean canFire(Phase p) {
+		return p == Phase.START;
 	}
 
 	@Override

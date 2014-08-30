@@ -29,6 +29,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -37,6 +38,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
 import ttftcuts.atg.api.ATGBiomes.BiomeType;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
@@ -58,6 +61,7 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
+import Reika.ChromatiCraft.World.CustomEndProvider;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -198,6 +202,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.setupClassFiles();
 		ChromaTiles.loadMappings();
 		ChromaBlocks.loadMappings();
+		ChromaItems.loadMappings();
 		//DimensionManager.registerProviderType(1, CustomEndProvider.class, false); if ASM turns out to be impossible
 
 		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
@@ -241,6 +246,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
 		GameRegistry.registerWorldGenerator(new PylonGenerator(), Integer.MIN_VALUE);
 
+		DimensionManager.unregisterProviderType(1);
+		DimensionManager.registerProviderType(1, CustomEndProvider.class, false);
+
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
 		if (!this.isLocked())
@@ -253,13 +261,16 @@ public class ChromatiCraft extends DragonAPIMod {
 			ChromaRecipes.addRecipes();
 		}
 
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			ChromaDescriptions.loadData();
+
 		if (!this.isLocked())
 			IntegrityChecker.instance.addMod(instance, ChromaBlocks.blockList, ChromaItems.itemList);
 
 		if (!this.isLocked()) {
 			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
-			TickRegistry.instance.registerTickHandler(ChromaTriggerHandler.instance, Side.CLIENT);
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
+			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 		}
 
 		//if (ConfigRegistry.HANDBOOK.getState())

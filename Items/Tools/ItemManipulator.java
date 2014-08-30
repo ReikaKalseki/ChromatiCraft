@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 
 public class ItemManipulator extends ItemChromaTool {
 
@@ -36,6 +37,10 @@ public class ItemManipulator extends ItemChromaTool {
 		if (t == ChromaTiles.TABLE) {
 			boolean flag = ((TileEntityCastingTable)tile).triggerCrafting();
 			return flag;
+		}
+		if (t == ChromaTiles.RITUAL) {
+			((TileEntityRitualTable)tile).triggerRitual(is);
+			return true;
 		}
 		return false;
 	}

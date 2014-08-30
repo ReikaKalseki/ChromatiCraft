@@ -23,6 +23,7 @@ import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -63,7 +64,7 @@ public class PylonGenerator implements IWorldGenerator {
 
 		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
 			if (r.nextInt(chance) == 0 && this.canGenerateAt(world, x, y, z)) {
-				ChromatiCraft.logger.log("Generated pylon at "+x+", "+z);
+				ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);
 				this.generatePylon(r, world, x, y, z);
 			}
 		}
@@ -172,7 +173,7 @@ public class PylonGenerator implements IWorldGenerator {
 	private void generatePylon(Random rand, World world, int x, int y, int z) {
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		CrystalElement e = CrystalElement.elements[rand.nextInt(16)];
-		FilledBlockArray array = this.getPylonStructure(world, x, y, z, e);
+		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y, z, e);
 
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
@@ -207,84 +208,6 @@ public class PylonGenerator implements IWorldGenerator {
 		te.setColor(e);
 		te.validateMultiblock();
 		world.func_147451_t(x, y+9, z);
-	}
-
-	public static FilledBlockArray getPylonStructure(World world, int x, int y, int z, CrystalElement e) {
-		FilledBlockArray array = new FilledBlockArray(world);
-		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
-		for (int n = 0; n <= 9; n++) {
-			int dy = y+n;
-			Block b2 = n == 0 ? b : Blocks.air;
-			for (int i = 2; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				for (int k = 0; k <= 3; k++) {
-					int dx = x+dir.offsetX*k;
-					int dz = z+dir.offsetZ*k;
-					array.setBlock(dx, dy, dz, b2, 0);
-					if (dir.offsetX == 0) {
-						array.setBlock(dx+dir.offsetZ, dy, dz, b2, 0);
-						array.setBlock(dx-dir.offsetZ, dy, dz, b2, 0);
-					}
-					else if (dir.offsetZ == 0) {
-						array.setBlock(dx, dy, dz+dir.offsetX, b2, 0);
-						array.setBlock(dx, dy, dz-dir.offsetX, b2, 0);
-					}
-				}
-			}
-		}
-
-		for (int i = 1; i <= 5; i++) {
-			int dy = y+i;
-			Block b2 = i < 5 ? b : ChromaBlocks.RUNE.getBlockInstance();
-			int meta = (i == 2 || i == 3) ? 2 : (i == 4 ? 7 : 8);
-			if (i == 5) //rune
-				meta = e.ordinal();
-			array.setBlock(x-3, dy, z+1, b2, meta);
-			array.setBlock(x-3, dy, z-1, b2, meta);
-
-			array.setBlock(x+3, dy, z+1, b2, meta);
-			array.setBlock(x+3, dy, z-1, b2, meta);
-
-			array.setBlock(x-1, dy, z+3, b2, meta);
-			array.setBlock(x-1, dy, z-3, b2, meta);
-
-			array.setBlock(x+1, dy, z+3, b2, meta);
-			array.setBlock(x+1, dy, z-3, b2, meta);
-		}
-
-		for (int n = 1; n <= 7; n++) {
-			int dy = y+n;
-			for (int i = -1; i <= 1; i += 2) {
-				int dx = x+i;
-				for (int k = -1; k <= 1; k += 2) {
-					int dz = z+k;
-					int meta = n == 5 ? 3 : (n == 7 ? 5 : 2);
-					array.setBlock(dx, dy, dz, b, meta);
-				}
-			}
-		}
-
-		array.setBlock(x-3, y+4, z, b, 4);
-		array.setBlock(x+3, y+4, z, b, 4);
-		array.setBlock(x, y+4, z-3, b, 4);
-		array.setBlock(x, y+4, z+3, b, 4);
-
-
-		array.setBlock(x-2, y+3, z+1, b, 1);
-		array.setBlock(x-2, y+3, z-1, b, 1);
-
-		array.setBlock(x+2, y+3, z+1, b, 1);
-		array.setBlock(x+2, y+3, z-1, b, 1);
-
-		array.setBlock(x-1, y+3, z+2, b, 1);
-		array.setBlock(x-1, y+3, z-2, b, 1);
-
-		array.setBlock(x+1, y+3, z+2, b, 1);
-		array.setBlock(x+1, y+3, z-2, b, 1);
-
-		array.remove(x, y+9, z);
-
-		return array;
 	}
 
 }

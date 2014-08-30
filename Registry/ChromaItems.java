@@ -9,6 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import java.util.HashMap;
+
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
@@ -33,13 +40,6 @@ import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.ItemEnum;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public enum ChromaItems implements ItemEnum {
@@ -72,6 +72,9 @@ public enum ChromaItems implements ItemEnum {
 
 	private int maxindex;
 
+	public static final ChromaItems[] itemList = values();
+	private static final HashMap<Item, ChromaItems> itemMap = new HashMap();
+
 	private ChromaItems(int tex, boolean sub, String n, Class <?extends Item> iCl) {
 		this(tex, sub, n, iCl, null);
 	}
@@ -84,29 +87,6 @@ public enum ChromaItems implements ItemEnum {
 		itemClass = iCl;
 		condition = api;
 	}
-	/*
-	private ChromaItems(int lotex, int hitex, boolean sub, String n, Class <?extends Item> iCl) {
-		if (lotex > hitex)
-			throw new RegistrationException(ChromatiCraft.instance, "Invalid item sprite registration for "+n+"! Backwards texture bounds?");
-		texturesheet = 1;
-		if (lotex < 0) {
-			lotex = -lotex;
-			hitex = -hitex;
-			texturesheet = 0;
-		}
-		if (lotex > 255) {
-			texturesheet = lotex/256;
-			lotex -= texturesheet*256;
-			hitex -= texturesheet*256;
-		}
-		index = lotex;
-		maxindex = lotex;
-		hasSubtypes = sub;
-		name = n;
-		itemClass = iCl;
-	}*/
-
-	public static final ChromaItems[] itemList = values();
 
 	@Override
 	public Class[] getConstructorParamTypes() {
@@ -146,20 +126,11 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public static boolean isRegistered(Item id) {
-		for (int i = 0; i < itemList.length; i++) {
-			if (itemList[i].getItemInstance() == id)
-				return true;
-		}
-		return false;
+		return getEntryByID(id) != null;
 	}
 
 	public static ChromaItems getEntryByID(Item id) {
-		for (int i = 0; i < itemList.length; i++) {
-			if (itemList[i].getItemInstance() == id)
-				return itemList[i];
-		}
-		//throw new RegistrationException(ChromatiCraft.instance, "Item ID "+id+" was called to the item registry but does not exist there!");
-		return null;
+		return itemMap.get(id);
 	}
 
 	public static ChromaItems getEntry(ItemStack is) {
@@ -192,11 +163,11 @@ public enum ChromaItems implements ItemEnum {
 		case PENDANT3:
 		case DYE:
 		case LENS:
-			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
+			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case CLUSTER:
 			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
 		case SEED:
-			return ReikaDyeHelper.dyes[meta%16].colorName+" "+this.getBasicName();
+			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case ENDERCRYSTAL:
 			return this.getBasicName();
 		case CRAFTING:
@@ -257,7 +228,7 @@ public enum ChromaItems implements ItemEnum {
 		case CLUSTER:
 			return ChromaNames.clusterNames.length;
 		case SEED:
-			return 32;
+			return 16; //was 32
 		case ENDERCRYSTAL:
 			return 2;
 		case CRAFTING:
@@ -436,6 +407,13 @@ public enum ChromaItems implements ItemEnum {
 			return true;
 		default:
 			return false;
+		}
+	}
+
+	public static void loadMappings() {
+		for (int i = 0; i < itemList.length; i++) {
+			ChromaItems r = itemList[i];
+			itemMap.put(r.getItemInstance(), r);
 		}
 	}
 }

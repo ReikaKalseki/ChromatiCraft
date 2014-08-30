@@ -16,11 +16,10 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
@@ -46,7 +45,6 @@ import Reika.DragonAPI.Instantiable.Data.BlockMap.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -74,8 +72,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		case CRAFTING:
 			return true;
 		case TEMPLE:
-		case MULTIBLOCK:
 			return hasStructure;
+		case MULTIBLOCK:
+			return hasStructure2;
 		case PYLON:
 			return hasPylonConnections;
 		}
@@ -105,6 +104,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (this.getTicksExisted() == 0) {
 			this.evaluateRecipeAndRequest();
 			craftingTick = 0;
+
+			this.validateStructure(null, world, x, y-1, z);
 		}
 		if (!world.isRemote && this.getTicksExisted() == 1) {
 			this.evaluateRecipeAndRequest();
@@ -131,6 +132,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}*/
 
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
+	}
+
+	private void killCrafting() {
+		craftingTick = 0;
+		craftSoundTimer = 20000;
+		//make something bad happen
 	}
 
 	private void onCraftingTick(World world, int x, int y, int z) {
@@ -215,10 +222,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			ElementTagCompound req = ((PylonRecipe)activeRecipe).getRequiredAura();
 			if (!energy.containsAtLeast(req)) {
 				if (this.getCooldown() == 0 && checkTimer.checkCap()) {
-					req.subtract(energy);
-					for (CrystalElement e : req.elementSet()) {
-						this.requestEnergy(e, req.getValue(e));
-					}
+					this.requestEnergyDifference(req);
 				}
 				return;
 			}
@@ -288,259 +292,41 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	public void validateStructure(StructuredBlockArray blocks, World world, int x, int y, int z) {
-		FilledBlockArray array = new FilledBlockArray(world);
-		for (int i = 2; i < 6; i++) {
-			ForgeDirection dir = dirs[i];
-			for (int k = 3; k <= 5; k++) {
-				int dx = x+k*dir.offsetX;
-				int dz = z+k*dir.offsetZ;
-				Block b = world.getBlock(dx, y, dz);
-				int meta = world.getBlockMetadata(dx, y, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-					return;
+		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
+		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
+		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
+		if ((b.matchInWorld() || b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.TEMPLE)) {
+			hasStructure = true;
+			if ((b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
+				hasStructure2 = true;
+				if (b3.matchInWorld() && this.getTier().isAtLeast(RecipeType.PYLON)) {
+					hasPylonConnections = true;
+				}
+				else {
+					hasPylonConnections = false;
 				}
 			}
-
-			int dx = x+dir.offsetX*6;
-			int dz = z+dir.offsetZ*6;
-			for (int k = 1; k <= 5; k++) {
-				int meta2 = k == 1 ? 8 : 2;
-				int dy = y+k;
-				Block b = world.getBlock(dx, dy, dz);
-				int meta = world.getBlockMetadata(dx, dy, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-					return;
-				}
+			else {
+				hasPylonConnections = false;
+				hasStructure2 = false;
 			}
 		}
-
-		for (int i = -6; i <= 6; i++) {
-			int dx = x-6;
-			int dz = z+i;
-			Block b = world.getBlock(dx, y, dz);
-			int meta = world.getBlockMetadata(dx, y, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-				return;
-			}
-
-			dx = x+6;
-			b = world.getBlock(dx, y, dz);
-			meta = world.getBlockMetadata(dx, y, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-				return;
-			}
-
-			dz = z-6;
-			dx = x+i;
-			b = world.getBlock(dx, y, dz);
-			meta = world.getBlockMetadata(dx, y, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-				return;
-			}
-
-			dz = z+6;
-			b = world.getBlock(dx, y, dz);
-			meta = world.getBlockMetadata(dx, y, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-				return;
-			}
+		else {
+			hasPylonConnections = false;
+			hasStructure = false;
+			hasStructure2 = false;
 		}
 
-		for (int k = 1; k <= 4; k++) {
-			int dx = x+6;
-			int dz = z+6;
-			int meta2 = k == 1 ? 0 : 2;
-			int dy = y+k;
-			Block b = world.getBlock(dx, dy, dz);
-			int meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
+		if (activeRecipe != null && !this.getValidRecipeTypes().contains(activeRecipe.type)) {
+			if (craftingTick > 0) {
+				this.killCrafting();
 			}
-
-			dx = x-6;
-			dz = z+6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-
-			dx = x+6;
-			dz = z-6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-
-			dx = x-6;
-			dz = z-6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
+			activeRecipe = null;
 		}
-
-		for (int k = 1; k <= 6; k++) {
-			int dx = x+6;
-			int dz = z+3;
-			int meta2 = k == 1 || k == 5 ? 0 : (k == 6 ? 7 : 2);
-			int dy = y+k;
-			Block b = world.getBlock(dx, dy, dz);
-			int meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-			dx = x+6;
-			dz = z-3;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-
-			dx = x-6;
-			dz = z+3;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-			dx = x-6;
-			dz = z-3;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-
-			dx = x+3;
-			dz = z-6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-			dx = x-3;
-			dz = z-6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-
-			dx = x-3;
-			dz = z+6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-			dx = x+3;
-			dz = z+6;
-			b = world.getBlock(dx, dy, dz);
-			meta = world.getBlockMetadata(dx, dy, dz);
-			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != meta2) {
-				return;
-			}
-		}
-
-		for (int i = -5; i <= 5; i++) {
-			if (i != 3 && i != -3 && i != 0) {
-				int dx = x-6;
-				int dz = z+i;
-				int dy = Math.abs(i) < 3 ? y+6 : y+5;
-				Block b = world.getBlock(dx, dy, dz);
-				int meta = world.getBlockMetadata(dx, dy, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 1) {
-					return;
-				}
-
-				dx = x+6;
-				b = world.getBlock(dx, dy, dz);
-				meta = world.getBlockMetadata(dx, dy, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 1) {
-					return;
-				}
-
-				dz = z-6;
-				dx = x+i;
-				b = world.getBlock(dx, dy, dz);
-				meta = world.getBlockMetadata(dx, dy, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 1) {
-					return;
-				}
-
-				dz = z+6;
-				b = world.getBlock(dx, dy, dz);
-				meta = world.getBlockMetadata(dx, dy, dz);
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 1) {
-					return;
-				}
-			}
-		}
-
-		for (int i = -3; i <= 3; i++) {
-			for (int k = 0; k <= 1; k++) {
-				if (k == 0 || Math.abs(i)%2 == 1) {
-					int dy = y+k;
-					int dx = x-3;
-					int dz = z+i;
-					Block b = world.getBlock(dx, dy, dz);
-					int meta = world.getBlockMetadata(dx, dy, dz);
-					if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-						return;
-					}
-
-					dx = x+3;
-					b = world.getBlock(dx, dy, dz);
-					meta = world.getBlockMetadata(dx, dy, dz);
-					if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-						return;
-					}
-
-					dz = z-3;
-					dx = x+i;
-					b = world.getBlock(dx, dy, dz);
-					meta = world.getBlockMetadata(dx, dy, dz);
-					if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-						return;
-					}
-
-					dz = z+3;
-					b = world.getBlock(dx, dy, dz);
-					meta = world.getBlockMetadata(dx, dy, dz);
-					if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0) {
-						return;
-					}
-				}
-			}
-		}
-
-		if (world.getBlock(x-6, y+5, z-6) != Blocks.coal_block)
-			return;
-		if (world.getBlock(x+6, y+5, z-6) != Blocks.coal_block)
-			return;
-		if (world.getBlock(x+6, y+5, z+6) != Blocks.coal_block)
-			return;
-		if (world.getBlock(x-6, y+5, z+6) != Blocks.coal_block)
-			return;
-
-		if (world.getBlock(x, y+6, z-6) != Blocks.lapis_block)
-			return;
-		if (world.getBlock(x, y+6, z+6) != Blocks.lapis_block)
-			return;
-		if (world.getBlock(x+6, y+6, z) != Blocks.lapis_block)
-			return;
-		if (world.getBlock(x-6, y+6, z) != Blocks.lapis_block)
-			return;
-
-		ReikaJavaLibrary.pConsole("COMPLETE");
 	}
 
 	public boolean triggerCrafting() {
-		if (activeRecipe != null && craftingTick == 0 && !worldObj.isRemote) {
+		if (activeRecipe != null && craftingTick == 0) {
 			ChromaSounds.CAST.playSoundAtBlock(this);
 			craftingTick = activeRecipe.getDuration();
 
@@ -642,9 +428,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	private void addXP(int experience) {
-		tableXP += experience;
-		if (tableXP >= tier.levelUp) {
-			this.setTier(tier.next());
+		if (!worldObj.isRemote) {
+			tableXP += experience;
+			if (tableXP >= tier.levelUp) {
+				this.setTier(tier.next());
+			}
 		}
 	}
 
@@ -663,8 +451,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private void changeRecipe(CastingRecipe r) {
 		if (r == null || r != activeRecipe || r.type != RecipeType.PYLON) {
 			CrystalNetworker.instance.breakPaths(this);
-			craftingTick = 0;
-			craftSoundTimer = 20000;
+			if (r == null || r != activeRecipe) {
+				this.killCrafting();
+			}
 		}/*
 		else if (r != activeRecipe) {
 			ElementTagCompound tag = ((PylonRecipe)r).getRequiredAura();
@@ -713,10 +502,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		CastingRecipe r = this.getValidRecipe();
 		if (r != null && r != activeRecipe && r instanceof PylonRecipe) {
 			ElementTagCompound tag = ((PylonRecipe)r).getRequiredAura();
-			tag.subtract(energy);
-			for (CrystalElement e : tag.elementSet()) {
-				this.requestEnergy(e, tag.getValue(e));
-			}
+			this.requestEnergyDifference(tag);
 		}
 		activeRecipe = r;
 	}
@@ -775,7 +561,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int maxThroughput() {
-		return 10;
+		return 50;
 	}
 
 	@Override

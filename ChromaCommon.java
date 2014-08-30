@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 public class ChromaCommon {
 
 	public static int crystalRender;
+	public static int runeRender;
 
 	public void registerRenderers()
 	{

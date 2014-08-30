@@ -1,6 +1,14 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
@@ -12,26 +20,20 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 		super(world);
 	}
 
-	@Override //Identical except no block damage
+	public EntityChromaEnderCrystal(World world, EntityEnderCrystal e) {
+		this(world);
+		this.setPosition(e.posX, e.posY, e.posZ);
+		rotationPitch = e.rotationPitch;
+		rotationYaw = e.rotationYaw;
+		innerRotation = e.innerRotation;
+		health = e.health;
+	}
+
+	@Override //Identical except cannot die outside of end
 	public boolean attackEntityFrom(DamageSource src, float amt) {
-		if (this.isEntityInvulnerable())  {
+		if (worldObj.provider.dimensionId != 1)
 			return false;
-		}
-		else {
-			if (!isDead && !worldObj.isRemote) {
-				health = 0;
-
-				if (health <= 0) {
-					this.setDead();
-
-					if (!worldObj.isRemote)  {
-						worldObj.createExplosion((Entity)null, posX, posY, posZ, 6.0F, false);
-					}
-				}
-			}
-
-			return true;
-		}
+		return super.attackEntityFrom(src, amt);
 	}
 
 	@Override

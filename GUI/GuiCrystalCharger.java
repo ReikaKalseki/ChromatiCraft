@@ -1,13 +1,22 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
+
+import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import org.lwjgl.opengl.GL11;
 
 public class GuiCrystalCharger extends GuiChromaBase {
 
@@ -56,7 +65,7 @@ public class GuiCrystalCharger extends GuiChromaBase {
 			int dx = i%8 >= 4 ? 22 : 0;
 			int x1 = 6+18*(i%8)+dx;
 			//api.fillBar(j+x1, k+dy-33, 18, dy, e.color.color, px, 34, false);
-			api.drawRect(j+x1, k+dy-px+1, 16, px, e.color.getJavaColor().brighter().getRGB()+0xff000000, true);
+			api.drawRect(j+x1, k+dy-px+1, 16, px, e.getColor(), true);
 		}
 	}
 

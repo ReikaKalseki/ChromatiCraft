@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import java.awt.Color;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -21,6 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -62,7 +61,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 
-			Color c = te.getColor().color.getJavaColor().brighter();
+			CrystalElement c = te.getColor();
 
 			v5.startDrawingQuads();
 			v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());

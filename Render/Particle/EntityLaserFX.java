@@ -39,9 +39,9 @@ public class EntityLaserFX extends EntityFX {
 		particleScale = 1F;
 		particleGravity = 0.0005F;
 		particleTextureIndexY = 0;
-		particleRed = e.color.getRed()/192F;
-		particleGreen = e.color.getGreen()/192F;
-		particleBlue = e.color.getBlue()/192F;
+		particleRed = e.getRed()/192F;
+		particleGreen = e.getGreen()/192F;
+		particleBlue = e.getBlue()/192F;
 	}
 
 	public EntityLaserFX setScale(float f) {

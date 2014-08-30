@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<abilities>
+	<reach>
+		This ability allows you to extend your reach distance, giving you the ability to break and place blocks up to 192 blocks away. You cannot, however, attack mobs or open GUIs outside the normal range.
+	</reach>
+	<magnet>
+		The magnet ability draws in all items and experience in a large radius around you. To avoid potential problems, they become indestructible while in transit.
+	</magnet>
+	<sonic>
+		This ability gives you the power to clear a sphere of blocks around you, dropping them as items. More power means a larger radius, and harder blocks may require more power to break.
+	</sonic>
+	<shift>
+		The shift capability allows you to move a region of blocks, minus any TileEntities, in one direction by a specified distance. This is often very convenient for relocating buildings or correcting minor build errors.
+	</shift>
+</abilities>

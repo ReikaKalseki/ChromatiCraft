@@ -9,6 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -17,18 +24,18 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.world.World;
-
 public class ItemPendant extends ItemCrystalBasic {
 
 	public ItemPendant(int tex) {
 		super(tex);
 		hasSubtypes = true;
 		maxStackSize = 1;
+		this.setNoRepair();
+	}
+
+	@Override
+	protected final CreativeTabs getCreativePage() {
+		return ChromatiCraft.tabChromaTools;
 	}
 
 	@Override

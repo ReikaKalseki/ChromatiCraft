@@ -161,6 +161,10 @@ public enum ChromaBlocks implements BlockEnum {
 		return BlockSapling.class.isAssignableFrom(blockClass);
 	}
 
+	public boolean isTechnical() {
+		return BlockChromaTile.class.isAssignableFrom(blockClass);
+	}
+
 	@Override
 	public Class[] getConstructorParamTypes() {
 		if (this.isFluid())
@@ -197,11 +201,11 @@ public enum ChromaBlocks implements BlockEnum {
 	@Override
 	public String getMultiValuedName(int meta) {
 		if (this.isCrystal() || this.isDye())
-			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
+			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		switch(this) {
 		case RUNE:
 		case PLANT: //"Crystal Bloom"
-			return ReikaDyeHelper.dyes[meta].colorName+" "+this.getBasicName();
+			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case HIVE:
 			return meta == 0 ? "Crystal Hive" : "Pure Hive";
 		case PYLON:

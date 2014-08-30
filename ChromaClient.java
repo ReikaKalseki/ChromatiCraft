@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.CrystalRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
+import Reika.ChromatiCraft.Render.RuneRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
@@ -45,6 +46,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final ChromaItemRenderer placer = new ChromaItemRenderer();
 
 	private static final CrystalRenderer crystal = new CrystalRenderer();
+	private static final RuneRenderer rune = new RuneRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -117,6 +119,9 @@ public class ChromaClient extends ChromaCommon {
 
 		crystalRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(crystalRender, crystal);
+
+		runeRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(runeRender, rune);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

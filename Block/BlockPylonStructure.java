@@ -17,11 +17,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
 public class BlockPylonStructure extends Block {
@@ -83,16 +84,26 @@ public class BlockPylonStructure extends Block {
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
-			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-12, y-12, z-12, x+12, y+12, z+12);
+			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-16, y-12, z-16, x+16, y+12, z+16);
 		}
 
 		int mx = blocks.getMidX();
-		int my = blocks.getMinY(); //intentionally middle
+		int my = blocks.getMinY(); //intentionally bottom
 		int mz = blocks.getMidZ();
 
 		TileEntity te = world.getTileEntity(mx, my+9, mz);
 		if (te instanceof TileEntityCrystalPylon) {
 			((TileEntityCrystalPylon)te).invalidateMultiblock();
+		}
+
+		te = world.getTileEntity(mx, my+1, mz);
+		if (te instanceof TileEntityCastingTable) {
+			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
+		}
+
+		te = world.getTileEntity(mx, my+2, mz);
+		if (te instanceof TileEntityRitualTable) {
+			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
 		}
 
 		for (int i = 2; i <= 3; i++) {
@@ -107,15 +118,15 @@ public class BlockPylonStructure extends Block {
 	public void onBlockAdded(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
-		blocks.recursiveAddWithBounds(world, x, y, z, this, x-12, y-12, z-12, x+12, y+12, z+12);
+		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-12, z-16, x+16, y+12, z+16);
 
 		int mx = blocks.getMidX();
-		int my = blocks.getMinY(); //intentionally middle
+		int my = blocks.getMinY(); //intentionally bottom
 		int mz = blocks.getMidZ();
 
 		TileEntity te = world.getTileEntity(mx, my+9, mz);
 		if (te instanceof TileEntityCrystalPylon) {
-			if (PylonGenerator.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
+			if (ChromaStructures.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
 				((TileEntityCrystalPylon)te).validateMultiblock();
 			}
 		}
@@ -123,6 +134,11 @@ public class BlockPylonStructure extends Block {
 		te = world.getTileEntity(mx, my+1, mz);
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
+		}
+
+		te = world.getTileEntity(mx, my+2, mz);
+		if (te instanceof TileEntityRitualTable) {
+			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
 		}
 
 		super.onBlockAdded(world, x, y, z);

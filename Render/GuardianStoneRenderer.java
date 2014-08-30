@@ -9,14 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -26,6 +18,14 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuardianStoneRenderer extends ChromaRenderBase {
 

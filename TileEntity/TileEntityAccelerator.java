@@ -9,6 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -19,16 +28,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -88,7 +87,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 			ForgeDirection dir = dirs[i];
 			TileEntity te = this.getAdjacentTileEntity(dir);
 			if (this.canAccelerate(te)) {
-				for (int k = 0; k < this.getAccelFromTier(meta) && !te.isInvalid(); k++) {
+				for (int k = 0; k < this.getAccelFromTier(tier) && !te.isInvalid(); k++) {
 					te.updateEntity();
 					if (System.nanoTime()-time >= MAX_LAG)
 						return;

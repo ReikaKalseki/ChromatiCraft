@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Base.BlockChromaTile;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
@@ -31,6 +24,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Base.BlockChromaTile;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockCrystalTile extends BlockChromaTile {
 
@@ -42,15 +41,20 @@ public class BlockCrystalTile extends BlockChromaTile {
 		stepSound = new SoundType("stone", 1.0F, 0.5F);
 	}
 
+	@Override
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
+		return 15;
+	}
+
 	public ArrayList<ItemStack> getPieces(World world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		ArrayList<ItemStack> li = new ArrayList();
 		switch (c) {
 		case ACCELERATOR:
 			for (int i = 0; i < 4; i++)
-				li.add(ChromaItems.CLUSTER.getStackOfMetadata(11));
+				li.add(ChromaStacks.crystalCore);
 		case GUARDIAN:
-			li.add(ChromaItems.CLUSTER.getStackOfMetadata(11));
+			li.add(ChromaStacks.crystalStar);
 			break;
 		default:
 			break;

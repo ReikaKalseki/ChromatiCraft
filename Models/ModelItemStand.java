@@ -15,12 +15,11 @@
 
 package Reika.ChromatiCraft.Models;
 
-import Reika.ChromatiCraft.Base.ChromaModelBase;
-import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
-
 import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
+import Reika.ChromatiCraft.Base.ChromaModelBase;
+import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
 public class ModelItemStand extends ChromaModelBase
 {
@@ -49,7 +48,7 @@ public class ModelItemStand extends ChromaModelBase
 		textureWidth = 128;
 		textureHeight = 128;
 
-		Shape1 = new LODModelPart(this, 0, 20);
+		Shape1 = new LODModelPart(this, 93, 20);
 		Shape1.addBox(-2F, 0F, -2F, 6, 1, 7);
 		Shape1.setRotationPoint(-1F, 17F, 3F);
 		Shape1.setTextureSize(128, 128);
@@ -61,7 +60,7 @@ public class ModelItemStand extends ChromaModelBase
 		Shape1a.setTextureSize(128, 128);
 		Shape1a.mirror = true;
 		this.setRotation(Shape1a, -0.5235988F, 0F, 0F);
-		Shapbe1d = new LODModelPart(this, 32, 20);
+		Shapbe1d = new LODModelPart(this, 64, 20);
 		Shapbe1d.addBox(-2F, 0F, 0F, 7, 1, 6);
 		Shapbe1d.setRotationPoint(3F, 17F, -3F);
 		Shapbe1d.setTextureSize(128, 128);
@@ -115,19 +114,19 @@ public class ModelItemStand extends ChromaModelBase
 		Shape4.setTextureSize(128, 128);
 		Shape4.mirror = true;
 		this.setRotation(Shape4, 0.7853982F, -2.356194F, 0F);
-		Shape4a = new LODModelPart(this, 0, 0);
+		Shape4a = new LODModelPart(this, 0, 7);
 		Shape4a.addBox(-4F, -8.2F, -2.4F, 8, 5, 1);
 		Shape4a.setRotationPoint(0F, 19F, 0F);
 		Shape4a.setTextureSize(128, 128);
 		Shape4a.mirror = true;
 		this.setRotation(Shape4a, 0.7853982F, -0.7853982F, 0F);
-		Shape4b = new LODModelPart(this, 0, 0);
+		Shape4b = new LODModelPart(this, 0, 73);
 		Shape4b.addBox(-4F, -8.2F, -2.4F, 8, 5, 1);
 		Shape4b.setRotationPoint(0F, 19F, 0F);
 		Shape4b.setTextureSize(128, 128);
 		Shape4b.mirror = true;
 		this.setRotation(Shape4b, 0.7853982F, 0.7853982F, 0F);
-		Shape4c = new LODModelPart(this, 0, 0);
+		Shape4c = new LODModelPart(this, 0, 81);
 		Shape4c.addBox(-4F, -8.2F, -2.4F, 8, 5, 1);
 		Shape4c.setRotationPoint(0F, 19F, 0F);
 		Shape4c.setTextureSize(128, 128);

@@ -11,7 +11,6 @@ package Reika.ChromatiCraft;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -25,6 +24,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
@@ -104,6 +104,8 @@ public class ChromatiPackets implements IPacketHandler {
 				for (int i = 0; i < len; i++)
 					data[i] = inputStream.readInt();
 				break;
+			case NBT:
+				break;
 			}
 			if (packetType.hasCoordinates()) {
 				x = inputStream.readInt();
@@ -144,14 +146,16 @@ public class ChromatiPackets implements IPacketHandler {
 			te.updateLight();
 			break;
 		case ABILITY:
-			ArrayList<Integer> li = new ArrayList();
-			for (int i = 1; i < data.length; i++) {
-				li.add(data[i]);
-			}
-			Chromabilities.abilities[data[0]].trigger(ep, li);
+			Chromabilities c = Chromabilities.abilities[data[0]];
+			if (c.playerHasAbility(ep))
+				c.trigger(ep, data[1]);
 			break;
 		case PYLONATTACK:
-			((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2]);
+			if (tile instanceof TileEntityCrystalPylon)
+				((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2]);
+			break;
+		case ABILITYCHOOSE:
+			((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);
 			break;
 		}
 	}

@@ -9,44 +9,68 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import java.awt.Color;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 
 public enum CrystalElement {
 
-	BLACK(""), //Hostile/Mob/Evil/Void
-	RED(""), //Durability/Protection/Resistance
-	GREEN(""), //Sickness
-	BROWN(""), //Sustenance/Eating/Food
-	BLUE(""), //Visibility/Darkness/Light
-	PURPLE(""), //Enchantment/Enhancement
-	CYAN(""), //Aquatic/Water
-	LIGHTGRAY(""), //stealth,deception
-	GRAY(""), //(weakness,fraility)
-	PINK(""), //Combat/Strength
-	LIME(""), //Mobility/Agility
-	YELLOW(""), //Energy
-	LIGHTBLUE(""), //Time/Acceleration
-	MAGENTA(""), //Health/Healing/Life
-	ORANGE(""), //Fire/Heat
-	WHITE(""); //Purity/Clarity
+	BLACK("Kuro", 0x191919), //Hostile/Mob/Evil/Void
+	RED("Karmir", 0xFF0000), //Durability/Protection/Resistance
+	GREEN("Kijani", 0x007F0E), //Sickness
+	BROWN("Ruskea", 0x724528), //Sustenance/Eating/Food
+	BLUE("Nila", 0x0026FF), //Visibility/Darkness/Light
+	PURPLE("Zambarau", 0x8C00EA), //Enchantment/Enhancement
+	CYAN("Vadali", 0x009FBF), //Aquatic/Water
+	LIGHTGRAY("Argia", 0x979797), //stealth,deception
+	GRAY("Ykri", 0x404040), //(weakness,fraility)
+	PINK("Ruzova", 0xFFBAD9), //Combat/Strength
+	LIME("Asveste", 0x00FF00), //Mobility/Agility
+	YELLOW("Kitrino", 0xFFFF00), //Energy
+	LIGHTBLUE("Galazio", 0x7FD4FF), //Time/Acceleration
+	MAGENTA("Kurauri", 0xFF00DC), //Health/Healing/Life
+	ORANGE("Portokali", 0xFF6A00), //Fire/Heat
+	WHITE("Tahara", 0xFFFFFF); //Purity/Clarity
 
-	public final ReikaDyeHelper color;
+	private final ReikaDyeHelper color;
 	public final String displayName;
 	private IIcon glowIcon;
+	private IIcon animatedFace;
+	private final int rgb;
 
 	public static final CrystalElement[] elements = values();
 
-	private CrystalElement(String n) {
+	private CrystalElement(String n, int rgb) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
-		displayName = this.name();//n;
+		displayName = n;
+		this.rgb = (255<<24)+rgb;
 	}
 
 	public String getEnglishName() {
 		return color.colorName;
+	}
+
+	public int getColor() {
+		return rgb;
+	}
+
+	public int getRed() {
+		return (this.getColor() >> 16) & 255;
+	}
+
+	public int getGreen() {
+		return (this.getColor() >> 8) & 255;
+	}
+
+	public int getBlue() {
+		return this.getColor() & 255;
+	}
+
+	public Color getJavaColor() {
+		return new Color(rgb);
 	}
 
 	public int getLevel() {
@@ -81,10 +105,15 @@ public enum CrystalElement {
 
 	public void setIcons(IIconRegister ico) {
 		glowIcon = ico.registerIcon("chromaticraft:runes/glow/tile"+this.ordinal()+"_0");
+		animatedFace = ico.registerIcon("chromaticraft:runes/frontpng/tile"+this.ordinal()+"_0");
 	}
 
 	public IIcon getGlowRune() {
 		return glowIcon;
+	}
+
+	public IIcon getFaceRune() {
+		return animatedFace;
 	}
 
 	public IIcon getBlockRune() {

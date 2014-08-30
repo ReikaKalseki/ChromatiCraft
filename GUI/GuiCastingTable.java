@@ -87,11 +87,11 @@ public class GuiCastingTable extends GuiChromaBase {
 					int w = 4;
 					int x = 183+e.ordinal()%4*w*2;
 					int h = energy*35/tag.getValue(e);
-					int dy = 35-h;
+					int dy = Math.max(35-h, 0); //prevent gui overflow
 					int y1 = 33+e.ordinal()/4*38;
 					int y = 68+e.ordinal()/4*38;
-					this.drawRect(x, y1, x+w, y, 0xff000000+e.color.getJavaColor().darker().darker().getRGB());
-					this.drawRect(x, y1+dy, x+w, y, 0xff000000+e.color.getJavaColor().getRGB());
+					this.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
+					this.drawRect(x, y1+dy, x+w, y, e.getColor());
 				}
 			}
 		}
@@ -121,7 +121,7 @@ public class GuiCastingTable extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return this.isMultiForm() ? "table4" : "table2";
+		return tile.isAtLeast(RecipeType.PYLON) ? "table5" : this.isMultiForm() ? "table4" : "table2";
 	}
 
 }
