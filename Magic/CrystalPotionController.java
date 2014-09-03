@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,6 +16,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import thaumcraft.api.aspects.Aspect;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class CrystalPotionController {
 

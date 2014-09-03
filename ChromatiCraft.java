@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
@@ -369,16 +370,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		return b instanceof BiomeRainbowForest || b.biomeName.equals("Rainbow Forest");
 	}
 
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event) {
-		if (event.map.getTextureType() == 0) {
-			logger.log("Loading Liquid Icons");
-			IIcon cry = event.map.registerIcon("ChromatiCraft:fluid/liqcrystal3");
-			crystal.setIcons(cry);
-		}
-	}
-
 	@EventHandler
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
@@ -426,7 +417,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				IIcon ficon = event.map.registerIcon("ChromatiCraft:fluid/chroma_flowing");
 				chroma.setIcons(sicon, ficon);
 
-				IIcon cry = event.map.registerIcon("GeoStrata:fluid/liqcrystal3");
+				IIcon cry = event.map.registerIcon("ChromatiCraft:fluid/liqcrystal3");
 				crystal.setIcons(cry);
 
 				IIconRegister ico = event.map;
@@ -456,6 +447,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			ReikaJavaLibrary.initClass(ChromaTiles.TEList[i].getTEClass());
 		}
 		GameRegistry.registerTileEntity(TileEntityCrystalPlant.class, "CCCrystalPlant");
+		GameRegistry.registerTileEntity(CrystalTankAuxTile.class, "CCTankAux");
 	}
 
 	@Override

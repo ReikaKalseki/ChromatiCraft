@@ -9,11 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.Random;
 
 import net.minecraft.world.World;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 
 

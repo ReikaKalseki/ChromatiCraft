@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-
 import java.awt.Color;
 import java.util.List;
 
@@ -26,6 +19,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class TileEntityRainbowBeacon extends TileEntityBase {
 

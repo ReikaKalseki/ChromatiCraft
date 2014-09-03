@@ -9,12 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.minecraft.tileentity.TileEntity;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class AcceleratorBlacklist {
 

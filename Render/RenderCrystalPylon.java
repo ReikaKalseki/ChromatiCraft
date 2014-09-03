@@ -30,9 +30,9 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		super.renderTileEntityAt(tile, par2, par4, par6, par8);
+		TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
 
 		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
-			TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
 			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();
@@ -63,6 +63,36 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 			CrystalElement c = te.getColor();
 
+			v5.startDrawingQuads();
+			v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());
+			v5.addVertexWithUV(-1, -1, 0, u, v);
+			v5.addVertexWithUV(1, -1, 0, du, v);
+			v5.addVertexWithUV(1, 1, 0, du, dv);
+			v5.addVertexWithUV(-1, 1, 0, u, dv);
+			v5.draw();
+
+			GL11.glPopMatrix();
+			BlendMode.DEFAULT.apply();
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_BLEND);
+			ReikaRenderHelper.enableLighting();
+		}
+		else if (!tile.hasWorldObj()) {
+			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
+			ReikaTextureHelper.bindTerrainTexture();
+			float u = ico.getMinU();
+			float v = ico.getMinV();
+			float du = ico.getMaxU();
+			float dv = ico.getMaxV();
+			ReikaRenderHelper.disableLighting();
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glPushMatrix();
+			GL11.glRotated(45, 0, 1, 0);
+			GL11.glRotated(-45, 1, 0, 0);
+			Tessellator v5 = Tessellator.instance;
+			CrystalElement c = te.getColor();
 			v5.startDrawingQuads();
 			v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());
 			v5.addVertexWithUV(-1, -1, 0, u, v);

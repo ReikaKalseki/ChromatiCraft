@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.util.ArrayList;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -39,6 +40,8 @@ public class ChromaRecipes {
 			GameRegistry.addRecipe(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
 		}
 
+		ChromaItems.TOOL.addRecipe("  s", " S ", "S  ", 'S', Items.stick, 's', ChromaItems.SHARD.getItemInstance());
+
 		//GameRegistry.addRecipe(ChromaTiles.BREWER.getCraftedProduct(), "NNN", "NBN", "SSS", 'N', Items.quartz, 'S', Blocks.stone, 'B', Items.brewing_stand);
 		//GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));
 
@@ -55,16 +58,6 @@ public class ChromaRecipes {
 				FMLInterModComms.sendMessage(ModList.THERMALEXPANSION.modLabel, "CrucibleRecipe", toSend);
 			}
 		}
-
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(0), " R ", "B P", " M ", 'B', getShard(ReikaDyeHelper.BLUE), 'R', getShard(ReikaDyeHelper.RED), 'P', getShard(ReikaDyeHelper.PURPLE), 'M', getShard(ReikaDyeHelper.MAGENTA));
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(1), " Y ", "C L", " G ", 'G', getShard(ReikaDyeHelper.GREEN), 'Y', getShard(ReikaDyeHelper.YELLOW), 'C', getShard(ReikaDyeHelper.CYAN), 'L', getShard(ReikaDyeHelper.LIME));
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(2), " B ", "P O", " L ", 'B', getShard(ReikaDyeHelper.BROWN), 'P', getShard(ReikaDyeHelper.PINK), 'O', getShard(ReikaDyeHelper.ORANGE), 'L', getShard(ReikaDyeHelper.LIGHTBLUE));
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(3), " B ", "G L", " W ", 'B', getShard(ReikaDyeHelper.BLACK), 'G', getShard(ReikaDyeHelper.GRAY), 'L', getShard(ReikaDyeHelper.LIGHTGRAY), 'W', getShard(ReikaDyeHelper.WHITE));
-
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(8), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(2), 'G', ChromaItems.CLUSTER.getStackOfMetadata(3));
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(9), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(0), 'G', ChromaItems.CLUSTER.getStackOfMetadata(1));
-
-		//GameRegistry.addRecipe(ChromaItems.CLUSTER.getStackOfMetadata(10), " B ", "G G", " B ", 'B', ChromaItems.CLUSTER.getStackOfMetadata(8), 'G', ChromaItems.CLUSTER.getStackOfMetadata(9));
 	}
 
 	private static ItemStack getShard(ReikaDyeHelper color) {

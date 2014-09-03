@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Models.ModelSpawnerProgram;
-import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
@@ -24,6 +17,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Models.ModelSpawnerProgram;
+import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderSpawnerProgrammer extends ChromaRenderBase {
 

@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
 import Reika.ChromatiCraft.Block.BlockCrystalPylon;
 import Reika.ChromatiCraft.Block.BlockCrystalRune;
+import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockLiquidChroma;
@@ -83,7 +84,8 @@ public enum ChromaBlocks implements BlockEnum {
 	ENDER(BlockLiquidEnder.class, 				ChromatiCraft.ender,			"Liquid Ender"),
 	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
-	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon");
+	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
+	TANK(BlockCrystalTank.class,												"crystal.tank");
 
 	private Class blockClass;
 	private String blockName;
@@ -219,6 +221,8 @@ public enum ChromaBlocks implements BlockEnum {
 
 	@Override
 	public boolean hasMultiValuedName() {
+		if (this == TANK)
+			return false;
 		return true;
 	}
 

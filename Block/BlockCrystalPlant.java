@@ -9,15 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
-import Reika.RotaryCraft.API.BlowableCrop;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -34,6 +25,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
+import Reika.RotaryCraft.API.BlowableCrop;
 
 public class BlockCrystalPlant extends Block implements BlowableCrop {
 

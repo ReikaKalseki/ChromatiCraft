@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import net.minecraft.init.Items;
@@ -24,6 +33,7 @@ public class EnhancedPendantRecipe extends PendantRecipe {
 
 		this.addAuraRequirement(CrystalElement.PURPLE, 8000);
 		this.addAuraRequirement(CrystalElement.WHITE, 2000);
+		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 16000);
 	}
 
 }

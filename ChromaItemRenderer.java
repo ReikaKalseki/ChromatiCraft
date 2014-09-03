@@ -52,7 +52,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		if (item.getItemDamage() >= ChromaTiles.TEList.length)
 			return;
 		ChromaTiles machine = item.getItem() == ChromaItems.RIFT.getItemInstance() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
-		if (machine.hasRender()) {
+		if (machine.hasRender() && machine != ChromaTiles.TANK) {
 			TileEntity te = machine.createTEInstanceForRender();
 			if (machine.hasNBTVariants() && item.stackTagCompound != null) {
 				((NBTTile)te).setDataFromItemStackTag(item);

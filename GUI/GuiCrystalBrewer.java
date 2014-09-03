@@ -9,16 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
-
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 
 public class GuiCrystalBrewer extends GuiContainer {
 

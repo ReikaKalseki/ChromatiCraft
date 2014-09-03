@@ -15,7 +15,6 @@ import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Territory;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Tolerance;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
-
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;
 

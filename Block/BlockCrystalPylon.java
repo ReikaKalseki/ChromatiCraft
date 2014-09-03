@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 
 public class BlockCrystalPylon extends BlockCrystalTile {
 

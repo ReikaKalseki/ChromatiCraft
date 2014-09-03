@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.block.Block;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-
-import net.minecraft.block.Block;
-import net.minecraft.world.World;
 
 public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater {
 

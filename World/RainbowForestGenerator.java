@@ -9,19 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
 
 public class RainbowForestGenerator extends WorldGenerator {
 

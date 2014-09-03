@@ -9,13 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API;
 
-import Reika.DragonAPI.Instantiable.WorldLocation;
-
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 
-public interface SpaceRift {
+public interface WorldRift {
 
 	public Block getBlockIDFrom(ForgeDirection dir);
 	public int getBlockMetadataFrom(ForgeDirection dir);

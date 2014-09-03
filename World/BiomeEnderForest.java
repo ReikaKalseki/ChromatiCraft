@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-
 import java.awt.Color;
 
 import net.minecraft.entity.monster.EntityCreeper;
@@ -20,6 +18,7 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenForest;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 
 public class BiomeEnderForest extends BiomeGenForest {
 

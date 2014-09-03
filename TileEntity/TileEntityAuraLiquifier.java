@@ -9,11 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 
 public class TileEntityAuraLiquifier extends FluidEmitterChromaticBase {
 

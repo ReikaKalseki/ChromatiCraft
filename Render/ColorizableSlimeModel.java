@@ -9,11 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.ChromatiCraft.ChromatiCraft;
-
 import java.awt.Color;
 
 import net.minecraft.client.model.ModelSlime;
@@ -23,6 +18,10 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

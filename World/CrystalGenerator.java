@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.API.CrystalGenEvent;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -26,6 +19,12 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+import Reika.ChromatiCraft.API.CrystalGenEvent;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class CrystalGenerator implements IWorldGenerator {

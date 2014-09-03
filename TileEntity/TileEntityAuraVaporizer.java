@@ -9,15 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class TileEntityAuraVaporizer extends FluidReceiverInventoryBase {
 

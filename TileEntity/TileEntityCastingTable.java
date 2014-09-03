@@ -102,34 +102,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		if (this.getTicksExisted() == 0) {
-			this.evaluateRecipeAndRequest();
-			craftingTick = 0;
-
 			this.validateStructure(null, world, x, y-1, z);
+			craftingTick = 0;
 		}
 		if (!world.isRemote && this.getTicksExisted() == 1) {
 			this.evaluateRecipeAndRequest();
 		}
 		if (craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
-		}/*
-		else {
-			if (activeRecipe != null) {
-				if (worldObj.isRemote) {
-					this.spawnParticles(world, x, y, z);
-				}
-
-
-				//if (this.getRecipeRequirements()) {
-				//	this.craft();
-				//}
-			}
-			else {
-				if (this.getCooldown() == 0) {
-
-				}
-			}
-		}*/
+		}
 
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
 	}
@@ -445,6 +426,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		super.markDirty();
 
 		CastingRecipe r = this.getValidRecipe();
+		if (inv[9] != null)
+			r = null;
 		this.changeRecipe(r);
 	}
 

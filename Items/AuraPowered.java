@@ -9,9 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 
 public interface AuraPowered {
 

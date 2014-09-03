@@ -9,12 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.awt.Color;
 
 import net.minecraft.block.Block;
@@ -26,6 +20,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {

@@ -35,7 +35,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
-import Reika.ChromatiCraft.API.SpaceRift;
+import Reika.ChromatiCraft.API.WorldRift;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -51,7 +51,7 @@ import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
-public class TileEntityRift extends TileEntityChromaticBase implements SpaceRift, IFluidHandler, IPowerReceptor, IEnergyHandler,
+public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, IFluidHandler, IPowerReceptor, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral  {
 
 	private WorldLocation target;
@@ -276,13 +276,6 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public void setSuction(AspectList suction) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof IEssentiaTransport) {
-			((IEssentiaTransport)this.getSingleDirTile()).setSuction(suction);
-		}
-	}
-
-	@Override
 	public void setSuction(Aspect aspect, int amount) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IEssentiaTransport) {
 			((IEssentiaTransport)this.getSingleDirTile()).setSuction(aspect, amount);
@@ -290,27 +283,51 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public AspectList getSuction(ForgeDirection face) {
+	public Aspect getSuctionType(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
-			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getSuction(face);
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getSuctionType(face);
 		}
 		return null;
 	}
 
 	@Override
-	public int takeVis(Aspect aspect, int amount) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof IEssentiaTransport) {
-			return ((IEssentiaTransport)this.getSingleDirTile()).takeVis(aspect, amount);
+	public int getSuctionAmount(ForgeDirection face) {
+		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getSuctionAmount(face);
 		}
 		return 0;
 	}
 
 	@Override
-	public AspectList getEssentia(ForgeDirection face) {
+	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
-			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getEssentia(face);
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).takeEssentia(aspect, amount, face);
+		}
+		return 0;
+	}
+
+	@Override
+	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).addEssentia(aspect, amount, face);
+		}
+		return 0;
+	}
+
+	@Override
+	public Aspect getEssentiaType(ForgeDirection face) {
+		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getEssentiaType(face);
 		}
 		return null;
+	}
+
+	@Override
+	public int getEssentiaAmount(ForgeDirection face) {
+		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
+			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getEssentiaAmount(face);
+		}
+		return 0;
 	}
 
 	@Override
@@ -343,9 +360,9 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public boolean canInterface(ForgeDirection from) {
+	public boolean canConnectEnergy(ForgeDirection from) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(from.getOpposite()) instanceof IEnergyHandler) {
-			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).canInterface(from);
+			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).canConnectEnergy(from);
 		}
 		return false;
 	}

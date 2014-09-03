@@ -9,11 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Instantiable.Data.BlockArray;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +19,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class EnderPoolGenerator extends WorldGenerator {
 

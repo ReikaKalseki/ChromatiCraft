@@ -23,9 +23,13 @@ public class NEIChromaConfig implements IConfigureNEI {
 	private static final CrystalBrewerHandler crystal = new CrystalBrewerHandler();
 	private static final CastingTableHandler casting = new CastingTableHandler();
 
+	private static final ChromaNEITabOccluder occlusion = new ChromaNEITabOccluder();
+
 	@Override
 	public void loadConfig() {
 		ReactorCraft.logger.log("Loading NEI Compatibility!");
+
+		API.registerNEIGuiHandler(occlusion);
 
 		API.registerRecipeHandler(crystal);
 		API.registerUsageHandler(crystal);

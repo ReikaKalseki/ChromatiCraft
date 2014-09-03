@@ -9,12 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
-import Reika.DragonAPI.Base.CoreContainer;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.DragonAPI.Base.CoreContainer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

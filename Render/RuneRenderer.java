@@ -101,15 +101,14 @@ public class RuneRenderer implements ISimpleBlockRenderingHandler {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
 		Tessellator v5 = Tessellator.instance;
 		int meta = world.getBlockMetadata(x, y, z);
-		IIcon ico = b.getIcon(0, meta);
-		int l = b.getMixedBrightnessForBlock(world, x, y, z);
-
+		/*
 		float f1 = 0.5F;
 		float f2 = 1;
 		float f3 = 0.8F;
 		float f4 = 0.8F;
 		float f5 = 0.6F;
 		float f6 = 0.6F;
+
 
 		v5.setBrightness(rb.renderMinY > 0.0D ? l : b.getMixedBrightnessForBlock(world, x, y - 1, z));
 		v5.setColorOpaque_F(f1, f1, f1);
@@ -134,8 +133,10 @@ public class RuneRenderer implements ISimpleBlockRenderingHandler {
 		v5.setBrightness(rb.renderMaxX < 1.0D ? l : b.getMixedBrightnessForBlock(world, x + 1, y, z));
 		v5.setColorOpaque_F(f6, f6, f6);
 		rb.renderFaceXPos(b, x, y, z, ico);
+		 */
+		rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
 
-		ico = CrystalElement.elements[meta].getFaceRune();
+		IIcon ico = CrystalElement.elements[meta].getFaceRune();
 		v5.setBrightness(240);
 		v5.setColorOpaque_F(255, 255, 255);
 		rb.renderFaceYNeg(b, x, y, z, ico);

@@ -22,18 +22,27 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalChargerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalClusterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalFurnaceRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalGroupRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalLaserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalSeedRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalStarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalTankRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeCrystalRepeater;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StorageCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.VoidCoreRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -49,8 +58,20 @@ public class RecipesCastingTable {
 	private final HashMap<RecipeType, ArrayList<CastingRecipe>> recipes = new HashMap();
 
 	private RecipesCastingTable() {
+		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, " R ", "B P", " M ", 'B', CrystalElement.BLUE, 'R', CrystalElement.RED, 'P', CrystalElement.PURPLE, 'M', CrystalElement.MAGENTA));
+		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.greenGroup, " Y ", "C L", " G ", 'G', CrystalElement.GREEN, 'Y', CrystalElement.YELLOW, 'C', CrystalElement.CYAN, 'L', CrystalElement.LIME));
+		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.orangeGroup, " B ", "P O", " L ", 'B', CrystalElement.BROWN, 'P', CrystalElement.PINK, 'O', CrystalElement.ORANGE, 'L', CrystalElement.LIGHTBLUE));
+		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.whiteGroup, " B ", "G L", " W ", 'B', CrystalElement.BLACK, 'G', CrystalElement.GRAY, 'L', CrystalElement.LIGHTGRAY, 'W', CrystalElement.WHITE));
+		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.primaryCluster));
+		this.addRecipe(new CrystalClusterRecipe(ChromaStacks.secondaryCluster));
+		this.addRecipe(new CrystalCoreRecipe(ChromaStacks.crystalCore, new ItemStack(Items.diamond)));
 		this.addRecipe(new CrystalStarRecipe(ChromaStacks.crystalStar, new ItemStack(Items.nether_star)));
+
+		this.addRecipe(new VoidCoreRecipe(ChromaStacks.voidCore, ChromaStacks.crystalStar));
+		this.addRecipe(new EnergyCoreRecipe(ChromaStacks.energyCore, ChromaStacks.crystalStar));
+
 		this.addRecipe(new StorageCrystalRecipe(ChromaItems.STORAGE.getStackOf(), ChromaStacks.rawCrystal));
+
 		for (int i = 0; i < 16; i++) {
 			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i), i));
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
@@ -88,7 +109,10 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new RiftRecipe(ChromaTiles.RIFT.getCraftedProduct(), ChromaStacks.voidCore));
 		this.addRecipe(new CrystalTankRecipe(ChromaTiles.TANK.getCraftedProduct(), ChromaStacks.voidCore));
+		this.addRecipe(new RecipeTankBlock(new ItemStack(ChromaBlocks.TANK.getBlockInstance()), new ItemStack(Items.diamond)));
 		this.addRecipe(new CrystalFurnaceRecipe(ChromaTiles.FURNACE.getCraftedProduct(), ChromaStacks.energyCore));
+		this.addRecipe(new CrystalLaserRecipe(ChromaTiles.LASER.getCraftedProduct(), ChromaStacks.energyCore));
+		this.addRecipe(new CrystalChargerRecipe(ChromaTiles.CHARGER.getCraftedProduct(), ChromaStacks.crystalCore));
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -104,6 +128,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new EnhancedPendantRecipe(pendant3, supercry));
 			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
 		}
+
+		this.addRecipe(new RecipeCrystalRepeater(ChromaTiles.REPEATER.getCraftedProduct(), ChromaStacks.crystalCore));
 	}
 
 	private void addRecipe(CastingRecipe r) {

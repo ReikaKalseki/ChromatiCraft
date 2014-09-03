@@ -9,16 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
-
 import java.util.List;
 import java.util.Random;
 
@@ -38,6 +28,15 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

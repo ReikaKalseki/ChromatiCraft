@@ -16,7 +16,6 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderEnd;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.ChunkProviderEvent;
-import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class CustomEndProvider extends WorldProviderEnd {
 
@@ -37,7 +36,7 @@ public class CustomEndProvider extends WorldProviderEnd {
 		{
 			ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField(this, p_73187_1_, p_73187_2_, p_73187_3_, p_73187_4_, p_73187_5_, p_73187_6_, p_73187_7_);
 			MinecraftForge.EVENT_BUS.post(event);
-			if (event.getResult() == Result.DENY) return event.noisefield;
+			/*if (event.getResult() == Result.DENY) return event.noisefield;*/
 
 			if (p_73187_1_ == null)
 			{

@@ -9,11 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -22,6 +17,10 @@ import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
+import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class ColorTreeGenerator implements IWorldGenerator {

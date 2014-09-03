@@ -9,15 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-
 import java.util.ArrayList;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
 public class GuardianCommand extends CommandBase {
 

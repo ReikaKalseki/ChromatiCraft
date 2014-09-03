@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.client.renderer.Tessellator;

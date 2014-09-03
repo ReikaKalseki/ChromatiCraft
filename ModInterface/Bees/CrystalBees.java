@@ -9,6 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.Bees;
 
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -21,14 +28,6 @@ import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Territory;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.TraitsBee;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
-
-import java.util.HashMap;
-import java.util.List;
-
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 import cpw.mods.fml.common.registry.GameRegistry;
 import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IBeeGenome;

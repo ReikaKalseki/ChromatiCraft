@@ -9,17 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Models.ModelItemStand;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
-
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Models.ModelItemStand;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
+import Reika.DragonAPI.Interfaces.RenderFetcher;
 
 public class RenderItemStand extends ChromaRenderBase {
 

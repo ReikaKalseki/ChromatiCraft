@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -23,6 +20,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 
 public class BlockCrystalBrewer extends Block {
 

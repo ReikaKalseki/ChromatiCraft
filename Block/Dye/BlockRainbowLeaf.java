@@ -9,20 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dye;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.TileEntity.TileEntityRainbowBeacon;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Base.BlockCustomLeaf;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
@@ -39,6 +25,19 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.TileEntity.TileEntityRainbowBeacon;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Base.BlockCustomLeaf;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
 
 import com.xcompwiz.mystcraft.api.MystObjects;
 

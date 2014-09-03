@@ -51,11 +51,13 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -95,6 +97,10 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		if (c == ChromaTiles.LASER)
 			return 15;
+		if (c == ChromaTiles.TANK) {
+			TileEntityCrystalTank te = (TileEntityCrystalTank)world.getTileEntity(x, y, z);
+			return te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+		}
 		return 0;
 	}
 
@@ -268,7 +274,28 @@ public class BlockChromaTile extends BlockTEBase implements IWailaBlock {
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		te.syncAllData(false);
-		if (te instanceof FluidIOChromaticBase) {
+		if (te instanceof TileEntityRift) {
+			WorldLocation loc = ((TileEntityRift)te).getLinkTarget();
+			if (loc != null) {
+				currenttip.add("Linked to "+loc);
+			}
+			else {
+				currenttip.add("Unlinked");
+			}
+		}
+		if (te instanceof TileEntityCrystalTank) {
+			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;
+			int amt = tank.getLevel();
+			int capacity = tank.getCapacity();
+			Fluid f = tank.getFluid();
+			if (amt > 0 && f != null) {
+				currenttip.add(String.format("Tank: %dmB/%dmB of %s", amt, capacity, f.getLocalizedName()));
+			}
+			else {
+				currenttip.add(String.format("Tank: Empty (Capacity %dmB)", capacity));
+			}
+		}
+		else if (te instanceof FluidIOChromaticBase) {
 			FluidIOChromaticBase liq = (FluidIOChromaticBase)te;
 			Fluid in = liq.getFluidInInput();
 			Fluid out = liq.getFluidInOutput();

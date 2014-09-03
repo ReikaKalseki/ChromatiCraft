@@ -9,17 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.Container.ContainerCollector;
-import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
-import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Container.ContainerCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
+import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 
 public class GuiCollector extends GuiChromaBase {
 

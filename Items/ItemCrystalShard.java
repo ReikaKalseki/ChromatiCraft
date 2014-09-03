@@ -9,15 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
-import Reika.ChromatiCraft.Base.ItemCrystalBasic;
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
+import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class ItemCrystalShard extends ItemCrystalBasic {
 

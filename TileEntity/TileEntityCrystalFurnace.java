@@ -13,43 +13,63 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import net.minecraftforge.oredict.OreDictionary;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.XPProducer;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityCrystalFurnace extends ChargedCrystalPowered implements XPProducer {
+public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver implements XPProducer {
 
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 
 	public static final int MULTIPLY = 2;
+	public static final int SMELT_TIME = 200;
 
-	static {
-		smelt.addTag(CrystalElement.ORANGE, 1000);
-		smelt.addTag(CrystalElement.WHITE, 200);
-		smelt.addTag(CrystalElement.PURPLE, 200);
-	}
+	public int smeltTimer;
 
 	private float xp;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (inv[1] != null) {
-			if (this.canSmelt()) {
+		super.updateEntity(world, x, y, z, meta);
+
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
+
+		if (this.canSmelt()) {
+			smeltTimer += this.getSmeltSpeed();
+			if (smeltTimer >= SMELT_TIME) {
 				this.smelt();
+				smeltTimer = 0;
+			}
+		}
+		else {
+			smeltTimer = 0;
+		}
+	}
+
+	private void checkAndRequest() {
+		int capacity = this.getMaxStorage();
+		for (CrystalElement e : smelt.elementSet()) {
+			int space = capacity-this.getEnergy(e);
+			if (space > 0) {
+				this.requestEnergy(e, space);
 			}
 		}
 	}
 
+	private int getSmeltSpeed() {
+		return 1+energy.getTotalEnergy()/12000;
+	}
+
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		if (slot == 0)
-			return this.getStoredEnergy() == 0;
-		return slot == 2;
+		return slot == 1;
 	}
 
 	@Override
@@ -64,9 +84,7 @@ public class TileEntityCrystalFurnace extends ChargedCrystalPowered implements X
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		if (slot == 0)
-			return ChromaItems.STORAGE.matchWith(is);
-		return false;
+		return slot == 0 && FurnaceRecipes.smelting().getSmeltingResult(is) != null;
 	}
 
 	@Override
@@ -75,41 +93,41 @@ public class TileEntityCrystalFurnace extends ChargedCrystalPowered implements X
 	}
 
 	private boolean canSmelt() {
-		if (!this.hasEnoughEnergy())
+		if (inv[0] == null)
 			return false;
-		ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(inv[1]);
+		if (!energy.containsAtLeast(smelt))
+			return false;
+		ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(inv[0]);
 		if (out == null)
 			return false;
 		out = out.copy();
 		out.stackSize *= this.getMultiplyRate(out);
-		if (inv[2] == null)
+		if (inv[1] == null)
 			return true;
-		if (!ReikaItemHelper.matchStacks(out, inv[2]) || !ItemStack.areItemStackTagsEqual(out, inv[2]))
+		if (!ReikaItemHelper.matchStacks(out, inv[1]) || !ItemStack.areItemStackTagsEqual(out, inv[1]))
 			return false;
-		if (out.stackSize+inv[2].stackSize > Math.min(this.getInventoryStackLimit(), out.getMaxStackSize()))
+		if (out.stackSize+inv[1].stackSize > Math.min(this.getInventoryStackLimit(), out.getMaxStackSize()))
 			return false;
 		return true;
 	}
 
 	private void smelt() {
-		ItemStack is = FurnaceRecipes.smelting().getSmeltingResult(inv[1]).copy();
+		ItemStack is = FurnaceRecipes.smelting().getSmeltingResult(inv[0]).copy();
 		is.stackSize *= this.getMultiplyRate(is);
-		ReikaInventoryHelper.addOrSetStack(is, inv, 2);
-		xp += FurnaceRecipes.smelting().func_151398_b(inv[1])*6;
-		ReikaInventoryHelper.decrStack(1, inv);
-		this.useEnergy(smelt);
+		ReikaInventoryHelper.addOrSetStack(is, inv, 1);
+		xp += FurnaceRecipes.smelting().func_151398_b(inv[0])*6;
+		ReikaInventoryHelper.decrStack(0, inv);
+		this.drainEnergy(smelt);
 	}
 
 	private int getMultiplyRate(ItemStack is) {
-		return MULTIPLY; //need way to solve exploits
-	}
-
-	private boolean hasEnoughEnergy() {
-		for (CrystalElement e : smelt.elementSet()) {
-			if (this.getStoredEnergy(e) < smelt.getValue(e))
-				return false;
+		int[] ids = OreDictionary.getOreIDs(is);
+		for (int i = 0; i < ids.length; i++) {
+			String name = OreDictionary.getOreName(ids[i]);
+			if (name.startsWith("dust")) //exploits
+				return 1;
 		}
-		return true;
+		return MULTIPLY;
 	}
 
 	@Override
@@ -128,6 +146,20 @@ public class TileEntityCrystalFurnace extends ChargedCrystalPowered implements X
 	}
 
 	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		smeltTimer = NBT.getInteger("time");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("time", smeltTimer);
+	}
+
+	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
@@ -139,6 +171,50 @@ public class TileEntityCrystalFurnace extends ChargedCrystalPowered implements X
 		super.writeToNBT(NBT);
 
 		NBT.setFloat("xp", xp);
+	}
+
+	static {
+		smelt.addTag(CrystalElement.ORANGE, 1000);
+		smelt.addTag(CrystalElement.YELLOW, 200);
+		smelt.addTag(CrystalElement.PURPLE, 500);
+	}
+
+	@Override
+	public void onPathBroken() {
+		//smeltTimer = 0;
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 16;
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return smelt.contains(e);
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 100;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return true;
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 12000;
+	}
+
+	public static ElementTagCompound smeltTags() {
+		return smelt.copy();
+	}
+
+	public int getCookProgressScaled(int a) {
+		return smeltTimer * a / SMELT_TIME;
 	}
 
 }

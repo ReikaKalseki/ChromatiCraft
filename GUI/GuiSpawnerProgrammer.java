@@ -9,16 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
@@ -30,6 +20,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Keyboard;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiSpawnerProgrammer extends GuiChromaBase {
 

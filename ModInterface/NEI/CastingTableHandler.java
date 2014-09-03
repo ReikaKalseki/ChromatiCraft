@@ -22,7 +22,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import codechicken.nei.PositionedStack;
@@ -115,8 +118,11 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 	public void drawBackground(int recipe)
 	{
 		GL11.glColor4f(1, 1, 1, 1);
+		CastingCrafting c = (CastingCrafting)arecipes.get(recipe);
+		CastingRecipe r = c.recipe;
+		int h = r instanceof MultiBlockCastingRecipe ? 154 : 122;
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture(recipe));
-		ReikaGuiAPI.instance.drawTexturedModalRect(0, 0, 5, 3, 214, 154);
+		ReikaGuiAPI.instance.drawTexturedModalRect(0, 0, 5, 3, 214, h);
 	}
 
 	@Override
@@ -151,6 +157,18 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 	@Override
 	public void drawExtras(int recipe)
 	{
+		CastingCrafting r = (CastingCrafting)arecipes.get(recipe);
+		if (r.recipe instanceof PylonRecipe) {
+			PylonRecipe p = (PylonRecipe)r.recipe;
+			ElementTagCompound tag = p.getRequiredAura();
+			for (CrystalElement e : tag.elementSet()) {
+				int w = 4;
+				int x = 178+e.ordinal()%4*w*2;
+				int y1 = 30+e.ordinal()/4*38;
+				int y = 65+e.ordinal()/4*38;
+				ReikaGuiAPI.instance.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
+			}
+		}
 		/*
 		ReikaGuiAPI.instance.drawTexturedModalRect(6, 17, 176, 44, 11, 43);
 		BlastTempRecipe r = ((BlastTempRecipe)arecipes.get(recipe));

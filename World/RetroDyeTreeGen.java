@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class RetroDyeTreeGen implements RetroactiveGenerator {
 

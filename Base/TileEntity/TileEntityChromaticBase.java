@@ -9,16 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import li.cil.oc.api.network.Visibility;
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
-
-import li.cil.oc.api.network.Visibility;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
 

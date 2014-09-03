@@ -9,12 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.ItemBlock;
 
-import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -30,6 +24,11 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.input.Keyboard;
 
+import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

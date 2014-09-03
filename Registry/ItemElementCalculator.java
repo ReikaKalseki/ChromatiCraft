@@ -9,10 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import Reika.ChromatiCraft.API.ElementController;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +21,9 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import Reika.ChromatiCraft.API.ElementController;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class ItemElementCalculator {
 

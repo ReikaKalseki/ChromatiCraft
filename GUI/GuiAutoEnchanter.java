@@ -9,16 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.GuiButton;
@@ -30,6 +20,16 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiAutoEnchanter extends GuiChromaBase {
 

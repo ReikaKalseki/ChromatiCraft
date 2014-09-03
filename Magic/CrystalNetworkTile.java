@@ -9,9 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
-
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalNetworkTile {
 

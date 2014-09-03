@@ -9,13 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 
 public class RetroCrystalGenerator implements RetroactiveGenerator {
 

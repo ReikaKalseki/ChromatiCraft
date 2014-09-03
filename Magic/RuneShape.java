@@ -9,15 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.BlockArray;
-
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 
 public class RuneShape {
 

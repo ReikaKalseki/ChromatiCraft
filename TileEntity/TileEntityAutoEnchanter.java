@@ -9,12 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
-import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +21,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
+import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered {
 

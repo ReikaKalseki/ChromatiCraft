@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public final class ProtectionZone {
 

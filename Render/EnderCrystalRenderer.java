@@ -9,11 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
-import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
@@ -25,6 +20,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class EnderCrystalRenderer implements IItemRenderer {
 

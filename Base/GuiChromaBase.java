@@ -35,6 +35,22 @@ public abstract class GuiChromaBase extends GuiContainer {
 		tile = te;
 	}
 
+	public final int getXSize() {
+		return xSize;
+	}
+
+	public final int getYSize() {
+		return ySize;
+	}
+
+	public int getGuiLeft() {
+		return guiLeft;
+	}
+
+	public int getGuiTop() {
+		return guiTop;
+	}
+
 	@Override
 	public void initGui() {
 		super.initGui();

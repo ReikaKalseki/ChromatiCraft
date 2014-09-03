@@ -9,12 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ICrafting;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.DragonAPI.Base.CoreContainer;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ICrafting;
 
 public class ContainerCrystalCharger extends CoreContainer {
 

@@ -9,6 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
@@ -16,13 +22,6 @@ import Reika.DragonAPI.Interfaces.TreeType;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-
-import java.util.ArrayList;
-import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
 
 public class RainbowTreeGenerator {
 

@@ -9,9 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-
 import net.minecraft.creativetab.CreativeTabs;
+import Reika.ChromatiCraft.ChromatiCraft;
 
 
 public abstract class ItemChromaTool extends ItemChromaBasic {

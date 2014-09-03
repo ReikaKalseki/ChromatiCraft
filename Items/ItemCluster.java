@@ -9,10 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-
-import net.minecraft.util.IIcon;
 
 public class ItemCluster extends ItemChromaMulti {
 

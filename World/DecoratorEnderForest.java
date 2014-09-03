@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-
 import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class DecoratorEnderForest extends BiomeDecorator {
 

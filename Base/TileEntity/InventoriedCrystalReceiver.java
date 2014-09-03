@@ -92,6 +92,10 @@ public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase 
 		energy.subtract(e, amt);
 	}
 
+	protected final void drainEnergy(ElementTagCompound tag) {
+		energy.subtract(tag);
+	}
+
 	private void clamp(CrystalElement e) {
 		int max = this.getMaxStorage();
 		if (this.getEnergy(e) > max)

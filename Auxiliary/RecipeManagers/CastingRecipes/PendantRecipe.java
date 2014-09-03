@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import net.minecraft.init.Blocks;
@@ -25,5 +34,6 @@ public class PendantRecipe extends PylonRecipe {
 
 		this.addAuraRequirement(CrystalElement.PURPLE, 2000);
 		this.addAuraRequirement(CrystalElement.WHITE, 1000);
+		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 5000);
 	}
 }

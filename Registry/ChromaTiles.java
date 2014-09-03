@@ -61,7 +61,7 @@ public enum ChromaTiles {
 	CHARGER("chroma.charger", ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3, "RenderCrystalCharger"),
 	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
 	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
-	TANK("chroma.tank", ChromaBlocks.TILEMODELLED, TileEntityCrystalTank.class, 4);
+	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender");
 
 	private final Class tile;
 	private final String name;

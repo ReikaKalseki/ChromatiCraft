@@ -44,7 +44,11 @@ public final class ElementTagCompound {
 	}
 
 	public int getValue(CrystalElement e) {
-		return data.containsKey(e) ? data.get(e) : 0;
+		return this.contains(e) ? data.get(e) : 0;
+	}
+
+	public boolean contains(CrystalElement e) {
+		return data.containsKey(e);
 	}
 
 	public void addValueToColor(CrystalElement e, int value) {

@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
-import Reika.ChromatiCraft.Auxiliary.ProtectionZone;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +17,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.ProtectionZone;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class TileEntityGuardianStone extends TileEntityChromaticBase {
 

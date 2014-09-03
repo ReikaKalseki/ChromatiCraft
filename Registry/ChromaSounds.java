@@ -30,7 +30,7 @@ public enum ChromaSounds implements SoundEnum {
 	CAST("cast3", SoundCategory.BLOCKS),
 	POWER("ambient", SoundCategory.AMBIENT),
 	CRAFTING("ambient1_short", SoundCategory.MASTER),
-	CRAFTDONE("craftdone", SoundCategory.BLOCKS),
+	CRAFTDONE("craftdone2", SoundCategory.BLOCKS),
 	UPGRADE("upgrade", SoundCategory.BLOCKS),
 	ABILITY("ability", SoundCategory.MASTER),
 	ERROR("error", SoundCategory.MASTER);

@@ -15,6 +15,7 @@ public class ChromaCommon {
 
 	public static int crystalRender;
 	public static int runeRender;
+	public static int tankRender;
 
 	public void registerRenderers()
 	{

@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dye;
 
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.EnumPlantType;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class BlockDyeFlower extends BlockFlower {
 

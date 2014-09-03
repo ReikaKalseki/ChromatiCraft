@@ -9,13 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Instantiable.ModSpawnEntry;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
@@ -31,6 +24,12 @@ import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.ModSpawnEntry;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

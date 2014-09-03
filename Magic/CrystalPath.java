@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.LinkedList;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.WorldLocation;
-
-import java.util.LinkedList;
 
 public class CrystalPath {
 

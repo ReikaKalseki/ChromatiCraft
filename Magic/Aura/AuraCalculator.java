@@ -9,13 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Aura;
 
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Aura.AuraMap.AuraLocation;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-
 import java.util.ArrayList;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Aura.AuraMap.AuraLocation;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class AuraCalculator {
 

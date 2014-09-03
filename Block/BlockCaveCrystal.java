@@ -9,10 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,6 +21,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

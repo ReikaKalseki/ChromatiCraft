@@ -9,16 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import Reika.ChromatiCraft.API.ProgrammableSpawner;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Extras.ItemSpawner;
-import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-
 import java.util.ArrayList;
 
 import net.minecraft.entity.EntityList;
@@ -31,6 +21,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.ProgrammableSpawner;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Extras.ItemSpawner;
+import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 

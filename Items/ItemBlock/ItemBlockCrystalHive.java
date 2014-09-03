@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.ItemBlock;
 
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -19,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

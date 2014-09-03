@@ -23,20 +23,49 @@ public class AbilityRituals {
 
 	private AbilityRituals() {
 
-		AbilityRitual rit = new AbilityRitual();
+		AbilityRitual rit = new AbilityRitual(Chromabilities.REACH);
 		rit.addAura(CrystalElement.LIME, 20000);
 		rit.addAura(CrystalElement.PURPLE, 5000);
-		data.put(Chromabilities.REACH, rit);
+		this.addRitual(rit);
 
-		rit = new AbilityRitual();
+		rit = new AbilityRitual(Chromabilities.MAGNET);
 		rit.addAura(CrystalElement.LIME, 5000);
 		rit.addAura(CrystalElement.WHITE, 5000);
-		data.put(Chromabilities.MAGNET, rit);
+		this.addRitual(rit);
 
-		rit = new AbilityRitual();
+		rit = new AbilityRitual(Chromabilities.SONIC);
 		rit.addAura(CrystalElement.BLACK, 5000);
 		rit.addAura(CrystalElement.YELLOW, 5000);
-		data.put(Chromabilities.SONIC, rit);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.SHIFT);
+		rit.addAura(CrystalElement.LIME, 25000);
+		rit.addAura(CrystalElement.YELLOW, 25000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.HEAL);
+		rit.addAura(CrystalElement.MAGENTA, 50000);
+		rit.addAura(CrystalElement.LIGHTBLUE, 10000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.SHIELD);
+		rit.addAura(CrystalElement.RED, 20000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.FIREBALL);
+		rit.addAura(CrystalElement.ORANGE, 10000);
+		rit.addAura(CrystalElement.PINK, 4000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.COMMUNICATE);
+		rit.addAura(CrystalElement.BLACK, 10000);
+		rit.addAura(CrystalElement.RED, 4000);
+		rit.addAura(CrystalElement.LIGHTGRAY, 4000);
+		this.addRitual(rit);
+	}
+
+	private void addRitual(AbilityRitual ar) {
+		data.put(ar.ability, ar);
 	}
 
 	public boolean hasRitual(Chromabilities c) {
@@ -55,9 +84,10 @@ public class AbilityRituals {
 
 		private final ElementTagCompound energy = new ElementTagCompound();
 		public final int duration;
+		public final Chromabilities ability;
 
-		private AbilityRitual() {
-
+		private AbilityRitual(Chromabilities c) {
+			ability = c;
 			duration = 950;
 		}
 

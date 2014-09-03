@@ -9,14 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 
 /** Specifies the magic elements present in each "fundamental" Items. */
 public class ItemMagicRegistry {
