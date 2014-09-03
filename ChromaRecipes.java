@@ -21,6 +21,7 @@ import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -67,10 +68,10 @@ public class ChromaRecipes {
 	public static void addPostLoadRecipes() {
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
-				BlockColorInterface.addGPRBlockColor(ChromaBlocks.CRYSTAL.getBlockInstance(), i, dye.color);
-				BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, dye.color);
-				BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, dye.color);
+				ReikaDyeHelper color = ReikaDyeHelper.dyes[i];
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.CRYSTAL.getBlockInstance(), i, color.color);
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, color.color);
+				BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, color.color);
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
@@ -78,12 +79,12 @@ public class ChromaRecipes {
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
+			for (int i = 0; i < CrystalElement.elements.length; i++) {
+				CrystalElement color = CrystalElement.elements[i];
 				ItemStack crystal = new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i);
 				ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
-				ArrayList<Aspect> li = CrystalPotionController.getAspects(dye);
+				ArrayList<Aspect> li = CrystalPotionController.getAspects(color);
 
 				ReikaThaumHelper.addAspects(shard, Aspect.CRYSTAL, 1);
 				ReikaThaumHelper.addAspects(crystal, Aspect.CRYSTAL, 20);

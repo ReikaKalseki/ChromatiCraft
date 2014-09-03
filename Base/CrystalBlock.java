@@ -31,6 +31,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -120,8 +121,8 @@ public abstract class CrystalBlock extends Block {
 				for (int i = 0; i < inbox.size(); i++) {
 					EntityLivingBase e = (EntityLivingBase)inbox.get(i);
 					if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= 4) {
-						ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(world.getBlockMetadata(x, y, z));
-						this.applyEffectFromColor(this.getDuration(), this.getPotionLevel(), e, dye);
+						CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
+						this.applyEffectFromColor(this.getDuration(), this.getPotionLevel(), e, color);
 					}
 				}
 			}
@@ -146,7 +147,7 @@ public abstract class CrystalBlock extends Block {
 
 	public abstract int getPotionLevel();
 
-	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, ReikaDyeHelper color) {
+	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
 		if (shouldBeHostile(e.worldObj)) {
 			switch(color) {
 			case ORANGE:

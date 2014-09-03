@@ -28,6 +28,8 @@ import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalLaser extends ChargedCrystalPowered implements OneSlotMachine {
 
@@ -129,6 +131,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 		((ItemStorageCrystal)inv[0].getItem()).removeEnergy(inv[0], this.getColor(), 1);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void spawnParticle(World world, int x, int y, int z, ForgeDirection dir) {
 		int num = 1+this.getRange()/32;
 		for (int i = 0; i < num; i++) {

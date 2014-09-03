@@ -16,69 +16,69 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import thaumcraft.api.aspects.Aspect;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class CrystalPotionController {
 
-	private static HashMap<ReikaDyeHelper, Potion> map = new HashMap();
-	private static HashMap<ReikaDyeHelper, Potion> nethermap = new HashMap();
-	private static HashMap<ReikaDyeHelper, ArrayList<Aspect>> aspects = new HashMap();
+	private static HashMap<CrystalElement, Potion> map = new HashMap();
+	private static HashMap<CrystalElement, Potion> nethermap = new HashMap();
+	private static HashMap<CrystalElement, ArrayList<Aspect>> aspects = new HashMap();
 
 	static {
-		addColorPotion(ReikaDyeHelper.BLUE, Potion.nightVision);
-		addColorPotion(ReikaDyeHelper.CYAN, Potion.waterBreathing);
-		addColorPotion(ReikaDyeHelper.GRAY, Potion.moveSlowdown);
-		addColorPotion(ReikaDyeHelper.GREEN, Potion.poison);
-		addColorPotion(ReikaDyeHelper.LIGHTBLUE, Potion.moveSpeed);
-		addColorPotion(ReikaDyeHelper.LIGHTGRAY, Potion.weakness);
-		addColorPotion(ReikaDyeHelper.LIME, Potion.jump);
-		addColorPotion(ReikaDyeHelper.MAGENTA, Potion.regeneration);
-		addColorPotion(ReikaDyeHelper.RED, Potion.resistance);
-		addColorPotion(ReikaDyeHelper.ORANGE, Potion.fireResistance);
-		addColorPotion(ReikaDyeHelper.PINK, Potion.damageBoost);
-		addColorPotion(ReikaDyeHelper.YELLOW, Potion.digSpeed);
-		addColorPotion(ReikaDyeHelper.WHITE, Potion.invisibility);
-		addColorPotion(ReikaDyeHelper.BROWN, Potion.field_76443_y);
+		addColorPotion(CrystalElement.BLUE, Potion.nightVision);
+		addColorPotion(CrystalElement.CYAN, Potion.waterBreathing);
+		addColorPotion(CrystalElement.GRAY, Potion.moveSlowdown);
+		addColorPotion(CrystalElement.GREEN, Potion.poison);
+		addColorPotion(CrystalElement.LIGHTBLUE, Potion.moveSpeed);
+		addColorPotion(CrystalElement.LIGHTGRAY, Potion.weakness);
+		addColorPotion(CrystalElement.LIME, Potion.jump);
+		addColorPotion(CrystalElement.MAGENTA, Potion.regeneration);
+		addColorPotion(CrystalElement.RED, Potion.resistance);
+		addColorPotion(CrystalElement.ORANGE, Potion.fireResistance);
+		addColorPotion(CrystalElement.PINK, Potion.damageBoost);
+		addColorPotion(CrystalElement.YELLOW, Potion.digSpeed);
+		addColorPotion(CrystalElement.WHITE, Potion.invisibility);
+		addColorPotion(CrystalElement.BROWN, Potion.field_76443_y);
 
-		addNetherPotion(ReikaDyeHelper.BLACK, Potion.wither);
-		addNetherPotion(ReikaDyeHelper.CYAN, Potion.hunger);
-		addNetherPotion(ReikaDyeHelper.GRAY, Potion.blindness);
-		addNetherPotion(ReikaDyeHelper.GREEN, Potion.poison);
-		addNetherPotion(ReikaDyeHelper.LIGHTBLUE, Potion.moveSlowdown);
-		addNetherPotion(ReikaDyeHelper.LIGHTGRAY, Potion.weakness);
-		addNetherPotion(ReikaDyeHelper.YELLOW, Potion.digSlowdown);
-		addNetherPotion(ReikaDyeHelper.WHITE, Potion.invisibility);
-		addNetherPotion(ReikaDyeHelper.BROWN, Potion.confusion);
-		addNetherPotion(ReikaDyeHelper.BLUE, Potion.nightVision);
-		addNetherPotion(ReikaDyeHelper.PINK, Potion.damageBoost);
-		addNetherPotion(ReikaDyeHelper.MAGENTA, Potion.regeneration);
+		addNetherPotion(CrystalElement.BLACK, Potion.wither);
+		addNetherPotion(CrystalElement.CYAN, Potion.hunger);
+		addNetherPotion(CrystalElement.GRAY, Potion.blindness);
+		addNetherPotion(CrystalElement.GREEN, Potion.poison);
+		addNetherPotion(CrystalElement.LIGHTBLUE, Potion.moveSlowdown);
+		addNetherPotion(CrystalElement.LIGHTGRAY, Potion.weakness);
+		addNetherPotion(CrystalElement.YELLOW, Potion.digSlowdown);
+		addNetherPotion(CrystalElement.WHITE, Potion.invisibility);
+		addNetherPotion(CrystalElement.BROWN, Potion.confusion);
+		addNetherPotion(CrystalElement.BLUE, Potion.nightVision);
+		addNetherPotion(CrystalElement.PINK, Potion.damageBoost);
+		addNetherPotion(CrystalElement.MAGENTA, Potion.regeneration);
 
-		addAspect(ReikaDyeHelper.BLACK, Aspect.BEAST, Aspect.DARKNESS, Aspect.MIND, Aspect.SENSES);
-		addAspect(ReikaDyeHelper.BLUE, Aspect.SENSES, Aspect.LIGHT);
-		addAspect(ReikaDyeHelper.BROWN, Aspect.HUNGER);
-		addAspect(ReikaDyeHelper.CYAN, Aspect.WATER);
-		addAspect(ReikaDyeHelper.GRAY, Aspect.WEAPON);
-		addAspect(ReikaDyeHelper.GREEN, Aspect.POISON, Aspect.BEAST);
-		addAspect(ReikaDyeHelper.LIGHTBLUE, Aspect.MOTION, Aspect.TRAVEL);
-		addAspect(ReikaDyeHelper.LIGHTGRAY, Aspect.MOTION);
-		addAspect(ReikaDyeHelper.LIME, Aspect.FLIGHT);
-		addAspect(ReikaDyeHelper.MAGENTA, Aspect.HEAL, Aspect.LIFE);
-		addAspect(ReikaDyeHelper.ORANGE, Aspect.FIRE);
-		addAspect(ReikaDyeHelper.PINK, Aspect.WEAPON);
-		addAspect(ReikaDyeHelper.PURPLE, Aspect.MAGIC, Aspect.CRAFT, Aspect.TOOL, Aspect.EXCHANGE);
-		addAspect(ReikaDyeHelper.RED, Aspect.ARMOR, Aspect.WEAPON);
-		addAspect(ReikaDyeHelper.WHITE, Aspect.VOID, Aspect.AIR);
-		addAspect(ReikaDyeHelper.YELLOW, Aspect.MINE, Aspect.TOOL);
+		addAspect(CrystalElement.BLACK, Aspect.BEAST, Aspect.DARKNESS, Aspect.MIND, Aspect.SENSES);
+		addAspect(CrystalElement.BLUE, Aspect.SENSES, Aspect.LIGHT);
+		addAspect(CrystalElement.BROWN, Aspect.HUNGER);
+		addAspect(CrystalElement.CYAN, Aspect.WATER);
+		addAspect(CrystalElement.GRAY, Aspect.WEAPON);
+		addAspect(CrystalElement.GREEN, Aspect.POISON, Aspect.BEAST);
+		addAspect(CrystalElement.LIGHTBLUE, Aspect.MOTION, Aspect.TRAVEL);
+		addAspect(CrystalElement.LIGHTGRAY, Aspect.MOTION);
+		addAspect(CrystalElement.LIME, Aspect.FLIGHT);
+		addAspect(CrystalElement.MAGENTA, Aspect.HEAL, Aspect.LIFE);
+		addAspect(CrystalElement.ORANGE, Aspect.FIRE);
+		addAspect(CrystalElement.PINK, Aspect.WEAPON);
+		addAspect(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.CRAFT, Aspect.TOOL, Aspect.EXCHANGE);
+		addAspect(CrystalElement.RED, Aspect.ARMOR, Aspect.WEAPON);
+		addAspect(CrystalElement.WHITE, Aspect.VOID, Aspect.AIR);
+		addAspect(CrystalElement.YELLOW, Aspect.MINE, Aspect.TOOL);
 	}
 
-	private static void addAspect(ReikaDyeHelper color, Aspect... asps) {
+	private static void addAspect(CrystalElement color, Aspect... asps) {
 		ArrayList li = new ArrayList();
 		for (int i = 0; i < asps.length; i++)
 			li.add(asps[i]);
 		aspects.put(color, li);
 	}
 
-	public static ArrayList<Aspect> getAspects(ReikaDyeHelper color) {
+	public static ArrayList<Aspect> getAspects(CrystalElement color) {
 		ArrayList li = new ArrayList();
 		ArrayList l2 = aspects.get(color);
 		if (l2 != null)
@@ -86,34 +86,34 @@ public class CrystalPotionController {
 		return li;
 	}
 
-	private static void addColorPotion(ReikaDyeHelper color, Potion pot) {
+	private static void addColorPotion(CrystalElement color, Potion pot) {
 		map.put(color, pot);
 	}
 
-	private static void addNetherPotion(ReikaDyeHelper color, Potion pot) {
+	private static void addNetherPotion(CrystalElement color, Potion pot) {
 		nethermap.put(color, pot);
 	}
 
-	public static PotionEffect getEffectFromColor(ReikaDyeHelper color, int dura, int level) {
+	public static PotionEffect getEffectFromColor(CrystalElement color, int dura, int level) {
 		Potion pot = map.get(color);
 		if (pot == null)
 			return null;
 		return new PotionEffect(pot.id, dura, level);
 	}
 
-	public static PotionEffect getNetherEffectFromColor(ReikaDyeHelper color, int dura, int level) {
+	public static PotionEffect getNetherEffectFromColor(CrystalElement color, int dura, int level) {
 		Potion pot = nethermap.get(color);
 		if (pot == null)
 			return null;
 		return new PotionEffect(pot.id, dura, level);
 	}
 
-	public static String getPotionName(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.BLACK)
+	public static String getPotionName(CrystalElement color) {
+		if (color == CrystalElement.BLACK)
 			return "corrupting";
-		if (color == ReikaDyeHelper.BROWN)
+		if (color == CrystalElement.BROWN)
 			return "lengthening";
-		if (color == ReikaDyeHelper.PURPLE)
+		if (color == CrystalElement.PURPLE)
 			return "enhancing";
 		Potion pot = map.get(color);
 		if (pot == null)
@@ -121,58 +121,58 @@ public class CrystalPotionController {
 		return StatCollector.translateToLocal(pot.getName());
 	}
 
-	public static boolean requiresCustomPotion(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.CYAN)
+	public static boolean requiresCustomPotion(CrystalElement color) {
+		if (color == CrystalElement.CYAN)
 			return true;
-		if (color == ReikaDyeHelper.YELLOW)
+		if (color == CrystalElement.YELLOW)
 			return true;
-		if (color == ReikaDyeHelper.LIME)
+		if (color == CrystalElement.LIME)
 			return true;
-		if (color == ReikaDyeHelper.RED)
-			return true;
-		return false;
-	}
-
-	public static boolean isCorruptedPotion(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.GRAY)
-			return true;
-		if (color == ReikaDyeHelper.LIGHTGRAY)
-			return true;
-		if (color == ReikaDyeHelper.WHITE)
+		if (color == CrystalElement.RED)
 			return true;
 		return false;
 	}
 
-	public static boolean isPotionModifier(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.BLACK)
+	public static boolean isCorruptedPotion(CrystalElement color) {
+		if (color == CrystalElement.GRAY)
 			return true;
-		if (color == ReikaDyeHelper.BROWN)
+		if (color == CrystalElement.LIGHTGRAY)
 			return true;
-		if (color == ReikaDyeHelper.PURPLE)
+		if (color == CrystalElement.WHITE)
 			return true;
 		return false;
 	}
 
-	public static String getEffectName(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.BLACK)
+	public static boolean isPotionModifier(CrystalElement color) {
+		if (color == CrystalElement.BLACK)
+			return true;
+		if (color == CrystalElement.BROWN)
+			return true;
+		if (color == CrystalElement.PURPLE)
+			return true;
+		return false;
+	}
+
+	public static String getEffectName(CrystalElement color) {
+		if (color == CrystalElement.BLACK)
 			return "Confuses Mobs";
-		if (color == ReikaDyeHelper.PURPLE)
+		if (color == CrystalElement.PURPLE)
 			return "Gives XP";
-		if (color == ReikaDyeHelper.WHITE)
+		if (color == CrystalElement.WHITE)
 			return "Clears Effects";
 		return StatCollector.translateToLocal(map.get(color).getName());
 	}
 
-	public static String getNetherEffectName(ReikaDyeHelper color) {
-		if (color == ReikaDyeHelper.BROWN)
+	public static String getNetherEffectName(CrystalElement color) {
+		if (color == CrystalElement.BROWN)
 			return "Nausea";
-		if (color == ReikaDyeHelper.PURPLE)
+		if (color == CrystalElement.PURPLE)
 			return "Takes XP";
-		if (color == ReikaDyeHelper.ORANGE)
+		if (color == CrystalElement.ORANGE)
 			return "Fire Damage";
-		if (color == ReikaDyeHelper.LIME)
+		if (color == CrystalElement.LIME)
 			return "Jump Disability";
-		if (color == ReikaDyeHelper.RED)
+		if (color == CrystalElement.RED)
 			return "Direct Damage";
 		return StatCollector.translateToLocal(nethermap.get(color).getName());
 	}

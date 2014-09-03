@@ -21,6 +21,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.WorldLocation;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CrystalTransmitterBase extends TileEntityCrystalBase implements CrystalTransmitter {
 
@@ -52,19 +54,24 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 			targets.clear();
 		}
 		if (!targets.isEmpty() && world.isRemote) {
-			for (int i = 0; i < targets.size(); i++) {
-				CrystalTarget tg = targets.get(i);
-				int dx = tg.location.xCoord-x;
-				int dy = tg.location.yCoord-y;
-				int dz = tg.location.zCoord-z;
-				double dd = ReikaMathLibrary.py3d(dx, dy, dz);
-				double dr = rand.nextDouble();
-				double px = dx*dr+x+0.5;
-				double py = dy*dr+y+0.5;
-				double pz = dz*dr+z+0.5;
-				EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
+			this.spawnBeamParticles(world, x, y, z);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnBeamParticles(World world, int x, int y, int z) {
+		for (int i = 0; i < targets.size(); i++) {
+			CrystalTarget tg = targets.get(i);
+			int dx = tg.location.xCoord-x;
+			int dy = tg.location.yCoord-y;
+			int dz = tg.location.zCoord-z;
+			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+			double dr = rand.nextDouble();
+			double px = dx*dr+x+0.5;
+			double py = dy*dr+y+0.5;
+			double pz = dz*dr+z+0.5;
+			EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

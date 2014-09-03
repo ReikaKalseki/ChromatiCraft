@@ -48,6 +48,8 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile {
 
@@ -125,72 +127,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (activeRecipe == null)
 			return;
 		if (world.isRemote) {
-			if (this.getTier().isAtLeast(RecipeType.TEMPLE) && hasStructure) {
-				BlockArray blocks = this.getStructureAccentLocations();
-
-				for (int i = 0; i < blocks.getSize(); i++) {
-					int[] xyz = blocks.getNthBlock(i);
-
-					int dx = xyz[0];
-					int dy = xyz[1];
-					int dz = xyz[2];
-					double dd = ReikaMathLibrary.py3d(dx-x, dy-y, dz-z);
-					double dr = rand.nextDouble();
-					double px = 0.5+dr*(dx-x)+x;
-					double py = 1+dr*(dy-y)+y;
-					double pz = 0.5+dr*(dz-z)+z;
-					//double v = 0;//.125;
-					//double vx = v*(x-px)/dd;
-					//double vy = v*(y-py)/dd;
-					//double vz = v*(z-pz)/dd;
-					Block b = world.getBlock(dx, dy, dz);
-					CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/20)%16];
-					EntityLaserFX fx = new EntityLaserFX(e, world, px, py, pz).setScale(2);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				}
-			}
-
-			if (this.getTier().isAtLeast(RecipeType.MULTIBLOCK) && hasStructure2) {
-				double a = 60*Math.sin(Math.toRadians((this.getTicksExisted()*4)%360));
-				for (int i = 0; i < 360; i += 60) {
-					double ang = Math.toRadians(a+i);
-					double r = 2;
-					double rx = x+0.5+r*Math.cos(ang);
-					double ry = y;
-					double rz = z+0.5+r*Math.sin(ang);
-					double dd = ReikaMathLibrary.py3d(rx, ry, rz);
-					double v = 64;
-					double vx = v*(x+0.5-rx)/dd;
-					double vy = 0.0125+v*(y+0.5-ry)/dd;
-					double vz = v*(z+0.5-rz)/dd;
-					EntityGlobeFX fx = new EntityGlobeFX(world, rx, ry, rz, vx, vy, vz);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				}
-			}
-
-			if (this.getTier().isAtLeast(RecipeType.PYLON) && hasPylonConnections && activeRecipe instanceof PylonRecipe) {
-				BlockArray blocks = this.getStructureRuneLocations(((PylonRecipe)activeRecipe).getRequiredAura());
-				int mod = 17-blocks.getSize();
-				if (this.getTicksExisted()%mod == 0) {
-					int[] xyz = blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
-					int dx = xyz[0];
-					int dy = xyz[1];
-					int dz = xyz[2];
-					Block b = world.getBlock(dx, dy, dz);
-					if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-						int meta = world.getBlockMetadata(dx, dy, dz);
-						CrystalElement e = CrystalElement.elements[meta];
-						double dd = ReikaMathLibrary.py3d(dx-x, dy-y, dz-z);
-						double v = 0.125;
-						double vx = v*(x-dx)/dd;
-						double vy = v*(y-dy)/dd;
-						double vz = v*(z-dz)/dd;
-						int t = dd < 9 ? 70 : 80;
-						EntityRuneFX fx = new EntityRuneFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz, e).setLife(t).setScale(2);
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					}
-				}
-			}
+			this.spawnCraftingParticles(world, x, y, z);
 		}
 
 		craftSoundTimer++;
@@ -211,6 +148,76 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		craftingTick--;
 		if (craftingTick == 0) {
 			this.craft();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnCraftingParticles(World world, int x, int y, int z) {
+		if (this.getTier().isAtLeast(RecipeType.TEMPLE) && hasStructure) {
+			BlockArray blocks = this.getStructureAccentLocations();
+
+			for (int i = 0; i < blocks.getSize(); i++) {
+				int[] xyz = blocks.getNthBlock(i);
+
+				int dx = xyz[0];
+				int dy = xyz[1];
+				int dz = xyz[2];
+				double dd = ReikaMathLibrary.py3d(dx-x, dy-y, dz-z);
+				double dr = rand.nextDouble();
+				double px = 0.5+dr*(dx-x)+x;
+				double py = 1+dr*(dy-y)+y;
+				double pz = 0.5+dr*(dz-z)+z;
+				//double v = 0;//.125;
+				//double vx = v*(x-px)/dd;
+				//double vy = v*(y-py)/dd;
+				//double vz = v*(z-pz)/dd;
+				Block b = world.getBlock(dx, dy, dz);
+				CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/20)%16];
+				EntityLaserFX fx = new EntityLaserFX(e, world, px, py, pz).setScale(2);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		if (this.getTier().isAtLeast(RecipeType.MULTIBLOCK) && hasStructure2) {
+			double a = 60*Math.sin(Math.toRadians((this.getTicksExisted()*4)%360));
+			for (int i = 0; i < 360; i += 60) {
+				double ang = Math.toRadians(a+i);
+				double r = 2;
+				double rx = x+0.5+r*Math.cos(ang);
+				double ry = y;
+				double rz = z+0.5+r*Math.sin(ang);
+				double dd = ReikaMathLibrary.py3d(rx, ry, rz);
+				double v = 64;
+				double vx = v*(x+0.5-rx)/dd;
+				double vy = 0.0125+v*(y+0.5-ry)/dd;
+				double vz = v*(z+0.5-rz)/dd;
+				EntityGlobeFX fx = new EntityGlobeFX(world, rx, ry, rz, vx, vy, vz);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		if (this.getTier().isAtLeast(RecipeType.PYLON) && hasPylonConnections && activeRecipe instanceof PylonRecipe) {
+			BlockArray blocks = this.getStructureRuneLocations(((PylonRecipe)activeRecipe).getRequiredAura());
+			int mod = 17-blocks.getSize();
+			if (this.getTicksExisted()%mod == 0) {
+				int[] xyz = blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
+				int dx = xyz[0];
+				int dy = xyz[1];
+				int dz = xyz[2];
+				Block b = world.getBlock(dx, dy, dz);
+				if (b == ChromaBlocks.RUNE.getBlockInstance()) {
+					int meta = world.getBlockMetadata(dx, dy, dz);
+					CrystalElement e = CrystalElement.elements[meta];
+					double dd = ReikaMathLibrary.py3d(dx-x, dy-y, dz-z);
+					double v = 0.125;
+					double vx = v*(x-dx)/dd;
+					double vy = v*(y-dy)/dd;
+					double vz = v*(z-dz)/dd;
+					int t = dd < 9 ? 70 : 80;
+					EntityRuneFX fx = new EntityRuneFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz, e).setLife(t).setScale(2);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
 	}
 
@@ -392,19 +399,19 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		craftSoundTimer = 20000;
 		craftingTick = 0;
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
-		this.particleBurst();
+		if (worldObj.isRemote)
+			this.particleBurst();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void particleBurst() {
-		if (worldObj.isRemote) {
-			for (int i = 0; i < 128; i++) {
-				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-				double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.125);
-				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
-				EntitySparkleFX fx = new EntitySparkleFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setScale(1.5F);
-				fx.noClip = true;
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
+		for (int i = 0; i < 128; i++) {
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.125);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			EntitySparkleFX fx = new EntitySparkleFX(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, vx, vy, vz).setScale(1.5F);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

@@ -21,8 +21,8 @@ import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class ItemPendant extends ItemCrystalBasic {
 
@@ -43,12 +43,12 @@ public class ItemPendant extends ItemCrystalBasic {
 		int level = this.isEnhanced() ? 2 : 0;
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer) e;
-			ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(is.getItemDamage());
-			if (dye != ReikaDyeHelper.PURPLE) {
-				int dura = dye == ReikaDyeHelper.BLUE ? 3 : 100;
-				PotionEffect pot = CrystalPotionController.getEffectFromColor(dye, dura, level);
-				if (pot == null || dye == ReikaDyeHelper.BLUE || !ep.isPotionActive(pot.getPotionID()))
-					CrystalBlock.applyEffectFromColor(dura, level, ep, dye);
+			CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+			if (color != CrystalElement.PURPLE) {
+				int dura = color == CrystalElement.BLUE ? 3 : 100;
+				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
+				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID()))
+					CrystalBlock.applyEffectFromColor(dura, level, ep, color);
 			}
 			if (ChromaOptions.NOPARTICLES.getState())
 				ReikaEntityHelper.setNoPotionParticles(ep);

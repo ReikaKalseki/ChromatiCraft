@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class ItemCrystalShard extends ItemCrystalBasic {
@@ -77,7 +78,7 @@ public class ItemCrystalShard extends ItemCrystalBasic {
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("Good for ");
-		ReikaDyeHelper color = ReikaDyeHelper.getColorFromDamage(is.getItemDamage());
+		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
 		sb.append(CrystalPotionController.getPotionName(color));
 		sb.append(" Potions");
 		li.add(sb.toString());

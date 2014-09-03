@@ -20,9 +20,9 @@ import net.minecraft.potion.PotionEffect;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 
@@ -30,14 +30,14 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 
 	private class CrystalRecipe extends CachedRecipe {
 
-		public final ReikaDyeHelper dye;
+		public final CrystalElement color;
 
 		public CrystalRecipe(int color) {
-			this(ReikaDyeHelper.getColorFromDamage(color));
+			this(CrystalElement.elements[color]);
 		}
 
-		public CrystalRecipe(ReikaDyeHelper color) {
-			dye = color;
+		public CrystalRecipe(CrystalElement color) {
+			this.color = color;
 		}
 
 		@Override
@@ -52,17 +52,17 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		}
 
 		public ItemStack getInputShard() {
-			return ChromaItems.SHARD.getStackOfMetadata(dye.ordinal());
+			return ChromaItems.SHARD.getStackOfMetadata(color.ordinal());
 		}
 
 		public Potion getOutputPotion() {
-			return Potion.potionTypes[CrystalPotionController.getEffectFromColor(dye, 20, 0).getPotionID()];
+			return Potion.potionTypes[CrystalPotionController.getEffectFromColor(color, 20, 0).getPotionID()];
 		}
 
 		@Override
 		public List<PositionedStack> getOtherStacks()
 		{
-			ItemStack out = TileEntityCrystalBrewer.getPotionStackFromColor(dye);
+			ItemStack out = TileEntityCrystalBrewer.getPotionStackFromColor(color);
 			ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
 			stacks.add(new PositionedStack(new ItemStack(Items.potionitem), 51, 35));
 			//stacks.add(new PositionedStack(out, 74, 42));
@@ -89,7 +89,7 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		else if (result.getItem() == Items.potionitem) {
 			int id = ReikaPotionHelper.getPotionID(result.getItemDamage());
 			for (int i = 0; i < 16; i++) {
-				ReikaDyeHelper color = ReikaDyeHelper.getColorFromDamage(i);
+				CrystalElement color = CrystalElement.elements[i];
 				PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
 				if (eff != null) {
 					int potid = eff.getPotionID();
@@ -105,7 +105,7 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 	@Override
 	public void loadUsageRecipes(ItemStack ingredient) {
 		if (ingredient.getItem() == ChromaItems.SHARD.getItemInstance()) {
-			ReikaDyeHelper color = ReikaDyeHelper.getColorFromDamage(ingredient.getItemDamage());
+			CrystalElement color = CrystalElement.elements[ingredient.getItemDamage()];
 			if (!CrystalPotionController.isPotionModifier(color))
 				arecipes.add(new CrystalRecipe(color));
 		}

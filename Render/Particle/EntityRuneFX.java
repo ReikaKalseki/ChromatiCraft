@@ -18,7 +18,10 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class EntityRuneFX extends EntityFX {
 
 	public EntityRuneFX(World world, double x, double y, double z, CrystalElement e) {

@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -132,10 +133,10 @@ public class ChromaticEventManager {
 				ItemStack is = ep.inventory.mainInventory[i];
 				if (is != null) {
 					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 3, elb, ReikaDyeHelper.getColorFromDamage(is.getItemDamage()));
+						CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 1, elb, ReikaDyeHelper.getColorFromDamage(is.getItemDamage()));
+						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 				}
 			}

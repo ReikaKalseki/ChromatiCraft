@@ -21,9 +21,9 @@ import net.minecraft.potion.PotionEffect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -45,7 +45,7 @@ public class ItemCrystalPotion extends ItemPotion {
 	@Override
 	public List getEffects(ItemStack is)
 	{
-		PotionEffect pot = CrystalPotionController.getEffectFromColor(ReikaDyeHelper.getColorFromDamage(this.getUsableDamage(is)), 3600, 0);
+		PotionEffect pot = CrystalPotionController.getEffectFromColor(CrystalElement.elements[this.getUsableDamage(is)], 3600, 0);
 		if (pot == null)
 			return new ArrayList();
 		if (ReikaPotionHelper.isSplashPotion(is.getItemDamage()))
@@ -60,8 +60,8 @@ public class ItemCrystalPotion extends ItemPotion {
 	@Override
 	public void getSubItems(Item ID, CreativeTabs cr, List li)
 	{
-		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-			ReikaDyeHelper color = ReikaDyeHelper.dyes[i];
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement color = CrystalElement.elements[i];
 			if (CrystalPotionController.requiresCustomPotion(color)) {
 
 				li.add(new ItemStack(ID, 1, i));
@@ -81,7 +81,7 @@ public class ItemCrystalPotion extends ItemPotion {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean verbose)
 	{
 		int dmg = this.getUsableDamage(is);
-		ReikaDyeHelper color = ReikaDyeHelper.getColorFromDamage(this.getUsableDamage(is));
+		CrystalElement color = CrystalElement.elements[this.getUsableDamage(is)];
 		StringBuilder name = new StringBuilder();
 		name.append(CrystalPotionController.getPotionName(color));
 		if (ReikaPotionHelper.isBoosted(is.getItemDamage()))
@@ -107,7 +107,7 @@ public class ItemCrystalPotion extends ItemPotion {
 	@SideOnly(Side.CLIENT)
 	public int getColorFromDamage(int dmg)
 	{
-		return ReikaDyeHelper.getColorFromDamage(dmg&15).getJavaColor().getRGB();
+		return CrystalElement.elements[dmg&15].getJavaColor().getRGB();
 	}
 
 	@Override

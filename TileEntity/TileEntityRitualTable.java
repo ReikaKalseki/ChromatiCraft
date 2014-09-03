@@ -34,6 +34,8 @@ import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityRitualTable extends InventoriedCrystalReceiver implements GuiController {
 
@@ -98,48 +100,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 
 		if (world.isRemote) {
-			int a = (2*this.getTicksExisted())%360;
-			for (int i = 0; i < 360; i += 120) {
-				double ang = Math.toRadians(a+i);
-				double r = 0.5;
-				double rx = x+0.5+r*Math.cos(ang);
-				double ry = y;
-				double rz = z+0.5+r*Math.sin(ang);
-				double v = 0.04;
-				double vx = v*Math.cos(ang);
-				double vz = v*Math.sin(ang);
-				EntityGlobeFX fx = new EntityGlobeFX(world, rx, y, rz, vx, 0.1875, vz).setScale(1.5F);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
-
-			tag.intersectWith(energy);
-			int n = tag.elementSet().size();
-			if (n > 0) {
-				a = (8*this.getTicksExisted())%360;
-				Iterator<CrystalElement> it = tag.elementSet().iterator();
-				for (int i = 0; i < 360; i += 360/n) {
-					double ang = Math.toRadians(a+i);
-					double r = 0.25;
-					double rx = x+0.5+r*Math.cos(ang);
-					double ry = y;
-					double rz = z+0.5+r*Math.sin(ang);
-					double v = 0.0125;
-					double vx = v*Math.cos(ang);
-					double vz = v*Math.sin(ang);
-					CrystalElement e = it.next();
-					EntityGlobeFX fx = new EntityGlobeFX(e, world, rx, y, rz, vx, 0.1875, vz).setScale(1.5F);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				}
-			}
-
-			if (inbox) {
-				Minecraft mc = Minecraft.getMinecraft();
-				mc.gameSettings.thirdPersonView = 2;
-				mc.thePlayer.rotationYaw = this.getTicksExisted()%360;
-				mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw-35;
-				mc.thePlayer.rotationPitch = 0;
-				mc.gameSettings.hideGUI = true;
-			}
+			this.spawnParticles(world, x, y, z, inbox, tag);
 		}
 
 		if (inbox && !world.isRemote) {
@@ -168,6 +129,52 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		if (abilityTick <= 0) {
 			this.giveAbility(ep);
 			energy.subtract(tag);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnParticles(World world, int x, int y, int z, boolean inbox, ElementTagCompound tag) {
+		int a = (2*this.getTicksExisted())%360;
+		for (int i = 0; i < 360; i += 120) {
+			double ang = Math.toRadians(a+i);
+			double r = 0.5;
+			double rx = x+0.5+r*Math.cos(ang);
+			double ry = y;
+			double rz = z+0.5+r*Math.sin(ang);
+			double v = 0.04;
+			double vx = v*Math.cos(ang);
+			double vz = v*Math.sin(ang);
+			EntityGlobeFX fx = new EntityGlobeFX(world, rx, y, rz, vx, 0.1875, vz).setScale(1.5F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		tag.intersectWith(energy);
+		int n = tag.elementSet().size();
+		if (n > 0) {
+			a = (8*this.getTicksExisted())%360;
+			Iterator<CrystalElement> it = tag.elementSet().iterator();
+			for (int i = 0; i < 360; i += 360/n) {
+				double ang = Math.toRadians(a+i);
+				double r = 0.25;
+				double rx = x+0.5+r*Math.cos(ang);
+				double ry = y;
+				double rz = z+0.5+r*Math.sin(ang);
+				double v = 0.0125;
+				double vx = v*Math.cos(ang);
+				double vz = v*Math.sin(ang);
+				CrystalElement e = it.next();
+				EntityGlobeFX fx = new EntityGlobeFX(e, world, rx, y, rz, vx, 0.1875, vz).setScale(1.5F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
+		if (inbox) {
+			Minecraft mc = Minecraft.getMinecraft();
+			mc.gameSettings.thirdPersonView = 2;
+			mc.thePlayer.rotationYaw = this.getTicksExisted()%360;
+			mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw-35;
+			mc.thePlayer.rotationPitch = 0;
+			mc.gameSettings.hideGUI = true;
 		}
 	}
 

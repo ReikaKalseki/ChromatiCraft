@@ -18,8 +18,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.ModInteract.Bees.BasicGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Fertility;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Flowering;
@@ -34,7 +35,6 @@ import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;
-import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleFlowers;
 import forestry.api.genetics.IEffectData;
@@ -51,21 +51,21 @@ public class CrystalBees {
 	protected static BasicBee crystal;
 	protected static BasicBee purity;
 
-	protected static final HashMap<ReikaDyeHelper, CrystalBee> beeMap = new HashMap();
-	protected static final HashMap<ReikaDyeHelper, CrystalEffect> effectMap = new HashMap();
-	protected static final HashMap<ReikaDyeHelper, CrystalAllele> flowerMap = new HashMap();
+	protected static final HashMap<CrystalElement, CrystalBee> beeMap = new HashMap();
+	protected static final HashMap<CrystalElement, CrystalEffect> effectMap = new HashMap();
+	protected static final HashMap<CrystalElement, CrystalAllele> flowerMap = new HashMap();
 
 	public static void register() {
-		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-			ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
-			BeeTraits traits = CrystalBeeTypes.list[dye.ordinal()].getTraits();
-			CrystalBee bee = new CrystalBee(dye, traits);
-			CrystalEffect eff = new CrystalEffect(dye);
-			CrystalAllele flw = new CrystalAllele(dye);
-			effectMap.put(dye, eff);
-			flowerMap.put(dye, flw);
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement color = CrystalElement.elements[i];
+			BeeTraits traits = CrystalBeeTypes.list[color.ordinal()].getTraits();
+			CrystalBee bee = new CrystalBee(color, traits);
+			CrystalEffect eff = new CrystalEffect(color);
+			CrystalAllele flw = new CrystalAllele(color);
+			effectMap.put(color, eff);
+			flowerMap.put(color, flw);
 			bee.register();
-			beeMap.put(dye, bee);
+			beeMap.put(color, bee);
 		}
 
 		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
@@ -83,24 +83,24 @@ public class CrystalBees {
 		crystal.register();
 		purity.register();
 
-		addBreeding(ReikaDyeHelper.RED, ReikaDyeHelper.YELLOW, ReikaDyeHelper.ORANGE);
-		addBreeding(ReikaDyeHelper.WHITE, ReikaDyeHelper.GREEN, ReikaDyeHelper.LIME);
-		addBreeding(ReikaDyeHelper.RED, ReikaDyeHelper.WHITE, ReikaDyeHelper.PINK);
-		addBreeding(ReikaDyeHelper.RED, ReikaDyeHelper.BLUE, ReikaDyeHelper.PURPLE);
-		addBreeding(ReikaDyeHelper.WHITE, ReikaDyeHelper.BLACK, ReikaDyeHelper.GRAY);
-		addBreeding(ReikaDyeHelper.BLUE, ReikaDyeHelper.GREEN, ReikaDyeHelper.CYAN);
-		addBreeding(ReikaDyeHelper.BLUE, ReikaDyeHelper.WHITE, ReikaDyeHelper.LIGHTBLUE);
-		addBreeding(ReikaDyeHelper.WHITE, ReikaDyeHelper.GRAY, ReikaDyeHelper.LIGHTGRAY);
-		addBreeding(ReikaDyeHelper.PINK, ReikaDyeHelper.PURPLE, ReikaDyeHelper.MAGENTA);
+		addBreeding(CrystalElement.RED, CrystalElement.YELLOW, CrystalElement.ORANGE);
+		addBreeding(CrystalElement.WHITE, CrystalElement.GREEN, CrystalElement.LIME);
+		addBreeding(CrystalElement.RED, CrystalElement.WHITE, CrystalElement.PINK);
+		addBreeding(CrystalElement.RED, CrystalElement.BLUE, CrystalElement.PURPLE);
+		addBreeding(CrystalElement.WHITE, CrystalElement.BLACK, CrystalElement.GRAY);
+		addBreeding(CrystalElement.BLUE, CrystalElement.GREEN, CrystalElement.CYAN);
+		addBreeding(CrystalElement.BLUE, CrystalElement.WHITE, CrystalElement.LIGHTBLUE);
+		addBreeding(CrystalElement.WHITE, CrystalElement.GRAY, CrystalElement.LIGHTGRAY);
+		addBreeding(CrystalElement.PINK, CrystalElement.PURPLE, CrystalElement.MAGENTA);
 
-		addBreeding(purity, crystal, ReikaDyeHelper.WHITE);
-		addBreeding(protective, hostile, ReikaDyeHelper.BLACK);
-		addBreeding(protective, crystal, ReikaDyeHelper.RED);
-		addBreeding(luminous, crystal, ReikaDyeHelper.BLUE);
+		addBreeding(purity, crystal, CrystalElement.WHITE);
+		addBreeding(protective, hostile, CrystalElement.BLACK);
+		addBreeding(protective, crystal, CrystalElement.RED);
+		addBreeding(luminous, crystal, CrystalElement.BLUE);
 
-		addBreeding("Rural", crystal, ReikaDyeHelper.BROWN);
-		addBreeding("Industrious", crystal, ReikaDyeHelper.YELLOW);
-		addBreeding("Tropical", hostile, ReikaDyeHelper.GREEN);
+		addBreeding("Rural", crystal, CrystalElement.BROWN);
+		addBreeding("Industrious", crystal, CrystalElement.YELLOW);
+		addBreeding("Tropical", hostile, CrystalElement.GREEN);
 
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
@@ -109,8 +109,8 @@ public class CrystalBees {
 		GameRegistry.registerWorldGenerator(HiveGenerator.instance, -5);
 	}
 
-	protected static final CrystalBee getBeeFor(ReikaDyeHelper dye) {
-		return beeMap.get(dye);
+	protected static final CrystalBee getBeeFor(CrystalElement color) {
+		return beeMap.get(color);
 	}
 
 	public static BasicBee getCrystalBee() {
@@ -121,17 +121,17 @@ public class CrystalBees {
 		return purity;
 	}
 
-	private static final void addBreeding(String in1, BeeSpecies in2, ReikaDyeHelper out) {
+	private static final void addBreeding(String in1, BeeSpecies in2, CrystalElement out) {
 		CrystalBee cb = beeMap.get(out);
 		cb.addBreeding(in1, in2, 8);
 	}
 
-	private static final void addBreeding(BeeSpecies in1, BeeSpecies in2, ReikaDyeHelper out) {
+	private static final void addBreeding(BeeSpecies in1, BeeSpecies in2, CrystalElement out) {
 		CrystalBee cb = beeMap.get(out);
 		cb.addBreeding(in1, in2, 8);
 	}
 
-	private static final void addBreeding(ReikaDyeHelper in1, ReikaDyeHelper in2, ReikaDyeHelper out) {
+	private static final void addBreeding(CrystalElement in1, CrystalElement in2, CrystalElement out) {
 		CrystalBee p1 = beeMap.get(in1);
 		CrystalBee p2 = beeMap.get(in2);
 		CrystalBee cb = beeMap.get(out);
@@ -216,15 +216,14 @@ public class CrystalBees {
 
 	}
 
-	private static final class CrystalEffect implements IAlleleBeeEffect {
+	private static final class CrystalEffect extends BasicGene implements IAlleleBeeEffect {
 
-		public final ReikaDyeHelper dye;
+		public final CrystalElement color;
 
-		public CrystalEffect(ReikaDyeHelper dye) {
-			this.dye = dye;
-			AlleleManager.alleleRegistry.registerAllele(this);
+		public CrystalEffect(CrystalElement color) {
+			super("effect.cavecrystal."+color.name().toLowerCase(), color.displayName+" Crystal");
+			this.color = color;
 		}
-
 
 		@Override
 		public boolean isCombinable() {
@@ -234,21 +233,6 @@ public class CrystalBees {
 		@Override
 		public IEffectData validateStorage(IEffectData ied) {
 			return null;
-		}
-
-		@Override
-		public String getUID() {
-			return "effect.cavecrystal."+dye.name().toLowerCase();
-		}
-
-		@Override
-		public boolean isDominant() {
-			return true;
-		}
-
-		@Override
-		public String getName() {
-			return dye.colorName+" Crystal";
 		}
 
 		@Override
@@ -262,7 +246,7 @@ public class CrystalBees {
 			List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 			for (int i = 0; i < li.size(); i++) {
 				EntityLivingBase e = li.get(i);
-				CrystalBlock.applyEffectFromColor(600, 0, e, dye);
+				CrystalBlock.applyEffectFromColor(600, 0, e, color);
 			}
 			return null;
 		}
@@ -274,30 +258,15 @@ public class CrystalBees {
 
 	}
 
-	private static final class CrystalAllele implements IAlleleFlowers {
+	private static final class CrystalAllele extends BasicGene implements IAlleleFlowers {
 
-		public final ReikaDyeHelper dye;
+		public final CrystalElement color;
 		private final FlowerProviderCrystal provider;;
 
-		public CrystalAllele(ReikaDyeHelper dye) {
-			this.dye = dye;
-			provider = new FlowerProviderCrystal(dye);
-			AlleleManager.alleleRegistry.registerAllele(this);
-		}
-
-		@Override
-		public String getUID() {
-			return "flower.cavecrystal."+dye.name().toLowerCase();
-		}
-
-		@Override
-		public boolean isDominant() {
-			return true;
-		}
-
-		@Override
-		public String getName() {
-			return dye.colorName+" Cave Crystal";
+		public CrystalAllele(CrystalElement color) {
+			super("flower.cavecrystal."+color.name().toLowerCase(), color.displayName+" Cave Crystal");
+			this.color = color;
+			provider = new FlowerProviderCrystal(color);
 		}
 
 		@Override
@@ -308,15 +277,15 @@ public class CrystalBees {
 
 	public static class FlowerProviderCrystal implements IFlowerProvider {
 
-		public final ReikaDyeHelper dye;
+		public final CrystalElement color;
 
-		public FlowerProviderCrystal(ReikaDyeHelper dye) {
-			this.dye = dye;
+		public FlowerProviderCrystal(CrystalElement color) {
+			this.color = color;
 		}
 
 		@Override
 		public boolean isAcceptedFlower(World world, IIndividual individual, int x, int y, int z) {
-			return world.getBlock(x, y, z) == ChromaBlocks.CRYSTAL.getBlockInstance() && world.getBlockMetadata(x, y, z) == dye.ordinal();
+			return world.getBlock(x, y, z) == ChromaBlocks.CRYSTAL.getBlockInstance() && world.getBlockMetadata(x, y, z) == color.ordinal();
 		}
 
 		@Override
@@ -331,7 +300,7 @@ public class CrystalBees {
 
 		@Override
 		public String getDescription() {
-			return dye.colorName+" Crystals";
+			return color.displayName+" Crystals";
 		}
 
 		@Override
@@ -341,14 +310,14 @@ public class CrystalBees {
 
 		@Override
 		public ItemStack[] getItemStacks() {
-			return new ItemStack[]{new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, dye.ordinal())};
+			return new ItemStack[]{new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, color.ordinal())};
 		}
 
 	}
 
 	private static final class CrystalBee extends BeeSpecies {
 
-		public final ReikaDyeHelper dye;
+		public final CrystalElement color;
 		public final Speeds speed;
 		public final Fertility fertility;
 		public final Flowering flowering;
@@ -361,9 +330,9 @@ public class CrystalBees {
 		public final EnumTemperature temperature;
 		public final EnumHumidity humidity;
 
-		public CrystalBee(ReikaDyeHelper dye, BeeTraits traits) {
-			super(dye.colorName+" Crystal", "bee.crystal."+dye.name().toLowerCase(), "Vitreus "+dye.colorName, "Reika");
-			this.dye = dye;
+		public CrystalBee(CrystalElement color, BeeTraits traits) {
+			super(color.displayName+" Crystal", "bee.crystal."+color.name().toLowerCase(), "Vitreus "+color.displayName, "Reika");
+			this.color = color;
 			speed = traits.speed;
 			fertility = traits.fertility;
 			flowering = traits.flowering;
@@ -427,7 +396,7 @@ public class CrystalBees {
 
 		@Override
 		public IAllele getFlowerAllele() {
-			return flowerMap.get(dye);
+			return flowerMap.get(color);
 		}
 
 		@Override
@@ -482,12 +451,12 @@ public class CrystalBees {
 
 		@Override
 		public int getOutlineColor() {
-			return dye.getJavaColor().getRGB();
+			return color.getJavaColor().getRGB();
 		}
 
 		@Override
 		public IAllele getEffectAllele() {
-			return effectMap.get(dye);
+			return effectMap.get(color);
 		}
 
 	}

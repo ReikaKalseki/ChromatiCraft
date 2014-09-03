@@ -31,8 +31,8 @@ public class EntityMagicRegistry {
 		this.addTag(EntitySkeleton.class, CrystalElement.BLACK, 5);
 	}
 
-	private void addTag(Class <? extends EntityLiving> cl, CrystalElement dye, int value) {
-		data.get(cl).setTag(dye, value);
+	private void addTag(Class <? extends EntityLiving> cl, CrystalElement color, int value) {
+		data.get(cl).setTag(color, value);
 	}
 
 }

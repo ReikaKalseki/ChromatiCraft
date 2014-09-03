@@ -31,6 +31,8 @@ import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 
@@ -99,6 +101,7 @@ public class AbilityHelper {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void middleMouseUse(MouseEvent e) {
 		if (e.buttonstate && e.button == 2) { //what about people with no mousewheels? config option to use keybind?
 			Minecraft mc = Minecraft.getMinecraft();

@@ -14,6 +14,8 @@ import java.awt.Color;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public enum CrystalElement {
@@ -103,19 +105,23 @@ public enum CrystalElement {
 		return this.getLevel() == 0;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void setIcons(IIconRegister ico) {
 		glowIcon = ico.registerIcon("chromaticraft:runes/glow/tile"+this.ordinal()+"_0");
 		animatedFace = ico.registerIcon("chromaticraft:runes/frontpng/tile"+this.ordinal()+"_0");
 	}
 
+	@SideOnly(Side.CLIENT)
 	public IIcon getGlowRune() {
 		return glowIcon;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public IIcon getFaceRune() {
 		return animatedFace;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public IIcon getBlockRune() {
 		return ChromaBlocks.RUNE.getBlockInstance().getIcon(0, this.ordinal());
 	}

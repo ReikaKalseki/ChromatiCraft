@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -71,7 +72,7 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 	}
 
 	private void brew() {
-		ReikaDyeHelper color = ReikaDyeHelper.getColorFromDamage(inv[0].getItemDamage());
+		CrystalElement color = CrystalElement.elements[inv[0].getItemDamage()];
 		boolean custom = CrystalPotionController.requiresCustomPotion(color);
 		inv[0] = null;
 
@@ -82,7 +83,7 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 		}
 	}
 
-	public static ItemStack getPotionStackFromColor(ReikaDyeHelper color) {
+	public static ItemStack getPotionStackFromColor(CrystalElement color) {
 		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(color.ordinal());
 		String eff = shard.getItem().getPotionEffect(shard);
 		boolean custom = CrystalPotionController.requiresCustomPotion(color);

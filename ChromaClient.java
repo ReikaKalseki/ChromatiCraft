@@ -11,10 +11,14 @@ package Reika.ChromatiCraft;
 
 import java.util.HashMap;
 
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -70,6 +74,10 @@ public class ChromaClient extends ChromaCommon {
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
+
+		RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
+		slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);
+		ChromatiCraft.logger.log("Overriding Slime Renderer Edge Model.");
 	}
 
 	@Override

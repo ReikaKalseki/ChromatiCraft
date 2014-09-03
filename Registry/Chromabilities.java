@@ -49,6 +49,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public enum Chromabilities {
 
@@ -246,8 +248,13 @@ public enum Chromabilities {
 			AbilityHelper.instance.playerReach = dist;
 
 			//until asm method is working, temporary application
-			Minecraft.getMinecraft().playerController = new ControllableReachPlayer(Minecraft.getMinecraft().playerController);
+			hackController();
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void hackController() {
+		Minecraft.getMinecraft().playerController = new ControllableReachPlayer(Minecraft.getMinecraft().playerController);
 	}
 
 	private static void destroyBlocksAround(EntityPlayer ep, int power) {

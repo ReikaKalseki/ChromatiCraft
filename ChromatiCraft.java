@@ -15,11 +15,8 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderSlime;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -56,7 +53,6 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.ColorizableSlimeModel;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -349,12 +345,6 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (!this.isLocked()) {
 			ChromaRecipes.addPostLoadRecipes();
-		}
-
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
-			slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);
-			logger.log("Overriding Slime Renderer Edge Model.");
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {

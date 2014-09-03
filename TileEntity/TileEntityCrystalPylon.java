@@ -17,9 +17,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -28,12 +28,12 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import codechicken.lib.math.MathHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource {
 
@@ -93,6 +93,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void particleAttack(int x, int y, int z) {
 		int n = 8+rand.nextInt(24);
 		for (int i = 0; i < n; i++) {
@@ -129,28 +130,34 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			ChromaSounds.POWERDOWN.playSound(worldObj, xCoord, yCoord, zCoord, 1F, 2F);
 			ChromaSounds.POWERDOWN.playSound(worldObj, xCoord, yCoord, zCoord, 1F, 0.5F);
 
-			double d = 1.25;
-			int n = 64+rand.nextInt(64);
-			for (int i = 0; i < n; i++) {
-				double rx = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, d);
-				double ry = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, d);
-				double rz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, d);
-				double vx = rand.nextDouble()-0.5;
-				double vy = rand.nextDouble()-0.5;
-				double vz = rand.nextDouble()-0.5;
-				EntityRuneFX fx = new EntityRuneFX(worldObj, rx, ry, rz, vx, vy, vz, color);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
+			if (worldObj.isRemote)
+				this.invalidatationParticles();
 		}
 		hasMultiblock = false;
 		this.clearTargets();
-		//play sounds, particle effects
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void invalidatationParticles() {
+		double d = 1.25;
+		int n = 64+rand.nextInt(64);
+		for (int i = 0; i < n; i++) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, d);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, d);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, d);
+			double vx = rand.nextDouble()-0.5;
+			double vy = rand.nextDouble()-0.5;
+			double vz = rand.nextDouble()-0.5;
+			EntityRuneFX fx = new EntityRuneFX(worldObj, rx, ry, rz, vx, vy, vz, color);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	public void validateMultiblock() {
 		hasMultiblock = true;
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void spawnParticle(World world, int x, int y, int z) {
 		double d = 1.25;
 		double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);

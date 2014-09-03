@@ -14,7 +14,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class EntitySparkleFX extends EntityFX {
 
 	public EntitySparkleFX(World world, double x, double y, double z, double vx, double vy, double vz) {

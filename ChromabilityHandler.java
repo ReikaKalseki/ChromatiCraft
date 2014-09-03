@@ -29,7 +29,6 @@ public class ChromabilityHandler implements TickHandler {
 	public void tick(Object... tickData) {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
 		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
-		Chromabilities.HEAL.trigger(ep, 5);
 		for (int i = 0; i < li.size(); i++) {
 			Chromabilities c = li.get(i);
 			if (c.tickBased && c.tickPhase == tickData[1] && c.playerHasAbility(ep)) {
