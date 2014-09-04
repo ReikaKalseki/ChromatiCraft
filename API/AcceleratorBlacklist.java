@@ -67,6 +67,10 @@ public class AcceleratorBlacklist {
 			ReikaJavaLibrary.pConsole("Error adding Accelerator Blacklist:");
 			e.printStackTrace();
 		}
+		catch (NullPointerException e) {
+			ReikaJavaLibrary.pConsole("Error adding Accelerator Blacklist: Class not loaded properly!");
+			e.printStackTrace();
+		}
 	}
 
 	public static void addBlacklist(Class<? extends TileEntity> cl, BlacklistReason r) {

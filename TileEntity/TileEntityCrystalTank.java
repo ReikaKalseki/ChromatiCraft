@@ -25,13 +25,14 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.HybridTank;
+import Reika.DragonAPI.Instantiable.FlaggedTank;
+import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler {
+public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher {
 
-	private final HybridTank tank = new HybridTank("crystaltank", 1000000000);
+	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", 1000000000);
 
 	private final BlockArray blocks = new BlockArray();
 	private int size = 1;
@@ -41,12 +42,16 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		if (this.getTicksExisted() == 0) {
 			this.initCoords(world, x, y, z);
 
-			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] a = blocks.getNthBlock(i);
-				world.markBlockForUpdate(a[0], a[1], a[2]);
-			}
+			this.update();
 		}
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
+	}
+
+	private void update() {
+		for (int i = 0; i < blocks.getSize(); i++) {
+			int[] a = blocks.getNthBlock(i);
+			worldObj.markBlockForUpdate(a[0], a[1], a[2]);
+		}
 	}
 
 	private void initCoords(World world, int x, int y, int z) {
@@ -225,6 +230,11 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	public double getFillPercentage() {
 		return (double)tank.getLevel()/this.getCapacity();
+	}
+
+	@Override
+	public void onTankChangeFluidType(String tank, Fluid from, Fluid to) {
+		this.update();
 	}
 
 }

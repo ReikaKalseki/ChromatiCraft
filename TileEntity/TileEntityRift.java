@@ -98,7 +98,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 					int pwr = worldObj.getIndirectPowerLevelTo(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ, opp.ordinal());
 					te.redstoneCache[i] = pwr;
 					if (id != Blocks.air) {
-						id.onNeighborBlockChange(worldObj, dx, dy, dz, id2);
+						id.onNeighborBlockChange(worldObj, dx, dy, dz, id);
 					}
 					TileEntity tile = this.getAdjacentTileEntity(dir);
 					if (tile != this && tile instanceof TileEntityBase) {

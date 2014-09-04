@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -39,7 +40,8 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
-			ReikaRenderHelper.disableLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			BlendMode.ADDITIVEDARK.apply();
@@ -75,7 +77,8 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			BlendMode.DEFAULT.apply();
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			ReikaRenderHelper.enableLighting();
+			ReikaRenderHelper.enableEntityLighting();
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 		else if (!tile.hasWorldObj()) {
 			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
@@ -84,7 +87,8 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
-			ReikaRenderHelper.disableLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			BlendMode.ADDITIVEDARK.apply();
@@ -105,7 +109,8 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			BlendMode.DEFAULT.apply();
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			ReikaRenderHelper.enableLighting();
+			RenderHelper.enableStandardItemLighting();
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 

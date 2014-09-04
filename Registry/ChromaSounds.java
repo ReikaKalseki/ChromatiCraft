@@ -24,16 +24,16 @@ import cpw.mods.fml.relauncher.Side;
 
 public enum ChromaSounds implements SoundEnum {
 
-	RIFT("rift", SoundCategory.BLOCKS),
-	POWERDOWN("powerdown-2", SoundCategory.BLOCKS),
-	DISCHARGE("discharge", SoundCategory.BLOCKS),
-	CAST("cast3", SoundCategory.BLOCKS),
-	POWER("ambient", SoundCategory.AMBIENT),
-	CRAFTING("ambient1_short", SoundCategory.MASTER),
-	CRAFTDONE("craftdone2", SoundCategory.BLOCKS),
-	UPGRADE("upgrade", SoundCategory.BLOCKS),
-	ABILITY("ability", SoundCategory.MASTER),
-	ERROR("error", SoundCategory.MASTER);
+	RIFT("rift"),
+	POWERDOWN("powerdown-2"),
+	DISCHARGE("discharge"),
+	CAST("cast3"),
+	POWER("ambient"),
+	CRAFTING("ambient1_short"),
+	CRAFTDONE("craftdone2"),
+	UPGRADE("upgrade"),
+	ABILITY("ability"),
+	ERROR("error");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -47,18 +47,18 @@ public enum ChromaSounds implements SoundEnum {
 
 	private final String path;
 	private final String name;
-	private final SoundCategory category;
+	//private final SoundCategory category;
 
 	private boolean isVolumed = false;
 
-	private ChromaSounds(String n, SoundCategory cat) {
+	private ChromaSounds(String n) {
 		if (n.startsWith("#")) {
 			isVolumed = true;
 			n = n.substring(1);
 		}
 		name = n;
 		path = PREFIX+SOUND_FOLDER+name+SOUND_EXT;
-		category = cat;
+		//category = cat;
 	}
 
 	public float getSoundVolume() {
@@ -122,6 +122,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public SoundCategory getCategory() {
-		return category;
+		return SoundCategory.MASTER;
 	}
 }

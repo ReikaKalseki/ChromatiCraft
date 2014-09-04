@@ -17,9 +17,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -28,6 +25,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {
+
+	public static int renderPass;
 
 	@Override
 	public void renderInventoryBlock(Block b, int meta, int modelID, RenderBlocks rb) {
@@ -109,8 +108,9 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//xu = u = xv = v = 0;
 
 		Tessellator v5 = Tessellator.instance;
+		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		//v5.draw();
-		GL11.glDisable(GL11.GL_CULL_FACE);
+		//GL11.glDisable(GL11.GL_CULL_FACE);
 		//GL11.glEnable(GL11.GL_BLEND);
 		//v5.startDrawingQuads();
 
@@ -130,30 +130,33 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 
 		int w = ico.getIconWidth();
 
-		this.renderSpike(v5, u, v, xu, xv, w);
-		int val = Math.abs(x)%9+Math.abs(z)%9; //16 combos -> binary selector
-		if (val > 15 || ((CrystalBlock)b).renderAllArms())
-			val = 15;
-		if ((val & 8) == 8)
-			this.renderXAngledSpike(u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
-		if ((val & 4) == 4)
-			this.renderXAngledSpike(u, v, xu, xv, -0.1875, w); //4,5,6,7,12,13,14,15
-		if ((val & 2) == 2)
-			this.renderZAngledSpike(u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
-		if ((val & 1) == 1)
-			this.renderZAngledSpike(u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
+		if (renderPass == 1) {
+			this.renderSpike(v5, u, v, xu, xv, w);
+			int val = Math.abs(x)%9+Math.abs(z)%9; //16 combos -> binary selector
+			if (val > 15 || ((CrystalBlock)b).renderAllArms())
+				val = 15;
+			if ((val & 8) == 8)
+				this.renderXAngledSpike(u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
+			if ((val & 4) == 4)
+				this.renderXAngledSpike(u, v, xu, xv, -0.1875, w); //4,5,6,7,12,13,14,15
+			if ((val & 2) == 2)
+				this.renderZAngledSpike(u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
+			if ((val & 1) == 1)
+				this.renderZAngledSpike(u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
+		}
 
 		//v5.setColorOpaque(0, 0, 0);
 		//this.renderOutline(v5);
-
-		if (((CrystalBlock)b).renderBase()) {
-			this.renderBase(v5, (CrystalBlock)b);
+		if (renderPass == 0) {
+			if (((CrystalBlock)b).renderBase()) {
+				this.renderBase(v5, (CrystalBlock)b);
+			}
 		}
 
 		v5.addTranslation(-x, -y, -z);
 
 		//v5.draw();
-		GL11.glEnable(GL11.GL_CULL_FACE);
+		//GL11.glEnable(GL11.GL_CULL_FACE);
 		//GL11.glDisable(GL11.GL_BLEND);
 		//v5.startDrawingQuads();
 		//v5.addVertex(0, 0, 0);
@@ -183,10 +186,10 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.addVertexWithUV(0, top, 0, u, v);
 
 		v5.setColorOpaque(110, 110, 110);
-		v5.addVertexWithUV(0, 0, 1, u, xv);
-		v5.addVertexWithUV(1, 0, 1, xu, xv);
-		v5.addVertexWithUV(1, 0, 0, xu, v);
 		v5.addVertexWithUV(0, 0, 0, u, v);
+		v5.addVertexWithUV(1, 0, 0, xu, v);
+		v5.addVertexWithUV(1, 0, 1, xu, xv);
+		v5.addVertexWithUV(0, 0, 1, u, xv);
 
 		ico = b.getBaseBlock(ForgeDirection.EAST).getIcon(0, 0);
 		u = ico.getMinU();
@@ -197,10 +200,10 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		double vv = v+(xv-v)/(w)*2;
 
 		v5.setColorOpaque(200, 200, 200);
-		v5.addVertexWithUV(0, 0, 0, u, v);
-		v5.addVertexWithUV(1, 0, 0, xu, v);
-		v5.addVertexWithUV(1, top, 0, xu, vv);
 		v5.addVertexWithUV(0, top, 0, u, vv);
+		v5.addVertexWithUV(1, top, 0, xu, vv);
+		v5.addVertexWithUV(1, 0, 0, xu, v);
+		v5.addVertexWithUV(0, 0, 0, u, v);
 
 		v5.setColorOpaque(170, 170, 170);
 		v5.addVertexWithUV(0, 0, 1, u, v);
@@ -209,10 +212,10 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.addVertexWithUV(0, top, 1, u, vv);
 
 		v5.setColorOpaque(200, 200, 200);
-		v5.addVertexWithUV(0, top, 0, u, vv);
-		v5.addVertexWithUV(0, top, 1, xu, vv);
-		v5.addVertexWithUV(0, 0, 1, xu, v);
 		v5.addVertexWithUV(0, 0, 0, u, v);
+		v5.addVertexWithUV(0, 0, 1, xu, v);
+		v5.addVertexWithUV(0, top, 1, xu, vv);
+		v5.addVertexWithUV(0, top, 0, u, vv);
 
 		v5.setColorOpaque(170, 170, 170);
 		v5.addVertexWithUV(1, top, 0, u, vv);

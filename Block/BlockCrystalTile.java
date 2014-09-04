@@ -30,6 +30,8 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCrystalTile extends BlockChromaTile {
 
@@ -112,6 +114,7 @@ public class BlockCrystalTile extends BlockChromaTile {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int s) {
 		if (Minecraft.getMinecraft().gameSettings.fancyGraphics)
 			return true;

@@ -34,6 +34,7 @@ public class ChromaStacks {
 	public static final ItemStack crystalMirror = ChromaItems.CRAFTING.getStackOfMetadata(3);
 	public static final ItemStack rawCrystal = ChromaItems.CRAFTING.getStackOfMetadata(4);
 	public static final ItemStack energyCore = ChromaItems.CRAFTING.getStackOfMetadata(5);
+	public static final ItemStack crystalPowder = ChromaItems.CRAFTING.getStackOfMetadata(6);
 
 	public static final ItemStack[] shards = {
 		ChromaItems.SHARD.getStackOfMetadata(0),

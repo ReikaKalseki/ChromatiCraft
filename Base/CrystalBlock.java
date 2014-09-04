@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.CrystalRenderer;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -78,6 +79,13 @@ public abstract class CrystalBlock extends Block {
 	@Override
 	public final int getRenderBlockPass() {
 		return 1;
+	}
+
+	@Override
+	public boolean canRenderInPass(int pass)
+	{
+		CrystalRenderer.renderPass = pass;
+		return pass <= 1;
 	}
 
 	@SideOnly(Side.CLIENT)

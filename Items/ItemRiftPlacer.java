@@ -112,7 +112,9 @@ public class ItemRiftPlacer extends Item {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
-			li.add("Tying to "+this.getRiftLocation(is).toString());
+			WorldLocation loc = this.getRiftLocation(is);
+			if (loc != null)
+				li.add("Tying to "+loc.toString());
 		}
 	}
 

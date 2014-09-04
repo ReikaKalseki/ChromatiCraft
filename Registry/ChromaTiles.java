@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
@@ -61,7 +62,8 @@ public enum ChromaTiles {
 	CHARGER("chroma.charger", ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3, "RenderCrystalCharger"),
 	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
 	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
-	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender");
+	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender"),
+	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence");
 
 	private final Class tile;
 	private final String name;

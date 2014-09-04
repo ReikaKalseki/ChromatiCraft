@@ -62,6 +62,7 @@ public class TankRender extends ChromaRenderBase {
 			v5.startDrawingQuads();
 
 			BlockArray blocks = te.getBlocks();
+			blocks.remove(te.xCoord, te.yCoord, te.zCoord);
 			for (int i = 0; i < blocks.getSize(); i++) {
 				int[] xyz = blocks.getNthBlock(i);
 				int x = xyz[0];
