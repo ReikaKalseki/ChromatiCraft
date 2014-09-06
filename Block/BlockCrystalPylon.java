@@ -32,6 +32,8 @@ public class BlockCrystalPylon extends BlockCrystalTile {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == null)
+			return null;
 		switch(c) {
 		case PYLON:
 			return null;

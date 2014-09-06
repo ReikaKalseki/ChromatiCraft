@@ -66,11 +66,15 @@ public class ColorTreeGenerator implements IWorldGenerator {
 
 		if (biome == BiomeGenBase.plains)
 			trees += 2;
+		if (biome == BiomeGenBase.forest || biome == BiomeGenBase.forestHills)
+			trees += 6;
 		if (biome == BiomeGenBase.extremeHills || biome == BiomeGenBase.extremeHillsEdge)
 			trees += 3;
 		if (biome == BiomeGenBase.iceMountains || biome == BiomeGenBase.icePlains)
 			trees += 3;
 		if (biome == BiomeGenBase.jungle)
+			trees += 3;
+		if (biome == BiomeGenBase.swampland)
 			trees += 3;
 
 		if (trees > 0)

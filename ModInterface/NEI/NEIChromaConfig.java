@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ReactorCraft.ReactorCraft;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
@@ -27,7 +26,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 
 	@Override
 	public void loadConfig() {
-		ReactorCraft.logger.log("Loading NEI Compatibility!");
+		ChromatiCraft.logger.log("Loading NEI Compatibility!");
 
 		API.registerNEIGuiHandler(occlusion);
 

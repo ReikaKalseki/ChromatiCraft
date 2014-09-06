@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Interfaces.SidePlacedTile;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -106,6 +107,9 @@ public class ItemChromaPlacer extends Item {
 			te.setBlockMetadata(ChromaAux.get6SidedMetadataFromPlayerLook(ep));
 		else
 			te.setBlockMetadata(ChromaAux.get4SidedMetadataFromPlayerLook(ep));
+		if (m.isSidePlaced()) {
+			((SidePlacedTile)te).placeOnSide(side);
+		}
 		/*
 		if (m == ChromaTiles.ACCELERATOR) {
 			((TileEntityAccelerator)te).setTier(is);

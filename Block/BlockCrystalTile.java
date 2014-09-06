@@ -49,8 +49,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 	}
 
 	public ArrayList<ItemStack> getPieces(World world, int x, int y, int z) {
-		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		ArrayList<ItemStack> li = new ArrayList();
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == null)
+			return li;
 		switch (c) {
 		case ACCELERATOR:
 			for (int i = 0; i < 4; i++)

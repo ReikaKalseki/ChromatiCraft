@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
+import Reika.DragonAPI.Interfaces.SidePlacedTile;
 
 public enum ChromaTiles {
 
@@ -65,7 +67,8 @@ public enum ChromaTiles {
 	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
 	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender"),
 	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence"),
-	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon");
+	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
+	ITEMRIFT("chroma.itemrift", ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift");
 
 	private final Class tile;
 	private final String name;
@@ -227,6 +230,10 @@ public enum ChromaTiles {
 
 	public boolean hasNBTVariants() {
 		return NBTTile.class.isAssignableFrom(tile);
+	}
+
+	public boolean isSidePlaced() {
+		return SidePlacedTile.class.isAssignableFrom(tile);
 	}
 
 }

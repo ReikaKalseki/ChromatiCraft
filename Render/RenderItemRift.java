@@ -13,11 +13,11 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 
-public class RenderCrystalFence extends ChromaRenderBase {
+public class RenderItemRift extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return "fence";
+		return "itemrift.png";
 	}
 
 	@Override
