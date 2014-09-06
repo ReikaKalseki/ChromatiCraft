@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAuraVaporizer;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
@@ -63,7 +64,8 @@ public enum ChromaTiles {
 	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
 	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
 	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender"),
-	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence");
+	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence"),
+	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon");
 
 	private final Class tile;
 	private final String name;
@@ -110,6 +112,8 @@ public enum ChromaTiles {
 		case PYLON:
 		case REPEATER:
 		case LASER:
+		case BEACON:
+		case FENCE:
 			return true;
 		default:
 			return false;

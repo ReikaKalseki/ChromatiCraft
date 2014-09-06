@@ -121,6 +121,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILEPLANT:
 			return Material.plants;
 		case CHROMA:
+		case ENDER:
 			return Material.water;
 		case TILECRYSTAL:
 			return Material.glass;

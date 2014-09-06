@@ -111,7 +111,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		float saplingChance = 0.0125F;
 		float appleChance = 0.1F;
 		float goldAppleChance = 0.025F;
-		float rareGoldAppleChance = 0.0025F;
+		float rareGoldAppleChance = ChromaOptions.getRainbowLeafGoldAppleDropChance(); //0.0025F default
 
 		saplingChance *= (1+fortune);
 		appleChance *= (1+fortune*5);

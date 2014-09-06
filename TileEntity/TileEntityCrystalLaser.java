@@ -58,7 +58,8 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 		}
 
 		if (this.isActive()) {
-			this.applyEffects(world, x, y, z, dir);
+			if (!world.isRemote)
+				this.applyEffects(world, x, y, z, dir);
 
 			int c = 4+4*Minecraft.getMinecraft().gameSettings.particleSetting;
 			if (world.isRemote && rand.nextInt(c) == 0) {
@@ -107,6 +108,8 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 			case GREEN:
 				break;
 			case LIGHTBLUE:
+				Block b = world.getBlock(dx, dy, dz);
+				b.updateTick(world, dx, dy, dz, rand);
 				break;
 			case LIGHTGRAY:
 				break;

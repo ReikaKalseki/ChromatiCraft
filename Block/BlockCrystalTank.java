@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import mcp.mobius.waila.api.IWailaBlock;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -41,7 +41,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Interfaces.ConnectedTextureGlass;
 
-public class BlockCrystalTank extends Block implements IWailaBlock, ConnectedTextureGlass {
+public class BlockCrystalTank extends Block implements IWailaDataProvider, ConnectedTextureGlass {
 
 	private final ArrayList<Integer> allDirs = new ArrayList();
 	private IIcon[] edges = new IIcon[10];

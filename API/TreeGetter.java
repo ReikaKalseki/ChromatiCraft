@@ -17,12 +17,12 @@ public class TreeGetter {
 	private static Class dyeTreeBlocks;
 	private static Block[] dyeBlocks;
 
-	public static final int LEAF_INDEX = 0;
-	public static final int SAPLING_INDEX = 1;
-	public static final int NATURAL_LEAF_INDEX = 2;
-	public static final int RAINBOW_LEAF_INDEX = 4;
-	public static final int RAINBOW_SAPLING_INDEX = 5;
-	public static final int FLOWER_INDEX = 6;
+	public static final int LEAF_INDEX = 14;
+	public static final int SAPLING_INDEX = 15;
+	public static final int NATURAL_LEAF_INDEX = 13;
+	public static final int RAINBOW_LEAF_INDEX = 17;
+	public static final int RAINBOW_SAPLING_INDEX = 18;
+	public static final int FLOWER_INDEX = 19;
 
 	public static boolean isDyeLeaf(ItemStack block) {
 		return Block.getBlockFromItem(block.getItem()) == dyeBlocks[LEAF_INDEX] || Block.getBlockFromItem(block.getItem()) == dyeBlocks[NATURAL_LEAF_INDEX];

@@ -38,6 +38,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 	public static final int MAX_TIER = 7;
 
 	private int tier;
+	private boolean particles = true;
 
 	private static List<Class<? extends TileEntity>> blacklist = new ArrayList<Class<? extends TileEntity>>();
 
@@ -170,6 +171,20 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("tier", tier);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBT.setBoolean("particle", particles);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		particles = NBT.getBoolean("particle");
 	}
 
 	public void setDataFromItemStackTag(ItemStack is) {

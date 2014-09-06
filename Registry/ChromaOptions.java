@@ -31,7 +31,8 @@ public enum ChromaOptions implements ConfigList {
 	ENDERCOLORING("Ender Forest Coloring", false),
 	ENDERPOOLS("Ender Pool Density from 1 to 3", 2),
 	ENDERFORESTID("Ender Forest ID", 47),
-	ENDEREFFECT("Liquid Ender Effect", true);
+	ENDEREFFECT("Liquid Ender Effect", true),
+	GOLDAPPLES("Rainbow Leaf Gold Apple Drop Percentage", 0.25F);
 
 	private String label;
 	private boolean defaultState;
@@ -136,6 +137,11 @@ public enum ChromaOptions implements ConfigList {
 
 	public static boolean isVanillaDyeMoreCommon() {
 		return DYEFRAC.getValue() > 50;
+	}
+
+	public static float getRainbowLeafGoldAppleDropChance() {
+		float base = GOLDAPPLES.getFloat()/100F;
+		return Math.min(1, Math.max(0.0001F, base));
 	}
 
 }

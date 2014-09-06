@@ -31,7 +31,8 @@ public enum ChromaIcons {
 	ROUNDFLARE("roundflare"),
 	RINGS("rings_blur"),
 	RIFT("rift"),
-	RIFTHALO("rift_halo");
+	RIFTHALO("rift_halo"),
+	FADE("fade");
 
 	private IIcon icon;
 	private final String iconName;

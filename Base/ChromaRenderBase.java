@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
 
+import net.minecraftforge.client.MinecraftForgeClient;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -32,6 +34,8 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, Object... args) {
+		if (MinecraftForgeClient.getRenderPass() != 0 && tile.isInWorld())
+			return;
 		this.bindTextureByName(this.getTextureFolder()+this.getImageFileName(tile));
 		GL11.glPushMatrix();
 		GL11.glScalef(1.0F, -1.0F, -1.0F);

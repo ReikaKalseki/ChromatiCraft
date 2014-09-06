@@ -62,37 +62,42 @@ public class ColorTreeGenerator implements IWorldGenerator {
 
 	public static int getTreeCount(BiomeGenBase biome) {
 		BiomeDecorator dec = biome.theBiomeDecorator;
-		int trees = dec.treesPerChunk;
+		int trees = Math.max(0, dec.treesPerChunk);
+
 		if (biome == BiomeGenBase.plains)
 			trees += 2;
 		if (biome == BiomeGenBase.extremeHills || biome == BiomeGenBase.extremeHillsEdge)
 			trees += 3;
 		if (biome == BiomeGenBase.iceMountains || biome == BiomeGenBase.icePlains)
 			trees += 3;
-		if (trees == 0) { //For BoP, BXL, and RealBiomes compatibility
-			BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(biome);
-			for (int i = 0; i < types.length; i++) {
-				if (types[i] == BiomeDictionary.Type.FOREST) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forest), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.MOUNTAIN) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.extremeHills), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.JUNGLE) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.jungle), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.HILLS) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forestHills), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.SNOWY) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.icePlains), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.PLAINS) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.plains), "max");
-				}
-				if (types[i] == BiomeDictionary.Type.SWAMP) {
-					trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.swampland), "max");
-				}
+		if (biome == BiomeGenBase.jungle)
+			trees += 3;
+
+		if (trees > 0)
+			return trees;
+
+		BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(biome);
+		for (int i = 0; i < types.length; i++) {
+			if (types[i] == BiomeDictionary.Type.FOREST) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forest), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.MOUNTAIN) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.extremeHills), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.JUNGLE) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.jungle), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.HILLS) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forestHills), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.SNOWY) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.icePlains), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.PLAINS) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.plains), "max");
+			}
+			if (types[i] == BiomeDictionary.Type.SWAMP) {
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.swampland), "max");
 			}
 		}
 		return trees;
