@@ -17,6 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 
@@ -40,6 +41,11 @@ public class ItemManipulator extends ItemChromaTool {
 		}
 		if (t == ChromaTiles.RITUAL) {
 			((TileEntityRitualTable)tile).triggerRitual(is);
+			return true;
+		}
+		if (t == ChromaTiles.ITEMRIFT) {
+			TileEntityItemRift ir = (TileEntityItemRift)tile;
+			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
 		return false;

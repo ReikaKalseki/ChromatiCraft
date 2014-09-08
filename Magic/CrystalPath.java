@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.Magic;
 import java.util.LinkedList;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public class CrystalPath {
 

@@ -25,7 +25,7 @@ import cpw.mods.fml.common.IWorldGenerator;
 
 public class ColorTreeGenerator implements IWorldGenerator {
 
-	public static final int CHANCE = 64;
+	public static final int CHANCE = 128;
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider cg, IChunkProvider cp) {

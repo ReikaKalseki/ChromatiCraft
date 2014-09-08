@@ -47,7 +47,7 @@ public class ChromaRecipes {
 		//GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));
 
 		if (ModList.THERMALEXPANSION.isLoaded()) {
-			FluidStack crystal = FluidRegistry.getFluidStack("potion crystal", 8000);
+			FluidStack crystal = FluidRegistry.getFluidStack("potion crystal", 500);
 			int energy = 40000;
 			for (int i = 0; i < 16; i++) {
 				NBTTagCompound toSend = new NBTTagCompound();

@@ -25,6 +25,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EntityBlurFX extends EntityFX {
 
+	private float scale;
+	private float cyclescale;
+
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
 	}
@@ -37,20 +40,39 @@ public class EntityBlurFX extends EntityFX {
 		super(world, x, y, z, vx, vy, vz);
 		particleGravity = 0;
 		noClip = true;
-		particleMaxAge = 63;
+		particleMaxAge = 60;
 		motionX = vx;
 		motionY = vy;
 		motionZ = vz;
-		particleScale = 1F;
-		particleRed = e.getRed()/192F;
-		particleGreen = e.getGreen()/192F;
-		particleBlue = e.getBlue()/192F;
+		scale = 1F;
+		particleRed = e.getRed()/255F;
+		particleGreen = e.getGreen()/255F;
+		particleBlue = e.getBlue()/255F;
 		particleIcon = ChromaIcons.FADE.getIcon();
 	}
 
 	public EntityBlurFX setScale(float f) {
-		particleScale = f;
+		scale = f;
 		return this;
+	}
+
+	@Override
+	public void onUpdate() {
+		super.onUpdate();
+		particleScale = scale*(float)Math.sin(Math.toRadians(180D*particleAge/particleMaxAge));
+		//if (particleAge < 10)
+		//	particleScale = scale*(particleAge+1)/10F;
+		//else if (particleAge > 50)
+		//	particleScale = scale*(61-particleAge)/10F;
+		//else
+		//	particleScale = scale;
+
+		if (cyclescale > 0) {
+			CrystalElement e = CrystalElement.elements[(int)((particleAge*cyclescale)%16)];
+			particleRed = e.getRed()/255F;
+			particleGreen = e.getGreen()/255F;
+			particleBlue = e.getBlue()/255F;
+		}
 	}
 
 	@Override
@@ -78,6 +100,11 @@ public class EntityBlurFX extends EntityFX {
 	public int getFXLayer()
 	{
 		return 2;
+	}
+
+	public EntityBlurFX setCyclingColor(float scale) {
+		cyclescale = scale;
+		return this;
 	}
 
 }

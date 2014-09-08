@@ -26,8 +26,8 @@ import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
-import Reika.ChromatiCraft.Items.ItemTreeDye;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
+import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
@@ -56,12 +56,14 @@ public enum ChromaItems implements ItemEnum {
 	PENDANT3(112, true, 	"crystal.pendant3", 	ItemPendant.class),
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
-	DYE(48, true,			"dye.item", 			ItemTreeDye.class),
+	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),
 	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
 	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class),
 	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
-	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class);
+	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
+	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
+	BERRY(176, true,		"chroma.berry",			ItemCrystalBasic.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -163,6 +165,7 @@ public enum ChromaItems implements ItemEnum {
 		case PENDANT3:
 		case DYE:
 		case LENS:
+		case BERRY:
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case CLUSTER:
 			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
@@ -224,6 +227,7 @@ public enum ChromaItems implements ItemEnum {
 		case POTION:
 		case DYE:
 		case LENS:
+		case BERRY:
 			return CrystalElement.elements.length;
 		case CLUSTER:
 			return ChromaNames.clusterNames.length;

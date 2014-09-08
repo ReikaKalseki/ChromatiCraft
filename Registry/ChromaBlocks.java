@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
+import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
@@ -85,7 +86,8 @@ public enum ChromaBlocks implements BlockEnum {
 	DYEGRASS(BlockDyeGrass.class,				ItemBlockDyeTypes.class,		"dye.grass"),
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
-	TANK(BlockCrystalTank.class,												"crystal.tank");
+	TANK(BlockCrystalTank.class,												"crystal.tank"),
+	FENCE(BlockCrystalFence.class,												"crystal.fence");
 
 	private Class blockClass;
 	private String blockName;
@@ -172,6 +174,8 @@ public enum ChromaBlocks implements BlockEnum {
 	public Class[] getConstructorParamTypes() {
 		if (this.isFluid())
 			return new Class[]{Fluid.class, Material.class};
+		if (this == DECAY || this == DYELEAF)
+			return new Class[]{boolean.class};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Class[0];
 		return new Class[]{Material.class};
@@ -181,6 +185,8 @@ public enum ChromaBlocks implements BlockEnum {
 	public Object[] getConstructorParams() {
 		if (this.isFluid())
 			return new Object[]{this.getFluid(), this.getBlockMaterial()};
+		if (this == DECAY || this == DYELEAF)
+			return new Object[]{this == DECAY};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Object[0];
 		return new Object[]{this.getBlockMaterial()};

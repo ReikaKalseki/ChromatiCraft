@@ -25,13 +25,17 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class BlockDyeLeaf extends BlockCustomLeaf {
 
-	public BlockDyeLeaf() {
-		super();
+	private final boolean decay;
+
+	public BlockDyeLeaf(boolean decay) {
+		super(decay);
+		this.decay = decay;
 	}
 
 	@Override
@@ -72,6 +76,8 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 		dyeChance *= (1+fortune);
 		rainbowChance *= (1+fortune)*(1+fortune);
 
+		float berryChance = 0.1F*ReikaMathLibrary.intpow2(2, fortune);
+
 		if (ReikaRandomHelper.doWithChance(saplingChance))
 			li.add(new ItemStack(ChromaBlocks.DYESAPLING.getBlockInstance(), 1, meta));
 		if (ReikaRandomHelper.doWithChance(appleChance))
@@ -80,6 +86,8 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 			li.add(this.getDye(world, x, y, z, meta));
 		if (ReikaRandomHelper.doWithChance(rainbowChance))
 			li.add(new ItemStack(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), 1, 0));
+		if (ReikaRandomHelper.doWithChance(berryChance))
+			li.add(ChromaItems.BERRY.getCraftedMetadataProduct(1+(int)berryChance, meta));
 		return li;
 	}
 
@@ -140,12 +148,12 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 
 	@Override
 	public boolean decays() {
-		return this == ChromaBlocks.DECAY.getBlockInstance();
+		return decay;
 	}
 
 	@Override
 	public boolean showInCreative() {
-		return this != ChromaBlocks.DECAY.getBlockInstance();
+		return !decay;
 	}
 
 	@Override

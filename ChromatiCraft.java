@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
@@ -438,6 +439,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 		GameRegistry.registerTileEntity(TileEntityCrystalPlant.class, "CCCrystalPlant");
 		GameRegistry.registerTileEntity(CrystalTankAuxTile.class, "CCTankAux");
+		GameRegistry.registerTileEntity(CrystalFenceAuxTile.class, "CCFenceAux");
 	}
 
 	@Override

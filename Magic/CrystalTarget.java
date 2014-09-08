@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public class CrystalTarget {
 

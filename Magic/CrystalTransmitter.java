@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public interface CrystalTransmitter extends CrystalNetworkTile {
 

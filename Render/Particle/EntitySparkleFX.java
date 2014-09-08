@@ -36,6 +36,11 @@ public class EntitySparkleFX extends EntityFX {
 		return this;
 	}
 
+	public EntitySparkleFX setLife(int life) {
+		particleMaxAge = life;
+		return this;
+	}
+
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{

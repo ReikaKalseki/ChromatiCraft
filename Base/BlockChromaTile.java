@@ -57,7 +57,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -282,6 +282,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			else {
 				currenttip.add("Unlinked");
 			}
+			return currenttip;
 		}
 		if (te instanceof TileEntityCrystalTank) {
 			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;
