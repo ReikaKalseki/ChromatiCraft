@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Extras.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
@@ -50,7 +51,9 @@ import cofh.api.energy.IEnergyHandler;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
-
+@Strippable(value = {"buildcraft.api.power.IPowerReceptor", "cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
+		"thaumcraft.api.aspects.IAspectContainer", "dan200.computer.api.IPeripheral", "li.cil.oc.api.network.Environment",
+"li.cil.oc.api.network.ManagedPeripheral"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, IFluidHandler, IPowerReceptor, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral  {
 

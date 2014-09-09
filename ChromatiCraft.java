@@ -311,8 +311,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		this.addDyeCompat();
 
-		ATGBiomes.addBiome(BiomeType.LAND, "Forest", rainbowforest, 1.0);
-		ATGBiomes.addBiome(BiomeType.LAND, "Forest", enderforest, 1.0);
+		if (ModList.ATG.isLoaded()) {
+			ATGBiomes.addBiome(BiomeType.LAND, "Forest", rainbowforest, 1.0);
+			ATGBiomes.addBiome(BiomeType.LAND, "Forest", enderforest, 1.0);
+		}
 
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
