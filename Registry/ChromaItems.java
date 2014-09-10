@@ -19,6 +19,7 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
@@ -63,7 +64,7 @@ public enum ChromaItems implements ItemEnum {
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
 	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
-	BERRY(176, true,		"chroma.berry",			ItemCrystalBasic.class);
+	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

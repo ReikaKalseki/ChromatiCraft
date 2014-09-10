@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
@@ -67,6 +68,7 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockDyeColors.class, 		"block.crystalrune"),
 	CHROMA(BlockLiquidChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
+	ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma,		"Activated Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
 	LAMP(BlockCrystalLamp.class, 				ItemBlockCrystal.class, 		"crystal.lamp"),

@@ -11,11 +11,15 @@ package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 
-public class TileEntityAuraProcessor extends InventoriedChromaticBase {
+//Infuses shards with activated chroma
+public class TileEntityAuraInfuser extends FluidReceiverInventoryBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -52,12 +56,27 @@ public class TileEntityAuraProcessor extends InventoriedChromaticBase {
 
 	@Override
 	public ChromaTiles getTile() {
-		return ChromaTiles.PROCESSOR;
+		return ChromaTiles.INFUSER;
 	}
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public int getCapacity() {
+		return 8000;
+	}
+
+	@Override
+	public Fluid getInputFluid() {
+		return FluidRegistry.getFluid("active chroma");
+	}
+
+	@Override
+	public boolean canReceiveFrom(ForgeDirection from) {
+		return true;
 	}
 
 }

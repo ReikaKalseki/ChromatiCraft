@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraProcessor;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
@@ -50,7 +50,7 @@ public enum ChromaTiles {
 	CHROMAFLOWER("chroma.flower", ChromaBlocks.TILEPLANT, TileEntityChromaFlower.class, 0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", ChromaBlocks.TILEENTITY, TileEntityAutoEnchanter.class, 0),
 	LIQUIFIER("chroma.liquifier", ChromaBlocks.TILEENTITY, TileEntityAuraLiquifier.class, 1),
-	PROCESSOR("chroma.vaporizer", ChromaBlocks.TILEENTITY, TileEntityAuraProcessor.class, 2),
+	INFUSER("chroma.vaporizer", ChromaBlocks.TILEENTITY, TileEntityAuraInfuser.class, 2),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", ChromaBlocks.TILEENTITY, TileEntityCollector.class, 4),
 	TABLE("chroma.table", ChromaBlocks.TILEENTITY, TileEntityCastingTable.class, 5),
