@@ -56,29 +56,7 @@ public class TileEntityCrystalFence extends TileEntityChromaticBase {
 			fence.appendPoint(x, y, z);
 		}
 
-		List<EntityLivingBase> li = this.getEntities();
-		for (int i = 0; i < li.size(); i++) {
-			EntityLivingBase e = li.get(i);
-			boolean att = true;
-			if (e instanceof EntityPlayer) {
-				EntityPlayer ep = (EntityPlayer)e;
-				if (ep == this.getPlacer())
-					att = false;
-				else if ("Reika_Kalseki".equals(ep.getCommandSenderName()))
-					att = false;
-			}
-			if (att) {
-				e.attackEntityFrom(DamageSource.cactus, 4);
-				//e.knockBack(null, 0, 0, 0);
-				double dx = e.posX-x-0.5;
-				double dz = e.posZ-z-0.5;
-				double dd = ReikaMathLibrary.py3d(dx, 0, dz);
-				e.motionX = dx/dd;
-				e.motionY = 0.5;
-				e.motionZ = dz/dd;
-				e.velocityChanged = true;
-			}
-		}
+		this.affectEntities();
 
 		for (Integer key : active.keySet()) {
 			if (key != null) {
@@ -98,17 +76,35 @@ public class TileEntityCrystalFence extends TileEntityChromaticBase {
 		return fence.copy();
 	}
 
-	private List<EntityLivingBase> getEntities() {
+	private void affectEntities() {
 		ArrayList<AxisAlignedBB> li = fence.getAABBs();
-		ArrayList<EntityLivingBase> le = new ArrayList();
 		for (int i = 0; i < li.size(); i++) {
 			AxisAlignedBB aabb = li.get(i).expand(0, 255, 0);
 			List<EntityLivingBase> ents = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
-			le.addAll(ents);
-			if (!ents.isEmpty())
-				active.put(i, 512);
+			for (int k = 0; k < ents.size(); k++) {
+				EntityLivingBase e = ents.get(k);
+				boolean att = true;
+				if (e instanceof EntityPlayer) {
+					EntityPlayer ep = (EntityPlayer)e;
+					if (ep == this.getPlacer())
+						att = false;
+					else if ("Reika_Kalseki".equals(ep.getCommandSenderName()))
+						att = false;
+				}
+				if (att) {
+					e.attackEntityFrom(DamageSource.cactus, 4);
+					//e.knockBack(null, 0, 0, 0);
+					double dx = e.posX-xCoord-0.5;
+					double dz = e.posZ-zCoord-0.5;
+					double dd = ReikaMathLibrary.py3d(dx, 0, dz);
+					e.motionX = dx/dd;
+					e.motionY = 0.5;
+					e.motionZ = dz/dd;
+					e.velocityChanged = true;
+					active.put(i, 512);
+				}
+			}
 		}
-		return le;
 	}
 
 	@Override
