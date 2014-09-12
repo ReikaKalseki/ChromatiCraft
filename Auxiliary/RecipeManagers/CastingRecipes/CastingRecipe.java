@@ -10,8 +10,10 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -140,10 +142,8 @@ public class CastingRecipe {
 			inputs.put(Arrays.asList(dx, dz), is);
 		}
 
-		public HashMap<List<Integer>, ItemStack> getAuxItems() {
-			HashMap map = new HashMap();
-			map.putAll(inputs);
-			return map;
+		public Map<List<Integer>, ItemStack> getAuxItems() {
+			return Collections.unmodifiableMap(inputs);
 		}
 
 		public HashMap<WorldLocation, ItemStack> getOtherInputs(World world, int x, int y, int z) {

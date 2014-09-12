@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
@@ -102,10 +104,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		}
 	}
 
-	public final ArrayList<CrystalTarget> getTargets() {
-		ArrayList<CrystalTarget> li = new ArrayList();
-		li.addAll(targets);
-		return li;
+	public final Collection<CrystalTarget> getTargets() {
+		return Collections.unmodifiableCollection(targets);
 	}
 	/*
 	private void spawnParticle(World world, int x, int y, int z) {

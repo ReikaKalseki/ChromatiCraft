@@ -27,6 +27,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
+import net.minecraftforge.common.BiomeManager.BiomeEntry;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
@@ -233,12 +234,14 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		rainbowforest = new BiomeRainbowForest(ChromaOptions.RAINBOWFORESTID.getValue());
+		BiomeManager.warmBiomes.add(new BiomeEntry(rainbowforest, 2));
 		BiomeManager.addSpawnBiome(rainbowforest);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
 
 		enderforest = new BiomeEnderForest(ChromaOptions.ENDERFORESTID.getValue());
+		BiomeManager.coolBiomes.add(new BiomeEntry(enderforest, 6));
 		BiomeManager.addSpawnBiome(enderforest);
-		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
+		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
 
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);

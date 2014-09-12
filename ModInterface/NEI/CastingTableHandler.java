@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.ModInterface.NEI;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
@@ -59,7 +59,7 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 			dx = 5;
 			dy = 3;
 			if (recipe instanceof MultiBlockCastingRecipe) {
-				HashMap<List<Integer>, ItemStack> map = ((MultiBlockCastingRecipe)recipe).getAuxItems();
+				Map<List<Integer>, ItemStack> map = ((MultiBlockCastingRecipe)recipe).getAuxItems();
 				for (List<Integer> key : map.keySet()) {
 					ItemStack is = map.get(key);
 					int i = key.get(0);

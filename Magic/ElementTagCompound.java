@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,9 +66,7 @@ public final class ElementTagCompound {
 
 	/** Map.keySet() */
 	public Collection<CrystalElement> elementSet() {
-		ArrayList<CrystalElement> c = new ArrayList();
-		c.addAll(data.keySet());
-		return c;
+		return Collections.unmodifiableSet(data.keySet());
 	}
 
 	public void maximizeWith(ElementTagCompound tag) {

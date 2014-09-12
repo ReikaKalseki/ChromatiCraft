@@ -10,8 +10,10 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
@@ -136,10 +138,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		return selected.containsKey(e) ? selected.get(e) : 0;
 	}
 
-	public HashMap<Enchantment, Integer> getEnchantments() {
-		HashMap map = new HashMap();
-		map.putAll(selected);
-		return map;
+	public Map<Enchantment, Integer> getEnchantments() {
+		return Collections.unmodifiableMap(selected);
 	}
 
 	@Override

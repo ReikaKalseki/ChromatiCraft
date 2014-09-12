@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +36,7 @@ public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		if (tile.worldObj != null) {
 			CrystalTransmitterBase te = (CrystalTransmitterBase)tile;
-			ArrayList<CrystalTarget> li = te.getTargets();
+			Collection<CrystalTarget> li = te.getTargets();
 			if (!li.isEmpty()) {
 
 				double t = (System.currentTimeMillis()/600D)%360;
@@ -58,8 +58,7 @@ public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 				GL11.glTranslated(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 
 				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
-				for (int k = 0; k < li.size(); k++) {
-					CrystalTarget ct = li.get(k);
+				for (CrystalTarget ct : li) {
 
 					WorldLocation tgt = ct.location;
 

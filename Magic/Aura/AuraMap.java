@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.Magic.Aura;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -26,10 +28,8 @@ public class AuraMap {
 
 	private final ArrayList<AuraLocation> auraSources = new ArrayList();
 
-	public ArrayList<AuraLocation> getAuraSources() {
-		ArrayList li = new ArrayList();
-		li.addAll(auraSources);
-		return li;
+	public Collection<AuraLocation> getAuraSources() {
+		return Collections.unmodifiableCollection(auraSources);
 	}
 
 	public ArrayList<AuraLocation> getAuraSourcesWithinDOfXYZ(World world, int x, int y, int z, double maxdist) {
