@@ -19,6 +19,7 @@ import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -32,6 +33,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -68,6 +70,42 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (is != null) {
+			CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+			TileEntityCrystalTank tk = te.getTankController();
+			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+			if (fs != null) {
+				int drain = tk.fill(null, fs, false);
+				if (drain == fs.amount) {
+					tk.fill(null, fs, true);
+					if (!ep.capabilities.isCreativeMode) {
+						ItemStack is2 = FluidContainerRegistry.drainFluidContainer(is);
+						ep.setCurrentItemOrArmor(0, is2);
+					}
+				}
+				return true;
+			}
+			else if (FluidContainerRegistry.isEmptyContainer(is)) {
+				FluidStack rem = tk.drain(null, tk.getLevel(), false);
+				if (rem != null) {
+					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
+					if (fill != null) {
+						FluidStack removed = FluidContainerRegistry.getFluidForFilledItem(fill);
+						tk.drain(null, removed.amount, true);
+						if (!ep.capabilities.isCreativeMode) {
+							ep.setCurrentItemOrArmor(0, fill);
+						}
+					}
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
 		CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		TileEntityCrystalTank te = tile.getTankController();
@@ -76,7 +114,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return blockIcon;//meta == 0 ? blockIcon : ChromaIcons.TRANSPARENT.getIcon();
+		return edges[0];//meta == 0 ? blockIcon : ChromaIcons.TRANSPARENT.getIcon();
 	}
 
 	@Override

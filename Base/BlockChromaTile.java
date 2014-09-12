@@ -32,6 +32,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
@@ -156,6 +157,36 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			return true;
 		}
 
+		if (is != null && m == ChromaTiles.TANK) {
+			TileEntityCrystalTank tile = (TileEntityCrystalTank)te;
+			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+			if (fs != null) {
+				int drain = tile.fill(null, fs, false);
+				if (drain == fs.amount) {
+					tile.fill(null, fs, true);
+					if (!ep.capabilities.isCreativeMode) {
+						ItemStack is2 = FluidContainerRegistry.drainFluidContainer(is);
+						ep.setCurrentItemOrArmor(0, is2);
+					}
+				}
+				return true;
+			}
+			else if (FluidContainerRegistry.isEmptyContainer(is)) {
+				FluidStack rem = tile.drain(null, tile.getLevel(), false);
+				if (rem != null) {
+					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
+					if (fill != null) {
+						FluidStack removed = FluidContainerRegistry.getFluidForFilledItem(fill);
+						tile.drain(null, removed.amount, true);
+						if (!ep.capabilities.isCreativeMode) {
+							ep.setCurrentItemOrArmor(0, fill);
+						}
+					}
+				}
+				return true;
+			}
+		}
+
 		if (ChromaItems.LENS.matchWith(is) && te instanceof TileEntityCrystalLaser) {
 			ItemStack ret = ((TileEntityCrystalLaser)te).swapLens(is);
 			ep.setCurrentItemOrArmor(0, ret);
@@ -182,12 +213,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		if (m.isEnchantable()) {
 			HashMap<Enchantment, Integer> ench = ((EnchantableMachine)tile).getEnchantments();
 			ReikaEnchantmentHelper.applyEnchantments(core, ench);
-		}
-		if (m.hasNBTVariants()) {
-			NBTMachine nb = (NBTMachine)tile;
-			NBTTagCompound nbt = nb.getTagsToWriteToStack();
-			//core.stackTagCompound = nbt;
 		}*/
+		if (m.hasNBTVariants()) {
+			NBTTile nb = (NBTTile)tile;
+			NBTTagCompound nbt = nb.getTagsToWriteToStack();
+			core.stackTagCompound = nbt;
+		}
 		return core;
 	}
 

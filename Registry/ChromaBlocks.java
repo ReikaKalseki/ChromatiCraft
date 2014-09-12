@@ -68,9 +68,10 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockDyeColors.class, 		"block.crystalrune"),
 	CHROMA(BlockLiquidChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
-	ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma,		"Activated Chroma"),
+	ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
+	RAINBOWCRYSTAL(BlockCaveCrystal.class, 										"crystal.rainbow"),
 	LAMP(BlockCrystalLamp.class, 				ItemBlockCrystal.class, 		"crystal.lamp"),
 	SUPER(BlockSuperCrystal.class, 				ItemBlockCrystal.class, 		"crystal.super"),
 	PLANT(BlockCrystalPlant.class, 				ItemBlockCrystalPlant.class, 	"crystal.plant"),
@@ -125,6 +126,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILEPLANT:
 			return Material.plants;
 		case CHROMA:
+		case ACTIVECHROMA:
 		case ENDER:
 			return Material.water;
 		case TILECRYSTAL:

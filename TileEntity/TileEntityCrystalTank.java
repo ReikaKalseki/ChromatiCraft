@@ -237,4 +237,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		this.update();
 	}
 
+	public boolean isEmpty() {
+		return tank.isEmpty();
+	}
+
 }

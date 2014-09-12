@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +35,8 @@ public class AcceleratorRenderer extends ChromaRenderBase {
 		GL11.glPushMatrix();
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		ReikaRenderHelper.disableLighting();
+		//ReikaRenderHelper.disableLighting();
+
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glTranslated(par2, par4, par6);
 		GL11.glScaled(1, -1, -1);
@@ -57,6 +57,10 @@ public class AcceleratorRenderer extends ChromaRenderBase {
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 		}
+		else {
+			//GL11.glDisable(GL11.GL_LIGHTING);
+			//ReikaRenderHelper.disableEntityLighting();
+		}
 
 		this.drawMiddle(te);
 
@@ -69,9 +73,11 @@ public class AcceleratorRenderer extends ChromaRenderBase {
 			this.drawInner(te);
 		}
 		else {
-			GL11.glEnable(GL11.GL_LIGHTING);
+			//GL11.glEnable(GL11.GL_LIGHTING);
+			//RenderHelper.enableGUIStandardItemLighting();
 		}
-		RenderHelper.enableGUIStandardItemLighting();
+		//ReikaRenderHelper.enableEntityLighting();
+		GL11.glEnable(GL11.GL_LIGHTING);
 
 		//this.drawSparkle(te);
 

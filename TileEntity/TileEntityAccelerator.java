@@ -79,7 +79,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote) {
+		if (particles && world.isRemote) {
 			this.spawnParticles(world, x, y, z, meta);
 		}
 

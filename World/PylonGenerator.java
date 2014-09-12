@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -38,34 +40,85 @@ public class PylonGenerator implements IWorldGenerator {
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	private static final int CHANCE = 40;
+	//private static final int CHANCE = 40;
+
+	private static final int avgDist = 8;
+	private static final int maxDeviation = 3;
+	private static final Random rand = new Random();
+
+	private static final int GRIDSIZE = 256;
+
+	private static final HashMap<Integer, boolean[][]> data = new HashMap();
+	private static final HashMap<Integer, Boolean> init = new HashMap();
+
+	private static void fillArray(World world) {
+		int id = world.provider.dimensionId;
+		init.put(id, true);
+
+		rand.setSeed(world.getSeed() ^ id);
+		boolean[][] grid = getGrid(id);
+		for (int x = maxDeviation; x < GRIDSIZE-maxDeviation; x += avgDist) {
+			for (int z = maxDeviation; z < GRIDSIZE-maxDeviation; z += avgDist) {
+				int x2 = ReikaRandomHelper.getRandomPlusMinus(x, maxDeviation);
+				int z2 = ReikaRandomHelper.getRandomPlusMinus(z, maxDeviation);
+				grid[x2][z2] = true;
+				//ChromatiCraft.logger.debug(x + ", " + z + " | " + x2 + ", " + z2);
+			}
+		}
+		if (ChromatiCraft.logger.shouldDebug())
+			ChromatiCraft.logger.debug("Dimension Pylon Generation Array: \n"+getDimensionString(id));
+	}
+
+	private static String getDimensionString(int id) {
+		boolean[][] arr = getGrid(id);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < GRIDSIZE; i++) {
+			for (int j = 0; j < GRIDSIZE; j++) {
+				char c = arr[i][j] ? 'x' : 'o';
+				sb.append(c);
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	private static boolean[][] getGrid(int dim) {
+		boolean[][] arr = data.get(dim);
+		if (arr == null) {
+			arr = new boolean[GRIDSIZE][GRIDSIZE];
+			data.put(dim, arr);
+		}
+		return arr;
+	}
+
+	private static boolean filledDim(World world) {
+		return init.containsKey(world.provider.dimensionId);
+	}
+
+	private static boolean isGennableChunk(World world, int chunkX, int chunkZ) {
+		boolean[][] arr = getGrid(world.provider.dimensionId);
+		return arr[chunkX%128][chunkZ%128];
+	}
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider gen, IChunkProvider p) {
-		if (!this.canGenerateIn(world))
-			return;
-		chunkX *= 16;
-		chunkZ *= 16;
-		int x = chunkX+r.nextInt(16);
-		int z = chunkZ+r.nextInt(16);
-		int chance = CHANCE;
-		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
-		if (BiomeDictionary.isBiomeOfType(b, Type.BEACH) || BiomeDictionary.isBiomeOfType(b, Type.NETHER))
-			return;
-		if (b == BiomeGenBase.desert || b == BiomeGenBase.icePlains)
-			chance *= 2;
-		else if (BiomeDictionary.isBiomeOfType(b, Type.WASTELAND) || BiomeDictionary.isBiomeOfType(b, Type.PLAINS))
-			chance *= 2;
-		else if (BiomeDictionary.isBiomeOfType(b, Type.JUNGLE))
-			chance /= 1.5;
-		else if (BiomeDictionary.isBiomeOfType(b, Type.FOREST))
-			chance /= 1.25;
-		int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+		if (this.canGenerateIn(world)) {
 
-		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
-			if (r.nextInt(chance) == 0 && this.canGenerateAt(world, x, y, z)) {
-				ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);
-				this.generatePylon(r, world, x, y, z);
+			if (!this.filledDim(world)) {
+				this.fillArray(world);
+			}
+
+			if (this.isGennableChunk(world, chunkX, chunkZ)) {
+				chunkX *= 16;
+				chunkZ *= 16;
+				int x = chunkX+r.nextInt(16);
+				int z = chunkZ+r.nextInt(16);
+
+				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+				if (this.canGenerateAt(world, x, y, z)) {
+					ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);
+					this.generatePylon(r, world, x, y, z);
+				}
 			}
 		}
 	}
@@ -77,10 +130,16 @@ public class PylonGenerator implements IWorldGenerator {
 			return false;
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return false;
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+			return false;
 		return true;
 	}
 
 	private boolean canGenerateAt(World world, int x, int y, int z) {
+		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+		if (BiomeDictionary.isBiomeOfType(biome, Type.NETHER))
+			return false;
+
 		Block origin = world.getBlock(x, y, z);
 		if (origin == Blocks.log || origin == Blocks.log2)
 			return false;

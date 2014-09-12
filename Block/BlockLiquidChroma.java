@@ -56,7 +56,12 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ico) {
-		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/chroma"), ico.registerIcon("chromaticraft:fluid/chroma_flowing")};
+		String icon = this.getIcon();
+		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/"+icon), ico.registerIcon("chromaticraft:fluid/"+icon+"_flowing")};
+	}
+
+	protected String getIcon() {
+		return "chroma";
 	}
 
 	@Override

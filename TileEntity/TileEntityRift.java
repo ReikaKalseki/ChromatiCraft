@@ -48,9 +48,10 @@ import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import cofh.api.energy.IEnergyHandler;
-import dan200.computer.api.IComputerAccess;
-import dan200.computer.api.ILuaContext;
-import dan200.computer.api.IPeripheral;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import dan200.computercraft.api.peripheral.IPeripheral;
 @Strippable(value = {"buildcraft.api.power.IPowerReceptor", "cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "dan200.computer.api.IPeripheral", "li.cil.oc.api.network.Environment",
 "li.cil.oc.api.network.ManagedPeripheral"})
@@ -674,19 +675,11 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			return ((IPeripheral)this.getSingleDirTile()).callMethod(computer, context, method, arguments);
 		}
 		return null;
-	}
-
-	@Override
-	public boolean canAttachToSide(int side) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
-			return ((IPeripheral)this.getSingleDirTile()).canAttachToSide(side);
-		}
-		return false;
 	}
 
 	@Override

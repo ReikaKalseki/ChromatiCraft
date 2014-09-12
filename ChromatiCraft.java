@@ -21,6 +21,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Achievement;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -41,8 +42,6 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
-import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
@@ -389,6 +388,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	private static void setupLiquids() {
 		logger.log("Loading And Registering Liquids");
 		FluidRegistry.registerFluid(chroma);
+		FluidRegistry.registerFluid(activechroma);
 		FluidRegistry.registerFluid(crystal);
 		FluidRegistry.registerFluid(ender);
 	}
@@ -440,9 +440,23 @@ public class ChromatiCraft extends DragonAPIMod {
 			GameRegistry.registerTileEntity(ChromaTiles.TEList[i].getTEClass(), label);
 			ReikaJavaLibrary.initClass(ChromaTiles.TEList[i].getTEClass());
 		}
+		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
+			ChromaBlocks b = ChromaBlocks.blockList[i];
+			Class c = b.getObjectClass();
+			Class[] cs = c.getClasses();
+			if (cs != null) {
+				for (int k = 0; k < cs.length; k++) {
+					Class in = cs[k];
+					if (TileEntity.class.isAssignableFrom(in)) {
+						String s = "CC"+in.getSimpleName();
+						GameRegistry.registerTileEntity(in, s);
+					}
+				}
+			}
+		}
 		GameRegistry.registerTileEntity(TileEntityCrystalPlant.class, "CCCrystalPlant");
-		GameRegistry.registerTileEntity(CrystalTankAuxTile.class, "CCTankAux");
-		GameRegistry.registerTileEntity(CrystalFenceAuxTile.class, "CCFenceAux");
+		//GameRegistry.registerTileEntity(CrystalTankAuxTile.class, "CCTankAux");
+		//GameRegistry.registerTileEntity(CrystalFenceAuxTile.class, "CCFenceAux");
 	}
 
 	@Override
