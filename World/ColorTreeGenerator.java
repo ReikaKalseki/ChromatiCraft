@@ -13,6 +13,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -113,6 +114,8 @@ public class ColorTreeGenerator implements IWorldGenerator {
 		if (Math.abs(world.provider.dimensionId) == 1)
 			return false;
 		if (Math.abs(world.provider.dimensionId) == ReikaTwilightHelper.getDimensionID())
+			return false;
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return false;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		BiomeDecorator dec = biome.theBiomeDecorator;

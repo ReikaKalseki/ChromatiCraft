@@ -242,7 +242,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
-		GameRegistry.registerWorldGenerator(new PylonGenerator(), Integer.MIN_VALUE);
+		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
 
 		DimensionManager.unregisterProviderType(1);
 		DimensionManager.registerProviderType(1, CustomEndProvider.class, false);

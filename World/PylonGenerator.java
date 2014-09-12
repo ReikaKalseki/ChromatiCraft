@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -29,34 +31,39 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.IWorldGenerator;
 
-public class PylonGenerator implements IWorldGenerator {
+public final class PylonGenerator implements IWorldGenerator {
+
+	public static final PylonGenerator instance = new PylonGenerator();
 
 	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	//private static final int CHANCE = 40;
+	//private final int CHANCE = 40;
 
-	private static final int avgDist = 8;
-	private static final int maxDeviation = 3;
-	private static final Random rand = new Random();
+	private final int avgDist = 10; //16
+	private final int maxDeviation = 4;
+	private final Random rand = new Random();
 
-	private static final int GRIDSIZE = 256;
+	private final int GRIDSIZE = 256;
 
-	private static final HashMap<Integer, boolean[][]> data = new HashMap();
-	private static final HashMap<Integer, Boolean> init = new HashMap();
+	private final HashMap<Integer, boolean[][]> data = new HashMap();
 
-	private static void fillArray(World world) {
+	private PylonGenerator() {
+
+	}
+
+	private void fillArray(World world) {
 		int id = world.provider.dimensionId;
-		init.put(id, true);
-
 		rand.setSeed(world.getSeed() ^ id);
-		boolean[][] grid = getGrid(id);
+		boolean[][] grid = this.getGrid(id);
 		for (int x = maxDeviation; x < GRIDSIZE-maxDeviation; x += avgDist) {
 			for (int z = maxDeviation; z < GRIDSIZE-maxDeviation; z += avgDist) {
 				int x2 = ReikaRandomHelper.getRandomPlusMinus(x, maxDeviation);
@@ -65,16 +72,16 @@ public class PylonGenerator implements IWorldGenerator {
 				//ChromatiCraft.logger.debug(x + ", " + z + " | " + x2 + ", " + z2);
 			}
 		}
-		if (ChromatiCraft.logger.shouldDebug())
-			ChromatiCraft.logger.debug("Dimension Pylon Generation Array: \n"+getDimensionString(id));
+		//if (ChromatiCraft.logger.shouldDebug())
+		//ChromatiCraft.logger.log("Dimension Pylon Generation Array: \n"+getDimensionString(id));
 	}
 
-	private static String getDimensionString(int id) {
-		boolean[][] arr = getGrid(id);
+	private String getDimensionString(int id) {
+		boolean[][] arr = this.getGrid(id);
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < GRIDSIZE; i++) {
 			for (int j = 0; j < GRIDSIZE; j++) {
-				char c = arr[i][j] ? 'x' : 'o';
+				String c = arr[i][j] ? "[#]" : "[ ]";
 				sb.append(c);
 			}
 			sb.append("\n");
@@ -82,7 +89,7 @@ public class PylonGenerator implements IWorldGenerator {
 		return sb.toString();
 	}
 
-	private static boolean[][] getGrid(int dim) {
+	private boolean[][] getGrid(int dim) {
 		boolean[][] arr = data.get(dim);
 		if (arr == null) {
 			arr = new boolean[GRIDSIZE][GRIDSIZE];
@@ -91,13 +98,22 @@ public class PylonGenerator implements IWorldGenerator {
 		return arr;
 	}
 
-	private static boolean filledDim(World world) {
-		return init.containsKey(world.provider.dimensionId);
+	private boolean filledDim(World world) {
+		return data.containsKey(world.provider.dimensionId);
 	}
 
-	private static boolean isGennableChunk(World world, int chunkX, int chunkZ) {
-		boolean[][] arr = getGrid(world.provider.dimensionId);
-		return arr[chunkX%128][chunkZ%128];
+	public Coordinate getNearestValidChunk(int x, int z) {
+
+		return new Coordinate(332, 80, -141);
+	}
+
+	public boolean isGennableChunk(World world, int chunkX, int chunkZ) {
+		boolean[][] arr = this.getGrid(world.provider.dimensionId);
+		while (chunkX < 0)
+			chunkX += GRIDSIZE;
+		while (chunkZ < 0)
+			chunkZ += GRIDSIZE;
+		return arr[chunkX%GRIDSIZE][chunkZ%GRIDSIZE];
 	}
 
 	@Override
@@ -109,16 +125,22 @@ public class PylonGenerator implements IWorldGenerator {
 			}
 
 			if (this.isGennableChunk(world, chunkX, chunkZ)) {
-				chunkX *= 16;
-				chunkZ *= 16;
-				int x = chunkX+r.nextInt(16);
-				int z = chunkZ+r.nextInt(16);
+				this.tryForceGenerate(world, chunkX*16, chunkZ*16, r);
+			}
+		}
+	}
 
-				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				if (this.canGenerateAt(world, x, y, z)) {
-					ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);
-					this.generatePylon(r, world, x, y, z);
-				}
+	private void tryForceGenerate(World world, int chunkX, int chunkZ, Random r) {
+		int maxtries = 24;
+		for (int i = 0; i < maxtries; i++) {
+			int x = chunkX+r.nextInt(16);
+			int z = chunkZ+r.nextInt(16);
+
+			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+			if (this.canGenerateAt(world, x, y, z)) {
+				ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);
+				this.generatePylon(r, world, x, y, z);
+				break;
 			}
 		}
 	}
@@ -149,7 +171,7 @@ public class PylonGenerator implements IWorldGenerator {
 		for (int i = y+1; i < world.getHeight(); i++) {
 			Block b = world.getBlock(x, i, z);
 			if (b != Blocks.air && b != Blocks.leaves && b != Blocks.leaves2 && !ReikaWorldHelper.softBlocks(world, x, i, z))
-				return false;
+				;//return false;
 		}
 
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
@@ -174,12 +196,17 @@ public class PylonGenerator implements IWorldGenerator {
 			}
 		}
 
+		//precalc:
 		for (int i = 0; i < blocks.getSize(); i++) {
 			int[] xyz = blocks.getNthBlock(i);
 			int dx = xyz[0];
 			int dy = xyz[1];
 			int dz = xyz[2];
 			Block b = world.getBlock(dx, dy, dz);
+			//if (b == Blocks.stone || b == Blocks.dirt || b == Blocks.grass) {
+			//	blocks.offset(0, 1, 0);
+			//	break precalc;
+			//}
 			if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
 				return false;
 			if (!ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
@@ -210,7 +237,19 @@ public class PylonGenerator implements IWorldGenerator {
 			return true;
 		if (b == Blocks.sand)
 			return true;
-		if (b == Blocks.log || b == Blocks.log2)
+		if (b == Blocks.log || b == Blocks.log2 || ModWoodList.isModWood(b, meta))
+			return true;
+		if (b == Blocks.leaves || b == Blocks.leaves2 || ModWoodList.isModLeaf(b, meta))
+			return true;
+		if (b == Blocks.red_flower || b == Blocks.yellow_flower || b instanceof BlockFlower)
+			return true;
+		if (b == Blocks.red_mushroom || b == Blocks.brown_mushroom)
+			return true;
+		if (b instanceof BlockBush)
+			return true;
+		if (b == Blocks.reeds)
+			return true;
+		if (b == Blocks.cactus)
 			return true;
 		return false;
 	}
@@ -222,9 +261,19 @@ public class PylonGenerator implements IWorldGenerator {
 			return true;
 		if (b == Blocks.gravel)
 			return true;
-		if (b == Blocks.log || b == Blocks.log2)
+		if (b == Blocks.log || b == Blocks.log2 || ModWoodList.isModWood(b, meta))
 			return true;
-		if (b == Blocks.leaves || b == Blocks.leaves2)
+		if (b == Blocks.leaves || b == Blocks.leaves2 || ModWoodList.isModLeaf(b, meta))
+			return true;
+		if (b == Blocks.red_flower || b == Blocks.yellow_flower || b instanceof BlockFlower)
+			return true;
+		if (b == Blocks.red_mushroom || b == Blocks.brown_mushroom)
+			return true;
+		if (b instanceof BlockBush)
+			return true;
+		if (b == Blocks.reeds)
+			return true;
+		if (b == Blocks.cactus)
 			return true;
 		return false;
 	}

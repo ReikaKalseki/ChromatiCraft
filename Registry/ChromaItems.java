@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
+import Reika.ChromatiCraft.Items.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
@@ -64,7 +65,8 @@ public enum ChromaItems implements ItemEnum {
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
 	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
-	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class);
+	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class),
+	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

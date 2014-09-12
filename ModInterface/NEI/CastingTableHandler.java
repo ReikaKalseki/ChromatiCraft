@@ -136,9 +136,11 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadCraftingRecipes(ItemStack result) {
-		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(result);
-		for (int i = 0; i < li.size(); i++)
-			arecipes.add(new CastingCrafting(li.get(i)));
+		if (result != null) {
+			ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(result);
+			for (int i = 0; i < li.size(); i++)
+				arecipes.add(new CastingCrafting(li.get(i)));
+		}
 	}
 
 	@Override

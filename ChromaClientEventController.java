@@ -18,10 +18,14 @@ import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 
 import org.lwjgl.opengl.GL11;
@@ -29,7 +33,9 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -46,6 +52,30 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent
+	public void renderPylonFinderArrow(RenderGameOverlayEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (is != null && ChromaItems.FINDER.matchWith(is)) {
+			Tessellator v5 = Tessellator.instance;
+			//CrystalElement e = CrystalElement.elements[is.getItemDamage()];
+			int x = MathHelper.floor_double(ep.posX);
+			int z = MathHelper.floor_double(ep.posZ);
+			Coordinate c = PylonGenerator.instance.getNearestValidChunk(x, z);
+			double dx = c.xCoord-TileEntityRendererDispatcher.staticPlayerX;
+			double dy = c.yCoord-TileEntityRendererDispatcher.staticPlayerY;
+			double dz = c.zCoord-TileEntityRendererDispatcher.staticPlayerZ;
+			//ReikaJavaLibrary.pConsole(c);
+			GL11.glPushMatrix();
+			GL11.glTranslated(dx, dy, dz);
+			//v5.startDrawing(GL11.GL_LINES);
+			v5.addVertex(0, 0, 0);
+			v5.addVertex(8, 0, 0);
+			//v5.draw();
+			GL11.glPopMatrix();
+		}
 	}
 
 	@SubscribeEvent

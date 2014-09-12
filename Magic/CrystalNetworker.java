@@ -18,6 +18,8 @@ import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -28,7 +30,7 @@ public class CrystalNetworker implements TickHandler {
 
 	public static final CrystalNetworker instance = new CrystalNetworker();
 
-	private final ArrayList<CrystalNetworkTile> tiles = new ArrayList();
+	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final ArrayList<CrystalFlow> flows = new ArrayList();
 
 	private int losTimer = 0;
@@ -40,8 +42,8 @@ public class CrystalNetworker implements TickHandler {
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		this.clear();
-		for (int i = 0; i < tiles.size(); i++) {
-			CrystalNetworkTile te = tiles.get(i);
+		for (Coordinate c : tiles.keySet()) {
+			CrystalNetworkTile te = tiles.get(c);
 			if (te instanceof CrystalTransmitter)
 				((CrystalTransmitter)te).clearTargets();
 		}
@@ -117,14 +119,12 @@ public class CrystalNetworker implements TickHandler {
 
 	public void addTile(CrystalNetworkTile te) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-			if (!tiles.contains(te)) {
-				tiles.add(te);
-			}
+			tiles.put(new Coordinate(te.getX(), te.getY(), te.getZ()), te);
 		}
 	}
 
 	public void removeTile(CrystalNetworkTile te) {
-		tiles.remove(te);
+		tiles.remove(new Coordinate(te.getX(), te.getY(), te.getZ()));
 		Iterator<CrystalFlow> it = flows.iterator();
 		while (it.hasNext()) {
 			CrystalFlow p = it.next();
@@ -151,8 +151,8 @@ public class CrystalNetworker implements TickHandler {
 	ArrayList<CrystalNetworkTile> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
 		dist = dist*dist;
 		ArrayList<CrystalNetworkTile> li = new ArrayList();
-		for (int i = 0; i < tiles.size(); i++) {
-			CrystalNetworkTile tile = tiles.get(i);
+		for (Coordinate c : tiles.keySet()) {
+			CrystalNetworkTile tile = tiles.get(c);
 			if (tile instanceof CrystalTransmitter) {
 				CrystalTransmitter te = (CrystalTransmitter)tile;
 				if (te.canConduct()) {
