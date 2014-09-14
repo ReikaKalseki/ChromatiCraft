@@ -61,7 +61,7 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 	}
 
 	@Override
-	public final void registerBlockIcons(IIconRegister ico) {
+	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:transparent");
 	}
 

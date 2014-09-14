@@ -41,6 +41,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			GL11.glDisable(GL11.GL_LIGHTING);
+			//GL11.glDisable(GL11.GL_ALPHA_TEST);
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
@@ -63,10 +64,13 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 
-			CrystalElement c = te.getColor();
+			int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
+			//ReikaJavaLibrary.pConsole(te.getEnergy());
+
+			int color = te.getRenderColor();
 
 			v5.startDrawingQuads();
-			v5.setColorOpaque(c.getRed(), c.getGreen(), c.getBlue());
+			v5.setColorRGBA_I(color, alpha);
 			v5.addVertexWithUV(-1, -1, 0, u, v);
 			v5.addVertexWithUV(1, -1, 0, du, v);
 			v5.addVertexWithUV(1, 1, 0, du, dv);
@@ -75,6 +79,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 			GL11.glPopMatrix();
 			BlendMode.DEFAULT.apply();
+			//GL11.glEnable(GL11.GL_ALPHA_TEST);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
 			ReikaRenderHelper.enableEntityLighting();

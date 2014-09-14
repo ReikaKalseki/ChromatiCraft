@@ -148,12 +148,9 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		}
 
 		if (te instanceof ItemOnRightClick) {
-			((ItemOnRightClick)te).onRightClickWith(is);
+			ItemStack ret = ((ItemOnRightClick)te).onRightClickWith(is);
 			((TileEntityBase)te).syncAllData(true);
-			if (is != null && is.stackSize > 1)
-				is.stackSize--;
-			else
-				ep.setCurrentItemOrArmor(0, null);
+			ep.setCurrentItemOrArmor(0, ret);
 			return true;
 		}
 

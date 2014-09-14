@@ -161,10 +161,11 @@ public enum ChromaItems implements ItemEnum {
 		case PLACER:
 			return ChromaTiles.TEList[meta].getName();
 		case BUCKET:
-			if (meta >= 2)
-				meta = 2;
+			//if (meta >= 2)
+			//	meta = 2;
 			return StatCollector.translateToLocal(ChromaNames.getFluidName(meta))+" "+this.getBasicName();
 		case SHARD:
+			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case POTION:
 		case PENDANT:
 		case PENDANT3:
@@ -223,10 +224,11 @@ public enum ChromaItems implements ItemEnum {
 			return 1;
 		switch(this) {
 		case BUCKET:
-			return 3;
+			return 2;
 		case PLACER:
 			return ChromaTiles.TEList.length;
 		case SHARD:
+			return CrystalElement.elements.length*2;
 		case PENDANT:
 		case PENDANT3:
 		case POTION:

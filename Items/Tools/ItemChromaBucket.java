@@ -21,10 +21,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -64,6 +62,7 @@ public class ItemChromaBucket extends ItemChromaTool {
 				return false;
 		}
 		world.setBlock(x, y, z, this.getBlock(is));
+		/*
 		if (is.getItemDamage() >= 2) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
 			te.activate(CrystalElement.elements[is.getItemDamage()-2]);
@@ -71,14 +70,15 @@ public class ItemChromaBucket extends ItemChromaTool {
 				te.setBerries(is.stackTagCompound.getInteger("berry"));
 			}
 		}
+		 */
 		if (!ep.capabilities.isCreativeMode)
 			ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket));
 		return true;
 	}
 
 	private Block getBlock(ItemStack is) {
-		if (is.getItemDamage() >= 2)
-			return ChromaBlocks.ACTIVECHROMA.getBlockInstance();
+		//if (is.getItemDamage() >= 2)
+		//	return ChromaBlocks.ACTIVECHROMA.getBlockInstance();
 		switch(is.getItemDamage()) {
 		case 0:
 			return ChromaBlocks.CHROMA.getBlockInstance();

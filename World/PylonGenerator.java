@@ -23,7 +23,9 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -39,6 +41,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.IWorldGenerator;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public final class PylonGenerator implements IWorldGenerator {
 
@@ -57,7 +60,16 @@ public final class PylonGenerator implements IWorldGenerator {
 	private final HashMap<Integer, boolean[][]> data = new HashMap();
 
 	private PylonGenerator() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
 
+	@SubscribeEvent
+	public void clearOnUnload(WorldEvent.Unload evt) {
+		this.clear(evt.world);
+	}
+
+	private void clear(World world) {
+		data.remove(world.provider.dimensionId);
 	}
 
 	private void fillArray(World world) {
@@ -102,12 +114,15 @@ public final class PylonGenerator implements IWorldGenerator {
 		return data.containsKey(world.provider.dimensionId);
 	}
 
-	public Coordinate getNearestValidChunk(int x, int z) {
+	public Coordinate getNearestValidChunk(World world, int x, int z) {
+		if (!this.filledDim(world)) {
+			this.fillArray(world);
+		}
 
 		return new Coordinate(332, 80, -141);
 	}
 
-	public boolean isGennableChunk(World world, int chunkX, int chunkZ) {
+	private boolean isGennableChunk(World world, int chunkX, int chunkZ) {
 		boolean[][] arr = this.getGrid(world.provider.dimensionId);
 		while (chunkX < 0)
 			chunkX += GRIDSIZE;
@@ -130,12 +145,13 @@ public final class PylonGenerator implements IWorldGenerator {
 		}
 	}
 
-	private void tryForceGenerate(World world, int chunkX, int chunkZ, Random r) {
+	private void tryForceGenerate(World world, int cx, int cz, Random r) {
 		int maxtries = 24;
 		for (int i = 0; i < maxtries; i++) {
-			int x = chunkX+r.nextInt(16);
-			int z = chunkZ+r.nextInt(16);
+			int x = cx+r.nextInt(16);
+			int z = cz+r.nextInt(16);
 
+			//world.setBlock(x, 128, z, Blocks.flowing_lava);
 			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
 			if (this.canGenerateAt(world, x, y, z)) {
 				ChromatiCraft.logger.debug("Generated pylon at "+x+", "+z);

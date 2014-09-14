@@ -15,6 +15,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -27,8 +28,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -42,7 +43,7 @@ import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class CrystalBlock extends Block {
+public abstract class CrystalBlock extends Block implements CrystalRenderedBlock {
 
 	protected final IIcon[] icons = new IIcon[ReikaDyeHelper.dyes.length];
 
@@ -59,6 +60,14 @@ public abstract class CrystalBlock extends Block {
 	@Override
 	public final IIcon getIcon(int s, int meta) {
 		return icons[meta];
+	}
+
+	@SideOnly(Side.CLIENT)
+	@Override
+	public final void registerBlockIcons(IIconRegister ico) {
+		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
+			icons[i] = ico.registerIcon("ChromatiCraft:crystal/crystal_outline");
+		}
 	}
 
 	@Override
@@ -148,10 +157,6 @@ public abstract class CrystalBlock extends Block {
 	public boolean renderAllArms() {
 		return this.renderBase();
 	}
-
-	public abstract boolean renderBase();
-
-	public abstract Block getBaseBlock(ForgeDirection side);
 
 	public abstract int getPotionLevel();
 
@@ -250,5 +255,9 @@ public abstract class CrystalBlock extends Block {
 	@Override
 	public boolean canEntityDestroy(IBlockAccess world, int x, int y, int z, Entity e) {
 		return false;
+	}
+
+	public final int getTintColor(int meta) {
+		return ReikaDyeHelper.dyes[meta].color;
 	}
 }

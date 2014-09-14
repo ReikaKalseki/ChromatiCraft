@@ -395,6 +395,18 @@ public class ChromaStructures {
 
 		array.remove(x, y+9, z);
 
+		array.remove(x-3, y+6, z-1);
+		array.remove(x-1, y+6, z-3);
+
+		array.remove(x+3, y+6, z-1);
+		array.remove(x+1, y+6, z-3);
+
+		array.remove(x-3, y+6, z+1);
+		array.remove(x-1, y+6, z+3);
+
+		array.remove(x+3, y+6, z+1);
+		array.remove(x+1, y+6, z+3);
+
 		return array;
 	}
 

@@ -117,7 +117,7 @@ public class CrystalPotionController {
 			return "enhancing";
 		Potion pot = map.get(color);
 		if (pot == null)
-			return "";
+			return "[None]";
 		return StatCollector.translateToLocal(pot.getName());
 	}
 

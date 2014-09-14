@@ -9,11 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import Reika.ChromatiCraft.Registry.CrystalElement;
+
 
 
 
 public interface CrystalSource extends CrystalTransmitter {
 
 	public int getTransmissionStrength();
+
+	public void drain(CrystalElement e, int amt);
+
+	public int getEnergy(CrystalElement e);
 
 }

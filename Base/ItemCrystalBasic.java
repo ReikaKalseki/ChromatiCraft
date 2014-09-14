@@ -18,7 +18,7 @@ public class ItemCrystalBasic extends ItemChromaMulti {
 	}
 
 	@Override
-	public final int getNumberTypes() {
+	public int getNumberTypes() {
 		return CrystalElement.elements.length;
 	}
 }

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,9 +27,12 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -40,6 +44,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	private boolean hasMultiblock = false;
 	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
+	public static final int MAX_ENERGY = 180000;
+	private int energy = MAX_ENERGY;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -55,6 +61,14 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		return color;
 	}
 
+	public int getEnergy(CrystalElement e) {
+		return e == color ? energy : 0;
+	}
+
+	public int getRenderColor() {
+		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/MAX_ENERGY);
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
@@ -68,6 +82,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		}*/
 
 		if (hasMultiblock) {
+			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);
+
+			this.charge(world, x, y, z);
+			energy = Math.min(energy, MAX_ENERGY);
+
 			if (world.isRemote) {
 				this.spawnParticle(world, x, y, z);
 			}
@@ -91,6 +110,70 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 				ChromaSounds.POWER.playSoundAtBlock(this);
 			}
 		}
+	}
+
+	private void charge(World world, int x, int y, int z) {
+		if (energy < MAX_ENERGY) {
+			energy++;
+		}
+
+		int a = 1;
+		if (energy <= MAX_ENERGY-a) {
+			BlockArray blocks = this.getBoosterCrystals(world, x, y, z);
+			for (int i = 0; i < blocks.getSize(); i++) {
+				energy += a;
+				a *= 2;
+				if (energy >= MAX_ENERGY) {
+					return;
+				}
+			}
+			if (world.isRemote && !blocks.isEmpty())
+				this.spawnRechargeParticles(world, x, y, z, blocks);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnRechargeParticles(World world, int x, int y, int z, BlockArray blocks) {
+		for (int i = 0; i < blocks.getSize(); i++) {
+			int[] xyz = blocks.getNthBlock(i);//blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			double ddx = dx-x;
+			double ddy = dy-y-0.25;
+			double ddz = dz-z;
+			double dd = ReikaMathLibrary.py3d(ddx, ddy, ddz);
+			double v = 0.125;
+			double vx = -v*ddx/dd;
+			double vy = -v*ddy/dd;
+			double vz = -v*ddz/dd;
+			double px = dx+0.5;
+			double py = dy+0.125;
+			double pz = dz+0.5;
+			//EntityRuneFX fx = new EntityRuneFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz, color);
+			float sc = (float)(2F+Math.sin(4*Math.toRadians(this.getTicksExisted()+i*90/blocks.getSize())));
+			EntityBlurFX fx = new EntityBlurFX(color, world, px, py, pz, vx, vy, vz).setScale(sc).setLife(38).setNoSlowdown();
+			//EntityLaserFX fx = new EntityLaserFX(color, world, px, py, pz, vx, vy, vz).setScale(3);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private BlockArray getBoosterCrystals(World world, int x, int y, int z) {
+		BlockArray blocks = new BlockArray();
+		Block b = ChromaTiles.CRYSTAL.getBlock();
+		int meta = ChromaTiles.CRYSTAL.getBlockMetadata();
+		blocks.addBlockCoordinateIf(world, x-3, y-3, z-1, b, meta);
+		blocks.addBlockCoordinateIf(world, x-1, y-3, z-3, b, meta);
+
+		blocks.addBlockCoordinateIf(world, x+3, y-3, z-1, b, meta);
+		blocks.addBlockCoordinateIf(world, x+1, y-3, z-3, b, meta);
+
+		blocks.addBlockCoordinateIf(world, x-3, y-3, z+1, b, meta);
+		blocks.addBlockCoordinateIf(world, x-1, y-3, z+3, b, meta);
+
+		blocks.addBlockCoordinateIf(world, x+3, y-3, z+1, b, meta);
+		blocks.addBlockCoordinateIf(world, x+1, y-3, z+3, b, meta);
+		return blocks;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -135,6 +218,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		}
 		hasMultiblock = false;
 		this.clearTargets();
+		energy = 0;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -173,6 +257,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 		color = CrystalElement.elements[NBT.getInteger("color")];
 		hasMultiblock = NBT.getBoolean("multi");
+		energy = NBT.getInteger("energy");
 	}
 
 	@Override
@@ -181,6 +266,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 		NBT.setInteger("color", color.ordinal());
 		NBT.setBoolean("multi", hasMultiblock);
+		NBT.setInteger("energy", energy);
 	}
 
 	@Override
@@ -205,6 +291,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	public void setColor(CrystalElement e) {
 		color = e;
+	}
+
+	@Override
+	public void drain(CrystalElement e, int amt) {
+		if (e == color)
+			energy -= amt;
 	}
 
 }

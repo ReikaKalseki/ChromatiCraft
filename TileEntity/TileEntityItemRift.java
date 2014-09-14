@@ -49,7 +49,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		boolean flag = false;
+		boolean connected = false;
 		if (!isEmitting) {
 			TileEntity src = this.getAdjacentTileEntity(this.getFacing());
 			if (src instanceof IInventory) {
@@ -60,12 +60,12 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 					if (tgt instanceof IInventory) {
 						if (!world.isRemote)
 							this.transferItems((IInventory)src, this.getFacing(), (IInventory)tgt, tile.getFacing());
-						flag = true;
+						connected = true;
 					}
 				}
 			}
 		}
-		if (!world.isRemote && flag) {
+		if (!world.isRemote && connected) {
 			this.spawnParticles(world, x, y, z);
 		}
 	}
@@ -92,8 +92,10 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		}
 
 		double d = (this.getTicksExisted()*4)%(len*16)/16D-0.5;
-		EntitySparkleFX fx = new EntitySparkleFX(world, x+0.5+d*dir.offsetX, y+0.5+d*dir.offsetY, z+0.5+d*dir.offsetZ, 0, 0, 0);
-		fx.setScale(1).setLife(15);
+		double px = x+0.5+d*dir.offsetX;
+		double py = y+0.5+d*dir.offsetY;
+		double pz = z+0.5+d*dir.offsetZ;
+		EntitySparkleFX fx = new EntitySparkleFX(world, px, py, pz, 0, 0, 0).setScale(1).setLife(15);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

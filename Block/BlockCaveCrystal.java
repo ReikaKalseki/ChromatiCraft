@@ -14,7 +14,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -23,9 +22,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCaveCrystal extends CrystalBlock {
 
@@ -68,14 +64,6 @@ public class BlockCaveCrystal extends CrystalBlock {
 
 	private int getNumberDrops(int meta, int fortune) {
 		return 1+rand.nextInt(6+fortune)+(1+fortune)*rand.nextInt(3)+rand.nextInt(1+fortune);
-	}
-
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
-			icons[i] = ico.registerIcon("ChromatiCraft:crystal/crystal_outline");
-		}
 	}
 
 	@Override

@@ -13,10 +13,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
-import Reika.ChromatiCraft.Container.ContainerCollector;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
-import Reika.ChromatiCraft.GUI.GuiCollector;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
@@ -65,7 +64,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 			if (te instanceof TileEntityAutoEnchanter)
 				return new ContainerAutoEnchanter(player, (TileEntityAutoEnchanter)te);
 			if (te instanceof TileEntityCollector)
-				return new ContainerCollector(player, (TileEntityCollector)te);
+				return null;//return new ContainerCollector(player, (TileEntityCollector)te);
 			if (te instanceof TileEntitySpawnerReprogrammer)
 				return new ContainerSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 			if (te instanceof TileEntityCrystalBrewer)
@@ -77,6 +76,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			if (te instanceof TileEntityCrystalFurnace)
 				return new ContainerCrystalFurnace(player, (TileEntityCrystalFurnace) te);
 
+			if (te instanceof ItemOnRightClick)
+				return null;
 			if (te instanceof OneSlotMachine)
 				return new OneSlotContainer(player, te);
 			if (te instanceof GuiController)
@@ -103,7 +104,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 			if (te instanceof TileEntityAutoEnchanter)
 				return new GuiAutoEnchanter(player, (TileEntityAutoEnchanter)te);
 			if (te instanceof TileEntityCollector)
-				return new GuiCollector(player, (TileEntityCollector)te);
+				return null;//return new GuiCollector(player, (TileEntityCollector)te);
 			if (te instanceof TileEntitySpawnerReprogrammer)
 				return new GuiSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 			if (te instanceof TileEntityCrystalBrewer)

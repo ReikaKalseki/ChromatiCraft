@@ -23,7 +23,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
@@ -38,6 +37,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockLiquidChroma;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
+import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
@@ -68,10 +68,10 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockDyeColors.class, 		"block.crystalrune"),
 	CHROMA(BlockLiquidChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
-	ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
+	//ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
-	RAINBOWCRYSTAL(BlockCaveCrystal.class, 										"crystal.rainbow"),
+	RAINBOWCRYSTAL(BlockRainbowCrystal.class, 										"crystal.rainbow"),
 	LAMP(BlockCrystalLamp.class, 				ItemBlockCrystal.class, 		"crystal.lamp"),
 	SUPER(BlockSuperCrystal.class, 				ItemBlockCrystal.class, 		"crystal.super"),
 	PLANT(BlockCrystalPlant.class, 				ItemBlockCrystalPlant.class, 	"crystal.plant"),
@@ -126,7 +126,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILEPLANT:
 			return Material.plants;
 		case CHROMA:
-		case ACTIVECHROMA:
+			//case ACTIVECHROMA:
 		case ENDER:
 			return Material.water;
 		case TILECRYSTAL:

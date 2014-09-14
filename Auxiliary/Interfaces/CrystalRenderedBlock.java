@@ -9,11 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.Block;
+import net.minecraftforge.common.util.ForgeDirection;
 
-public interface ItemOnRightClick extends IInventory {
+public interface CrystalRenderedBlock {
 
-	public ItemStack onRightClickWith(ItemStack item);
+	public boolean renderBase();
+
+	public Block getBaseBlock(ForgeDirection up);
+
+	public boolean renderAllArms();
+
+	public int getTintColor(int meta);
 
 }

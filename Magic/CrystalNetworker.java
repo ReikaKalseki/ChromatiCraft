@@ -80,6 +80,7 @@ public class CrystalNetworker implements TickHandler {
 				int amt = p.drain();
 				if (amt > 0) {
 					p.receiver.receiveElement(p.element, amt);
+					p.transmitter.drain(p.element, amt);
 					if (p.isComplete()) {
 						p.resetTiles();
 						it.remove();

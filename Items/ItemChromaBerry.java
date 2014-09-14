@@ -9,21 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
-import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class ItemChromaBerry extends ItemCrystalBasic {
 
 	public ItemChromaBerry(int tex) {
 		super(tex);
 	}
-
+	/*
 	@Override
 	public boolean onEntityItemUpdate(EntityItem ei) {
 		int x = MathHelper.floor_double(ei.posX);
@@ -45,6 +38,7 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 		}
 		return false;
 	}
+	 */
 	/*
 	@Override
 	public boolean hasCustomEntity(ItemStack is) {

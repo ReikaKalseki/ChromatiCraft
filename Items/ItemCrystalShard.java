@@ -14,15 +14,22 @@ import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.util.EnumChatFormatting;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Interfaces.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
-public class ItemCrystalShard extends ItemCrystalBasic {
+public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet {
 
 	public ItemCrystalShard(int tex) {
 		super(tex);
+	}
+
+	@Override
+	public int getItemSpriteIndex(ItemStack item) {
+		return super.getItemSpriteIndex(item)-item.getItemDamage()+item.getItemDamage()%16;
 	}
 
 	@Override
@@ -32,45 +39,60 @@ public class ItemCrystalShard extends ItemCrystalBasic {
 	}
 
 	@Override
+	public int getNumberTypes() {
+		return CrystalElement.elements.length*2;
+	}
+
+	//@Override
+	//public boolean hasEffect(ItemStack is) {
+	//	return is.getItemDamage() >= 16;
+	//}
+
+	@Override
 	public String getPotionEffect(ItemStack is)
 	{
+		String ret = "";
 		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(is.getItemDamage());
 		switch(dye) {
 		case BLACK:
-			return PotionHelper.fermentedSpiderEyeEffect;
+			ret += PotionHelper.fermentedSpiderEyeEffect;
 		case BLUE:
-			return PotionHelper.goldenCarrotEffect;
+			ret += PotionHelper.goldenCarrotEffect;
 		case BROWN:
-			return PotionHelper.redstoneEffect;
+			ret += PotionHelper.redstoneEffect;
 		case CYAN: //water breathing
-			return "";
+			ret += "";
 		case GRAY: //slowness
-			return PotionHelper.sugarEffect;
+			ret += PotionHelper.sugarEffect;
 		case GREEN:
-			return PotionHelper.spiderEyeEffect;
+			ret += PotionHelper.spiderEyeEffect;
 		case LIGHTBLUE:
-			return PotionHelper.sugarEffect;
+			ret += PotionHelper.sugarEffect;
 		case LIGHTGRAY: //weakness
-			return PotionHelper.blazePowderEffect;
+			ret += PotionHelper.blazePowderEffect;
 		case LIME: //jump boost
-			return "";
+			ret += "";
 		case MAGENTA:
-			return PotionHelper.ghastTearEffect;
+			ret += PotionHelper.ghastTearEffect;
 		case ORANGE:
-			return PotionHelper.magmaCreamEffect;
+			ret += PotionHelper.magmaCreamEffect;
 		case PINK:
-			return PotionHelper.blazePowderEffect;
+			ret += PotionHelper.blazePowderEffect;
 		case PURPLE: //xp -> level2?
-			return PotionHelper.glowstoneEffect;
+			ret += PotionHelper.glowstoneEffect;
 		case RED: //resistance
-			return "";
+			ret += "";
 		case WHITE:
-			return PotionHelper.goldenCarrotEffect;
+			ret += PotionHelper.goldenCarrotEffect;
 		case YELLOW: //haste
-			return "";
+			ret += "";
 		default:
-			return "";
+			ret += "";
 		}
+		if (is.getItemDamage() >= 16) {
+			ret += "+5+6-7"; //level II and extended
+		}
+		return ret;
 	}
 
 	@Override
@@ -78,9 +100,43 @@ public class ItemCrystalShard extends ItemCrystalBasic {
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("Good for ");
-		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+		CrystalElement color = CrystalElement.elements[is.getItemDamage()%16];
 		sb.append(CrystalPotionController.getPotionName(color));
 		sb.append(" Potions");
 		li.add(sb.toString());
+		if (is.getItemDamage() >= 16)
+			li.add(EnumChatFormatting.LIGHT_PURPLE.toString()+"Gives level II enhanced potions");
+		else
+			li.add(EnumChatFormatting.GOLD.toString()+"Gives ordinary potions");
+	}
+
+	@Override
+	public boolean useAnimatedRender(ItemStack is) {
+		return is.getItemDamage() >= 16;
+	}
+
+	@Override
+	public int getFrameSpeed() {
+		return 3;
+	}
+
+	@Override
+	public int getColumn(ItemStack is) {
+		return is.getItemDamage()%16;
+	}
+
+	@Override
+	public int getFrameCount() {
+		return 16;
+	}
+
+	@Override
+	public int getBaseRow(ItemStack is) {
+		return 0;
+	}
+
+	@Override
+	public String getTexture(ItemStack is) {
+		return is.getItemDamage() >= 16 ? "/Reika/ChromatiCraft/Textures/Items/shardglow.png" : super.getTexture(is);
 	}
 }

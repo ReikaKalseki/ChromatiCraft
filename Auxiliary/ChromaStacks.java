@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class ChromaStacks {
 
@@ -36,7 +37,32 @@ public class ChromaStacks {
 	public static final ItemStack energyCore = ChromaItems.CRAFTING.getStackOfMetadata(5);
 	public static final ItemStack crystalPowder = ChromaItems.CRAFTING.getStackOfMetadata(6);
 
-	public static final ItemStack[] shards = {
+	public static final ItemStack chargedBlackShard = ChromaItems.SHARD.getStackOfMetadata(16);
+	public static final ItemStack chargedRedShard = ChromaItems.SHARD.getStackOfMetadata(17);
+	public static final ItemStack chargedGreenShard = ChromaItems.SHARD.getStackOfMetadata(18);
+	public static final ItemStack chargedBrownShard = ChromaItems.SHARD.getStackOfMetadata(19);
+	public static final ItemStack chargedBlueShard = ChromaItems.SHARD.getStackOfMetadata(20);
+	public static final ItemStack chargedPurpleShard = ChromaItems.SHARD.getStackOfMetadata(21);
+	public static final ItemStack chargedCyanShard = ChromaItems.SHARD.getStackOfMetadata(22);
+	public static final ItemStack chargedLightGrayShard = ChromaItems.SHARD.getStackOfMetadata(23);
+	public static final ItemStack chargedGrayShard = ChromaItems.SHARD.getStackOfMetadata(24);
+	public static final ItemStack chargedPinkShard = ChromaItems.SHARD.getStackOfMetadata(25);
+	public static final ItemStack chargedLimeShard = ChromaItems.SHARD.getStackOfMetadata(26);
+	public static final ItemStack chargedYellowShard = ChromaItems.SHARD.getStackOfMetadata(27);
+	public static final ItemStack chargedLightBlueShard = ChromaItems.SHARD.getStackOfMetadata(28);
+	public static final ItemStack chargedMagentaShard = ChromaItems.SHARD.getStackOfMetadata(29);
+	public static final ItemStack chargedOrangeShard = ChromaItems.SHARD.getStackOfMetadata(30);
+	public static final ItemStack chargedWhiteShard = ChromaItems.SHARD.getStackOfMetadata(31);
+
+	public static ItemStack getShard(CrystalElement e) {
+		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());
+	}
+
+	public static ItemStack getChargedShard(CrystalElement e) {
+		return ChromaItems.SHARD.getStackOfMetadata(16+e.ordinal());
+	}
+
+	private static final ItemStack[] shards = {
 		ChromaItems.SHARD.getStackOfMetadata(0),
 		ChromaItems.SHARD.getStackOfMetadata(1),
 		ChromaItems.SHARD.getStackOfMetadata(2),

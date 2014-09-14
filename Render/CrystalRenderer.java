@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render;
 
-import java.awt.Color;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,10 +16,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {
@@ -33,12 +30,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//GL11.glDisable(GL11.GL_LIGHTING);
 		Tessellator v5 = Tessellator.instance;
 		//v5.setBrightness(240);
-		ReikaDyeHelper color = ReikaDyeHelper.dyes[meta];
-		Color dye = color.getJavaColor();
-		int red = dye.getRed();
-		int green = dye.getGreen();
-		int blue = dye.getBlue();
-		int alpha = 256;
+		int color = ((CrystalRenderedBlock)b).getTintColor(meta);
+		int alpha = 255;
 		IIcon ico = ChromaBlocks.CRYSTAL.getBlockInstance().getIcon(0, meta);
 		double u = ico.getMinU();
 		double v = ico.getMinV();
@@ -48,43 +41,43 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 
 		v5.startDrawingQuads();
 		v5.setNormal(0, 0.8F, 0);
-		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+		v5.setColorRGBA_I(color, alpha);
 		this.renderSpike(v5, u, v, xu, xv, w);
 		v5.draw();
 
 		v5.startDrawingQuads();
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
-		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+		v5.setColorRGBA_I(color, alpha);
 		this.renderXAngledSpike(u, v, xu, xv, 0.1875, w);
 		v5.draw();
 
 		v5.startDrawingQuads();
 		//v5.setBrightness(240);
 		v5.setNormal(0, 0.5F, 0);
-		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+		v5.setColorRGBA_I(color, alpha);
 		this.renderZAngledSpike(u, v, xu, xv, 0.1875, w);
 		v5.draw();
 		//GL11.glEnable(GL11.GL_LIGHTING);
 
-		if (((CrystalBlock)b).renderBase()) {
+		if (((CrystalRenderedBlock)b).renderBase()) {
 
 			v5.startDrawingQuads();
 			//v5.setBrightness(240);
-			v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+			v5.setColorRGBA_I(color, alpha);
 			//this.renderXAngledSpike(v5, u, v, xu, xv, -0.1875, w);
 			v5.draw();
 
 			v5.startDrawingQuads();
 			//v5.setBrightness(240);
-			v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+			v5.setColorRGBA_I(color, alpha);
 			//this.renderZAngledSpike(v5, u, v, xu, xv, -0.1875, w);
 			v5.draw();
 
 			v5.startDrawingQuads();
 			//v5.setBrightness(240);
-			v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
-			this.renderBase(v5, (CrystalBlock)b);
+			v5.setColorRGBA_I(color, alpha);
+			this.renderBase(v5, (CrystalRenderedBlock)b);
 			v5.draw();
 		}
 	}
@@ -92,13 +85,10 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
 		int meta = world.getBlockMetadata(x, y, z);
-		ReikaDyeHelper dye = ReikaDyeHelper.dyes[meta];
-		int red = dye.getRed();
-		int green = dye.getGreen();
-		int blue = dye.getBlue();
+		int color = ((CrystalRenderedBlock)b).getTintColor(meta);
 		int alpha = 220;
 
-		IIcon ico = ChromaBlocks.CRYSTAL.getBlockInstance().getIcon(0, meta);
+		IIcon ico = b.getIcon(0, meta);
 		//ico = Blocks.blockNetherQuartz.getIcon(0, 0);
 		double u = ico.getMinU();
 		double v = ico.getMinV();
@@ -126,14 +116,14 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//v5.setBrightness(rb.renderMaxY < 1.0D ? l : b.getMixedBrightnessForBlock(world, x, y+1, z));
 		v5.setBrightness(240);
 		v5.addTranslation(x, y, z);
-		v5.setColorRGBA_F(red/255F, green/255F, blue/255F, alpha/255F);
+		v5.setColorRGBA_I(color, alpha);
 
 		int w = ico.getIconWidth();
 
 		if (renderPass == 1) {
 			this.renderSpike(v5, u, v, xu, xv, w);
 			int val = Math.abs(x)%9+Math.abs(z)%9; //16 combos -> binary selector
-			if (val > 15 || ((CrystalBlock)b).renderAllArms())
+			if (val > 15 || ((CrystalRenderedBlock)b).renderAllArms())
 				val = 15;
 			if ((val & 8) == 8)
 				this.renderXAngledSpike(u, v, xu, xv, 0.1875, w); //8,9,10,11,12,13,14,15
@@ -148,8 +138,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//v5.setColorOpaque(0, 0, 0);
 		//this.renderOutline(v5);
 		if (renderPass == 0) {
-			if (((CrystalBlock)b).renderBase()) {
-				this.renderBase(v5, (CrystalBlock)b);
+			if (((CrystalRenderedBlock)b).renderBase()) {
+				this.renderBase(v5, (CrystalRenderedBlock)b);
 			}
 		}
 
@@ -167,7 +157,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		return true;
 	}
 
-	private void renderBase(Tessellator v5, CrystalBlock b) {
+	private void renderBase(Tessellator v5, CrystalRenderedBlock b) {
 		IIcon ico = b.getBaseBlock(ForgeDirection.UP).getIcon(0, 0);
 		int w = ico.getIconWidth();
 

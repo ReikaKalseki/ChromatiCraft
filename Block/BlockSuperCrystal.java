@@ -13,15 +13,11 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockSuperCrystal extends CrystalBlock {
 
@@ -40,6 +36,7 @@ public class BlockSuperCrystal extends CrystalBlock {
 		return meta;
 	}
 
+	/*
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
@@ -47,6 +44,7 @@ public class BlockSuperCrystal extends CrystalBlock {
 			icons[i] = ico.registerIcon("ChromatiCraft:crystal/lamp_"+ReikaDyeHelper.dyes[i].name().toLowerCase());
 		}
 	}
+	 */
 
 	@Override
 	public boolean shouldMakeNoise() {

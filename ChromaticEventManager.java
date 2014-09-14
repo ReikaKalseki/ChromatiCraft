@@ -27,7 +27,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -42,7 +41,6 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import Reika.ChromatiCraft.Base.CrystalBlock;
-import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -116,7 +114,7 @@ public class ChromaticEventManager {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
-		}
+		}/*
 		else if (b == ChromaBlocks.ACTIVECHROMA.getBlockInstance()) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
 			event.result = ChromaItems.BUCKET.getStackOfMetadata(2+te.getElement().ordinal());
@@ -125,7 +123,7 @@ public class ChromaticEventManager {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
-		}
+		}*/
 		else if (b == ChromaBlocks.ENDER.getBlockInstance()) {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);

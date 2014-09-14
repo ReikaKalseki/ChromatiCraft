@@ -63,7 +63,7 @@ public class ChromaClientEventController {
 			//CrystalElement e = CrystalElement.elements[is.getItemDamage()];
 			int x = MathHelper.floor_double(ep.posX);
 			int z = MathHelper.floor_double(ep.posZ);
-			Coordinate c = PylonGenerator.instance.getNearestValidChunk(x, z);
+			Coordinate c = PylonGenerator.instance.getNearestValidChunk(Minecraft.getMinecraft().theWorld, x, z);
 			double dx = c.xCoord-TileEntityRendererDispatcher.staticPlayerX;
 			double dy = c.yCoord-TileEntityRendererDispatcher.staticPlayerY;
 			double dz = c.zCoord-TileEntityRendererDispatcher.staticPlayerZ;

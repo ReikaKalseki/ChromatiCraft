@@ -51,7 +51,6 @@ public enum ChromaTiles {
 	CHROMAFLOWER("chroma.flower", ChromaBlocks.TILEPLANT, TileEntityChromaFlower.class, 0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", ChromaBlocks.TILEENTITY, TileEntityAutoEnchanter.class, 0),
 	LIQUIFIER("chroma.liquifier", ChromaBlocks.TILEENTITY, TileEntityAuraLiquifier.class, 1),
-	INFUSER("chroma.vaporizer", ChromaBlocks.TILEENTITY, TileEntityAuraInfuser.class, 2),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", ChromaBlocks.TILEENTITY, TileEntityCollector.class, 4),
 	TABLE("chroma.table", ChromaBlocks.TILEENTITY, TileEntityCastingTable.class, 5),
@@ -70,7 +69,8 @@ public enum ChromaTiles {
 	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence"),
 	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
 	ITEMRIFT("chroma.itemrift", ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
-	CRYSTAL("chroma.chromacrystal", ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0);
+	CRYSTAL("chroma.chromacrystal", ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
+	INFUSER("chroma.infuser", ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser");
 
 	private final Class tile;
 	private final String name;

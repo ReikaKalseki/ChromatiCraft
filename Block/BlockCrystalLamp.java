@@ -13,15 +13,11 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCrystalLamp extends CrystalBlock {
 
@@ -44,14 +40,14 @@ public class BlockCrystalLamp extends CrystalBlock {
 	public final int quantityDropped(Random r) {
 		return 1;
 	}
-
+	/*
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			icons[i] = ico.registerIcon("ChromatiCraft:crystal/lamp_"+ReikaDyeHelper.dyes[i].name().toLowerCase());
 		}
-	}
+	}*/
 
 	@Override
 	public boolean shouldMakeNoise() {
