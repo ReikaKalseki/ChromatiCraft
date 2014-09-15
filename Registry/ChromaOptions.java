@@ -27,7 +27,7 @@ public enum ChromaOptions implements ConfigList {
 	ETHEREAL("Generate Anti-Taint plants in Rainbow Forest", true),
 	DYEFRAC("Vanilla Dye Drop Percentage", 100),
 	ANIMALSPAWN("Rainbow Forest Animal Density", 6),
-	RAINBOWSPREAD("Rainbow Trees Spead Rainbow Forests", true),
+	RAINBOWSPREAD("Rainbow Trees Spread Rainbow Forests", true),
 	ENDERCOLORING("Ender Forest Coloring", false),
 	ENDERPOOLS("Ender Pool Density from 1 to 3", 2),
 	ENDERFORESTID("Ender Forest ID", 47),
