@@ -36,11 +36,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.MystCraftHandler;
 import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
-
-import com.xcompwiz.mystcraft.api.MystObjects;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -270,10 +268,10 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	private void fightDecay(World world, int x, int y, int z) {
-		if (MystObjects.decay != null) {
+		if (MystCraftHandler.getInstance().decayID != null) {
 			int rx = ReikaRandomHelper.getRandomPlusMinus(x, 64);
 			int rz = ReikaRandomHelper.getRandomPlusMinus(z, 64);
-			ReikaChunkHelper.removeBlocksFromChunk(world, rx, rz, MystObjects.decay, -1);
+			ReikaChunkHelper.removeBlocksFromChunk(world, rx, rz, MystCraftHandler.getInstance().decayID, -1);
 		}
 	}
 
@@ -288,7 +286,8 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 				//ReikaJavaLibrary.pConsole("base: "+ReikaMystcraftHelper.getBaseInstabilityForAge(world));
 			}
 			else {
-				ReikaMystcraftHelper.addStabilityForAge(world, 1);
+				//REMOVED//ReikaMystcraftHelper.addStabilityForAge(world, 1);
+
 				//ReikaJavaLibrary.pConsole("sta: "+ReikaMystcraftHelper.getStabilityForAge(world));
 			}
 		}
