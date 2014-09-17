@@ -9,19 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 
 public class RuneShape {
 
 	/** ChunkCoords are relative to the BlockArray origin! */
-	private HashMap<ChunkCoordinates, CrystalElement> runes = new HashMap();
+	private HashMap<Coordinate, CrystalElement> runes = new HashMap();
 	private BlockArray blocks = new BlockArray();
 
 	public RuneShape() {
@@ -29,19 +31,19 @@ public class RuneShape {
 	}
 
 	public void addRune(CrystalElement e, int x, int y, int z) {
-		runes.put(new ChunkCoordinates(x, y, z), e);
+		runes.put(new Coordinate(x, y, z), e);
 		blocks.addBlockCoordinate(x, y, z);
 	}
 
 	public CrystalElement getRuneAt(int x, int y, int z) {
-		return runes.get(new ChunkCoordinates(x, y, z));
+		return runes.get(new Coordinate(x, y, z));
 	}
 
 	public boolean matchAt(World world, int x, int y, int z, int xref, int yref, int zref) {
-		for (ChunkCoordinates c : runes.keySet()) {
-			int dx = x+c.posX-xref;
-			int dy = y+c.posY-yref;
-			int dz = z+c.posZ-zref;
+		for (Coordinate c : runes.keySet()) {
+			int dx = x+c.xCoord-xref;
+			int dy = y+c.yCoord-yref;
+			int dz = z+c.zCoord-zref;
 			Block b = world.getBlock(dx, dy, dz);
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
 				int meta = world.getBlockMetadata(dx, dy, dz);
@@ -98,6 +100,10 @@ public class RuneShape {
 	@Override
 	public String toString() {
 		return runes.toString();
+	}
+
+	public Map getData() {
+		return Collections.unmodifiableMap(runes);
 	}
 
 	public static class RuneLocation {

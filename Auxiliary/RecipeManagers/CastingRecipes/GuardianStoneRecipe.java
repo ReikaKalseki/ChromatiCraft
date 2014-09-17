@@ -19,14 +19,14 @@ public class GuardianStoneRecipe extends PylonRecipe {
 	public GuardianStoneRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), -2, -2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), -2, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), -2, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), 0, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), 2, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), 2, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), 2, -2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(CrystalElement.WHITE.ordinal()), 0, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), -2, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), -2, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), -2, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), 0, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), 2, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), 2, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), 2, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+CrystalElement.WHITE.ordinal()), 0, -2);
 
 		this.addAuraRequirement(CrystalElement.RED, 10000);
 		this.addAuraRequirement(CrystalElement.BLUE, 500);

@@ -41,6 +41,7 @@ public class GuiCastingTable extends GuiChromaBase {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		int a = (width - xSize) / 2;
 		int b = (height - ySize) / 2;
+
 		HashMap<List<Integer>, TileEntityItemStand> li = tile.getOtherStands();
 		for (List<Integer> key : li.keySet()) {
 			TileEntityItemStand te = li.get(key);

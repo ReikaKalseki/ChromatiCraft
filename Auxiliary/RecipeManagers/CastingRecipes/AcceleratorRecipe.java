@@ -32,7 +32,7 @@ public class AcceleratorRecipe extends PylonRecipe {
 		this.addAuxItem(corner, 2, 2);
 		this.addAuxItem(corner, -2, 2);
 
-		ItemStack shard = this.getShard(CrystalElement.BLUE);
+		ItemStack shard = this.getChargedShard(CrystalElement.BLUE);
 		this.addAuxItem(shard, 0, -2);
 		this.addAuxItem(shard, 2, 0);
 		this.addAuxItem(shard, 0, 2);

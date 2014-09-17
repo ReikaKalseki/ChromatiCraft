@@ -2,6 +2,7 @@ package Reika.ChromatiCraft;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -69,11 +70,25 @@ public class ChromaHelpHUD {
 	}
 
 	private void renderHelpIcon(RenderGameOverlayEvent evt) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/helphud3.png");
+		Tessellator v5 = Tessellator.instance;
+		int a = 0;
+		int b = 0;
+		int w = 128;
+		int h = 10;
 
+		v5.startDrawingQuads();
+		v5.addVertexWithUV(a, b+h, 0, 0, 0.078125);
+		v5.addVertexWithUV(a+w, b+h, 0, 1, 0.078125);
+		v5.addVertexWithUV(a+w, b, 0, 1, 0);
+		v5.addVertexWithUV(a, b, 0, 0, 0);
+		v5.draw();
 	}
 
-	private void renderHelpBar(HelpEntry h, RenderGameOverlayEvent evt) {
-		String s = h.getTitle();
+	private void renderHelpBar(HelpEntry he, RenderGameOverlayEvent evt) {
+		String s = he.getTitle();
+
+
 	}
 
 	private boolean isExpanded() {

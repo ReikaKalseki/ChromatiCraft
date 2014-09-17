@@ -22,14 +22,14 @@ public class CrystalTankRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.BLACK, 6000);
 		this.addAuraRequirement(CrystalElement.CYAN, 9000);
 
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), 0, 2);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), 0, -2);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), 2, 0);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), -2, 0);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), 2, 2);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), -2, 2);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), 2, -2);
-		this.addAuxItem(this.getShard(CrystalElement.CYAN), -2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 0, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 0, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, -2);
 
 		this.addAuxItem(new ItemStack(Blocks.glass), -4, -4);
 		this.addAuxItem(new ItemStack(Blocks.glass), -2, -4);

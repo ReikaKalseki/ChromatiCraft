@@ -77,6 +77,10 @@ public class CastingRecipe {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());
 	}
 
+	protected static final ItemStack getChargedShard(CrystalElement e) {
+		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal()+16);
+	}
+
 	public boolean match(TileEntityCastingTable table) {
 		if (recipe == null)
 			return true;
