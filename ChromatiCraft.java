@@ -28,7 +28,6 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.BiomeManager.BiomeEntry;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -59,7 +58,6 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
-import Reika.ChromatiCraft.World.CustomEndProvider;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -249,9 +247,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
 		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
 
-		DimensionManager.unregisterProviderType(1);
-		DimensionManager.registerProviderType(1, CustomEndProvider.class, false);
-
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
 		if (!this.isLocked())
@@ -420,8 +415,8 @@ public class ChromatiCraft extends DragonAPIMod {
 				crystal.setIcons(cry);
 
 				IIconRegister ico = event.map;
-				ender.setStillIcon(ico.registerIcon("chromaticraft:fluid/ender"));
-				ender.setFlowingIcon(ico.registerIcon("chromaticraft:fluid/flowingender"));
+				ender.setStillIcon(ico.registerIcon("ChromatiCraft:fluid/ender"));
+				ender.setFlowingIcon(ico.registerIcon("ChromatiCraft:fluid/flowingender"));
 				ender.setBlock(ChromaBlocks.ENDER.getBlockInstance());
 
 				for (int i = 0; i < CrystalElement.elements.length; i++) {

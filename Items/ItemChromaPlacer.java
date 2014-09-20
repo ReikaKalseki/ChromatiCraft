@@ -143,7 +143,7 @@ public class ItemChromaPlacer extends Item {
 	}
 
 	protected boolean checkValidBounds(ItemStack is, EntityPlayer ep, World world, int x, int y, int z) {
-		return true;
+		return y > 0 && y < world.provider.getHeight()-1;
 	}
 
 	@Override

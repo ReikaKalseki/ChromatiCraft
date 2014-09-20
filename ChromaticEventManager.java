@@ -232,7 +232,7 @@ public class ChromaticEventManager {
 
 	/** Not functional due to BlockLeaves being the <i>only</i> block not to fire the event */
 	@SubscribeEvent
-	public void addLeafColors(HarvestDropsEvent evt) {
+	public void addLeafColors(HarvestDropsEvent evt) {/*
 		World world = evt.world;
 		int x = evt.x;
 		int y = evt.y;
@@ -245,7 +245,7 @@ public class ChromaticEventManager {
 			if (ReikaRandomHelper.doWithChance(0.04)) { //4% chance per leaf block
 				li.add(sapling);
 			}
-		}
+		}*/
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)

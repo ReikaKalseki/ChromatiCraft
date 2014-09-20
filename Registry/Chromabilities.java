@@ -34,6 +34,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -248,13 +249,20 @@ public enum Chromabilities {
 			AbilityHelper.instance.playerReach = dist;
 
 			//until asm method is working, temporary application
-			hackController();
+			//hackController();
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	private static void hackController() {
 		Minecraft.getMinecraft().playerController = new ControllableReachPlayer(Minecraft.getMinecraft().playerController);
+	}
+
+	GameType currentGameType;
+
+	public float getBlockReachDistance()
+	{
+		return Math.max(AbilityHelper.instance.playerReach, currentGameType.isCreative() ? 5.0F : 4.5F);
 	}
 
 	private static void destroyBlocksAround(EntityPlayer ep, int power) {

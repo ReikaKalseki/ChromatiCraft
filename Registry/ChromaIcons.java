@@ -32,7 +32,9 @@ public enum ChromaIcons {
 	RINGS("rings_blur"),
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
-	FADE("fade");
+	FADE("fade"),
+	CENTER("centerblur3"),
+	CHROMA("chroma_particle");
 
 	private IIcon icon;
 	private final String iconName;

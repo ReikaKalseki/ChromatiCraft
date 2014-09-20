@@ -16,8 +16,16 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.classloading.FMLForgePlugin;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
+import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 
@@ -55,7 +63,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 		private static enum ClassPatch {
 			//ENDERCRYSTALGEN("net.minecraft.world.gen.feature.WorldGenSpikes", ""),
-			//ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", ""),
+			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", ""),
 			//ENDPROVIDER2("net.minecraft.world.WorldProviderEnd", ""),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "");
 
@@ -94,7 +102,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						}
 					}
 				}
-				break;*/
+				break;
 				/*
 				case ENDPROVIDER2: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "createChunkGenerator", "()Lnet/minecraft/world/chunk/IChunkProvider;");
@@ -124,7 +132,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 				}
 				break;*/
-				/*
+
 				case ENDPROVIDER: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "initializeNoiseField", "([DIIIIII)[D");
 					if (m == null) {
@@ -135,11 +143,33 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 					}
 				}
-				break;*/
+				break;
 				case REACHDIST:
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "getBlockReachDistance", "()F");
+					if (m == null) {
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
+					}
+					else {
+						m.instructions.insert(new InsnNode(Opcodes.I2F));
+						m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "playerReach", "I"));
+						m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/AbilityHelper;"));
+						AbstractInsnNode index = null;
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.FRETURN) {
+								index = ain;
+								break;
+							}
+						}
+						m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+					}
 					break;
 				}
-				return data;
+
+				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);
+				cn.accept(writer);
+				return writer.toByteArray();
 			}
 		}
 

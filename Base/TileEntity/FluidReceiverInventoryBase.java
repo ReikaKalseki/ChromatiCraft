@@ -57,7 +57,7 @@ public abstract class FluidReceiverInventoryBase extends FluidReceiverChromaticB
 	}
 
 	@Override
-	public final void markDirty() {
+	public void markDirty() {
 		blockMetadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
 
