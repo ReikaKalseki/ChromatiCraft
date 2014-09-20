@@ -146,6 +146,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		CrystalTankAuxTile te = new CrystalTankAuxTile();
 		world.setTileEntity(x, y, z, te);
 
+		TileEntityCrystalTank con = null;
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -153,9 +154,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			int dz = z+dir.offsetZ;
 			ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
 			if (c == ChromaTiles.TANK) {
-				te.setTile((TileEntityCrystalTank)world.getTileEntity(dx, dy, dz));
+				TileEntityCrystalTank tank = (TileEntityCrystalTank)world.getTileEntity(dx, dy, dz);
+				te.setTile(tank);
 				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 				te.addToTank();
+				con = tank;
 			}
 			else if (world.getBlock(dx, dy, dz) == this) {
 				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
@@ -163,7 +166,23 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 					te.setTile(tile.getTankController());
 					world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 					te.addToTank();
+					con = tile.getTankController();
 				}
+			}
+		}
+
+		if (con != null) {
+			BlockArray blocks = new BlockArray();
+			blocks.recursiveAddWithBounds(world, x, y, z, this, x-32, y-32, z-32, x+32, y+32, z+32);
+			for (int i = 0; i < blocks.getSize(); i++) {
+				int[] xyz = blocks.getNthBlock(i);
+				int dx = xyz[0];
+				int dy = xyz[1];
+				int dz = xyz[2];
+				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
+				tile.setTile(con);
+				world.setBlockMetadataWithNotify(dx, dy, dz, 1, 3);
+				tile.addToTank();
 			}
 		}
 	}
