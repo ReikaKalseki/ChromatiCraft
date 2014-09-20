@@ -146,11 +146,34 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		CrystalTankAuxTile te = new CrystalTankAuxTile();
 		world.setTileEntity(x, y, z, te);
 
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
+			if (c == ChromaTiles.TANK) {
+				te.setTile((TileEntityCrystalTank)world.getTileEntity(dx, dy, dz));
+				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+				te.addToTank();
+			}
+			else if (world.getBlock(dx, dy, dz) == this) {
+				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
+				if (tile.hasTile()) {
+					te.setTile(tile.getTankController());
+					world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+					te.addToTank();
+				}
+			}
+		}
+	}
+
+	private void confirmHasController(World world, int x, int y, int z) {
 		BlockArray blocks = new BlockArray();
 		List<Block> li = Arrays.asList(this, ChromaTiles.TANK.getBlock());
 		blocks.recursiveAddMultipleWithBounds(world, x, y, z, li, x-32, y-32, z-32, x+32, y+32, z+32);
-
 		TileEntityCrystalTank con = null;
+		int count = 0;
 		for (int i = 0; i < blocks.getSize(); i++) {
 			int[] xyz = blocks.getNthBlock(i);
 			int dx = xyz[0];
@@ -158,19 +181,24 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			int dz = xyz[2];
 			ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
 			if (c == ChromaTiles.TANK) {
-				if (con == null) {
-					con = (TileEntityCrystalTank)world.getTileEntity(dx, dy, dz);
-				}
-				else {
-					return; //max 1 controller
-				}
+				count++;
 			}
 		}
-
-		if (con != null) {
-			te.setTile(con);
-			world.setBlockMetadataWithNotify(x, y, z, 1, 3);
-			te.addToTank();
+		if (count != 1) {
+			CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+			if (te != null) {
+				te.removeFromTank();
+			}
+			for (int i = 0; i < blocks.getSize(); i++) {
+				int[] xyz = blocks.getNthBlock(i);
+				int dx = xyz[0];
+				int dy = xyz[1];
+				int dz = xyz[2];
+				CrystalTankAuxTile te2 = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
+				if (te2 != null) {
+					te2.removeFromTank();
+				}
+			}
 		}
 	}
 
@@ -180,14 +208,21 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		if (te != null) {
 			te.removeFromTank();
 		}
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			this.confirmHasController(world, dx, dy, dz);
+		}
 		super.breakBlock(world, x, y, z, old, oldmeta);
 	}
 
 	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
 
-		private int tileX;
-		private int tileY;
-		private int tileZ;
+		private int tileX = Integer.MIN_VALUE;
+		private int tileY = Integer.MIN_VALUE;
+		private int tileZ = Integer.MIN_VALUE;
 
 		@Override
 		public boolean canUpdate() {
@@ -210,6 +245,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			TileEntityCrystalTank te = this.getTankController();
 			if (te != null)
 				te.removeCoordinate(xCoord, yCoord, zCoord);
+			tileX = tileY = tileZ = Integer.MIN_VALUE;
+		}
+
+		public boolean hasTile() {
+			return tileY != Integer.MIN_VALUE;
 		}
 
 		public TileEntityCrystalTank getTankController() {

@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class TankRender extends ChromaRenderBase {
 
@@ -45,6 +46,7 @@ public class TankRender extends ChromaRenderBase {
 
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			IIcon ico = f.getStillIcon();
 			if (ico == null) {

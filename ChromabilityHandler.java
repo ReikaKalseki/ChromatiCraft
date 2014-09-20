@@ -35,6 +35,7 @@ public class ChromabilityHandler implements TickHandler {
 				c.apply(ep);
 			}
 		}
+		Chromabilities.HEAL.give(ep);
 	}
 
 	@Override
