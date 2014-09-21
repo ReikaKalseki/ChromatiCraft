@@ -28,7 +28,11 @@ import org.objectweb.asm.tree.MethodNode;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 
+@SortingIndex(1001)
+@MCVersion("1.7.10")
 public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 
@@ -63,9 +67,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 		private static enum ClassPatch {
 			//ENDERCRYSTALGEN("net.minecraft.world.gen.feature.WorldGenSpikes", ""),
-			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", ""),
+			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "aqr"),
 			//ENDPROVIDER2("net.minecraft.world.WorldProviderEnd", ""),
-			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "");
+			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje");
 
 			private final String obfName;
 			private final String deobfName;
@@ -134,7 +138,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				break;*/
 
 				case ENDPROVIDER: {
-					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "initializeNoiseField", "([DIIIIII)[D");
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
 					if (m == null) {
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
 					}
@@ -145,7 +149,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				}
 				break;
 				case REACHDIST:
-					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "getBlockReachDistance", "()F");
+					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
 					if (m == null) {
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
 					}
