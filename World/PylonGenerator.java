@@ -29,6 +29,8 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Aura.BaseAura;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -296,7 +298,10 @@ public final class PylonGenerator implements IWorldGenerator {
 
 	private void generatePylon(Random rand, World world, int x, int y, int z) {
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
-		CrystalElement e = CrystalElement.elements[rand.nextInt(16)];
+		ElementTagCompound tag = BaseAura.getBaseAura(world, x, y, z);
+		if (rand.nextInt(25) > 0)
+			tag.clipToPrimaries();
+		CrystalElement e = tag.asWeightedRandom().getRandomEntry();
 		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y, z, e);
 
 		for (int n = -4; n < 0; n++) {

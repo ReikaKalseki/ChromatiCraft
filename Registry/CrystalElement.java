@@ -10,9 +10,13 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
+import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -43,7 +47,10 @@ public enum CrystalElement {
 	private IIcon animatedFace;
 	private final int rgb;
 
+	private static final Random rand = new Random();
+
 	public static final CrystalElement[] elements = values();
+	private static final HashMap<Integer, ArrayList<CrystalElement>> levelMap = new HashMap();
 
 	private CrystalElement(String n, int rgb) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
@@ -101,6 +108,14 @@ public enum CrystalElement {
 		}
 	}
 
+	public CrystalElement mixWith(CrystalElement e) {
+		return ElementMixer.instance.getMix(this, e);
+	}
+
+	public CrystalElement subtract(CrystalElement e) {
+		return ElementMixer.instance.subtract(this, e);
+	}
+
 	public boolean isPrimary() {
 		return this.getLevel() == 0;
 	}
@@ -128,6 +143,28 @@ public enum CrystalElement {
 
 	public static CrystalElement randomElement() {
 		return elements[ReikaDyeHelper.getRandomColor().ordinal()];
+	}
+
+	public static CrystalElement randomElement(int level) {
+		ArrayList<CrystalElement> li = levelMap.get(level);
+		return li != null ? li.get(rand.nextInt(li.size())) : null;
+	}
+
+	public static CrystalElement randomPrimaryElement() {
+		return randomElement(0);
+	}
+
+	static {
+		for (int i = 0; i < elements.length; i++) {
+			CrystalElement e = elements[i];
+			int lvl = e.getLevel();
+			ArrayList<CrystalElement> li = levelMap.get(lvl);
+			if (li == null) {
+				li = new ArrayList();
+				levelMap.put(lvl, li);
+			}
+			li.add(e);
+		}
 	}
 
 }

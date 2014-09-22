@@ -9,12 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 
 public final class ElementTagCompound {
 
@@ -43,6 +45,10 @@ public final class ElementTagCompound {
 			data.put(e, value);
 	}
 
+	public void removeTag(CrystalElement e) {
+		data.remove(e);
+	}
+
 	public int getValue(CrystalElement e) {
 		return this.contains(e) ? data.get(e) : 0;
 	}
@@ -67,6 +73,16 @@ public final class ElementTagCompound {
 	/** Map.keySet() */
 	public Collection<CrystalElement> elementSet() {
 		return Collections.unmodifiableSet(data.keySet());
+	}
+
+	public void addTag(ElementTagCompound tag) {
+		if (tag == null || tag.data.isEmpty())
+			return;
+		for (CrystalElement e : tag.data.keySet()) {
+			int amt = tag.getValue(e);
+			int value = this.getValue(e);
+			this.setTag(e, amt+value);
+		}
 	}
 
 	public void maximizeWith(ElementTagCompound tag) {
@@ -196,6 +212,25 @@ public final class ElementTagCompound {
 		data.clear();
 		for (CrystalElement e : temp.data.keySet()) {
 			this.setTag(e, temp.getValue(e));
+		}
+	}
+
+	public WeightedRandom<CrystalElement> asWeightedRandom() {
+		WeightedRandom<CrystalElement> rand = new WeightedRandom();
+		for (CrystalElement e : data.keySet()) {
+			rand.addEntry(e, data.get(e));
+		}
+		return rand;
+	}
+
+	public void clipToPrimaries() {
+		ArrayList<CrystalElement> li = new ArrayList();
+		for (CrystalElement e : data.keySet()) {
+			if (!e.isPrimary())
+				li.add(e);
+		}
+		for (CrystalElement e : li) {
+			data.remove(e);
 		}
 	}
 

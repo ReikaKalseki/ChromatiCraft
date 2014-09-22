@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalFlower;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
@@ -70,7 +71,8 @@ public enum ChromaTiles {
 	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
 	ITEMRIFT("chroma.itemrift", ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
 	CRYSTAL("chroma.chromacrystal", ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
-	INFUSER("chroma.infuser", ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser");
+	INFUSER("chroma.infuser", ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),
+	CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1);
 
 	private final Class tile;
 	private final String name;
