@@ -221,7 +221,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		return true;
 	}
 
-	public final boolean setTarget(int x, int y, int z) {
+	public final boolean setTarget(World world, int x, int y, int z) {
 		if (!this.canConnect(x, y, z))
 			return false;
 		target[0] = x;
@@ -231,7 +231,7 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		return true;
 	}
 
-	public final boolean setSource(int x, int y, int z) {
+	public final boolean setSource(World world, int x, int y, int z) {
 		if (!this.canConnect(x, y, z))
 			return false;
 		source[0] = x;

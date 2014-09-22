@@ -105,7 +105,7 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 	@Override
 	public void loadUsageRecipes(ItemStack ingredient) {
 		if (ingredient.getItem() == ChromaItems.SHARD.getItemInstance()) {
-			CrystalElement color = CrystalElement.elements[ingredient.getItemDamage()];
+			CrystalElement color = CrystalElement.elements[ingredient.getItemDamage()%16];
 			if (!CrystalPotionController.isPotionModifier(color))
 				arecipes.add(new CrystalRecipe(color));
 		}

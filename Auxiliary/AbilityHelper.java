@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.DragonAPI.Auxiliary.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
@@ -112,6 +113,38 @@ public class AbilityHelper {
 			}
 			mc.thePlayer.openGui(ChromatiCraft.instance, ChromaGuis.ABILITY.ordinal(), mc.theWorld, 0, 0, 0);
 		}
+	}
+
+	public static class ReachApplier implements PlayerTracker {
+
+		public static final ReachApplier instance = new ReachApplier();
+
+		private ReachApplier() {
+
+		}
+
+		@Override
+		public void onPlayerLogin(EntityPlayer ep) {
+			if (Chromabilities.REACH.enabledOn(ep)) {
+				Chromabilities.REACH.trigger(ep, 0);
+			}
+		}
+
+		@Override
+		public void onPlayerLogout(EntityPlayer player) {
+
+		}
+
+		@Override
+		public void onPlayerChangedDimension(EntityPlayer player, int dimFrom, int dimTo) {
+
+		}
+
+		@Override
+		public void onPlayerRespawn(EntityPlayer player) {
+
+		}
+
 	}
 
 	public static class PlayerExemptAITarget implements IEntitySelector {

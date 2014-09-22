@@ -37,6 +37,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
 import ttftcuts.atg.api.ATGBiomes.BiomeType;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper.ReachApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
@@ -269,6 +270,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
+			PlayerHandler.instance.registerTracker(ReachApplier.instance);
 		}
 
 		//if (ConfigRegistry.HANDBOOK.getState())

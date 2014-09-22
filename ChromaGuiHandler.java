@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Base.ContainerBasicStorage;
@@ -77,6 +78,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerCrystalFurnace(player, (TileEntityCrystalFurnace) te);
 
 			if (te instanceof ItemOnRightClick)
+				return null;
+			if (te instanceof TileEntityRift)
 				return null;
 			if (te instanceof OneSlotMachine)
 				return new OneSlotContainer(player, te);
