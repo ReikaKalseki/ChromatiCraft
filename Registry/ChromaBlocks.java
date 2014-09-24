@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
+import Reika.ChromatiCraft.Block.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
@@ -48,6 +49,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
@@ -90,7 +92,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
 	TANK(BlockCrystalTank.class,												"crystal.tank"),
-	FENCE(BlockCrystalFence.class,												"crystal.fence");
+	FENCE(BlockCrystalFence.class,												"crystal.fence"),
+	TIERED(BlockChromaTiered.class,				ItemBlockChromaTiered.class,	"crystal.tiered");
 
 	private Class blockClass;
 	private String blockName;

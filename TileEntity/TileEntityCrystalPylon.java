@@ -91,7 +91,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 				this.spawnParticle(world, x, y, z);
 			}
 
-			if (!world.isRemote && rand.nextInt(40) == 0) {
+			if (!world.isRemote && rand.nextInt(80) == 0) {
 				int r = 8+rand.nextInt(8);
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);

@@ -11,26 +11,14 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
-public class GuardianCommand extends CommandBase {
-
-	private final String tag = "guardstone";
-
-	@Override
-	public String getCommandName() {
-		return tag;
-	}
-
-	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
-		return "/"+tag;
-	}
+public class GuardianCommand extends DragonCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {
@@ -39,7 +27,7 @@ public class GuardianCommand extends CommandBase {
 			StringBuilder sb = new StringBuilder();
 			sb.append("You must specify a valid name and whether to add or remove it.");
 			sb.append("\n");
-			sb.append("Command format: /"+tag+" [add/remove] <playername>");
+			sb.append("Command format: /"+this.getCommandString()+" [add/remove] <playername>");
 			ReikaChatHelper.sendChatToPlayer(ep, EnumChatFormatting.RED+sb.toString());
 			return;
 		}
@@ -89,5 +77,10 @@ public class GuardianCommand extends CommandBase {
 	@Override
 	public boolean canCommandSenderUseCommand(ICommandSender sender) {
 		return true;
+	}
+
+	@Override
+	public String getCommandString() {
+		return "guardstone";
 	}
 }

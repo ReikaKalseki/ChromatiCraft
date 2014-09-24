@@ -17,7 +17,7 @@ import Reika.DragonAPI.Base.OneSlotContainer;
 public class GuiOneSlot extends GuiChromaBase {
 
 	public GuiOneSlot(EntityPlayer ep, TileEntityChromaticBase te) {
-		super(new OneSlotContainer(ep, te), te);
+		super(new OneSlotContainer(ep, te), ep, te);
 	}
 
 	@Override

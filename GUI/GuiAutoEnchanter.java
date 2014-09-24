@@ -47,7 +47,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 
 
 	public GuiAutoEnchanter(EntityPlayer ep, TileEntityAutoEnchanter tile) {
-		super(new ContainerAutoEnchanter(ep, tile), tile);
+		super(new ContainerAutoEnchanter(ep, tile), ep, tile);
 		player = ep;
 		ench = tile;
 		ySize = 181;

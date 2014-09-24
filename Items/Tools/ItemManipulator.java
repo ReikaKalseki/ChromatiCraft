@@ -36,7 +36,7 @@ public class ItemManipulator extends ItemChromaTool {
 			return true;
 		}
 		if (t == ChromaTiles.TABLE) {
-			boolean flag = ((TileEntityCastingTable)tile).triggerCrafting();
+			boolean flag = ((TileEntityCastingTable)tile).triggerCrafting(ep);
 			return flag;
 		}
 		if (t == ChromaTiles.RITUAL) {

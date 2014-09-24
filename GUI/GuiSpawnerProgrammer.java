@@ -46,7 +46,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	}
 
 	public GuiSpawnerProgrammer(EntityPlayer ep, TileEntitySpawnerReprogrammer tile) {
-		super(new ContainerSpawnerProgrammer(ep, tile), tile);
+		super(new ContainerSpawnerProgrammer(ep, tile), ep, tile);
 		player = ep;
 		prog = tile;
 		ySize = 166;

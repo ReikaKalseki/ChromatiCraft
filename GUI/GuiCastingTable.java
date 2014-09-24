@@ -14,22 +14,29 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
+
+import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiCastingTable extends GuiChromaBase {
 
 	private final TileEntityCastingTable tile;
 
 	public GuiCastingTable(EntityPlayer ep, TileEntityCastingTable te) {
-		super(new ContainerCastingTable(ep, te), te);
+		super(new ContainerCastingTable(ep, te), ep, te);
 
 		tile = te;
 		ySize = this.isMultiForm() ? 240 : 209;
@@ -78,6 +85,17 @@ public class GuiCastingTable extends GuiChromaBase {
 				int my = api.getMouseRealY();
 				api.drawTooltipAt(fontRendererObj, out.getDisplayName(), mx-30, my);
 			}
+
+			zLevel = 100;
+			if (!r.canRunRecipe(ProgressionManager.instance.getPlayerProgressionStage(player))) {
+				ReikaTextureHelper.bindTerrainTexture();
+				GL11.glEnable(GL11.GL_BLEND);
+				IIcon ico = ChromaIcons.NOENTER.getIcon();
+				GL11.glColor4f(1, 1, 1, 0.5F);
+				this.drawTexturedModelRectFromIcon(189, 12, ico, 16, 16);
+				GL11.glDisable(GL11.GL_BLEND);
+			}
+			zLevel = 0;
 			//this.drawRect(188, 11, 188+18, 29, 0xffABABAB);
 
 			if (r instanceof PylonRecipe) {

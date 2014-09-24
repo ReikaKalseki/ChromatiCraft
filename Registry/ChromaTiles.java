@@ -73,8 +73,8 @@ public enum ChromaTiles {
 	CRYSTAL("chroma.chromacrystal", ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
 	INFUSER("chroma.infuser", ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),
 	CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
-	MIXER(),
-	SPLITTER();
+	;//MIXER(),
+	//SPLITTER();
 
 	private final Class tile;
 	private final String name;

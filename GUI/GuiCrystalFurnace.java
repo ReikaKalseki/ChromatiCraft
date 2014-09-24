@@ -23,7 +23,7 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 	private final TileEntityCrystalFurnace tile;
 
 	public GuiCrystalFurnace(EntityPlayer ep, TileEntityCrystalFurnace te) {
-		super(new ContainerCrystalFurnace(ep, te), te);
+		super(new ContainerCrystalFurnace(ep, te), ep, te);
 		tile = te;
 	}
 

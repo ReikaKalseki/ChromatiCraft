@@ -30,9 +30,10 @@ public abstract class GuiChromaBase extends GuiContainer {
 	protected EntityPlayer player;
 	protected static final ReikaGuiAPI api = ReikaGuiAPI.instance;
 
-	public GuiChromaBase(Container par1Container, TileEntityChromaticBase te) {
+	public GuiChromaBase(Container par1Container, EntityPlayer ep, TileEntityChromaticBase te) {
 		super(par1Container);
 		tile = te;
+		player = ep;
 	}
 
 	public final int getXSize() {

@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
@@ -368,6 +369,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
+		evt.registerServerCommand(new ProgressionStageCommand());
 	}
 
 	@EventHandler

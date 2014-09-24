@@ -18,6 +18,7 @@ import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -89,6 +90,14 @@ public class CastingRecipe {
 			items[i] = table.getStackInSlot(i);
 		RecipePattern ic = new RecipePattern(items);
 		return recipe.matches(ic, null);
+	}
+
+	protected ProgressStage getRequiredProgress() {
+		return ProgressStage.ENTRY;
+	}
+
+	public final boolean canRunRecipe(ProgressStage s) {
+		return s.ordinal() >= this.getRequiredProgress().ordinal();
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {

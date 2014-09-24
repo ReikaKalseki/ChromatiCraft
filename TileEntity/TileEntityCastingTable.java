@@ -16,10 +16,12 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -313,19 +315,20 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 	}
 
-	public boolean triggerCrafting() {
+	public boolean triggerCrafting(EntityPlayer ep) {
 		if (activeRecipe != null && craftingTick == 0) {
-			ChromaSounds.CAST.playSoundAtBlock(this);
-			craftingTick = activeRecipe.getDuration();
-
-			if (activeRecipe instanceof PylonRecipe) {
-				ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
-				tag.subtract(energy);
-				for (CrystalElement e : tag.elementSet()) {
-					this.requestEnergy(e, tag.getValue(e));
+			if (activeRecipe.canRunRecipe(ProgressionManager.instance.getPlayerProgressionStage(ep)) && this.isPlacer(ep)) {
+				ChromaSounds.CAST.playSoundAtBlock(this);
+				craftingTick = activeRecipe.getDuration();
+				if (activeRecipe instanceof PylonRecipe) {
+					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
+					tag.subtract(energy);
+					for (CrystalElement e : tag.elementSet()) {
+						this.requestEnergy(e, tag.getValue(e));
+					}
 				}
+				return true;
 			}
-			return true;
 		}
 		return false;
 	}

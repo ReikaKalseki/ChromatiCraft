@@ -26,7 +26,7 @@ public class GuiCollector extends GuiChromaBase {
 	private TileEntityCollector coll;
 
 	public GuiCollector(EntityPlayer ep, TileEntityCollector tile) {
-		super(new ContainerCollector(ep, tile), tile);
+		super(new ContainerCollector(ep, tile), ep, tile);
 		player = ep;
 		coll = tile;
 	}

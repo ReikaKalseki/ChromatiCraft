@@ -23,7 +23,7 @@ public class GuiCrystalCharger extends GuiChromaBase {
 	private final TileEntityCrystalCharger tile;
 
 	public GuiCrystalCharger(EntityPlayer ep, TileEntityCrystalCharger te) {
-		super(new ContainerCrystalCharger(ep, te), te);
+		super(new ContainerCrystalCharger(ep, te), ep, te);
 
 		tile = te;
 		ySize = 191;
