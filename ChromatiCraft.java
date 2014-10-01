@@ -40,10 +40,12 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.ReachApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
@@ -55,12 +57,14 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.BiomeCollisionTracker;
@@ -68,6 +72,7 @@ import Reika.DragonAPI.Auxiliary.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.CompatibilityTracker;
 import Reika.DragonAPI.Auxiliary.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.PlayerHandler;
+import Reika.DragonAPI.Auxiliary.PotionCollisionTracker;
 import Reika.DragonAPI.Auxiliary.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
@@ -78,7 +83,6 @@ import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ThermalHandler;
@@ -126,10 +130,12 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static final Material enderMat = new Material(MapColor.ironColor);
 
+	public static PotionGrowthHormone growth;
+
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
 
-	public static final ChromaConfig config = new ChromaConfig(instance, ChromaOptions.optionList, null, 0);
+	public static final ChromaConfig config = new ChromaConfig(instance, ChromaOptions.optionList, ExtraChromaIDs.idList, 0);
 
 	public static ModLogger logger;
 
@@ -197,6 +203,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		logger = new ModLogger(instance, false);
 
+		int id = ExtraChromaIDs.GROWTHID.getValue();
+		PotionCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
+		growth = (PotionGrowthHormone)new PotionGrowthHormone(id).setPotionName("Growth Hormone");
+
 		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.RAINBOWFORESTID.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.ENDERFORESTID.getValue(), BiomeEnderForest.class);
 
@@ -210,7 +220,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
-		tabChromaItems.setIcon(ReikaItemHelper.redDye);
+		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
 
 		if (!this.isLocked()) {
 			//if (ConfigRegistry.ACHIEVEMENTS.getState()) {
@@ -248,6 +258,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
 		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
+		GameRegistry.registerWorldGenerator(new TieredWorldGenerator(), Integer.MIN_VALUE);
 
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 

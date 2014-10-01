@@ -25,8 +25,8 @@ public class BlockRift extends BlockModelledChromaTile {
 
 	public BlockRift(Material par2Material) {
 		super(par2Material);
-		this.setHardness(1000);
-		this.setResistance(10000);
+		this.setBlockUnbreakable();
+		this.setResistance(600000);
 		stepSound = soundTypeCloth;
 	}
 

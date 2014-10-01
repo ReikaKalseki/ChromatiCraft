@@ -15,9 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -71,7 +73,7 @@ public class CastingRecipe {
 	}
 
 	public boolean usesItem(ItemStack is) {
-		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is);
+		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is, true);
 	}
 
 	protected static final ItemStack getShard(CrystalElement e) {
@@ -93,11 +95,11 @@ public class CastingRecipe {
 	}
 
 	protected ProgressStage getRequiredProgress() {
-		return ProgressStage.ENTRY;
+		return ProgressStage.CRYSTALS;
 	}
 
-	public final boolean canRunRecipe(ProgressStage s) {
-		return s.ordinal() >= this.getRequiredProgress().ordinal();
+	public final boolean canRunRecipe(EntityPlayer ep) {
+		return ProgressionManager.instance.isPlayerAtStage(ep, this.getRequiredProgress());
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {
@@ -129,6 +131,11 @@ public class CastingRecipe {
 		@Override
 		public int getDuration() {
 			return 20;
+		}
+
+		@Override
+		protected ProgressStage getRequiredProgress() {
+			return ProgressStage.RUNEUSE;
 		}
 
 	}
@@ -222,6 +229,11 @@ public class CastingRecipe {
 			iss[4] = main;
 			return iss;
 		}
+
+		@Override
+		protected ProgressStage getRequiredProgress() {
+			return ProgressStage.MULTIBLOCK;
+		}
 	}
 
 	public static class PylonRecipe extends MultiBlockCastingRecipe {
@@ -258,6 +270,11 @@ public class CastingRecipe {
 		@Override
 		public int getDuration() {
 			return 400;
+		}
+
+		@Override
+		protected ProgressStage getRequiredProgress() {
+			return ProgressStage.PYLON;
 		}
 	}
 

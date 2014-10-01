@@ -21,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -313,11 +312,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 			activeRecipe = null;
 		}
+		this.syncAllData(true);
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
 		if (activeRecipe != null && craftingTick == 0) {
-			if (activeRecipe.canRunRecipe(ProgressionManager.instance.getPlayerProgressionStage(ep)) && this.isPlacer(ep)) {
+			if (activeRecipe.canRunRecipe(ep) && this.isPlacer(ep)) {
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				craftingTick = activeRecipe.getDuration();
 				if (activeRecipe instanceof PylonRecipe) {

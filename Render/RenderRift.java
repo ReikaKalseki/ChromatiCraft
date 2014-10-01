@@ -77,7 +77,7 @@ public class RenderRift extends ChromaRenderBase {
 		double y = 0.5+dir.offsetY*d;
 		double z = 0.5+dir.offsetZ*d;
 
-		IIcon ico = CrystalElement.LIGHTBLUE.getGlowRune();
+		IIcon ico = CrystalElement.LIME.getGlowRune();
 		ReikaTextureHelper.bindTerrainTexture();
 		float u = ico.getMinU();
 		float du = ico.getMaxU();

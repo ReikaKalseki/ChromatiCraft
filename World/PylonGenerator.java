@@ -301,7 +301,7 @@ public final class PylonGenerator implements IWorldGenerator {
 		ElementTagCompound tag = BaseAura.getBaseAura(world, x, y, z);
 		if (rand.nextInt(25) > 0)
 			tag.clipToPrimaries();
-		CrystalElement e = tag.asWeightedRandom().getRandomEntry();
+		CrystalElement e = CrystalElement.randomElement();//tag.asWeightedRandom().getRandomEntry();
 		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y, z, e);
 
 		for (int n = -4; n < 0; n++) {

@@ -17,6 +17,9 @@ public class ChromaCommon {
 	public static int runeRender;
 	public static int tankRender;
 
+	public static int oreRender;
+	public static int plantRender;
+
 	public void registerRenderers()
 	{
 		//unused server side. -- see ClientProxy for implementation

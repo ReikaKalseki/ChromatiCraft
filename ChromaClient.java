@@ -27,6 +27,8 @@ import Reika.ChromatiCraft.Render.CrystalRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.RuneRenderer;
 import Reika.ChromatiCraft.Render.TankBlockRenderer;
+import Reika.ChromatiCraft.Render.TieredOreRenderer;
+import Reika.ChromatiCraft.Render.TieredPlantRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
@@ -53,6 +55,9 @@ public class ChromaClient extends ChromaCommon {
 	private static final CrystalRenderer crystal = new CrystalRenderer();
 	private static final RuneRenderer rune = new RuneRenderer();
 	private static final TankBlockRenderer tank = new TankBlockRenderer();
+
+	private static final TieredOreRenderer ore = new TieredOreRenderer();
+	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -135,6 +140,11 @@ public class ChromaClient extends ChromaCommon {
 
 		tankRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(tankRender, tank);
+
+		oreRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(oreRender, ore);
+		plantRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(plantRender, plant);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

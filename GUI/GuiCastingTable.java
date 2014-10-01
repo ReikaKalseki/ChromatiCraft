@@ -18,7 +18,6 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -87,7 +86,7 @@ public class GuiCastingTable extends GuiChromaBase {
 			}
 
 			zLevel = 100;
-			if (!r.canRunRecipe(ProgressionManager.instance.getPlayerProgressionStage(player))) {
+			if (!r.canRunRecipe(player)) {
 				ReikaTextureHelper.bindTerrainTexture();
 				GL11.glEnable(GL11.GL_BLEND);
 				IIcon ico = ChromaIcons.NOENTER.getIcon();

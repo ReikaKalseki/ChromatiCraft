@@ -219,6 +219,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		hasMultiblock = false;
 		this.clearTargets();
 		energy = 0;
+		this.syncAllData(true);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -239,6 +240,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	public void validateMultiblock() {
 		hasMultiblock = true;
+		this.syncAllData(true);
 	}
 
 	@SideOnly(Side.CLIENT)

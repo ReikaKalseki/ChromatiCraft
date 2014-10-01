@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
@@ -138,7 +139,7 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 	public ArrayList<ItemStack> getItemList(ItemStack is) {
 		ArrayList<ItemStack> li = new ArrayList();
 		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("items")) {
-			NBTTagList items = is.stackTagCompound.getTagList("items", is.stackTagCompound.getId());
+			NBTTagList items = is.stackTagCompound.getTagList("items", NBTTypes.COMPOUND.ID);
 			for (int i = 0; i < items.tagCount(); i++) {
 				NBTTagCompound nbt = items.getCompoundTagAt(i);
 				ItemStack item = ItemStack.loadItemStackFromNBT(nbt);

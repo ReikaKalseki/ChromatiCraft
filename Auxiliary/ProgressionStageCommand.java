@@ -31,11 +31,19 @@ public class ProgressionStageCommand extends DragonCommandBase {
 		}
 		try {
 			int stage = Integer.parseInt(args[args.length-1]);
-			if (ProgressionManager.instance.setPlayerStage(ep, stage)) {
-				sendChatToSender(ics, EnumChatFormatting.GREEN.toString()+"Player progression stage set successfully.");
+			if (stage == -1) {
+				ProgressionManager.instance.maxPlayerProgression(ep);
+			}
+			else if (stage == 0) {
+				ProgressionManager.instance.resetPlayerProgression(ep);
 			}
 			else {
-				sendChatToSender(ics, EnumChatFormatting.RED.toString()+"Invalid stage number: "+args[args.length-1]);
+				if (ProgressionManager.instance.setPlayerStage(ep, stage, true)) {
+					sendChatToSender(ics, EnumChatFormatting.GREEN.toString()+"Player progression stage set successfully.");
+				}
+				else {
+					sendChatToSender(ics, EnumChatFormatting.RED.toString()+"Invalid stage number: "+args[args.length-1]);
+				}
 			}
 		}
 		catch (NumberFormatException e) {

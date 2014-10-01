@@ -24,22 +24,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public enum CrystalElement {
 
-	BLACK("Kuro", 0x191919), //Hostile/Mob/Evil/Void
-	RED("Karmir", 0xFF0000), //Durability/Protection/Resistance
-	GREEN("Kijani", 0x007F0E), //Sickness
-	BROWN("Ruskea", 0x724528), //Sustenance/Eating/Food
-	BLUE("Nila", 0x0026FF), //Visibility/Darkness/Light
-	PURPLE("Zambarau", 0x8C00EA), //Enchantment/Enhancement
-	CYAN("Vadali", 0x009FBF), //Aquatic/Water
-	LIGHTGRAY("Argia", 0x979797), //stealth,deception
-	GRAY("Ykri", 0x404040), //(weakness,fraility)
-	PINK("Ruzova", 0xFFBAD9), //Combat/Strength
-	LIME("Asveste", 0x00FF00), //Mobility/Agility
+	BLACK("Kuro", 0x191919), //Magic
+	RED("Karmir", 0xFF0000), //Endurance
+	GREEN("Kijani", 0x007F0E), //Nature
+	BROWN("Ruskea", 0x724528), //Mineral
+	BLUE("Nila", 0x0026FF), //Light
+	PURPLE("Zambarau", 0x8C00EA), //Enhancement
+	CYAN("Vadali", 0x009FBF), //Water
+	LIGHTGRAY("Argia", 0x979797), //Deception
+	GRAY("Ykri", 0x404040), //Change
+	PINK("Ruzova", 0xFFBAD9), //Aggression
+	LIME("Asveste", 0x00FF00), //Motion
 	YELLOW("Kitrino", 0xFFFF00), //Energy
-	LIGHTBLUE("Galazio", 0x7FD4FF), //Time/Acceleration
-	MAGENTA("Kurauri", 0xFF00DC), //Health/Healing/Life
-	ORANGE("Portokali", 0xFF6A00), //Fire/Heat
-	WHITE("Tahara", 0xFFFFFF); //Purity/Clarity
+	LIGHTBLUE("Galazio", 0x7FD4FF), //Time
+	MAGENTA("Kurauri", 0xFF00DC), //Life
+	ORANGE("Portokali", 0xFF6A00), //Fire
+	WHITE("Tahara", 0xFFFFFF); //Purity
 
 	private final ReikaDyeHelper color;
 	public final String displayName;
@@ -55,7 +55,7 @@ public enum CrystalElement {
 	private CrystalElement(String n, int rgb) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
 		displayName = n;
-		this.rgb = (255<<24)+rgb;
+		this.rgb = 0xff000000 | rgb;
 	}
 
 	public String getEnglishName() {
@@ -114,6 +114,10 @@ public enum CrystalElement {
 
 	public CrystalElement subtract(CrystalElement e) {
 		return ElementMixer.instance.subtract(this, e);
+	}
+
+	public boolean isCompatible(CrystalElement e) {
+		return ElementMixer.instance.isCompatible(this, e);
 	}
 
 	public boolean isPrimary() {

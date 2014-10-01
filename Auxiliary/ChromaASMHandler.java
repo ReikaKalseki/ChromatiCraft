@@ -66,9 +66,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 		private static final HashMap<String, ClassPatch> classes = new HashMap();
 
 		private static enum ClassPatch {
-			//ENDERCRYSTALGEN("net.minecraft.world.gen.feature.WorldGenSpikes", ""),
 			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "aqr"),
-			//ENDPROVIDER2("net.minecraft.world.WorldProviderEnd", ""),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje");
 
 			private final String obfName;
@@ -85,58 +83,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				ClassNode cn = new ClassNode();
 				ClassReader classReader = new ClassReader(data);
 				classReader.accept(cn, 0);
-				switch(this) {/*
-				case ENDERCRYSTALGEN: {
-					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "generate", "(Lnet/minecraft/world/World;Ljava/util/Random;III)Z");
-					if (m == null) {
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
-					}
-					else {
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
-								MethodInsnNode min = (MethodInsnNode)ain;
-								if (min.name.equals("<init>")) {
-									String c = "Reika/ChromatiCraft/Entity/EntityChromaEnderCrystal";
-									m.instructions.insert(min, new MethodInsnNode(Opcodes.INVOKESPECIAL, c, min.name, m.desc));
-									m.instructions.remove(min);
-									ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
-								}
-							}
-						}
-					}
-				}
-				break;
-				/*
-				case ENDPROVIDER2: {
-					MethodNode m = ReikaASMHelper.getMethodByName(cn, "", "createChunkGenerator", "()Lnet/minecraft/world/chunk/IChunkProvider;");
-					if (m == null) {
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
-					}
-					else {
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.NEW) {
-								TypeInsnNode min = (TypeInsnNode)ain;
-								String c = "Reika/ChromatiCraft/World/CustomEndProvider";
-								m.instructions.insert(min, new TypeInsnNode(Opcodes.NEW, c));
-								m.instructions.remove(min);
-								ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler part 1!");
-							}
-							if (ain.getOpcode() == Opcodes.INVOKESPECIAL) {
-								MethodInsnNode min = (MethodInsnNode)ain;
-								if (min.name.equals("<init>")) {
-									String c = "Reika/ChromatiCraft/World/CustomEndProvider";
-									m.instructions.insert(min, new MethodInsnNode(Opcodes.INVOKESPECIAL, c, min.name, m.desc));
-									m.instructions.remove(min);
-									ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler part 2!");
-								}
-							}
-						}
-					}
-				}
-				break;*/
-
+				switch(this) {
 				case ENDPROVIDER: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
 					if (m == null) {

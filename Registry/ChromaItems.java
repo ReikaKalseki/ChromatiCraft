@@ -16,6 +16,7 @@ import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
+import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
@@ -53,7 +55,7 @@ public enum ChromaItems implements ItemEnum {
 	TOOL(32, false,			"chroma.tool",			ItemManipulator.class),
 	SHARD(64, true, 		"crystal.shard", 		ItemCrystalShard.class),
 	POTION(0, true, 		"crystal.potion", 		ItemCrystalPotion.class),
-	CLUSTER(80, true, 		"crystal.cluster", 		ItemCluster.class),
+	CLUSTER(336, true, 		"crystal.cluster", 		ItemCluster.class),
 	PENDANT(96, true, 		"crystal.pendant", 		ItemPendant.class),
 	PENDANT3(112, true, 	"crystal.pendant3", 	ItemPendant.class),
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
@@ -66,7 +68,8 @@ public enum ChromaItems implements ItemEnum {
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
 	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
 	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class),
-	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class);
+	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
+	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -175,6 +178,8 @@ public enum ChromaItems implements ItemEnum {
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case CLUSTER:
 			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
+		case TIERED:
+			return StatCollector.translateToLocal(ChromaNames.tieredNames[meta]);
 		case SEED:
 			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case ENDERCRYSTAL:
@@ -238,6 +243,8 @@ public enum ChromaItems implements ItemEnum {
 			return CrystalElement.elements.length;
 		case CLUSTER:
 			return ChromaNames.clusterNames.length;
+		case TIERED:
+			return ChromaNames.tieredNames.length;
 		case SEED:
 			return 16; //was 32
 		case ENDERCRYSTAL:
@@ -426,5 +433,9 @@ public enum ChromaItems implements ItemEnum {
 			ChromaItems r = itemList[i];
 			itemMap.put(r.getItemInstance(), r);
 		}
+	}
+
+	public ItemStack getAnyMetaStack() {
+		return this.getStackOfMetadata(OreDictionary.WILDCARD_VALUE);
 	}
 }

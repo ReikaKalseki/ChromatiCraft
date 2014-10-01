@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.ProtectionZone;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class TileEntityGuardianStone extends TileEntityChromaticBase {
@@ -52,7 +53,7 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
-		NBTTagList list = NBT.getTagList("players", 8); //string
+		NBTTagList list = NBT.getTagList("players", NBTTypes.STRING.ID);
 		//ReikaJavaLibrary.pConsole("READ:  "+list);
 		extraPlayers.clear();
 		for (int i = 0; i < list.tagCount(); i++) {

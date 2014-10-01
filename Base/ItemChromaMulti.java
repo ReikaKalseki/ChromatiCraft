@@ -14,10 +14,11 @@ import java.util.List;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ItemChromaMulti extends ItemChromaBasic {
+public class ItemChromaMulti extends ItemChromaBasic {
 
 	public ItemChromaMulti(int tex) {
 		super(tex);
@@ -25,7 +26,9 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 		this.setMaxDamage(0);
 	}
 
-	public abstract int getNumberTypes();
+	public int getNumberTypes() {
+		return ChromaItems.getEntryByID(this).getNumberMetadatas();
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)

@@ -85,8 +85,9 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
 		int meta = world.getBlockMetadata(x, y, z);
-		int color = ((CrystalRenderedBlock)b).getTintColor(meta);
-		int alpha = 220;
+		//boolean discover = ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer);
+		int color = /*discover ? */((CrystalRenderedBlock)b).getTintColor(meta);// : 0xbbbbbb;
+		int alpha = /*discover ? */220;// : 32;
 
 		IIcon ico = b.getIcon(0, meta);
 		//ico = Blocks.blockNetherQuartz.getIcon(0, 0);

@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
-import Reika.ChromatiCraft.Block.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
@@ -41,6 +40,8 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.BlockSuperCrystal;
+import Reika.ChromatiCraft.Block.BlockTieredOre;
+import Reika.ChromatiCraft.Block.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -93,7 +94,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
 	TANK(BlockCrystalTank.class,												"crystal.tank"),
 	FENCE(BlockCrystalFence.class,												"crystal.fence"),
-	TIERED(BlockChromaTiered.class,				ItemBlockChromaTiered.class,	"crystal.tiered");
+	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"crystal.tiered"),
+	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"crystal.tieredore");
 
 	private Class blockClass;
 	private String blockName;
@@ -127,6 +129,7 @@ public enum ChromaBlocks implements BlockEnum {
 			return Material.glass;
 		switch(this) {
 		case TILEPLANT:
+		case TIEREDPLANT:
 			return Material.plants;
 		case CHROMA:
 			//case ACTIVECHROMA:
@@ -257,7 +260,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case PYLON:
 			return 2;
 		case PYLONSTRUCT:
-			return 10;
+			return 12;
 		default:
 			return 1;
 		}

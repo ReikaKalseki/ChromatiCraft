@@ -58,6 +58,37 @@ public class TileEntityAuraInfuser extends FluidReceiverInventoryBase implements
 		//ReikaJavaLibrary.pConsole(color+":"+berries, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(progressTimer, Side.SERVER);
 
+		/*
+		if (this.getTicksExisted()%1 == 0) {
+			double r = 3;
+			for (int n = 0; n < 6; n++) {
+				for (int i = 0; i < 360; i += 60) {
+					int a = this.getTicksExisted()+i;
+					double px = x+0.5+r*Math.sin(Math.toRadians(a));
+					double py = y+0.125+n*0.0625+ReikaRandomHelper.getRandomPlusMinus(0, 0.05);
+					double pz = z+0.5+r*Math.cos(Math.toRadians(a));
+					int red = n < 2 ? 255 : 0;
+					int green = n < 4 ? 255 : 0;
+					int blue = 255;
+					EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, 0, 0, 0).setColor(red, green, blue).setScale(0.5F);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
+		}*/
+
+		/*
+
+		double angle = (System.currentTimeMillis()/15D)%360;
+		double d = 0.05;
+		double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
+		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
+		double py = ReikaRandomHelper.getRandomPlusMinus(y+1.5+0.5*(1+Math.sin(Math.toRadians(angle))), d);
+		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
+		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+		 */
+
 		if (this.canProcess()) {
 			if (progressTimer < DURATION) {
 				progressTimer++;

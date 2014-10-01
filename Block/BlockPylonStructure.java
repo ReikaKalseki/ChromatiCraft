@@ -14,6 +14,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -67,6 +68,27 @@ public class BlockPylonStructure extends Block {
 	@Override
 	public boolean canSilkHarvest() {
 		return true;
+	}
+
+	@Override
+	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion e) {
+		int r = 12;
+		for (int i = -r; i <= r; i++) {
+			for (int j = -r; j <= r; j++) {
+				for (int k = -r; k <= r; k++) {
+					int dx = x+i;
+					int dy = y+j;
+					int dz = z+k;
+					TileEntity te = world.getTileEntity(dx, dy, dz);
+					if (te instanceof TileEntityCrystalPylon) {
+						((TileEntityCrystalPylon)te).invalidateMultiblock();
+					}
+					if (te instanceof TileEntityCrystalRepeater) {
+						CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)te);
+					}
+				}
+			}
+		}
 	}
 
 	@Override

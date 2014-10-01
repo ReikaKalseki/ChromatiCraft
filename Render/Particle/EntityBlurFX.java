@@ -52,6 +52,11 @@ public class EntityBlurFX extends EntityFX {
 		particleIcon = ChromaIcons.FADE.getIcon();
 	}
 
+	public EntityBlurFX setIcon(ChromaIcons c) {
+		particleIcon = c.getIcon();
+		return this;
+	}
+
 	public EntityBlurFX setScale(float f) {
 		scale = f;
 		return this;
@@ -64,6 +69,18 @@ public class EntityBlurFX extends EntityFX {
 
 	public final EntityBlurFX setNoSlowdown() {
 		noSlow = true;
+		return this;
+	}
+
+	public final EntityBlurFX setGravity(float g) {
+		particleGravity = g;
+		return this;
+	}
+
+	public final EntityBlurFX setColor(int r, int g, int b) {
+		particleRed = r/255F;
+		particleGreen = g/255F;
+		particleBlue = b/255F;
 		return this;
 	}
 

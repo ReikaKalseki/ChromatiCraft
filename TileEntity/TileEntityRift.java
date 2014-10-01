@@ -38,12 +38,14 @@ import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.API.WorldRift;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Extras.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
@@ -62,6 +64,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	private int color = 0xffffff;
 	private int[] redstoneCache = new int[6];
 	private ForgeDirection singleDirection;
+	private boolean shouldDrop;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -70,7 +73,10 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		if (shouldDrop) {
+			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaItems.RIFT.getStackOf());
+			this.delete();
+		}
 	}
 
 	public void setDirection(ForgeDirection dir) {
@@ -82,6 +88,14 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 
 	public ForgeDirection getSingleDirection() {
 		return singleDirection;
+	}
+
+	public void drop() {
+		shouldDrop = true;
+		TileEntityRift te = this.getOther();
+		if (te != null)
+			te.shouldDrop = true;
+		this.reset();
 	}
 
 	public void passThrough() {

@@ -37,6 +37,8 @@ public class ChromaStacks {
 	public static final ItemStack energyCore = ChromaItems.CRAFTING.getStackOfMetadata(5);
 	public static final ItemStack crystalPowder = ChromaItems.CRAFTING.getStackOfMetadata(6);
 
+	public static final ItemStack chromaDust = ChromaItems.TIERED.getStackOfMetadata(0);
+
 	public static final ItemStack chargedBlackShard = ChromaItems.SHARD.getStackOfMetadata(16);
 	public static final ItemStack chargedRedShard = ChromaItems.SHARD.getStackOfMetadata(17);
 	public static final ItemStack chargedGreenShard = ChromaItems.SHARD.getStackOfMetadata(18);

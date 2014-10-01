@@ -32,6 +32,10 @@ public class ChromaNames {
 		"chromacraft.energycore", "chromacraft.crystaldust"
 	};
 
+	public static final String[] tieredNames = {
+		"chromacraft.chromadust"
+	};
+
 	public static final String[] storageNames = {
 		"", "", "", "", "", "", ""
 	};

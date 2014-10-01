@@ -32,7 +32,13 @@ public class ItemManipulator extends ItemChromaTool {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (t == ChromaTiles.RIFT) {
-			((TileEntityRift)tile).setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
+			TileEntityRift te = (TileEntityRift)tile;
+			if (ep.isSneaking()) {
+				te.drop();
+			}
+			else {
+				te.setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
+			}
 			return true;
 		}
 		if (t == ChromaTiles.TABLE) {

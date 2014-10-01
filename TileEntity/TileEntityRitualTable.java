@@ -197,6 +197,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		if (!hasStructure && abilityTick > 0) {
 			this.killRitual();
 		}
+		this.syncAllData(true);
 	}
 
 	private void killRitual() {
