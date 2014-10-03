@@ -21,7 +21,7 @@ public class TileEntityCrystalFlower extends TileEntityChromaticBase {
 
 	@Override
 	public ChromaTiles getTile() {
-		return ChromaTiles.CRYSTALFLOWER;
+		return null;//ChromaTiles.CRYSTALFLOWER;
 	}
 
 	@Override

@@ -59,16 +59,15 @@ public class BlockTieredOre extends BlockTieredResource {
 
 		public boolean generate(World world, int x, int z, Random r) {
 			int y = r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
-			new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal()).generate(world, r, x, y, z);
-			return false;
+			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), 8, Blocks.stone).generate(world, r, x, y, z);
 		}
 
 		public int getGenerationCount() {
-			return 3;
+			return 4;
 		}
 
 		public int getGenerationChance() {
-			return 5;
+			return 1;
 		}
 	}
 

@@ -23,7 +23,6 @@ public class BlockCrystalLamp extends CrystalBlock {
 
 	public BlockCrystalLamp(Material mat) {
 		super(mat);
-		this.setLightLevel(1F);
 	}
 
 	@Override
@@ -82,5 +81,10 @@ public class BlockCrystalLamp extends CrystalBlock {
 	@Override
 	public int getPotionLevel() {
 		return 0;
+	}
+
+	@Override
+	public int getBrightness() {
+		return 15;
 	}
 }

@@ -22,6 +22,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -109,7 +110,18 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			if (this.getTicksExisted()%72 == 0) {
 				ChromaSounds.POWER.playSoundAtBlock(this);
 			}
+
+			if (world.isRemote && rand.nextInt(36) == 0) {
+				this.spawnLightning(world, x, y, z);
+			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnLightning(World world, int x, int y, int z) {
+		EntityBallLightning e = new EntityBallLightning(world, x+0.5, y+0.5, z+0.5, color);
+		e.setVelocity(0.125, rand.nextInt(360), 0);
+		Minecraft.getMinecraft().effectRenderer.addEffect(e);
 	}
 
 	private void charge(World world, int x, int y, int z) {

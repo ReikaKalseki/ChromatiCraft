@@ -81,4 +81,9 @@ public class BlockSuperCrystal extends CrystalBlock {
 		return 2;
 	}
 
+	@Override
+	public int getBrightness() {
+		return 15;
+	}
+
 }

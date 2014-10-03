@@ -15,12 +15,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class TieredWorldGenerator implements IWorldGenerator {
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+
+		chunkX *= 16;
+		chunkZ *= 16;
 
 		for (int i = 0; i < TieredPlants.list.length; i++) {
 			TieredPlants p = TieredPlants.list[i];
@@ -30,7 +34,10 @@ public class TieredWorldGenerator implements IWorldGenerator {
 				for (int k = 0; k < n; k++) {
 					int posX = chunkX + random.nextInt(16);
 					int posZ = chunkZ + random.nextInt(16);
-					flag |= p.generate(world, posX, posZ, random);
+					Coordinate c = p.generate(world, posX, posZ, random);
+					if (c != null) {
+						c.setBlock(world, p.getBlock(), p.ordinal());
+					}
 				}
 			}
 		}

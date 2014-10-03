@@ -42,37 +42,36 @@ import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
-import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalFlower;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
 
 public enum ChromaTiles {
 
-	CHROMAFLOWER("chroma.flower", ChromaBlocks.TILEPLANT, TileEntityChromaFlower.class, 0, "ChromaFlowerRenderer"),
-	ENCHANTER("chroma.enchanter", ChromaBlocks.TILEENTITY, TileEntityAutoEnchanter.class, 0),
-	LIQUIFIER("chroma.liquifier", ChromaBlocks.TILEENTITY, TileEntityAuraLiquifier.class, 1),
+	CHROMAFLOWER("chroma.flower", 		ChromaBlocks.TILEPLANT, TileEntityChromaFlower.class, 0, "ChromaFlowerRenderer"),
+	ENCHANTER("chroma.enchanter", 		ChromaBlocks.TILEENTITY, TileEntityAutoEnchanter.class, 0),
+	LIQUIFIER("chroma.liquifier", 		ChromaBlocks.TILEENTITY, TileEntityAuraLiquifier.class, 1),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
-	COLLECTOR("chroma.collector", ChromaBlocks.TILEENTITY, TileEntityCollector.class, 4),
-	TABLE("chroma.table", ChromaBlocks.TILEENTITY, TileEntityCastingTable.class, 5),
-	RIFT("chroma.rift", ChromaBlocks.RIFT, TileEntityRift.class, 0, "RenderRift"),
-	BREWER("chroma.brewer", ChromaBlocks.TILEENTITY, TileEntityCrystalBrewer.class, 6),
-	GUARDIAN("chroma.guardian", ChromaBlocks.TILECRYSTAL, TileEntityGuardianStone.class, 0, "GuardianStoneRenderer"),
-	ACCELERATOR("chroma.accelerator", ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 0, "AcceleratorRenderer"),
-	PYLON("chroma.pylon", ChromaBlocks.PYLON, TileEntityCrystalPylon.class, 0, "RenderCrystalPylon"),
-	REPEATER("chroma.repeater", ChromaBlocks.PYLON, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
-	LASER("chroma.laser", ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1, "RenderCrystalLaser"),
-	STAND("chroma.stand", ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand"),
-	CHARGER("chroma.charger", ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3, "RenderCrystalCharger"),
-	FURNACE("chroma.furnace", ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
-	RITUAL("chroma.ritual", ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
-	TANK("chroma.tank", ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender"),
-	FENCE("chroma.fence", ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence"),
-	BEACON("chroma.beacon", ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
-	ITEMRIFT("chroma.itemrift", ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
-	CRYSTAL("chroma.chromacrystal", ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
-	INFUSER("chroma.infuser", ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),
-	CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
+	COLLECTOR("chroma.collector", 		ChromaBlocks.TILEENTITY, TileEntityCollector.class, 4),
+	TABLE("chroma.table", 				ChromaBlocks.TILEENTITY, TileEntityCastingTable.class, 5),
+	RIFT("chroma.rift", 				ChromaBlocks.RIFT, TileEntityRift.class, 0, "RenderRift"),
+	BREWER("chroma.brewer", 			ChromaBlocks.TILEENTITY, TileEntityCrystalBrewer.class, 6),
+	GUARDIAN("chroma.guardian", 		ChromaBlocks.TILECRYSTAL, TileEntityGuardianStone.class, 0, "GuardianStoneRenderer"),
+	ACCELERATOR("chroma.accelerator", 	ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 0, "AcceleratorRenderer"),
+	PYLON("chroma.pylon", 				ChromaBlocks.PYLON, TileEntityCrystalPylon.class, 0, "RenderCrystalPylon"),
+	REPEATER("chroma.repeater", 		ChromaBlocks.PYLON, TileEntityCrystalRepeater.class, 1, "RenderCrystalRepeater"),
+	LASER("chroma.laser", 				ChromaBlocks.TILEMODELLED, TileEntityCrystalLaser.class, 1, "RenderCrystalLaser"),
+	STAND("chroma.stand", 				ChromaBlocks.TILEMODELLED, TileEntityItemStand.class, 2, "RenderItemStand"),
+	CHARGER("chroma.charger", 			ChromaBlocks.TILEMODELLED, TileEntityCrystalCharger.class, 3, "RenderCrystalCharger"),
+	FURNACE("chroma.furnace", 			ChromaBlocks.TILEENTITY, TileEntityCrystalFurnace.class, 7),
+	RITUAL("chroma.ritual", 			ChromaBlocks.TILEENTITY, TileEntityRitualTable.class, 8),
+	TANK("chroma.tank", 				ChromaBlocks.TILEENTITY, TileEntityCrystalTank.class, 9, "TankRender"),
+	FENCE("chroma.fence", 				ChromaBlocks.TILEMODELLED, TileEntityCrystalFence.class, 4, "RenderCrystalFence"),
+	BEACON("chroma.beacon", 			ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
+	ITEMRIFT("chroma.itemrift", 		ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
+	CRYSTAL("chroma.chromacrystal", 	ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
+	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),;
+	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
 	//SPLITTER();
 

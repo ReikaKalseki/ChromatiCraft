@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +24,6 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class TileEntityGuardianStone extends TileEntityChromaticBase {
 
@@ -88,7 +88,7 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 	}
 
 	public List<String> getExtraPlayers() {
-		return ReikaJavaLibrary.copyList(extraPlayers);
+		return Collections.unmodifiableList(extraPlayers);
 	}
 
 	@Override

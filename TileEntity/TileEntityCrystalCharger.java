@@ -124,7 +124,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 			ElementTagCompound tag = this.item().getStoredTags(inv[0]);
 			energy += tag.getTotalEnergy();
 		}
-		angle += ReikaMathLibrary.logbase2(energy);
+		angle += ReikaMathLibrary.logbase(energy, 2);
 		if (angle >= 180) {
 			//ReikaSoundHelper.playSound(ChromaSounds., x+0.5, y+0.5, z+0.5, 1, 1);
 			angle -= 180;

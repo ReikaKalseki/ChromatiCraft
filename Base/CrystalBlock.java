@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.CrystalRenderer;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -71,8 +72,15 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	}
 
 	@Override
+	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		int color = CrystalElement.elements[iba.getBlockMetadata(x, y, z)].getColor();
+		int l = this.getBrightness();
+		return ModList.COLORLIGHT.isLoaded() ? color&0xff << 15 | color&0xff00 << 10 | color&0xff0000 << 5 | l : l;
+	}
+
+	@Override
 	public final int getRenderType() {
-		return ChromatiCraft.proxy.crystalRender; //6 was crops
+		return ChromatiCraft.proxy.crystalRender;
 	}
 
 	@Override
@@ -153,6 +161,8 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	public abstract int getRange();
 
 	public abstract int getDuration();
+
+	public abstract int getBrightness();
 
 	public boolean renderAllArms() {
 		return this.renderBase();

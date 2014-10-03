@@ -174,6 +174,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void preload(FMLPreInitializationEvent evt) {
+		this.verifyVersions();
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
