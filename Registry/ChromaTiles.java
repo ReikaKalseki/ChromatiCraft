@@ -36,8 +36,10 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
+import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
@@ -70,7 +72,9 @@ public enum ChromaTiles {
 	BEACON("chroma.beacon", 			ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
 	ITEMRIFT("chroma.itemrift", 		ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
 	CRYSTAL("chroma.chromacrystal", 	ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
-	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),;
+	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser"),
+	FABRICATOR("chroma.fabricator",		ChromaBlocks.TILEMODELLED, TileEntityItemFabricator.class, 8),
+	MINER("chroma.miner",				ChromaBlocks.TILEMODELLED, TileEntityMiner.class, 9);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
 	//SPLITTER();

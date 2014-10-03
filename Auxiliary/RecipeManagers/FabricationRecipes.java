@@ -27,12 +27,18 @@ public class FabricationRecipes {
 
 	private ArrayList<ItemStack> products = new ArrayList();
 
-	public FabricationRecipes recipes() {
+	public static FabricationRecipes recipes() {
 		return instance;
 	}
 
 	private FabricationRecipes() {
 
+	}
+
+	public ElementTagCompound getItemCost(ItemStack is) {
+		KeyedItemStack ks = new KeyedItemStack(is);
+		ElementTagCompound tag = data.get(ks);
+		return tag != null ? tag.copy() : null;
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {
