@@ -40,8 +40,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	public final void addTarget(WorldLocation loc, CrystalElement e) {
-		CrystalTarget tg = new CrystalTarget(loc, e);
+	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz) {
+		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
@@ -64,9 +64,9 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	private void spawnBeamParticles(World world, int x, int y, int z) {
 		for (int i = 0; i < targets.size(); i++) {
 			CrystalTarget tg = targets.get(i);
-			int dx = tg.location.xCoord-x;
-			int dy = tg.location.yCoord-y;
-			int dz = tg.location.zCoord-z;
+			double dx = tg.location.xCoord+tg.offsetX-x;
+			double dy = tg.location.yCoord+tg.offsetY-y;
+			double dz = tg.location.zCoord+tg.offsetZ-z;
 			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 			double dr = rand.nextDouble();
 			double px = dx*dr+x+0.5;

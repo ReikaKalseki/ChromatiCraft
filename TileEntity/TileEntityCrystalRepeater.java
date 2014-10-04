@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -79,6 +82,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void onPathBroken() {
 
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		return null;
 	}
 
 }

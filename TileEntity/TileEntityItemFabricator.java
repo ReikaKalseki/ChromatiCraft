@@ -12,6 +12,9 @@ package Reika.ChromatiCraft.TileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
@@ -52,12 +55,27 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
+
 		if (recipe != null) {
 
 		}
 
 		if (craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
+		}
+	}
+
+	private void checkAndRequest() {
+		int capacity = this.getMaxStorage();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int space = capacity-this.getEnergy(e);
+			if (space > 0) {
+				this.requestEnergy(e, space);
+			}
 		}
 	}
 
@@ -78,7 +96,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	@Override
 	public int maxThroughput() {
-		return 500;
+		return 20;
 	}
 
 	@Override
@@ -133,6 +151,16 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("craft", craftingTick);
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		double ang = Math.toRadians(e.ordinal()*22.5D);
+		double r = 1;
+		double dx = r*Math.sin(ang);
+		double dy = 1;
+		double dz = r*Math.cos(ang);
+		return new ImmutableTriple(dx, dy, dz);
 	}
 
 }

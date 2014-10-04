@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
@@ -31,12 +33,16 @@ public class CrystalFlow extends CrystalPath {
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalSource)nodes.getLast().getTileEntity()).addTarget(nodes.get(nodes.size()-2), element);
+		((CrystalSource)nodes.getLast().getTileEntity()).addTarget(nodes.get(nodes.size()-2), element, 0, 0, 0);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				((CrystalTransmitter)te).addTarget(tg, element);
+				ImmutableTriple<Double, Double, Double> offset = i == 1 ? ((CrystalReceiver)tg.getTileEntity()).getTargetRenderOffset(element) : null;
+				double dx = offset != null ? offset.left : 0;
+				double dy = offset != null ? offset.middle : 0;
+				double dz = offset != null ? offset.right : 0;
+				((CrystalTransmitter)te).addTarget(tg, element, dx, dy, dz);
 			}/*
 			if (te instanceof CrystalReceiver) {
 				WorldLocation src = nodes.get(i+1);

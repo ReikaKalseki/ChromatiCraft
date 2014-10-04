@@ -13,7 +13,6 @@ import java.util.Collection;
 
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -65,24 +64,24 @@ public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 
 					//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
 					//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
-					int dx = tgt.xCoord-src.xCoord;
-					int dy = tgt.yCoord-src.yCoord;
-					int dz = tgt.zCoord-src.zCoord;
+					double dx = tgt.xCoord-src.xCoord+ct.offsetX;
+					double dy = tgt.yCoord-src.yCoord+ct.offsetY;
+					double dz = tgt.zCoord-src.zCoord+ct.offsetZ;
 
 					GL11.glPushMatrix();
-					float f7 = MathHelper.sqrt_float(dx*dx+dz*dz);
-					float f8 = MathHelper.sqrt_float(dx*dx+dy*dy+dz*dz);
+					double f7 = Math.sqrt(dx*dx+dz*dz);
+					double f8 = Math.sqrt(dx*dx+dy*dy+dz*dz);
 					double ang1 = -Math.atan2(dz, dx) * 180 / Math.PI - 90;
 					double ang2 = -Math.atan2(f7, dy) * 180 / Math.PI - 90;
-					GL11.glRotated(ang1, 0.0F, 1.0F, 0.0F);
-					GL11.glRotated(ang2, 1.0F, 0.0F, 0.0F);
+					GL11.glRotated(ang1, 0, 1, 0);
+					GL11.glRotated(ang2, 1, 0, 0);
 
 					v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
 					v5.setColorOpaque_I(ct.color.getColor());
 					for (int i = 0; i <= sides; i++) {
-						double f11 = r*MathHelper.sin(i % sides * (float)Math.PI * 2.0F / sides) * 0.75F;
-						double f12 = r*MathHelper.cos(i % sides * (float)Math.PI * 2.0F / sides) * 0.75F;
-						double f13 = i % sides * 1.0F / sides;
+						double f11 = r*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
+						double f12 = r*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
+						double f13 = i % sides * 1 / sides;
 						v5.addVertexWithUV(f11, f12, 0, t, t+1);
 						v5.addVertexWithUV(f11, f12, f8, t+1, t);
 					}

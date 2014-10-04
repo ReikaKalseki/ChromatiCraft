@@ -132,6 +132,16 @@ public final class ElementTagCompound {
 		return e;
 	}
 
+	public ElementTagCompound scale(float s) {
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			amt *= s;
+			this.setTag(e, amt);
+		}
+		this.clearEmptyKeys();
+		return this;
+	}
+
 	public ElementTagCompound clear() {
 		data.clear();
 		return this;

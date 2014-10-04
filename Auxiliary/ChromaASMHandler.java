@@ -95,7 +95,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 				}
 				break;
-				case REACHDIST:
+				case REACHDIST: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
 					if (m == null) {
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
@@ -115,7 +115,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 					}
-					break;
+				}
+				break;
+
 				}
 
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);

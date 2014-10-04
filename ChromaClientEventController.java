@@ -13,6 +13,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -21,6 +22,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
@@ -28,15 +30,22 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -191,6 +200,83 @@ public class ChromaClientEventController {
 					}
 					ReikaRenderHelper.exitGeoDraw();
 					GL11.glPopMatrix();
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void renderItemTags(RenderItemInSlotEvent evt) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (evt.hasItem() && evt.isHovered()) {
+				ItemStack is = evt.getItem();
+				ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
+				if (tag != null) {
+					Tessellator v5 = Tessellator.instance;
+					int i = tag.elementSet().size();
+					GL11.glDisable(GL11.GL_CULL_FACE);
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
+					GL11.glDisable(GL11.GL_LIGHTING);
+					GL11.glEnable(GL11.GL_BLEND);
+					double z = 400;
+					int w = 8;
+					int mx = 0;//evt.getRelativeMouseX();
+					int my = 0;//evt.getRelativeMouseY();
+					int x2 = evt.slotX-i*w+mx;
+					int y2 = evt.slotY-w+my;
+					int r = 1;
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					v5.startDrawingQuads();
+					v5.setColorRGBA(127, 0, 255, 255);
+					v5.addVertex(x2-r, y2-r, z);
+					v5.addVertex(x2+w*i+r, y2-r, z);
+					v5.addVertex(x2+w*i+r, y2+w+r, z);
+					v5.addVertex(x2-r, y2+w+r, z);
+					v5.draw();
+					v5.startDrawingQuads();
+					v5.setColorRGBA(0, 0, 0, 255);
+					v5.addVertex(x2, y2, z);
+					v5.addVertex(x2+w*i, y2, z);
+					v5.addVertex(x2+w*i, y2+w, z);
+					v5.addVertex(x2, y2+w, z);
+					v5.draw();
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+					for (CrystalElement e : tag.elementSet()) {
+						IIcon ico = e.getFaceRune();
+						float u = ico.getMinU();
+						float v = ico.getMinV();
+						float du = ico.getMaxU();
+						float dv = ico.getMaxV();
+						int x = evt.slotX-i*w+mx;
+						int y = evt.slotY-w+my;
+						i--;
+						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+							GL11.glPushMatrix();
+							double sc = 0.5;
+							GL11.glScaled(sc, sc, sc);
+							String s = Integer.toString(tag.getValue(e), 10).toUpperCase();//String.format("%d", tag.getValue(e));
+							int color = e.getColor() | 0xff000000;
+							FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-8)/sc), (int)((y+w-10)/sc), color);
+							GL11.glTranslated(1, 0, 0);
+							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-8)/sc), (int)((y+w-10)/sc), color);
+							GL11.glPopMatrix();
+						}
+						else {
+							ReikaTextureHelper.bindTerrainTexture();
+							v5.startDrawingQuads();
+							v5.setColorOpaque_I(0xffffff);
+							v5.addVertexWithUV(x, y, z, u, v);
+							v5.addVertexWithUV(x+w, y, z, du, v);
+							v5.addVertexWithUV(x+w, y+w, z, du, dv);
+							v5.addVertexWithUV(x, y+w, z, u, dv);
+							v5.draw();
+						}
+					}
+					GL11.glEnable(GL11.GL_CULL_FACE);
+					GL11.glEnable(GL11.GL_DEPTH_TEST);
+					GL11.glEnable(GL11.GL_LIGHTING);
+					GL11.glDisable(GL11.GL_BLEND);
 				}
 			}
 		}

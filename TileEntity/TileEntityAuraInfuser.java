@@ -76,19 +76,6 @@ public class TileEntityAuraInfuser extends FluidReceiverInventoryBase implements
 			}
 		}*/
 
-		/*
-
-		double angle = (System.currentTimeMillis()/15D)%360;
-		double d = 0.05;
-		double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
-		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
-		double py = ReikaRandomHelper.getRandomPlusMinus(y+1.5+0.5*(1+Math.sin(Math.toRadians(angle))), d);
-		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
-		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-
-		 */
-
 		if (this.canProcess()) {
 			if (progressTimer < DURATION) {
 				progressTimer++;

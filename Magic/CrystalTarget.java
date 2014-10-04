@@ -17,14 +17,24 @@ public class CrystalTarget {
 
 	public final WorldLocation location;
 	public final CrystalElement color;
+	public final double offsetX;
+	public final double offsetY;
+	public final double offsetZ;
 
 	public CrystalTarget(WorldLocation target, CrystalElement color) {
+		this(target, color, 0, 0, 0);
+	}
+
+	public CrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz) {
 		if (target == null)
 			throw new IllegalArgumentException("Cannot supply null target!");
 		if (color == null)
 			throw new IllegalArgumentException("Cannot supply null color!");
 		this.color = color;
 		location = target;
+		offsetX = dx;
+		offsetY = dy;
+		offsetZ = dz;
 	}
 
 	public void writeToNBT(String name, NBTTagCompound NBT) {
@@ -32,6 +42,9 @@ public class CrystalTarget {
 			return;
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setInteger("color", color.ordinal());
+		tag.setDouble("dx", offsetX);
+		tag.setDouble("dy", offsetY);
+		tag.setDouble("dz", offsetZ);
 		location.writeToNBT("loc", tag);
 		NBT.setTag(name, tag);
 	}
@@ -44,7 +57,10 @@ public class CrystalTarget {
 			return null;
 		WorldLocation loc = WorldLocation.readFromNBT("loc", tag);
 		CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
-		return loc != null && e != null ? new CrystalTarget(loc, e) : null;
+		double dx = tag.getDouble("dx");
+		double dy = tag.getDouble("dy");
+		double dz = tag.getDouble("dz");
+		return loc != null && e != null ? new CrystalTarget(loc, e, dx, dy, dz) : null;
 	}
 
 	@Override

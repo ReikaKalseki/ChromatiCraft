@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -138,6 +141,11 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	public boolean hasItem() {
 		return inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0]);
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		return null;
 	}
 
 }

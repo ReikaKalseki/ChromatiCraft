@@ -11,59 +11,50 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-
-import com.google.common.collect.HashBiMap;
 
 public class FabricationRecipes {
 
 	private static final FabricationRecipes instance = new FabricationRecipes();
 
-	private final HashBiMap<KeyedItemStack, ElementTagCompound> data = HashBiMap.create();
-
 	private ArrayList<ItemStack> products = new ArrayList();
+	private final Map<KeyedItemStack, ElementTagCompound> data;
+	private static final float SCALE = 0.8F;
 
 	public static FabricationRecipes recipes() {
 		return instance;
 	}
 
 	private FabricationRecipes() {
-
-	}
-
-	public ElementTagCompound getItemCost(ItemStack is) {
-		KeyedItemStack ks = new KeyedItemStack(is);
-		ElementTagCompound tag = data.get(ks);
-		return tag != null ? tag.copy() : null;
+		data = ItemMagicRegistry.instance.getMap();
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {
 		Collection<ItemStack> items = new ArrayList();
-		for (KeyedItemStack is : data.keySet()) {
-			ElementTagCompound val = data.get(is);
+		for (KeyedItemStack ks : data.keySet()) {
+			ElementTagCompound val = data.get(ks).copy().scale(SCALE);
 			if (tag.containsAtLeast(val))
-				items.add(is.getItem());
+				items.add(ks.getItemStack());
 		}
 		return items;
 	}
 
 	public boolean isItemFabricable(ItemStack is, ElementTagCompound tag) {
 		KeyedItemStack ks = new KeyedItemStack(is);
-		return data.containsKey(ks) && tag.containsAtLeast(data.get(ks));
+		return data.containsKey(ks) && tag.containsAtLeast(this.getItemCost(ks));
 	}
 
-	private void addElement(ItemStack is, CrystalElement e, int amt) {
-		KeyedItemStack ks = new KeyedItemStack(is).setSized();
-		ElementTagCompound tag = data.get(ks);
-		if (tag == null) {
-			tag = new ElementTagCompound();
-			data.put(ks, tag);
-		}
-		tag.addTag(e, amt);
+	public ElementTagCompound getItemCost(ItemStack is) {
+		return this.getItemCost(new KeyedItemStack(is));
+	}
+
+	private ElementTagCompound getItemCost(KeyedItemStack is) {
+		return data.get(is).copy().scale(1/SCALE);
 	}
 
 }

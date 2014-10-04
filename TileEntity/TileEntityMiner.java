@@ -3,24 +3,28 @@ package Reika.ChromatiCraft.TileEntity;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityMiner extends TileEntityChromaticBase {
 
-	private BlockArray ores = new BlockArray();
-
-	private boolean calculating;
+	private boolean digging;
 
 	private int range = 512;
 
@@ -37,9 +41,8 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		//if (calculating) {
 		if (!world.isRemote) {
-			for (int i = 0; i < TICKSTEP*8 && calculating; i++) {
+			for (int i = 0; i < TICKSTEP*8 && digging; i++) {
 				int dx = x+readX;
 				int dy = readY;
 				int dz = z+readZ;
@@ -53,17 +56,21 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 				}
 				this.updateReadPosition();
 			}
-		}/*
-		else if (!ores.isEmpty()) {
-			int[] xyz = ores.getNextAndMoveOn();
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
-			Block id = world.getBlock(dx, dy, dz);
-			int meta2 = world.getBlockMetadata(dx, dy, dz);
-			this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
-		}*/
-		//ReikaJavaLibrary.pConsole(ores, Side.SERVER);
+		}
+		if (world.isRemote)
+			this.spawnParticles(world, x, y, z);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnParticles(World world, int x, int y, int z) {
+		double angle = (System.currentTimeMillis()/15D)%360;
+		double d = 0.05;
+		double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
+		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
+		double py = ReikaRandomHelper.getRandomPlusMinus(y+1.5+0.5*(1+Math.sin(Math.toRadians(angle))), d);
+		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
+		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
@@ -103,12 +110,11 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 			}
 		}
 		if (readY >= worldObj.getActualHeight())
-			calculating = false;
+			digging = false;
 	}
 
 	public void triggerCalculation() {
-		ores.clear();
-		calculating = true;
+		digging = true;
 		readX = -range;
 		readY = 1;
 		readZ = -range;
