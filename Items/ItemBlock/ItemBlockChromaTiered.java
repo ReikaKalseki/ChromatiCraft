@@ -22,6 +22,7 @@ public class ItemBlockChromaTiered extends ItemBlock {
 
 	public ItemBlockChromaTiered(Block b) {
 		super(b);
+		hasSubtypes = true;
 	}
 
 	@Override
