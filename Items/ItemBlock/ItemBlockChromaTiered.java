@@ -15,6 +15,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.BlockTieredResource;
 
 public class ItemBlockChromaTiered extends ItemBlock {
@@ -41,6 +42,11 @@ public class ItemBlockChromaTiered extends ItemBlock {
 	public IIcon getIconFromDamage(int meta)
 	{
 		return field_150939_a.getIcon(0, meta);
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack is) {
+		return ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
 	}
 
 }

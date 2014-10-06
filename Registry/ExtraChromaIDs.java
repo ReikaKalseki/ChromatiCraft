@@ -12,8 +12,8 @@ package Reika.ChromatiCraft.Registry;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Interfaces.IDRegistry;
-import Reika.RotaryCraft.RotaryCraft;
 
 public enum ExtraChromaIDs implements IDRegistry {
 
@@ -54,11 +54,11 @@ public enum ExtraChromaIDs implements IDRegistry {
 	}
 
 	public int getValue() {
-		return RotaryCraft.config.getOtherID(this.ordinal());
+		return ChromatiCraft.config.getOtherID(this.ordinal());
 	}
 
 	public int getShiftedValue() {
-		return RotaryCraft.config.getOtherID(this.ordinal())+256;
+		return ChromatiCraft.config.getOtherID(this.ordinal())+256;
 	}
 
 	@Override

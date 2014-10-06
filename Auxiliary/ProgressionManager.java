@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -41,11 +42,10 @@ public class ProgressionManager {
 	public static enum ProgressStage {
 
 		CRYSTALS(), //Found a crystal
-		RUNEUSE(), //Placed runes
 		MULTIBLOCK(), //Assembled a multiblock
+		RUNEUSE(), //Placed runes
 		PYLON(), //Found pylon
-		LINK(), //Made a network connection/high-tier crafting
-		FINAL();
+		LINK(); //Made a network connection/high-tier crafting
 
 	}
 
@@ -60,9 +60,13 @@ public class ProgressionManager {
 		NBTTagList li = this.getNBTList(ep);
 		Collection<ProgressStage> c = new ArrayList();
 		ProgressStage[] list = ProgressStage.values();
-		for (int i = 0; i < li.tagCount(); i++) {
-			int val = ((NBTTagInt)li.tagList.get(i)).func_150287_d();
-			c.add(list[val]);
+		Iterator<NBTTagInt> it = li.tagList.iterator();
+		while (it.hasNext()) {
+			int val = it.next().func_150287_d();
+			if (val < list.length)
+				c.add(list[val]);
+			else
+				it.remove();
 		}
 		return c;
 	}
@@ -100,7 +104,8 @@ public class ProgressionManager {
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagInt(s.ordinal());
 		if (set) {
-			li.appendTag(tag);
+			if (!li.tagList.contains(tag))
+				li.appendTag(tag);
 		}
 		else {
 			li.tagList.remove(tag);
@@ -133,6 +138,7 @@ public class ProgressionManager {
 	}
 
 	public void setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc) {
+		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG2);
 		nbt.setBoolean(e.name(), disc);
 		this.updateChunks(ep);

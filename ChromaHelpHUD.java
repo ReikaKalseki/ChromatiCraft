@@ -109,7 +109,7 @@ public class ChromaHelpHUD {
 		EntityPlayer ep = mc.thePlayer;
 		FontRenderer f = mc.fontRenderer;
 
-		MovingObjectPosition hit = ReikaPlayerAPI.getLookedAtBlockClient(4);
+		MovingObjectPosition hit = ReikaPlayerAPI.getLookedAtBlockClient(4, false);
 		if (hit != null) {
 			CoordinateData dat = new CoordinateData(ep.worldObj, hit);
 			HelpEntry help = ChromaHelpData.getEntryFor(ep, dat);

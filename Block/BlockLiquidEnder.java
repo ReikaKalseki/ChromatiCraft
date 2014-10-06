@@ -49,7 +49,7 @@ public class BlockLiquidEnder extends BlockFluidClassic {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ico) {
-		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:ender"), ico.registerIcon("chromaticraft:flowingender")};
+		theIcon = new IIcon[]{ico.registerIcon("chromaticraft:fluid/ender"), ico.registerIcon("chromaticraft:fluid/flowingender")};
 	}
 
 	@Override

@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper.ReachApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
@@ -282,6 +283,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!this.isLocked()) {
 			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
+			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(ReachApplier.instance);
 		}

@@ -15,9 +15,10 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Block.BlockTieredPlant;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
@@ -25,8 +26,42 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 	public int renderPass;
 
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
+	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks renderer) {
+		Tessellator v5 = Tessellator.instance;
+		BlockTieredPlant t = (BlockTieredPlant)b;
+		IIcon ico = t.getBacking(metadata);
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+		GL11.glPushMatrix();
+		GL11.glRotated(45, 0, 1, 0);
+		GL11.glRotated(-30, 1, 0, 0);
+		double s = 1.6;
+		GL11.glScaled(s, s, s);
+		double x = -0.5;
+		double y = -0.5;
+		double z = 0;
+		GL11.glTranslated(x, y, z);
+		v5.startDrawingQuads();
+		v5.addVertexWithUV(0, 0, 0, u, dv);
+		v5.addVertexWithUV(1, 0, 0, du, dv);
+		v5.addVertexWithUV(1, 1, 0, du, v);
+		v5.addVertexWithUV(0, 1, 0, u, v);
+		v5.draw();
 
+		ico = t.getOverlay(metadata);
+		u = ico.getMinU();
+		v = ico.getMinV();
+		du = ico.getMaxU();
+		dv = ico.getMaxV();
+		v5.startDrawingQuads();
+		v5.addVertexWithUV(0, 0, 0, u, dv);
+		v5.addVertexWithUV(1, 0, 0, du, dv);
+		v5.addVertexWithUV(1, 1, 0, du, v);
+		v5.addVertexWithUV(0, 1, 0, u, v);
+		v5.draw();
+		GL11.glPopMatrix();
 	}
 
 	@Override
@@ -56,7 +91,7 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 
 	@Override
 	public boolean shouldRender3DInInventory(int modelId) {
-		return false;
+		return true;
 	}
 
 	@Override

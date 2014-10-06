@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Base.BlockTieredResource;
 
 public class BlockTieredOre extends BlockTieredResource {
@@ -47,7 +48,15 @@ public class BlockTieredOre extends BlockTieredResource {
 
 	public static enum TieredOres {
 
-		INFUSED(ProgressStage.RUNEUSE);
+		INFUSED(ProgressStage.CRYSTALS),
+		STONES(ProgressStage.RUNEUSE),
+		PLACEHOLDER2(ProgressStage.LINK),
+		PLACEHOLDER3(ProgressStage.LINK),
+		PLACEHOLDER4(ProgressStage.LINK),
+		PLACEHOLDER5(ProgressStage.LINK),
+		PLACEHOLDER6(ProgressStage.LINK),
+		PLACEHOLDER7(ProgressStage.LINK),
+		PLACEHOLDER8(ProgressStage.LINK);
 
 		public final ProgressStage level;
 
@@ -63,11 +72,11 @@ public class BlockTieredOre extends BlockTieredResource {
 		}
 
 		public int getGenerationCount() {
-			return 4;
+			return this == PLACEHOLDER8 ? 1 : this.ordinal() < PLACEHOLDER4.ordinal() ? 4 : 2;
 		}
 
 		public int getGenerationChance() {
-			return 1;
+			return this == PLACEHOLDER8 ? 2 : 1;
 		}
 	}
 
@@ -88,12 +97,16 @@ public class BlockTieredOre extends BlockTieredResource {
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.chromaDust.copy());
 			break;
+		case 1:
+			li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
+			break;
 		}
 		return li;
 	}
 
 	private ProgressStage getProgressStage(IBlockAccess world, int x, int y, int z) {
-		return ProgressStage.PYLON;
+		int meta = world.getBlockMetadata(x, y, z);
+		return TieredOres.list[meta].level;
 	}
 
 	@Override

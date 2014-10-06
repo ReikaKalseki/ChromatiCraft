@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
+import Reika.ChromatiCraft.Items.ItemElementalStone;
 import Reika.ChromatiCraft.Items.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
@@ -69,7 +70,8 @@ public enum ChromaItems implements ItemEnum {
 	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
 	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class),
 	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
-	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class);
+	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class),
+	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -175,6 +177,7 @@ public enum ChromaItems implements ItemEnum {
 		case DYE:
 		case LENS:
 		case BERRY:
+		case ELEMENTAL:
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case CLUSTER:
 			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
@@ -240,6 +243,7 @@ public enum ChromaItems implements ItemEnum {
 		case DYE:
 		case LENS:
 		case BERRY:
+		case ELEMENTAL:
 			return CrystalElement.elements.length;
 		case CLUSTER:
 			return ChromaNames.clusterNames.length;

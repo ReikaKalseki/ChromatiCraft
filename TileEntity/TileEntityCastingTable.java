@@ -24,6 +24,8 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -289,6 +291,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
 		if ((b.matchInWorld() || b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.TEMPLE)) {
 			hasStructure = true;
+			ProgressionManager.instance.setPlayerStage(this.getPlacer(), ProgressStage.MULTIBLOCK, true);
 			if ((b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
 				hasStructure2 = true;
 				if (b3.matchInWorld() && this.getTier().isAtLeast(RecipeType.PYLON)) {
@@ -397,6 +400,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			count += activeRecipe.getOutput().stackSize;
 			if (activeRecipe instanceof PylonRecipe) {
 				energy.subtract(((PylonRecipe)activeRecipe).getRequiredAura());
+				ProgressionManager.instance.setPlayerStage(this.getPlacer(), ProgressStage.LINK, true);
 			}
 			recipe = this.getValidRecipe();
 		}

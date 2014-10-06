@@ -13,7 +13,6 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -43,7 +42,6 @@ import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -218,27 +216,32 @@ public class ChromaClientEventController {
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_BLEND);
-					double z = 400;
+					double z = 0;
 					int w = 8;
+					int h = 8;
 					int mx = 0;//evt.getRelativeMouseX();
 					int my = 0;//evt.getRelativeMouseY();
 					int x2 = evt.slotX-i*w+mx;
 					int y2 = evt.slotY-w+my;
+					//if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+					//	w = 16;
+					//	x2 -= 8;
+					//}
 					int r = 1;
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					v5.startDrawingQuads();
 					v5.setColorRGBA(127, 0, 255, 255);
 					v5.addVertex(x2-r, y2-r, z);
 					v5.addVertex(x2+w*i+r, y2-r, z);
-					v5.addVertex(x2+w*i+r, y2+w+r, z);
-					v5.addVertex(x2-r, y2+w+r, z);
+					v5.addVertex(x2+w*i+r, y2+h+r, z);
+					v5.addVertex(x2-r, y2+h+r, z);
 					v5.draw();
 					v5.startDrawingQuads();
 					v5.setColorRGBA(0, 0, 0, 255);
 					v5.addVertex(x2, y2, z);
 					v5.addVertex(x2+w*i, y2, z);
-					v5.addVertex(x2+w*i, y2+w, z);
-					v5.addVertex(x2, y2+w, z);
+					v5.addVertex(x2+w*i, y2+h, z);
+					v5.addVertex(x2, y2+h, z);
 					v5.draw();
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 					for (CrystalElement e : tag.elementSet()) {
@@ -249,7 +252,7 @@ public class ChromaClientEventController {
 						float dv = ico.getMaxV();
 						int x = evt.slotX-i*w+mx;
 						int y = evt.slotY-w+my;
-						i--;
+						i--;/*
 						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 							GL11.glPushMatrix();
 							double sc = 0.5;
@@ -257,21 +260,21 @@ public class ChromaClientEventController {
 							String s = Integer.toString(tag.getValue(e), 10).toUpperCase();//String.format("%d", tag.getValue(e));
 							int color = e.getColor() | 0xff000000;
 							FontRenderer f = Minecraft.getMinecraft().fontRenderer;
-							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-8)/sc), (int)((y+w-10)/sc), color);
+							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-0)/sc), (int)((y+w-6)/sc), color);
 							GL11.glTranslated(1, 0, 0);
-							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-8)/sc), (int)((y+w-10)/sc), color);
+							ReikaGuiAPI.instance.drawCenteredStringNoShadow(f, s, (int)((x+w-0)/sc), (int)((y+w-6)/sc), color);
 							GL11.glPopMatrix();
 						}
-						else {
-							ReikaTextureHelper.bindTerrainTexture();
-							v5.startDrawingQuads();
-							v5.setColorOpaque_I(0xffffff);
-							v5.addVertexWithUV(x, y, z, u, v);
-							v5.addVertexWithUV(x+w, y, z, du, v);
-							v5.addVertexWithUV(x+w, y+w, z, du, dv);
-							v5.addVertexWithUV(x, y+w, z, u, dv);
-							v5.draw();
-						}
+						else {*/
+						ReikaTextureHelper.bindTerrainTexture();
+						v5.startDrawingQuads();
+						v5.setColorOpaque_I(0xffffff);
+						v5.addVertexWithUV(x, y, z, u, v);
+						v5.addVertexWithUV(x+w, y, z, du, v);
+						v5.addVertexWithUV(x+w, y+w, z, du, dv);
+						v5.addVertexWithUV(x, y+w, z, u, dv);
+						v5.draw();
+						//}
 					}
 					GL11.glEnable(GL11.GL_CULL_FACE);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);

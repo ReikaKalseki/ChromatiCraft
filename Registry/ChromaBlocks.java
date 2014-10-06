@@ -94,8 +94,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
 	TANK(BlockCrystalTank.class,												"crystal.tank"),
 	FENCE(BlockCrystalFence.class,												"crystal.fence"),
-	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"crystal.tiered"),
-	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"crystal.tieredore");
+	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
+	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore");
 
 	private Class blockClass;
 	private String blockName;
@@ -231,6 +231,9 @@ public enum ChromaBlocks implements BlockEnum {
 			return this.getBasicName();
 		case PYLONSTRUCT:
 			return StatCollector.translateToLocal("chromablock.pylon."+meta);
+		case TIEREDORE:
+		case TIEREDPLANT:
+			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
 		default:
 			return "";
 		}

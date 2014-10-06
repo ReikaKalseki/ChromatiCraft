@@ -10,14 +10,17 @@
 package Reika.ChromatiCraft.Block;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 
-public class BlockCrystalPylon extends BlockCrystalTile {
+public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger {
 
 	public BlockCrystalPylon(Material mat) {
 		super(mat);
@@ -51,6 +54,12 @@ public class BlockCrystalPylon extends BlockCrystalTile {
 			return ChromaIcons.REPEATER.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
+	}
+
+	@Override
+	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		return c == ChromaTiles.PYLON ? new ProgressStage[]{ProgressStage.PYLON} : null;
 	}
 
 }

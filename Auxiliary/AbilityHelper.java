@@ -107,7 +107,7 @@ public class AbilityHelper {
 		if (e.buttonstate && e.button == 2) { //what about people with no mousewheels? config option to use keybind?
 			Minecraft mc = Minecraft.getMinecraft();
 			if (mc.thePlayer.capabilities.isCreativeMode) {
-				MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(5);
+				MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(5, false);
 				if (mov != null)
 					return;
 			}

@@ -20,10 +20,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 
-public class BlockCaveCrystal extends CrystalBlock {
+public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger {
 
 	private static final Random rand = new Random();
 
@@ -103,5 +105,10 @@ public class BlockCaveCrystal extends CrystalBlock {
 	@Override
 	public int getBrightness() {
 		return 10;
+	}
+
+	@Override
+	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
+		return new ProgressStage[]{ProgressStage.CRYSTALS};
 	}
 }

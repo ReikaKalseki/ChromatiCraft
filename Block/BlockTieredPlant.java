@@ -56,11 +56,11 @@ public final class BlockTieredPlant extends BlockTieredResource {
 
 	public static enum TieredPlants {
 
-		FLOWER(ProgressStage.RUNEUSE),
-		CAVE(ProgressStage.CRYSTALS),
+		FLOWER(ProgressStage.CRYSTALS),
+		CAVE(ProgressStage.RUNEUSE),
 		LILY(ProgressStage.PYLON),
 		BULB(ProgressStage.MULTIBLOCK),
-		DESERT(ProgressStage.CRYSTALS);
+		DESERT(ProgressStage.PYLON);
 
 		public final ProgressStage level;
 
@@ -157,7 +157,8 @@ public final class BlockTieredPlant extends BlockTieredResource {
 	}
 
 	private ProgressStage getProgressStage(IBlockAccess world, int x, int y, int z) {
-		return ProgressStage.CRYSTALS;//ProgressStage.values()[world.getBlockMetadata(x, y, z)]; //Testing
+		int meta = world.getBlockMetadata(x, y, z);
+		return TieredPlants.list[meta].level;
 	}
 
 	@Override
@@ -209,6 +210,7 @@ public final class BlockTieredPlant extends BlockTieredResource {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		if (world.getTotalWorldTime()%2 == 0 && this.isPlayerSufficientTier(world, x, y, z, Minecraft.getMinecraft().thePlayer)) {
 			int meta = world.getBlockMetadata(x, y, z);
@@ -237,9 +239,18 @@ public final class BlockTieredPlant extends BlockTieredResource {
 			case 3: {
 				float g = 0.02F+0.005F*r.nextFloat();
 				int gr = r.nextInt(255);
+				double px = x+rand.nextDouble();
+				double pz = z+rand.nextDouble();
+				EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(0, 255, gr).setGravity(g).setScale(2);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				break;
+			}
+			case 4: {
+				float g = 0.02F+0.005F*r.nextFloat();
+				int gr = r.nextInt(255);
 				double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
 				double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
-				EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(g).setScale(2);
+				EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				break;
 			}

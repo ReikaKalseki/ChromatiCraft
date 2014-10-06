@@ -15,9 +15,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -29,10 +32,11 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockCrystalRune extends BlockDyeTypes {
+public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigger {
 
 	public BlockCrystalRune(Material par2Material) {
 		super(par2Material);
@@ -100,6 +104,12 @@ public class BlockCrystalRune extends BlockDyeTypes {
 	@Override
 	public int getRenderType() {
 		return ChromatiCraft.proxy.runeRender;
+	}
+
+	@Override
+	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
+		boolean use = ReikaWorldHelper.checkForAdjBlock(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null;
+		return use ? new ProgressStage[]{ProgressStage.RUNEUSE} : null;
 	}
 
 }
