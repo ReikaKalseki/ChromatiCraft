@@ -117,7 +117,7 @@ public class BlockTieredOre extends BlockTieredResource {
 	@Override
 	public Collection<ItemStack> getNoHarvestResources(World world, int x, int y, int z, int fortune) {
 		ArrayList li = new ArrayList();
-		li.add(new ItemStack(Blocks.stone));
+		li.add(Blocks.stone.getDrops(world, x, y, z, 0, fortune));
 		return li;
 	}
 
