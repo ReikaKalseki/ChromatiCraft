@@ -25,8 +25,6 @@ public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase 
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		super.updateEntity(world, x, y, z, meta);
-
 		checkTimer.update();
 		if (receiveCooldown > 0)
 			receiveCooldown--;

@@ -192,9 +192,8 @@ public enum Chromabilities {
 		double y = ep.posY+1.5;
 		double z = ep.posZ;
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x, y, z).expand(range, range, range);
-		List inbox = world.getEntitiesWithinAABB(EntityItem.class, box);
-		for (int i = 0; i < inbox.size(); i++) {
-			EntityItem ent = (EntityItem)inbox.get(i);
+		List<EntityItem> inbox = world.getEntitiesWithinAABB(EntityItem.class, box);
+		for (EntityItem ent : inbox) {
 			ReikaEntityHelper.setInvulnerable(ent, true);
 			if (ent.delayBeforeCanPickup == 0) {
 				double dx = (x+0.5 - ent.posX);
@@ -215,9 +214,8 @@ public enum Chromabilities {
 				}
 			}
 		}
-		List inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
-		for (int i = 0; i < inbox2.size(); i++) {
-			EntityXPOrb ent = (EntityXPOrb)inbox2.get(i);
+		List<EntityXPOrb> inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
+		for (EntityXPOrb ent : inbox2) {
 			ReikaEntityHelper.setInvulnerable(ent, true);
 			double dx = (x+0.5 - ent.posX);
 			double dy = (y+0.5 - ent.posY);
@@ -347,8 +345,7 @@ public enum Chromabilities {
 	private static void stopArrows(EntityPlayer ep) {
 		AxisAlignedBB box = ep.boundingBox.expand(4, 4, 4);
 		List<EntityArrow> li = ep.worldObj.getEntitiesWithinAABB(EntityArrow.class, box);
-		for (int i = 0; i < li.size(); i++) {
-			EntityArrow e = li.get(i);
+		for (EntityArrow e : li) {
 			if (e.shootingEntity != ep && !e.worldObj.isRemote) { //bounceback code
 				e.motionX *= -0.10000000149011612D;
 				e.motionY *= -0.10000000149011612D;
@@ -363,8 +360,7 @@ public enum Chromabilities {
 	private static void deAggroMobs(EntityPlayer ep) {
 		AxisAlignedBB box = ep.boundingBox.expand(12, 12, 12);
 		List<EntityMob> li = ep.worldObj.getEntitiesWithinAABB(EntityMob.class, box);
-		for (int i = 0; i < li.size(); i++) {
-			EntityMob e = li.get(i);
+		for (EntityMob e : li) {
 			if (!(e instanceof EntityEnderman || e instanceof EntityPigZombie)) {
 				if (e.getEntityToAttack() == ep) {
 					//e.setAttackTarget(null);

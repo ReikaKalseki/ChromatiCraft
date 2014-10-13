@@ -39,9 +39,12 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.getTicksExisted() == 0) {
-			this.updateItem();
-		}
+
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.updateItem();
 	}
 
 	@Override

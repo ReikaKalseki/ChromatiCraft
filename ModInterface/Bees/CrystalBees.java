@@ -244,8 +244,7 @@ public class CrystalBees {
 			int[] r = ibg.getTerritory();
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r[0], r[1], r[2]);
 			List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-			for (int i = 0; i < li.size(); i++) {
-				EntityLivingBase e = li.get(i);
+			for (EntityLivingBase e : li) {
 				CrystalBlock.applyEffectFromColor(600, 0, e, color);
 			}
 			return null;

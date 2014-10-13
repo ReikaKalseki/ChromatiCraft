@@ -39,12 +39,13 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.getTicksExisted() == 0) {
-			this.initCoords(world, x, y, z);
-
-			this.update();
-		}
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.initCoords(world, x, y, z);
+		this.update();
 	}
 
 	private void update() {

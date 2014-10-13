@@ -263,7 +263,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case PYLON:
 			return 2;
 		case PYLONSTRUCT:
-			return 12;
+			return 13;
 		default:
 			return 1;
 		}

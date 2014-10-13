@@ -9,7 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -46,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
@@ -132,6 +135,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final Material enderMat = new Material(MapColor.ironColor);
 
 	public static PotionGrowthHormone growth;
+	public static PotionBetterSaturation betterSat;
 
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
@@ -207,7 +211,11 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		int id = ExtraChromaIDs.GROWTHID.getValue();
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
-		growth = (PotionGrowthHormone)new PotionGrowthHormone(id).setPotionName("Growth Hormone");
+		growth = new PotionGrowthHormone(id);
+
+		id = ExtraChromaIDs.SATID.getValue();
+		PotionCollisionTracker.instance.addPotionID(instance, id, PotionBetterSaturation.class);
+		betterSat = new PotionBetterSaturation(id);
 
 		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.RAINBOWFORESTID.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.ENDERFORESTID.getValue(), BiomeEnderForest.class);
@@ -333,6 +341,23 @@ public class ChromatiCraft extends DragonAPIMod {
 			ATGBiomes.addBiome(BiomeType.LAND, "Forest", enderforest, 1.0);
 		}
 
+		if (ModList.BLUEPOWER.isLoaded()) { //prevent what is nearly an exploit by uncrafting gold apples
+			try {
+				Class c = Class.forName("com.bluepowermod.recipe.AlloyFurnaceRegistry");
+				Field inst = c.getDeclaredField("INSTANCE");
+				inst.setAccessible(true);
+				Object instance = inst.get(null);
+				Field list = c.getDeclaredField("blacklist");
+				list.setAccessible(true);
+				List li = (List)list.get(instance);
+				li.add(Items.golden_apple);
+			}
+			catch (Exception e) {
+				logger.logError("Unable to blacklist golden apple recycling");
+				e.printStackTrace();
+			}
+		}
+
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values");
@@ -414,7 +439,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	private static void setupLiquidContainers() {
 		logger.log("Loading And Registering Liquid Containers");
 		FluidContainerRegistry.registerFluidContainer(new FluidStack(chroma, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOf(), new ItemStack(Items.bucket));
-		if (!ModList.THERMALEXPANSION.isLoaded())
+		if (!ModList.THERMALFOUNDATION.isLoaded())
 			FluidContainerRegistry.registerFluidContainer(new FluidStack(ender, FluidContainerRegistry.BUCKET_VOLUME), ChromaItems.BUCKET.getStackOfMetadata(1), new ItemStack(Items.bucket));
 	}
 
@@ -446,7 +471,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	public Block getEnderBlockToGenerate() {
-		if (ModList.THERMALEXPANSION.isLoaded() && ThermalHandler.getInstance().enderID != null) {
+		if (ModList.THERMALFOUNDATION.isLoaded() && ThermalHandler.getInstance().enderID != null) {
 			return ThermalHandler.getInstance().enderID;
 		}
 		return ChromaBlocks.ENDER.getBlockInstance();

@@ -18,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class BlockCrystalLamp extends CrystalBlock {
 
@@ -54,7 +55,7 @@ public class BlockCrystalLamp extends CrystalBlock {
 	}
 
 	@Override
-	public boolean shouldGiveEffects() {
+	public boolean shouldGiveEffects(CrystalElement e) {
 		return ChromaOptions.EFFECTS.getState();
 	}
 
@@ -64,7 +65,7 @@ public class BlockCrystalLamp extends CrystalBlock {
 	}
 
 	@Override
-	public int getDuration() {
+	public int getDuration(CrystalElement e) {
 		return 200;
 	}
 
@@ -79,7 +80,7 @@ public class BlockCrystalLamp extends CrystalBlock {
 	}
 
 	@Override
-	public int getPotionLevel() {
+	public int getPotionLevel(CrystalElement e) {
 		return 0;
 	}
 

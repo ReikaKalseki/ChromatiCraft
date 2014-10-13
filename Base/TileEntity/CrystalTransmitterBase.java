@@ -51,13 +51,15 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		super.updateEntity(world, x, y, z, meta);
-		if (this.getTicksExisted() == 0) {
-			targets.clear();
-		}
 		if (!targets.isEmpty() && world.isRemote) {
 			this.spawnBeamParticles(world, x, y, z);
 		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		targets.clear();
 	}
 
 	@SideOnly(Side.CLIENT)

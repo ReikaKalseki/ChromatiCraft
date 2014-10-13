@@ -77,7 +77,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i), i));
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
-			ItemStack block = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, 0);
+			ItemStack block = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 8, 0);
 			ShapedOreRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
 			this.addRecipe(new CastingRecipe(block, sr));
 
@@ -86,6 +86,9 @@ public class RecipesCastingTable {
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		ShapedRecipes sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 2), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 12), "SS", "SS", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 12), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 1), "SS", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 1), sr));
@@ -133,7 +136,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
 		}
 
-		this.addRecipe(new RecipeCrystalRepeater(ChromaTiles.REPEATER.getCraftedProduct(), ChromaStacks.crystalCore));
+		this.addRecipe(new RecipeCrystalRepeater(ReikaItemHelper.getSizedItemStack(ChromaTiles.REPEATER.getCraftedProduct(), 4), ChromaStacks.crystalCore));
 	}
 
 	private void addRecipe(CastingRecipe r) {

@@ -73,7 +73,7 @@ public class ItemBlockCrystal extends ItemBlock {
 		boolean negative = eff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[eff.getPotionID()]) : false;
 		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) : false;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			if (block.shouldGiveEffects()) {
+			if (block.shouldGiveEffects(color)) {
 				li.add("Effects: "+CrystalPotionController.getEffectName(color));
 				if (negative)
 					li.add("(Mobs only)");
@@ -83,7 +83,7 @@ public class ItemBlockCrystal extends ItemBlock {
 				if (CrystalPotionController.getEffectFromColor(color, 200, 0) != null) {
 					li.add("");
 					li.add("Effect Range: "+block.getRange());
-					li.add("Effect Level: "+(block.getPotionLevel()+1));
+					li.add("Effect Level: "+(block.getPotionLevel(color)+1));
 
 				}
 			}

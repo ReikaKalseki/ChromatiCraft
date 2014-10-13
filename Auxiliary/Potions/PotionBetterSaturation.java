@@ -9,46 +9,34 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Potions;
 
-import java.util.Random;
-
-import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.StatCollector;
 
-public class PotionGrowthHormone extends Potion {
+public class PotionBetterSaturation extends Potion {
 
-	private static final Random rand = new Random();
-
-	public PotionGrowthHormone(int par1) {
-		super(par1, false, 0x00aaff);
+	public PotionBetterSaturation(int par1) {
+		super(par1, false, 0xA55926);
 	}
 
 	@Override
 	public void performEffect(EntityLivingBase e, int level) {
-		if (e instanceof EntityAgeable) {
-			EntityAgeable a = (EntityAgeable)e;
-			a.addGrowth(level);
-
-			if (e instanceof EntitySheep) {
-				EntitySheep es = (EntitySheep)e;
-				if (rand.nextInt(10) == 0)
-					es.setSheared(false);
-			}
+		if (!e.worldObj.isRemote && e instanceof EntityPlayer) {
+			((EntityPlayer)e).getFoodStats().addStats(level + 1, 1.0F);
 		}
 	}
 
 	@Override
 	public String getName()
 	{
-		return StatCollector.translateToLocal("chromapotion.growth");
+		return StatCollector.translateToLocal("chromapotion.sat");
 	}
 
 	@Override
 	public boolean isReady(int time, int amp)
 	{
-		return true;
+		return amp > 0 || time == 5;
 	}
 
 }

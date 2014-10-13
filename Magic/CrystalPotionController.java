@@ -16,6 +16,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import thaumcraft.api.aspects.Aspect;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class CrystalPotionController {
@@ -28,7 +29,7 @@ public class CrystalPotionController {
 		addColorPotion(CrystalElement.BLUE, Potion.nightVision);
 		addColorPotion(CrystalElement.CYAN, Potion.waterBreathing);
 		addColorPotion(CrystalElement.GRAY, Potion.moveSlowdown);
-		addColorPotion(CrystalElement.GREEN, Potion.poison);
+		addColorPotion(CrystalElement.GREEN, Potion.poison); //change
 		addColorPotion(CrystalElement.LIGHTBLUE, Potion.moveSpeed);
 		addColorPotion(CrystalElement.LIGHTGRAY, Potion.weakness);
 		addColorPotion(CrystalElement.LIME, Potion.jump);
@@ -38,7 +39,7 @@ public class CrystalPotionController {
 		addColorPotion(CrystalElement.PINK, Potion.damageBoost);
 		addColorPotion(CrystalElement.YELLOW, Potion.digSpeed);
 		addColorPotion(CrystalElement.WHITE, Potion.invisibility);
-		addColorPotion(CrystalElement.BROWN, Potion.field_76443_y);
+		addColorPotion(CrystalElement.BROWN, ChromatiCraft.betterSat);
 
 		addNetherPotion(CrystalElement.BLACK, Potion.wither);
 		addNetherPotion(CrystalElement.CYAN, Potion.hunger);

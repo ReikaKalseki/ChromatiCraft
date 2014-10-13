@@ -81,8 +81,7 @@ public class TileEntityCrystalFence extends TileEntityChromaticBase {
 		for (int i = 0; i < li.size(); i++) {
 			AxisAlignedBB aabb = li.get(i).expand(0, 255, 0);
 			List<EntityLivingBase> ents = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
-			for (int k = 0; k < ents.size(); k++) {
-				EntityLivingBase e = ents.get(k);
+			for (EntityLivingBase e : ents) {
 				boolean att = true;
 				if (e instanceof EntityPlayer) {
 					EntityPlayer ep = (EntityPlayer)e;

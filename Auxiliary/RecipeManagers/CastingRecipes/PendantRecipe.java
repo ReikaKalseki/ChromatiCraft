@@ -12,10 +12,9 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
-import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 
-public class PendantRecipe extends PylonRecipe {
+public class PendantRecipe extends MultiBlockCastingRecipe {
 
 	public PendantRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
@@ -32,8 +31,10 @@ public class PendantRecipe extends PylonRecipe {
 
 		this.addAuxItem(new ItemStack(Items.diamond), 0, 2);
 
-		this.addAuraRequirement(CrystalElement.PURPLE, 2000);
-		this.addAuraRequirement(CrystalElement.WHITE, 1000);
-		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 5000);
+		//this.addRune(CrystalElement.elements[out.getItemDamage()], 0, -1, -4);
+
+		//this.addAuraRequirement(CrystalElement.PURPLE, 2000);
+		//this.addAuraRequirement(CrystalElement.WHITE, 1000);
+		//this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 5000);
 	}
 }

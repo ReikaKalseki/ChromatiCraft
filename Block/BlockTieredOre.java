@@ -26,6 +26,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -150,6 +151,24 @@ public class BlockTieredOre extends BlockTieredResource {
 
 	public Block getDisguise() {
 		return Blocks.stone;
+	}
+
+	@Override
+	public boolean shouldSideBeRendered(IBlockAccess world, int dx, int dy, int dz, int s) {
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+		Block b = world.getBlock(dx, dy, dz);
+		if (b.isOpaqueCube())
+			return false;
+		switch(dir) {
+		case EAST:
+		case WEST:
+		case SOUTH:
+		case NORTH:
+		case UP:
+		case DOWN:
+		default:
+			return true;
+		}
 	}
 
 

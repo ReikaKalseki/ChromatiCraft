@@ -93,6 +93,20 @@ public class BiomeRainbowForest extends BiomeGenBase {
 	}
 
 	@Override
+	public float getFloatTemperature(int x, int y, int z)
+	{
+		float base = super.getFloatTemperature(x, y, z);
+		float min = 0.125F;
+		if (y > 127) {
+			base -= (y-127)/127F*base;
+		}
+		if (y > 191) {
+			base = 0.15F+0.025F*(y-255)/64F;
+		}
+		return Math.max(base, min);
+	}
+
+	@Override
 	public BiomeDecorator createBiomeDecorator()
 	{
 		return new RainbowForestDecorator();

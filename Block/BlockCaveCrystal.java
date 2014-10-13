@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger {
 
@@ -73,8 +74,8 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	}
 
 	@Override
-	public boolean shouldGiveEffects() {
-		return true;
+	public boolean shouldGiveEffects(CrystalElement e) {
+		return e == CrystalElement.BROWN || e == CrystalElement.BLUE ? rand.nextInt(4) == 0 : true;
 	}
 
 	@Override
@@ -83,8 +84,8 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	}
 
 	@Override
-	public int getDuration() {
-		return 200;
+	public int getDuration(CrystalElement e) {
+		return e == CrystalElement.BROWN ? 5 : 200;
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	}
 
 	@Override
-	public int getPotionLevel() {
+	public int getPotionLevel(CrystalElement e) {
 		return 0;
 	}
 

@@ -47,14 +47,15 @@ public class TileEntityAuraInfuser2 extends FluidReceiverInventoryBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.getTicksExisted() == 0) {
-			for (int i = 0; i < 16; i++) {
-				inv[i] = ChromaStacks.getShard(CrystalElement.elements[i]);
-			}
-		}
-
 		if (craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
+		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		for (int i = 0; i < 16; i++) {
+			inv[i] = ChromaStacks.getShard(CrystalElement.elements[i]);
 		}
 	}
 

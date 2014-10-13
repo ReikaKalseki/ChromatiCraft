@@ -93,7 +93,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (lvl != tier) {
 			tier = lvl;
 			ChromaSounds.UPGRADE.playSoundAtBlock(this);
-			this.particleBurst();
+			if (worldObj.isRemote)
+				this.particleBurst();
 		}
 	}
 
@@ -109,10 +110,6 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-		if (this.getTicksExisted() == 0) {
-			this.validateStructure(null, world, x, y-1, z);
-			craftingTick = 0;
-		}
 		if (!world.isRemote && this.getTicksExisted() == 1) {
 			this.evaluateRecipeAndRequest();
 		}
@@ -121,6 +118,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.validateStructure(null, world, x, y-1, z);
+		craftingTick = 0;
 	}
 
 	private void killCrafting() {

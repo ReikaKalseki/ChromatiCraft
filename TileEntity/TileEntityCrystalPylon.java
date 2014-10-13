@@ -96,8 +96,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 				int r = 8+rand.nextInt(8);
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-				for (int i = 0; i < li.size(); i++) {
-					EntityLivingBase e = li.get(i);
+				for (EntityLivingBase e : li) {
 					boolean attack = !e.isDead && e.getHealth() > 0;
 					if (e instanceof EntityPlayer) {
 						attack = attack && !((EntityPlayer)e).capabilities.isCreativeMode;

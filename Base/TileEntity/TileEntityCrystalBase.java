@@ -16,10 +16,8 @@ import Reika.ChromatiCraft.Magic.CrystalNetworker;
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
 	@Override
-	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (this.getTicksExisted() == 0) {
-			this.cachePosition();
-		}
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.cachePosition();
 	}
 
 	@Override

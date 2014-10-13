@@ -66,14 +66,14 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-
-		if (this.getTicksExisted() == 0) {
-			this.validateMultiblock(null, world, x, y-2, z);
-		}
-
 		if (abilityTick > 0) {
 			this.onRitualTick(world, x, y, z);
 		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.validateMultiblock(null, world, x, y-2, z);
 	}
 
 	private void onRitualTick(World world, int x, int y, int z) {

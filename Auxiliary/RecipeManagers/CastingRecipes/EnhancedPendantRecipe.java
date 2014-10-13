@@ -11,10 +11,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class EnhancedPendantRecipe extends PendantRecipe {
+public class EnhancedPendantRecipe extends PylonRecipe {
 
 	public EnhancedPendantRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

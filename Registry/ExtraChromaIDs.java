@@ -17,7 +17,8 @@ import Reika.DragonAPI.Interfaces.IDRegistry;
 
 public enum ExtraChromaIDs implements IDRegistry {
 
-	GROWTHID("Other IDs", "Growth Hormone ID", 36, Potion.class);
+	GROWTHID("Other IDs", "Growth Hormone ID", 36, Potion.class),
+	SATID("Other IDs", "Saturation ID", 38, Potion.class);
 
 	private String name;
 	private String category;

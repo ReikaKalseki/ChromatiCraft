@@ -139,15 +139,14 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 				float f2 = rand.nextFloat();
 				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, 0.5F*((f1-f2)*0.7F+1.8F));
 			}
-			if (this.shouldGiveEffects()) {
+			CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
+			if (this.shouldGiveEffects(color)) {
 				int r = this.getRange();
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);
-				List inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-				for (int i = 0; i < inbox.size(); i++) {
-					EntityLivingBase e = (EntityLivingBase)inbox.get(i);
+				List<EntityLivingBase> inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+				for (EntityLivingBase e : inbox) {
 					if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= 4) {
-						CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
-						this.applyEffectFromColor(this.getDuration(), this.getPotionLevel(), e, color);
+						this.applyEffectFromColor(this.getDuration(color), this.getPotionLevel(color), e, color);
 					}
 				}
 			}
@@ -156,11 +155,11 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 
 	public abstract boolean shouldMakeNoise();
 
-	public abstract boolean shouldGiveEffects();
+	public abstract boolean shouldGiveEffects(CrystalElement e);
 
 	public abstract int getRange();
 
-	public abstract int getDuration();
+	public abstract int getDuration(CrystalElement e);
 
 	public abstract int getBrightness();
 
@@ -168,7 +167,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 		return this.renderBase();
 	}
 
-	public abstract int getPotionLevel();
+	public abstract int getPotionLevel(CrystalElement e);
 
 	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
 		if (shouldBeHostile(e.worldObj)) {

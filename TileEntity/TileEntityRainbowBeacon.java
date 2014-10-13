@@ -38,8 +38,7 @@ public class TileEntityRainbowBeacon extends TileEntityBase {
 		if (world.getWorldTime()%200 == 0) {
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, this.getTreeBaseY(), z).expand(48, 48, 48);
 			List<EntityPlayer> inbox = world.getEntitiesWithinAABB(EntityPlayer.class, box);
-			for (int i = 0; i < inbox.size(); i++) {
-				EntityPlayer ep = inbox.get(i);
+			for (EntityPlayer ep : inbox) {
 				for (int k = 0; k < 18; k++) {
 					double ex = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 1);
 					double ez = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 1);
