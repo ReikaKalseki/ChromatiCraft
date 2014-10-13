@@ -16,7 +16,6 @@ import Reika.DragonAPI.Interfaces.ConfigList;
 public enum ChromaOptions implements ConfigList {
 
 	NOISE("Lamp Noises", true),
-	EFFECTS("Lamp Effects", false),
 	NETHER("Nether Crystals", true),
 	NOPARTICLES("Disable Pendant Particles", true),
 	CRYSTALFARM("Crystal Plants May Drop Shards", true),

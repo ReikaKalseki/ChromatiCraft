@@ -56,7 +56,7 @@ public class BlockCrystalLamp extends CrystalBlock {
 
 	@Override
 	public boolean shouldGiveEffects(CrystalElement e) {
-		return ChromaOptions.EFFECTS.getState();
+		return false;//ChromaOptions.EFFECTS.getState();
 	}
 
 	@Override
