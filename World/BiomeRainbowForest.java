@@ -103,6 +103,9 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		if (y > 191) {
 			base = 0.15F+0.025F*(y-255)/64F;
 		}
+		if (y >= 255) {
+			base = 0.1F;
+		}
 		return Math.max(base, min);
 	}
 

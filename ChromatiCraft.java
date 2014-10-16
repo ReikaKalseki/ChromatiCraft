@@ -350,7 +350,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				Field list = c.getDeclaredField("blacklist");
 				list.setAccessible(true);
 				List li = (List)list.get(instance);
-				li.add(Items.golden_apple);
+				li.add("minecraft:golden_apple");
 			}
 			catch (Exception e) {
 				logger.logError("Unable to blacklist golden apple recycling");
