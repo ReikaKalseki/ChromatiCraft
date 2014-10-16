@@ -154,7 +154,7 @@ public final class BlockTieredPlant extends BlockTieredResource implements IPlan
 	}
 
 	@Override
-	protected Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
+	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
 		return li;
 	}
