@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
@@ -74,6 +75,8 @@ public class ItemChromaPlacer extends Item {
 		if (inblock.size() > 0)
 			return false;
 		ChromaTiles m = ChromaTiles.TEList[is.getItemDamage()];
+		if (m == ChromaTiles.HEATLILY)
+			return false;
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
 			return false;
 		else
@@ -118,6 +121,34 @@ public class ItemChromaPlacer extends Item {
 			((NBTTile)te).setDataFromItemStackTag(is);
 		}
 		return true;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		ChromaTiles m = ChromaTiles.TEList[is.getItemDamage()];
+		if (m == ChromaTiles.HEATLILY) {
+			MovingObjectPosition mov = this.getMovingObjectPositionFromPlayer(world, ep, true);
+			if (mov != null && mov.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+				int x = mov.blockX;
+				int y = mov.blockY;
+				int z = mov.blockZ;
+
+				if (!world.canMineBlock(ep, x, y, z))
+					return is;
+				if (!ep.canPlayerEdit(x, y, z, mov.sideHit, is))
+					return is;
+
+				if (world.getBlock(x, y, z).getMaterial() == Material.water && world.getBlockMetadata(x, y, z) == 0) {
+					if (world.isAirBlock(x, y+1, z)) {
+						world.setBlock(x, y + 1, z, m.getBlock(), m.getBlockMetadata(), 3);
+						if (!ep.capabilities.isCreativeMode)
+							--is.stackSize;
+					}
+				}
+			}
+		}
+
+		return is;
 	}
 
 	@Override

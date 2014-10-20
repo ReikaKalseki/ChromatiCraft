@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.CrystalRenderer;
+import Reika.ChromatiCraft.Render.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.RuneRenderer;
 import Reika.ChromatiCraft.Render.TankBlockRenderer;
@@ -58,6 +59,8 @@ public class ChromaClient extends ChromaCommon {
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
+
+	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -145,6 +148,9 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerBlockHandler(oreRender, ore);
 		plantRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(plantRender, plant);
+
+		plantRender2 = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(plantRender2, plant2);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

@@ -28,6 +28,7 @@ import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -97,7 +98,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 			switch(this.getColor()) {
 			case BLACK:
 				break;
-			case BLUE:
+			case BLUE: //light beam
 				break;
 			case BROWN:
 				break;
@@ -118,6 +119,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 			case MAGENTA:
 				break;
 			case ORANGE:
+				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 400);
 				break;
 			case PINK:
 				break;

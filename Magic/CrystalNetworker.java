@@ -72,7 +72,7 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	public void tick(Object... data) {
+	public void tick(TickType type, Object... data) {
 		Iterator<CrystalFlow> it = flows.iterator();
 		while (it.hasNext()) {
 			CrystalFlow p = it.next();

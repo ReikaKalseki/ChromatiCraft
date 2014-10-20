@@ -26,7 +26,7 @@ public class ChromabilityHandler implements TickHandler {
 	}
 
 	@Override
-	public void tick(Object... tickData) {
+	public void tick(TickType type, Object... tickData) {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
 		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
 		for (int i = 0; i < li.size(); i++) {

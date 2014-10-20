@@ -37,6 +37,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.ChromaticEventManager;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
@@ -54,6 +55,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockTEBase;
@@ -62,6 +64,7 @@ import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DartItemHandler;
 
 public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
@@ -266,6 +269,11 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	public final void breakBlock(World world, int x, int y, int z, Block par5, int par6) {
 		TileEntity te = world.getTileEntity(x, y, z);
+		ChromaticEventManager.instance.remove(te);
+		if (te instanceof TileEntityItemCollector) {
+			((TileEntityItemCollector)te).canIntake = false;
+			ReikaWorldHelper.splitAndSpawnXP(world, x+0.5, y+0.5, z+0.5, ((TileEntityItemCollector)te).getExperience());
+		}
 		if (te instanceof IInventory)
 			ReikaItemHelper.dropInventory(world, x, y, z);
 		if (te instanceof TileEntityRift) {

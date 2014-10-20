@@ -29,7 +29,7 @@ public class ExplorationMonitor implements TickHandler {
 	}
 
 	@Override
-	public void tick(Object... tickData) {
+	public void tick(TickType type, Object... tickData) {
 		EntityPlayer ep = (EntityPlayer)tickData[0];
 		World world = ep.worldObj;
 		if (!world.isRemote) {
