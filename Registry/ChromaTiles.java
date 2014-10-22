@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
@@ -78,7 +79,8 @@ public enum ChromaTiles {
 	FABRICATOR("chroma.fabricator",		ChromaBlocks.TILEMODELLED, TileEntityItemFabricator.class, 8),
 	MINER("chroma.miner",				ChromaBlocks.TILEMODELLED, TileEntityMiner.class, 9, "RenderMiner"),
 	HEATLILY("chroma.heatlily",			ChromaBlocks.DECOPLANT, TileEntityHeatLily.class, 0),
-	ITEMCOLLECTOR("chroma.itemcoll",	ChromaBlocks.TILEENTITY, TileEntityItemCollector.class, 10);
+	ITEMCOLLECTOR("chroma.itemcoll",	ChromaBlocks.TILEENTITY, TileEntityItemCollector.class, 10),
+	TICKER("chroma.ticker",				ChromaBlocks.TILEENTITY, TileEntityInventoryTicker.class, 11);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
 	//SPLITTER();
