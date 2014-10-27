@@ -52,7 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.ModInterface.CrystalDyeAspectManager;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -393,7 +393,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			CrystalDyeAspectManager.register();
+			ChromaAspectManager.instance.register();
 		}
 
 		if (ModList.FORESTRY.isLoaded()) {

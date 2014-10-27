@@ -9,13 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
-import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -23,7 +21,6 @@ public class CrystalPotionController {
 
 	private static HashMap<CrystalElement, Potion> map = new HashMap();
 	private static HashMap<CrystalElement, Potion> nethermap = new HashMap();
-	private static HashMap<CrystalElement, ArrayList<Aspect>> aspects = new HashMap();
 
 	static {
 		addColorPotion(CrystalElement.BLUE, Potion.nightVision);
@@ -53,38 +50,6 @@ public class CrystalPotionController {
 		addNetherPotion(CrystalElement.BLUE, Potion.nightVision);
 		addNetherPotion(CrystalElement.PINK, Potion.damageBoost);
 		addNetherPotion(CrystalElement.MAGENTA, Potion.regeneration);
-
-		addAspect(CrystalElement.BLACK, Aspect.BEAST, Aspect.DARKNESS, Aspect.MIND, Aspect.SENSES);
-		addAspect(CrystalElement.BLUE, Aspect.SENSES, Aspect.LIGHT);
-		addAspect(CrystalElement.BROWN, Aspect.HUNGER);
-		addAspect(CrystalElement.CYAN, Aspect.WATER);
-		addAspect(CrystalElement.GRAY, Aspect.WEAPON);
-		addAspect(CrystalElement.GREEN, Aspect.POISON, Aspect.BEAST);
-		addAspect(CrystalElement.LIGHTBLUE, Aspect.MOTION, Aspect.TRAVEL);
-		addAspect(CrystalElement.LIGHTGRAY, Aspect.MOTION);
-		addAspect(CrystalElement.LIME, Aspect.FLIGHT);
-		addAspect(CrystalElement.MAGENTA, Aspect.HEAL, Aspect.LIFE);
-		addAspect(CrystalElement.ORANGE, Aspect.FIRE);
-		addAspect(CrystalElement.PINK, Aspect.WEAPON);
-		addAspect(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.CRAFT, Aspect.TOOL, Aspect.EXCHANGE);
-		addAspect(CrystalElement.RED, Aspect.ARMOR, Aspect.WEAPON);
-		addAspect(CrystalElement.WHITE, Aspect.VOID, Aspect.AIR);
-		addAspect(CrystalElement.YELLOW, Aspect.MINE, Aspect.TOOL);
-	}
-
-	private static void addAspect(CrystalElement color, Aspect... asps) {
-		ArrayList li = new ArrayList();
-		for (int i = 0; i < asps.length; i++)
-			li.add(asps[i]);
-		aspects.put(color, li);
-	}
-
-	public static ArrayList<Aspect> getAspects(CrystalElement color) {
-		ArrayList li = new ArrayList();
-		ArrayList l2 = aspects.get(color);
-		if (l2 != null)
-			li.addAll(l2);
-		return li;
 	}
 
 	private static void addColorPotion(CrystalElement color, Potion pot) {

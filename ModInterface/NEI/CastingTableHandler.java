@@ -122,7 +122,7 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 		CastingRecipe r = c.recipe;
 		int h = r instanceof MultiBlockCastingRecipe ? 154 : 122;
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture(recipe));
-		ReikaGuiAPI.instance.drawTexturedModalRect(0, 0, 5, 3, 214, h);
+		ReikaGuiAPI.instance.drawTexturedModalRectWithDepth(0, 0, 5, 3, 214, h, -300);
 	}
 
 	@Override

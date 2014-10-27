@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -20,10 +23,16 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalSource;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -31,6 +40,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -40,13 +50,28 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
-public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource {
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode {
 
 	private boolean hasMultiblock = false;
 	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
 	public static final int MAX_ENERGY = 180000;
 	private int energy = MAX_ENERGY;
+
+	private static Class node;
+	private static HashMap<String, ArrayList<Integer>> nodeCache;
+
+	static {
+		try {
+			node = Class.forName("thaumcraft.common.tiles.TileNode");
+			Field f = node.getDeclaredField("locations");
+			f.setAccessible(true);
+			nodeCache = (HashMap<String, ArrayList<Integer>>)f.get(null);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -68,6 +93,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	public int getRenderColor() {
 		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/MAX_ENERGY);
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		if (ModList.THAUMCRAFT.isLoaded() && nodeCache != null) {
+			ArrayList li = new ArrayList();
+			li.add(world.provider.dimensionId);
+			li.add(x);
+			li.add(y);
+			li.add(z);
+			nodeCache.put(this.getId(), li);
+		}
 	}
 
 	@Override
@@ -311,5 +349,97 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (e == color)
 			energy -= amt;
 	}
+
+	@Override
+	public AspectList getAspects() {
+		AspectList as = new AspectList();
+		as.add(Aspect.AURA, 60);
+		ArrayList<Aspect> li = ChromaAspectManager.instance.getAspects(this.getColor());
+		for (Aspect a : li) {
+			as.add(a, 60);
+		}
+		return as;
+	}
+
+	@Override
+	public void setAspects(AspectList aspects) {}
+
+	@Override
+	public boolean doesContainerAccept(Aspect tag) {
+		return this.getAspects().getAmount(tag) > 0;
+	}
+
+	@Override
+	public int addToContainer(Aspect tag, int amount) {return 0;}
+
+	@Override
+	public boolean takeFromContainer(Aspect tag, int amount) {
+		return this.doesContainerContainAmount(tag, amount);
+	}
+
+	@Override
+	@Deprecated
+	public boolean takeFromContainer(AspectList ot) {
+		return false;
+	}
+
+	@Override
+	public boolean doesContainerContainAmount(Aspect tag, int amount) {
+		return this.getAspects().getAmount(tag) > amount;
+	}
+
+	@Override
+	@Deprecated
+	public boolean doesContainerContain(AspectList ot) {
+		return false;
+	}
+
+	@Override
+	public int containerContains(Aspect tag) {
+		return this.getAspects().getAmount(tag);
+	}
+
+	@Override
+	public String getId() {
+		return "Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
+	}
+
+	@Override
+	public AspectList getAspectsBase() {
+		return this.getAspects();
+	}
+
+	@Override
+	public NodeType getNodeType() {
+		switch(color) {
+		case BLACK:
+			return NodeType.DARK;
+		case GRAY:
+			return NodeType.UNSTABLE;
+		case WHITE:
+			return NodeType.PURE;
+		default:
+			return NodeType.NORMAL;
+		}
+	}
+
+	@Override
+	public void setNodeType(NodeType nodeType) {}
+
+	@Override
+	public void setNodeModifier(NodeModifier nodeModifier) {}
+
+	@Override
+	public NodeModifier getNodeModifier() {
+		return NodeModifier.BRIGHT;
+	}
+
+	@Override
+	public int getNodeVisBase(Aspect aspect) {
+		return this.containerContains(aspect);
+	}
+
+	@Override
+	public void setNodeVisBase(Aspect aspect, short nodeVisBase) {}
 
 }

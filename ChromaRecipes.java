@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import java.util.ArrayList;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -18,8 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
-import thaumcraft.api.aspects.Aspect;
-import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -27,7 +23,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.GrinderAPI;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -78,29 +73,6 @@ public class ChromaRecipes {
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
-			}
-		}
-
-		if (ModList.THAUMCRAFT.isLoaded()) {
-			for (int i = 0; i < CrystalElement.elements.length; i++) {
-				CrystalElement color = CrystalElement.elements[i];
-				ItemStack crystal = new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i);
-				ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
-				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
-				ArrayList<Aspect> li = CrystalPotionController.getAspects(color);
-
-				ReikaThaumHelper.addAspects(shard, Aspect.CRYSTAL, 1);
-				ReikaThaumHelper.addAspects(crystal, Aspect.CRYSTAL, 20);
-				ReikaThaumHelper.addAspects(crystal, Aspect.AURA, 4);
-				ReikaThaumHelper.addAspects(crystal, Aspect.LIGHT, 3);
-				ReikaThaumHelper.addAspects(crystal, Aspect.MAGIC, 6);
-				ReikaThaumHelper.addAspects(lamp, Aspect.LIGHT, 8);
-
-				for (int k = 0; k < li.size(); k++) {
-					Aspect as = li.get(k);
-					ReikaThaumHelper.addAspects(shard, as, 2);
-					ReikaThaumHelper.addAspects(crystal, as, 16);
-				}
 			}
 		}
 	}
