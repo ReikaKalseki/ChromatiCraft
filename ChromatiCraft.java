@@ -185,6 +185,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
 			//MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);
+			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 		}
 
 		config.loadSubfolderedConfigFile(evt);

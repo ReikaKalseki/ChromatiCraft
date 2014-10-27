@@ -10,17 +10,23 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemManipulator extends ItemChromaTool {
 
@@ -60,6 +66,39 @@ public class ItemManipulator extends ItemChromaTool {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ItemStack onEaten(ItemStack is, World world, EntityPlayer ep)
+	{
+		return is;
+	}
+
+	@Override
+	public int getMaxItemUseDuration(ItemStack is)
+	{
+		return 72000;
+	}
+
+	@Override
+	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
+		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 12, false);
+		if (mov != null) {
+			ChromaTiles c = ChromaTiles.getTile(player.worldObj, mov.blockX, mov.blockY, mov.blockZ);
+			if (c == ChromaTiles.PYLON) {
+				TileEntityCrystalPylon te = (TileEntityCrystalPylon)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
+				CrystalElement e = te.getColor();
+				if (PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
+					PlayerElementBuffer.instance.addToPlayer(player, e, 1);
+					PlayerElementBuffer.instance.checkUpgrade(player, true);
+				}
+			}
+		}
+	}
+
+	@Override
+	public EnumAction getItemUseAction(ItemStack is) {
+		return EnumAction.bow;
 	}
 
 }
