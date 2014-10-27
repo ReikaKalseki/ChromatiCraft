@@ -18,6 +18,9 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 
 public class TileEntityInventoryTicker extends InventoriedChromaticBase {
 
+	private int ticks = 1;
+	private boolean hotbar = true;
+
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
 		return side == ForgeDirection.DOWN.ordinal();
@@ -45,7 +48,8 @@ public class TileEntityInventoryTicker extends InventoriedChromaticBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		this.updateItems();
+		for (int i = 0; i < ticks; i++)
+			this.updateItems();
 	}
 
 	private void updateItems() {
@@ -54,7 +58,7 @@ public class TileEntityInventoryTicker extends InventoriedChromaticBase {
 			for (int i = 0; i < this.getSizeInventory(); i++) {
 				ItemStack is = inv[i];
 				if (is != null) {
-					is.getItem().onUpdate(is, worldObj, ep, 0, true); //trick into thinking is slot 0 (hotbar) and held, to force activation
+					is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
 				}
 			}
 		}
