@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
+import Reika.ChromatiCraft.Items.Tools.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -71,7 +72,8 @@ public enum ChromaItems implements ItemEnum {
 	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class),
 	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
 	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class),
-	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class);
+	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
+	TRANSITION(5, false,	"chroma.transition",	ItemTransitionWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

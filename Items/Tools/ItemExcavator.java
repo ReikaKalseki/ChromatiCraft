@@ -9,15 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.util.HashMap;
+
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
+import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 
-public class ItemExcavator extends ItemChromaTool {
+public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 
 	public static final int MAX_DEPTH = 12;
+
+	private static HashMap<Integer, EntityPlayer> breakers = new HashMap();
 
 	public ItemExcavator(int index) {
 		super(index);
@@ -25,22 +34,45 @@ public class ItemExcavator extends ItemChromaTool {
 
 	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
-		World world = ep.worldObj;/*
-		Block b = world.getBlock(x, y, z);
-		int meta = world.getBlockMetadata(x, y, z);
-		for (int i = 0; i < 6; i++) {
-			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-			int dx = x+dir.offsetX;
-			int dy = y+dir.offsetY;
-			int dz = z+dir.offsetZ;
-			Block b2 = world.getBlock(dx, dy, dz);
-			int meta2 = world.getBlockMetadata(dx, dy, dz);
-			if (b == b2 && meta == meta2) {
-				ProgressiveRecursiveBreaker.instance.addCoordinate(world, dx, dy, dz, 30);
-			}
-		}*/
-		ProgressiveRecursiveBreaker.instance.addCoordinate(world, x, y, z, 12);
+		World world = ep.worldObj;
+		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
+		b.call = this;
+		breakers.put(b.hashCode(), ep);
 		return true;
+	}
+
+	@Override
+	public void onBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+		EntityPlayer ep = breakers.get(b.hashCode());
+		if (ep != null) {
+			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
+			if (exists) {
+				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.BROWN, 5);
+				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.YELLOW, 5);
+			}
+			else {
+				b.terminate();
+			}
+		}
+	}
+
+	@Override
+	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+		EntityPlayer ep = breakers.get(b.hashCode());
+		if (ep != null) {
+			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
+			if (exists) {
+				boolean b1 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.BROWN, 5);
+				boolean b2 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.YELLOW, 5);
+				return b1 && b2;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void onFinish(ProgressiveBreaker b) {
+		breakers.remove(b.hashCode());
 	}
 
 }

@@ -176,6 +176,19 @@ public final class ElementTagCompound {
 		}
 	}
 
+	public static ElementTagCompound createFromNBT(NBTTagCompound tag) {
+		ElementTagCompound c = new ElementTagCompound();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			if (tag.hasKey(e.name())) {
+				int amt = tag.getInteger(e.name());
+				if (amt > 0)
+					c.data.put(e, amt);
+			}
+		}
+		return c;
+	}
+
 	public void writeToNBT(String name, NBTTagCompound NBT) {
 		NBTTagCompound tag = new NBTTagCompound();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
