@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
@@ -27,6 +29,9 @@ import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemManipulator extends ItemChromaTool {
 
@@ -82,18 +87,36 @@ public class ItemManipulator extends ItemChromaTool {
 
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 12, false);
+		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 16, false);
 		if (mov != null) {
 			ChromaTiles c = ChromaTiles.getTile(player.worldObj, mov.blockX, mov.blockY, mov.blockZ);
 			if (c == ChromaTiles.PYLON) {
 				TileEntityCrystalPylon te = (TileEntityCrystalPylon)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
 				CrystalElement e = te.getColor();
-				if (PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
+				if (te.canConduct() && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
 					PlayerElementBuffer.instance.addToPlayer(player, e, 1);
 					PlayerElementBuffer.instance.checkUpgrade(player, true);
+					if (player.worldObj.isRemote) {
+						this.spawnParticles(player, e);
+					}
 				}
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnParticles(EntityPlayer player, CrystalElement e) {
+		double rx = ReikaRandomHelper.getRandomPlusMinus(player.posX, 0.8);
+		double ry = ReikaRandomHelper.getRandomPlusMinus(player.posY, 1.5);
+		double rz = ReikaRandomHelper.getRandomPlusMinus(player.posZ, 0.8);
+		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(player.worldObj, rx, ry, rz, e));
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep)
+	{
+		ep.setItemInUse(is, this.getMaxItemUseDuration(is));
+		return is;
 	}
 
 	@Override

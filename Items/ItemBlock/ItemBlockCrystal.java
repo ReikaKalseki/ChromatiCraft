@@ -87,9 +87,6 @@ public class ItemBlockCrystal extends ItemBlock {
 
 				}
 			}
-			else {
-				li.add("No effects - not enabled in config");
-			}
 		}
 		else {
 			StringBuilder sb = new StringBuilder();

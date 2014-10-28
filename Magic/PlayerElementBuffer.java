@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Magic;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
@@ -72,7 +73,11 @@ public class PlayerElementBuffer {
 		int prev = this.getElementCap(ep);
 		int val = Math.min(prev*4, 240000);
 		tag.setInteger("cap", val);
-		return val != prev;
+		boolean flag = val > prev;
+		if (flag) {
+			ChromaSounds.CAST.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
+		}
+		return flag;
 	}
 
 	public boolean canPlayerAccept(EntityPlayer ep, CrystalElement e, int amt) {

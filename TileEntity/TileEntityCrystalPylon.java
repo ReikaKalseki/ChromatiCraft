@@ -353,10 +353,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	public AspectList getAspects() {
 		AspectList as = new AspectList();
-		as.add(Aspect.AURA, 60);
+		as.add(Aspect.AURA, 400);
 		ArrayList<Aspect> li = ChromaAspectManager.instance.getAspects(this.getColor());
 		for (Aspect a : li) {
-			as.add(a, 60);
+			as.add(a, 400);
 		}
 		return as;
 	}
