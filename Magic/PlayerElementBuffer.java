@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,6 +77,10 @@ public class PlayerElementBuffer {
 		return Math.max(24, tag.getInteger("cap"));
 	}
 
+	public double getPlayerFraction(EntityPlayer ep, CrystalElement e) {
+		return (double)this.getPlayerContent(ep, e)/this.getElementCap(ep);
+	}
+
 	public boolean upgradeCap(EntityPlayer ep) {
 		NBTTagCompound tag = this.getTag(ep);
 		int prev = this.getElementCap(ep);
@@ -95,6 +108,10 @@ public class PlayerElementBuffer {
 				return false;
 		}
 		return upgrade ? this.upgradeCap(player) : true;
+	}
+
+	public boolean hasElement(EntityPlayer ep, CrystalElement e) {
+		return this.getPlayerContent(ep, e) > 0;
 	}
 
 }

@@ -9,7 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class ItemChromaBerry extends ItemCrystalBasic {
 
@@ -55,5 +62,36 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 		ei.delayBeforeCanPickup = 10;
 		return ei;
 	}*/
+
+	@Override
+	public ItemStack onEaten(ItemStack is, World world, EntityPlayer ep)
+	{
+		is.stackSize--;
+		CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
+		if (ReikaRandomHelper.doWithChance(20)) {
+			if (PlayerElementBuffer.instance.hasElement(ep, e) && PlayerElementBuffer.instance.getPlayerFraction(ep, e) < 0.25)
+				PlayerElementBuffer.instance.addToPlayer(ep, e, 1);
+		}
+		return is;
+	}
+
+	@Override
+	public int getMaxItemUseDuration(ItemStack is)
+	{
+		return 64;
+	}
+
+	@Override
+	public EnumAction getItemUseAction(ItemStack p_77661_1_)
+	{
+		return EnumAction.eat;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep)
+	{
+		ep.setItemInUse(is, this.getMaxItemUseDuration(is));
+		return is;
+	}
 
 }

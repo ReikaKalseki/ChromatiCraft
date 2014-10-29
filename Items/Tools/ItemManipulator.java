@@ -17,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -88,16 +89,21 @@ public class ItemManipulator extends ItemChromaTool {
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
 		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 16, false);
+		//PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], 1);
+		//PlayerElementBuffer.instance.checkUpgrade(player, true);
+		//player.getEntityData().removeTag("CrystalBuffer");
 		if (mov != null) {
 			ChromaTiles c = ChromaTiles.getTile(player.worldObj, mov.blockX, mov.blockY, mov.blockZ);
 			if (c == ChromaTiles.PYLON) {
 				TileEntityCrystalPylon te = (TileEntityCrystalPylon)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
 				CrystalElement e = te.getColor();
-				if (te.canConduct() && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
-					PlayerElementBuffer.instance.addToPlayer(player, e, 1);
+				if (te.canConduct() && te.getEnergy(e) >= 4 && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
+					if (PlayerElementBuffer.instance.addToPlayer(player, e, 1))
+						te.drain(e, 4);
 					PlayerElementBuffer.instance.checkUpgrade(player, true);
 					if (player.worldObj.isRemote) {
-						this.spawnParticles(player, e);
+						//this.spawnParticles(player, e);
+						ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D);
 					}
 				}
 			}
