@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
@@ -281,6 +282,9 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		}
 		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
+		}
+		if (te instanceof TileEntityAIShutdown) {
+			((TileEntityAIShutdown)te).freeAll();
 		}
 		if (te instanceof CrystalNetworkTile) {
 			((CrystalNetworkTile)te).removeFromCache();

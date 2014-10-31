@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -17,7 +17,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class AbilityRituals {
 
-	private final HashMap<Chromabilities, AbilityRitual> data = new HashMap();
+	private final EnumMap<Chromabilities, AbilityRitual> data = new EnumMap(Chromabilities.class);
 
 	public static final AbilityRituals instance = new AbilityRituals();
 

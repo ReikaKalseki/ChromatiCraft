@@ -70,13 +70,8 @@ public class GuardianCommand extends DragonCommandBase {
 	}
 
 	@Override
-	public int getRequiredPermissionLevel() {
-		return 0;
-	}
-
-	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		return true;
+	protected boolean isAdminOnly() {
+		return false;
 	}
 
 	@Override

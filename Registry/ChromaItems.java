@@ -64,7 +64,7 @@ public enum ChromaItems implements ItemEnum {
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),
 	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
-	VACUUMGUN(34, false,	"chroma.vac",			ItemVacuumGun.class),
+	VACUUMGUN(4, false,		"chroma.vac",			ItemVacuumGun.class),
 	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
@@ -73,7 +73,7 @@ public enum ChromaItems implements ItemEnum {
 	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
 	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class),
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
-	TRANSITION(5, false,	"chroma.transition",	ItemTransitionWand.class);
+	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

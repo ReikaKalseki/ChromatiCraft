@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -46,7 +47,7 @@ public class AbilityHelper {
 	private final HashMap<EntityPlayer, Boolean> isDrawingBox = new HashMap();
 	public final HashMap<EntityPlayer, ScaledDirection> shifts = new HashMap();
 
-	private final HashMap<Chromabilities, ElementTagCompound> tagMap = new HashMap();
+	private final EnumMap<Chromabilities, ElementTagCompound> tagMap = new EnumMap(Chromabilities.class);
 
 	public static final AbilityHelper instance = new AbilityHelper();
 
@@ -178,6 +179,10 @@ public class AbilityHelper {
 
 	public ElementTagCompound getElementsFor(Chromabilities c) {
 		return tagMap.get(c).copy();
+	}
+
+	public ElementTagCompound getUsageElementsFor(Chromabilities c) {
+		return tagMap.get(c).copy().scale(0.001F);
 	}
 
 }

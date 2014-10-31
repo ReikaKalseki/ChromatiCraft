@@ -47,6 +47,15 @@ public class PlayerElementBuffer {
 		return ep.capabilities.isCreativeMode || this.getPlayerContent(ep, e) >= amt;
 	}
 
+	public boolean playerHas(EntityPlayer player, ElementTagCompound tag) {
+		for (CrystalElement e : tag.elementSet()) {
+			int amt = tag.getValue(e);
+			if (!this.playerHas(player, e, amt))
+				return false;
+		}
+		return true;
+	}
+
 	public boolean addToPlayer(EntityPlayer ep, CrystalElement e, int amt) {
 		NBTTagCompound tag = this.getTag(ep);
 		int has = tag.getInteger(e.name());
@@ -72,6 +81,13 @@ public class PlayerElementBuffer {
 		tag.setInteger(e.name(), Math.max(0, has));
 	}
 
+	public void removeFromPlayer(EntityPlayer player, ElementTagCompound tag) {
+		for (CrystalElement e : tag.elementSet()) {
+			int amt = tag.getValue(e);
+			this.removeFromPlayer(player, e, amt);
+		}
+	}
+
 	public int getElementCap(EntityPlayer ep) {
 		NBTTagCompound tag = this.getTag(ep);
 		return Math.max(24, tag.getInteger("cap"));
@@ -88,7 +104,7 @@ public class PlayerElementBuffer {
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
-			ChromaSounds.CAST.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
+			ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
 		}
 		return flag;
 	}

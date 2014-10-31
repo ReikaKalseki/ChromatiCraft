@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -39,6 +42,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ControllableReachPlayer;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
@@ -47,6 +54,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -62,11 +70,14 @@ public enum Chromabilities {
 	HEAL(null, false),
 	SHIELD(Phase.END, false),
 	FIREBALL(null, false),
-	COMMUNICATE(Phase.START, false);
+	COMMUNICATE(Phase.START, false),
+	HEALTH(null, true);
 
 	public final boolean tickBased;
 	public final Phase tickPhase;
 	public final boolean actOnClient;
+
+	private static final UUID uid_health = UUID.randomUUID();
 
 	private Chromabilities(Phase tick, boolean client) {
 		tickBased = tick != null;
@@ -80,6 +91,10 @@ public enum Chromabilities {
 	public static final Chromabilities[] abilities = values();
 
 	public void apply(EntityPlayer ep) {
+		if (ReikaRandomHelper.doWithChance(5)) {
+			ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
+			PlayerElementBuffer.instance.removeFromPlayer(ep, use);
+		}
 		switch(this) {
 		case MAGNET:
 			this.attractItemsAndXP(ep, 24);
@@ -103,6 +118,9 @@ public enum Chromabilities {
 				return;
 		}
 
+		ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.ABILITY);
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
+		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = this.enabledOn(ep);
 		this.setToPlayer(ep, !flag);
 
@@ -133,10 +151,23 @@ public enum Chromabilities {
 			case FIREBALL:
 				this.launchFireball(ep, data);
 				break;
+			case HEALTH:
+				this.setPlayerMaxHealth(ep, data);
+				break;
 			default:
 				break;
 			}
 		}
+	}
+
+	private void setPlayerMaxHealth(EntityPlayer ep, int value) {
+		int add = Math.min(value, 60);
+		float added = add+20-ep.getMaxHealth();
+		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", add/20D, 2));
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", add/20D, 2));
+		if (added > 0)
+			ep.heal(added);
 	}
 
 	public static ArrayList<Chromabilities> getFrom(EntityPlayer ep) {
@@ -392,14 +423,9 @@ public enum Chromabilities {
 		}
 	}
 
-	public boolean canPlayerExecuteAt(EntityPlayer player) {/* need a way for this to be less of a hassle
-		WorldLocation loc = new WorldLocation(player).move(0, 1, 0);
-		ElementTagCompound tag = AbilityHelper.instance.getElementsFor(this);
-		for (CrystalElement e : tag.elementSet()) {
-			if (!CrystalNetworker.instance.checkConnectivity(e, loc, 24))
-				return false;
-		}*/
-		return true;
+	public boolean canPlayerExecuteAt(EntityPlayer player) {
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
+		return PlayerElementBuffer.instance.playerHas(player, use);
 	}
 
 	public int maxPower() {
@@ -412,6 +438,8 @@ public enum Chromabilities {
 			return 4;
 		case FIREBALL:
 			return 8;
+		case HEALTH:
+			return 20;
 		default:
 			return 0;
 		}

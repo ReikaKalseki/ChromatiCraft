@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -71,7 +72,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return e.ordinal() == worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord);
+		return e != null && e == this.getActiveColor();
 	}
 
 	@Override
@@ -87,6 +88,15 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		return null;
+	}
+
+	public boolean checkConnectivity() {
+		CrystalElement c = this.getActiveColor();
+		return c != null && CrystalNetworker.instance.checkConnectivity(c, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange());
+	}
+
+	public CrystalElement getActiveColor() {
+		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
 	}
 
 }

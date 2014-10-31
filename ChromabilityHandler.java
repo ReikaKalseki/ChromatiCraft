@@ -31,7 +31,7 @@ public class ChromabilityHandler implements TickHandler {
 		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
 		for (int i = 0; i < li.size(); i++) {
 			Chromabilities c = li.get(i);
-			if (c.tickBased && c.tickPhase == tickData[1] && c.playerHasAbility(ep)) {
+			if (c.tickBased && c.tickPhase == tickData[1] && c.playerHasAbility(ep) && c.canPlayerExecuteAt(ep)) {
 				c.apply(ep);
 			}
 		}

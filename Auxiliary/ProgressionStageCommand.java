@@ -57,9 +57,8 @@ public class ProgressionStageCommand extends DragonCommandBase {
 	}
 
 	@Override
-	public int getRequiredPermissionLevel()
-	{
-		return 4;
+	protected boolean isAdminOnly() {
+		return true;
 	}
 
 }

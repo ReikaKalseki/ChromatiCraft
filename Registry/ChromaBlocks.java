@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
@@ -35,7 +36,6 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
-import Reika.ChromatiCraft.Block.BlockLiquidChroma;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
@@ -71,7 +71,7 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEENTITY(BlockChromaTile.class, 											"Chromatic Tile"),
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockDyeColors.class, 		"block.crystalrune"),
-	CHROMA(BlockLiquidChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
+	CHROMA(BlockActiveChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
 	//ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal

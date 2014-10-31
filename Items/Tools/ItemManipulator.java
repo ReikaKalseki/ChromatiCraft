@@ -18,19 +18,24 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -71,6 +76,18 @@ public class ItemManipulator extends ItemChromaTool {
 			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
+		if (t == ChromaTiles.REPEATER) {
+			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
+			if (te.checkConnectivity()) {
+				CrystalElement e = te.getActiveColor();
+				ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
+				ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+			}
+			return true;
+		}
 		return false;
 	}
 
@@ -101,6 +118,7 @@ public class ItemManipulator extends ItemChromaTool {
 					if (PlayerElementBuffer.instance.addToPlayer(player, e, 1))
 						te.drain(e, 4);
 					PlayerElementBuffer.instance.checkUpgrade(player, true);
+					ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
 					if (player.worldObj.isRemote) {
 						//this.spawnParticles(player, e);
 						ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D);

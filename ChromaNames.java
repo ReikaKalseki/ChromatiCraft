@@ -29,11 +29,12 @@ public class ChromaNames {
 
 	public static final String[] craftingNames = {
 		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror", "chromacraft.rawcrystal",
-		"chromacraft.energycore", "chromacraft.crystaldust"
+		"chromacraft.energycore", "chromacraft.crystaldust", "chromacraft.transformcore", "chromacraft.elementunit"
 	};
 
 	public static final String[] tieredNames = {
-		"chromacraft.chromadust"
+		"chromacraft.chromadust", "chromacraft.auradust", "chromacraft.puredust", "chromacraft.focusdust", "chromacraft.elementdust",
+		"chromacraft.beacondust", "chromacraft.bindingcrystal"
 	};
 
 	public static final String[] storageNames = {

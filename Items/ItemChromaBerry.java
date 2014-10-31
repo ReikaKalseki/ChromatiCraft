@@ -9,12 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -23,29 +29,31 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 	public ItemChromaBerry(int tex) {
 		super(tex);
 	}
-	/*
+
 	@Override
 	public boolean onEntityItemUpdate(EntityItem ei) {
 		int x = MathHelper.floor_double(ei.posX);
 		int y = MathHelper.floor_double(ei.posY);
 		int z = MathHelper.floor_double(ei.posZ);
 		Block b = ei.worldObj.getBlock(x, y, z);
-		if (b == ChromaBlocks.CHROMA.getBlockInstance() || b == ChromaBlocks.ACTIVECHROMA.getBlockInstance()) {
+		if (b == ChromaBlocks.CHROMA.getBlockInstance()) {
 			if (ei.worldObj.getBlockMetadata(x, y, z) == 0) {
-				if (b == ChromaBlocks.CHROMA.getBlockInstance())
-					ei.worldObj.setBlock(x, y, z, ChromaBlocks.ACTIVECHROMA.getBlockInstance());
 				TileEntity te = ei.worldObj.getTileEntity(x, y, z);
 				if (te instanceof TileEntityChroma) {
 					TileEntityChroma tc = (TileEntityChroma)te;
-					if (tc.activate(CrystalElement.elements[ei.getEntityItem().getItemDamage()])) {
+					ItemStack is = ei.getEntityItem();
+					int amt = tc.activate(CrystalElement.elements[is.getItemDamage()], is.stackSize);
+					is.stackSize -= amt;
+					if (is.stackSize <= 0)
 						ei.setDead();
-					}
+					else
+						ei.setEntityItemStack(is);
 				}
 			}
 		}
 		return false;
 	}
-	 */
+
 	/*
 	@Override
 	public boolean hasCustomEntity(ItemStack is) {

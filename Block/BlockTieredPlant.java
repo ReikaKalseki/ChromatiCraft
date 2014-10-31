@@ -32,6 +32,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -156,6 +157,30 @@ public final class BlockTieredPlant extends BlockTieredResource implements IPlan
 	@Override
 	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
+		int n = 1;
+		switch(TieredPlants.list[world.getBlockMetadata(x, y, z)]) {
+		case FLOWER:
+			li.add(ChromaStacks.auraDust.copy());
+			break;
+		case CAVE:
+			n = (1+rand.nextInt(3))*(1+fortune);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.purityDust.copy());
+			break;
+		case LILY:
+			n = 4*(1+fortune);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.elementDust.copy());
+			break;
+		case BULB:
+
+			break;
+		case DESERT:
+			n = (1+fortune*fortune)+2*rand.nextInt(5);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.beaconDust.copy());
+			break;
+		}
 		return li;
 	}
 

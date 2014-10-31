@@ -138,16 +138,16 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		private int berryCount;
 		private CrystalElement element;
 
-		public boolean activate(CrystalElement e) {
-			if (berryCount < 24) {
+		public int activate(CrystalElement e, int amt) {
+			int add = Math.min(24-berryCount, amt);
+			if (add > 0) {
 				if (e == element || element == null) {
-					berryCount++;
+					berryCount += add;
 					element = e;
 					this.update();
-					return true;
 				}
 			}
-			return false;
+			return add;
 		}
 
 		private void update() {
@@ -213,6 +213,17 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 			this.readFromNBT(p.field_148860_e);
 		}
 
+		public boolean isFullyActive() {
+			return berryCount == 24 && element != null;
+		}
+
+		public void clear() {
+			berryCount = 0;
+			element = null;
+			this.update();
+		}
+
+		/*
 		public int getBerryCount() {
 			return berryCount;
 		}
@@ -220,7 +231,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		public void setBerries(int count) {
 			berryCount = count;
 			this.update();
-		}
+		}*/
 
 	}
 

@@ -102,6 +102,10 @@ public class CastingRecipe {
 		return ProgressionManager.instance.isPlayerAtStage(ep, this.getRequiredProgress());
 	}
 
+	protected void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		private final RuneShape runes = new RuneShape();

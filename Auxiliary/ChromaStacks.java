@@ -36,8 +36,33 @@ public class ChromaStacks {
 	public static final ItemStack rawCrystal = ChromaItems.CRAFTING.getStackOfMetadata(4);
 	public static final ItemStack energyCore = ChromaItems.CRAFTING.getStackOfMetadata(5);
 	public static final ItemStack crystalPowder = ChromaItems.CRAFTING.getStackOfMetadata(6);
+	public static final ItemStack transformCore = ChromaItems.CRAFTING.getStackOfMetadata(7);
+	public static final ItemStack elementUnit = ChromaItems.CRAFTING.getStackOfMetadata(8);
 
 	public static final ItemStack chromaDust = ChromaItems.TIERED.getStackOfMetadata(0);
+	public static final ItemStack auraDust = ChromaItems.TIERED.getStackOfMetadata(1);
+	public static final ItemStack purityDust = ChromaItems.TIERED.getStackOfMetadata(2);
+	public static final ItemStack focusDust = ChromaItems.TIERED.getStackOfMetadata(3);
+	public static final ItemStack elementDust = ChromaItems.TIERED.getStackOfMetadata(4);
+	public static final ItemStack beaconDust = ChromaItems.TIERED.getStackOfMetadata(5);
+	public static final ItemStack bindingCrystal = ChromaItems.TIERED.getStackOfMetadata(6);
+
+	public static final ItemStack blackShard = ChromaItems.SHARD.getStackOfMetadata(0);
+	public static final ItemStack redShard = ChromaItems.SHARD.getStackOfMetadata(1);
+	public static final ItemStack greenShard = ChromaItems.SHARD.getStackOfMetadata(2);
+	public static final ItemStack brownShard = ChromaItems.SHARD.getStackOfMetadata(3);
+	public static final ItemStack blueShard = ChromaItems.SHARD.getStackOfMetadata(4);
+	public static final ItemStack purpleShard = ChromaItems.SHARD.getStackOfMetadata(5);
+	public static final ItemStack cyanShard = ChromaItems.SHARD.getStackOfMetadata(6);
+	public static final ItemStack lightGrayShard = ChromaItems.SHARD.getStackOfMetadata(7);
+	public static final ItemStack grayShard = ChromaItems.SHARD.getStackOfMetadata(8);
+	public static final ItemStack pinkShard = ChromaItems.SHARD.getStackOfMetadata(9);
+	public static final ItemStack limeShard = ChromaItems.SHARD.getStackOfMetadata(10);
+	public static final ItemStack yellowShard = ChromaItems.SHARD.getStackOfMetadata(11);
+	public static final ItemStack lightBlueShard = ChromaItems.SHARD.getStackOfMetadata(12);
+	public static final ItemStack magentaShard = ChromaItems.SHARD.getStackOfMetadata(13);
+	public static final ItemStack orangeShard = ChromaItems.SHARD.getStackOfMetadata(14);
+	public static final ItemStack whiteShard = ChromaItems.SHARD.getStackOfMetadata(15);
 
 	public static final ItemStack chargedBlackShard = ChromaItems.SHARD.getStackOfMetadata(16);
 	public static final ItemStack chargedRedShard = ChromaItems.SHARD.getStackOfMetadata(17);

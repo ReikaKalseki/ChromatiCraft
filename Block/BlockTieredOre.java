@@ -51,8 +51,8 @@ public class BlockTieredOre extends BlockTieredResource {
 
 		INFUSED(ProgressStage.CRYSTALS),
 		STONES(ProgressStage.RUNEUSE),
-		PLACEHOLDER2(ProgressStage.LINK),
-		PLACEHOLDER3(ProgressStage.LINK),
+		BINDING(ProgressStage.CHARGE),
+		FOCAL(ProgressStage.MULTIBLOCK),
 		PLACEHOLDER4(ProgressStage.LINK),
 		PLACEHOLDER5(ProgressStage.LINK),
 		PLACEHOLDER6(ProgressStage.LINK),
@@ -90,16 +90,36 @@ public class BlockTieredOre extends BlockTieredResource {
 
 	@Override
 	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
-		int meta = world.getBlockMetadata(x, y, z);
 		ArrayList li = new ArrayList();
-		switch (meta) {
-		case 0:
-			int n = 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune));
+		int n = 1;
+		switch(TieredOres.list[world.getBlockMetadata(x, y, z)]) {
+		case INFUSED:
+			n = 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune));
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.chromaDust.copy());
 			break;
-		case 1:
+		case STONES:
 			li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
+			break;
+		case BINDING:
+			n = 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2));
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.bindingCrystal.copy());
+			break;
+		case FOCAL:
+			n = 1+rand.nextInt(8)*(1+rand.nextInt(1+fortune*2));
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.focusDust.copy());
+			break;
+		case PLACEHOLDER4:
+			break;
+		case PLACEHOLDER5:
+			break;
+		case PLACEHOLDER6:
+			break;
+		case PLACEHOLDER7:
+			break;
+		case PLACEHOLDER8:
 			break;
 		}
 		return li;
