@@ -54,7 +54,6 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -90,11 +89,19 @@ public enum Chromabilities {
 
 	public static final Chromabilities[] abilities = values();
 
-	public void apply(EntityPlayer ep) {
-		if (ReikaRandomHelper.doWithChance(5)) {
-			ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
-			PlayerElementBuffer.instance.removeFromPlayer(ep, use);
+	public ElementTagCompound getTickCost() {
+		if (tickBased) {
+			return AbilityHelper.instance.getUsageElementsFor(this);
 		}
+		switch(this) {
+		case HEALTH:
+			return AbilityHelper.instance.getUsageElementsFor(this);
+		default:
+			return null;
+		}
+	}
+
+	public void apply(EntityPlayer ep) {
 		switch(this) {
 		case MAGNET:
 			this.attractItemsAndXP(ep, 24);
@@ -120,6 +127,8 @@ public enum Chromabilities {
 
 		ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.ABILITY);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
+		if (this == HEALTH)
+			use.scale(5);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = this.enabledOn(ep);
 		this.setToPlayer(ep, !flag);
@@ -152,7 +161,7 @@ public enum Chromabilities {
 				this.launchFireball(ep, data);
 				break;
 			case HEALTH:
-				this.setPlayerMaxHealth(ep, data);
+				this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
 				break;
 			default:
 				break;
@@ -178,6 +187,7 @@ public enum Chromabilities {
 			Iterator<String> it = abilities.func_150296_c().iterator();
 			while (it.hasNext()) {
 				String n = it.next();
+				//ReikaJavaLibrary.pConsole(n+":"+abilities.getBoolean(n), Side.SERVER);
 				if (abilities.getBoolean(n)) {
 					Chromabilities c = tagMap.get(n);
 					li.add(c);
@@ -215,6 +225,20 @@ public enum Chromabilities {
 
 	public void give(EntityPlayer ep) {
 		this.setToPlayer(ep, false);
+	}
+
+	public void removeFromPlayer(EntityPlayer ep) {
+		this.setToPlayer(ep, false);
+		switch(this) {
+		case REACH:
+			this.setReachDistance(ep, -1);
+			break;
+		case HEALTH:
+			this.setPlayerMaxHealth(ep, 0);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private static void attractItemsAndXP(EntityPlayer ep, int range) {

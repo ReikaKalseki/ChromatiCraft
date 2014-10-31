@@ -89,9 +89,9 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 						}
 					}
 				}
-			}
-			else {
-				ei.lifespan = Integer.MAX_VALUE;
+				else {
+					ei.lifespan = Integer.MAX_VALUE;
+				}
 			}
 		}
 		return false;
