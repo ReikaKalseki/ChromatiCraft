@@ -117,6 +117,8 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 			return true;
 		if (f.equals(FluidRegistry.getFluid("experience")))
 			return true;
+		if (f.equals(FluidRegistry.getFluid("xpjuice")))
+			return true;
 		return false;
 	}
 
