@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -156,6 +157,9 @@ public class ChromatiPackets implements IPacketHandler {
 			break;
 		case ABILITYCHOOSE:
 			((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);
+			break;
+		case BUFFERINC:
+			PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
 			break;
 		}
 	}

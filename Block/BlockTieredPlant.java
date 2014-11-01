@@ -19,6 +19,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -42,6 +43,7 @@ import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -155,12 +157,17 @@ public final class BlockTieredPlant extends BlockTieredResource implements IPlan
 	}
 
 	@Override
-	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
+	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList<ItemStack> li = new ArrayList();
 		int n = 1;
+		if (ItemFetcher.isPlayerHoldingBedrockPick(player))
+			fortune = 5;
+		fortune = Math.max(fortune, EnchantmentHelper.getLootingModifier(player));
 		switch(TieredPlants.list[world.getBlockMetadata(x, y, z)]) {
 		case FLOWER:
-			li.add(ChromaStacks.auraDust.copy());
+			n = 1+fortune;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.auraDust.copy());
 			break;
 		case CAVE:
 			n = (1+rand.nextInt(3))*(1+fortune);

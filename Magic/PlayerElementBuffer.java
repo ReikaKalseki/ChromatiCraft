@@ -9,22 +9,45 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.HashMap;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 
 public class PlayerElementBuffer {
 
 	public static final PlayerElementBuffer instance = new PlayerElementBuffer();
 
-	//private final HashMap<String, ElementTagCompound> data = new HashMap();
+	private final HashMap<EntityPlayer, Integer> recentUpgrades = new HashMap();
 
 	private static final String NBT_TAG = "CrystalBuffer";
 
 	private PlayerElementBuffer() {
 
+	}
+
+	public float getAndDecrUpgradeTick(EntityPlayer ep) {
+		Integer val = recentUpgrades.get(ep);
+		if (val == null)
+			return 0;
+		else {
+			int tick = val.intValue();
+			tick--;
+			if (tick == 0) {
+				recentUpgrades.remove(ep);
+			}
+			else {
+				recentUpgrades.put(ep, tick);
+			}
+			return tick/2000F;
+		}
 	}
 
 	private NBTTagCompound getTag(EntityPlayer ep) {
@@ -105,8 +128,19 @@ public class PlayerElementBuffer {
 		boolean flag = val > prev;
 		if (flag) {
 			ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
+			recentUpgrades.put(ep, 2000);
+			if (ep instanceof EntityPlayerMP)
+				this.sendUpgradePacket((EntityPlayerMP)ep);
 		}
 		return flag;
+	}
+
+	private void sendUpgradePacket(EntityPlayerMP ep) {
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERINC.ordinal(), ep, 0);
+	}
+
+	public void upgradePlayerOnClient(EntityPlayer ep) {
+		recentUpgrades.put(ep, 2000);
 	}
 
 	public boolean canPlayerAccept(EntityPlayer ep, CrystalElement e, int amt) {

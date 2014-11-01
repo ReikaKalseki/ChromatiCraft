@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
+import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
+import Reika.ChromatiCraft.GUI.GuiItemFabricator;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
@@ -42,6 +44,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
@@ -81,6 +84,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerCrystalFurnace(player, (TileEntityCrystalFurnace) te);
 			if (te instanceof TileEntityItemCollector)
 				return new ContainerItemCollector(player, (TileEntityItemCollector) te);
+			if (te instanceof TileEntityItemFabricator)
+				return new ContainerItemFabricator(player, (TileEntityItemFabricator) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -127,6 +132,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiCrystalFurnace(player, (TileEntityCrystalFurnace) te);
 			if (te instanceof TileEntityItemCollector)
 				return new GuiItemCollector(player, (TileEntityItemCollector) te);
+			if (te instanceof TileEntityItemFabricator)
+				return new GuiItemFabricator(player, (TileEntityItemFabricator) te);
 
 
 			if (te instanceof OneSlotMachine) {

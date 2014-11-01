@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
@@ -137,7 +138,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 				for (EntityLivingBase e : li) {
 					boolean attack = !e.isDead && e.getHealth() > 0;
 					if (e instanceof EntityPlayer) {
-						attack = attack && !((EntityPlayer)e).capabilities.isCreativeMode;
+						EntityPlayer ep = (EntityPlayer)e;
+						attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
 					}
 					if (attack)
 						this.attackEntity(e);

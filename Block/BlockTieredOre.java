@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.RotaryCraft.API.ItemFetcher;
 
 public class BlockTieredOre extends BlockTieredResource {
 
@@ -89,9 +90,11 @@ public class BlockTieredOre extends BlockTieredResource {
 	}
 
 	@Override
-	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune) {
+	public Collection<ItemStack> getHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
 		int n = 1;
+		if (ItemFetcher.isPlayerHoldingBedrockPick(player))
+			fortune = 5;
 		switch(TieredOres.list[world.getBlockMetadata(x, y, z)]) {
 		case INFUSED:
 			n = 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune));
@@ -136,7 +139,7 @@ public class BlockTieredOre extends BlockTieredResource {
 	}
 
 	@Override
-	public Collection<ItemStack> getNoHarvestResources(World world, int x, int y, int z, int fortune) {
+	public Collection<ItemStack> getNoHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
 		li.addAll(Blocks.stone.getDrops(world, x, y, z, 0, fortune));
 		return li;

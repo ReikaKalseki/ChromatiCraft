@@ -21,29 +21,56 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
+
+	public int progress = 0;
 
 	private static class Recipe {
 
 		private final ItemStack output;
 		private final ElementTagCompound energy;
+		private final int duration;
 
 		private Recipe(ElementTagCompound tag, ItemStack is) {
 			energy = tag;
 			output = is;
+			duration = this.duration(energy);
+		}
+
+		private static int duration(ElementTagCompound energy) {
+			return ReikaMathLibrary.roundUpToX(20, (int)Math.sqrt(energy.getTotalEnergy()));
 		}
 	}
 
 	private Recipe recipe = null;
-	private int craftingTick;
+	private int craftingTick = 0;
 
-	public void setRecipe(ItemStack out) {
-		ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
-		if (tag != null) {
-			recipe = new Recipe(tag, out);
+	private void setRecipe(ItemStack out) {
+		if (out == null) {
+			recipe = null;
+			this.onRecipeChanged();
 		}
+		else if (craftingTick == 0) {
+			ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
+			if (tag != null) {
+				recipe = new Recipe(tag, out);
+				this.onRecipeChanged();
+			}
+		}
+	}
+
+	private void onRecipeChanged() {
+		craftingTick = recipe != null ? recipe.duration : 0;
+	}
+
+	public ElementTagCompound getCurrentRequirements() {
+		return recipe != null ? recipe.energy.copy() : null;
 	}
 
 	@Override
@@ -54,18 +81,20 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-
+		//ReikaJavaLibrary.pConsole(FabricationRecipes.recipes().getItemsFabricableWith(ElementTagCompound.getUniformTag(5000)));
 		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
-
-		if (recipe != null) {
-
-		}
-
-		if (craftingTick > 0) {
+		//ReikaJavaLibrary.pConsole(recipe.energy+" <"+craftingTick+"> "+energy, Side.SERVER);
+		if (recipe != null && energy.containsAtLeast(recipe.energy) && craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);
 		}
+	}
+
+	@Override
+	public void markDirty() {
+		super.markDirty();
+		this.setRecipe(inv[0]);
 	}
 
 	private void checkAndRequest() {
@@ -80,8 +109,40 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	}
 
 	private void onCraftingTick(World world, int x, int y, int z) {
-
+		if (world.isRemote)
+			this.craftingFX(world, x, y, z);
 		craftingTick--;
+		progress = recipe.duration-craftingTick;
+		if (craftingTick == 0) {
+			if (this.canCraft()) {
+				this.craft(world, x, y, z);
+			}
+			else {
+				craftingTick = 5;
+			}
+		}
+	}
+
+	private boolean canCraft() {
+		if (inv[1] == null)
+			return true;
+		return ReikaItemHelper.matchStacks(inv[1], recipe.output) && inv[1].stackSize+recipe.output.stackSize <= inv[1].getMaxStackSize();
+	}
+
+	private void craft(World world, int x, int y, int z) {
+		ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, 1);
+		energy.subtract(recipe.energy);
+		progress = 0;
+		this.markDirty();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void craftingFX(World world, int x, int y, int z) {
+
+	}
+
+	public int getProgressScaled(int a) {
+		return recipe != null ? a * progress / recipe.duration : 0;
 	}
 
 	@Override
@@ -96,7 +157,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	@Override
 	public int maxThroughput() {
-		return 20;
+		return 500;
 	}
 
 	@Override
@@ -126,7 +187,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	@Override
 	public int getMaxStorage() {
-		return 8000;
+		return 200000;
 	}
 
 	@Override
@@ -156,9 +217,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		double ang = Math.toRadians(e.ordinal()*22.5D);
-		double r = 1;
+		double r = 1.75;
 		double dx = r*Math.sin(ang);
-		double dy = 1;
+		double dy = 0.55;
 		double dz = r*Math.cos(ang);
 		return new ImmutableTriple(dx, dy, dz);
 	}

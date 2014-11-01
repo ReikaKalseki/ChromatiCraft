@@ -19,6 +19,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.FakePlayer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
@@ -94,6 +95,8 @@ public class ProgressionManager {
 	}
 
 	public boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
+		if (ep instanceof FakePlayer)
+			return false;
 		Collection<ProgressStage> c = progressMap.getParents(s);
 		for (ProgressStage s2 : c) {
 			if (!this.isPlayerAtStage(ep, s2))
@@ -104,6 +107,8 @@ public class ProgressionManager {
 	}
 
 	public boolean setPlayerStage(EntityPlayer ep, int val, boolean set) {
+		if (ep instanceof FakePlayer)
+			return false;
 		if (val < 0 || val >= ProgressStage.values().length)
 			return false;
 		this.setPlayerStage(ep, ProgressStage.values()[val], set);
@@ -111,6 +116,8 @@ public class ProgressionManager {
 	}
 
 	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set) {
+		if (ep instanceof FakePlayer)
+			return;
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagInt(s.ordinal());
 		if (set) {

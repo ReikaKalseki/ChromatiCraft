@@ -42,8 +42,13 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 				if (te instanceof TileEntityChroma) {
 					TileEntityChroma tc = (TileEntityChroma)te;
 					ItemStack is = ei.getEntityItem();
+					int df = is.stackSize;
+					//ReikaJavaLibrary.pConsole("pre "+is.stackSize, Side.SERVER);
 					int amt = tc.activate(CrystalElement.elements[is.getItemDamage()], is.stackSize);
-					is.stackSize -= amt;
+					//ReikaJavaLibrary.pConsole(amt+" from "+is.stackSize, Side.SERVER);
+					if (!ei.worldObj.isRemote)
+						is.stackSize -= amt;
+					//ReikaJavaLibrary.pConsole(ei.age+":"+amt+", "+df+">"+is.stackSize, Side.SERVER);
 					if (is.stackSize <= 0)
 						ei.setDead();
 					else

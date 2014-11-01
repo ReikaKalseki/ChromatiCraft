@@ -39,6 +39,12 @@ public class RuneShape {
 		return runes.get(new Coordinate(x, y, z));
 	}
 
+	public void place(World world, int x, int y, int z) {
+		for (Coordinate c : runes.keySet()) {
+			world.setBlock(c.xCoord+x, c.yCoord+y, c.zCoord+z, ChromaBlocks.RUNE.getBlockInstance(), runes.get(c).ordinal(), 3);
+		}
+	}
+
 	public boolean matchAt(World world, int x, int y, int z, int xref, int yref, int zref) {
 		for (Coordinate c : runes.keySet()) {
 			int dx = x+c.xCoord-xref;

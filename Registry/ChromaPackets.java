@@ -19,7 +19,8 @@ public enum ChromaPackets {
 	PLANTUPDATE(),
 	ABILITY(2),
 	PYLONATTACK(3),
-	ABILITYCHOOSE(1);
+	ABILITYCHOOSE(1),
+	BUFFERINC(1);
 
 	public final int numInts;
 	public final PacketTypes type;

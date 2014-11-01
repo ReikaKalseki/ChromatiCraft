@@ -45,7 +45,7 @@ public class ExplorationMonitor implements TickHandler {
 					if (ps != null) {
 						for (int i = 0; i < ps.length; i++) {
 							ProgressStage p = ps[i];
-							ProgressionManager.instance.setPlayerStage(ep, p, true);
+							ProgressionManager.instance.stepPlayerTo(ep, p);
 						}
 					}
 				}

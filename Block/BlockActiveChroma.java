@@ -146,6 +146,9 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 					element = e;
 					this.update();
 				}
+				else {
+					add = 0;
+				}
 			}
 			return add;
 		}

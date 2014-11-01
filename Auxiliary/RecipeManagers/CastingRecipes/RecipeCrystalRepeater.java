@@ -19,22 +19,22 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 	public RecipeCrystalRepeater(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -2, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 0, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 2, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 4, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 4, -2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 4, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 4, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 4, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 2, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), 0, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -2, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(15), -4, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, -2);
 
 		this.addRune(CrystalElement.BLACK, 0, -1, 5);
 		this.addRune(CrystalElement.BLACK, 0, -1, -5);

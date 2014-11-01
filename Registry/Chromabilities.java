@@ -70,7 +70,8 @@ public enum Chromabilities {
 	SHIELD(Phase.END, false),
 	FIREBALL(null, false),
 	COMMUNICATE(Phase.START, false),
-	HEALTH(null, true);
+	HEALTH(null, true),
+	PYLON(null, false);
 
 	public final boolean tickBased;
 	public final Phase tickPhase;
@@ -95,7 +96,10 @@ public enum Chromabilities {
 		}
 		switch(this) {
 		case HEALTH:
+		case PYLON:
 			return AbilityHelper.instance.getUsageElementsFor(this);
+		case REACH:
+			return AbilityHelper.instance.getUsageElementsFor(this).scale(0.5F);
 		default:
 			return null;
 		}
@@ -130,7 +134,7 @@ public enum Chromabilities {
 		if (this == HEALTH)
 			use.scale(5);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
-		boolean flag = this.enabledOn(ep);
+		boolean flag = this.enabledOn(ep) || this.isPureEventDriven();
 		this.setToPlayer(ep, !flag);
 
 		if (tickBased) {
@@ -166,6 +170,18 @@ public enum Chromabilities {
 			default:
 				break;
 			}
+		}
+	}
+
+	private boolean isPureEventDriven() {
+		switch(this) {
+		case SONIC:
+		case SHIFT:
+		case HEAL:
+		case FIREBALL:
+			return true;
+		default:
+			return false;
 		}
 	}
 
@@ -205,6 +221,8 @@ public enum Chromabilities {
 		}
 		abilities.setBoolean(this.getNBTName(), set);
 		nbt.setTag(NBT_TAG, abilities);
+		if (ep instanceof EntityPlayerMP)
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
 	private String getNBTName() {

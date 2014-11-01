@@ -142,6 +142,15 @@ public final class ElementTagCompound {
 		return this;
 	}
 
+	public ElementTagCompound square() {
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			amt *= amt;
+			this.setTag(e, amt);
+		}
+		return this;
+	}
+
 	public ElementTagCompound clear() {
 		data.clear();
 		return this;

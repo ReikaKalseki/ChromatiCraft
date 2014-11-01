@@ -47,6 +47,8 @@ public class ChromabilityHandler implements TickHandler {
 				}
 			}
 		}
+		//for (Chromabilities c : Chromabilities.values())
+		//	c.give(ep);
 	}
 
 	@Override

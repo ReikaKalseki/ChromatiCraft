@@ -62,7 +62,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		this.dropSlot();
 		inv[0] = item != null ? ReikaItemHelper.getSizedItemStack(item, 1) : null;
 		this.updateItem();
-		item.stackSize--;
+		if (item != null)
+			item.stackSize--;
 		return item;
 	}
 

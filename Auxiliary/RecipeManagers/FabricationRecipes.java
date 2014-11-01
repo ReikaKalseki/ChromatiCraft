@@ -32,6 +32,11 @@ public class FabricationRecipes {
 
 	private FabricationRecipes() {
 		data = ItemMagicRegistry.instance.getMap();
+		for (ElementTagCompound tag : data.values()) {
+			tag.square();
+			tag.square();
+			tag.scale(100);
+		}
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {
@@ -54,7 +59,8 @@ public class FabricationRecipes {
 	}
 
 	private ElementTagCompound getItemCost(KeyedItemStack is) {
-		return data.get(is).copy().scale(1/SCALE);
+		ElementTagCompound tag = data.get(is);
+		return tag != null ? tag.copy().scale(1/SCALE) : null;
 	}
 
 }

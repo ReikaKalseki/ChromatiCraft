@@ -185,8 +185,7 @@ public class RecipesCastingTable {
 			if (list != null)
 				li.addAll(list);
 		}
-		for (int i = 0; i < li.size(); i++) {
-			CastingRecipe r = li.get(i);
+		for (CastingRecipe r : li) {
 			if (r.match(table))
 				return r;
 		}

@@ -117,6 +117,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
+		//ChromaStructures.getCastingLevelOne(world, x, y-1, z).place();
+
 		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
 	}
 
@@ -294,7 +296,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
 		if ((b.matchInWorld() || b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.TEMPLE)) {
 			hasStructure = true;
-			ProgressionManager.instance.setPlayerStage(this.getPlacer(), ProgressStage.MULTIBLOCK, true);
+			ProgressionManager.instance.stepPlayerTo(this.getPlacer(), ProgressStage.MULTIBLOCK);
 			if ((b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
 				hasStructure2 = true;
 				if (b3.matchInWorld() && this.getTier().isAtLeast(RecipeType.PYLON)) {
@@ -403,7 +405,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			count += activeRecipe.getOutput().stackSize;
 			if (activeRecipe instanceof PylonRecipe) {
 				energy.subtract(((PylonRecipe)activeRecipe).getRequiredAura());
-				ProgressionManager.instance.setPlayerStage(this.getPlacer(), ProgressStage.LINK, true);
+				ProgressionManager.instance.stepPlayerTo(this.getPlacer(), ProgressStage.LINK);
 			}
 			recipe = this.getValidRecipe();
 		}
