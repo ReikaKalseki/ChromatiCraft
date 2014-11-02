@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.TileEntityTeleportationPump;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -160,6 +161,9 @@ public class ChromatiPackets implements IPacketHandler {
 			break;
 		case BUFFERINC:
 			PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
+			break;
+		case TELEPUMP:
+			((TileEntityTeleportationPump)tile).setTargetedFluid(data[0]);
 			break;
 		}
 	}

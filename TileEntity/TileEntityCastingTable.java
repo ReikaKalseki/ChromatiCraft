@@ -394,7 +394,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				for (WorldLocation loc : map.keySet()) {
 					TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
 					//ReikaJavaLibrary.pConsole(te+":"+te.getStackInSlot(0), Side.SERVER);
-					te.setInventorySlotContents(0, null);
+					if (te != null)
+						te.setInventorySlotContents(0, null);
 					te.syncAllData(true);
 				}
 			}

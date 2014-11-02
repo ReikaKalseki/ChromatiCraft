@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
+import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.GUI.GuiItemFabricator;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
+import Reika.ChromatiCraft.GUI.GuiTelePump;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
@@ -48,6 +50,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.TileEntityTeleportationPump;
 import Reika.DragonAPI.Base.ContainerBasicStorage;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Base.OneSlotContainer;
@@ -86,6 +89,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerItemCollector(player, (TileEntityItemCollector) te);
 			if (te instanceof TileEntityItemFabricator)
 				return new ContainerItemFabricator(player, (TileEntityItemFabricator) te);
+			if (te instanceof TileEntityTeleportationPump)
+				return new ContainerTelePump(player, (TileEntityTeleportationPump) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -134,7 +139,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiItemCollector(player, (TileEntityItemCollector) te);
 			if (te instanceof TileEntityItemFabricator)
 				return new GuiItemFabricator(player, (TileEntityItemFabricator) te);
-
+			if (te instanceof TileEntityTeleportationPump)
+				return new GuiTelePump(player, (TileEntityTeleportationPump) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

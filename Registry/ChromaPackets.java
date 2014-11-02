@@ -20,7 +20,8 @@ public enum ChromaPackets {
 	ABILITY(2),
 	PYLONATTACK(3),
 	ABILITYCHOOSE(1),
-	BUFFERINC(1);
+	BUFFERINC(1),
+	TELEPUMP(1);
 
 	public final int numInts;
 	public final PacketTypes type;
