@@ -97,6 +97,8 @@ public class ProgressionManager {
 	public boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
 		if (ep instanceof FakePlayer)
 			return false;
+		if (this.isPlayerAtStage(ep, s))
+			return false;
 		Collection<ProgressStage> c = progressMap.getParents(s);
 		for (ProgressStage s2 : c) {
 			if (!this.isPlayerAtStage(ep, s2))
@@ -120,22 +122,30 @@ public class ProgressionManager {
 			return;
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagInt(s.ordinal());
+		boolean flag = false;
 		if (set) {
-			if (!li.tagList.contains(tag))
+			if (!li.tagList.contains(tag)) {
+				flag = true;
 				li.appendTag(tag);
-		}
-		else {
-			li.tagList.remove(tag);
-			Collection<ProgressStage> c = progressMap.getRecursiveChildren(s);
-			for (ProgressStage s2 : c) {
-				NBTBase tag2 = new NBTTagInt(s2.ordinal());
-				li.tagList.remove(tag2);
 			}
 		}
-		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
-		if (ep instanceof EntityPlayerMP)
-			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-		this.updateChunks(ep);
+		else {
+			if (li.tagList.contains(tag)) {
+				flag = true;
+				li.tagList.remove(tag);
+				Collection<ProgressStage> c = progressMap.getRecursiveChildren(s);
+				for (ProgressStage s2 : c) {
+					NBTBase tag2 = new NBTTagInt(s2.ordinal());
+					li.tagList.remove(tag2);
+				}
+			}
+		}
+		if (flag) {
+			ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
+			if (ep instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			this.updateChunks(ep);
+		}
 	}
 
 	public void resetPlayerProgression(EntityPlayer ep) {

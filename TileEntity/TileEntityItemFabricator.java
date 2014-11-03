@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -21,6 +22,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -50,19 +52,21 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	private Recipe recipe = null;
 	private int craftingTick = 0;
+	private EntityItem entity;
 
 	private void setRecipe(ItemStack out) {
 		if (out == null) {
 			recipe = null;
 			this.onRecipeChanged();
 		}
-		else if (craftingTick == 0) {
+		else if (craftingTick >= 0) {
 			ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
 			if (tag != null) {
 				recipe = new Recipe(tag, out);
 				this.onRecipeChanged();
 			}
 		}
+		entity = recipe != null ? new InertItem(worldObj, recipe.output) : null;
 	}
 
 	private void onRecipeChanged() {
@@ -95,6 +99,12 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	public void markDirty() {
 		super.markDirty();
 		this.setRecipe(inv[0]);
+	}
+
+	@Override
+	public void onFirstTick(World world, int x, int y, int z) {
+		this.markDirty();
+		//ReikaJavaLibrary.pConsole(craftingTick+":"+inv[0]+">"+recipe+","+entity);
 	}
 
 	private void checkAndRequest() {
@@ -143,6 +153,10 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	public int getProgressScaled(int a) {
 		return recipe != null ? a * progress / recipe.duration : 0;
+	}
+
+	public ItemStack getRecipe() {
+		return recipe != null ? recipe.output.copy() : null;
 	}
 
 	@Override
@@ -222,6 +236,10 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		double dy = 0.55;
 		double dz = r*Math.cos(ang);
 		return new ImmutableTriple(dx, dy, dz);
+	}
+
+	public EntityItem getEntityItem() {
+		return entity;
 	}
 
 }

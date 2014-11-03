@@ -57,7 +57,8 @@ public class ChromaItemRenderer implements IItemRenderer {
 			if (machine.hasNBTVariants() && item.stackTagCompound != null) {
 				((NBTTile)te).setDataFromItemStackTag(item);
 			}
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, 0.0F);
+			boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, entity ? -1 : 0);
 		}
 		else {
 			ReikaTextureHelper.bindTerrainTexture();

@@ -87,6 +87,7 @@ public class RecipesCastingTable {
 
 		for (int i = 0; i < 16; i++) {
 			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i), i));
+			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 16, i), i+16));
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack block = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 8, 0);
@@ -151,7 +152,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalFocusRecipe(ChromaStacks.crystalFocus, ChromaStacks.primaryCluster));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, ChromaStacks.getChargedShard(CrystalElement.WHITE)));
 
-		this.addRecipe(new RecipeCrystalRepeater(ReikaItemHelper.getSizedItemStack(ChromaTiles.REPEATER.getCraftedProduct(), 8), ChromaStacks.crystalCore));
+		this.addRecipe(new RecipeCrystalRepeater(ReikaItemHelper.getSizedItemStack(ChromaTiles.REPEATER.getCraftedProduct(), 16), ChromaStacks.crystalCore));
 
 		this.addRecipe(new TransitionRecipe(ChromaItems.TRANSITION.getStackOf(), ChromaStacks.transformCore));
 		this.addRecipe(new BreakerRecipe(ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.energyCore));

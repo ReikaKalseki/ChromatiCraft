@@ -117,9 +117,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		//ChromaStructures.getCastingLevelOne(world, x, y-1, z).place();
+		//ChromaStructures.getCastingLevelTwo(world, x, y-1, z).place();
 
-		//ReikaJavaLibrary.pConsole(energy, Side.SERVER);
+		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
 
 	@Override

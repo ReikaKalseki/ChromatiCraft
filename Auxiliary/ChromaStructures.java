@@ -109,7 +109,8 @@ public class ChromaStructures {
 			for (int k = 3; k <= 5; k++) {
 				int dx = x+k*dir.offsetX;
 				int dz = z+k*dir.offsetZ;
-				array.setBlock(dx, y, dz, b, 0);
+				array.addBlock(dx, y, dz, b, 0);
+				//array.addBlock(dx, y, dz, ChromaBlocks.RUNE.getBlockInstance());
 			}
 
 			int dx = x+dir.offsetX*6;
@@ -192,7 +193,9 @@ public class ChromaStructures {
 			for (int k = -5; k <= 5; k++) {
 				int dx = x+i;
 				int dz = z+k;
-				array.setBlock(dx, y, dz, b, 0);
+				array.remove(dx, y, dz);
+				array.addBlock(dx, y, dz, b, 0);
+				array.addBlock(dx, y, dz, ChromaBlocks.RUNE.getBlockInstance());
 			}
 		}
 

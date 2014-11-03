@@ -88,7 +88,8 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 			ForgeDirection dir = dirs[i];
 			TileEntity te = this.getAdjacentTileEntity(dir);
 			if (this.canAccelerate(te)) {
-				for (int k = 0; k < this.getAccelFromTier(tier) && !te.isInvalid(); k++) {
+				int max = this.getAccelFromTier(tier);
+				for (int k = 0; k < max && !te.isInvalid(); k++) {
 					te.updateEntity();
 					if (System.nanoTime()-time >= MAX_LAG)
 						return;

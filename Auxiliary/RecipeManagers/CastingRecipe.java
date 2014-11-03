@@ -119,6 +119,8 @@ public class CastingRecipe {
 		}
 
 		protected boolean matchRunes(World world, int x, int y, int z) {
+			//runes.place(world, x, y, z);
+			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
 			return runes.matchAt(world, x, y, z, 0, 0, 0);
 		}
 
@@ -195,9 +197,13 @@ public class CastingRecipe {
 			ItemStack ctr = this.getMainInput();
 			if (ReikaItemHelper.matchStacks(main, ctr) && ItemStack.areItemStackTagsEqual(main, ctr)) {
 				HashMap<List<Integer>, TileEntityItemStand> stands = table.getOtherStands();
+				if (stands.size() != 24)
+					return false;
+				//ReikaJavaLibrary.pConsole(stands.keySet());
 				for (List key : stands.keySet()) {
 					ItemStack at = (stands.get(key).getStackInSlot(0));
 					ItemStack is = inputs.get(key);
+					//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput(), this.getOutput().getDisplayName().endsWith("ter"));
 					if (!ReikaItemHelper.matchStacks(at, is) || !ItemStack.areItemStackTagsEqual(at, is)) {
 						//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput());
 						return false;

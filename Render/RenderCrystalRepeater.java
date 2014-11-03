@@ -74,7 +74,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		else if (!tile.hasWorldObj()) {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_LIGHTING);
-			ReikaRenderHelper.disableEntityLighting();
+			if (par8 < 0)
+				ReikaRenderHelper.disableEntityLighting();
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glPushMatrix();
 			RenderBlocks.getInstance().renderBlockAsItem(ChromaBlocks.PYLON.getBlockInstance(), 1, 1);
@@ -105,8 +106,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			BlendMode.DEFAULT.apply();
 
 			GL11.glDisable(GL11.GL_BLEND);
+			if (par8 < 0)
+				ReikaRenderHelper.enableEntityLighting();
 			RenderHelper.enableStandardItemLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			//GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 
