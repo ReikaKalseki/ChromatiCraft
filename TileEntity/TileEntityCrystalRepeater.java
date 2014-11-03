@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -35,12 +37,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSendRange() {
-		return 16;
+		return 24;
 	}
 
 	@Override
 	public int getReceiveRange() {
-		return 16;
+		return 24;
 	}
 
 	@Override
@@ -97,6 +99,19 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public CrystalElement getActiveColor() {
 		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
+	}
+
+	public CrystalTransmitter getEnergySource() {
+		CrystalElement e = this.getActiveColor();
+		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
+	}
+
+	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
+		if (!worldObj.isRemote) {
+			if (!player.capabilities.isCreativeMode && rand.nextInt(20) == 0)
+				p.attackEntityByProxy(player, this);
+			CrystalNetworker.instance.makeRequest(this, this.getActiveColor(), 15000, this.getReceiveRange());
+		}
 	}
 
 }

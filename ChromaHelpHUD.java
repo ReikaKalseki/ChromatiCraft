@@ -10,17 +10,15 @@
 package Reika.ChromatiCraft;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
-import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
-import Reika.ChromatiCraft.Auxiliary.ChromaHelpData.HelpEntry;
-import Reika.DragonAPI.Instantiable.Data.CoordinateData;
+import Reika.ChromatiCraft.Auxiliary.ChromaHelpData.HelpKey;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -32,10 +30,13 @@ public class ChromaHelpHUD {
 
 	public static ChromaHelpHUD instance = new ChromaHelpHUD();
 
-	private int roll = 0;
-	private int rollv = 0;
+	private int rollx;
+	private int rolly;
 
-	private static final int SIZE = 30;
+	private MovingObjectPosition last_look;
+
+	private static final int xSize = 64;
+	private static final int ySize = 128;
 
 	private ChromaHelpHUD() {
 
@@ -43,85 +44,70 @@ public class ChromaHelpHUD {
 
 	@SubscribeEvent
 	public void renderHUD(RenderGameOverlayEvent evt) {
-		this.renderHelpIcon(evt);
-		this.checkAndRenderBlockHUD(evt);
+		if (evt.type == ElementType.HELMET) {
+			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlockClient(5, false);
 
-		if (this.isToggleable() && Mouse.isButtonDown(0) && this.isCursorInExpandButton()) {
-			this.toggle();
-		}
-
-		if (roll > 0) {
-			roll += rollv;
-		}
-
-		if (roll <= 0) {
-			rollv = 0;
-			roll = 0;
-		}
-		else if (roll >= SIZE) {
-			rollv = 0;
-			roll = SIZE;
+			if (look != null) {
+				if (this.isDifferent(look)) {
+					this.closePanel();
+				}
+				else {
+					this.openPanel();
+					HelpKey key = ChromaHelpData.ChromaHelpKeys.instance.getKey(Minecraft.getMinecraft().theWorld, look);
+					if (key != null) {
+						this.renderPanel();
+						if (this.isPanelOpen()) {
+							this.renderText(key);
+						}
+					}
+				}
+			}
+			last_look = look;
 		}
 
 		ReikaTextureHelper.bindHUDTexture();
 	}
 
-	private boolean isCursorInExpandButton() {
-		return false;
-	}
-
-	private boolean isToggleable() {
-		return rollv == 0;
-	}
-
-	private void toggle() {
-		rollv = roll > 0 ? -2 : 2;
-	}
-
-	private void renderHelpIcon(RenderGameOverlayEvent evt) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/helphud3.png");
+	private void renderPanel() {
 		Tessellator v5 = Tessellator.instance;
-		int a = 0;
-		int b = 0;
-		int w = 128;
-		int h = 10;
-
-		v5.startDrawingQuads();
-		v5.addVertexWithUV(a, b+h, 0, 0, 0.078125);
-		v5.addVertexWithUV(a+w, b+h, 0, 1, 0.078125);
-		v5.addVertexWithUV(a+w, b, 0, 1, 0);
-		v5.addVertexWithUV(a, b, 0, 0, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
+		v5.setColorRGBA_I(0xffffff, 255);
+		int dx = Minecraft.getMinecraft().displayWidth/2-rollx-3;
+		int dy = Minecraft.getMinecraft().displayHeight/4-ySize/2;
+		v5.addVertex(dx, dy, 0);
+		v5.addVertex(dx+rollx, dy, 0);
+		v5.addVertex(dx+rollx, dy+rolly, 0);
+		v5.addVertex(dx, dy+rolly, 0);
 		v5.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private void renderHelpBar(HelpEntry he, RenderGameOverlayEvent evt) {
-		String s = he.getTitle();
-
+	private void renderText(HelpKey key) {
 
 	}
 
-	private boolean isExpanded() {
-		return roll == SIZE;
+	private boolean isPanelOpen() {
+		return rollx == xSize && rolly == ySize;
 	}
 
-	private void checkAndRenderBlockHUD(RenderGameOverlayEvent evt) {
-		Minecraft mc = Minecraft.getMinecraft();
-		EntityPlayer ep = mc.thePlayer;
-		FontRenderer f = mc.fontRenderer;
+	private void openPanel() {
+		if (rollx < xSize)
+			rollx++;
+		else if (rolly < ySize)
+			rolly++;
+	}
 
-		MovingObjectPosition hit = ReikaPlayerAPI.getLookedAtBlockClient(4, false);
-		if (hit != null) {
-			CoordinateData dat = new CoordinateData(ep.worldObj, hit);
-			HelpEntry help = ChromaHelpData.getEntryFor(ep, dat);
-			if (help != null) {
-				if (this.isExpanded()) {
-					help.render(evt);
-				}
-				else {
-					this.renderHelpBar(help, evt);
-				}
-			}
-		}
+	private void closePanel() {
+		rollx = rolly = 0;
+	}
+
+	private boolean isDifferent(MovingObjectPosition look) {
+		if (look == last_look)
+			return false;
+		if (look == null || last_look == null)
+			return true;
+		return look.blockX != last_look.blockX || look.blockY != last_look.blockY || look.blockZ != last_look.blockZ;
 	}
 
 }

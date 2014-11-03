@@ -31,7 +31,9 @@ import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.CrystalSource;
+import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -141,8 +143,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 						EntityPlayer ep = (EntityPlayer)e;
 						attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
 					}
-					if (attack)
+					if (attack) {
 						this.attackEntity(e);
+						this.sendClientAttack(this, e);
+					}
 				}
 			}
 
@@ -228,34 +232,44 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void particleAttack(int x, int y, int z) {
+	public void particleAttack(int sx, int sy, int sz, int x, int y, int z) {
 		int n = 8+rand.nextInt(24);
 		for (int i = 0; i < n; i++) {
-			float rx = xCoord+rand.nextFloat();
-			float ry = yCoord+rand.nextFloat();
-			float rz = zCoord+rand.nextFloat();
-			double dx = x-xCoord;
-			double dy = y-yCoord;
-			double dz = z-zCoord;
+			float rx = sx+rand.nextFloat();
+			float ry = sy+rand.nextFloat();
+			float rz = sz+rand.nextFloat();
+			double dx = x-sx;
+			double dy = y-sy;
+			double dz = z-sz;
 			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 			double vx = 2*dx/dd;
 			double vy = 2*dy/dd;
 			double vz = 2*dz/dd;
-			EntityFlareFX f = new EntityFlareFX(color, worldObj, rx, ry, rz, vx, vy, vz);
+			EntityFlareFX f = new EntityFlareFX(color, worldObj, rx, ry, rz, vx, vy, vz).setNoGravity();
 			Minecraft.getMinecraft().effectRenderer.addEffect(f);
 		}
 	}
 
-	private void attackEntity(EntityLivingBase e) {
+	void attackEntityByProxy(EntityPlayer player, CrystalRepeater te) {
+		this.attackEntity(player);
+		this.sendClientAttack(te, player);
+	}
+
+	void attackEntity(EntityLivingBase e) {
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 		ChromaSounds.DISCHARGE.playSound(worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		e.attackEntityFrom(DamageSource.magic, 5);
+	}
 
+	private void sendClientAttack(CrystalTransmitter te, EntityLivingBase e) {
+		int tx = te.getX();
+		int ty = te.getY();
+		int tz = te.getZ();
 		int x = MathHelper.floor_double(e.posX);
-		int y = MathHelper.floor_double(e.posY);
+		int y = MathHelper.floor_double(e.posY)+1;
 		int z = MathHelper.floor_double(e.posZ);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACK.ordinal(), this, x, y, z);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONATTACK.ordinal(), this, tx, ty, tz, x, y, z);
 	}
 
 	public void invalidateMultiblock() {
@@ -324,7 +338,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public int getSendRange() {
-		return 32;
+		return 48;
 	}
 
 	@Override

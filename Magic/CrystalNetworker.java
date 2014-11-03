@@ -59,6 +59,11 @@ public class CrystalNetworker implements TickHandler {
 		return p != null && p.canTransmit();
 	}
 
+	public CrystalTransmitter getConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
+		CrystalPath p = new PylonFinder(e, world, x, y, z, range).findPylon();
+		return p != null && p.canTransmit() ? p.transmitter : null;
+	}
+
 	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
 		this.makeRequest(r, e, amount, r.getWorld(), r.getX(), r.getY(), r.getZ(), range);
 	}

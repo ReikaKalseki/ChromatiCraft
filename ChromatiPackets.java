@@ -154,7 +154,7 @@ public class ChromatiPackets implements IPacketHandler {
 			break;
 		case PYLONATTACK:
 			if (tile instanceof TileEntityCrystalPylon)
-				((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2]);
+				((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
 			break;
 		case ABILITYCHOOSE:
 			((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);

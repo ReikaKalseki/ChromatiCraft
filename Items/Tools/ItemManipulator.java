@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -114,18 +115,34 @@ public class ItemManipulator extends ItemChromaTool {
 			if (c == ChromaTiles.PYLON) {
 				TileEntityCrystalPylon te = (TileEntityCrystalPylon)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
 				CrystalElement e = te.getColor();
-				if (te.canConduct() && te.getEnergy(e) >= 4 && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
-					if (PlayerElementBuffer.instance.addToPlayer(player, e, 1))
-						te.drain(e, 4);
-					PlayerElementBuffer.instance.checkUpgrade(player, true);
-					ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
-					if (player.worldObj.isRemote) {
-						//this.spawnParticles(player, e);
-						ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D);
+				this.chargeFromPylon(player, te, e, count);
+			}
+			else if (c == ChromaTiles.REPEATER) {
+				TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
+				CrystalTransmitter tr = te.getEnergySource();
+				if (tr instanceof TileEntityCrystalPylon) {
+					TileEntityCrystalPylon p = (TileEntityCrystalPylon)tr;
+					if (this.chargeFromPylon(player, p, p.getColor(), count)) {
+						te.onRelayPlayerCharge(player, p);
 					}
 				}
 			}
 		}
+	}
+
+	private boolean chargeFromPylon(EntityPlayer player, TileEntityCrystalPylon te, CrystalElement e, int count) {
+		if (te.canConduct() && te.getEnergy(e) >= 4 && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
+			if (PlayerElementBuffer.instance.addToPlayer(player, e, 1))
+				te.drain(e, 4);
+			PlayerElementBuffer.instance.checkUpgrade(player, true);
+			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
+			if (player.worldObj.isRemote) {
+				//this.spawnParticles(player, e);
+				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@SideOnly(Side.CLIENT)

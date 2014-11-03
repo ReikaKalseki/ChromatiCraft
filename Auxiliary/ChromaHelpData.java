@@ -12,8 +12,12 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import Reika.DragonAPI.Instantiable.Data.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.CoordinateData;
 
 public class ChromaHelpData {
@@ -66,6 +70,46 @@ public class ChromaHelpData {
 
 		public String getTitle() {
 			return "Test";
+		}
+
+	}
+
+	public static class ChromaHelpKeys {
+
+		public static final ChromaHelpKeys instance = new ChromaHelpKeys();
+
+		private final BlockMap<HelpKey> data = new BlockMap();
+
+		private ChromaHelpKeys() {
+
+		}
+
+		private void addKey(Block b, String s) {
+			data.put(b, new HelpKey(s));
+		}
+
+		private void addKey(Block b, int meta, String s) {
+			data.put(b, meta, new HelpKey(s));
+		}
+
+		public HelpKey getKey(Block b, int meta) {
+			return data.get(b, meta);
+		}
+
+		public HelpKey getKey(World world, int x, int y, int z) {
+			return this.getKey(world.getBlock(x, y, z), world.getBlockMetadata(x, y, z));
+		}
+
+		public HelpKey getKey(World world, MovingObjectPosition mov) {
+			return this.getKey(world, mov.blockX, mov.blockY, mov.blockZ);
+		}
+
+	}
+
+	public static class HelpKey {
+
+		private HelpKey(String text) {
+
 		}
 
 	}
