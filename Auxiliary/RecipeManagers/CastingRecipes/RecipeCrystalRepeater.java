@@ -62,8 +62,8 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 		this.addRune(CrystalElement.BLUE, 5, -1, -4);
 		this.addRune(CrystalElement.BLUE, -5, -1, 4);
 
-		this.addRune(CrystalElement.LIME, -4, -1, -5);
-		this.addRune(CrystalElement.LIME, 4, -1, 5);
+		this.addRune(CrystalElement.GREEN, -4, -1, -5);
+		this.addRune(CrystalElement.GREEN, 4, -1, 5);
 		this.addRune(CrystalElement.YELLOW, 4, -1, -5);
 		this.addRune(CrystalElement.YELLOW, -4, -1, 5);
 	}

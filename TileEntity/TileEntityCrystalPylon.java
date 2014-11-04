@@ -44,6 +44,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Extras.APIStripper.Strippable;
+import Reika.DragonAPI.Extras.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -53,6 +55,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
+@Strippable(value = {"thaumcraft.api.nodes.INode"})
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode {
 
 	private boolean hasMultiblock = false;
@@ -367,6 +370,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public AspectList getAspects() {
 		AspectList as = new AspectList();
 		as.add(Aspect.AURA, 400);
@@ -378,39 +382,47 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public void setAspects(AspectList aspects) {}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public boolean doesContainerAccept(Aspect tag) {
 		return this.getAspects().getAmount(tag) > 0;
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public int addToContainer(Aspect tag, int amount) {return 0;}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
 		return this.doesContainerContainAmount(tag, amount);
 	}
 
 	@Override
 	@Deprecated
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public boolean takeFromContainer(AspectList ot) {
 		return false;
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
 		return this.getAspects().getAmount(tag) > amount;
 	}
 
 	@Override
 	@Deprecated
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public boolean doesContainerContain(AspectList ot) {
 		return false;
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public int containerContains(Aspect tag) {
 		return this.getAspects().getAmount(tag);
 	}
@@ -421,11 +433,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public AspectList getAspectsBase() {
 		return this.getAspects();
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public NodeType getNodeType() {
 		switch(color) {
 		case BLACK:
@@ -440,22 +454,27 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public void setNodeType(NodeType nodeType) {}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public void setNodeModifier(NodeModifier nodeModifier) {}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public NodeModifier getNodeModifier() {
 		return NodeModifier.BRIGHT;
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public int getNodeVisBase(Aspect aspect) {
 		return this.containerContains(aspect);
 	}
 
 	@Override
+	@ModDependent(mod = ModList.THAUMCRAFT)
 	public void setNodeVisBase(Aspect aspect, short nodeVisBase) {}
 
 }
