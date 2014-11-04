@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Block.BlockInWorldGui;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
@@ -97,7 +98,8 @@ public enum ChromaBlocks implements BlockEnum {
 	FENCE(BlockCrystalFence.class,												"crystal.fence"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
-	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2");
+	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),
+	GUI(BlockInWorldGui.class,													"GUI");
 
 	private Class blockClass;
 	private String blockName;

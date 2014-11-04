@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import net.minecraft.world.World;
@@ -18,7 +19,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
-import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -31,7 +31,7 @@ public class CrystalNetworker implements TickHandler {
 	public static final CrystalNetworker instance = new CrystalNetworker();
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
-	private final ArrayList<CrystalFlow> flows = new ArrayList();
+	private final HashMap<Integer, ArrayList<CrystalFlow>> flows = new HashMap();
 
 	private int losTimer = 0;
 
@@ -41,13 +41,14 @@ public class CrystalNetworker implements TickHandler {
 
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
-		this.clear();
-		for (Coordinate c : tiles.keySet()) {
+		int dim = evt.world.provider.dimensionId;
+		this.clear(dim);
+		for (WorldLocation c : tiles.keySet()) {
 			CrystalNetworkTile te = tiles.get(c);
 			if (te instanceof CrystalTransmitter)
 				((CrystalTransmitter)te).clearTargets();
 		}
-		tiles.clear();
+		tiles.removeWorld(evt.world);
 	}
 
 	public boolean checkConnectivity(CrystalElement e, WorldLocation loc, int range) {
@@ -73,39 +74,102 @@ public class CrystalNetworker implements TickHandler {
 			return;
 		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
 		if (p != null) {
-			flows.add(p);
+
 		}
 	}
 
+	private void addFlow(World world, CrystalFlow p) {
+		ArrayList<CrystalFlow> li = flows.get(world.provider.dimensionId);
+		if (li == null) {
+			li = new ArrayList();
+			flows.put(world.provider.dimensionId, li);
+		}
+		li.add(p);
+	}
+
 	public void tick(TickType type, Object... data) {
-		Iterator<CrystalFlow> it = flows.iterator();
-		while (it.hasNext()) {
-			CrystalFlow p = it.next();
-			if (p.transmitter.canConduct() && p.canTransmit()) {
-				int amt = p.drain();
-				if (amt > 0) {
-					p.receiver.receiveElement(p.element, amt);
-					p.transmitter.drain(p.element, amt);
-					if (p.isComplete()) {
+		losTimer++;
+		boolean doCheckLOS = false;
+		if (losTimer >= 40) {
+			losTimer = 0;
+			doCheckLOS = true;
+		}
+		for (int dim : flows.keySet()) {
+			Iterator<CrystalFlow> it = flows.get(dim).iterator();
+			while (it.hasNext()) {
+				CrystalFlow p = it.next();
+				if (p.transmitter.canConduct() && p.canTransmit()) {
+					int amt = p.drain();
+					if (amt > 0) {
+						p.receiver.receiveElement(p.element, amt);
+						p.transmitter.drain(p.element, amt);
+						if (p.isComplete()) {
+							p.resetTiles();
+							it.remove();
+						}
+					}
+				}
+				else {
+					p.receiver.onPathBroken();
+					p.resetTiles();
+					it.remove();
+				}
+			}
+
+			if (doCheckLOS) {
+				it = flows.get(dim).iterator();
+				while (it.hasNext()) {
+					CrystalFlow p = it.next();
+					if (!p.checkLineOfSight()) {
+						p.receiver.onPathBroken();
 						p.resetTiles();
 						it.remove();
 					}
 				}
 			}
-			else {
-				p.receiver.onPathBroken();
-				p.resetTiles();
-				it.remove();
-			}
 		}
+	}
 
-		losTimer++;
-		if (losTimer >= 40) {
-			losTimer = 0;
-			it = flows.iterator();
+	public void clear(int dim) {
+		//do not clear tiles!
+		ArrayList<CrystalFlow> li = flows.get(dim);
+		if (li != null) {
+			for (CrystalFlow f : li) {
+				f.resetTiles();
+			}
+			flows.remove(dim);
+		}
+	}
+
+	public void addTile(CrystalNetworkTile te) {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+			tiles.put(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()), te);
+		}
+	}
+
+	public void removeTile(CrystalNetworkTile te) {
+		tiles.remove(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		ArrayList<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
+		if (li != null) {
+			Iterator<CrystalFlow> it = li.iterator();
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
-				if (!p.checkLineOfSight()) {
+				if (p.contains(te)) {
+					p.resetTiles();
+					p.receiver.onPathBroken();
+					it.remove();
+				}
+			}
+		}
+	}
+
+	public void breakPaths(CrystalNetworkTile te) {
+		ArrayList<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
+		if (li != null) {
+			Iterator<CrystalFlow> it = li.iterator();
+			while (it.hasNext()) {
+				CrystalFlow p = it.next();
+				if (p.contains(te)) {
 					p.receiver.onPathBroken();
 					p.resetTiles();
 					it.remove();
@@ -114,59 +178,21 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	public void clear() {
-		//do not clear tiles!
-		for (int i = 0; i < flows.size(); i++) {
-			CrystalFlow f = flows.get(i);
-			f.resetTiles();
-		}
-		flows.clear();
-	}
-
-	public void addTile(CrystalNetworkTile te) {
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-			tiles.put(new Coordinate(te.getX(), te.getY(), te.getZ()), te);
-		}
-	}
-
-	public void removeTile(CrystalNetworkTile te) {
-		tiles.remove(new Coordinate(te.getX(), te.getY(), te.getZ()));
-		Iterator<CrystalFlow> it = flows.iterator();
-		while (it.hasNext()) {
-			CrystalFlow p = it.next();
-			if (p.contains(te)) {
-				p.resetTiles();
-				p.receiver.onPathBroken();
-				it.remove();
-			}
-		}
-	}
-
-	public void breakPaths(CrystalNetworkTile te) {
-		Iterator<CrystalFlow> it = flows.iterator();
-		while (it.hasNext()) {
-			CrystalFlow p = it.next();
-			if (p.contains(te)) {
-				p.receiver.onPathBroken();
-				p.resetTiles();
-				it.remove();
-			}
-		}
-	}
-
 	ArrayList<CrystalNetworkTile> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
 		dist = dist*dist;
 		ArrayList<CrystalNetworkTile> li = new ArrayList();
-		for (Coordinate c : tiles.keySet()) {
-			CrystalNetworkTile tile = tiles.get(c);
-			if (tile instanceof CrystalTransmitter) {
-				CrystalTransmitter te = (CrystalTransmitter)tile;
-				if (te.canConduct()) {
-					if (e == null || te.isConductingElement(e)) {
-						double send = te.getSendRange()*te.getSendRange();
-						double d = te.getDistanceSqTo(x, y, z);
-						if (d <= Math.min(dist, send)) {
-							li.add(te);
+		for (WorldLocation c : tiles.keySet()) {
+			if (c.dimensionID == world.provider.dimensionId) {
+				CrystalNetworkTile tile = tiles.get(c);
+				if (tile instanceof CrystalTransmitter) {
+					CrystalTransmitter te = (CrystalTransmitter)tile;
+					if (te.canConduct()) {
+						if (e == null || te.isConductingElement(e)) {
+							double send = te.getSendRange()*te.getSendRange();
+							double d = te.getDistanceSqTo(x, y, z);
+							if (d <= Math.min(dist, send)) {
+								li.add(te);
+							}
 						}
 					}
 				}

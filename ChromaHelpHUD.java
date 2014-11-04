@@ -9,8 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -18,7 +22,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
-import Reika.ChromatiCraft.Auxiliary.ChromaHelpData.HelpKey;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -38,6 +41,8 @@ public class ChromaHelpHUD {
 	private static final int xSize = 64;
 	private static final int ySize = 128;
 
+	private static final String NBT_TAG = "ChromaExploreHelp";
+
 	private ChromaHelpHUD() {
 
 	}
@@ -45,19 +50,23 @@ public class ChromaHelpHUD {
 	@SubscribeEvent
 	public void renderHUD(RenderGameOverlayEvent evt) {
 		if (evt.type == ElementType.HELMET) {
-			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlockClient(5, false);
-
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
+			int gsc = evt.resolution.getScaleFactor();
 			if (look != null) {
 				if (this.isDifferent(look)) {
 					this.closePanel();
 				}
 				else {
 					this.openPanel();
-					HelpKey key = ChromaHelpData.ChromaHelpKeys.instance.getKey(Minecraft.getMinecraft().theWorld, look);
-					if (key != null) {
-						this.renderPanel();
+					Block b = Minecraft.getMinecraft().theWorld.getBlock(look.blockX, look.blockY, look.blockZ);
+					int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(look.blockX, look.blockY, look.blockZ);
+					String text = ChromaHelpData.instance.getText(b, meta);
+					if (text != null && !text.isEmpty()) {
+						this.renderPanel(gsc);
 						if (this.isPanelOpen()) {
-							this.renderText(key);
+							this.renderText(text, gsc);
+							this.markDiscovered(ep, b, meta);
 						}
 					}
 				}
@@ -68,23 +77,71 @@ public class ChromaHelpHUD {
 		ReikaTextureHelper.bindHUDTexture();
 	}
 
-	private void renderPanel() {
+	private void markDiscovered(EntityPlayer ep, Block b, int meta) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
+		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
+		boolean has = tag.getBoolean(sg);
+		if (!has) {
+			tag.setBoolean(sg, true);
+			nbt.setTag(NBT_TAG, tag);
+			ReikaPlayerAPI.syncCustomDataFromClient(ep);
+		}
+	}
+
+	private void renderPanel(int gsc) {
 		Tessellator v5 = Tessellator.instance;
+
+		int n1 = gsc;
+		int n2 = 2*gsc;
+
+		int w = rollx*2/gsc;
+		int h = rolly*2/gsc;
+		int hm = ySize*2/gsc;
+
+		int dx = Minecraft.getMinecraft().displayWidth/n1-w-3;
+		int dy = Minecraft.getMinecraft().displayHeight/n2-hm/2;
+
+		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setColorRGBA_I(0xffffff, 255);
-		int dx = Minecraft.getMinecraft().displayWidth/2-rollx-3;
-		int dy = Minecraft.getMinecraft().displayHeight/4-ySize/2;
 		v5.addVertex(dx, dy, 0);
-		v5.addVertex(dx+rollx, dy, 0);
-		v5.addVertex(dx+rollx, dy+rolly, 0);
-		v5.addVertex(dx, dy+rolly, 0);
+		v5.addVertex(dx+w, dy, 0);
+		v5.addVertex(dx+w, dy+h, 0);
+		v5.addVertex(dx, dy+h, 0);
 		v5.draw();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/helphud4.png");
+		v5.startDrawingQuads();
+		double u = 0.25*rollx/xSize;
+		double v = 0.5*rolly/ySize;
+		v5.addVertexWithUV(dx, dy+h, 0, 0, v);
+		v5.addVertexWithUV(dx+w, dy+h, 0, u, v);
+		v5.addVertexWithUV(dx+w, dy, 0, u, 0);
+		v5.addVertexWithUV(dx, dy, 0, 0, 0);
+		v5.draw();
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	private void renderText(HelpKey key) {
+	private void renderText(String s, int gsc) {
+		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+		GL11.glPushMatrix();
+		double d = 1D/gsc;//Math.max(0.5, 1D/gsc);
 
+		int w = rollx*2/gsc;
+		int wm = xSize*2/gsc;
+		int hm = ySize*2/gsc;
+
+		int n1 = gsc;
+		int n2 = 2*gsc;
+
+		GL11.glScaled(d, d, d);
+		int dx = (int)((Minecraft.getMinecraft().displayWidth/n1-w-1)/d);
+		int dy = (int)((Minecraft.getMinecraft().displayHeight/n2-hm/2+2)/d);
+		int tw = gsc*wm-4;
+		f.drawSplitString(s, dx, dy, tw, 0xffffff);
+		GL11.glPopMatrix();
 	}
 
 	private boolean isPanelOpen() {

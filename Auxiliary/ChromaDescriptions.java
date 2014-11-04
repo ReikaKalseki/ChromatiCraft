@@ -44,6 +44,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface resources = new XMLInterface(ChromatiCraft.class, PARENT+"resource.xml", mustLoad);
 	private static final XMLInterface miscs = new XMLInterface(ChromatiCraft.class, PARENT+"misc.xml", mustLoad);
 	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
+	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
 
 	public static void addCategory(ChromaBook h) {
 		categories.add(h);
@@ -84,6 +85,10 @@ public final class ChromaDescriptions {
 		return sb.toString();
 	}*/
 
+	public static String getHoverText(String key) {
+		return hover.getValueAtNode(key);
+	}
+
 	private static void addData(ChromaTiles m, Object... data) {
 		machineData.put(m, data);
 	}
@@ -113,6 +118,7 @@ public final class ChromaDescriptions {
 		resources.reread();
 		miscs.reread();
 		infos.reread();
+		hover.reread();
 
 		parents.reread();
 
@@ -123,7 +129,8 @@ public final class ChromaDescriptions {
 		data.put(h, sg);
 	}
 
-	public static void loadData() {/*
+	public static void loadData() {
+		/*
 		List<ChromaBook> parenttabs = ChromaBook.getCategoryTabs();
 
 		List<ChromaBook> machinetabs = ChromaBook.getMachineTabs();
