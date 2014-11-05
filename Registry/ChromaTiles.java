@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
@@ -86,7 +87,9 @@ public enum ChromaTiles {
 	TICKER("chroma.ticker",				ChromaBlocks.TILEENTITY, TileEntityInventoryTicker.class, 11),
 	AISHUTDOWN("chroma.aishutdown",		ChromaBlocks.TILEMODELLED, TileEntityAIShutdown.class, 10),
 	TELEPUMP("chroma.telepump",			ChromaBlocks.TILEENTITY, TileEntityTeleportationPump.class, 12),
-	HELP("chroma.helpblock",			ChromaBlocks.TILEMODELLED, TileEntityHelpBlock.class, 11, "HelpBlockRenderer");
+	HELP("chroma.helpblock",			ChromaBlocks.TILEMODELLED, TileEntityHelpBlock.class, 11, "HelpBlockRenderer"),
+	COMPOUND("chroma.compound",			ChromaBlocks.PYLON,	TileEntityCompoundRepeater.class, 2, "RenderMultiRepeater"),
+	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
 	//SPLITTER();
@@ -135,6 +138,7 @@ public enum ChromaTiles {
 		case RIFT:
 		case PYLON:
 		case REPEATER:
+		case COMPOUND:
 		case LASER:
 		case BEACON:
 		case FENCE:

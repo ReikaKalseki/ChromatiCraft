@@ -24,6 +24,7 @@ public enum ChromaIcons {
 	RADIATE("plant_glow"),
 	FLARE("flare"),
 	REPEATER("repeater"),
+	MULTIREPEATER("multirepeater"),
 	SPINFLARE("rotating flare_pulse"),
 	LASER("laser_2"),
 	LASEREND("laser_end_2"),

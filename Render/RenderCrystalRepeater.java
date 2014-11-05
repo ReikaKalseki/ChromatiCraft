@@ -20,9 +20,9 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
+import Reika.ChromatiCraft.Magic.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -33,8 +33,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		super.renderTileEntityAt(tile, par2, par4, par6, par8);
 
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
-			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
+		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1 && ((CrystalTransmitter)tile).canConduct()) {
+			//TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			IIcon ico = ChromaIcons.SPARKLE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();

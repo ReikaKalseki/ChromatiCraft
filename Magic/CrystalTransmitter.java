@@ -21,4 +21,6 @@ public interface CrystalTransmitter extends CrystalNetworkTile {
 	public void removeTarget(WorldLocation loc, CrystalElement e);
 
 	public void clearTargets();
+
+	public boolean needsLineOfSight();
 }

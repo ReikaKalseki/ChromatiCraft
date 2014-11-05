@@ -89,6 +89,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		return e == color;
 	}
 
+	@Override
+	public boolean needsLineOfSight() {
+		return true;
+	}
+
 	public CrystalElement getColor() {
 		return color;
 	}

@@ -1,15 +1,7 @@
-/*******************************************************************************
- * @author Reika Kalseki
- * 
- * Copyright 2014
- * 
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
- ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -23,59 +15,28 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater {
-
-	@Override
-	public ChromaTiles getTile() {
-		return ChromaTiles.REPEATER;
-	}
+public class TileEntityCompoundRepeater extends CrystalTransmitterBase implements CrystalRepeater {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+		if (world.isRemote && this.canConduct())
+			this.particles(world, x, y, z);
 	}
 
-	@Override
-	public int getSendRange() {
-		return 24;
-	}
-
-	@Override
-	public int getReceiveRange() {
-		return 24;
-	}
-
-	@Override
-	public int getSignalDegradation() {
-		return 1;
-	}
-
-	@Override
-	public boolean canConduct() {
-		return this.checkForStructure(worldObj, xCoord, yCoord, zCoord);
-	}
-
-	private boolean checkForStructure(World world, int x, int y, int z) {
-		if (world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance())
-			return false;
-		for (int i = 2; i < 4; i++) {
-			Block id = world.getBlock(x, y-i, z);
-			int meta = world.getBlockMetadata(x, y-i, z);
-			if (id != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0)
-				return false;
+	@SideOnly(Side.CLIENT)
+	private void particles(World world, int x, int y, int z) {
+		if (this.getTicksExisted()%32 == 0) {
+			double px = x+0.5;//rand.nextDouble();
+			double py = y+0.5;//0.25+y+rand.nextDouble();
+			double pz = z+0.5;//rand.nextDouble();
+			CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/32)%16];
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, px, py, pz, 0, 0, 0, e).setScale(5).setFading());
 		}
-		return true;
-	}
-
-	@Override
-	public int maxThroughput() {
-		return 500;
-	}
-
-	@Override
-	public boolean isConductingElement(CrystalElement e) {
-		return e != null && e == this.getActiveColor();
 	}
 
 	@Override
@@ -89,8 +50,58 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+	public int getReceiveRange() {
+		return 24;
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset( CrystalElement e) {
 		return null;
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return this.canConduct();
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 1000;
+	}
+
+	@Override
+	public boolean canConduct() {
+		for (int i = -3; i <= 1; i++) {
+			if (i != 0) {
+				Block b = worldObj.getBlock(xCoord, yCoord+i, zCoord);
+				int meta = worldObj.getBlockMetadata(xCoord, yCoord+i, zCoord);
+				int m2 = i == -2 ? 2 : 0;
+				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != m2) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public int getSendRange() {
+		return 16;
+	}
+
+	@Override
+	public int getSignalDegradation() {
+		return 5;
+	}
+
+	@Override
+	public ChromaTiles getTile() {
+		return ChromaTiles.COMPOUND;
+	}
+
+	@Override
+	public boolean needsLineOfSight() {
+		return true;
 	}
 
 	public boolean checkConnectivity() {
@@ -113,11 +124,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 				p.attackEntityByProxy(player, this);
 			CrystalNetworker.instance.makeRequest(this, this.getActiveColor(), 15000, this.getReceiveRange());
 		}
-	}
-
-	@Override
-	public boolean needsLineOfSight() {
-		return true;
 	}
 
 }

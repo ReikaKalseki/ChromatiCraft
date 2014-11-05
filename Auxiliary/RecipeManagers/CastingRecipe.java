@@ -195,7 +195,7 @@ public class CastingRecipe {
 				}
 			}
 			ItemStack ctr = this.getMainInput();
-			if (ReikaItemHelper.matchStacks(main, ctr) && ItemStack.areItemStackTagsEqual(main, ctr)) {
+			if (ReikaItemHelper.matchStacks(main, ctr) && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(main, ctr))) {
 				HashMap<List<Integer>, TileEntityItemStand> stands = table.getOtherStands();
 				if (stands.size() != 24)
 					return false;
@@ -204,7 +204,7 @@ public class CastingRecipe {
 					ItemStack at = (stands.get(key).getStackInSlot(0));
 					ItemStack is = inputs.get(key);
 					//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput(), this.getOutput().getDisplayName().endsWith("ter"));
-					if (!ReikaItemHelper.matchStacks(at, is) || !ItemStack.areItemStackTagsEqual(at, is)) {
+					if (!ReikaItemHelper.matchStacks(at, is) || (is != null && is.stackTagCompound != null && !ItemStack.areItemStackTagsEqual(at, is))) {
 						//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput());
 						return false;
 					}
@@ -223,11 +223,11 @@ public class CastingRecipe {
 
 		@Override
 		public boolean usesItem(ItemStack is) {
-			if (ReikaItemHelper.matchStacks(is, main) && ItemStack.areItemStackTagsEqual(is, main))
+			if (ReikaItemHelper.matchStacks(is, main) && (main.stackTagCompound == null || ItemStack.areItemStackTagsEqual(is, main)))
 				return true;
 			for (List<Integer> key : inputs.keySet()) {
 				ItemStack item = inputs.get(key);
-				if (ReikaItemHelper.matchStacks(is, item) && ItemStack.areItemStackTagsEqual(is, item))
+				if (ReikaItemHelper.matchStacks(is, item) && (item.stackTagCompound == null || ItemStack.areItemStackTagsEqual(is, item)))
 					return true;
 			}
 			return false;

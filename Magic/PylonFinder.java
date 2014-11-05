@@ -59,10 +59,9 @@ public class PylonFinder {
 			return;
 		}
 		nodes.add(new WorldLocation(world, x, y, z));
-		ArrayList<CrystalNetworkTile> li = net.getTransmittersWithinDofXYZ(world, x, y, z, stepRange, element);
-		for (int i = 0; i < li.size(); i++) {
-			CrystalNetworkTile te = li.get(i);
-			if (this.lineOfSight(world, x, y, z, te)) {
+		ArrayList<CrystalTransmitter> li = net.getTransmittersWithinDofXYZ(world, x, y, z, stepRange, element);
+		for (CrystalTransmitter te : li) {
+			if (/*!te.needsLineOfSight() || */this.lineOfSight(world, x, y, z, te)) {
 				if (te instanceof CrystalSource) {
 					nodes.add(new WorldLocation(world, te.getX(), te.getY(), te.getZ()));
 					return;

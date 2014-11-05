@@ -20,32 +20,32 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 	public RecipeCrystalRepeater(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, -4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, -2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 4, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 4);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 2);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, 0);
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -4, -2);
+		this.addAuxItem(ChromaStacks.beaconDust, -4, -4);
+		this.addAuxItem(ChromaStacks.beaconDust, -2, -4);
+		this.addAuxItem(ChromaStacks.beaconDust, 0, -4);
+		this.addAuxItem(ChromaStacks.beaconDust, 2, -4);
+		this.addAuxItem(ChromaStacks.beaconDust, 4, -4);
+		this.addAuxItem(ChromaStacks.beaconDust, 4, -2);
+		this.addAuxItem(ChromaStacks.beaconDust, 4, 0);
+		this.addAuxItem(ChromaStacks.beaconDust, 4, 2);
+		this.addAuxItem(ChromaStacks.beaconDust, 4, 4);
+		this.addAuxItem(ChromaStacks.beaconDust, 2, 4);
+		this.addAuxItem(ChromaStacks.beaconDust, 0, 4);
+		this.addAuxItem(ChromaStacks.beaconDust, -2, 4);
+		this.addAuxItem(ChromaStacks.beaconDust, -4, 4);
+		this.addAuxItem(ChromaStacks.beaconDust, -4, 2);
+		this.addAuxItem(ChromaStacks.beaconDust, -4, 0);
+		this.addAuxItem(ChromaStacks.beaconDust, -4, -2);
 
-		this.addAuxItem(ChromaStacks.beaconDust, -2, -2);
-		this.addAuxItem(ChromaStacks.beaconDust, 2, -2);
-		this.addAuxItem(ChromaStacks.beaconDust, -2, 2);
-		this.addAuxItem(ChromaStacks.beaconDust, 2, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 2);
 
-		this.addAuxItem(ChromaStacks.beaconDust, 0, -2);
-		this.addAuxItem(ChromaStacks.beaconDust, 0, 2);
-		this.addAuxItem(ChromaStacks.beaconDust, 2, 0);
-		this.addAuxItem(ChromaStacks.beaconDust, -2, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 0);
 
 		this.addRune(CrystalElement.BLACK, 0, -1, 5);
 		this.addRune(CrystalElement.BLACK, 0, -1, -5);

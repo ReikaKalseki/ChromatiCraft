@@ -14,7 +14,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class ChromaFX {
 
 	public static void createPylonChargeBeam(TileEntityCrystalPylon te, EntityPlayer ep, double dist) {

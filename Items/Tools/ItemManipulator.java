@@ -9,8 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -21,13 +23,14 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
@@ -35,7 +38,9 @@ import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -77,15 +82,45 @@ public class ItemManipulator extends ItemChromaTool {
 			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
-		if (t == ChromaTiles.REPEATER) {
-			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
-			if (te.checkConnectivity()) {
-				CrystalElement e = te.getActiveColor();
-				ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
-				ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+		if (t == ChromaTiles.COMPOUND) {
+			TileEntityCompoundRepeater te = (TileEntityCompoundRepeater)tile;
+			if (ep.isSneaking()) {
+				if (te.isPlacer(ep)) {
+					world.setBlock(x, y, z, Blocks.air);
+					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.COMPOUND.getCraftedProduct());
+					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, Block.soundTypeStone.getStepResourcePath(), 2, 0.5F);
+				}
 			}
 			else {
-				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				if (te.checkConnectivity()) {
+					CrystalElement e = te.getActiveColor();
+					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
+					ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				}
+			}
+			return true;
+		}
+		if (t == ChromaTiles.REPEATER) {
+			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
+			if (ep.isSneaking()) {
+				if (te.isPlacer(ep)) {
+					world.setBlock(x, y, z, Blocks.air);
+					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.REPEATER.getCraftedProduct());
+					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, Block.soundTypeStone.getStepResourcePath(), 2, 0.5F);
+				}
+			}
+			else {
+				if (te.checkConnectivity()) {
+					CrystalElement e = te.getActiveColor();
+					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
+					ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				}
 			}
 			return true;
 		}
@@ -119,7 +154,7 @@ public class ItemManipulator extends ItemChromaTool {
 			}
 			else if (c == ChromaTiles.REPEATER) {
 				TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
-				CrystalTransmitter tr = te.getEnergySource();
+				CrystalSource tr = te.getEnergySource();
 				if (tr instanceof TileEntityCrystalPylon) {
 					TileEntityCrystalPylon p = (TileEntityCrystalPylon)tr;
 					if (this.chargeFromPylon(player, p, p.getColor(), count)) {

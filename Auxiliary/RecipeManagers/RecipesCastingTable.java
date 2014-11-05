@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalChargerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalClusterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalCoreRecipe;
@@ -147,6 +148,9 @@ public class RecipesCastingTable {
 			this.addRecipe(new PendantRecipe(pendant, cave));
 			this.addRecipe(new EnhancedPendantRecipe(pendant3, supercry));
 			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
+
+			sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.whiteShard, " F ", "FSF", " F ", 'F', ChromaStacks.purityDust, 'S', shard);
+			this.addRecipe(new CastingRecipe(is, sr));
 		}
 
 		this.addRecipe(new CrystalFocusRecipe(ChromaStacks.crystalFocus, ChromaStacks.primaryCluster));
@@ -176,6 +180,9 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.TELEPUMP.getCraftedProduct();
 		this.addRecipe(new TelePumpRecipe(is, ChromaStacks.energyCore));
+
+		is = ChromaTiles.COMPOUND.getCraftedProduct();
+		this.addRecipe(new CompoundRepeaterRecipe(is, ChromaTiles.REPEATER.getCraftedProduct()));
 	}
 
 	private void addRecipe(CastingRecipe r) {

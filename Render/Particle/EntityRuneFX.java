@@ -24,6 +24,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EntityRuneFX extends EntityFX {
 
+	private boolean fade = false;
+
 	public EntityRuneFX(World world, double x, double y, double z, CrystalElement e) {
 		this(world, x, y, z, 0, 0, 0, e);
 		particleGravity = 0.05F;
@@ -48,6 +50,11 @@ public class EntityRuneFX extends EntityFX {
 
 	public EntityRuneFX setLife(int life) {
 		particleMaxAge = life;
+		return this;
+	}
+
+	public EntityRuneFX setFading() {
+		fade = true;
 		return this;
 	}
 
@@ -86,7 +93,7 @@ public class EntityRuneFX extends EntityFX {
 	@Override
 	public int getBrightnessForRender(float par1)
 	{
-		return 240;
+		return fade ? (int)(250-10*(0.5+0.5*Math.sin(Math.toRadians(180D*particleAge/particleMaxAge)))) : 240;
 	}
 
 	@Override

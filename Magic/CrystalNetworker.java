@@ -60,7 +60,7 @@ public class CrystalNetworker implements TickHandler {
 		return p != null && p.canTransmit();
 	}
 
-	public CrystalTransmitter getConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
+	public CrystalSource getConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
 		CrystalPath p = new PylonFinder(e, world, x, y, z, range).findPylon();
 		return p != null && p.canTransmit() ? p.transmitter : null;
 	}
@@ -178,9 +178,9 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	ArrayList<CrystalNetworkTile> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
+	ArrayList<CrystalTransmitter> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
 		dist = dist*dist;
-		ArrayList<CrystalNetworkTile> li = new ArrayList();
+		ArrayList<CrystalTransmitter> li = new ArrayList();
 		for (WorldLocation c : tiles.keySet()) {
 			if (c.dimensionID == world.provider.dimensionId) {
 				CrystalNetworkTile tile = tiles.get(c);
@@ -200,10 +200,10 @@ public class CrystalNetworker implements TickHandler {
 		}
 		return li;
 	}
-
+	/*
 	ArrayList<CrystalNetworkTile> getTilesWithinDofXYZ(World world, int x, int y, int z, double dist) {
 		return this.getTransmittersWithinDofXYZ(world, x, y, z, dist, null);
-	}
+	}*/
 
 	@Override
 	public TickType getType() {
