@@ -12,9 +12,9 @@ package Reika.ChromatiCraft.TileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -25,11 +25,29 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
+	private int colorTimer = 0;
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		if (world.isRemote && this.canConduct())
 			this.particles(world, x, y, z);
+		colorTimer++;
+		//ReikaJavaLibrary.pConsole(colorTimer+":"+this.getSide()+">"+this.getActiveColor());
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		colorTimer = NBT.getInteger("colort");
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBT.setInteger("colort", colorTimer);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -38,7 +56,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			double px = x+0.5;//rand.nextDouble();
 			double py = y+0.5;//0.25+y+rand.nextDouble();
 			double pz = z+0.5;//rand.nextDouble();
-			CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/32)%16];
+			CrystalElement e = this.getActiveColor();
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, px, py, pz, 0, 0, 0, e).setScale(5).setFading());
 		}
 	}
@@ -105,7 +123,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	public boolean needsLineOfSight() {
 		return true;
 	}
-
+	/*
 	@Override
 	public boolean checkConnectivity() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
@@ -115,16 +133,16 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 		}
 		return false;
 	}
-
+	 */
 	@Override
 	public CrystalElement getActiveColor() {
-		return CrystalElement.randomElement();
+		return CrystalElement.elements[(colorTimer/32)%16];
 	}
-
+	/*
 	@Override
 	public CrystalSource getEnergySource(CrystalElement e) {
 		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
-	}
+	}*/
 
 	@Override
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
