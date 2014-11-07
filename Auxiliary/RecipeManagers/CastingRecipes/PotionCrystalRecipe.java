@@ -32,4 +32,9 @@ public class PotionCrystalRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 20000);
 	}
 
+	@Override
+	public int getDuration() {
+		return 4*super.getDuration();
+	}
+
 }

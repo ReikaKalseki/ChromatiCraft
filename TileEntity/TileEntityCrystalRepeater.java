@@ -151,9 +151,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
 	}
 
-	public CrystalSource getEnergySource(CrystalElement e) {
-		boolean valid = e == this.getActiveColor() && e != null;
-		return valid ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
+	public CrystalSource getEnergySource() {
+		CrystalElement e = this.getActiveColor();
+		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
 	}
 
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {

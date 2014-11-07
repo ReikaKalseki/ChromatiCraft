@@ -37,4 +37,9 @@ public class EnhancedPendantRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 16000);
 	}
 
+	@Override
+	public int getDuration() {
+		return 8*super.getDuration();
+	}
+
 }

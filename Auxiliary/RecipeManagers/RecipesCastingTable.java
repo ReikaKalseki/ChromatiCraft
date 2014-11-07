@@ -43,6 +43,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPenda
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeCrystalRepeater;
@@ -132,7 +134,7 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new RiftRecipe(ChromaTiles.RIFT.getCraftedProduct(), ChromaStacks.voidCore));
 		this.addRecipe(new CrystalTankRecipe(ChromaTiles.TANK.getCraftedProduct(), ChromaStacks.voidCore));
-		this.addRecipe(new RecipeTankBlock(new ItemStack(ChromaBlocks.TANK.getBlockInstance()), new ItemStack(Items.diamond)));
+		this.addRecipe(new RecipeTankBlock(new ItemStack(ChromaBlocks.TANK.getBlockInstance(), 4, 0), new ItemStack(Items.diamond)));
 		this.addRecipe(new CrystalFurnaceRecipe(ChromaTiles.FURNACE.getCraftedProduct(), ChromaStacks.energyCore));
 		this.addRecipe(new CrystalLaserRecipe(ChromaTiles.LASER.getCraftedProduct(), ChromaStacks.energyCore));
 		this.addRecipe(new CrystalChargerRecipe(ChromaTiles.CHARGER.getCraftedProduct(), ChromaStacks.crystalCore));
@@ -151,7 +153,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new EnhancedPendantRecipe(pendant3, supercry));
 			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
 
-			sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.whiteShard, " F ", "FSF", " F ", 'F', ChromaStacks.purityDust, 'S', shard);
+			sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.rawCrystal, " F ", "FSF", " F ", 'F', ChromaStacks.purityDust, 'S', shard);
 			this.addRecipe(new CastingRecipe(is, sr));
 		}
 
@@ -191,6 +193,11 @@ public class RecipesCastingTable {
 		this.addRecipe(new FiberRecipe(is, sr));
 
 		this.addRecipe(new CompoundRuneRecipe(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, 13), ChromaStacks.bindingCrystal));
+
+		this.addRecipe(new IridescentChunkRecipe(ChromaStacks.iridChunk, ChromaStacks.bindingCrystal));
+
+		is = ChromaTiles.CRYSTAL.getCraftedProduct();
+		this.addRecipe(new IridescentCrystalRecipe(is, new ItemStack(Items.diamond)));
 	}
 
 	private void addRecipe(CastingRecipe r) {

@@ -33,4 +33,9 @@ public class RiftRecipe extends PylonRecipe {
 		this.addAuxItem(this.getShard(CrystalElement.WHITE), -2, 0);
 	}
 
+	@Override
+	public int getDuration() {
+		return 200+super.getDuration();
+	}
+
 }

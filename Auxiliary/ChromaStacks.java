@@ -38,6 +38,8 @@ public class ChromaStacks {
 	public static final ItemStack crystalPowder = ChromaItems.CRAFTING.getStackOfMetadata(6);
 	public static final ItemStack transformCore = ChromaItems.CRAFTING.getStackOfMetadata(7);
 	public static final ItemStack elementUnit = ChromaItems.CRAFTING.getStackOfMetadata(8);
+	public static final ItemStack iridCrystal = ChromaItems.CRAFTING.getStackOfMetadata(9);
+	public static final ItemStack iridChunk = ChromaItems.CRAFTING.getStackOfMetadata(10);
 
 	public static final ItemStack chromaDust = ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust = ChromaItems.TIERED.getStackOfMetadata(1);
@@ -46,6 +48,7 @@ public class ChromaStacks {
 	public static final ItemStack elementDust = ChromaItems.TIERED.getStackOfMetadata(4);
 	public static final ItemStack beaconDust = ChromaItems.TIERED.getStackOfMetadata(5);
 	public static final ItemStack bindingCrystal = ChromaItems.TIERED.getStackOfMetadata(6);
+	public static final ItemStack resonanceDust = ChromaItems.TIERED.getStackOfMetadata(7);
 
 	public static final ItemStack blackShard = ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard = ChromaItems.SHARD.getStackOfMetadata(1);
