@@ -74,7 +74,7 @@ public class CrystalNetworker implements TickHandler {
 			return;
 		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
 		if (p != null) {
-
+			this.addFlow(world, p);
 		}
 	}
 

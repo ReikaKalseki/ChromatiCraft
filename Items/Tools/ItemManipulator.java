@@ -160,7 +160,7 @@ public class ItemManipulator extends ItemChromaTool {
 			}
 			else if (c == ChromaTiles.REPEATER) {
 				TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
-				CrystalSource tr = te.getEnergySource();
+				CrystalSource tr = te.getEnergySource(te.getActiveColor());
 				if (tr instanceof TileEntityCrystalPylon) {
 					TileEntityCrystalPylon p = (TileEntityCrystalPylon)tr;
 					if (this.chargeFromPylon(player, p, p.getColor(), count)) {

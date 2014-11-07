@@ -43,6 +43,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
 	}
 
@@ -150,14 +151,14 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
 	}
 
-	public CrystalSource getEnergySource() {
-		CrystalElement e = this.getActiveColor();
-		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
+	public CrystalSource getEnergySource(CrystalElement e) {
+		boolean valid = e == this.getActiveColor() && e != null;
+		return valid ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
 	}
 
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
 		if (!worldObj.isRemote) {
-			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(20) == 0)
+			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(60) == 0)
 				p.attackEntityByProxy(player, this);
 			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}

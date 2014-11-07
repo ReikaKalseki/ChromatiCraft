@@ -118,12 +118,12 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public CrystalElement getActiveColor() {
-		return null;
+		return CrystalElement.randomElement();
 	}
 
 	@Override
-	public CrystalSource getEnergySource() {
-		return null;
+	public CrystalSource getEnergySource(CrystalElement e) {
+		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
 	}
 
 	@Override
