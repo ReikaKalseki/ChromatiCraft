@@ -19,12 +19,13 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Base.TileEntityBase;
 
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger {
 
 	public BlockCrystalPylon(Material mat) {
 		super(mat);
-		this.setBlockUnbreakable();
+		//this.setBlockUnbreakable();
 	}
 
 	@Override
@@ -43,6 +44,12 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		default:
 			return this.getBlockAABB(x, y, z);
 		}
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
+		return te.isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override

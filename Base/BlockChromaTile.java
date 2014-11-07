@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.ChromaticEventManager;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
@@ -52,9 +53,12 @@ import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
+import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
@@ -152,10 +156,16 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		}
 
 		if (te instanceof ItemOnRightClick) {
-			ItemStack ret = ((ItemOnRightClick)te).onRightClickWith(is);
+			ItemStack ret = ((ItemOnRightClick)te).onRightClickWith(is, ep);
 			((TileEntityBase)te).syncAllData(true);
 			ep.setCurrentItemOrArmor(0, ret);
 			return true;
+		}
+
+		if (ChromaItems.SHARD.matchWith(is) && te instanceof FiberIO) {
+			((FiberIO)te).setColor(CrystalElement.elements[is.getItemDamage()%16]);
+			if (!ep.capabilities.isCreativeMode)
+				is.stackSize--;
 		}
 
 		if (is != null && m == ChromaTiles.TANK) {
@@ -282,6 +292,15 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		}
 		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
+		}
+		if (te instanceof TileEntityCastingTable) {
+			((TileEntityCastingTable)te).onBreak();
+		}
+		if (te instanceof FiberIO) {
+			((FiberIO)te).onBroken();
+		}
+		if (te instanceof TileEntityFiberOptic) {
+			((TileEntityFiberOptic)te).removeFromNetwork();
 		}
 		if (te instanceof TileEntityAIShutdown) {
 			((TileEntityAIShutdown)te).freeAll();

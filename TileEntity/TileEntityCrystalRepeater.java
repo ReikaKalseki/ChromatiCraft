@@ -11,7 +11,9 @@ package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
@@ -26,6 +28,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater {
 
+	protected ForgeDirection facing = ForgeDirection.DOWN;
+	protected boolean hasMultiblock;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.REPEATER;
@@ -34,6 +39,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.validateStructure();
 	}
 
 	@Override
@@ -52,20 +62,58 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public boolean canConduct() {
-		return this.checkForStructure(worldObj, xCoord, yCoord, zCoord);
+	public final boolean canConduct() {
+		return hasMultiblock;
 	}
 
-	private boolean checkForStructure(World world, int x, int y, int z) {
-		if (world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance())
+	public final void validateStructure() {
+		hasMultiblock = this.checkForStructure();
+		if (!hasMultiblock) {
+			CrystalNetworker.instance.breakPaths(this);
+		}
+	}
+
+	protected boolean checkForStructure() {
+		ForgeDirection dir = facing;
+		World world = worldObj;
+		int x = xCoord;
+		int y = yCoord;
+		int z = zCoord;
+		if (world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ) != ChromaBlocks.RUNE.getBlockInstance())
 			return false;
 		for (int i = 2; i < 4; i++) {
-			Block id = world.getBlock(x, y-i, z);
-			int meta = world.getBlockMetadata(x, y-i, z);
+			int dx = x+dir.offsetX*i;
+			int dy = y+dir.offsetY*i;
+			int dz = z+dir.offsetZ*i;
+			Block id = world.getBlock(dx, dy, dz);
+			int meta = world.getBlockMetadata(dx, dy, dz);
 			if (id != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0)
 				return false;
 		}
 		return true;
+	}
+
+	public void redirect(int side) {
+		facing = dirs[side].getOpposite();
+		this.validateStructure();
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		facing = dirs[NBT.getInteger("face")];
+		hasMultiblock = NBT.getBoolean("multi");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		if (facing != null)
+			NBT.setInteger("face", facing.ordinal());
+
+		NBT.setBoolean("multi", hasMultiblock);
 	}
 
 	@Override
@@ -84,7 +132,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 
 	}
 
@@ -111,7 +159,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (!worldObj.isRemote) {
 			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(20) == 0)
 				p.attackEntityByProxy(player, this);
-			CrystalNetworker.instance.makeRequest(this, this.getActiveColor(), 15000, this.getReceiveRange());
+			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}
 	}
 

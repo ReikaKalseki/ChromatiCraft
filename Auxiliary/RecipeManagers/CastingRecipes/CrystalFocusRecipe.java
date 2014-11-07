@@ -21,7 +21,12 @@ public class CrystalFocusRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), -2, 0);
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), 2, 0);
 		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 0, -2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 0, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 0, 2);
+
+		this.addAuxItem(this.getChargedShard(CrystalElement.PURPLE), -2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.PURPLE), -2, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.PURPLE), 2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.PURPLE), 2, 2);
 	}
 
 }

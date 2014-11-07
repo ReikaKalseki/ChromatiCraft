@@ -22,8 +22,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.ProgrammableSpawner;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Extras.ItemSpawner;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -31,7 +33,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
+public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 
 	private String selectedMob;
 	private static final ArrayList<String> disallowedMobs = new ArrayList();
@@ -39,7 +41,12 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 	private StepTimer progress = new StepTimer(180);
 	public int progressTimer;
 
+	private static final ElementTagCompound required = new ElementTagCompound();
+
 	static {
+		required.addTag(CrystalElement.PINK, 2000);
+		required.addTag(CrystalElement.BLACK, 500);
+
 		addDisallowedMob(EntityWither.class);
 		addDisallowedMob(EntityDragon.class);
 		addDisallowedMob(EntityGiantZombie.class);
@@ -128,7 +135,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 	}
 
 	private boolean canConvert() {
-		return this.isValidSpawner(inv[0]) && inv[1] == null;
+		return energy.containsAtLeast(required) && this.isValidSpawner(inv[0]) && inv[1] == null;
 	}
 
 	private void programSpawner() {
@@ -147,6 +154,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 			((ProgrammableSpawner)is.getItem()).setSpawnerType(is, this.getMobClass(selectedMob));
 		}
 		inv[1] = is;
+		this.drainEnergy(required);
 	}
 
 	private Class<? extends EntityLiving> getMobClass(String name) {
@@ -211,6 +219,16 @@ public class TileEntitySpawnerReprogrammer extends InventoriedChromaticBase {
 
 	public boolean hasSpawner() {
 		return this.isValidSpawner(inv[0]);
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return required.contains(e);
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 10000;
 	}
 
 }

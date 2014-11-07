@@ -22,14 +22,15 @@ import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Render.CrystalPlantRenderer;
-import Reika.ChromatiCraft.Render.CrystalRenderer;
-import Reika.ChromatiCraft.Render.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
-import Reika.ChromatiCraft.Render.RuneRenderer;
-import Reika.ChromatiCraft.Render.TankBlockRenderer;
-import Reika.ChromatiCraft.Render.TieredOreRenderer;
-import Reika.ChromatiCraft.Render.TieredPlantRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.FiberRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
+import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
@@ -56,6 +57,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final CrystalRenderer crystal = new CrystalRenderer();
 	private static final RuneRenderer rune = new RuneRenderer();
 	private static final TankBlockRenderer tank = new TankBlockRenderer();
+	private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
@@ -143,6 +145,10 @@ public class ChromaClient extends ChromaCommon {
 
 		tankRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(tankRender, tank);
+
+		fiberRender = RenderingRegistry.getNextAvailableRenderId();
+		fiber = new FiberRenderer(fiberRender);
+		RenderingRegistry.registerBlockHandler(fiberRender, fiber);
 
 		oreRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(oreRender, ore);

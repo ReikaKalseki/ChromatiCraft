@@ -37,6 +37,9 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityHelpBlock;
 import Reika.ChromatiCraft.TileEntity.TileEntityInventoryTicker;
@@ -89,6 +92,9 @@ public enum ChromaTiles {
 	TELEPUMP("chroma.telepump",			ChromaBlocks.TILEENTITY, TileEntityTeleportationPump.class, 12),
 	HELP("chroma.helpblock",			ChromaBlocks.TILEMODELLED, TileEntityHelpBlock.class, 11, "HelpBlockRenderer"),
 	COMPOUND("chroma.compound",			ChromaBlocks.PYLON,	TileEntityCompoundRepeater.class, 2, "RenderMultiRepeater"),
+	FIBERSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, TileEntityFiberReceiver.class, 12, "RenderReceiver"),
+	FIBER("chroma.fiber",				ChromaBlocks.FIBER,	TileEntityFiberOptic.class, 0, "RenderFiberOptic"),
+	FIBERSINK("chroma.fibersink", 		ChromaBlocks.TILEMODELLED, TileEntityFiberTransmitter.class, 13, "RenderEmitter"),
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
@@ -142,6 +148,7 @@ public enum ChromaTiles {
 		case LASER:
 		case BEACON:
 		case FENCE:
+		case STAND:
 			//case ITEMRIFT:
 			return true;
 		default:
@@ -156,7 +163,7 @@ public enum ChromaTiles {
 	public String getRenderer() {
 		if (!this.hasRender())
 			throw new RuntimeException("Tile "+name+" has no render to call!");
-		return "Reika.ChromatiCraft.Render."+renderer;
+		return "Reika.ChromatiCraft.Render.TESR."+renderer;
 	}
 
 	public TileEntity createTEInstanceForRender() {
@@ -260,6 +267,35 @@ public enum ChromaTiles {
 
 	public boolean isSidePlaced() {
 		return SidePlacedTile.class.isAssignableFrom(tile);
+	}
+
+	public double getMinX(TileEntityChromaticBase te) {
+		return 0;
+	}
+
+	public double getMinY(TileEntityChromaticBase te) {
+		return 0;
+	}
+
+	public double getMinZ(TileEntityChromaticBase te) {
+		return 0;
+	}
+
+	public double getMaxX(TileEntityChromaticBase te) {
+		return 1;
+	}
+
+	public double getMaxY(TileEntityChromaticBase te) {
+		switch(this) {
+		case FIBERSOURCE:
+			return 0.625;
+		default:
+			return 1;
+		}
+	}
+
+	public double getMaxZ(TileEntityChromaticBase te) {
+		return 1;
 	}
 
 }

@@ -76,7 +76,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 									ei.worldObj.spawnEntityInWorld(ei2);
 								else
 									this.spawnEffects(ei);
-								ChromaSounds.UPGRADE.playSoundAtBlock(ei.worldObj, x, y, z);
+								ChromaSounds.INFUSE.playSoundAtBlock(ei.worldObj, x, y, z);
 								ei.setDead();
 								tc.clear();
 							}

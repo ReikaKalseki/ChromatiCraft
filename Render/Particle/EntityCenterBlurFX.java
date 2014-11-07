@@ -45,14 +45,14 @@ public class EntityCenterBlurFX extends EntityFX {
 		motionX = vx;
 		motionY = vy;
 		motionZ = vz;
-		scale = 1F;
+		particleScale = 1F;
 		particleRed = e.getRed()/255F;
 		particleGreen = e.getGreen()/255F;
 		particleBlue = e.getBlue()/255F;
 	}
 
 	public EntityCenterBlurFX setScale(float f) {
-		scale = f;
+		particleScale = f;
 		return this;
 	}
 

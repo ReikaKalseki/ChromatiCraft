@@ -31,7 +31,8 @@ public enum ChromaOptions implements ConfigList {
 	ENDERPOOLS("Ender Pool Density from 1 to 3", 2),
 	ENDERFORESTID("Ender Forest ID", 47),
 	ENDEREFFECT("Liquid Ender Effect", true),
-	GOLDAPPLES("Rainbow Leaf Gold Apple Drop Percentage", 0.25F);
+	GOLDAPPLES("Rainbow Leaf Gold Apple Drop Percentage", 0.25F),
+	BROKENPYLON("Generate Some Pylons as Broken", false);
 
 	private String label;
 	private boolean defaultState;

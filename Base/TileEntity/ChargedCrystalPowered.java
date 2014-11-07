@@ -35,10 +35,14 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase {
 		return 0;
 	}
 
-	protected final void useEnergy(ElementTagCompound tag) {
+	protected final void useEnergy(CrystalElement e, int amt) {
 		ItemStorageCrystal c = ((ItemStorageCrystal)inv[0].getItem());
+		c.removeEnergy(inv[0], e, amt);
+	}
+
+	protected final void useEnergy(ElementTagCompound tag) {
 		for (CrystalElement e : tag.elementSet()) {
-			c.removeEnergy(inv[0], e, tag.getValue(e));
+			this.useEnergy(e, tag.getValue(e));
 		}
 	}
 

@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
@@ -304,6 +305,10 @@ public final class PylonGenerator implements IWorldGenerator {
 		CrystalElement e = CrystalElement.randomElement();//tag.asWeightedRandom().getRandomEntry();
 		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y, z, e);
 
+		boolean broken = ChromaOptions.BROKENPYLON.getState() && rand.nextInt(2) == 0;
+		if (broken)
+			this.breakPylon(array);
+
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
 			for (int i = 2; i < 6; i++) {
@@ -335,8 +340,27 @@ public final class PylonGenerator implements IWorldGenerator {
 		world.setBlock(x, y+9, z, ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata(), 3);
 		TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
 		te.setColor(e);
-		te.validateMultiblock();
+		if (broken)
+			te.invalidateMultiblock();
+		else
+			te.validateMultiblock();
 		world.func_147451_t(x, y+9, z);
+	}
+
+	private void breakPylon(FilledBlockArray array) {
+		int n = 3+rand.nextInt(4);
+		int i = 0;
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		while (i < n) {
+			int[] xyz = array.getRandomBlock();
+			int x = xyz[0];
+			int y = xyz[1];
+			int z = xyz[2];
+			if (array.hasBlockAt(x, y, z, b, 0) || array.hasBlockAt(x, y, z, b, 1) || array.hasBlockAt(x, y, z, b, 2) || array.hasBlockAt(x, y, z, b, 7) || array.hasBlockAt(x, y, z, b, 8)) {
+				i++;
+				array.setBlock(x, y, z, Blocks.air);
+			}
+		}
 	}
 
 }

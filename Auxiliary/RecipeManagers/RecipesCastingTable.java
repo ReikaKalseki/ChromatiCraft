@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRepeaterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalChargerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalClusterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalCoreRecipe;
@@ -39,6 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalTankRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.ElementUnitRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
@@ -101,8 +103,8 @@ public class RecipesCastingTable {
 		ShapedRecipes sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 2), sr));
 
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 12), "SS", "SS", 'S', new ItemStack(block, 1, 0));
-		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 12), sr));
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, 12), "SS", "SS", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 4, 12), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 1), "SS", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 1), sr));
@@ -182,7 +184,13 @@ public class RecipesCastingTable {
 		this.addRecipe(new TelePumpRecipe(is, ChromaStacks.energyCore));
 
 		is = ChromaTiles.COMPOUND.getCraftedProduct();
-		this.addRecipe(new CompoundRepeaterRecipe(is, ChromaTiles.REPEATER.getCraftedProduct()));
+		this.addRecipe(new CompoundRepeaterRecipe(is, ChromaStacks.crystalFocus));
+
+		is = ReikaItemHelper.getSizedItemStack(ChromaTiles.FIBER.getCraftedProduct(), 16);
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "GgG", "GDG", "GgG", 'G', Blocks.glass, 'D', Items.diamond, 'g', Items.glowstone_dust);
+		this.addRecipe(new FiberRecipe(is, sr));
+
+		this.addRecipe(new CompoundRuneRecipe(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, 13), ChromaStacks.bindingCrystal));
 	}
 
 	private void addRecipe(CastingRecipe r) {

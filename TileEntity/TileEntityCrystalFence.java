@@ -19,15 +19,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityFiberPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalFence extends TileEntityChromaticBase {
+public class TileEntityCrystalFence extends TileEntityFiberPowered {
 
 	private Perimeter fence = new Perimeter().disallowVertical();
 	private HashMap<Integer, Integer> active = new HashMap();
+
+	private static final ElementTagCompound required = new ElementTagCompound();
+
+	static {
+		required.addTag(CrystalElement.RED, 100);
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -56,7 +64,10 @@ public class TileEntityCrystalFence extends TileEntityChromaticBase {
 			fence.appendPoint(x, y, z);
 		}
 
-		this.affectEntities();
+		if (energy.containsAtLeast(required)) {
+			this.affectEntities();
+			this.drainEnergy(required);
+		}
 
 		for (Integer key : active.keySet()) {
 			if (key != null) {
@@ -129,6 +140,16 @@ public class TileEntityCrystalFence extends TileEntityChromaticBase {
 		fence.prependPoint(xCoord, yCoord, zCoord);
 		fence.appendPoint(xCoord, yCoord, zCoord);
 		//ReikaJavaLibrary.pConsole("read: "+fence, Side.SERVER);
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return required.contains(e);
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 2000;
 	}
 
 }

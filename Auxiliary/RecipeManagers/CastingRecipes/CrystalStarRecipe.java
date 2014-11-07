@@ -42,4 +42,9 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+15), -4, -2);
 	}
 
+	@Override
+	public int getDuration() {
+		return 4*super.getDuration();
+	}
+
 }

@@ -106,6 +106,11 @@ public class CastingRecipe {
 
 	}
 
+	@Override
+	public String toString() {
+		return super.toString()+" _ "+type+" > "+out.getDisplayName();
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		private final RuneShape runes = new RuneShape();
@@ -175,7 +180,7 @@ public class CastingRecipe {
 		public HashMap<WorldLocation, ItemStack> getOtherInputs(World world, int x, int y, int z) {
 			HashMap<WorldLocation, ItemStack> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {
-				ItemStack is = inputs.get(li);
+				ItemStack is = inputs.get(li).copy();
 				int dx = li.get(0);
 				int dz = li.get(1);
 				int dy = y+(Math.abs(dx) != 4 && Math.abs(dz) != 4 ? 0 : 1);

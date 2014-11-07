@@ -31,4 +31,9 @@ public class CrystalChargerRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getShard(CrystalElement.WHITE), 0, -2);
 	}
 
+	@Override
+	public int getDuration() {
+		return 2*super.getDuration();
+	}
+
 }

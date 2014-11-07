@@ -11,6 +11,11 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 public class BlockModelledChromaTile extends BlockChromaTile {
 
@@ -36,6 +41,25 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:transparent");
+	}
+
+	@Override
+	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+		return this.getCollisionBoundingBoxFromPool(world, x, y, z);
+	}
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z)  {
+		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
+		if (m == null)
+			return ReikaAABBHelper.getBlockAABB(x, y, z);
+		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
+		//if (te.isFlipped) {
+		//	box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+(1-m.getMaxY(te)), z+m.getMinZ(te), x+m.getMaxX(te), y+(1-m.getMinY(te)), z+m.getMaxZ(te));
+		//}
+		this.setBounds(box, x, y, z);
+		return box;
 	}
 
 }

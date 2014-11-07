@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -216,7 +217,7 @@ public class TileEntityAuraInfuser extends FluidReceiverInventoryBase implements
 	}
 
 	@Override
-	public ItemStack onRightClickWith(ItemStack item) {
+	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
 		if (item != null && !this.isItemValidForSlot(0, item))
 			return item;
 		ItemStack ret = inv[0];

@@ -49,8 +49,8 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	private int tickNoPlayer = 0;
 
 	@Override
-	public void onPathBroken() {
-
+	public void onPathBroken(CrystalElement e) {
+		abilityTick = 0;
 	}
 
 	@Override

@@ -17,14 +17,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromaticEventManager;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityItemCollector extends InventoriedChromaticBase {
+public class TileEntityItemCollector extends InventoriedFiberPowered {
 
 	private int experience = 0;
 	public boolean canIntake = false;
+
+	private static final ElementTagCompound required = new ElementTagCompound();
+
+	static {
+		required.addTag(CrystalElement.LIME, 100);
+		required.addTag(CrystalElement.BLACK, 20);
+	}
 
 	public int getExperience() {
 		return experience;
@@ -77,6 +86,8 @@ public class TileEntityItemCollector extends InventoriedChromaticBase {
 			return false;
 		if (e.worldObj.provider.dimensionId != worldObj.provider.dimensionId)
 			return false;
+		if (!energy.containsAtLeast(required))
+			return false;
 		if (e instanceof EntityItem || e instanceof EntityXPOrb) {
 			if (Math.abs(e.posX-x) <= 16 && Math.abs(e.posY-y) <= 3 && Math.abs(e.posZ-z) <= 16) {
 				if (e instanceof EntityItem) {
@@ -87,6 +98,7 @@ public class TileEntityItemCollector extends InventoriedChromaticBase {
 				}
 				else {
 					this.absorbXP(worldObj, x, y, z, (EntityXPOrb)e);
+					this.drainEnergy(required);
 					return true;
 				}
 			}
@@ -120,6 +132,7 @@ public class TileEntityItemCollector extends InventoriedChromaticBase {
 		}
 		world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.pop", 0.1F+0.5F*rand.nextFloat(), rand.nextFloat());
 		ent.playSound("random.pop", 0.5F, 2F);
+		this.drainEnergy(required);
 		return true;
 	}
 
@@ -183,6 +196,16 @@ public class TileEntityItemCollector extends InventoriedChromaticBase {
 	{
 		super.writeSyncTag(NBT);
 		NBT.setInteger("xp", experience);
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return required.contains(e);
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 6000;
 	}
 
 }

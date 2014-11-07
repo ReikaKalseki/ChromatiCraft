@@ -68,4 +68,9 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 		this.addRune(CrystalElement.YELLOW, -4, -1, 5);
 	}
 
+	@Override
+	public int getDuration() {
+		return 4*super.getDuration();
+	}
+
 }

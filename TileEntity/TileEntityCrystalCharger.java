@@ -71,7 +71,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 
 	}
 

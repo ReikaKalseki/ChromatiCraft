@@ -19,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
@@ -84,7 +83,7 @@ public class BlockPylonStructure extends Block {
 						((TileEntityCrystalPylon)te).invalidateMultiblock();
 					}
 					if (te instanceof TileEntityCrystalRepeater) {
-						CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)te);
+						((TileEntityCrystalRepeater)te).validateStructure();
 					}
 				}
 			}
@@ -128,10 +127,13 @@ public class BlockPylonStructure extends Block {
 			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
 		}
 
-		for (int i = 2; i <= 3; i++) {
-			te = world.getTileEntity(x, y+i, z);
-			if (te instanceof TileEntityCrystalRepeater) {
-				CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)te);
+		for (int k = 0; k < 6; k++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
+			for (int i = 1; i <= 5; i++) {
+				te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				if (te instanceof TileEntityCrystalRepeater) {
+					((TileEntityCrystalRepeater)te).validateStructure();
+				}
 			}
 		}
 	}
@@ -161,6 +163,16 @@ public class BlockPylonStructure extends Block {
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
 			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
+		}
+
+		for (int k = 0; k < 6; k++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
+			for (int i = 1; i <= 5; i++) {
+				te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				if (te instanceof TileEntityCrystalRepeater) {
+					((TileEntityCrystalRepeater)te).validateStructure();
+				}
+			}
 		}
 
 		super.onBlockAdded(world, x, y, z);

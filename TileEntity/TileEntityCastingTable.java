@@ -117,7 +117,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		//ChromaStructures.getCastingLevelTwo(world, x, y-1, z).place();
+		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
+		//this.addXP(3434);
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
@@ -126,6 +127,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.validateStructure(null, world, x, y-1, z);
 		craftingTick = 0;
+	}
+
+	public int getCraftingTick() {
+		return craftingTick;
 	}
 
 	private void killCrafting() {
@@ -385,6 +390,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private void craft() {
 		CastingRecipe recipe = activeRecipe;
+		//ReikaJavaLibrary.pConsole(recipe, Side.SERVER);
 		int count = 0;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
 			this.addXP(activeRecipe.getExperience());
@@ -392,11 +398,13 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				MultiBlockCastingRecipe mult = ((MultiBlockCastingRecipe)activeRecipe);
 				HashMap<WorldLocation, ItemStack> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
 				for (WorldLocation loc : map.keySet()) {
-					TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
+					TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
 					//ReikaJavaLibrary.pConsole(te+":"+te.getStackInSlot(0), Side.SERVER);
-					if (te != null)
-						te.setInventorySlotContents(0, null);
-					te.syncAllData(true);
+					if (te != null) {
+						//ReikaJavaLibrary.pConsole(loc+" @ "+te.getStackInSlot(0), Side.SERVER);
+						ReikaInventoryHelper.decrStack(0, te, 1);
+						te.syncAllData(true);
+					}
 				}
 			}
 			for (int i = 0; i < 9; i++) {
@@ -409,6 +417,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				ProgressionManager.instance.stepPlayerTo(this.getPlacer(), ProgressStage.LINK);
 			}
 			recipe = this.getValidRecipe();
+			//ReikaJavaLibrary.pConsole(count+": "+recipe, Side.SERVER);
 		}
 		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
 		activeRecipe = null;
@@ -417,6 +426,14 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 		if (worldObj.isRemote)
 			this.particleBurst();
+	}
+
+	public void onBreak() {
+		HashMap<List<Integer>, TileEntityItemStand> tiles = this.getOtherStands();
+		for (TileEntityItemStand te : tiles.values()) {
+			te.setTable(null);
+		}
+		tiles.clear();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -556,8 +573,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	@Override
-	public void onPathBroken() {
-
+	public void onPathBroken(CrystalElement e) {
+		this.killCrafting();
 	}
 
 	@Override

@@ -9,99 +9,115 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.StepTimer;
+import net.minecraft.nbt.NBTTagList;
+import Reika.DragonAPI.Interfaces.InertIInv;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
-public abstract class InventoriedCrystalReceiver extends InventoriedCrystalBase implements CrystalReceiver {
+public abstract class InventoriedCrystalReceiver extends CrystalReceiverBase implements ISidedInventory {
 
-	protected ElementTagCompound energy = new ElementTagCompound();
-	private int receiveCooldown = 40;
-	protected StepTimer checkTimer = new StepTimer(40);
+	protected ItemStack[] inv = new ItemStack[this.getSizeInventory()];
+
+	public final int[] getAccessibleSlotsFromSide(int var1) {
+		if (this instanceof InertIInv)
+			return new int[0];
+		return ReikaInventoryHelper.getWholeInventoryForISided(this);
+	}
+
+	public final boolean canInsertItem(int i, ItemStack is, int side) {
+		if (this instanceof InertIInv)
+			return false;
+		return ((IInventory)this).isItemValidForSlot(i, is);
+	}
+
+	public final ItemStack getStackInSlot(int par1) {
+		return inv[par1];
+	}
+
+	public final void setInventorySlotContents(int par1, ItemStack is) {
+		inv[par1] = is;
+	}
+
+	public void openInventory() {}
+
+	public void closeInventory() {}
 
 	@Override
-	public void updateEntity(World world, int x, int y, int z, int meta) {
-		checkTimer.update();
-		if (receiveCooldown > 0)
-			receiveCooldown--;
+	public final boolean hasCustomInventoryName() {
+		return true;
 	}
 
-	protected final int getCooldown() {
-		return receiveCooldown;
+	public final String getInventoryName() {
+		return this.getTEName();
 	}
 
-	public abstract int getMaxStorage();
+	@Override
+	public void markDirty() {
+		blockMetadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+		worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
 
-	public final int getEnergyScaled(CrystalElement e, int a) {
-		return a * this.getEnergy(e) / this.getMaxStorage();
-	}
-
-	protected final void requestEnergy(CrystalElement e, int amount) {
-		int amt = Math.min(amount, this.getRemainingSpace(e));
-		if (amt > 0)
-			CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
-	}
-
-	protected final void requestEnergy(ElementTagCompound tag) {
-		for (CrystalElement e : tag.elementSet()) {
-			this.requestEnergy(e, tag.getValue(e));
+		if (this.getBlockType() != Blocks.air)
+		{
+			worldObj.func_147453_f(xCoord, yCoord, zCoord, this.getBlockType());
 		}
 	}
 
-	protected final void requestEnergyDifference(ElementTagCompound tag) {
-		tag.subtract(energy);
-		this.requestEnergy(tag);
+	public boolean isUseableByPlayer(EntityPlayer var1) {
+		return this.isPlayerAccessible(var1);
 	}
 
-	public final int getRemainingSpace(CrystalElement e) {
-		return this.getMaxStorage()-this.getEnergy(e);
+	public final ItemStack decrStackSize(int par1, int par2)
+	{
+		return ReikaInventoryHelper.decrStackSize(this, par1, par2);
 	}
 
-	@Override
-	protected void readSyncTag(NBTTagCompound NBT) {
-		super.readSyncTag(NBT);
-
-		energy.readFromNBT("energy", NBT);
-	}
-
-	@Override
-	protected void writeSyncTag(NBTTagCompound NBT) {
-		super.writeSyncTag(NBT);
-
-		energy.writeToNBT("energy", NBT);
+	public final ItemStack getStackInSlotOnClosing(int par1)
+	{
+		return ReikaInventoryHelper.getStackInSlotOnClosing(this, par1);
 	}
 
 	@Override
-	public final void receiveElement(CrystalElement e, int amt) {
-		energy.addValueToColor(e, amt);
-		this.clamp(e);
-		receiveCooldown = 40;
+	public void writeToNBT(NBTTagCompound NBT)
+	{
+		super.writeToNBT(NBT);
+
+		NBTTagList nbttaglist = new NBTTagList();
+
+		for (int i = 0; i < inv.length; i++) {
+			if (inv[i] != null) {
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte)i);
+				inv[i].writeToNBT(nbttagcompound);
+				nbttaglist.appendTag(nbttagcompound);
+			}
+		}
+
+		NBT.setTag("Items", nbttaglist);
 	}
 
-	public final int getEnergy(CrystalElement e) {
-		return energy.getValue(e);
-	}
+	@Override
+	public void readFromNBT(NBTTagCompound NBT)
+	{
+		super.readFromNBT(NBT);
 
-	protected final void drainEnergy(CrystalElement e, int amt) {
-		energy.subtract(e, amt);
-	}
+		NBTTagList nbttaglist = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
+		inv = new ItemStack[this.getSizeInventory()];
 
-	protected final void drainEnergy(ElementTagCompound tag) {
-		energy.subtract(tag);
-	}
+		for (int i = 0; i < nbttaglist.tagCount(); i++)
+		{
+			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+			byte byte0 = nbttagcompound.getByte("Slot");
 
-	private void clamp(CrystalElement e) {
-		int max = this.getMaxStorage();
-		if (this.getEnergy(e) > max)
-			energy.setTag(e, max);
-	}
-
-	public void setEnergy(CrystalElement e, int lvl) {
-		energy.setTag(e, lvl);
+			if (byte0 >= 0 && byte0 < inv.length) {
+				inv[byte0] = ItemStack.loadItemStackFromNBT(nbttagcompound);
+			}
+		}
 	}
 
 }

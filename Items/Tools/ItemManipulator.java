@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Items.Tools;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -33,6 +32,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -82,13 +81,19 @@ public class ItemManipulator extends ItemChromaTool {
 			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
+		if (t == ChromaTiles.FIBERSINK) {
+			TileEntityFiberTransmitter ft = (TileEntityFiberTransmitter)tile;
+			ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
+			return true;
+		}
 		if (t == ChromaTiles.COMPOUND) {
 			TileEntityCompoundRepeater te = (TileEntityCompoundRepeater)tile;
 			if (ep.isSneaking()) {
 				if (te.isPlacer(ep)) {
-					world.setBlock(x, y, z, Blocks.air);
-					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.COMPOUND.getCraftedProduct());
+					//world.setBlock(x, y, z, Blocks.air);
+					//ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.COMPOUND.getCraftedProduct());
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, Block.soundTypeStone.getStepResourcePath(), 2, 0.5F);
+					te.redirect(s);
 				}
 			}
 			else {
@@ -107,9 +112,10 @@ public class ItemManipulator extends ItemChromaTool {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			if (ep.isSneaking()) {
 				if (te.isPlacer(ep)) {
-					world.setBlock(x, y, z, Blocks.air);
-					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.REPEATER.getCraftedProduct());
+					//world.setBlock(x, y, z, Blocks.air);
+					//ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.REPEATER.getCraftedProduct());
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, Block.soundTypeStone.getStepResourcePath(), 2, 0.5F);
+					te.redirect(s);
 				}
 			}
 			else {

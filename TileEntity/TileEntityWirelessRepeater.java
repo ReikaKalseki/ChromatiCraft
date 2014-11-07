@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -15,7 +24,7 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 
 	}
 

@@ -183,7 +183,7 @@ public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 		//smeltTimer = 0;
 	}
 

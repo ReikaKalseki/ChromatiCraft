@@ -37,4 +37,9 @@ public class PendantRecipe extends MultiBlockCastingRecipe {
 		//this.addAuraRequirement(CrystalElement.WHITE, 1000);
 		//this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 5000);
 	}
+
+	@Override
+	public int getDuration() {
+		return 4*super.getDuration();
+	}
 }

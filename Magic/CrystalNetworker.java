@@ -110,7 +110,7 @@ public class CrystalNetworker implements TickHandler {
 					}
 				}
 				else {
-					p.receiver.onPathBroken();
+					p.receiver.onPathBroken(p.element);
 					p.resetTiles();
 					it.remove();
 				}
@@ -121,7 +121,7 @@ public class CrystalNetworker implements TickHandler {
 				while (it.hasNext()) {
 					CrystalFlow p = it.next();
 					if (!p.checkLineOfSight()) {
-						p.receiver.onPathBroken();
+						p.receiver.onPathBroken(p.element);
 						p.resetTiles();
 						it.remove();
 					}
@@ -156,7 +156,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalFlow p = it.next();
 				if (p.contains(te)) {
 					p.resetTiles();
-					p.receiver.onPathBroken();
+					p.receiver.onPathBroken(p.element);
 					it.remove();
 				}
 			}
@@ -170,7 +170,7 @@ public class CrystalNetworker implements TickHandler {
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
 				if (p.contains(te)) {
-					p.receiver.onPathBroken();
+					p.receiver.onPathBroken(p.element);
 					p.resetTiles();
 					it.remove();
 				}

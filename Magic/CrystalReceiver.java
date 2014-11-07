@@ -17,7 +17,7 @@ public interface CrystalReceiver extends CrystalNetworkTile {
 
 	public void receiveElement(CrystalElement e, int amt);
 
-	public void onPathBroken();
+	public void onPathBroken(CrystalElement e);
 
 	public int getReceiveRange();
 

@@ -9,7 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -17,15 +20,19 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.InertItem;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick {
 
 	private InertItem item;
-	private int tileX;
-	private int tileY;
-	private int tileZ;
+	private Coordinate tile;
+	private int clickTick = 0;
 
 	@Override
 	public int getSizeInventory() {
@@ -39,7 +46,25 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (tile != null && ((TileEntityCastingTable)tile.getTileEntity(world)).getCraftingTick() > 0) {
+			this.spawnCraftParticles(world, x, y, z);
+		}
+		if (clickTick > 0)
+			clickTick--;
+	}
 
+	private boolean recentClicked() {
+		return clickTick > 0;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnCraftParticles(World world, int x, int y, int z) {
+		if (rand.nextInt(8) == 0) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.375);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.375);
+			EntityFX fx = new EntityCenterBlurFX(world, rx, y, rz, 0, 0.1, 0);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override
@@ -58,19 +83,29 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	}
 
 	@Override
-	public ItemStack onRightClickWith(ItemStack item) {
-		this.dropSlot();
-		inv[0] = item != null ? ReikaItemHelper.getSizedItemStack(item, 1) : null;
+	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
+		int has = inv[0] != null ? inv[0].stackSize : 0;
+		int sum = item != null ? has+item.stackSize : has;
+		boolean all = this.recentClicked() && ReikaItemHelper.matchStacks(item, inv[0]) && item != null && sum <= item.getMaxStackSize();
+		if (!all)
+			this.dropSlot();
+		ItemStack put = item != null ? (all ? ReikaItemHelper.getSizedItemStack(item, sum) : ReikaItemHelper.getSizedItemStack(item, 1)) : null;
+		inv[0] = put;
 		this.updateItem();
-		if (item != null)
-			item.stackSize--;
+		if (item != null) {
+			if (all)
+				item = null;
+			else
+				item.stackSize--;
+		}
+		clickTick = 10;
 		return item;
 	}
 
 	private void updateItem() {
-		item = inv[0] != null ? new InertItem(worldObj, inv[0]) : null;
+		item = inv[0] != null ? new InertItem(worldObj, ReikaItemHelper.getSizedItemStack(inv[0], 1)) : null;
 		if (worldObj != null) {
-			TileEntity te = worldObj.getTileEntity(tileX, tileY, tileZ);
+			TileEntity te = tile != null ? tile.getTileEntity(worldObj) : null;
 			if (te instanceof TileEntityCastingTable) {
 				((TileEntityCastingTable)te).markDirty();
 			}
@@ -102,24 +137,20 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 		this.updateItem();
 
-		tileX = NBT.getInteger("tx");
-		tileY = NBT.getInteger("ty");
-		tileZ = NBT.getInteger("tz");
+		if (NBT.hasKey("table"))
+			tile = Coordinate.readFromNBT("table", NBT);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		NBT.setInteger("tx", tileX);
-		NBT.setInteger("ty", tileY);
-		NBT.setInteger("tz", tileZ);
+		if (tile != null)
+			tile.writeToNBT("table", NBT);
 	}
 
 	public void setTable(TileEntityCastingTable te) {
-		tileX = te.xCoord;
-		tileY = te.yCoord;
-		tileZ = te.zCoord;
+		tile = te != null ? new Coordinate(te) : null;
 	}
 
 }

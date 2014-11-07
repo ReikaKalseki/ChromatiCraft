@@ -100,6 +100,9 @@ public class ItemChromaPlacer extends Item {
 			else if (mat == Material.plants) {
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.grass);
 			}
+			else if (mat == Material.glass) {
+				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.glass);
+			}
 			else {
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.wool);
 			}

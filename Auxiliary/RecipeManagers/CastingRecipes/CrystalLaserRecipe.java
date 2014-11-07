@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
@@ -27,6 +28,7 @@ public class CrystalLaserRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.crystalFocus, -2, 0);
 		this.addAuxItem(ChromaStacks.crystalMirror, 2, 0);
 		this.addAuxItem(new ItemStack(Blocks.quartz_block), 2, 0);
+		this.addAuxItem(new ItemStack(Items.diamond), 4, 0);
 		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, -2);
 		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, 2);
 		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, -2);

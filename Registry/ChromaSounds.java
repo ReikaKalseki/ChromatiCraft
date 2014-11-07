@@ -33,7 +33,8 @@ public enum ChromaSounds implements SoundEnum {
 	CRAFTDONE("craftdone2"),
 	UPGRADE("upgrade"),
 	ABILITY("ability"),
-	ERROR("error");
+	ERROR("error"),
+	INFUSE("infuse");
 
 	public static final ChromaSounds[] soundList = values();
 

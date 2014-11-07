@@ -17,14 +17,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
-import Reika.ChromatiCraft.Items.ItemStorageCrystal;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
-import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -32,7 +29,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalLaser extends ChargedCrystalPowered implements OneSlotMachine {
+public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 
 	private int range;
 	private StepTimer rangeTimer = new StepTimer(20);
@@ -45,13 +42,6 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		ForgeDirection dir = this.getFacing();
-
-		if (DragonAPICore.debugtest) {
-			ItemStack is = ChromaItems.STORAGE.getStackOfMetadata(4);
-			((ItemStorageCrystal)is.getItem()).addEnergy(is, CrystalElement.WHITE, 20000);
-			inv[0] = is;
-			inv[1] = ChromaItems.LENS.getStackOfMetadata(CrystalElement.WHITE.ordinal());
-		}
 
 		rangeTimer.update();
 		if (rangeTimer.checkCap()) {
@@ -72,7 +62,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 	private int updateRange(ForgeDirection dir) {
 		if (!this.isActive())
 			return 0;
-		int energy = ((ItemStorageCrystal)inv[0].getItem()).getStoredEnergy(inv[0], this.getColor());
+		int energy = this.getEnergy(this.getColor());
 		int max = (int)Math.min(Math.sqrt(energy), 128);
 		for (int i = 1; i <= max; i++) {
 			int dx = xCoord+dir.offsetX*i;
@@ -86,7 +76,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 	}
 
 	public boolean isActive() {
-		return ChromaItems.LENS.matchWith(inv[1]) && this.getStoredEnergy(this.getColor()) > 0;
+		return ChromaItems.LENS.matchWith(inv[0]) && this.getEnergy(this.getColor()) > 0;
 	}
 
 	private void applyEffects(World world, int x, int y, int z, ForgeDirection dir) {
@@ -133,7 +123,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 				break;
 			}
 		}
-		((ItemStorageCrystal)inv[0].getItem()).removeEnergy(inv[0], this.getColor(), 1);
+		this.drainEnergy(this.getColor(), 1);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -177,7 +167,7 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 	}
 
 	public CrystalElement getColor() {
-		return inv[1] != null && ChromaItems.LENS.matchWith(inv[1]) ? CrystalElement.elements[inv[1].getItemDamage()] : null;
+		return inv[0] != null && ChromaItems.LENS.matchWith(inv[0]) ? CrystalElement.elements[inv[0].getItemDamage()] : null;
 	}
 
 	public int getRange() {
@@ -186,14 +176,12 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		if (slot == 0)
-			return this.getStoredEnergy(this.getColor()) == 0;
 		return side == 0;
 	}
 
 	@Override
 	public int getSizeInventory() {
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -202,18 +190,14 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 	}
 
 	public ItemStack swapLens(ItemStack is) {
-		ItemStack ret = inv[1] != null ? inv[1].copy() : null;
-		inv[1] = is != null ? is.copy() : null;
+		ItemStack ret = inv[0] != null ? inv[0].copy() : null;
+		inv[0] = is != null ? is.copy() : null;
 		return ret;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		if (slot == 1)
-			return ChromaItems.LENS.matchWith(is);
-		if (slot == 0)
-			return ChromaItems.STORAGE.matchWith(is);
-		return false;
+		return ChromaItems.LENS.matchWith(is);
 	}
 
 	@Override
@@ -238,6 +222,16 @@ public class TileEntityCrystalLaser extends ChargedCrystalPowered implements One
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("range", range);
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 12000;
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return e == this.getColor();
 	}
 
 }

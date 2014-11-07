@@ -52,7 +52,7 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public int getDuration() {
-		return 800;
+		return 8*super.getDuration();
 	}
 
 }

@@ -27,4 +27,9 @@ public class CrystalCoreRecipe extends MultiBlockCastingRecipe {
 		//this.addRune(color, rx, ry, rz);
 	}
 
+	@Override
+	public int getDuration() {
+		return 2*super.getDuration();
+	}
+
 }

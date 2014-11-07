@@ -93,6 +93,8 @@ public class BlockCrystalTile extends BlockChromaTile {
 	@Override
 	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (c == null)
+			return;
 		if (c == ChromaTiles.PYLON) {
 
 		}

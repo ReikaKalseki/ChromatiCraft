@@ -1,15 +1,19 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
-import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -19,7 +23,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCompoundRepeater extends CrystalTransmitterBase implements CrystalRepeater {
+public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -45,18 +49,13 @@ public class TileEntityCompoundRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 
 	}
 
 	@Override
 	public int getReceiveRange() {
 		return 24;
-	}
-
-	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset( CrystalElement e) {
-		return null;
 	}
 
 	@Override
@@ -70,21 +69,6 @@ public class TileEntityCompoundRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public boolean canConduct() {
-		for (int i = -3; i <= 1; i++) {
-			if (i != 0) {
-				Block b = worldObj.getBlock(xCoord, yCoord+i, zCoord);
-				int meta = worldObj.getBlockMetadata(xCoord, yCoord+i, zCoord);
-				int m2 = i == -2 ? 2 : 0;
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != m2) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	@Override
 	public int getSendRange() {
 		return 16;
 	}
@@ -92,6 +76,24 @@ public class TileEntityCompoundRepeater extends CrystalTransmitterBase implement
 	@Override
 	public int getSignalDegradation() {
 		return 5;
+	}
+
+	@Override
+	protected boolean checkForStructure() {
+		for (int i = 1; i <= 5; i++) {
+			if (i != 0) {
+				int dx = xCoord+facing.offsetX*i;
+				int dy = yCoord+facing.offsetY*i;
+				int dz = zCoord+facing.offsetZ*i;
+				Block b = worldObj.getBlock(dx, dy, dz);
+				int meta = worldObj.getBlockMetadata(dx, dy, dz);
+				int m2 = i == 3 ? 13 : i == 1 || i == 5 ? 12 : 2;
+				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != m2) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -104,25 +106,32 @@ public class TileEntityCompoundRepeater extends CrystalTransmitterBase implement
 		return true;
 	}
 
+	@Override
 	public boolean checkConnectivity() {
-		CrystalElement c = this.getActiveColor();
-		return c != null && CrystalNetworker.instance.checkConnectivity(c, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange());
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			if (CrystalNetworker.instance.checkConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()))
+				return true;
+		}
+		return false;
 	}
 
+	@Override
 	public CrystalElement getActiveColor() {
-		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
+		return null;
 	}
 
+	@Override
 	public CrystalSource getEnergySource() {
-		CrystalElement e = this.getActiveColor();
-		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
+		return null;
 	}
 
+	@Override
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
 		if (!worldObj.isRemote) {
 			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(20) == 0)
 				p.attackEntityByProxy(player, this);
-			CrystalNetworker.instance.makeRequest(this, this.getActiveColor(), 15000, this.getReceiveRange());
+			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}
 	}
 

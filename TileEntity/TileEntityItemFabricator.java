@@ -78,7 +78,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	}
 
 	@Override
-	public void onPathBroken() {
+	public void onPathBroken(CrystalElement e) {
 
 	}
 
