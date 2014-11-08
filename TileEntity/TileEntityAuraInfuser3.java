@@ -12,26 +12,34 @@ package Reika.ChromatiCraft.TileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.DragonAPI.Instantiable.InertItem;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements ItemOnRightClick {
+public class TileEntityAuraInfuser3 extends InventoriedChromaticBase implements ItemOnRightClick {
 
 	private InertItem item;
 
-	private int craftingTick = 200;
+	private int craftingTick = 0;
+	private boolean hasStructure = true;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -40,17 +48,9 @@ public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements I
 		required.addTag(CrystalElement.BLACK, 2500);
 	}
 
-	private boolean isCollecting() {
-		return ReikaMathLibrary.isValueInsideBounds(0, 40, craftingTick);
-	}
-
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		energy.addValueToColor(CrystalElement.randomElement(), 4000);
-		craftingTick = 250;
-		if (craftingTick == 0)
-			craftingTick = 250;
-		if (energy.containsAtLeast(required)) {
+		if (hasStructure/* && energy.containsAtLeast(required)*/) {
 			if (craftingTick > 0) {
 				this.onCraftingTick(world, x, y, z);
 			}
@@ -62,17 +62,86 @@ public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements I
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		this.validateMultiblock();
+	}
 
+	public void validateMultiblock() {
+		hasStructure = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		if (!hasStructure) {
+			if (craftingTick > 0) {
+				this.killCrafting();
+			}
+			craftingTick = 0;
+		}
+		this.markDirty();
+		this.syncAllData(false);
+	}
+
+	private void killCrafting() {
+
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		hasStructure = NBT.getBoolean("struct");
+
+		craftingTick = NBT.getInteger("craft");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("struct", hasStructure);
+
+		NBT.setInteger("craft", craftingTick);
 	}
 
 	private void onCraftingTick(World world, int x, int y, int z) {
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
 
+		if (craftingTick%304 == 0) {
+			ChromaSounds.INFUSION.playSoundAtBlock(this);
+		}
 		craftingTick--;
 
 		if (craftingTick == 0) {
-			this.drainEnergy(required);
+			;//this.drainEnergy(required);
+			this.craft();
+			if (world.isRemote) {
+				this.craftParticles(world, x, y, z);
+			}
+		}
+	}
+
+	private void craft() {
+		ChromaSounds.INFUSE.playSoundAtBlock(this);
+		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, inv[0].stackSize);
+		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
+		for (int i = 0; i < arr.getSize(); i++) {
+			int[] xyz = arr.getNthBlock(i);
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			if (arr.hasBlockAt(dx, dy, dz, ChromaBlocks.CHROMA.getBlockInstance(), 0))
+				worldObj.setBlock(dx, dy, dz, Blocks.air);
+		}
+		this.validateMultiblock();
+		this.markDirty();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void craftParticles(World world, int x, int y, int z) {
+		for (int i = 0; i < 360; i += 15) {
+			double ang = Math.toRadians(ReikaRandomHelper.getRandomPlusMinus(i, 5));
+			double v = 0.075;
+			double vx = v*Math.sin(ang);
+			double vz = v*Math.cos(ang);
+			EntityFlareFX fx = new EntityFlareFX(CrystalElement.WHITE, world, x+0.5, y+0.5, z+0.5, vx, 0, vz);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -86,8 +155,20 @@ public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements I
 			flag = is != null;
 		else if (!ReikaItemHelper.matchStacks(inv[0], item.getEntityItem()))
 			flag = true;
-		if (flag)
+		if (flag) {
 			item = is != null ? new InertItem(worldObj, is) : null;
+		}
+
+		if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.rawCrystal)) {
+			if (craftingTick == 0)
+				craftingTick = 608;
+		}
+		else {
+			if (craftingTick > 0) {
+				this.killCrafting();
+			}
+			craftingTick = 0;
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -145,7 +226,7 @@ public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements I
 	public EntityItem getItem() {
 		return item;
 	}
-
+	/*
 	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
 		return required.contains(e);
@@ -155,7 +236,7 @@ public class TileEntityAuraInfuser3 extends InventoriedFiberPowered implements I
 	public int getMaxStorage() {
 		return 5000;
 	}
-
+	 */
 	@Override
 	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
 		if (item != null && !this.isItemValidForSlot(0, item))

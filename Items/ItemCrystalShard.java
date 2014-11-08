@@ -21,6 +21,8 @@ import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -31,12 +33,15 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Interfaces.AnimatedSpritesheet;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet {
+public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem {
+
+	private static final int[] offsets;
 
 	public ItemCrystalShard(int tex) {
 		super(tex);
@@ -235,5 +240,25 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 	@Override
 	public String getTexture(ItemStack is) {
 		return is.getItemDamage() >= 16 ? "/Reika/ChromatiCraft/Textures/Items/shardglow.png" : super.getTexture(is);
+	}
+
+	@Override
+	public int getFrameOffset(ItemStack is) {
+		return offsets[is.getItemDamage()%16];
+	}
+
+	static {
+		offsets = ReikaArrayHelper.getLinearArray(16);
+		ReikaArrayHelper.shuffleArray(offsets);
+	}
+
+	@Override
+	public ProgressStage getDiscoveryTier(ItemStack is) {
+		return ProgressStage.CHROMA;
+	}
+
+	@Override
+	public boolean isTiered(ItemStack is) {
+		return is.getItemDamage() >= 16;
 	}
 }

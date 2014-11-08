@@ -20,6 +20,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -27,6 +28,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
+		BlockTieredOre bt = (BlockTieredOre)b;
 		Tessellator tessellator = Tessellator.instance;
 
 		rb.renderMaxX = 1;
@@ -36,7 +38,8 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		rb.renderMinZ = 0;
 		rb.renderMaxY = 1;
 
-		IIcon ico = ((BlockTieredOre)b).getBacking(metadata);
+		boolean tier = ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, bt.getProgressStage(metadata));
+		IIcon ico = tier ? bt.getBacking(metadata) : bt.getDisguise().getIcon(0, 0);
 
 		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
@@ -67,34 +70,35 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, ico);
 		tessellator.draw();
 
+		if (tier) {
+			ico = ((BlockTieredOre)b).getOverlay(metadata);
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(0.0F, -1.0F, 0.0F);
+			rb.renderFaceYNeg(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
 
-		ico = ((BlockTieredOre)b).getOverlay(metadata);
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, -1.0F, 0.0F);
-		rb.renderFaceYNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(0.0F, 1.0F, 0.0F);
+			rb.renderFaceYPos(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
 
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 1.0F, 0.0F);
-		rb.renderFaceYPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 0.0F, -1.0F);
-		rb.renderFaceZNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(0.0F, 0.0F, 1.0F);
-		rb.renderFaceZPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
-		rb.renderFaceXNeg(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
-		tessellator.startDrawingQuads();
-		tessellator.setNormal(1.0F, 0.0F, 0.0F);
-		rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, ico);
-		tessellator.draw();
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(0.0F, 0.0F, -1.0F);
+			rb.renderFaceZNeg(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(0.0F, 0.0F, 1.0F);
+			rb.renderFaceZPos(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(-1.0F, 0.0F, 0.0F);
+			rb.renderFaceXNeg(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
+			tessellator.startDrawingQuads();
+			tessellator.setNormal(1.0F, 0.0F, 0.0F);
+			rb.renderFaceXPos(b, 0.0D, 0.0D, 0.0D, ico);
+			tessellator.draw();
+		}
 
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 	}

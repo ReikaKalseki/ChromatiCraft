@@ -29,21 +29,19 @@ import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.RotaryCraft.API.ItemFetcher;
 
-public class BlockTieredOre extends BlockTieredResource {
+public class BlockTieredOre extends BlockChromaTiered {
 
 	private final IIcon[] overlay = new IIcon[16];
 	private final IIcon[] back = new IIcon[16];
 
 	public BlockTieredOre(Material mat) {
 		super(mat);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
 		this.setHardness(4);
 		this.setResistance(5);
 	}
@@ -128,14 +126,9 @@ public class BlockTieredOre extends BlockTieredResource {
 		return li;
 	}
 
-	private ProgressStage getProgressStage(IBlockAccess world, int x, int y, int z) {
-		int meta = world.getBlockMetadata(x, y, z);
-		return TieredOres.list[meta].level;
-	}
-
 	@Override
-	public boolean isPlayerSufficientTier(IBlockAccess world, int x, int y, int z, EntityPlayer ep) {
-		return ProgressionManager.instance.isPlayerAtStage(ep, this.getProgressStage(world, x, y, z));
+	public ProgressStage getProgressStage(int meta) {
+		return TieredOres.list[meta].level;
 	}
 
 	@Override

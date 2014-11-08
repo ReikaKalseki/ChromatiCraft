@@ -11,15 +11,21 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Interfaces.IndexedItemSprites;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -92,7 +98,23 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
 		ChromaItems ir = ChromaItems.getEntry(is);
-		return ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
+		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
+		if (this instanceof TieredItem && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			name = this.obfuscateIf(name, is);
+		}
+		return name;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private String obfuscateIf(String name, ItemStack is) {
+		TieredItem it = (TieredItem)this;
+		if (it.isTiered(is)) {
+			ProgressStage p = it.getDiscoveryTier(is);
+			if (!ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, p)) {
+				name = EnumChatFormatting.OBFUSCATED.toString()+name;
+			}
+		}
+		return name;
 	}
 
 }

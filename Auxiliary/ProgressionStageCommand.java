@@ -34,7 +34,7 @@ public class ProgressionStageCommand extends DragonCommandBase {
 			if (stage == -1) {
 				ProgressionManager.instance.maxPlayerProgression(ep);
 			}
-			else if (stage == 0) {
+			else if (stage == -2) {
 				ProgressionManager.instance.resetPlayerProgression(ep);
 			}
 			else {

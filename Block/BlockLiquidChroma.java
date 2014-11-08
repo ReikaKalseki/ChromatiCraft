@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block;
 import java.awt.Color;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -19,12 +20,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -97,6 +100,37 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.CHROMA);
+		}
+	}
+
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z) {
+		super.onBlockAdded(world, x, y, z);
+
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, y, dz);
+			if (b == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+				((BlockPylonStructure)b).triggerAddCheck(world, dx, y, dz);
+			}
+		}
+	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block old, int oldm) {
+
+		super.breakBlock(world, x, y, z, old, oldm);
+
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, y, dz);
+			if (b == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+				((BlockPylonStructure)b).triggerBreakCheck(world, dx, y, dz);
+			}
 		}
 	}
 

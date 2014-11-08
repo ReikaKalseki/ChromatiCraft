@@ -123,6 +123,10 @@ public class ChromatiPackets implements IPacketHandler {
 			return;
 		}
 		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile == null) {
+			ChromatiCraft.logger.logError("TileEntity at "+x+", "+y+", "+z+" was deleted before its packet could be received!");
+			return;
+		}
 		switch (pack) {
 		case ENCHANTER:
 			Enchantment e = Enchantment.enchantmentsList[data[0]];

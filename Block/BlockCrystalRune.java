@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -27,7 +26,6 @@ import Reika.ChromatiCraft.Base.BlockDyeTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -51,13 +49,14 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 		if (world.isRemote)
 			ReikaParticleHelper.spawnColoredParticles(world, x, y, z, dye, 256);
 
-		for (int k = 0; k < 6; k++) {
-			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
-			for (int i = 1; i <= 5; i++) {
-				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
-				if (te instanceof TileEntityCrystalRepeater) {
-					((TileEntityCrystalRepeater)te).validateStructure();
-				}
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, dy, dz);
+			if (b == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+				((BlockPylonStructure)b).triggerAddCheck(world, dx, dy, dz);
 			}
 		}
 
@@ -69,17 +68,15 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(meta);
 		if (world.isRemote)
 			ReikaParticleHelper.spawnColoredParticles(world, x, y, z, dye, 256);
-		if (world.getBlock(x, y-1, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
-			((BlockPylonStructure)ChromaBlocks.PYLONSTRUCT.getBlockInstance()).triggerBreakCheck(world, x, y-1, z);
-		}
 
-		for (int k = 0; k < 6; k++) {
-			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
-			for (int i = 1; i <= 5; i++) {
-				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
-				if (te instanceof TileEntityCrystalRepeater) {
-					((TileEntityCrystalRepeater)te).validateStructure();
-				}
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			Block b = world.getBlock(dx, dy, dz);
+			if (b == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
+				((BlockPylonStructure)b).triggerBreakCheck(world, dx, dy, dz);
 			}
 		}
 

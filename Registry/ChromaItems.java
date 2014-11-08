@@ -172,7 +172,8 @@ public enum ChromaItems implements ItemEnum {
 			//	meta = 2;
 			return StatCollector.translateToLocal(ChromaNames.getFluidName(meta))+" "+this.getBasicName();
 		case SHARD:
-			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
+			String s = meta >= 16 ? /*EnumChatFormatting.GREEN.toString()*/"Boosted " : "";
+			return s+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case POTION:
 		case PENDANT:
 		case PENDANT3:

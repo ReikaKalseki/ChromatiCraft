@@ -15,6 +15,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -22,6 +23,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
+import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -59,15 +61,23 @@ public class ChromaHelpHUD {
 					this.closePanel();
 				}
 				else {
-					this.openPanel();
-					Block b = Minecraft.getMinecraft().theWorld.getBlock(look.blockX, look.blockY, look.blockZ);
-					int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(look.blockX, look.blockY, look.blockZ);
+					int x = look.blockX;
+					int y = look.blockY;
+					int z = look.blockZ;
+					Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
+					int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
+					boolean flag = true;
+					if (b instanceof BlockTieredResource) {
+						flag = ((BlockTieredResource)b).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, x, y, z, ep);
+					}
 					String text = ChromaHelpData.instance.getText(b, meta);
 					if (text != null && !text.isEmpty()) {
+						this.openPanel();
 						this.renderPanel(gsc);
 						if (this.isPanelOpen()) {
-							this.renderText(text, gsc);
-							this.markDiscovered(ep, b, meta);
+							this.renderText(text, gsc, flag);
+							if (flag)
+								this.markDiscovered(ep, b, meta);
 						}
 					}
 				}
@@ -125,7 +135,10 @@ public class ChromaHelpHUD {
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	private void renderText(String s, int gsc) {
+	private void renderText(String s, int gsc, boolean know) {
+		if (!know) {
+			s = EnumChatFormatting.OBFUSCATED.toString()+s;
+		}
 		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
 		GL11.glPushMatrix();
 		double d = 1D/gsc;//Math.max(0.5, 1D/gsc);

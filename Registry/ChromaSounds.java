@@ -34,7 +34,8 @@ public enum ChromaSounds implements SoundEnum {
 	UPGRADE("upgrade"),
 	ABILITY("ability"),
 	ERROR("error"),
-	INFUSE("infuse");
+	INFUSE("infuse"),
+	INFUSION("infuse2");
 
 	public static final ChromaSounds[] soundList = values();
 

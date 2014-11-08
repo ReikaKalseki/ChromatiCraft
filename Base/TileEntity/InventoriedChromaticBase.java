@@ -72,7 +72,7 @@ public abstract class InventoriedChromaticBase extends TileEntityChromaticBase i
 	}
 
 	@Override
-	public final void markDirty() {
+	public void markDirty() {
 		blockMetadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 		worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
 

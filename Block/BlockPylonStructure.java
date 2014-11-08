@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
@@ -97,7 +98,7 @@ public class BlockPylonStructure extends Block {
 		super.breakBlock(world, x, y, z, oldB, oldM);
 	}
 
-	public void triggerBreakCheck(World world, int x, int y, int z) {
+	void triggerBreakCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
 		for (int i = 0; i < 6; i++) {
@@ -118,13 +119,20 @@ public class BlockPylonStructure extends Block {
 		}
 
 		te = world.getTileEntity(mx, my+1, mz);
+		//ReikaJavaLibrary.pConsole(te+" @ "+mx+", "+(my+1)+", "+mz, Side.SERVER);
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
+		}
+		if (te instanceof TileEntityAuraInfuser3) {
+			((TileEntityAuraInfuser3)te).validateMultiblock();
 		}
 
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
 			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
+		}
+		if (te instanceof TileEntityAuraInfuser3) {
+			((TileEntityAuraInfuser3)te).validateMultiblock();
 		}
 
 		for (int k = 0; k < 6; k++) {
@@ -140,6 +148,12 @@ public class BlockPylonStructure extends Block {
 
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
+		this.triggerAddCheck(world, x, y, z);
+
+		super.onBlockAdded(world, x, y, z);
+	}
+
+	void triggerAddCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
 		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-12, z-16, x+16, y+12, z+16);
@@ -159,6 +173,9 @@ public class BlockPylonStructure extends Block {
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
 		}
+		if (te instanceof TileEntityAuraInfuser3) {
+			((TileEntityAuraInfuser3)te).validateMultiblock();
+		}
 
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
@@ -174,8 +191,6 @@ public class BlockPylonStructure extends Block {
 				}
 			}
 		}
-
-		super.onBlockAdded(world, x, y, z);
 	}
 
 }

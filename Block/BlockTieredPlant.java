@@ -34,11 +34,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -47,14 +46,13 @@ import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public final class BlockTieredPlant extends BlockTieredResource implements IPlantable {
+public final class BlockTieredPlant extends BlockChromaTiered implements IPlantable {
 
 	private final IIcon[] front_icons = new IIcon[16];
 	private final IIcon[] back_icons = new IIcon[16];
 
 	public BlockTieredPlant(Material mat) {
 		super(mat);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
 		this.setHardness(0);
 		this.setResistance(2);
 		stepSound = soundTypeGrass;
@@ -180,7 +178,9 @@ public final class BlockTieredPlant extends BlockTieredResource implements IPlan
 				li.add(ChromaStacks.elementDust.copy());
 			break;
 		case BULB:
-
+			n = 1+fortune*4+2*rand.nextInt(9);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.resonanceDust.copy());
 			break;
 		case DESERT:
 			n = (1+fortune*fortune)+2*rand.nextInt(5);
@@ -191,14 +191,9 @@ public final class BlockTieredPlant extends BlockTieredResource implements IPlan
 		return li;
 	}
 
-	private ProgressStage getProgressStage(IBlockAccess world, int x, int y, int z) {
-		int meta = world.getBlockMetadata(x, y, z);
-		return TieredPlants.list[meta].level;
-	}
-
 	@Override
-	public boolean isPlayerSufficientTier(IBlockAccess world, int x, int y, int z, EntityPlayer ep) {
-		return ProgressionManager.instance.isPlayerAtStage(ep, this.getProgressStage(world, x, y, z));
+	public ProgressStage getProgressStage(int meta) {
+		return TieredPlants.list[meta].level;
 	}
 
 	@Override
