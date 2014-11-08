@@ -21,8 +21,8 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
-	private int receiveCooldown = 40;
-	protected StepTimer checkTimer = new StepTimer(40);
+	private int receiveCooldown = this.getCooldownLength();
+	protected StepTimer checkTimer = new StepTimer(this.getCooldownLength());
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -34,6 +34,10 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		if (DragonAPICore.debugtest) {
 			energy.addValueToColor(CrystalElement.randomElement(), 500);
 		}
+	}
+
+	protected int getCooldownLength() {
+		return 40;
 	}
 
 	protected final int getCooldown() {
@@ -85,7 +89,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	public final void receiveElement(CrystalElement e, int amt) {
 		energy.addValueToColor(e, amt);
 		this.clamp(e);
-		receiveCooldown = 40;
+		receiveCooldown = this.getCooldownLength();
 	}
 
 	public final int getEnergy(CrystalElement e) {

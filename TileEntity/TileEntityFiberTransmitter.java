@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,9 +17,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.FiberPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityFiberPowered;
 import Reika.ChromatiCraft.Magic.FiberNetwork;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -125,9 +126,13 @@ public class TileEntityFiberTransmitter extends TileEntityChromaticBase implemen
 	private int emitEnergy(CrystalElement e, int amt) {
 		ForgeDirection dir = this.getFacing();
 		for (int i = 1; i < 4; i++) {
-			TileEntity tile = worldObj.getTileEntity(xCoord+dir.offsetX*i, yCoord+dir.offsetY*i, zCoord+dir.offsetZ*i);
-			if (tile instanceof TileEntityFiberPowered) {
-				TileEntityFiberPowered te = (TileEntityFiberPowered)tile;
+			int dx = xCoord+dir.offsetX*i;
+			int dy = yCoord+dir.offsetY*i;
+			int dz = zCoord+dir.offsetZ*i;
+			Block b = worldObj.getBlock(dx, dy, dz);
+			TileEntity tile = worldObj.getTileEntity(dx, dy, dz);
+			if (tile instanceof FiberPowered) {
+				FiberPowered te = (FiberPowered)tile;
 				int added = te.addEnergy(e, amt);
 				if (added > 0) {
 					if (particleTick > 1 && rand.nextInt(Math.max(1, 20-particleTick)) == 0) {
@@ -138,6 +143,8 @@ public class TileEntityFiberTransmitter extends TileEntityChromaticBase implemen
 				}
 				return added;
 			}
+			else if (b.isOpaqueCube())
+				return 0;
 		}
 		return 0;
 	}

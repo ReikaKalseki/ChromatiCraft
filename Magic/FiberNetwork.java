@@ -12,10 +12,15 @@ package Reika.ChromatiCraft.Magic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.LinkedList;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberSource;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberReceiver;
@@ -27,6 +32,7 @@ public class FiberNetwork {
 	private final ArrayList<TileEntityFiberOptic> wires = new ArrayList();
 	private final EnumMap<CrystalElement, Collection<TileEntityFiberTransmitter>> sinks = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Collection<TileEntityFiberReceiver>> sources = new EnumMap(CrystalElement.class);
+	//private final Collection<FiberPath> paths = new ArrayList();
 
 	public FiberNetwork() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -56,6 +62,22 @@ public class FiberNetwork {
 		Collection<TileEntityFiberReceiver> source = sources.get(e);
 		if (source != null)
 			source.remove(te);
+		if (te instanceof TileEntityFiberTransmitter) {
+			Collection<TileEntityFiberReceiver> c = sources.get(e);
+			if (c != null) {
+				for (TileEntityFiberReceiver r : c) {
+					r.removeTerminus((TileEntityFiberTransmitter)te);
+				}
+			}
+		}
+		else if (te instanceof TileEntityFiberReceiver) {
+			Collection<TileEntityFiberTransmitter> c = sinks.get(e);
+			if (c != null) {
+				for (TileEntityFiberTransmitter r : c) {
+					((TileEntityFiberReceiver)te).removeTerminus(r);
+				}
+			}
+		}
 	}
 
 	private void rebuild() {
@@ -130,7 +152,13 @@ public class FiberNetwork {
 			c.add(te);
 		}
 		te.setNetwork(this);
-
+		Collection<TileEntityFiberReceiver> c = sources.get(e);
+		//ReikaJavaLibrary.pConsole("added emitter, "+c+" from "+sources);
+		if (c != null) {
+			for (TileEntityFiberReceiver r : c) {
+				r.addTerminus(te);
+			}
+		}
 		//ReikaJavaLibrary.pConsole(te, Side.SERVER);
 	}
 
@@ -144,7 +172,13 @@ public class FiberNetwork {
 			c.add(te);
 		}
 		te.setNetwork(this);
-
+		Collection<TileEntityFiberTransmitter> c = sinks.get(e);
+		//ReikaJavaLibrary.pConsole("added receiver, "+c+" from "+sinks);
+		if (c != null) {
+			for (TileEntityFiberTransmitter r : c) {
+				te.addTerminus(r);
+			}
+		}
 		//ReikaJavaLibrary.pConsole(te, Side.SERVER);
 	}
 
@@ -168,20 +202,32 @@ public class FiberNetwork {
 		wires.clear();
 		sinks.clear();
 		sources.clear();
+		//paths.clear();
 	}
 
-	public void killChannel(CrystalElement e) {
-
+	public void killChannel(CrystalElement e) {/*
+		Iterator<FiberPath> it = paths.iterator();
+		while (it.hasNext()) {
+			FiberPath p = it.next();
+			if (p.color == e) {
+				it.remove();
+				p.breakPath();
+			}
+		}*/
 	}
 
-	public int distribute(CrystalElement e, int energy) {
+	public int distribute(FiberSource s, CrystalElement e, int energy) {
 		int dist = 0;
 		Collection<TileEntityFiberTransmitter> c = sinks.get(e);
 		if (c != null) {
 			for (TileEntityFiberTransmitter te : c) {
-				dist += te.dumpEnergy(e, energy-dist);
-				if (dist >= energy)
-					break;
+				int add = te.dumpEnergy(e, energy-dist);
+				if (add > 0) {
+					s.onTransmitTo(te, e, energy);
+					dist += add;
+					if (dist >= energy)
+						break;
+				}
 			}
 		}
 		return dist;
@@ -195,6 +241,52 @@ public class FiberNetwork {
 	@Override
 	public String toString() {
 		return this.hashCode()+": "+sources.toString()+" > "+sinks.toString();
+	}
+
+	public FiberPath getPathBetween(TileEntityFiberReceiver fr, TileEntityFiberTransmitter ft) {
+		LinkedList<TileEntityChromaticBase> li = new LinkedList();
+		li.addLast(fr);
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			TileEntity te = fr.getAdjacentTileEntity(dir);
+			if (te == ft) {
+				li.addLast((TileEntityChromaticBase)te);
+				break;
+			}
+			else if (te instanceof TileEntityFiberOptic) {
+				this.recurse(fr, ft, (TileEntityFiberOptic)te, li);
+			}
+			if (this.isComplete(li, fr, ft))
+				break;
+		}
+		//ReikaJavaLibrary.pConsole(li, Side.SERVER);
+		return this.isComplete(li, fr, ft) ? new FiberPath(fr.getColor(), li) : null;
+	}
+
+	private boolean isComplete(LinkedList<TileEntityChromaticBase> li, TileEntityFiberReceiver fr, TileEntityFiberTransmitter ft) {
+		return li.getFirst() == fr && li.getLast() == ft;
+	}
+
+	private void recurse(TileEntityFiberReceiver fr, TileEntityFiberTransmitter ft, TileEntityFiberOptic te, LinkedList<TileEntityChromaticBase> li) {
+		if (li.contains(te))
+			return;
+		if (this.isComplete(li, fr, ft))
+			return;
+		li.addLast(te);
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			TileEntity tile = te.getAdjacentTileEntity(dir);
+			if (tile == ft) {
+				li.addLast((TileEntityChromaticBase)tile);
+				return;
+			}
+			else if (tile instanceof TileEntityFiberOptic) {
+				this.recurse(fr, ft, (TileEntityFiberOptic)tile, li);
+			}
+			if (this.isComplete(li, fr, ft))
+				return;
+		}
+		li.removeLast();
 	}
 
 }

@@ -10,10 +10,11 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import Reika.ChromatiCraft.API.FiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public abstract class TileEntityFiberPowered extends TileEntityChromaticBase {
+public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements FiberPowered {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 

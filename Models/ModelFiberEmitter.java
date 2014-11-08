@@ -21,7 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
-public class ModelEmitter extends ChromaModelBase
+public class ModelFiberEmitter extends ChromaModelBase
 {
 	//fields
 	LODModelPart Shape1b;
@@ -42,7 +42,7 @@ public class ModelEmitter extends ChromaModelBase
 	LODModelPart Shape1;
 	LODModelPart Shape4a1;
 
-	public ModelEmitter()
+	public ModelFiberEmitter()
 	{
 		textureWidth = 128;
 		textureHeight = 128;

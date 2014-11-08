@@ -17,14 +17,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
@@ -50,6 +50,17 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(meta);
 		if (world.isRemote)
 			ReikaParticleHelper.spawnColoredParticles(world, x, y, z, dye, 256);
+
+		for (int k = 0; k < 6; k++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
+			for (int i = 1; i <= 5; i++) {
+				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				if (te instanceof TileEntityCrystalRepeater) {
+					((TileEntityCrystalRepeater)te).validateStructure();
+				}
+			}
+		}
+
 		super.onBlockAdded(world, x, y, z);
 	}
 
@@ -61,9 +72,17 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 		if (world.getBlock(x, y-1, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
 			((BlockPylonStructure)ChromaBlocks.PYLONSTRUCT.getBlockInstance()).triggerBreakCheck(world, x, y-1, z);
 		}
-		if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.REPEATER) {
-			CrystalNetworker.instance.breakPaths((TileEntityCrystalRepeater)world.getTileEntity(x, y+1, z));
+
+		for (int k = 0; k < 6; k++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
+			for (int i = 1; i <= 5; i++) {
+				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				if (te instanceof TileEntityCrystalRepeater) {
+					((TileEntityCrystalRepeater)te).validateStructure();
+				}
+			}
 		}
+
 		super.breakBlock(world, x, y, z, id, meta);
 	}
 

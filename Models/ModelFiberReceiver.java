@@ -25,7 +25,7 @@ import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
-public class ModelReceiver extends ChromaModelBase
+public class ModelFiberReceiver extends ChromaModelBase
 {
 	//fields
 	LODModelPart Shape1;
@@ -43,7 +43,7 @@ public class ModelReceiver extends ChromaModelBase
 	LODModelPart Shape1e2;
 	LODModelPart Shape1e3;
 
-	public ModelReceiver()
+	public ModelFiberReceiver()
 	{
 		textureWidth = 128;
 		textureHeight = 128;

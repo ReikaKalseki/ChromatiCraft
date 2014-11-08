@@ -57,6 +57,7 @@ public class FiberRenderer extends WorldPipingRenderer {
 
 		v5.setColorOpaque(255, 255, 255);
 		v5.addTranslation(x, y, z);
+		/*
 		if (tile.isInWorld() && tile.isConnectedOnSideAt(tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord, dir, false)) {
 			ico = BlockFiberOptic.getOuterIcon();
 			u = ico.getMinU();
@@ -393,50 +394,50 @@ public class FiberRenderer extends WorldPipingRenderer {
 				break;
 			}
 		}
-		else {
-			this.faceBrightness(dir, v5);
-			v5.setNormal(dir.offsetX, dir.offsetY, dir.offsetZ);
-			switch(dir) {
-			case DOWN:
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, u, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, du, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, du, v);
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, u, v);
-				break;
-			case NORTH:
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, du, v);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, u, v);
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, u, dv);
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, du, dv);
-				break;
-			case EAST:
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, u, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, du, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, du, v);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, u, v);
-				break;
-			case WEST:
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, du, v);
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, u, v);
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, u, dv);
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, du, dv);
-				break;
-			case UP:
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, du, v);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, u, v);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, u, dv);
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, du, dv);
-				break;
-			case SOUTH:
-				v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, u, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, du, dv);
-				v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, du, v);
-				v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, u, v);
-				break;
-			default:
-				break;
-			}
+		else {*/
+		this.faceBrightness(dir, v5);
+		v5.setNormal(dir.offsetX, dir.offsetY, dir.offsetZ);
+		switch(dir) {
+		case DOWN:
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, u, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, du, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, du, v);
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, u, v);
+			break;
+		case NORTH:
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, du, v);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, u, v);
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, u, dv);
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, du, dv);
+			break;
+		case EAST:
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, u, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5+size/2, du, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, du, v);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, u, v);
+			break;
+		case WEST:
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, du, v);
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, u, v);
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5+size/2, u, dv);
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, du, dv);
+			break;
+		case UP:
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, du, v);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, u, v);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5+size/2, u, dv);
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5+size/2, du, dv);
+			break;
+		case SOUTH:
+			v5.addVertexWithUV(0.5-size/2, 0.5+size/2, 0.5-size/2, u, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5+size/2, 0.5-size/2, du, dv);
+			v5.addVertexWithUV(0.5+size/2, 0.5-size/2, 0.5-size/2, du, v);
+			v5.addVertexWithUV(0.5-size/2, 0.5-size/2, 0.5-size/2, u, v);
+			break;
+		default:
+			break;
 		}
-		v5.addTranslation(-x, -y, -z);
+		//}
+	v5.addTranslation(-x, -y, -z);
 	}
 }

@@ -29,6 +29,7 @@ import thaumcraft.api.nodes.INode;
 import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.CrystalSource;
@@ -43,10 +44,12 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightning;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Extras.APIStripper.Strippable;
-import Reika.DragonAPI.Extras.ModDependent;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -123,13 +126,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		/*
-		if (!hasMultiblock) {
-			color = CrystalElement.BLACK;
-			FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y-9, z, color);
-			b.place();
-			hasMultiblock = true;
-		}*/
+		color = CrystalElement.WHITE;
+		if (DragonAPICore.debugtest) {
+			if (!hasMultiblock) {
+				CrystalElement e = CrystalElement.randomElement();
+				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y, z, e);
+				b.place();
+				world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
+				TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
+				te.color = e;
+				te.hasMultiblock = true;
+				te.syncAllData(true);
+			}
+		}
 
 		if (hasMultiblock) {
 			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);

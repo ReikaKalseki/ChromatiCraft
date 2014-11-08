@@ -9,23 +9,33 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberSource;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.FiberNetwork;
+import Reika.ChromatiCraft.Magic.FiberPath;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
-public class TileEntityFiberReceiver extends CrystalReceiverBase implements FiberIO {
+public class TileEntityFiberReceiver extends CrystalReceiverBase implements FiberSource {
 
 	private FiberNetwork network;
 
 	private CrystalElement color = CrystalElement.WHITE;
+
+	private HashMap<WorldLocation, FiberPath> paths = new HashMap();
 
 	@Override
 	public void setNetwork(FiberNetwork net) {
@@ -50,18 +60,43 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase implements Fibe
 	}
 
 	@Override
+	protected int getCooldownLength() {
+		return 200;
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
+
 		//ReikaJavaLibrary.pConsole(network, Side.SERVER);
 
-		CrystalElement e = this.getColor();
-		if (network != null && e != null) {
-			int amt = this.getEnergy(e);
-			if (amt > 0) {
-				int add = network.distribute(e, amt);
-				this.drainEnergy(e, add);
+		if (!paths.isEmpty() && this.getTicksExisted()%(1+2*paths.size()) == 0) {
+			CrystalElement e = this.getColor();
+			if (network != null && e != null) {
+				int amt = this.getEnergy(e);
+				if (amt > 0) {
+					int add = network.distribute(this, e, amt);
+					if (add > 0) {
+						this.drainEnergy(e, add);
+					}
+				}
 			}
+		}
+
+		for (WorldLocation loc : paths.keySet()) {
+			paths.get(loc).tick();
+		}
+	}
+
+	private void checkAndRequest() {
+		CrystalElement e = this.getColor();
+		int space = this.getRemainingSpace(e);
+		if (space > 0) {
+			this.requestEnergy(e, space);
 		}
 	}
 
@@ -126,6 +161,17 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase implements Fibe
 		super.readSyncTag(NBT);
 
 		color = CrystalElement.elements[NBT.getInteger("color")];
+
+		if (NBT.hasKey("paths")) {
+			NBTTagList tag = NBT.getTagList("paths", NBTTypes.COMPOUND.ID);
+			for (Object o : tag.tagList) {
+				NBTTagCompound b = (NBTTagCompound)o;
+				FiberPath p = FiberPath.readFromNBT(b);
+				if (p != null && p.isValid()) {
+					paths.put(p.getSink(), p);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -133,6 +179,40 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase implements Fibe
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("color", color.ordinal());
+
+		NBTTagList li = new NBTTagList();
+		for (FiberPath p : paths.values()) {
+			NBTTagCompound tag = new NBTTagCompound();
+			p.writeToNBT(tag);
+			li.appendTag(tag);
+		}
+		NBT.setTag("paths", li);
+	}
+
+	@Override
+	public void removeTerminus(TileEntityFiberTransmitter te) {
+		paths.remove(new WorldLocation(te));
+		this.syncAllData(true);
+	}
+
+	@Override
+	public void addTerminus(TileEntityFiberTransmitter te) {
+		FiberPath p = network.getPathBetween(this, te);
+		if (p != null)
+			paths.put(new WorldLocation(te), p);
+		this.syncAllData(true);
+	}
+
+	@Override
+	public void onTransmitTo(TileEntityFiberTransmitter te, CrystalElement e, int energy) {
+		FiberPath path = paths.get(new WorldLocation(te));
+		if (path != null) {
+			path.pulse();
+		}
+	}
+
+	public Collection<FiberPath> getActivePaths() {
+		return Collections.unmodifiableCollection(paths.values());
 	}
 
 }

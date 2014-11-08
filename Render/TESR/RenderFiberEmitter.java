@@ -14,13 +14,13 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Models.ModelEmitter;
+import Reika.ChromatiCraft.Models.ModelFiberEmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 
-public class RenderEmitter extends ChromaRenderBase {
+public class RenderFiberEmitter extends ChromaRenderBase {
 
-	private final ModelEmitter model = new ModelEmitter();
+	private final ModelFiberEmitter model = new ModelFiberEmitter();
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -85,5 +85,4 @@ public class RenderEmitter extends ChromaRenderBase {
 			GL11.glPopMatrix();
 		}
 	}
-
 }

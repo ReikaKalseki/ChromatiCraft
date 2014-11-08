@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -149,10 +150,15 @@ public class ChromaHelpHUD {
 	}
 
 	private void openPanel() {
+		int step = Math.max(1, 180/Math.max(1, ReikaRenderHelper.getFPS()));
 		if (rollx < xSize)
-			rollx++;
+			rollx += step;
 		else if (rolly < ySize)
-			rolly++;
+			rolly += step;
+		if (rollx > xSize)
+			rollx = xSize;
+		if (rolly > ySize)
+			rolly = ySize;
 	}
 
 	private void closePanel() {
