@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -49,6 +50,11 @@ public class EntityChromaFluidFX extends EntityFX {
 
 	public EntityChromaFluidFX setScale(float f) {
 		particleScale = f;
+		return this;
+	}
+
+	public EntityChromaFluidFX setGravity(float f) {
+		particleGravity = f;
 		return this;
 	}
 
@@ -110,6 +116,7 @@ public class EntityChromaFluidFX extends EntityFX {
 		//GL11.glColor4f(1, 1, 1, 1);
 		//v5.startDrawingQuads();
 		//v5.setBrightness(this.getBrightnessForRender(0));
+		ReikaTextureHelper.bindTerrainTexture();
 		super.renderParticle(v5, par2, par3, par4, par5, par6, par7);
 		//v5.draw();
 		//BlendMode.DEFAULT.apply();

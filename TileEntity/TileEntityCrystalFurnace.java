@@ -14,10 +14,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -25,7 +22,7 @@ import Reika.DragonAPI.Interfaces.XPProducer;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver implements XPProducer {
+public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements XPProducer {
 
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 
@@ -38,12 +35,6 @@ public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver impleme
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		super.updateEntity(world, x, y, z, meta);
-
-		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
-			this.checkAndRequest();
-		}
-
 		if (this.canSmelt()) {
 			smeltTimer += this.getSmeltSpeed();
 			if (smeltTimer >= SMELT_TIME) {
@@ -53,16 +44,6 @@ public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver impleme
 		}
 		else {
 			smeltTimer = 0;
-		}
-	}
-
-	private void checkAndRequest() {
-		int capacity = this.getMaxStorage();
-		for (CrystalElement e : smelt.elementSet()) {
-			int space = capacity-this.getEnergy(e);
-			if (space > 0) {
-				this.requestEnergy(e, space);
-			}
 		}
 	}
 
@@ -183,31 +164,6 @@ public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-		//smeltTimer = 0;
-	}
-
-	@Override
-	public int getReceiveRange() {
-		return 16;
-	}
-
-	@Override
-	public boolean isConductingElement(CrystalElement e) {
-		return smelt.contains(e);
-	}
-
-	@Override
-	public int maxThroughput() {
-		return 100;
-	}
-
-	@Override
-	public boolean canConduct() {
-		return true;
-	}
-
-	@Override
 	public int getMaxStorage() {
 		return 12000;
 	}
@@ -221,8 +177,8 @@ public class TileEntityCrystalFurnace extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
-		return null;
+	public boolean isAcceptingColor(CrystalElement e) {
+		return smelt.contains(e);
 	}
 
 }
