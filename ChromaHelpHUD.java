@@ -150,7 +150,7 @@ public class ChromaHelpHUD {
 	}
 
 	private void openPanel() {
-		int step = Math.max(1, 180/Math.max(1, ReikaRenderHelper.getFPS()));
+		int step = Math.max(1, 90/Math.max(1, ReikaRenderHelper.getFPS()));
 		if (rollx < xSize)
 			rollx += step;
 		else if (rolly < ySize)
