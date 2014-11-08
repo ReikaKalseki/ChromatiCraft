@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -57,7 +58,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
 		String name = ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
-		if (field_150939_a instanceof BlockTieredOre && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			name = this.getDisguiseName(is, name);
 		}
 		return name;
@@ -65,9 +66,15 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 
 	@SideOnly(Side.CLIENT)
 	private String getDisguiseName(ItemStack is, String name) {
-		BlockTieredOre bt = (BlockTieredOre)field_150939_a;
-		boolean tier = ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, bt.getProgressStage(is.getItemDamage()));
-		return tier ? name : bt.getDisguise().getLocalizedName();
+		BlockChromaTiered bc = (BlockChromaTiered)field_150939_a;
+		boolean tier = ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, bc.getProgressStage(is.getItemDamage()));
+		if (field_150939_a instanceof BlockTieredOre) {
+			BlockTieredOre bt = (BlockTieredOre)field_150939_a;
+			return tier ? name : bt.getDisguise().getLocalizedName();
+		}
+		else {
+			return tier ? name : EnumChatFormatting.OBFUSCATED.toString()+name;
+		}
 	}
 
 	@Override
