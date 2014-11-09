@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
@@ -138,7 +137,12 @@ public class GuiAspectFormer extends GuiChromaBase {
 		int w = 36;
 		int maxx = minx+w;
 		int maxy = miny+w;
-		api.drawRectFrame(minx, miny, w, w, Color.HSBtoRGB(0.35F, clickDelay/90F, bright/255F));
+
+		//api.drawRectFrame(minx, miny, w, w, ReikaColorAPI.mixColors(this.getActive().getColor(), 0x1e1e1e, clickDelay/90F));
+		//Color.HSBtoRGB(hsb[0], Math.min(clickDelay/90F, hsb[1]), Math.min(bright/255F, hsb[2]))
+		int color = ReikaColorAPI.mixColors(0x010101, 0xffffff, 1-bright/255F-clickDelay/90F);
+		color = ReikaColorAPI.mixColors(color, this.getActive().getColor(), 1-clickDelay/90F);
+		api.drawRectFrame(minx, miny, w, w, color);
 		if (api.isMouseInBox(j+minx, j+maxx, k+miny, k+maxy)) {
 			bright = Math.min(bright+12, 255);
 		}
@@ -153,7 +157,8 @@ public class GuiAspectFormer extends GuiChromaBase {
 		int dx = 18;
 		int dy = 21;
 		for (CrystalElement e : tag.elementSet()) {
-			fontRendererObj.drawString(e.displayName+": "+tag.getValue(e), dx, dy, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F));
+			String s = e.displayName+": "+tag.getValue(e)+" L/Vis";
+			fontRendererObj.drawString(s, dx, dy, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F));
 			dy += fontRendererObj.FONT_HEIGHT;
 		}
 	}

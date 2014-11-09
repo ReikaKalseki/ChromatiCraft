@@ -38,9 +38,12 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		}
 
 		if (selected != null) {
-			TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
-			if (te instanceof IAspectContainer) {
-				this.addAspect(selected, (IAspectContainer)te);
+			ElementTagCompound cost = this.getCost();
+			if (energy.containsAtLeast(cost)) {
+				TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
+				if (te instanceof IAspectContainer) {
+					this.addAspect(selected, (IAspectContainer)te, cost);
+				}
 			}
 		}
 	}
@@ -49,21 +52,21 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		selected = Strings.isNullOrEmpty(asp) ? null : Aspect.aspects.get(asp);
 	}
 
-	private void addAspect(Aspect a, IAspectContainer iac) {
+	private void addAspect(Aspect a, IAspectContainer iac, ElementTagCompound tag) {
 		int amt = selected.isPrimal() ? 4 : 1;
 		int left = iac.addToContainer(a, amt);
 		int added = amt-left;
 		if (added > 0) {
-			this.drainEnergy(this.getCost(a, added));
+			this.drainEnergy(tag.scale(added));
 		}
 	}
 
 	public ElementTagCompound getCost(Aspect a) {
-		return this.getCost(a, 1);
+		return ChromaAspectManager.instance.getElementCost(a, 2).square();
 	}
 
-	private ElementTagCompound getCost(Aspect a, int amt) {
-		return ChromaAspectManager.instance.getElementCost(a, 2).square().scale(amt);
+	private ElementTagCompound getCost() {
+		return this.getCost(selected);
 	}
 
 	private void checkAndRequest() {
@@ -99,7 +102,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public int maxThroughput() {
-		return 500;
+		return 100;
 	}
 
 	@Override
