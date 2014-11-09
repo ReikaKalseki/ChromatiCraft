@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
@@ -63,6 +64,13 @@ public class EntityCenterBlurFX extends EntityFX {
 
 	public final EntityCenterBlurFX setNoSlowdown() {
 		noSlow = true;
+		return this;
+	}
+
+	public final EntityCenterBlurFX setColor(int rgb) {
+		particleRed = ReikaColorAPI.HextoColorMultiplier(rgb, 0);
+		particleGreen = ReikaColorAPI.HextoColorMultiplier(rgb, 1);
+		particleBlue = ReikaColorAPI.HextoColorMultiplier(rgb, 2);
 		return this;
 	}
 

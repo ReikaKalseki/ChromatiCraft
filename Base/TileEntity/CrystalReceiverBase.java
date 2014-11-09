@@ -31,7 +31,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 			receiveCooldown--;
 
 
-		if (DragonAPICore.debugtest) {
+		if (DragonAPICore.debugtest && !world.isRemote) {
 			energy.addValueToColor(CrystalElement.randomElement(), 500);
 		}
 	}

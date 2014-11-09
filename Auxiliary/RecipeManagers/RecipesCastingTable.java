@@ -22,6 +22,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AspectFormerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRuneRecipe;
@@ -66,6 +67,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -202,6 +204,11 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.INFUSER.getCraftedProduct();
 		this.addRecipe(new InfuserRecipe(is, ChromaTiles.STAND.getCraftedProduct()));
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			is = ChromaTiles.ASPECT.getCraftedProduct();
+			this.addRecipe(new AspectFormerRecipe(is, ChromaStacks.transformCore));
+		}
 	}
 
 	private void addRecipe(CastingRecipe r) {
