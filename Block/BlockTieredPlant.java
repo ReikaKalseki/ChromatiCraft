@@ -149,7 +149,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	@Override
 	public void getSubBlocks(Item item, CreativeTabs c, List li) {
-		for (int i = 0; i < ProgressStage.values().length; i++) {
+		for (int i = 0; i < TieredPlants.list.length; i++) {
 			li.add(new ItemStack(item, 1, i));
 		}
 	}

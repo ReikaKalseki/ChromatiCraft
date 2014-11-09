@@ -126,7 +126,6 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		color = CrystalElement.WHITE;
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
 				CrystalElement e = CrystalElement.randomElement();

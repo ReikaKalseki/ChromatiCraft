@@ -19,6 +19,7 @@ import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
@@ -54,6 +55,8 @@ import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
@@ -95,6 +98,7 @@ public enum ChromaTiles {
 	FIBERSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, TileEntityFiberReceiver.class, 12, "RenderFiberReceiver"),
 	FIBER("chroma.fiber",				ChromaBlocks.FIBER,	TileEntityFiberOptic.class, 0, "RenderFiberOptic"),
 	FIBERSINK("chroma.fibersink", 		ChromaBlocks.TILEMODELLED, TileEntityFiberTransmitter.class, 13, "RenderFiberEmitter"),
+	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, TileEntityAspectFormer.class, 14, ModList.THAUMCRAFT);
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
@@ -106,21 +110,31 @@ public enum ChromaTiles {
 	private final int metadata;
 	private final ChromaBlocks block;
 	private TileEntity renderInstance;
+	private final ModList dependency;
 
 	public static final ChromaTiles[] TEList = values();
 
 	private static final BlockMap<ChromaTiles> chromaMappings = new BlockMap();
 
 	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta) {
-		this(n, b, c, meta, null);
+		this(n, b, c, meta, null, null);
 	}
 
 	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta, String r) {
+		this(n, b, c, meta, r, null);
+	}
+
+	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta, ModList mod) {
+		this(n, b, c, meta, null, mod);
+	}
+
+	private ChromaTiles(String n, ChromaBlocks b, Class <? extends TileEntityChromaticBase> c, int meta, String r, ModList mod) {
 		tile = c;
 		name = n;
 		block = b;
 		metadata = meta;
 		renderer = r;
+		dependency = mod;
 	}
 
 	public Block getBlock() {
@@ -250,6 +264,10 @@ public enum ChromaTiles {
 	public boolean isAvailableInCreativeInventory() {
 		if (this == RIFT)
 			return false;
+		if (DragonAPICore.isReikasComputer())
+			return true;
+		if (dependency != null && !dependency.isLoaded())
+			return false;
 		return true;
 	}
 
@@ -290,6 +308,8 @@ public enum ChromaTiles {
 		switch(this) {
 		case FIBERSOURCE:
 			return 0.625;
+		case INFUSER:
+			return 0.5;
 		default:
 			return 1;
 		}

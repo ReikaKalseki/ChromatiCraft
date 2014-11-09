@@ -39,6 +39,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		if (this.getTicksExisted() < 5)
+			this.syncAllData(false);
 	}
 
 	@Override
@@ -148,7 +151,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	public CrystalElement getActiveColor() {
-		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord-1, zCoord)] : null;
+		int dx = xCoord+facing.offsetX;
+		int dy = yCoord+facing.offsetY;
+		int dz = zCoord+facing.offsetZ;
+		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(dx, dy, dz)] : null;
 	}
 
 	public CrystalSource getEnergySource() {

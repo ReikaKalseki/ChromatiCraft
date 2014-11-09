@@ -179,7 +179,6 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	ArrayList<CrystalTransmitter> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
-		dist = dist*dist;
 		ArrayList<CrystalTransmitter> li = new ArrayList();
 		for (WorldLocation c : tiles.keySet()) {
 			if (c.dimensionID == world.provider.dimensionId) {
@@ -188,9 +187,10 @@ public class CrystalNetworker implements TickHandler {
 					CrystalTransmitter te = (CrystalTransmitter)tile;
 					if (te.canConduct()) {
 						if (e == null || te.isConductingElement(e)) {
-							double send = te.getSendRange()*te.getSendRange();
 							double d = te.getDistanceSqTo(x, y, z);
-							if (d <= Math.min(dist, send)) {
+							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
+							double send = te.getSendRange();
+							if (d <= Math.min(dist*dist, send*send)) {
 								li.add(te);
 							}
 						}

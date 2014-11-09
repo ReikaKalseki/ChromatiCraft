@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
+import Reika.ChromatiCraft.GUI.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
@@ -38,6 +39,7 @@ import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
@@ -141,6 +143,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiItemFabricator(player, (TileEntityItemFabricator) te);
 			if (te instanceof TileEntityTeleportationPump)
 				return new GuiTelePump(player, (TileEntityTeleportationPump) te);
+			if (te instanceof TileEntityAspectFormer)
+				return new GuiAspectFormer(player, (TileEntityAspectFormer) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

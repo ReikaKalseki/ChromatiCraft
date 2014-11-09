@@ -88,7 +88,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public int getSendRange() {
-		return 16;
+		return 24;
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 				int dz = zCoord+facing.offsetZ*i;
 				Block b = worldObj.getBlock(dx, dy, dz);
 				int meta = worldObj.getBlockMetadata(dx, dy, dz);
-				int m2 = i == 3 ? 13 : i == 1 || i == 5 ? 12 : 2;
+				int m2 = i == 3 ? 13 : i == 1 || i == 5 ? 12 : facing.offsetY == 0 ? 1 : 2;
 				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != m2) {
 					return false;
 				}

@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.aspects.Aspect;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -22,6 +24,7 @@ import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
 public class ChromaAspectManager {
 
 	private final EnumMap<CrystalElement, ArrayList<Aspect>> aspects = new EnumMap(CrystalElement.class);
+	private final HashMap<Aspect, ElementTagCompound> costs = new HashMap();
 
 	public static final ChromaAspectManager instance = new ChromaAspectManager();
 
@@ -42,6 +45,34 @@ public class ChromaAspectManager {
 		this.addAspect(CrystalElement.RED, Aspect.ARMOR);
 		this.addAspect(CrystalElement.WHITE, Aspect.VOID, Aspect.AIR, Aspect.ORDER);
 		this.addAspect(CrystalElement.YELLOW, Aspect.MINE, Aspect.ENERGY);
+
+		this.addAspectCost(Aspect.ORDER, CrystalElement.WHITE);
+		this.addAspectCost(Aspect.FIRE, CrystalElement.ORANGE);
+		this.addAspectCost(Aspect.ENERGY, CrystalElement.YELLOW);
+		this.addAspectCost(Aspect.MAGIC, CrystalElement.BLACK);
+		this.addAspectCost(Aspect.MOTION, CrystalElement.LIME);
+		this.addAspectCost(Aspect.LIFE, CrystalElement.MAGENTA);
+		this.addAspectCost(Aspect.ARMOR, CrystalElement.RED);
+		this.addAspectCost(Aspect.EARTH, CrystalElement.GREEN);
+		this.addAspectCost(Aspect.HUNGER, CrystalElement.BROWN);
+		this.addAspectCost(Aspect.LIGHT, CrystalElement.BLUE);
+		this.addAspectCost(Aspect.CRAFT, CrystalElement.PURPLE);
+		this.addAspectCost(Aspect.WEAPON, CrystalElement.PINK);
+		this.addAspectCost(Aspect.EXCHANGE, CrystalElement.GRAY);
+		this.addAspectCost(Aspect.MIND, CrystalElement.LIGHTGRAY);
+		//this.addAspectCost(Aspect.AURA, CrystalElement.LIGHTBLUE);
+		this.addAspectCost(Aspect.WATER, CrystalElement.CYAN);
+		this.addAspectCost(Aspect.ENTROPY, CrystalElement.BLACK);
+		this.addAspectCost(Aspect.AIR, CrystalElement.WHITE);
+	}
+
+	private void addAspectCost(Aspect a, CrystalElement e) {
+		ElementTagCompound tag = costs.get(a);
+		if (tag == null) {
+			tag = new ElementTagCompound();
+			costs.put(a, tag);
+		}
+		tag.setTag(e, 1);
 	}
 
 	private void addAspect(CrystalElement color, Aspect... asps) {
@@ -116,6 +147,28 @@ public class ChromaAspectManager {
 		};
 		for (int i = 0; i < 16; i++)
 			ReikaThaumHelper.addAspectsToBlockMeta(ChromaBlocks.DYEFLOWER.getBlockInstance(), i, flowers[i], 1, Aspect.PLANT, 2);
+	}
+
+	public ElementTagCompound getElementCost(Aspect a, float depthcost) {
+		ElementTagCompound tag = new ElementTagCompound();
+		this.recursiveCount(a, tag, 0, depthcost);
+		return tag;
+	}
+
+	private void recursiveCount(Aspect a, ElementTagCompound tag, int depth, float depthcost) {
+		ElementTagCompound cost = costs.get(a);
+		if (cost == null) {
+			Aspect[] parents = a.getComponents();
+			if (parents != null) {
+				for (int i = 0; i < parents.length; i++)
+					this.recursiveCount(parents[i], tag, depth+1, depthcost);
+			}
+		}
+		else {
+			cost = cost.copy();
+			cost.scale((1+depth)*depthcost);
+			tag.addTag(cost);
+		}
 	}
 
 }

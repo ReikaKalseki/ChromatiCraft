@@ -44,6 +44,7 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 		double z = 0;
 		GL11.glTranslated(x, y, z);
 		v5.startDrawingQuads();
+		v5.setBrightness(240);
 		v5.addVertexWithUV(0, 0, 0, u, dv);
 		v5.addVertexWithUV(1, 0, 0, du, dv);
 		v5.addVertexWithUV(1, 1, 0, du, v);
@@ -56,6 +57,7 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 		du = ico.getMaxU();
 		dv = ico.getMaxV();
 		v5.startDrawingQuads();
+		v5.setBrightness(240);
 		v5.addVertexWithUV(0, 0, 0, u, dv);
 		v5.addVertexWithUV(1, 0, 0, du, dv);
 		v5.addVertexWithUV(1, 1, 0, du, v);

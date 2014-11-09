@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPenda
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InfuserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
@@ -198,6 +199,9 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.CRYSTAL.getCraftedProduct();
 		this.addRecipe(new IridescentCrystalRecipe(is, new ItemStack(Items.diamond)));
+
+		is = ChromaTiles.INFUSER.getCraftedProduct();
+		this.addRecipe(new InfuserRecipe(is, ChromaTiles.STAND.getCraftedProduct()));
 	}
 
 	private void addRecipe(CastingRecipe r) {

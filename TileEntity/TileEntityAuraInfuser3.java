@@ -248,4 +248,8 @@ public class TileEntityAuraInfuser3 extends InventoriedChromaticBase implements 
 		return null;
 	}
 
+	public int getCraftingTick() {
+		return craftingTick;
+	}
+
 }
