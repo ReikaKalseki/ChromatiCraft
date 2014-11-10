@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -57,7 +58,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -428,7 +429,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.particleBurst();
 	}
 
-	public void onBreak() {
+	public void breakBlock() {
 		HashMap<List<Integer>, TileEntityItemStand> tiles = this.getOtherStands();
 		for (TileEntityItemStand te : tiles.values()) {
 			te.setTable(null);

@@ -37,9 +37,9 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.ChromaticEventManager;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -54,8 +54,6 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
@@ -280,7 +278,6 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	public final void breakBlock(World world, int x, int y, int z, Block par5, int par6) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		ChromaticEventManager.instance.remove(te);
 		if (te instanceof TileEntityItemCollector) {
 			((TileEntityItemCollector)te).canIntake = false;
 			ReikaWorldHelper.splitAndSpawnXP(world, x+0.5, y+0.5, z+0.5, ((TileEntityItemCollector)te).getExperience());
@@ -293,17 +290,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
 		}
-		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).onBreak();
-		}
 		if (te instanceof FiberIO) {
 			((FiberIO)te).onBroken();
 		}
 		if (te instanceof TileEntityFiberOptic) {
 			((TileEntityFiberOptic)te).removeFromNetwork();
 		}
-		if (te instanceof TileEntityAIShutdown) {
-			((TileEntityAIShutdown)te).freeAll();
+		if (te instanceof BreakAction) {
+			((BreakAction)te).breakBlock();
 		}
 		if (te instanceof CrystalNetworkTile) {
 			((CrystalNetworkTile)te).removeFromCache();

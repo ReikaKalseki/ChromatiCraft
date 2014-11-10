@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -16,19 +19,22 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromaticEventManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityItemCollector extends InventoriedFiberPowered {
+public class TileEntityItemCollector extends InventoriedFiberPowered implements BreakAction {
 
 	private int experience = 0;
 	public boolean canIntake = false;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private static final Collection<WorldLocation> cache = new ArrayList();
 
 	static {
 		required.addTag(CrystalElement.LIME, 100);
@@ -71,9 +77,23 @@ public class TileEntityItemCollector extends InventoriedFiberPowered {
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		if (!world.isRemote)
-			ChromaticEventManager.instance.addCollector(this);
-		canIntake = true;
+		WorldLocation loc = new WorldLocation(this);
+		if (!cache.contains(loc))
+			cache.add(loc);
+	}
+
+	@Override
+	public void breakBlock() {
+		WorldLocation loc = new WorldLocation(this);
+		cache.remove(loc);
+	}
+
+	public static boolean absorbItem(Entity e) {
+		for (WorldLocation loc : cache) {
+			if (((TileEntityItemCollector)loc.getTileEntity()).checkAbsorb(e))
+				return true;
+		}
+		return false;
 	}
 
 	public boolean checkAbsorb(Entity e) {

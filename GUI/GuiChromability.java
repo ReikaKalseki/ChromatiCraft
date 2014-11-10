@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
@@ -104,7 +105,7 @@ public class GuiChromability extends GuiScreen {
 		Chromabilities c = Chromabilities.abilities[index];
 		boolean has = c.playerHasAbility(player);
 		double px = 2D*Math.abs(dx)/width;
-		int sp = Math.max(1, (int)(6*Math.abs(-(px*px)+2*px)));
+		int sp = (int)(90D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px)));
 		if (dx > 0) {
 			dx += sp;
 		}

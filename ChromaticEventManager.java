@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -27,7 +26,6 @@ import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -42,7 +40,6 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
@@ -53,6 +50,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
+import Reika.ChromatiCraft.TileEntity.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -71,11 +69,18 @@ public class ChromaticEventManager {
 
 	private final Random rand = new Random();
 
-	private final Collection<TileEntityHeatLily> lilies = new ArrayList();
-	private final Collection<TileEntityItemCollector> collectors = new ArrayList();
+	//
+	//private final Collection<TileEntityItemCollector> collectors = new ArrayList();
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void lampSpawnLimits(CheckSpawn evt) {
+		if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.y, evt.z)) {
+			evt.setResult(Result.DENY);
+		}
 	}
 
 	@SubscribeEvent
@@ -90,11 +95,9 @@ public class ChromaticEventManager {
 		if (!evt.world.isRemote) {
 			Entity e = evt.entity;
 			if (e instanceof EntityItem || e instanceof EntityXPOrb) {
-				for (TileEntityItemCollector te : collectors) {
-					if (te.checkAbsorb(e)) {
-						evt.setCanceled(true);
-						return;
-					}
+				if (TileEntityItemCollector.absorbItem(e)) {
+					evt.setCanceled(true);
+					return;
 				}
 			}
 		}
@@ -102,34 +105,9 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void preventLilyFreeze(IceFreezeEvent evt) {
-		for (TileEntityHeatLily te : lilies) {
-			int dd = Math.abs(evt.x-te.xCoord)+Math.abs(evt.y-te.yCoord)+Math.abs(evt.z-te.zCoord);
-			if (dd <= 7) {
-				evt.setResult(Result.DENY);
-				break;
-			}
+		if (TileEntityHeatLily.stopFreeze(evt.world, evt.x, evt.y, evt.z)) {
+			evt.setResult(Result.DENY);
 		}
-	}
-
-	@SubscribeEvent
-	public void clearCache(WorldEvent.Unload evt) {
-		lilies.clear();
-		collectors.clear();
-	}
-
-	public void addLily(TileEntityHeatLily lily) {
-		if (!lilies.contains(lily))
-			lilies.add(lily);
-	}
-
-	public void addCollector(TileEntityItemCollector c) {
-		if (!collectors.contains(c))
-			collectors.add(c);
-	}
-
-	public void remove(TileEntity te) {
-		collectors.remove(te);
-		lilies.remove(te);
 	}
 
 	@SubscribeEvent

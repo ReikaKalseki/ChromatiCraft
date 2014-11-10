@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InfuserRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
@@ -209,6 +210,9 @@ public class RecipesCastingTable {
 			is = ChromaTiles.ASPECT.getCraftedProduct();
 			this.addRecipe(new AspectFormerRecipe(is, ChromaStacks.transformCore));
 		}
+
+		is = ChromaItems.LINK.getStackOf();
+		this.addRecipe(new InventoryLinkRecipe(is, ChromaStacks.resonanceDust));
 	}
 
 	private void addRecipe(CastingRecipe r) {

@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBeacon;
@@ -98,7 +99,8 @@ public enum ChromaTiles {
 	FIBERSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, TileEntityFiberReceiver.class, 12, "RenderFiberReceiver"),
 	FIBER("chroma.fiber",				ChromaBlocks.FIBER,	TileEntityFiberOptic.class, 0, "RenderFiberOptic"),
 	FIBERSINK("chroma.fibersink", 		ChromaBlocks.TILEMODELLED, TileEntityFiberTransmitter.class, 13, "RenderFiberEmitter"),
-	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, TileEntityAspectFormer.class, 14, "RenderAspectFormer", ModList.THAUMCRAFT);
+	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, TileEntityAspectFormer.class, 14, "RenderAspectFormer", ModList.THAUMCRAFT),
+	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, TileEntityChromaLamp.class, 15);
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),

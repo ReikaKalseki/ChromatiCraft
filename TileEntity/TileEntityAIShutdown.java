@@ -18,12 +18,13 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
-public class TileEntityAIShutdown extends TileEntityChromaticBase {
+public class TileEntityAIShutdown extends TileEntityChromaticBase implements BreakAction {
 
 	private static final Collection<EntityLiving> stopped = new ArrayList();
 	private List<EntityLiving> local = new ArrayList();
@@ -91,7 +92,7 @@ public class TileEntityAIShutdown extends TileEntityChromaticBase {
 
 	}
 
-	public void freeAll() {
+	public void breakBlock() {
 		stopped.removeAll(local);
 	}
 

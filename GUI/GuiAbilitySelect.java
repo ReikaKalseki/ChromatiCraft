@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -91,7 +92,7 @@ public class GuiAbilitySelect extends GuiScreen {
 
 		ability = Chromabilities.abilities[-dx/step];
 
-		double sp = Math.max(1, Math.abs(offset-dx)/4)/5D;
+		double sp = 90D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, Math.abs(offset-dx)/4)/5D;
 		if (offset > dx) {
 			offset -= sp;
 		}
