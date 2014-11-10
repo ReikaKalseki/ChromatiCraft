@@ -104,6 +104,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		if (c == ChromaTiles.LASER)
 			return 15;
+		if (c == ChromaTiles.LAMP)
+			return 15;
 		if (c == ChromaTiles.TANK) {
 			TileEntityCrystalTank te = (TileEntityCrystalTank)world.getTileEntity(x, y, z);
 			return te.getFluid() != null ? te.getFluid().getLuminosity() : 0;

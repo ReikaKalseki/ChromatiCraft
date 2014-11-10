@@ -2,17 +2,20 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.util.HashMap;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public class TileEntityChromaLamp extends TileEntityChromaticBase implements BreakAction {
 
 	private static final HashMap<WorldLocation, Integer> cache = new HashMap();
 
-	private int range = 32;
+	private final ElementTagCompound colors = new ElementTagCompound();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -21,7 +24,7 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Bre
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		this.addColor(CrystalElement.randomElement());
 	}
 
 	@Override
@@ -30,12 +33,21 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Bre
 	}
 
 	public int getRange() {
-		return range;
+		return 8*colors.tagCount();
 	}
 
-	private void setRange(int r) {
-		range = r;
-		this.cacheTile();
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		colors.readFromNBT("energy", NBT);
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		colors.writeToNBT("energy", NBT);
 	}
 
 	private void cacheTile() {
@@ -52,14 +64,27 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Bre
 
 	}
 
-	public static boolean findLampFromXYZ(World world, double x, double y, double z) {
+	public static boolean findLampFromXYZ(World world, double x, double z) {
 		for (WorldLocation loc : cache.keySet()) {
-			double d = loc.getDistanceTo(x, y, z);
 			int max = cache.get(loc);
-			if (d <= max)
+			double dx = Math.abs(x-loc.xCoord);
+			double dz = Math.abs(z-loc.zCoord);
+			if (dx <= max && dz <= max)
 				return true;
 		}
 		return false;
+	}
+
+	public ElementTagCompound getColors() {
+		return colors.copy();
+	}
+
+	public boolean addColor(CrystalElement e) {
+		if (colors.contains(e))
+			return false;
+		colors.addValueToColor(e, 1);
+		this.cacheTile();
+		return true;
 	}
 
 }

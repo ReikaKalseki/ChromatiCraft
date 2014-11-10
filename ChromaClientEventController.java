@@ -211,7 +211,7 @@ public class ChromaClientEventController {
 				ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
 				if (tag != null) {
 					Tessellator v5 = Tessellator.instance;
-					int i = tag.elementSet().size();
+					int i = tag.tagCount();
 					GL11.glDisable(GL11.GL_CULL_FACE);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glDisable(GL11.GL_LIGHTING);

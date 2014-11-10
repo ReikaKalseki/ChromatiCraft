@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft;
+package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -74,7 +75,7 @@ public class ChromaOverlays {
 				ReikaTextureHelper.bindTerrainTexture();
 				int k = 0;
 
-				int s = tag.elementSet().size();
+				int s = tag.tagCount();
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				v5.startDrawingQuads();
 				v5.setColorOpaque_I(0x666666);

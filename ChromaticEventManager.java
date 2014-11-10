@@ -78,7 +78,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void lampSpawnLimits(CheckSpawn evt) {
-		if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.y, evt.z)) {
+		if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.z)) {
 			evt.setResult(Result.DENY);
 		}
 	}

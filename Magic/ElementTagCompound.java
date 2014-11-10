@@ -266,4 +266,8 @@ public final class ElementTagCompound {
 		}
 	}
 
+	public int tagCount() {
+		return data.size();
+	}
+
 }

@@ -152,7 +152,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 
 		tag.intersectWith(energy);
-		int n = tag.elementSet().size();
+		int n = tag.tagCount();
 		if (n > 0) {
 			a = (8*this.getTicksExisted())%360;
 			Iterator<CrystalElement> it = tag.elementSet().iterator();

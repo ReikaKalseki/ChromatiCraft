@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InfuserRecipe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeCrystalRepeater;
@@ -213,6 +214,9 @@ public class RecipesCastingTable {
 
 		is = ChromaItems.LINK.getStackOf();
 		this.addRecipe(new InventoryLinkRecipe(is, ChromaStacks.resonanceDust));
+
+		is = ChromaTiles.LAMP.getCraftedProduct();
+		this.addRecipe(new LampRecipe(is, new ItemStack(Blocks.glowstone)));
 	}
 
 	private void addRecipe(CastingRecipe r) {
