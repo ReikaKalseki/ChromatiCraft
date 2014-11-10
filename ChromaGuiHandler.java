@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
+import Reika.ChromatiCraft.GUI.GuiChromaBook;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
@@ -107,6 +108,10 @@ public class ChromaGuiHandler implements IGuiHandler {
 			break;
 		case ABILITY:
 			return null;
+		case HANDBOOK:
+			return null;
+		default:
+			break;
 		}
 		return null;
 	}
@@ -155,6 +160,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			break;
 		case ABILITY:
 			return new GuiAbilitySelect(player);
+		case HANDBOOK:
+			return new GuiChromaBook(player);
 		}
 		return null;
 	}

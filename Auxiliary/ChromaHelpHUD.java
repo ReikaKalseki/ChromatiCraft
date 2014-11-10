@@ -54,8 +54,8 @@ public class ChromaHelpHUD {
 	public void renderHUD(RenderGameOverlayEvent evt) {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
 			int gsc = evt.resolution.getScaleFactor();
+			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
 			if (look != null) {
 				if (this.isDifferent(look)) {
 					this.closePanel();
@@ -83,9 +83,13 @@ public class ChromaHelpHUD {
 				}
 			}
 			last_look = look;
-		}
 
-		ReikaTextureHelper.bindHUDTexture();
+			ReikaTextureHelper.bindHUDTexture();
+		}
+	}
+
+	private void renderHelpGui(int gsc) {
+
 	}
 
 	private void markDiscovered(EntityPlayer ep, Block b, int meta) {

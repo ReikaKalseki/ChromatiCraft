@@ -13,7 +13,8 @@ public enum ChromaGuis {
 
 	TILE(),
 	LINK(),
-	ABILITY();
+	ABILITY(),
+	HANDBOOK();
 
 	public static final ChromaGuis[] guiList = values();
 

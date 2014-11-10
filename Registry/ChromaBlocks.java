@@ -62,7 +62,6 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
-import Reika.DragonAPI.Instantiable.BlockInWorldGui;
 import Reika.DragonAPI.Interfaces.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -100,7 +99,7 @@ public enum ChromaBlocks implements BlockEnum {
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
 	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),
-	GUI(BlockInWorldGui.class,													"GUI"),
+	//GUI(BlockInWorldGui.class,													"GUI"),
 	FIBER(BlockFiberOptic.class,												"Fiber");
 
 	private Class blockClass;

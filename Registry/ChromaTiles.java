@@ -43,7 +43,6 @@ import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberReceiver;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
-import Reika.ChromatiCraft.TileEntity.TileEntityHelpBlock;
 import Reika.ChromatiCraft.TileEntity.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
@@ -94,7 +93,7 @@ public enum ChromaTiles {
 	TICKER("chroma.ticker",				ChromaBlocks.TILEENTITY, TileEntityInventoryTicker.class, 11),
 	AISHUTDOWN("chroma.aishutdown",		ChromaBlocks.TILEMODELLED, TileEntityAIShutdown.class, 10),
 	TELEPUMP("chroma.telepump",			ChromaBlocks.TILEENTITY, TileEntityTeleportationPump.class, 12),
-	HELP("chroma.helpblock",			ChromaBlocks.TILEMODELLED, TileEntityHelpBlock.class, 11, "HelpBlockRenderer"),
+	//HELP("chroma.helpblock",			ChromaBlocks.TILEMODELLED, TileEntityHelpBlock.class, 11, "HelpBlockRenderer"),
 	COMPOUND("chroma.compound",			ChromaBlocks.PYLON,	TileEntityCompoundRepeater.class, 2, "RenderMultiRepeater"),
 	FIBERSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, TileEntityFiberReceiver.class, 12, "RenderFiberReceiver"),
 	FIBER("chroma.fiber",				ChromaBlocks.FIBER,	TileEntityFiberOptic.class, 0, "RenderFiberOptic"),

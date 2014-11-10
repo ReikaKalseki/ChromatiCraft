@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Items.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
@@ -73,7 +74,8 @@ public enum ChromaItems implements ItemEnum {
 	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
 	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class),
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
-	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class);
+	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
+	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

@@ -9,12 +9,23 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 
 public class ItemChromaBook extends ItemChromaTool {
 
 	public ItemChromaBook(int index) {
 		super(index);
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		ep.openGui(ChromatiCraft.instance, ChromaGuis.HANDBOOK.ordinal(), world, 0, 0, 0);
+		return is;
 	}
 
 }
