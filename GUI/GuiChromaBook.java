@@ -84,7 +84,7 @@ public class GuiChromaBook extends GuiScreen {
 		}
 
 		public String getFileName() {
-			return "handbookgui"+endString;
+			return endString.isEmpty() ? "handbook" : "handbook_"+endString;
 		}
 	}
 
