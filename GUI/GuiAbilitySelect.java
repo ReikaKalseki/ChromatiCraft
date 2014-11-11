@@ -66,7 +66,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (move > 0) {
 			if (ability != null && ctrl) {
-				if (data < ability.maxPower() && ability.playerHasAbility(player))
+				if (data < ability.maxPower(player) && ability.playerHasAbility(player))
 					data++;
 			}
 			else {

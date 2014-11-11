@@ -470,6 +470,16 @@ public enum Chromabilities {
 		return PlayerElementBuffer.instance.playerHas(player, use);
 	}
 
+	public int maxPower(EntityPlayer ep) {
+		int base = this.maxPower();
+		int lvl = base;
+		ElementTagCompound use = AbilityHelper.instance.getElementsFor(this).scale(0.01F);
+		for (CrystalElement e : use.elementSet()) {
+			lvl = Math.min(lvl, base*use.getValue(e));
+		}
+		return lvl;
+	}
+
 	public int maxPower() {
 		switch(this) {
 		case SONIC:
