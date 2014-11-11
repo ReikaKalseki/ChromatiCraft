@@ -17,6 +17,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
+import Reika.ChromatiCraft.Magic.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.TileEntityBase;
@@ -49,6 +50,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
+		if (te instanceof CrystalSource)
+			return -1;
 		return te.isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -21,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -73,7 +75,7 @@ public class RuneShapeRenderer {
 		int w = 16;
 		int dx = midx-w/2;
 		int dy = midy-w/2;
-		int y = s.getMinY()+(int)((System.currentTimeMillis()/500)%s.getSizeY());
+		int y = s.getMinY()+(int)((System.currentTimeMillis()/5000)%s.getSizeY());
 		v5.startDrawingQuads();
 		for (int x = -5; x <= 5; x++) {
 			for (int z = -5; z <= 5; z++) {
@@ -81,6 +83,10 @@ public class RuneShapeRenderer {
 				CrystalElement e = map.get(new Coordinate(x, y, z));
 				if (e != null)
 					ico = e.getBlockRune();
+
+				if (x == 0 && z == 0) {
+					ico = ChromaTiles.TABLE.getBlock().getIcon(1, ChromaTiles.TABLE.getBlockMetadata());
+				}
 
 				float u = ico.getMinU();
 				float v = ico.getMinV();
@@ -114,6 +120,9 @@ public class RuneShapeRenderer {
 			}
 		}
 		v5.draw();
+
+		if (!map.isEmpty())
+			Minecraft.getMinecraft().fontRenderer.drawString("y="+y, midx+93, midy-4, 0x000000);
 
 		GL11.glPopMatrix();
 	}

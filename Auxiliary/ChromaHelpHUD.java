@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -43,8 +42,6 @@ public class ChromaHelpHUD {
 
 	private static final int xSize = 64;
 	private static final int ySize = 128;
-
-	private static final String NBT_TAG = "ChromaExploreHelp";
 
 	private ChromaHelpHUD() {
 
@@ -77,7 +74,7 @@ public class ChromaHelpHUD {
 						if (this.isPanelOpen()) {
 							this.renderText(text, gsc, flag);
 							if (flag)
-								this.markDiscovered(ep, b, meta);
+								ChromaHelpData.instance.markDiscovered(ep, b, meta);
 						}
 					}
 				}
@@ -90,18 +87,6 @@ public class ChromaHelpHUD {
 
 	private void renderHelpGui(int gsc) {
 
-	}
-
-	private void markDiscovered(EntityPlayer ep, Block b, int meta) {
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
-		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
-		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
-		boolean has = tag.getBoolean(sg);
-		if (!has) {
-			tag.setBoolean(sg, true);
-			nbt.setTag(NBT_TAG, tag);
-			ReikaPlayerAPI.syncCustomDataFromClient(ep);
-		}
 	}
 
 	private void renderPanel(int gsc) {

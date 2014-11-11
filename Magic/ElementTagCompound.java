@@ -270,4 +270,24 @@ public final class ElementTagCompound {
 		return data.size();
 	}
 
+	public int getMaximumValue() {
+		int max = 0;
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			if (amt > max)
+				max = amt;
+		}
+		return max;
+	}
+
+	public int getMinimumValue() {
+		int min = 0;
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			if (amt < min)
+				min = amt;
+		}
+		return min;
+	}
+
 }

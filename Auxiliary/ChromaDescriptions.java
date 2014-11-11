@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
@@ -69,7 +70,7 @@ public final class ChromaDescriptions {
 	public static int getCategoryCount() {
 		return categories.size();
 	}
-	/*
+
 	public static String getTOC() {
 		List<ChromaBook> toctabs = ChromaBook.getTOCTabs();
 		StringBuilder sb = new StringBuilder();
@@ -78,12 +79,12 @@ public final class ChromaDescriptions {
 			sb.append("Page ");
 			sb.append(h.getScreen());
 			sb.append(" - ");
-			sb.append(h.getTOCTitle());
+			sb.append(h.getTitle());
 			if (i < toctabs.size()-1)
 				sb.append("\n");
 		}
 		return sb.toString();
-	}*/
+	}
 
 	public static String getHoverText(String key) {
 		return hover.getValueAtNode(key);

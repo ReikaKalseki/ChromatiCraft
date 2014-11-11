@@ -18,7 +18,7 @@ public interface CrystalSource extends CrystalTransmitter {
 
 	public int getTransmissionStrength();
 
-	public void drain(CrystalElement e, int amt);
+	public boolean drain(CrystalElement e, int amt);
 
 	public int getEnergy(CrystalElement e);
 

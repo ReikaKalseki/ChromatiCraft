@@ -10,16 +10,21 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ChromaHelpData {
 
 	public static final ChromaHelpData instance = new ChromaHelpData();
 
 	private final BlockMap<HelpKey> data = new BlockMap();
+
+	private static final String NBT_TAG = "ChromaExploreHelp";
 
 	private ChromaHelpData() {
 		this.addKey(ChromaBlocks.CRYSTAL, "crystals");
@@ -77,6 +82,25 @@ public class ChromaHelpData {
 			return ChromaDescriptions.getHoverText(key);
 		}
 
+	}
+
+	public void markDiscovered(EntityPlayer ep, Block b, int meta) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
+		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
+		boolean has = tag.getBoolean(sg);
+		if (!has) {
+			tag.setBoolean(sg, true);
+			nbt.setTag(NBT_TAG, tag);
+			ReikaPlayerAPI.syncCustomDataFromClient(ep);
+		}
+	}
+
+	public boolean hasDiscovered(EntityPlayer ep, Block b, int meta) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG);
+		String sg = String.format("%d:%d", Block.getIdFromBlock(b), meta);
+		return tag.getBoolean(sg);
 	}
 
 }

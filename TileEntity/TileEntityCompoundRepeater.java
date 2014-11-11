@@ -62,23 +62,8 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	}
 
 	@Override
-	public void receiveElement(CrystalElement e, int amt) {
-
-	}
-
-	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
-	public int getReceiveRange() {
-		return 24;
-	}
-
-	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return this.canConduct();
+		return e != null && this.canConduct();
 	}
 
 	@Override
@@ -87,13 +72,8 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	}
 
 	@Override
-	public int getSendRange() {
-		return 24;
-	}
-
-	@Override
 	public int getSignalDegradation() {
-		return 5;
+		return 50;
 	}
 
 	@Override

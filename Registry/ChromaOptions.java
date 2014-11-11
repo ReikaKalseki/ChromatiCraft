@@ -33,6 +33,7 @@ public enum ChromaOptions implements ConfigList {
 	ENDEREFFECT("Liquid Ender Effect", true),
 	GOLDAPPLES("Rainbow Leaf Gold Apple Drop Percentage", 0.25F),
 	BROKENPYLON("Generate Some Pylons as Broken", false),
+	DYNAMICHANDBOOK("Reload Handbook Data on Open", false),
 	FLATGEN("Run Worldgen in Superflat Worlds", false);
 
 	private String label;
