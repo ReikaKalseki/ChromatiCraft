@@ -43,6 +43,7 @@ public class ChromaBookData {
 			ArrayList<CastingRecipe> li = h.getCrafting();
 			if (!li.isEmpty()) {
 				CastingRecipe c = li.get(recipe);
+				gui.drawItemStack(ri, fr, c.getOutput(), posX+7, posY+7);
 				if (subpage == 0 || subpage == 2) {
 					ItemStack[] arr = c.getArrayForDisplay();
 					for (int i = 0; i < 9; i++) {
@@ -84,14 +85,18 @@ public class ChromaBookData {
 
 						int energy = (int)((System.currentTimeMillis())%max);
 						int w = 10;
+						int h2 = 48;
 						int x = posX+7+e.ordinal()*(w+4);
-						int ht = energy*52/tag.getValue(e);
-						int dy = Math.max(52-ht, 0); //prevent gui overflow
-						int y1 = posY+21;
-						int y = posY+73;
+						int ht = energy*h2/tag.getValue(e);
+						int dy = Math.max(h2-ht, 0); //prevent gui overflow
+						int y1 = posY+26;
+						int y = posY+26+h2;
 						gui.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
 						gui.drawRect(x, y1+dy, x+w, y, e.getColor());
 					}
+				}
+				if (h.getTitle().isEmpty()) {
+					fr.drawString(c.getOutput().getDisplayName(), posX+6, posY-2, 0);
 				}
 			}
 		}

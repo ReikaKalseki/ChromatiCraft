@@ -95,9 +95,10 @@ public class GuiChromaBook extends GuiScreen {
 			buttonList.add(new GuiButton(14, j+xSize-27, k+52, 20, 20, "<"));
 		}
 
-		if (h.isCrafting()) {
-			buttonList.add(new GuiButton(15, j+xSize/2, k+32, 20, 20, "`"));
-			buttonList.add(new GuiButton(16, j+xSize/2, k+52, 20, 20, "~"));
+		if (h.isCrafting() && h.getRecipeCount() > 1) {
+			String f2 = "Textures/GUIs/Handbook/buttons.png";
+			buttonList.add(new ImagedGuiButton(16, j+146, k-4, 36, 10, 126, 6, "Prev", 0, false, f2, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(17, j+187, k-4, 36, 10, 126, 6, "Next", 0, false, f2, ChromatiCraft.class));
 		}
 
 		this.addTabButtons(j, k);
@@ -136,6 +137,7 @@ public class GuiChromaBook extends GuiScreen {
 				screen--;
 				page = 0;
 				subpage = 0;
+				recipe = 0;
 			}
 			//renderq = 22.5F;
 			this.initGui();
@@ -147,6 +149,7 @@ public class GuiChromaBook extends GuiScreen {
 				screen++;
 				page = 0;
 				subpage = 0;
+				recipe = 0;
 			}
 			//renderq = 22.5F;
 			this.initGui();
@@ -158,6 +161,7 @@ public class GuiChromaBook extends GuiScreen {
 			this.initGui();
 			page = 0;
 			subpage = 0;
+			recipe = 0;
 			//renderq = 22.5F;
 			return;
 		}
@@ -170,6 +174,21 @@ public class GuiChromaBook extends GuiScreen {
 		if (button.id == 14) {
 			if (subpage > 0)
 				subpage--;
+			this.initGui();
+			return;
+		}
+		ChromaBook cb = (ChromaBook)this.getEntry();
+		if (button.id == 16) { //prev recipe
+			if (recipe > 0)
+				recipe--;
+			subpage = Math.min(subpage, cb.getRecipeLevel(recipe).ordinal());
+			this.initGui();
+			return;
+		}
+		if (button.id == 17) { //next recipe
+			if (recipe < cb.getRecipeCount()-1)
+				recipe++;
+			subpage = Math.min(subpage, cb.getRecipeLevel(recipe).ordinal());
 			this.initGui();
 			return;
 		}

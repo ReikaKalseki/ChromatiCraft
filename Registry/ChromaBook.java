@@ -324,7 +324,7 @@ public enum ChromaBook implements HandbookEntry {
 
 	@Override
 	public boolean hasSubpages() {
-		return this.isMachine() || this.isTool();
+		return this.isCrafting();
 	}
 
 	public String getTabImageFile() {
