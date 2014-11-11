@@ -9,8 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
@@ -20,6 +22,12 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.RuneShapeRenderer;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -113,6 +121,13 @@ public class GuiChromaBook extends GuiScreen {
 	}
 
 	protected void drawAuxData(int posX, int posY) {
+		if (System.currentTimeMillis()%10 == 0)
+			Minecraft.getMinecraft().renderEngine.tick();
+		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(ChromaTiles.REPEATER.getCraftedProduct());
+		CastingRecipe c = li.get(0);
+		TempleCastingRecipe m = (TempleCastingRecipe)c;
+		RuneViewer v = m.getRunes();
+		RuneShapeRenderer.instance.render(v, posX+xSize/2, posY+ySize/2/*+32*/);
 		//HandbookAuxData.drawPage(fontRendererObj, ri, screen, page, subpage, posX, posY);
 	}
 

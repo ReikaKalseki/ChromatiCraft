@@ -91,6 +91,7 @@ public class PylonFinderOverlay {
 							int cx = 10;
 							v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
 							v5.setColorRGBA_I(e.getColor(), 96);
+							v5.setBrightness(240);
 							v5.addVertex(cx+10, cy+10, 0);
 							v5.addVertex(cx+10, cy-10, 0);
 							v5.addVertex(cx, cy, 0);
@@ -98,6 +99,7 @@ public class PylonFinderOverlay {
 
 							v5.startDrawing(GL11.GL_LINE_LOOP);
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertex(cx, cy, 0);
 							v5.addVertex(cx+10, cy-10, 0);
 							v5.addVertex(cx+10, cy+10, 0);
@@ -108,6 +110,7 @@ public class PylonFinderOverlay {
 							GL11.glEnable(GL11.GL_TEXTURE_2D);
 							v5.startDrawingQuads();
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertexWithUV(cx+10, cy+8, 0, u, dv);
 							v5.addVertexWithUV(cx+26, cy+8, 0, du, dv);
 							v5.addVertexWithUV(cx+26, cy-8, 0, du, v);
@@ -119,6 +122,7 @@ public class PylonFinderOverlay {
 							int cx = evt.resolution.getScaledWidth()-10;
 							v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
 							v5.setColorRGBA_I(e.getColor(), 96);
+							v5.setBrightness(240);
 							v5.addVertex(cx, cy, 0);
 							v5.addVertex(cx-10, cy-10, 0);
 							v5.addVertex(cx-10, cy+10, 0);
@@ -126,6 +130,7 @@ public class PylonFinderOverlay {
 
 							v5.startDrawing(GL11.GL_LINE_LOOP);
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertex(cx, cy, 0);
 							v5.addVertex(cx-10, cy-10, 0);
 							v5.addVertex(cx-10, cy+10, 0);
@@ -136,6 +141,7 @@ public class PylonFinderOverlay {
 							GL11.glEnable(GL11.GL_TEXTURE_2D);
 							v5.startDrawingQuads();
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertexWithUV(cx-26, cy+8, 0, u, dv);
 							v5.addVertexWithUV(cx-10, cy+8, 0, du, dv);
 							v5.addVertexWithUV(cx-10, cy-8, 0, du, v);
@@ -146,6 +152,7 @@ public class PylonFinderOverlay {
 						else {
 							v5.startDrawingQuads();
 							v5.setColorRGBA_I(e.getColor(), 32);
+							v5.setBrightness(240);
 							int w = evt.resolution.getScaledWidth()/2;
 							int cx = (int)(w+1*w*Math.sin(Math.toRadians(phi)));
 							//ReikaJavaLibrary.pConsole(cx, c.zCoord == 1184 && c.xCoord == -1047);
@@ -157,6 +164,7 @@ public class PylonFinderOverlay {
 
 							v5.startDrawing(GL11.GL_LINE_LOOP);
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertex(cx-8, cy+8, 0);
 							v5.addVertex(cx+8, cy+8, 0);
 							v5.addVertex(cx+8, cy-8, 0);
@@ -167,6 +175,7 @@ public class PylonFinderOverlay {
 							GL11.glEnable(GL11.GL_TEXTURE_2D);
 							v5.startDrawingQuads();
 							v5.setColorOpaque_I(e.getColor());
+							v5.setBrightness(240);
 							v5.addVertexWithUV(cx-8, cy+8, 0, u, dv);
 							v5.addVertexWithUV(cx+8, cy+8, 0, du, dv);
 							v5.addVertexWithUV(cx+8, cy-8, 0, du, v);

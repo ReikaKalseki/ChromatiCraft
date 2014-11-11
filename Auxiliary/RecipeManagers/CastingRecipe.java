@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
+import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
@@ -132,6 +133,10 @@ public class CastingRecipe {
 		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
 			runes.addRune(color, rx, ry, rz);
 			return this;
+		}
+
+		public RuneViewer getRunes() {
+			return runes.getView();
 		}
 
 		@Override

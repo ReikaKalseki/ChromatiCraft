@@ -22,7 +22,7 @@ import Reika.DragonAPI.Instantiable.Data.Coordinate;
 
 public class RuneShape {
 
-	/** ChunkCoords are relative to the BlockArray origin! */
+	/** Coords are relative to the BlockArray origin! */
 	private HashMap<Coordinate, CrystalElement> runes = new HashMap();
 	private BlockArray blocks = new BlockArray();
 
@@ -108,8 +108,8 @@ public class RuneShape {
 		return runes.toString();
 	}
 
-	public Map getData() {
-		return Collections.unmodifiableMap(runes);
+	public RuneViewer getView() {
+		return new RuneViewer(this);
 	}
 
 	public static class RuneLocation {
@@ -132,5 +132,54 @@ public class RuneShape {
 			this(CrystalElement.elements[meta], world, x, y, z);
 		}
 
+	}
+
+	public static class RuneViewer {
+
+		private final RuneShape shape;
+
+		private RuneViewer(RuneShape r) {
+			shape = r;
+		}
+
+		public Map<Coordinate, CrystalElement> getRunes() {
+			return Collections.unmodifiableMap(shape.runes);
+		}
+
+		public int getSizeX() {
+			return shape.getSizeX();
+		}
+
+		public int getSizeY() {
+			return shape.getSizeY();
+		}
+
+		public int getSizeZ() {
+			return shape.getSizeZ();
+		}
+
+		public int getMinX() {
+			return shape.getMinX();
+		}
+
+		public int getMinY() {
+			return shape.getMinY();
+		}
+
+		public int getMinZ() {
+			return shape.getMinZ();
+		}
+
+		public int getMaxX() {
+			return shape.getMaxX();
+		}
+
+		public int getMaxY() {
+			return shape.getMaxY();
+		}
+
+		public int getMaxZ() {
+			return shape.getMaxZ();
+		}
 	}
 }
