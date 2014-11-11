@@ -16,6 +16,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import cpw.mods.fml.common.IWorldGenerator;
 
@@ -24,7 +25,7 @@ public class TieredWorldGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 
-		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT) {
+		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState()) {
 			chunkX *= 16;
 			chunkZ *= 16;
 

@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -39,6 +42,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -61,6 +65,7 @@ public final class PylonGenerator implements IWorldGenerator {
 	private final int GRIDSIZE = 256;
 
 	private final HashMap<Integer, boolean[][]> data = new HashMap();
+	private final EnumMap<CrystalElement, Collection<WorldLocation>> colorCache = new EnumMap(CrystalElement.class);
 
 	private PylonGenerator() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -117,12 +122,20 @@ public final class PylonGenerator implements IWorldGenerator {
 		return data.containsKey(world.provider.dimensionId);
 	}
 
-	public Coordinate getNearestValidChunk(World world, int x, int z) {
-		if (!this.filledDim(world)) {
-			this.fillArray(world);
+	public Coordinate getNearestPylonSpawn(World world, double x, double y, double z, CrystalElement e) {
+		Collection<WorldLocation> c = colorCache.get(e);
+		if (c == null)
+			return null;
+		double dist = Double.POSITIVE_INFINITY;
+		WorldLocation close = null;
+		for (WorldLocation loc : c) {
+			double d = loc.dimensionID == world.provider.dimensionId ? loc.getDistanceTo(x, y, z) : Double.POSITIVE_INFINITY;
+			if (d < dist) {
+				dist = d;
+				close = loc;
+			}
 		}
-
-		return new Coordinate(332, 80, -141);
+		return close != null ? new Coordinate(close) : null;
 	}
 
 	private boolean isGennableChunk(World world, int chunkX, int chunkZ) {
@@ -172,7 +185,7 @@ public final class PylonGenerator implements IWorldGenerator {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return false;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
-			return false;
+			return ChromaOptions.FLATGEN.getState();
 		return true;
 	}
 
@@ -345,6 +358,22 @@ public final class PylonGenerator implements IWorldGenerator {
 		else
 			te.validateMultiblock();
 		world.func_147451_t(x, y+9, z);
+		this.addToCache(te, e);
+	}
+
+	public void cachePylon(TileEntityCrystalPylon te) {
+		this.addToCache(te, te.getColor());
+	}
+
+	private void addToCache(TileEntityCrystalPylon te, CrystalElement e) {
+		WorldLocation loc = new WorldLocation(te);
+		Collection<WorldLocation> c = colorCache.get(e);
+		if (c == null) {
+			c = new ArrayList();
+			colorCache.put(e, c);
+		}
+		if (!c.contains(loc))
+			c.add(loc);
 	}
 
 	private void breakPylon(FilledBlockArray array) {

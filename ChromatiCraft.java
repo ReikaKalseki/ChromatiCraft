@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
+import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
@@ -188,6 +189,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
 			MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
+			MinecraftForge.EVENT_BUS.register(PylonFinderOverlay.instance);
 		}
 
 		config.loadSubfolderedConfigFile(evt);

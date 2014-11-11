@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightning;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -112,6 +113,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+		PylonGenerator.instance.cachePylon(this);
 		if (ModList.THAUMCRAFT.isLoaded() && nodeCache != null) {
 			ArrayList li = new ArrayList();
 			li.add(world.provider.dimensionId);
