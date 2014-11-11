@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Interfaces.HandbookEntry;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public enum ChromaBook implements HandbookEntry {
 
@@ -76,6 +77,7 @@ public enum ChromaBook implements HandbookEntry {
 	RESOURCEDESC("Resources", ""),
 	SHARDS(ChromaStacks.redShard, ProgressStage.CRYSTALS),
 	DUSTS(ChromaStacks.auraDust),
+	GROUPS(ChromaStacks.crystalCore),
 	BINDING(ChromaStacks.bindingCrystal), //**
 	;
 
@@ -253,6 +255,8 @@ public enum ChromaBook implements HandbookEntry {
 			return false;
 		if (this.isMachine() || this.isTool())
 			return true;
+		if (this == GROUPS)
+			return true;
 		//if (this.getParent() == TOC || this.getParent() == TERMS)
 		//	return false;
 		//if (this == MODINTERFACE)
@@ -268,29 +272,44 @@ public enum ChromaBook implements HandbookEntry {
 		return this.getParent() == TOOLDESC;
 	}
 
-	private ItemStack getItemStack() {
+	private ArrayList<ItemStack> getItemStacks() {
 		if (this.isMachine())
-			return machine.getCraftedProduct();
+			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
 		if (item != null) {
-			return item.getStackOf();
+			return ReikaJavaLibrary.makeListFrom(item.getStackOf());
+		}
+		if (this == GROUPS) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 13; i++) {
+				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
+			}
+			return li;
 		}
 		return null;
+	}
+
+	public int getRecipeCount() {
+		return this.getCrafting().size();
 	}
 
 	public ArrayList<CastingRecipe> getCrafting() {
 		if (!this.isCrafting())
 			return new ArrayList();
-		ItemStack is = this.getItemStack();
-		if (is == null)
+		ArrayList<ItemStack> li = this.getItemStacks();
+		if (li == null || li.isEmpty())
 			return new ArrayList();
-		return RecipesCastingTable.instance.getAllRecipesMaking(is);
+		ArrayList<CastingRecipe> rec = new ArrayList();
+		for (ItemStack is : li) {
+			rec.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is));
+		}
+		return rec;
 	}
 
-	public RecipeType getRecipeLevel() {
+	public RecipeType getRecipeLevel(int recipe) {
 		ArrayList<CastingRecipe> li = this.getCrafting();
 		if (li.isEmpty())
 			return null;
-		return li.get(0).type;
+		return li.get(recipe).type;
 	}
 
 	@Override

@@ -55,6 +55,7 @@ public class GuiChromaBook extends GuiScreen {
 	private int screen = 0;
 	private int page = 0;
 	private int subpage = 0;
+	private int recipe = 0;
 
 	private static final int descX = 8;
 	private static final int descY = 88;
@@ -87,12 +88,18 @@ public class GuiChromaBook extends GuiScreen {
 		buttonList.add(new ImagedGuiButton(15, j-20, 17+k+175, 20, 20, 220, 20, "<<", 0, false, file, ChromatiCraft.class));	//First page
 		buttonList.add(new GuiButton(12, j+xSize-27, k-2, 20, 20, "X"));	//Close gui button
 
-		HandbookEntry h = this.getEntry();
+		ChromaBook h = (ChromaBook)this.getEntry();
 
 		if (h.hasSubpages()) {
 			buttonList.add(new GuiButton(13, j+xSize-27, k+32, 20, 20, ">"));
 			buttonList.add(new GuiButton(14, j+xSize-27, k+52, 20, 20, "<"));
 		}
+
+		if (h.isCrafting()) {
+			buttonList.add(new GuiButton(15, j+xSize/2, k+32, 20, 20, "`"));
+			buttonList.add(new GuiButton(16, j+xSize/2, k+52, 20, 20, "~"));
+		}
+
 		this.addTabButtons(j, k);
 	}
 
@@ -246,7 +253,7 @@ public class GuiChromaBook extends GuiScreen {
 	protected void drawAuxData(int posX, int posY) {
 		if (System.currentTimeMillis()%10 == 0)
 			Minecraft.getMinecraft().renderEngine.tick();
-		ChromaBookData.drawPage(fontRendererObj, ri, screen, page, subpage, posX, posY);
+		ChromaBookData.drawPage(fontRendererObj, ri, screen, page, subpage, recipe, posX, posY);
 	}
 
 	private final void drawTabIcons() {
@@ -317,7 +324,7 @@ public class GuiChromaBook extends GuiScreen {
 	public int getMaxSubpage() {
 		ChromaBook h = ChromaBook.getEntry(screen, page);
 		if (h.isCrafting()) {
-			RecipeType r = h.getRecipeLevel();
+			RecipeType r = h.getRecipeLevel(recipe);
 			return r != null ? r.ordinal() : 0;
 		}
 		return 0;

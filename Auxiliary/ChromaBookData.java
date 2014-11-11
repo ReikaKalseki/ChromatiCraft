@@ -36,14 +36,13 @@ public class ChromaBookData {
 		mapHandbook();
 	}
 
-	public static void drawPage(FontRenderer fr, RenderItem ri, int screen, int page, int subpage, int posX, int posY) {
+	public static void drawPage(FontRenderer fr, RenderItem ri, int screen, int page, int subpage, int recipe, int posX, int posY) {
 		ChromaBook h = ChromaBook.getEntry(screen, page);
 		ReikaGuiAPI gui = ReikaGuiAPI.instance;
-		if (h.isMachine() || h.isTool()) {
+		if (h.isCrafting()) {
 			ArrayList<CastingRecipe> li = h.getCrafting();
 			if (!li.isEmpty()) {
-				int idx = (int)((System.currentTimeMillis()/500)%li.size());
-				CastingRecipe c = li.get(idx);
+				CastingRecipe c = li.get(recipe);
 				if (subpage == 0 || subpage == 2) {
 					ItemStack[] arr = c.getArrayForDisplay();
 					for (int i = 0; i < 9; i++) {
