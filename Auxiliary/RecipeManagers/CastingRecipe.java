@@ -19,7 +19,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.API.ChromaCasting;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
@@ -36,7 +35,7 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
-public class CastingRecipe implements ChromaCasting {
+public class CastingRecipe {
 
 	private final ItemStack out;
 	public final RecipeType type;
@@ -129,6 +128,11 @@ public class CastingRecipe implements ChromaCasting {
 			//runes.place(world, x, y, z);
 			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
 			return runes.matchAt(world, x, y, z, 0, 0, 0);
+		}
+
+		protected CastingRecipe addRune(int color, int rx, int ry, int rz) {
+			this.addRune(CrystalElement.elements[color], rx, ry, rz);
+			return this;
 		}
 
 		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
@@ -267,6 +271,10 @@ public class CastingRecipe implements ChromaCasting {
 
 		public ElementTagCompound getRequiredAura() {
 			return elements.copy();
+		}
+
+		protected CastingRecipe addAuraRequirement(int e, int amt) {
+			return this.addAuraRequirement(CrystalElement.elements[e], amt);
 		}
 
 		protected CastingRecipe addAuraRequirement(CrystalElement e, int amt) {
