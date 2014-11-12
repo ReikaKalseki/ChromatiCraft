@@ -46,6 +46,7 @@ import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -183,6 +184,8 @@ public final class PylonGenerator implements IWorldGenerator {
 		if (world.provider.isHellWorld || world.provider.hasNoSky)
 			return false;
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
+			return false;
+		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return ChromaOptions.FLATGEN.getState();
