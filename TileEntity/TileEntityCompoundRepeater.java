@@ -52,11 +52,11 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@SideOnly(Side.CLIENT)
 	private void particles(World world, int x, int y, int z) {
-		if (this.getTicksExisted()%32 == 0) {
+		if (this.getTicksExisted()%32 == 2) {
 			double px = x+0.5;//rand.nextDouble();
 			double py = y+0.5;//0.25+y+rand.nextDouble();
 			double pz = z+0.5;//rand.nextDouble();
-			CrystalElement e = this.getActiveColor();
+			CrystalElement e = CrystalElement.elements[((colorTimer+8)/32)%16];
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, px, py, pz, 0, 0, 0, e).setScale(5).setFading());
 		}
 	}

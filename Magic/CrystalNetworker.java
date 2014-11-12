@@ -73,11 +73,24 @@ public class CrystalNetworker implements TickHandler {
 	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int x, int y, int z, int range) {
 		if (amount <= 0)
 			return;
+		if (this.hasFlowTo(r, e, world))
+			return;
 		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			this.addFlow(world, p);
 		}
+	}
+
+	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
+		ArrayList<CrystalFlow> li = flows.get(world.provider.dimensionId);
+		if (li == null)
+			return false;
+		for (CrystalFlow f : li) {
+			if (f.element == e && f.receiver == r)
+				return true;
+		}
+		return false;
 	}
 
 	private void addFlow(World world, CrystalFlow p) {
