@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
@@ -166,6 +167,13 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			((FiberIO)te).setColor(CrystalElement.elements[is.getItemDamage()%16]);
 			if (!ep.capabilities.isCreativeMode)
 				is.stackSize--;
+		}
+
+		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {
+			if (((TileEntityChromaLamp)te).addColor(CrystalElement.elements[is.getItemDamage()%16])) {
+				if (!ep.capabilities.isCreativeMode)
+					is.stackSize--;
+			}
 		}
 
 		if (is != null && m == ChromaTiles.TANK) {
