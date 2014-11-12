@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
@@ -30,6 +32,8 @@ import cpw.mods.fml.relauncher.Side;
 public class CrystalNetworker implements TickHandler {
 
 	public static final CrystalNetworker instance = new CrystalNetworker();
+
+	private static final String NBT_TAG = "crystalnet";
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final HashMap<Integer, ArrayList<CrystalFlow>> flows = new HashMap();
@@ -52,17 +56,26 @@ public class CrystalNetworker implements TickHandler {
 		tiles.removeWorld(evt.world);
 	}
 
-	public boolean checkConnectivity(CrystalElement e, WorldLocation loc, int range) {
-		return this.checkConnectivity(e, loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord, range);
+	private void save(NBTTagCompound NBT) {
+		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
+		tiles.writeToNBT(tag);
+		NBT.setTag(NBT_TAG, tag);
+		//ReikaJavaLibrary.pConsole(tiles+" to "+tag, Side.SERVER);
 	}
 
-	public boolean checkConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
-		CrystalPath p = new PylonFinder(e, world, x, y, z, range).findPylon();
+	private void load(NBTTagCompound NBT) {
+		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
+		tiles.readFromNBT(tag);
+		//ReikaJavaLibrary.pConsole(tiles+" from "+tag, Side.SERVER);
+	}
+
+	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
+		CrystalPath p = new PylonFinder(e, r).findPylon();
 		return p != null && p.canTransmit();
 	}
 
-	public CrystalSource getConnectivity(CrystalElement e, World world, int x, int y, int z, int range) {
-		CrystalPath p = new PylonFinder(e, world, x, y, z, range).findPylon();
+	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
+		CrystalPath p = new PylonFinder(e, r).findPylon();
 		return p != null && p.canTransmit() ? p.transmitter : null;
 	}
 
@@ -75,7 +88,8 @@ public class CrystalNetworker implements TickHandler {
 			return;
 		if (this.hasFlowTo(r, e, world))
 			return;
-		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
+		CrystalFlow p = new PylonFinder(e, r).findPylon(amount);
+		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			this.addFlow(world, p);
@@ -159,6 +173,7 @@ public class CrystalNetworker implements TickHandler {
 	public void addTile(CrystalNetworkTile te) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 			tiles.put(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()), te);
+			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
 	}
 
@@ -176,6 +191,7 @@ public class CrystalNetworker implements TickHandler {
 				}
 			}
 		}
+		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false);
 	}
 
 	public void breakPaths(CrystalNetworkTile te) {
@@ -193,18 +209,19 @@ public class CrystalNetworker implements TickHandler {
 		}
 	}
 
-	ArrayList<CrystalTransmitter> getTransmittersWithinDofXYZ(World world, int x, int y, int z, double dist, CrystalElement e) {
+	ArrayList<CrystalTransmitter> getTransmittersTo(CrystalReceiver r, CrystalElement e) {
 		ArrayList<CrystalTransmitter> li = new ArrayList();
 		for (WorldLocation c : tiles.keySet()) {
-			if (c.dimensionID == world.provider.dimensionId) {
+			if (c.dimensionID == r.getWorld().provider.dimensionId) {
 				CrystalNetworkTile tile = tiles.get(c);
 				if (tile instanceof CrystalTransmitter) {
 					CrystalTransmitter te = (CrystalTransmitter)tile;
 					if (te.canConduct()) {
 						if (e == null || te.isConductingElement(e)) {
-							double d = te.getDistanceSqTo(x, y, z);
+							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
 							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
 							double send = te.getSendRange();
+							double dist = r.getReceiveRange();
 							if (d <= Math.min(dist*dist, send*send)) {
 								li.add(te);
 							}
@@ -233,6 +250,38 @@ public class CrystalNetworker implements TickHandler {
 	@Override
 	public String getLabel() {
 		return "Crystal Networker";
+	}
+
+	public static class WorldCrystalNetworkData extends WorldSavedData {
+
+		private static final String IDENTIFIER = NBT_TAG;
+
+		public WorldCrystalNetworkData() {
+			super(IDENTIFIER);
+		}
+
+		public WorldCrystalNetworkData(String s) {
+			super(s);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			instance.load(NBT);
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			instance.save(NBT);
+		}
+
+		private static WorldCrystalNetworkData initNetworkData(World world) {
+			WorldCrystalNetworkData data = (WorldCrystalNetworkData)world.loadItemData(WorldCrystalNetworkData.class, IDENTIFIER);
+			if (data == null) {
+				data = new WorldCrystalNetworkData();
+				world.setItemData(IDENTIFIER, data);
+			}
+			return data;
+		}
 	}
 
 }

@@ -16,13 +16,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -45,17 +42,6 @@ public class ItemStorageCrystal extends ItemChromaTool {
 				this.addEnergy(item2, CrystalElement.elements[k], this.getCapacity(item2));
 			par3List.add(item2);
 		}
-	}
-
-	@Override
-	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			if (CrystalNetworker.instance.checkConnectivity(e, new WorldLocation(ep), 8)) {
-				this.addEnergy(is, e, 4);
-			}
-		}
-		return is;
 	}
 
 	@Override

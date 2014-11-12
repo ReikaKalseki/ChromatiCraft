@@ -124,61 +124,65 @@ public class ChromatiPackets implements IPacketHandler {
 			return;
 		}
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile == null) {
-			ChromatiCraft.logger.logError("TileEntity at "+x+", "+y+", "+z+" was deleted before its packet could be received!");
-			return;
+		try {
+			switch (pack) {
+			case ENCHANTER:
+				Enchantment e = Enchantment.enchantmentsList[data[0]];
+				boolean incr = data[1] > 0;
+				TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
+				if (incr) {
+					ench.incrementEnchantment(e);
+				}
+				else {
+					ench.decrementEnchantment(e);
+				}
+				break;
+			case SPAWNERPROGRAM:
+				TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
+				prog.setMobType(stringdata);
+				break;
+			case CRYSTALEFFECT:
+				Block b = world.getBlock(x, y, z);
+				if (b instanceof CrystalBlock) {
+					CrystalBlock cb = (CrystalBlock)b;
+					cb.updateEffects(world, x, y, z);
+				}
+				break;
+			case PLANTUPDATE:
+				TileEntityCrystalPlant te = (TileEntityCrystalPlant)tile;
+				te.updateLight();
+				break;
+			case ABILITY:
+				Chromabilities c = Chromabilities.abilities[data[0]];
+				if (c.playerHasAbility(ep))
+					c.trigger(ep, data[1]);
+				break;
+			case PYLONATTACK:
+				if (tile instanceof TileEntityCrystalPylon)
+					((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
+				break;
+			case ABILITYCHOOSE:
+				((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);
+				break;
+			case BUFFERINC:
+				PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
+				break;
+			case TELEPUMP:
+				((TileEntityTeleportationPump)tile).setTargetedFluid(data[0]);
+				break;
+			case TRANSMIT:
+				((TileEntityFiberTransmitter)tile).transmitParticle(ForgeDirection.VALID_DIRECTIONS[data[0]], data[1], CrystalElement.elements[data[2]]);
+				break;
+			case ASPECT:
+				((TileEntityAspectFormer)tile).selectAspect(stringdata);
+				break;
+			}
 		}
-		switch (pack) {
-		case ENCHANTER:
-			Enchantment e = Enchantment.enchantmentsList[data[0]];
-			boolean incr = data[1] > 0;
-			TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
-			if (incr) {
-				ench.incrementEnchantment(e);
-			}
-			else {
-				ench.decrementEnchantment(e);
-			}
-			break;
-		case SPAWNERPROGRAM:
-			TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
-			prog.setMobType(stringdata);
-			break;
-		case CRYSTALEFFECT:
-			Block b = world.getBlock(x, y, z);
-			if (b instanceof CrystalBlock) {
-				CrystalBlock cb = (CrystalBlock)b;
-				cb.updateEffects(world, x, y, z);
-			}
-			break;
-		case PLANTUPDATE:
-			TileEntityCrystalPlant te = (TileEntityCrystalPlant)tile;
-			te.updateLight();
-			break;
-		case ABILITY:
-			Chromabilities c = Chromabilities.abilities[data[0]];
-			if (c.playerHasAbility(ep))
-				c.trigger(ep, data[1]);
-			break;
-		case PYLONATTACK:
-			if (tile instanceof TileEntityCrystalPylon)
-				((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
-			break;
-		case ABILITYCHOOSE:
-			((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);
-			break;
-		case BUFFERINC:
-			PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
-			break;
-		case TELEPUMP:
-			((TileEntityTeleportationPump)tile).setTargetedFluid(data[0]);
-			break;
-		case TRANSMIT:
-			((TileEntityFiberTransmitter)tile).transmitParticle(ForgeDirection.VALID_DIRECTIONS[data[0]], data[1], CrystalElement.elements[data[2]]);
-			break;
-		case ASPECT:
-			((TileEntityAspectFormer)tile).selectAspect(stringdata);
-			break;
+		catch (NullPointerException e) {
+			ChromatiCraft.logger.logError("TileEntity at "+x+", "+y+", "+z+" was deleted before its packet "+pack+" could be received!");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

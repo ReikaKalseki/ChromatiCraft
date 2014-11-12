@@ -23,43 +23,49 @@ public class PylonFinder {
 	private final CrystalNetworker net;
 	private static final RayTracer tracer;
 
-	private final int stepRange;
-	private final World world;
-	private final int targetX;
-	private final int targetY;
-	private final int targetZ;
+	//private final int stepRange;
+	private final CrystalReceiver target;
 	private final CrystalElement element;
 
-	PylonFinder(CrystalElement e, World world, int x, int y, int z, int r) {
+	PylonFinder(CrystalElement e, CrystalReceiver r) {
 		element = e;
-		this.world = world;
-		targetX = x;
-		targetY = y;
-		targetZ = z;
-		stepRange = r;
+		target = r;
+		//stepRange = r;
 		net = CrystalNetworker.instance;
 	}
 
 	CrystalPath findPylon() {
-		this.findFrom(targetX, targetY, targetZ);
+		this.findFrom(target);
+		//ReikaJavaLibrary.pConsole(this.toString());
 		return this.isComplete() ? new CrystalPath(element, nodes) : null;
 	}
 
-	CrystalFlow findPylon(CrystalReceiver r, int amount) {
-		this.findFrom(targetX, targetY, targetZ);
-		return this.isComplete() ? new CrystalFlow(r, element, amount, nodes) : null;
+	CrystalFlow findPylon(int amount) {
+		this.findFrom(target);
+		//ReikaJavaLibrary.pConsole(this.toString());
+		return this.isComplete() ? new CrystalFlow(target, element, amount, nodes) : null;
+	}
+
+	@Override
+	public String toString() {
+		return element+": "+target;//+" by "+stepRange;
 	}
 
 	public boolean isComplete() {
 		return nodes.size() >= 2 && nodes.getLast().getTileEntity() instanceof CrystalSource;
 	}
 
-	private void findFrom(int x, int y, int z) {
+	private void findFrom(CrystalReceiver r) {
+		World world = r.getWorld();
+		int x = r.getX();
+		int y = r.getY();
+		int z = r.getZ();
 		if (nodes.contains(new WorldLocation(world, x, y, z))) {
 			return;
 		}
 		nodes.add(new WorldLocation(world, x, y, z));
-		ArrayList<CrystalTransmitter> li = net.getTransmittersWithinDofXYZ(world, x, y, z, stepRange, element);
+		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
+		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
 		for (CrystalTransmitter te : li) {
 			if (/*!te.needsLineOfSight() || */this.lineOfSight(world, x, y, z, te)) {
 				if (te instanceof CrystalSource) {
@@ -67,7 +73,7 @@ public class PylonFinder {
 					return;
 				}
 				else if (te instanceof CrystalRepeater) {
-					this.findFrom(te.getX(), te.getY(), te.getZ());
+					this.findFrom((CrystalRepeater)te);
 				}
 			}
 		}

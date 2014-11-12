@@ -51,7 +51,7 @@ public class CrystalPath {
 
 	@Override
 	public String toString() {
-		return nodes.toString();
+		return element+": to "+origin+" from "+transmitter+": "+nodes.toString();
 	}
 
 	public boolean contains(CrystalNetworkTile te) {

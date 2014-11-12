@@ -26,7 +26,7 @@ public class CrystalFlow extends CrystalPath {
 		super(e, li);
 		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
-		maxFlow = this.getMaxFlow()-this.getSignalLoss();
+		maxFlow = Math.max(1, this.getMaxFlow()-this.getSignalLoss());
 	}
 
 	@Override

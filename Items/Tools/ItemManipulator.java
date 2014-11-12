@@ -86,6 +86,13 @@ public class ItemManipulator extends ItemChromaTool {
 			ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
 			return true;
 		}
+		/*
+		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode) {
+			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;
+			cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+			return true;
+		}
+		 */
 		if (t == ChromaTiles.COMPOUND) {
 			TileEntityCompoundRepeater te = (TileEntityCompoundRepeater)tile;
 			if (ep.isSneaking()) {

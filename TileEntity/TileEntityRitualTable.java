@@ -55,7 +55,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int getReceiveRange() {
-		return 16;
+		return 24; //16
 	}
 
 	@Override

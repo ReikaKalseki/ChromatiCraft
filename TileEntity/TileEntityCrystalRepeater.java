@@ -62,7 +62,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSignalDegradation() {
-		return 20;
+		return 5;
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public boolean checkConnectivity() {
 		CrystalElement c = this.getActiveColor();
-		return c != null && CrystalNetworker.instance.checkConnectivity(c, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange());
+		return c != null && CrystalNetworker.instance.checkConnectivity(c, this);
 	}
 
 	public CrystalElement getActiveColor() {
@@ -159,7 +159,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public CrystalSource getEnergySource() {
 		CrystalElement e = this.getActiveColor();
-		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
+		return e != null ? CrystalNetworker.instance.getConnectivity(e, this) : null;
 	}
 
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
