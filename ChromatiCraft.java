@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
@@ -414,6 +415,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
 		evt.registerServerCommand(new ProgressionStageCommand());
+		evt.registerServerCommand(new NetworkLoggerCommand());
 	}
 
 	@EventHandler

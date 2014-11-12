@@ -16,6 +16,7 @@ import java.util.Iterator;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
@@ -73,6 +74,7 @@ public class CrystalNetworker implements TickHandler {
 		if (amount <= 0)
 			return;
 		CrystalFlow p = new PylonFinder(e, world, x, y, z, range).findPylon(r, amount);
+		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			this.addFlow(world, p);
 		}
