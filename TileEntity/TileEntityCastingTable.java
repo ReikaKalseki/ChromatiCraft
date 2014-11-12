@@ -595,7 +595,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int getReceiveRange() {
-		return 32;
+		return 24;
 	}
 
 	@Override
