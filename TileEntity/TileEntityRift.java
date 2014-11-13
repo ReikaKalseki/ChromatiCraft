@@ -41,7 +41,9 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
@@ -55,7 +57,7 @@ import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 @Strippable(value = {"buildcraft.api.power.IPowerReceptor", "cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
-		"thaumcraft.api.aspects.IAspectContainer", "dan200.computer.api.IPeripheral", "li.cil.oc.api.network.Environment",
+		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 "li.cil.oc.api.network.ManagedPeripheral"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, IFluidHandler, IPowerReceptor, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral  {
@@ -270,6 +272,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean isConnectable(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).isConnectable(face);
@@ -278,6 +281,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean canInputFrom(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).canInputFrom(face);
@@ -286,6 +290,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean canOutputTo(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).canOutputTo(face);
@@ -294,6 +299,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setSuction(Aspect aspect, int amount) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IEssentiaTransport) {
 			((IEssentiaTransport)this.getSingleDirTile()).setSuction(aspect, amount);
@@ -301,6 +307,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getSuctionType(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getSuctionType(face);
@@ -309,6 +316,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getSuctionAmount(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getSuctionAmount(face);
@@ -317,6 +325,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).takeEssentia(aspect, amount, face);
@@ -325,6 +334,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).addEssentia(aspect, amount, face);
@@ -333,6 +343,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getEssentiaType(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getEssentiaType(face);
@@ -341,6 +352,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getEssentiaAmount(ForgeDirection face) {
 		if (this.getOther() != null && this.getAdjacentTargetTile(face.getOpposite()) instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getAdjacentTargetTile(face.getOpposite())).getEssentiaAmount(face);
@@ -349,6 +361,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getMinimumSuction() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IEssentiaTransport) {
 			return ((IEssentiaTransport)this.getSingleDirTile()).getMinimumSuction();
@@ -357,6 +370,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean renderExtendedTube() {
 		return false;
 	}
@@ -602,6 +616,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).getAspects();
@@ -610,6 +625,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setAspects(AspectList aspects) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			((IAspectContainer)this.getSingleDirTile()).setAspects(aspects);
@@ -617,6 +633,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerAccept(Aspect tag) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).doesContainerAccept(tag);
@@ -625,6 +642,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int addToContainer(Aspect tag, int amount) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).addToContainer(tag, amount);
@@ -633,6 +651,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).takeFromContainer(tag, amount);
@@ -641,6 +660,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(AspectList ot) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).takeFromContainer(ot);
@@ -649,6 +669,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).doesContainerContainAmount(tag, amount);
@@ -657,6 +678,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContain(AspectList ot) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).doesContainerContain(ot);
@@ -665,6 +687,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int containerContains(Aspect tag) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IAspectContainer) {
 			return ((IAspectContainer)this.getSingleDirTile()).containerContains(tag);
@@ -673,6 +696,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public String getType() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			return ((IPeripheral)this.getSingleDirTile()).getType();
@@ -681,6 +705,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public String[] getMethodNames() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			return ((IPeripheral)this.getSingleDirTile()).getMethodNames();
@@ -689,6 +714,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			return ((IPeripheral)this.getSingleDirTile()).callMethod(computer, context, method, arguments);
@@ -697,6 +723,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public void attach(IComputerAccess computer) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			((IPeripheral)this.getSingleDirTile()).attach(computer);
@@ -704,6 +731,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.COMPUTERCRAFT)
 	public void detach(IComputerAccess computer) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof IPeripheral) {
 			((IPeripheral)this.getSingleDirTile()).detach(computer);
@@ -711,6 +739,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public String[] methods() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof ManagedPeripheral) {
 			return ((ManagedPeripheral)this.getSingleDirTile()).methods();
@@ -719,6 +748,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public Object[] invoke(String method, Context context, Arguments args) throws Exception {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof ManagedPeripheral) {
 			return ((ManagedPeripheral)this.getSingleDirTile()).invoke(method, context, args);
@@ -727,6 +757,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public final Node node() {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
 			return ((Environment)this.getSingleDirTile()).node();
@@ -735,6 +766,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onConnect(Node node) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
 			((Environment)this.getSingleDirTile()).onConnect(node);
@@ -742,6 +774,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onDisconnect(Node node) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
 			((Environment)this.getSingleDirTile()).onDisconnect(node);
@@ -749,6 +782,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onMessage(Message message) {
 		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
 			((Environment)this.getSingleDirTile()).onMessage(message);

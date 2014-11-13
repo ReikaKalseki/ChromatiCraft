@@ -388,7 +388,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
 		AspectList as = new AspectList();
 		as.add(Aspect.AURA, 400);
@@ -400,47 +400,47 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setAspects(AspectList aspects) {}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerAccept(Aspect tag) {
 		return this.getAspects().getAmount(tag) > 0;
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public int addToContainer(Aspect tag, int amount) {return 0;}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
 		return this.doesContainerContainAmount(tag, amount);
 	}
 
 	@Override
 	@Deprecated
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(AspectList ot) {
 		return false;
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
 		return this.getAspects().getAmount(tag) > amount;
 	}
 
 	@Override
 	@Deprecated
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContain(AspectList ot) {
 		return false;
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public int containerContains(Aspect tag) {
 		return this.getAspects().getAmount(tag);
 	}
@@ -451,13 +451,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspectsBase() {
 		return this.getAspects();
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public NodeType getNodeType() {
 		switch(color) {
 		case BLACK:
@@ -472,27 +472,27 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setNodeType(NodeType nodeType) {}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setNodeModifier(NodeModifier nodeModifier) {}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public NodeModifier getNodeModifier() {
 		return NodeModifier.BRIGHT;
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getNodeVisBase(Aspect aspect) {
 		return this.containerContains(aspect);
 	}
 
 	@Override
-	@ModDependent(mod = ModList.THAUMCRAFT)
+	@ModDependent(ModList.THAUMCRAFT)
 	public void setNodeVisBase(Aspect aspect, short nodeVisBase) {}
 
 }

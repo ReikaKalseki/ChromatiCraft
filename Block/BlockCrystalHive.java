@@ -25,6 +25,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
@@ -59,6 +61,8 @@ public class BlockCrystalHive extends Block {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
+		if (!ModList.FORESTRY.isLoaded())
+			return li;
 		BeeSpecies bee = this.getBeeForMeta(metadata);
 		if (bee != null) {
 			float chance = Math.min(0.95F, (1+fortune)*0.25F);
@@ -78,6 +82,7 @@ public class BlockCrystalHive extends Block {
 		return new ItemStack(ChromaBlocks.HIVE.getBlockInstance(), 1, meta);
 	}
 
+	@ModDependent(ModList.FORESTRY)
 	private BeeSpecies getBeeForMeta(int meta) {
 		switch(meta) {
 		case 0:
