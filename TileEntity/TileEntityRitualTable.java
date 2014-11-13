@@ -95,6 +95,9 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		tickNoPlayer = 0;
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 2, 0).expand(0, 1, 0);
 		boolean inbox = energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
+		//ReikaJavaLibrary.pConsole(abilityTick+":"+inbox+" from "+ep.boundingBox+" & "+box, Side.SERVER);
+		//ReikaJavaLibrary.pConsole(energy+"/"+tag, Side.SERVER);
+		//ReikaJavaLibrary.pConsole(box.maxX > ep.boundingBox.minX && box.minX < ep.boundingBox.maxX ? (box.maxY > ep.boundingBox.minY && box.minY < ep.boundingBox.maxY ? box.maxZ > ep.boundingBox.minZ && box.minZ < ep.boundingBox.maxZ : false) : false);
 
 		abilitySoundTick++;
 		if (abilitySoundTick >= 490) {
@@ -278,7 +281,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int getMaxStorage() {
-		return 20000;
+		return 30000;
 	}
 
 	@Override
