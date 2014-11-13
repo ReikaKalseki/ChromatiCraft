@@ -182,7 +182,7 @@ public class AbilityHelper {
 	}
 
 	public ElementTagCompound getUsageElementsFor(Chromabilities c) {
-		return tagMap.get(c).copy().scale(0.001F);
+		return tagMap.get(c).copy().scale(0.0002F);
 	}
 
 }
