@@ -10,6 +10,10 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.minecraft.world.World;
@@ -27,6 +31,8 @@ public class PylonFinder {
 	private final CrystalReceiver target;
 	private final CrystalElement element;
 
+	private static final HashMap<WorldLocation, EnumMap<CrystalElement, Collection<CrystalPath>>> paths = new HashMap();
+
 	PylonFinder(CrystalElement e, CrystalReceiver r) {
 		element = e;
 		target = r;
@@ -35,15 +41,94 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylon() {
+		CrystalPath p = this.checkExistingPaths();
+		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
+		if (p != null)
+			return p;
+
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
-		return this.isComplete() ? new CrystalPath(element, nodes) : null;
+		if (this.isComplete()) {
+			CrystalPath path = new CrystalPath(element, nodes);
+			this.addValidPath(path);
+			return path;
+		}
+		return null;
 	}
 
 	CrystalFlow findPylon(int amount) {
+		CrystalPath p = this.checkExistingPaths();
+		if (p != null)
+			return new CrystalFlow(p, target, amount);
+
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
-		return this.isComplete() ? new CrystalFlow(target, element, amount, nodes) : null;
+		if (this.isComplete()) {
+			CrystalFlow flow = new CrystalFlow(target, element, amount, nodes);
+			this.addValidPath(flow.asPath());
+			return flow;
+		}
+		return null;
+	}
+
+	private CrystalPath checkExistingPaths() {
+		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(new WorldLocation(target.getWorld(), target.getX(), target.getY(), target.getZ()));
+		if (map != null) {
+			Collection<CrystalPath> c = map.get(element);
+			if (c != null) {
+				Iterator<CrystalPath> it = c.iterator();
+				while (it.hasNext()) {
+					CrystalPath p = it.next();
+					if (!p.stillValid()) {
+						//ReikaJavaLibrary.pConsole("rem "+p, Side.SERVER);
+						it.remove();
+					}
+					else
+						return p;
+				}
+			}
+		}
+		return null;
+	}
+
+	private void addValidPath(CrystalPath p) {
+		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(p.origin);
+		if (map == null) {
+			Collection<CrystalPath> c = new ArrayList();
+			map = new EnumMap(CrystalElement.class);
+			c.add(p);
+			map.put(element, c);
+			paths.put(p.origin, map);
+		}
+		else {
+			Collection<CrystalPath> c = map.get(p.element);
+			if (c == null) {
+				c = new ArrayList();
+				c.add(p);
+				map.put(element, c);
+			}
+			else {
+				if (!c.contains(p))
+					c.add(p);
+				//ReikaJavaLibrary.pConsole(c.size(), Side.SERVER);
+			}
+		}
+		//ReikaJavaLibrary.pConsole(paths, Side.SERVER);
+	}
+
+	static void removePathsWithTile(CrystalNetworkTile te) {
+		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		if (map != null) {
+			for (CrystalElement e : map.keySet()) {
+				Collection<CrystalPath> c = map.get(e);
+				Iterator<CrystalPath> it = c.iterator();
+				while (it.hasNext()) {
+					CrystalPath p = it.next();
+					if (p.contains(te))
+						it.remove();
+				}
+			}
+		}
 	}
 
 	@Override

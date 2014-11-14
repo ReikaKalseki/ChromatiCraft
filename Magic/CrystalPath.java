@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class CrystalPath {
 
@@ -22,7 +23,7 @@ public class CrystalPath {
 	public final CrystalElement element;
 	private int attenuation;
 
-	public CrystalPath(CrystalElement e, LinkedList<WorldLocation> li) {
+	protected CrystalPath(CrystalElement e, LinkedList<WorldLocation> li) {
 		nodes = li;
 		transmitter = (CrystalSource)nodes.getLast().getTileEntity();
 		origin = nodes.getFirst();
@@ -56,6 +57,40 @@ public class CrystalPath {
 
 	public boolean contains(CrystalNetworkTile te) {
 		return nodes.contains(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+	}
+
+	public final boolean checkLineOfSight() {
+		for (int i = 0; i < nodes.size()-1; i++) {
+			WorldLocation src = nodes.get(i);
+			WorldLocation tgt = nodes.get(i+1);
+			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
+				CrystalTransmitter tr = (CrystalTransmitter)src.getTileEntity();
+				CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
+				if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	boolean stillValid() {
+		for (int i = 0; i < nodes.size()-1; i++) {
+			WorldLocation src = nodes.get(i);
+			WorldLocation tgt = nodes.get(i+1);
+			CrystalTransmitter tr = (CrystalTransmitter)src.getTileEntity();
+			CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
+			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
+				if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
+					ReikaJavaLibrary.pConsole(tr+" >> "+tg);
+					return false;
+				}
+			}
+			if (!tr.canConduct() || !tr.isConductingElement(element)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

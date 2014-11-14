@@ -22,11 +22,19 @@ public class CrystalFlow extends CrystalPath {
 	private final int maxFlow;
 	public final CrystalReceiver receiver;
 
-	public CrystalFlow(CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li) {
+	protected CrystalFlow(CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li) {
 		super(e, li);
 		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
 		maxFlow = Math.max(1, this.getMaxFlow()-this.getSignalLoss());
+	}
+
+	CrystalFlow(CrystalPath p, CrystalReceiver r, int amt) {
+		this(r, p.element, amt, p.nodes);
+	}
+
+	CrystalPath asPath() {
+		return new CrystalPath(element, nodes);
 	}
 
 	@Override
@@ -84,17 +92,6 @@ public class CrystalFlow extends CrystalPath {
 			return 0;
 		remainingAmount -= ret;
 		return ret;
-	}
-
-	public boolean checkLineOfSight() {
-		for (int i = 0; i < nodes.size()-1; i++) {
-			WorldLocation src = nodes.get(i);
-			WorldLocation tgt = nodes.get(i+1);
-			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }

@@ -17,14 +17,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -41,7 +39,41 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 	private int readY = 0;
 	private int readZ = 0;
 
+	private static final int len = 2;
+	private final double[] particleX = new double[len];
+	private final double[] particleY = new double[len];
+	private final double[] particleZ = new double[len];
+	private final int[] particleIndex;
+	private static final double[][] coords = new double[6][3];
+
 	private static int TICKSTEP = 256;
+
+	static {
+		coords[1][0] = 1;
+
+		coords[2][0] = 1;
+		coords[2][1] = 1;
+
+		coords[3][0] = 1;
+		coords[3][1] = 1;
+		coords[3][2] = 1;
+
+		coords[4][1] = 1;
+		coords[4][2] = 1;
+
+		coords[5][2] = 1;
+	}
+
+	public TileEntityMiner() {
+		particleIndex = new int[len];
+		for (int i = 0; i < len; i++) {
+			int idx = i*coords.length/len;
+			particleIndex[i] = idx;
+			particleX[i] = coords[idx][0];
+			particleY[i] = coords[idx][1];
+			particleZ[i] = coords[idx][2];
+		}
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -72,14 +104,39 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
-		double angle = (System.currentTimeMillis()/15D)%360;
-		double d = 0.05;
-		double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
-		double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
-		double py = ReikaRandomHelper.getRandomPlusMinus(y+1.5+0.5*(1+Math.sin(Math.toRadians(angle))), d);
-		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
-		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		for (int i = 0; i < particleIndex.length; i++) {
+			double px = x+particleX[i];
+			double py = y+particleY[i];
+			double pz = z+particleZ[i];
+
+			if (this.getTicksExisted()%2 == 0) {
+				EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(50);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+				px = x+1-particleX[i];
+				//py = y+1-particleY[i];
+				//pz = z+1-particleZ[i];
+				fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(50);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+
+			double d = 0.05;
+			double tx = coords[particleIndex[i]][0];
+			double ty = coords[particleIndex[i]][1];
+			double tz = coords[particleIndex[i]][2];
+			double vx = Math.signum(tx-particleX[i])*d;
+			double vy = Math.signum(ty-particleY[i])*d;
+			double vz = Math.signum(tz-particleZ[i])*d;
+			particleX[i] += vx;
+			particleY[i] += vy;
+			particleZ[i] += vz;
+			particleX[i] = MathHelper.clamp_double(particleX[i], 0, 1);
+			particleY[i] = MathHelper.clamp_double(particleY[i], 0, 1);
+			particleZ[i] = MathHelper.clamp_double(particleZ[i], 0, 1);
+			boolean step = particleX[i] == tx && particleY[i] == ty && particleZ[i] == tz;
+			if (step)
+				particleIndex[i] = (particleIndex[i]+1)%coords.length;
+		}
 	}
 
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {

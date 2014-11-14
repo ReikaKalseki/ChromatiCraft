@@ -42,8 +42,11 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 		double x = -0.5;
 		double y = -0.5;
 		double z = 0;
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glTranslated(x, y, z);
 		v5.startDrawingQuads();
+		v5.setColorOpaque_I(0xffffff);
 		v5.setBrightness(240);
 		v5.addVertexWithUV(0, 0, 0, u, dv);
 		v5.addVertexWithUV(1, 0, 0, du, dv);
@@ -58,12 +61,14 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 		dv = ico.getMaxV();
 		v5.startDrawingQuads();
 		v5.setBrightness(240);
+		v5.setColorOpaque_I(0xffffff);
 		v5.addVertexWithUV(0, 0, 0, u, dv);
 		v5.addVertexWithUV(1, 0, 0, du, dv);
 		v5.addVertexWithUV(1, 1, 0, du, v);
 		v5.addVertexWithUV(0, 1, 0, u, v);
 		v5.draw();
 		GL11.glPopMatrix();
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	@Override

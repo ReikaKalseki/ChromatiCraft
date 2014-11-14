@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -36,7 +37,7 @@ public class CrystalNetworker implements TickHandler {
 	private static final String NBT_TAG = "crystalnet";
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
-	private final HashMap<Integer, ArrayList<CrystalFlow>> flows = new HashMap();
+	private final HashMap<Integer, Collection<CrystalFlow>> flows = new HashMap();
 
 	private int losTimer = 0;
 
@@ -50,6 +51,7 @@ public class CrystalNetworker implements TickHandler {
 		this.clear(dim);
 		for (WorldLocation c : tiles.keySet()) {
 			CrystalNetworkTile te = tiles.get(c);
+			PylonFinder.removePathsWithTile(te);
 			if (te instanceof CrystalTransmitter)
 				((CrystalTransmitter)te).clearTargets();
 		}
@@ -97,7 +99,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
-		ArrayList<CrystalFlow> li = flows.get(world.provider.dimensionId);
+		Collection<CrystalFlow> li = flows.get(world.provider.dimensionId);
 		if (li == null)
 			return false;
 		for (CrystalFlow f : li) {
@@ -108,7 +110,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	private void addFlow(World world, CrystalFlow p) {
-		ArrayList<CrystalFlow> li = flows.get(world.provider.dimensionId);
+		Collection<CrystalFlow> li = flows.get(world.provider.dimensionId);
 		if (li == null) {
 			li = new ArrayList();
 			flows.put(world.provider.dimensionId, li);
@@ -161,7 +163,7 @@ public class CrystalNetworker implements TickHandler {
 
 	public void clear(int dim) {
 		//do not clear tiles!
-		ArrayList<CrystalFlow> li = flows.get(dim);
+		Collection<CrystalFlow> li = flows.get(dim);
 		if (li != null) {
 			for (CrystalFlow f : li) {
 				f.resetTiles();
@@ -172,6 +174,10 @@ public class CrystalNetworker implements TickHandler {
 
 	public void addTile(CrystalNetworkTile te) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+			CrystalNetworkTile old = tiles.get(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+			if (old != null) { //cache cleaning; old TEs may get out of sync for things like charge
+				this.removeTile(old);
+			}
 			tiles.put(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()), te);
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
@@ -179,7 +185,7 @@ public class CrystalNetworker implements TickHandler {
 
 	public void removeTile(CrystalNetworkTile te) {
 		tiles.remove(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
-		ArrayList<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
+		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
 		if (li != null) {
 			Iterator<CrystalFlow> it = li.iterator();
 			while (it.hasNext()) {
@@ -191,11 +197,12 @@ public class CrystalNetworker implements TickHandler {
 				}
 			}
 		}
+		PylonFinder.removePathsWithTile(te);
 		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false);
 	}
 
 	public void breakPaths(CrystalNetworkTile te) {
-		ArrayList<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
+		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
 		if (li != null) {
 			Iterator<CrystalFlow> it = li.iterator();
 			while (it.hasNext()) {
