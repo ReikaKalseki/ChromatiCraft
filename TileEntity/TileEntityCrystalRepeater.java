@@ -166,8 +166,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (!worldObj.isRemote) {
 			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(60) == 0)
 				p.attackEntityByProxy(player, this);
-			if (!CrystalNetworker.instance.isActiveFlowTo(this, p.getColor()))
-				CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
+			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}
 	}
 
