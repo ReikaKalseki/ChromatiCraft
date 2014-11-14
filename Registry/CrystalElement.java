@@ -17,6 +17,7 @@ import java.util.Random;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.Magic.ElementMixer;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -156,6 +157,13 @@ public enum CrystalElement {
 
 	public static CrystalElement randomPrimaryElement() {
 		return randomElement(0);
+	}
+
+	public static int getBlendedColor(int tick, int mod) {
+		CrystalElement e = CrystalElement.elements[(tick/mod)%16];
+		CrystalElement e2 = CrystalElement.elements[(tick/mod+1)%16];
+		float mix = tick%mod/(float)mod;
+		return ReikaColorAPI.mixColors(e.getColor(), e2.getColor(), 1-mix);
 	}
 
 	static {

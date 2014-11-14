@@ -117,6 +117,8 @@ public class PylonFinder {
 	}
 
 	static void removePathsWithTile(CrystalNetworkTile te) {
+		if (te == null)
+			return;
 		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
 		if (map != null) {
 			for (CrystalElement e : map.keySet()) {
