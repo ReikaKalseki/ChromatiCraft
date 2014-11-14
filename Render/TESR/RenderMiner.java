@@ -117,14 +117,15 @@ public class RenderMiner extends ChromaRenderBase {
 		int dy = te.getReadY()-te.yCoord;
 		int dz = te.getReadZ()-te.zCoord;
 		Tessellator v5 = Tessellator.instance;
-		ReikaRenderHelper.prepareGeoDraw(false);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LIGHTING);
 
 		int tick = Math.abs((int)System.currentTimeMillis());
 		float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-		GL11.glLineWidth(6);
+		float t = par8 < 0 ? 6 : 2;
+		GL11.glLineWidth(t);
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 200));
 		v5.addVertex(dx, dy, dz);
@@ -133,7 +134,7 @@ public class RenderMiner extends ChromaRenderBase {
 		v5.addVertex(dx, dy+1, dz);
 		v5.draw();
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 300));
 		v5.addVertex(dx, dy, dz+1);
@@ -142,7 +143,7 @@ public class RenderMiner extends ChromaRenderBase {
 		v5.addVertex(dx, dy+1, dz+1);
 		v5.draw();
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 400));
 		v5.addVertex(dx, dy, dz);
@@ -151,7 +152,7 @@ public class RenderMiner extends ChromaRenderBase {
 		v5.addVertex(dx, dy+1, dz);
 		v5.draw();
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 500));
 		v5.addVertex(dx+1, dy, dz);
@@ -160,7 +161,7 @@ public class RenderMiner extends ChromaRenderBase {
 		v5.addVertex(dx+1, dy+1, dz);
 		v5.draw();
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 600));
 		v5.addVertex(dx, dy, dz);
@@ -169,7 +170,7 @@ public class RenderMiner extends ChromaRenderBase {
 		v5.addVertex(dx+1, dy, dz);
 		v5.draw();
 
-		v5.startDrawing(GL11.GL_LINES);
+		v5.startDrawing(GL11.GL_LINE_LOOP);
 		v5.setBrightness(240);
 		v5.setColorOpaque_I(CrystalElement.getBlendedColor(tick, 700));
 		v5.addVertex(dx, dy+1, dz);
@@ -180,8 +181,8 @@ public class RenderMiner extends ChromaRenderBase {
 
 		GL11.glLineWidth(w);
 
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		ReikaRenderHelper.exitGeoDraw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 }

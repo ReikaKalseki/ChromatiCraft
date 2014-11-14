@@ -123,7 +123,7 @@ public class PlayerElementBuffer {
 	public boolean upgradeCap(EntityPlayer ep) {
 		NBTTagCompound tag = this.getTag(ep);
 		int prev = this.getElementCap(ep);
-		int val = Math.min(prev*4, 240000);
+		int val = Math.min(prev*4, 400000);
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
