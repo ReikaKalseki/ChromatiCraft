@@ -56,15 +56,15 @@ public class PylonFinder {
 		return null;
 	}
 
-	CrystalFlow findPylon(int amount) {
+	CrystalFlow findPylon(int amount, int maxthru) {
 		CrystalPath p = this.checkExistingPaths();
 		if (p != null)
-			return new CrystalFlow(p, target, amount);
+			return new CrystalFlow(p, target, amount, maxthru);
 
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
-			CrystalFlow flow = new CrystalFlow(target, element, amount, nodes);
+			CrystalFlow flow = new CrystalFlow(target, element, amount, nodes, maxthru);
 			this.addValidPath(flow.asPath());
 			return flow;
 		}

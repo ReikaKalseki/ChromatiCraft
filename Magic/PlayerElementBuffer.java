@@ -116,6 +116,10 @@ public class PlayerElementBuffer {
 		return Math.max(24, tag.getInteger("cap"));
 	}
 
+	public int getChargeSpeed(EntityPlayer ep) {
+		return (int)Math.pow(this.getElementCap(ep)/24, 0.667);
+	}
+
 	public double getPlayerFraction(EntityPlayer ep, CrystalElement e) {
 		return (double)this.getPlayerContent(ep, e)/this.getElementCap(ep);
 	}

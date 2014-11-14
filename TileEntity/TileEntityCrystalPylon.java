@@ -67,6 +67,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	public int randomOffset = rand.nextInt(360);
 	public static final int MAX_ENERGY = 180000;
 	private int energy = MAX_ENERGY;
+	private int energyStep = 1;
 
 	private static Class node;
 	private static HashMap<String, ArrayList<Integer>> nodeCache;
@@ -187,8 +188,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	private void charge(World world, int x, int y, int z) {
 		if (energy < MAX_ENERGY) {
-			energy++;
+			energy += energyStep;
 		}
+		if (energyStep > 1)
+			energyStep--;
 
 		int a = 1;
 		if (energy <= MAX_ENERGY-a) {
@@ -203,6 +206,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			if (world.isRemote && !blocks.isEmpty())
 				this.spawnRechargeParticles(world, x, y, z, blocks);
 		}
+	}
+
+	public void speedRegenShortly() {
+		energyStep = 5;
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -9,27 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityEntityCacher;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
-public class TileEntityAIShutdown extends TileEntityChromaticBase implements BreakAction {
-
-	private static final Collection<EntityLiving> stopped = new ArrayList();
-	private List<EntityLiving> local = new ArrayList();
-
-	private final StepTimer resyncTimer = new StepTimer(100);
+public class TileEntityAIShutdown extends TileEntityEntityCacher {
 
 	//private ForgeDirection facing;
 
@@ -69,17 +58,7 @@ public class TileEntityAIShutdown extends TileEntityChromaticBase implements Bre
 	}
 
 	@Override
-	public void updateEntity(World world, int x, int y, int z, int meta) {
-		resyncTimer.update();
-		if (resyncTimer.checkCap()) {
-			stopped.removeAll(local);
-			AxisAlignedBB box = this.getBox(world, x, y, z);
-			local = world.getEntitiesWithinAABB(EntityLiving.class, box);
-			//stopped.addAll(local);
-		}
-	}
-
-	private AxisAlignedBB getBox(World world, int x, int y, int z) {
+	protected AxisAlignedBB getBox(World world, int x, int y, int z) {
 		int r = 8;
 		int dx = (r+1)*this.getFacing().offsetX;
 		int dy = (r+1)*this.getFacing().offsetY;
@@ -92,12 +71,8 @@ public class TileEntityAIShutdown extends TileEntityChromaticBase implements Bre
 
 	}
 
-	public void breakBlock() {
-		stopped.removeAll(local);
-	}
-
 	public static boolean stopUpdate(Entity e) {
-		return e instanceof EntityLiving && stopped.contains(e);
+		return e instanceof EntityLiving && cachedEntity(e);
 	}
 
 }

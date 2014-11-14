@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -21,6 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.TileEntityCache;
@@ -37,6 +39,7 @@ public class CrystalNetworker implements TickHandler {
 	private static final String NBT_TAG = "crystalnet";
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
+	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final HashMap<Integer, Collection<CrystalFlow>> flows = new HashMap();
 
 	private int losTimer = 0;
@@ -56,6 +59,8 @@ public class CrystalNetworker implements TickHandler {
 				((CrystalTransmitter)te).clearTargets();
 		}
 		tiles.removeWorld(evt.world);
+		for (TileEntityCache c : pylons.values())
+			c.removeWorld(evt.world);
 	}
 
 	private void save(NBTTagCompound NBT) {
@@ -68,6 +73,13 @@ public class CrystalNetworker implements TickHandler {
 	private void load(NBTTagCompound NBT) {
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tiles.readFromNBT(tag);
+
+		for (CrystalNetworkTile te : tiles.values()) {
+			if (te instanceof TileEntityCrystalPylon) {
+				TileEntityCrystalPylon tile = (TileEntityCrystalPylon)te;
+				this.addPylon(tile);
+			}
+		}
 		//ReikaJavaLibrary.pConsole(tiles+" from "+tag, Side.SERVER);
 	}
 
@@ -82,15 +94,19 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
-		this.makeRequest(r, e, amount, r.getWorld(), r.getX(), r.getY(), r.getZ(), range);
+		this.makeRequest(r, e, amount, r.getWorld(), range, Integer.MAX_VALUE);
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int x, int y, int z, int range) {
+	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range, int maxthru) {
+		this.makeRequest(r, e, amount, r.getWorld(), range, maxthru);
+	}
+
+	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
 		if (amount <= 0)
 			return;
 		if (this.hasFlowTo(r, e, world))
 			return;
-		CrystalFlow p = new PylonFinder(e, r).findPylon(amount);
+		CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
@@ -179,12 +195,46 @@ public class CrystalNetworker implements TickHandler {
 				this.removeTile(old);
 			}
 			tiles.put(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()), te);
+			if (te instanceof TileEntityCrystalPylon) {
+				this.addPylon((TileEntityCrystalPylon)te);
+			}
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
 	}
 
+	private void addPylon(TileEntityCrystalPylon te) {
+		CrystalElement e = te.getColor();
+		TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
+		if (c == null) {
+			c = new TileEntityCache();
+			pylons.put(e, c);
+		}
+		c.put(te);
+	}
+
+	public Collection<TileEntityCrystalPylon> getNearbyPylons(World world, int x, int y, int z, CrystalElement e, int range, boolean LOS) {
+		TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
+		Collection<TileEntityCrystalPylon> li = new ArrayList();
+		if (c != null) {
+			for (WorldLocation loc : c.keySet()) {
+				if (loc.dimensionID == world.provider.dimensionId && loc.getDistanceTo(x, y, z) <= range) {
+					if (!LOS || PylonFinder.lineOfSight(world, x, y, z, loc.xCoord, loc.yCoord, loc.zCoord)) {
+						li.add(c.get(loc));
+					}
+				}
+			}
+		}
+		return li;
+	}
+
 	public void removeTile(CrystalNetworkTile te) {
 		tiles.remove(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		if (te instanceof TileEntityCrystalPylon) {
+			TileEntityCrystalPylon tile = (TileEntityCrystalPylon)te;
+			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(tile.getColor());
+			if (c != null)
+				c.remove(tile);
+		}
 		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
 		if (li != null) {
 			Iterator<CrystalFlow> it = li.iterator();

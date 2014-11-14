@@ -179,9 +179,16 @@ public class ItemManipulator extends ItemChromaTool {
 	}
 
 	private boolean chargeFromPylon(EntityPlayer player, TileEntityCrystalPylon te, CrystalElement e, int count) {
-		if (te.canConduct() && te.getEnergy(e) >= 4 && PlayerElementBuffer.instance.canPlayerAccept(player, e, 1)) {
-			if (PlayerElementBuffer.instance.addToPlayer(player, e, 1))
-				te.drain(e, 4);
+		int add = PlayerElementBuffer.instance.getChargeSpeed(player);
+		int drain = add*4;
+		int energy = te.getEnergy(e);
+		if (drain > energy) {
+			drain = energy;
+			add = drain/4;
+		}
+		if (te.canConduct() && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
+				te.drain(e, drain);
 			PlayerElementBuffer.instance.checkUpgrade(player, true);
 			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
 			if (player.worldObj.isRemote) {

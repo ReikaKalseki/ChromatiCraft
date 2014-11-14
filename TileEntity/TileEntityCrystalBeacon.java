@@ -10,17 +10,23 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityEntityCacher;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalBeacon extends TileEntityChromaticBase {
+public class TileEntityCrystalBeacon extends TileEntityEntityCacher {
 
 	@Override
 	public ChromaTiles getTile() {
@@ -29,8 +35,15 @@ public class TileEntityCrystalBeacon extends TileEntityChromaticBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	@Override
+	protected AxisAlignedBB getBox(World world, int x, int y, int z) {
+		int r = 32;
+		return ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r/4, r);
 	}
 	/*
 	@SideOnly(Side.CLIENT)
@@ -68,6 +81,45 @@ public class TileEntityCrystalBeacon extends TileEntityChromaticBase {
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	public static boolean isPlayerInvincible(EntityPlayer ep) {
+		return cachedEntity(ep);
+	}
+
+	@Override
+	public void onPathBroken(CrystalElement e) {
+
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 0;
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		return null;
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return false;
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 0;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return false;
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 0;
 	}
 
 }

@@ -31,6 +31,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -51,6 +52,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -74,6 +76,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(receiveCanceled = true, priority=EventPriority.LOWEST)
+	public void rangedInvincibility(LivingAttackEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving)) {
+
+		}
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
