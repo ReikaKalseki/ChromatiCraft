@@ -9,24 +9,26 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityEntityCacher;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
+import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalBeacon extends TileEntityEntityCacher {
+public class TileEntityCrystalBeacon extends CrystalReceiverBase implements BreakAction {
+
+	private static final Collection<WorldLocation> cache = new ArrayList();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -38,12 +40,19 @@ public class TileEntityCrystalBeacon extends TileEntityEntityCacher {
 		super.updateEntity(world, x, y, z, meta);
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
 	}
 
-	@Override
-	protected AxisAlignedBB getBox(World world, int x, int y, int z) {
-		int r = 32;
-		return ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r/4, r);
+	private void checkAndRequest() {
+		int capacity = this.getMaxStorage();
+		CrystalElement e = CrystalElement.RED;
+		int space = capacity-this.getEnergy(e);
+		if (space > 0) {
+			this.requestEnergy(e, space);
+		}
 	}
 	/*
 	@SideOnly(Side.CLIENT)
@@ -83,8 +92,23 @@ public class TileEntityCrystalBeacon extends TileEntityEntityCacher {
 
 	}
 
-	public static boolean isPlayerInvincible(EntityPlayer ep) {
-		return cachedEntity(ep);
+	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
+		for (WorldLocation loc : cache) {
+			if (Math.abs(ep.posY-loc.yCoord) <= 8 && loc.getDistanceTo(ep) <= 32) {
+				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity();
+				return te.isPlacer(ep) && te.prevent(dmg);
+			}
+		}
+		return false;
+	}
+
+	private boolean prevent(float dmg) {
+		int amt = (int)(dmg*dmg*100);
+		if (energy.containsAtLeast(CrystalElement.RED, amt)) {
+			this.drainEnergy(CrystalElement.RED, amt);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -94,32 +118,40 @@ public class TileEntityCrystalBeacon extends TileEntityEntityCacher {
 
 	@Override
 	public int getReceiveRange() {
-		return 0;
-	}
-
-	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
-		return null;
+		return 16;
 	}
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return false;
+		return e == CrystalElement.RED;
 	}
 
 	@Override
 	public int maxThroughput() {
-		return 0;
+		return 500;
 	}
 
 	@Override
 	public boolean canConduct() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public int getMaxStorage() {
-		return 0;
+		return 250000;
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		WorldLocation loc = new WorldLocation(this);
+		if (!cache.contains(loc))
+			cache.add(loc);
+	}
+
+	@Override
+	public void breakBlock() {
+		WorldLocation loc = new WorldLocation(this);
+		cache.remove(loc);
 	}
 
 }

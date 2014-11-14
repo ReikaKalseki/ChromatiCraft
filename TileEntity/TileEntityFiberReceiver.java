@@ -17,9 +17,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberSource;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.FiberNetwork;
@@ -110,11 +107,6 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase implements Fibe
 	@Override
 	public int getReceiveRange() {
 		return 32;
-	}
-
-	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
-		return null;
 	}
 
 	@Override

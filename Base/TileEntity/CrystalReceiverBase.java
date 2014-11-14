@@ -11,6 +11,9 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -112,6 +115,11 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	public final void setEnergy(CrystalElement e, int lvl) {
 		energy.setTag(e, lvl);
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		return null;
 	}
 
 }

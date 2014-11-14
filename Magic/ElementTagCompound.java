@@ -216,6 +216,10 @@ public final class ElementTagCompound {
 		return tag;
 	}
 
+	public boolean containsAtLeast(CrystalElement e, int amt) {
+		return this.getValue(e) >= amt;
+	}
+
 	public boolean containsAtLeast(ElementTagCompound tag) {
 		for (CrystalElement e : tag.data.keySet()) {
 			int val = tag.getValue(e);

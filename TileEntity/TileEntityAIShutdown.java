@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityEntityCacher;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 public class TileEntityAIShutdown extends TileEntityEntityCacher {
@@ -73,6 +74,36 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 
 	public static boolean stopUpdate(Entity e) {
 		return e instanceof EntityLiving && cachedEntity(e);
+	}
+
+	@Override
+	public void onPathBroken(CrystalElement e) {
+
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 0;
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return false;
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 0;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return false;
+	}
+
+	@Override
+	public int getMaxStorage() {
+		return 0;
 	}
 
 }

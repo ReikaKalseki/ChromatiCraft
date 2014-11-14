@@ -20,9 +20,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -600,7 +597,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int getMaxStorage() {
-		return 50000;
+		return 250000;
 	}
 
 	public boolean isCrafting() {
@@ -629,11 +626,6 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				}
 			}
 		}
-	}
-
-	@Override
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
-		return null;
 	}
 
 }

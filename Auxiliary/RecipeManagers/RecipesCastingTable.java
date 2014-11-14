@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AspectFormerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRuneRecipe;
@@ -217,6 +218,9 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.LAMP.getCraftedProduct();
 		this.addRecipe(new LampRecipe(is, new ItemStack(Blocks.glowstone)));
+
+		is = ChromaTiles.BEACON.getCraftedProduct();
+		this.addRecipe(new BeaconRecipe(is, new ItemStack(Items.nether_star)));
 	}
 
 	private void addRecipe(CastingRecipe r) {

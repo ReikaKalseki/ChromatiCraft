@@ -78,10 +78,12 @@ public class ChromaticEventManager {
 
 	}
 
-	@SubscribeEvent(receiveCanceled = true, priority=EventPriority.LOWEST)
+	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedInvincibility(LivingAttackEvent evt) {
-		if (evt.entityLiving instanceof EntityPlayer && TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving)) {
-
+		if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode && evt.ammount > 0) {
+			if (TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving, evt.ammount)) {
+				evt.setCanceled(true);
+			}
 		}
 	}
 

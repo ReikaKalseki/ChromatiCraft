@@ -98,11 +98,6 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	public ChromaTiles getTile() {
 		return ChromaTiles.COMPOUND;
 	}
-
-	@Override
-	public boolean needsLineOfSight() {
-		return true;
-	}
 	/*
 	@Override
 	public boolean checkConnectivity() {

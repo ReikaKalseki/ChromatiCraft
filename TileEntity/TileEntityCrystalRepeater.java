@@ -39,9 +39,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
-
-		if (this.getTicksExisted() < 5)
-			this.syncAllData(false);
 	}
 
 	@Override
@@ -52,12 +49,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSendRange() {
-		return 24;
+		return 32;
 	}
 
 	@Override
 	public int getReceiveRange() {
-		return 24;
+		return 32;
 	}
 
 	@Override

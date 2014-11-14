@@ -78,16 +78,18 @@ public class CrystalPath {
 		for (int i = 0; i < nodes.size()-1; i++) {
 			WorldLocation src = nodes.get(i);
 			WorldLocation tgt = nodes.get(i+1);
-			CrystalTransmitter tr = (CrystalTransmitter)src.getTileEntity();
-			CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
-			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
-				if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
-					ReikaJavaLibrary.pConsole(tr+" >> "+tg);
+			if (src.getTileEntity() instanceof CrystalTransmitter) {
+				CrystalTransmitter tr = (CrystalTransmitter)src.getTileEntity();
+				CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
+				if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
+					if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
+						ReikaJavaLibrary.pConsole(tr+" >> "+tg);
+						return false;
+					}
+				}
+				if (!tr.canConduct() || !tr.isConductingElement(element)) {
 					return false;
 				}
-			}
-			if (!tr.canConduct() || !tr.isConductingElement(element)) {
-				return false;
 			}
 		}
 		return true;
