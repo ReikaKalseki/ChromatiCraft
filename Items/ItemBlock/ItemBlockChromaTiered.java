@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
+import Reika.ChromatiCraft.Block.BlockTieredPlant;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -85,6 +86,13 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	@Override
 	public boolean isTiered(ItemStack is) {
 		return true;
+	}
+
+	@Override
+	public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata)
+	{
+		boolean flag = field_150939_a instanceof BlockTieredPlant ? ((BlockTieredPlant)field_150939_a).canPlaceAt(world, x, y, z, stack) : true;
+		return flag && super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata);
 	}
 
 }

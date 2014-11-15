@@ -66,7 +66,7 @@ public enum ChromaItems implements ItemEnum {
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),
 	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
-	VACUUMGUN(4, false,		"chroma.vac",			ItemVacuumGun.class),
+	VACUUMGUN(7, false,		"chroma.vac",			ItemVacuumGun.class),
 	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),

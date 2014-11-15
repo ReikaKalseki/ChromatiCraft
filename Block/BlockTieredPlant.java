@@ -30,7 +30,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -316,13 +315,27 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		}
 	}
 
-	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
-		return super.canPlaceBlockAt(world, x, y, z) && this.canBlockStay(world, x, y, z);
+	public boolean canPlaceAt(World world, int x, int y, int z, ItemStack is) {
+		return this.isValidLocation(world, x, y, z, is.getItemDamage());
 	}
 
-	protected boolean canPlaceBlockOn(Block b) {
-		return b == Blocks.grass || b == Blocks.dirt || b == Blocks.farmland;
+	protected boolean canPlaceBlockOn(World world, int x, int y, int z, TieredPlants p) {
+		Block b = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		switch(p) {
+		case FLOWER:
+			return b == Blocks.grass || b == Blocks.dirt || b == Blocks.farmland;
+		case BULB:
+			return b.getMaterial() == Material.leaves;
+		case CAVE:
+			return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta);
+		case LILY:
+			return b == Blocks.water || b == Blocks.flowing_water;
+		case DESERT:
+			return b == Blocks.sand;
+		default:
+			return false;
+		}
 	}
 
 	@Override
@@ -346,7 +359,22 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	@Override
 	public boolean canBlockStay(World world, int x, int y, int z) {
-		return world.getBlock(x, y-1, z).canSustainPlant(world, x, y-1, z, ForgeDirection.UP, this);
+		return this.isValidLocation(world, x, y, z, world.getBlockMetadata(x, y, z));
+	}
+
+	private boolean isValidLocation(World world, int x, int y, int z, int meta) {
+		TieredPlants p = TieredPlants.list[meta];
+		switch(p) {
+		case FLOWER:
+		case LILY:
+		case DESERT:
+			return this.canPlaceBlockOn(world, x, y-1, z, p);
+		case BULB:
+		case CAVE:
+			return this.canPlaceBlockOn(world, x, y+1, z, p);
+		default:
+			return true;
+		}
 	}
 
 	@Override
