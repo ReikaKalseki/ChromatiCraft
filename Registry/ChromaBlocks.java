@@ -72,7 +72,7 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEENTITY(BlockChromaTile.class, 											"Chromatic Tile"),
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
 	RUNE(BlockCrystalRune.class, 				ItemBlockDyeColors.class, 		"block.crystalrune"),
-	CHROMA(BlockActiveChroma.class, 			ChromatiCraft.chroma, 			"Liquid Chroma"),
+	CHROMA(BlockActiveChroma.class, 			ChromatiCraft.chroma, 			"fluid.chroma"),
 	//ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
