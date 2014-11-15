@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCry
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeCrystalRepeater;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RiftRecipe;
@@ -221,6 +222,10 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.BEACON.getCraftedProduct();
 		this.addRecipe(new BeaconRecipe(is, new ItemStack(Items.nether_star)));
+
+		is = ChromaItems.FINDER.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SIS", "IAI", "SIS", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'S', ChromaItems.SHARD.getAnyMetaStack());
+		this.addRecipe(new PylonFinderRecipe(is, sr));
 	}
 
 	private void addRecipe(CastingRecipe r) {
