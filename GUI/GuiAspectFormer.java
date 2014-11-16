@@ -153,7 +153,7 @@ public class GuiAspectFormer extends GuiChromaBase {
 			clickDelay = Math.max(clickDelay-4, 0);
 		}
 
-		ElementTagCompound tag = tile.getCost(this.getActive());
+		ElementTagCompound tag = TileEntityAspectFormer.getAspectCost(this.getActive());
 		int dx = 18;
 		int dy = 21;
 		for (CrystalElement e : tag.elementSet()) {

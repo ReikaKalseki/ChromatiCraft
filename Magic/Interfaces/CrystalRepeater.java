@@ -7,7 +7,8 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Magic;
+package Reika.ChromatiCraft.Magic.Interfaces;
+
 
 
 public interface CrystalRepeater extends CrystalReceiver, CrystalTransmitter {

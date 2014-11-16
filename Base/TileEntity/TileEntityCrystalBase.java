@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Magic.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
@@ -25,7 +25,7 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 		CrystalNetworker.instance.addTile(this);
 	}
 
-	public void removeFromCache() {
+	public final void removeFromCache() {
 		CrystalNetworker.instance.removeTile(this);
 	}
 

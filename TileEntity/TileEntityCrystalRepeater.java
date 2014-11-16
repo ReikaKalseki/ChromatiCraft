@@ -19,8 +19,8 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalRepeater;
-import Reika.ChromatiCraft.Magic.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -72,6 +72,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (!hasMultiblock) {
 			CrystalNetworker.instance.breakPaths(this);
 		}
+		this.syncAllData(false);
 	}
 
 	protected boolean checkForStructure() {

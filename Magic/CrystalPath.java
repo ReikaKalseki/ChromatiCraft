@@ -11,6 +11,10 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.LinkedList;
 
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;

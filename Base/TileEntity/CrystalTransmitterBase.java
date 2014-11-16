@@ -18,7 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
-import Reika.ChromatiCraft.Magic.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;

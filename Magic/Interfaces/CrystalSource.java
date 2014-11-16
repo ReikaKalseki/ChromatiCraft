@@ -7,16 +7,19 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Magic.Aura;
+package Reika.ChromatiCraft.Magic.Interfaces;
 
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public interface AuraSource {
 
-	public ElementTagCompound getAuras();
 
-	public double getDistancePower();
 
-	public double getCoefficient();
+public interface CrystalSource extends CrystalTransmitter {
+
+	public int getTransmissionStrength();
+
+	public boolean drain(CrystalElement e, int amt);
+
+	public int getEnergy(CrystalElement e);
 
 }

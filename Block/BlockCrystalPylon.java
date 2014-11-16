@@ -17,7 +17,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
-import Reika.ChromatiCraft.Magic.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Base.TileEntityBase;

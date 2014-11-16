@@ -105,21 +105,23 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		}
 	}
 
-	public ElementTagCompound getCost(Aspect a) {
+	public static ElementTagCompound getAspectCost(Aspect a) {
 		return ChromaAspectManager.instance.getElementCost(a, 2).square();
 	}
 
 	private ElementTagCompound getCost() {
-		return this.getCost(selected);
+		return this.getAspectCost(selected);
 	}
 
 	private void checkAndRequest() {
-		int capacity = this.getMaxStorage();
-		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			int space = capacity-this.getEnergy(e);
-			if (space > 0) {
-				this.requestEnergy(e, space);
+		if (selected != null) {
+			ElementTagCompound tag = this.getCost().scale(64);
+			for (CrystalElement e : tag.elementSet()) {
+				int max = Math.min(tag.getValue(e), this.getMaxStorage());
+				int diff = max-this.getEnergy(e);
+				if (diff > 0) {
+					this.requestEnergy(e, diff);
+				}
 			}
 		}
 	}

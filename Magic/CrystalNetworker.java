@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -22,10 +23,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.LinkMap;
 import Reika.DragonAPI.Instantiable.Data.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -42,6 +48,7 @@ public class CrystalNetworker implements TickHandler {
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final HashMap<Integer, Collection<CrystalFlow>> flows = new HashMap();
+	private final LinkMap links = new LinkMap();
 
 	private int losTimer = 0;
 
@@ -60,6 +67,7 @@ public class CrystalNetworker implements TickHandler {
 				((CrystalTransmitter)te).clearTargets();
 		}
 		tiles.removeWorld(evt.world);
+		links.removeWorld(evt.world);
 		for (TileEntityCache c : pylons.values())
 			c.removeWorld(evt.world);
 	}
@@ -94,25 +102,27 @@ public class CrystalNetworker implements TickHandler {
 		return p != null && p.canTransmit() ? p.transmitter : null;
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
-		this.makeRequest(r, e, amount, r.getWorld(), range, Integer.MAX_VALUE);
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
+		return this.makeRequest(r, e, amount, r.getWorld(), range, Integer.MAX_VALUE);
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range, int maxthru) {
-		this.makeRequest(r, e, amount, r.getWorld(), range, maxthru);
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range, int maxthru) {
+		return this.makeRequest(r, e, amount, r.getWorld(), range, maxthru);
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
 		if (amount <= 0)
-			return;
+			return false;
 		if (this.hasFlowTo(r, e, world))
-			return;
+			return false;
 		CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			this.addFlow(world, p);
+			return true;
 		}
+		return false;
 	}
 
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
@@ -193,14 +203,39 @@ public class CrystalNetworker implements TickHandler {
 
 	public void addTile(CrystalNetworkTile te) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
-			CrystalNetworkTile old = tiles.get(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+			WorldLocation loc = PylonFinder.getLocation(te);
+			CrystalNetworkTile old = tiles.get(loc);
 			if (old != null) { //cache cleaning; old TEs may get out of sync for things like charge
 				this.removeTile(old);
 			}
-			tiles.put(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()), te);
+			tiles.put(loc, te);
 			if (te instanceof TileEntityCrystalPylon) {
 				this.addPylon((TileEntityCrystalPylon)te);
 			}
+
+			int dist = 0;
+			if (te instanceof CrystalTransmitter) {
+				dist = Math.max(dist, ((CrystalTransmitter)te).getSendRange());
+			}
+			if (te instanceof CrystalReceiver) {
+				dist = Math.max(dist, ((CrystalReceiver)te).getReceiveRange());
+			}
+			for (WorldLocation loc2 : tiles.keySet()) {
+				CrystalNetworkTile tile = tiles.get(loc2);
+				if (loc2.dimensionID == te.getWorld().provider.dimensionId) {
+					int dist2 = 0;
+					if (tile instanceof CrystalTransmitter) {
+						dist2 = Math.max(dist2, ((CrystalTransmitter)tile).getSendRange());
+					}
+					if (tile instanceof CrystalReceiver) {
+						dist2 = Math.max(dist2, ((CrystalReceiver)tile).getReceiveRange());
+					}
+					if (dist > 0 && dist2 > 0 && loc2.getDistanceTo(loc) <= Math.min(dist, dist2)) {
+						links.addBiLink(loc2, loc);
+					}
+				}
+			}
+
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
 	}
@@ -231,7 +266,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public void removeTile(CrystalNetworkTile te) {
-		tiles.remove(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		tiles.remove(PylonFinder.getLocation(te));
 		if (te instanceof TileEntityCrystalPylon) {
 			TileEntityCrystalPylon tile = (TileEntityCrystalPylon)te;
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(tile.getColor());
@@ -252,6 +287,7 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		PylonFinder.removePathsWithTile(te);
+		links.removeLocation(PylonFinder.getLocation(te));
 		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false);
 	}
 
@@ -273,10 +309,11 @@ public class CrystalNetworker implements TickHandler {
 
 	ArrayList<CrystalTransmitter> getTransmittersTo(CrystalReceiver r, CrystalElement e) {
 		ArrayList<CrystalTransmitter> li = new ArrayList();
-		for (WorldLocation c : tiles.keySet()) {
+		Map<WorldLocation, Double> map = links.getTargets(PylonFinder.getLocation(r));
+		for (WorldLocation c : map.keySet()) {
 			if (c.dimensionID == r.getWorld().provider.dimensionId) {
 				CrystalNetworkTile tile = tiles.get(c);
-				if (tile instanceof CrystalTransmitter) {
+				if (tile instanceof CrystalTransmitter && r != tile) {
 					CrystalTransmitter te = (CrystalTransmitter)tile;
 					if (te.canConduct()) {
 						if (e == null || te.isConductingElement(e)) {
@@ -294,10 +331,47 @@ public class CrystalNetworker implements TickHandler {
 		}
 		return li;
 	}
-	/*
-	ArrayList<CrystalNetworkTile> getTilesWithinDofXYZ(World world, int x, int y, int z, double dist) {
-		return this.getTransmittersWithinDofXYZ(world, x, y, z, dist, null);
-	}*/
+
+	ArrayList<CrystalReceiver> getNearbyReceivers(CrystalTransmitter r, CrystalElement e) {
+		ArrayList<CrystalReceiver> li = new ArrayList();
+		Map<WorldLocation, Double> map = links.getTargets(PylonFinder.getLocation(r));
+		for (WorldLocation c : map.keySet()) {
+			if (c.dimensionID == r.getWorld().provider.dimensionId) {
+				CrystalNetworkTile tile = tiles.get(c);
+				if (tile instanceof CrystalReceiver && r != tile) {
+					CrystalReceiver te = (CrystalReceiver)tile;
+					if (te.canConduct()) {
+						if (e == null || te.isConductingElement(e)) {
+							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
+							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
+							double send = r.getSendRange();
+							double dist = te.getReceiveRange();
+							if (d <= Math.min(dist*dist, send*send)) {
+								li.add(te);
+							}
+						}
+					}
+				}
+			}
+		}
+		return li;
+	}
+
+	ArrayList<CrystalSource> getAllSourcesFor(CrystalElement e, boolean activeOnly) {
+		ArrayList<CrystalSource> li = new ArrayList();
+		for (WorldLocation c : tiles.keySet()) {
+			CrystalNetworkTile tile = tiles.get(c);
+			if (tile instanceof CrystalSource) {
+				CrystalSource te = (CrystalSource)tile;
+				if (te.canConduct() || !activeOnly) {
+					if (e == null || te.isConductingElement(e)) {
+						li.add(te);
+					}
+				}
+			}
+		}
+		return li;
+	}
 
 	@Override
 	public TickType getType() {

@@ -17,6 +17,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
@@ -45,6 +50,8 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
 		if (p != null)
 			return p;
+		if (!this.anyConnectedSources())
+			return null;
 
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
@@ -60,6 +67,8 @@ public class PylonFinder {
 		CrystalPath p = this.checkExistingPaths();
 		if (p != null)
 			return new CrystalFlow(p, target, amount, maxthru);
+		if (!this.anyConnectedSources())
+			return null;
 
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
@@ -69,6 +78,19 @@ public class PylonFinder {
 			return flow;
 		}
 		return null;
+	}
+
+	private boolean anyConnectedSources() {
+		ArrayList<CrystalSource> li = net.getAllSourcesFor(element, true);
+		for (CrystalSource s : li) {
+			if (this.isSourceConnected(s))
+				return true;
+		}
+		return false;
+	}
+
+	private boolean isSourceConnected(CrystalSource s) {
+		return !net.getNearbyReceivers(s, element).isEmpty();
 	}
 
 	private CrystalPath checkExistingPaths() {
@@ -143,20 +165,16 @@ public class PylonFinder {
 	}
 
 	private void findFrom(CrystalReceiver r) {
-		World world = r.getWorld();
-		int x = r.getX();
-		int y = r.getY();
-		int z = r.getZ();
-		if (nodes.contains(new WorldLocation(world, x, y, z))) {
+		if (nodes.contains(getLocation(r))) {
 			return;
 		}
-		nodes.add(new WorldLocation(world, x, y, z));
+		nodes.add(getLocation(r));
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
 		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
 		for (CrystalTransmitter te : li) {
-			if (/*!te.needsLineOfSight() || */this.lineOfSight(world, x, y, z, te)) {
+			if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
 				if (te instanceof CrystalSource) {
-					nodes.add(new WorldLocation(world, te.getX(), te.getY(), te.getZ()));
+					nodes.add(getLocation(te));
 					return;
 				}
 				else if (te instanceof CrystalRepeater) {
@@ -166,6 +184,10 @@ public class PylonFinder {
 		}
 		if (!this.isComplete())
 			nodes.removeLast();
+	}
+
+	private boolean lineOfSight(CrystalNetworkTile te1, CrystalNetworkTile te) {
+		return lineOfSight(te1.getWorld(), te1.getX(), te1.getY(), te1.getZ(), te.getX(), te.getY(), te.getZ());
 	}
 
 	private boolean lineOfSight(World world, int x, int y, int z, CrystalNetworkTile te) {
@@ -198,6 +220,10 @@ public class PylonFinder {
 		tracer.addOpaqueBlock(Blocks.wheat);
 		tracer.addOpaqueBlock(Blocks.carrots);
 		tracer.addOpaqueBlock(Blocks.potatoes);*/
+	}
+
+	static final WorldLocation getLocation(CrystalNetworkTile te) {
+		return new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ());
 	}
 
 }

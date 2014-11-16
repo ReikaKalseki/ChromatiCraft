@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.TileEntity;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
-import Reika.ChromatiCraft.Magic.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 

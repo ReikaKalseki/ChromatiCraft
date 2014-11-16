@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -53,21 +53,26 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		return a * this.getEnergy(e) / this.getMaxStorage();
 	}
 
-	protected final void requestEnergy(CrystalElement e, int amount) {
+	protected final boolean requestEnergy(CrystalElement e, int amount) {
 		int amt = Math.min(amount, this.getRemainingSpace(e));
-		if (amt > 0)
-			CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
-	}
-
-	protected final void requestEnergy(ElementTagCompound tag) {
-		for (CrystalElement e : tag.elementSet()) {
-			this.requestEnergy(e, tag.getValue(e));
+		boolean flag = false;
+		if (amt > 0) {
+			flag = CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
 		}
+		return flag;
 	}
 
-	protected final void requestEnergyDifference(ElementTagCompound tag) {
+	protected final boolean requestEnergy(ElementTagCompound tag) {
+		boolean flag = false;
+		for (CrystalElement e : tag.elementSet()) {
+			flag &= this.requestEnergy(e, tag.getValue(e));
+		}
+		return flag;
+	}
+
+	protected final boolean requestEnergyDifference(ElementTagCompound tag) {
 		tag.subtract(energy);
-		this.requestEnergy(tag);
+		return this.requestEnergy(tag);
 	}
 
 	public final int getRemainingSpace(CrystalElement e) {
