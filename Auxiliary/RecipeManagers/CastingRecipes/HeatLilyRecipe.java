@@ -23,4 +23,9 @@ public class HeatLilyRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.ORANGE, 4, 0, 0);
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 3;
+	}
+
 }

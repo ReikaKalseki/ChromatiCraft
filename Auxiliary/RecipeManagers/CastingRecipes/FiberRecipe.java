@@ -31,4 +31,9 @@ public class FiberRecipe extends TempleCastingRecipe {
 		return 16*super.getDuration();
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 16;
+	}
+
 }

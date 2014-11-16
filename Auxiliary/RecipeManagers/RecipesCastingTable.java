@@ -167,14 +167,14 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalFocusRecipe(ChromaStacks.crystalFocus, ChromaStacks.primaryCluster));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, ChromaStacks.getChargedShard(CrystalElement.WHITE)));
 
-		this.addRecipe(new RecipeCrystalRepeater(ReikaItemHelper.getSizedItemStack(ChromaTiles.REPEATER.getCraftedProduct(), 16), ChromaStacks.crystalCore));
+		this.addRecipe(new RecipeCrystalRepeater(ChromaTiles.REPEATER.getCraftedProduct(), ChromaStacks.crystalCore));
 
 		this.addRecipe(new TransitionRecipe(ChromaItems.TRANSITION.getStackOf(), ChromaStacks.transformCore));
 		this.addRecipe(new BreakerRecipe(ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.energyCore));
 
 		this.addRecipe(new ElementUnitRecipe(ChromaStacks.elementUnit, ChromaStacks.bindingCrystal));
 
-		is = ReikaItemHelper.getSizedItemStack(ChromaTiles.HEATLILY.getCraftedProduct(), 3);
+		is = ChromaTiles.HEATLILY.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " F ", "FBF", "LSL", 'L', Blocks.waterlily, 'F', Blocks.yellow_flower, 'S', ChromaStacks.orangeShard, 'B', Items.blaze_powder);
 		this.addRecipe(new HeatLilyRecipe(is, sr));
 
@@ -186,16 +186,13 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "S S", "ScS", "CCC", 'C', Blocks.stone, 'c', Items.cauldron, 'S', new ItemStack(ChromaItems.SHARD.getItemInstance(), 1, OreDictionary.WILDCARD_VALUE));
 		this.addRecipe(new CastingRecipe(is, sr));
 
-		is = ChromaTiles.REPROGRAMMER.getCraftedProduct();
-		this.addRecipe(new SpawnerReprogrammerRecipe(is, ChromaStacks.transformCore));
+		this.addRecipe(new SpawnerReprogrammerRecipe(ChromaTiles.REPROGRAMMER.getCraftedProduct(), ChromaStacks.transformCore));
 
-		is = ChromaTiles.TELEPUMP.getCraftedProduct();
-		this.addRecipe(new TelePumpRecipe(is, ChromaStacks.energyCore));
+		this.addRecipe(new TelePumpRecipe(ChromaTiles.TELEPUMP.getCraftedProduct(), ChromaStacks.energyCore));
 
-		is = ChromaTiles.COMPOUND.getCraftedProduct();
-		this.addRecipe(new CompoundRepeaterRecipe(is, ChromaStacks.crystalFocus));
+		this.addRecipe(new CompoundRepeaterRecipe(ChromaTiles.COMPOUND.getCraftedProduct(), ChromaStacks.crystalFocus));
 
-		is = ReikaItemHelper.getSizedItemStack(ChromaTiles.FIBER.getCraftedProduct(), 16);
+		is = ChromaTiles.FIBER.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "GgG", "GDG", "GgG", 'G', Blocks.glass, 'D', Items.diamond, 'g', Items.glowstone_dust);
 		this.addRecipe(new FiberRecipe(is, sr));
 
@@ -203,25 +200,19 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new IridescentChunkRecipe(ChromaStacks.iridChunk, ChromaStacks.bindingCrystal));
 
-		is = ChromaTiles.CRYSTAL.getCraftedProduct();
-		this.addRecipe(new IridescentCrystalRecipe(is, new ItemStack(Items.diamond)));
+		this.addRecipe(new IridescentCrystalRecipe(ChromaTiles.CRYSTAL.getCraftedProduct(), new ItemStack(Items.diamond)));
 
-		is = ChromaTiles.INFUSER.getCraftedProduct();
-		this.addRecipe(new InfuserRecipe(is, ChromaTiles.STAND.getCraftedProduct()));
+		this.addRecipe(new InfuserRecipe(ChromaTiles.INFUSER.getCraftedProduct(), ChromaTiles.STAND.getCraftedProduct()));
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			is = ChromaTiles.ASPECT.getCraftedProduct();
-			this.addRecipe(new AspectFormerRecipe(is, ChromaStacks.transformCore));
+			this.addRecipe(new AspectFormerRecipe(ChromaTiles.ASPECT.getCraftedProduct(), ChromaStacks.transformCore));
 		}
 
-		is = ChromaItems.LINK.getStackOf();
-		this.addRecipe(new InventoryLinkRecipe(is, ChromaStacks.resonanceDust));
+		this.addRecipe(new InventoryLinkRecipe(ChromaItems.LINK.getStackOf(), ChromaStacks.resonanceDust));
 
-		is = ChromaTiles.LAMP.getCraftedProduct();
-		this.addRecipe(new LampRecipe(is, new ItemStack(Blocks.glowstone)));
+		this.addRecipe(new LampRecipe(ChromaTiles.LAMP.getCraftedProduct(), new ItemStack(Blocks.glowstone)));
 
-		is = ChromaTiles.BEACON.getCraftedProduct();
-		this.addRecipe(new BeaconRecipe(is, new ItemStack(Items.nether_star)));
+		this.addRecipe(new BeaconRecipe(ChromaTiles.BEACON.getCraftedProduct(), new ItemStack(Items.nether_star)));
 
 		is = ChromaItems.FINDER.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SIS", "IAI", "SIS", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'S', ChromaItems.SHARD.getAnyMetaStack());

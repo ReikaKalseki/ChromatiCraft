@@ -32,4 +32,9 @@ public class CrystalCoreRecipe extends MultiBlockCastingRecipe {
 		return 2*super.getDuration();
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 4;
+	}
+
 }

@@ -46,7 +46,10 @@ public class ChromaBookData {
 	}
 
 	public static void drawPage(FontRenderer fr, RenderItem ri, int screen, int page, int subpage, int recipe, int posX, int posY) {
-		ChromaBook h = ChromaBook.getEntry(screen, page);
+		drawPage(fr, ri, ChromaBook.getEntry(screen, page), subpage, recipe, posX, posY);
+	}
+
+	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaBook h, int subpage, int recipe, int posX, int posY) {
 		ReikaGuiAPI gui = ReikaGuiAPI.instance;
 		if (h.isCrafting()) {
 			ArrayList<CastingRecipe> li = h.getCrafting();

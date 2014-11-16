@@ -29,6 +29,25 @@ public class CrystalNetworkLogger {
 		}
 	}
 
+	public static void logFlowBreak(CrystalFlow p, FlowFail f) {
+		if (active) {
+			String s = p.element+" flow from "+p.transmitter+" to "+p.receiver+" broken due to: "+f.text+".";
+			ChromatiCraft.logger.log(s);
+		}
+	}
+
+	public static enum FlowFail {
+		SIGHT("Line of Sight"),
+		ENERGY("Insufficient Energy or Disabled Transmitter"),
+		TILE("Missing Network Tile");
+
+		public final String text;
+
+		private FlowFail(String s) {
+			text = s;
+		}
+	}
+
 	public static class NetworkLoggerCommand extends DragonCommandBase {
 
 		@Override

@@ -52,7 +52,11 @@ public class CastingRecipe {
 	}
 
 	public final ItemStack getOutput() {
-		return out.copy();
+		return ReikaItemHelper.getSizedItemStack(out, Math.max(out.stackSize, this.getNumberProduced()));
+	}
+
+	public int getNumberProduced() {
+		return 1;
 	}
 
 	public void drawInParticlesTo(World world, int x, int y, int z) {

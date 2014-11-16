@@ -47,4 +47,9 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe {
 		return 4*super.getDuration();
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 4;
+	}
+
 }

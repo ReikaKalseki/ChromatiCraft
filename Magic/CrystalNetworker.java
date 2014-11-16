@@ -21,6 +21,7 @@ import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
@@ -157,6 +158,7 @@ public class CrystalNetworker implements TickHandler {
 					}
 				}
 				else {
+					CrystalNetworkLogger.logFlowBreak(p, FlowFail.ENERGY);
 					p.receiver.onPathBroken(p.element);
 					p.resetTiles();
 					it.remove();
@@ -168,6 +170,7 @@ public class CrystalNetworker implements TickHandler {
 				while (it.hasNext()) {
 					CrystalFlow p = it.next();
 					if (!p.checkLineOfSight()) {
+						CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
 						p.receiver.onPathBroken(p.element);
 						p.resetTiles();
 						it.remove();
@@ -241,6 +244,7 @@ public class CrystalNetworker implements TickHandler {
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
 				if (p.contains(te)) {
+					CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
 					p.resetTiles();
 					p.receiver.onPathBroken(p.element);
 					it.remove();
@@ -258,6 +262,7 @@ public class CrystalNetworker implements TickHandler {
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
 				if (p.contains(te)) {
+					CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
 					p.receiver.onPathBroken(p.element);
 					p.resetTiles();
 					it.remove();

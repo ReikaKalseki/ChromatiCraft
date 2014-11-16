@@ -181,7 +181,7 @@ public class TileEntityAuraInfuser3 extends InventoriedChromaticBase implements 
 			float g = tall ? 0.375F*(0.5F+0.5F*fac) : 0.375F;
 			double a = ang+Math.toRadians(i);
 			double r = 1.85;
-			double v = tall ? 0.0425*(1+fac) : 0.0425;
+			double v = tall ? 0.0425*(1+fac) : ReikaRandomHelper.getRandomPlusMinus(0.0425, 0.005);
 			double px = x+0.5+r*Math.sin(a);
 			double py = y-0.75;
 			double pz = z+0.5+r*Math.cos(a);

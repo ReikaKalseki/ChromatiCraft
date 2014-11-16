@@ -155,8 +155,8 @@ public class ItemManipulator extends ItemChromaTool {
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
 		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 16, false);
-		//PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], 20);
-		//PlayerElementBuffer.instance.checkUpgrade(player, true);
+		PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player)/4);
+		PlayerElementBuffer.instance.checkUpgrade(player, true);
 		//player.getEntityData().removeTag("CrystalBuffer");
 		if (mov != null) {
 			ChromaTiles c = ChromaTiles.getTile(player.worldObj, mov.blockX, mov.blockY, mov.blockZ);

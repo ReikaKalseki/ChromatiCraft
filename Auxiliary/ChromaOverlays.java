@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -46,16 +48,17 @@ public class ChromaOverlays {
 	@SubscribeEvent
 	public void renderHUD(RenderGameOverlayEvent evt) {
 		if (evt.type == ElementType.HELMET) {
+			int gsc = evt.resolution.getScaleFactor();
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			ItemStack is = ep.getCurrentEquippedItem();
 			if (ChromaItems.TOOL.matchWith(is)) {
-				this.renderElementPie(ep);
+				this.renderElementPie(ep, gsc);
 			}
-			this.renderAbilityStatus(ep);
+			this.renderAbilityStatus(ep, gsc);
 		}
 	}
 
-	private void renderAbilityStatus(EntityPlayer ep) {
+	private void renderAbilityStatus(EntityPlayer ep, int gsc) {
 		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
 		int i = 0;
 		for (Chromabilities c : li) {
@@ -63,8 +66,8 @@ public class ChromaOverlays {
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
-			int x = Minecraft.getMinecraft().displayWidth/2-20;
-			int y = Minecraft.getMinecraft().displayHeight/4-8-(int)(li.size()/2F*20)+i*20;
+			int x = Minecraft.getMinecraft().displayWidth/gsc-20;
+			int y = Minecraft.getMinecraft().displayHeight/gsc/2-8-(int)(li.size()/2F*20)+i*20;
 			v5.addVertexWithUV(x+0, y+16, 0, 0, 1);
 			v5.addVertexWithUV(x+16, y+16, 0, 1, 1);
 			v5.addVertexWithUV(x+16, y+0, 0, 1, 0);
@@ -115,7 +118,7 @@ public class ChromaOverlays {
 		}
 	}
 
-	private void renderElementPie(EntityPlayer ep) {
+	private void renderElementPie(EntityPlayer ep, int gsc) {
 		GL11.glEnable(GL11.GL_BLEND);
 
 		Tessellator v5 = Tessellator.instance;
@@ -234,5 +237,10 @@ public class ChromaOverlays {
 		v5.addVertexWithUV(ox-r*2, oy-r*2, 0, 0, 0);
 		v5.draw();
 		GL11.glDisable(GL11.GL_BLEND);
+
+		int cap = PlayerElementBuffer.instance.getElementCap(ep);
+		String s = "Cap: "+cap;
+		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+		ReikaGuiAPI.instance.drawCenteredString(f, s, ox, oy+r+f.FONT_HEIGHT-4, 0xffffff);
 	}
 }

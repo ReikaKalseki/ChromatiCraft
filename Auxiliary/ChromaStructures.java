@@ -56,7 +56,7 @@ public class ChromaStructures {
 		for (int i = -5; i <= 5; i++) {
 			for (int k = -5; k <= 5; k++) {
 				for (int j = 1; j <= 3; j++)
-					array.setBlock(x+i, y+j, z+k, Blocks.air);
+					array.setEmpty(x+i, y+j, z+k, true, true);
 			}
 		}
 
@@ -126,10 +126,10 @@ public class ChromaStructures {
 		for (int i = -6; i <= 6; i++) {
 			for (int k = 0; k < 6; k++) {
 				int dy = y+k;
-				array.setBlock(x-6, dy, z+i, Blocks.air);
-				array.setBlock(x+6, dy, z+i, Blocks.air);
-				array.setBlock(x+i, dy, z-6, Blocks.air);
-				array.setBlock(x+i, dy, z+6, Blocks.air);
+				array.setEmpty(x-6, dy, z+i, true, true);
+				array.setEmpty(x+6, dy, z+i, true, true);
+				array.setEmpty(x+i, dy, z-6, true, true);
+				array.setEmpty(x+i, dy, z+6, true, true);
 			}
 		}
 

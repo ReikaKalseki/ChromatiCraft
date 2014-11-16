@@ -73,4 +73,9 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 		return 4*super.getDuration();
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 16;
+	}
+
 }
