@@ -36,7 +36,7 @@ public class TransformationCoreRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLACK), 0, -2);
 
 		this.addRune(CrystalElement.GRAY, 3, 0, -2);
-		this.addRune(CrystalElement.GRAY.YELLOW, -3, 0, 2);
+		this.addRune(CrystalElement.YELLOW, -3, 0, 2);
 	}
 
 }
