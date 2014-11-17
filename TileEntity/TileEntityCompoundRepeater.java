@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.EnumMap;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +28,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	private int colorTimer = 0;
+	private EnumMap<CrystalElement, Integer> depth = new EnumMap(CrystalElement.class);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -126,6 +129,37 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 				p.attackEntityByProxy(player, this);
 			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}
+	}
+
+	@Override
+	public void setSignalDepth(CrystalElement e, int d) {
+		depth.put(e, d);
+	}
+
+	@Override
+	public int getSignalDepth(CrystalElement e) {
+		Integer d = depth.get(e);
+		return d != null ? d.intValue() : -1;
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			String s = "depth_"+e.ordinal();
+			if (NBT.hasKey(s))
+				depth.put(e, NBT.getInteger(s));
+		}
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		for (CrystalElement e : depth.keySet())
+			NBT.setInteger("depth_"+e.ordinal(), depth.get(e));
 	}
 
 }

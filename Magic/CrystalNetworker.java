@@ -44,6 +44,7 @@ public class CrystalNetworker implements TickHandler {
 	public static final CrystalNetworker instance = new CrystalNetworker();
 
 	private static final String NBT_TAG = "crystalnet";
+	private static final String NBT_TAG2 = "crystalnet2";
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
@@ -58,6 +59,7 @@ public class CrystalNetworker implements TickHandler {
 
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
+		PylonFinder.stopAllSearches();
 		int dim = evt.world.provider.dimensionId;
 		this.clear(dim);
 		for (WorldLocation c : tiles.keySet()) {
@@ -76,12 +78,19 @@ public class CrystalNetworker implements TickHandler {
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tiles.writeToNBT(tag);
 		NBT.setTag(NBT_TAG, tag);
+
+		tag = NBT.getCompoundTag(NBT_TAG2);
+		links.writeToNBT(tag);
+		NBT.setTag(NBT_TAG2, tag);
 		//ReikaJavaLibrary.pConsole(tiles+" to "+tag, Side.SERVER);
 	}
 
 	private void load(NBTTagCompound NBT) {
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tiles.readFromNBT(tag);
+
+		tag = NBT.getCompoundTag(NBT_TAG2);
+		links.readFromNBT(tag);
 
 		for (CrystalNetworkTile te : tiles.values()) {
 			if (te instanceof TileEntityCrystalPylon) {
@@ -310,7 +319,9 @@ public class CrystalNetworker implements TickHandler {
 	ArrayList<CrystalTransmitter> getTransmittersTo(CrystalReceiver r, CrystalElement e) {
 		ArrayList<CrystalTransmitter> li = new ArrayList();
 		Map<WorldLocation, Double> map = links.getTargets(PylonFinder.getLocation(r));
-		for (WorldLocation c : map.keySet()) {
+		if (map == null)
+			return li;
+		for (WorldLocation c : links.keySet()) {
 			if (c.dimensionID == r.getWorld().provider.dimensionId) {
 				CrystalNetworkTile tile = tiles.get(c);
 				if (tile instanceof CrystalTransmitter && r != tile) {

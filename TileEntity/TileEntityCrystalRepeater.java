@@ -30,6 +30,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
+	private int depth = -1;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -45,6 +46,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		this.validateStructure();
+		//this.checkConnectivity();
 	}
 
 	@Override
@@ -106,6 +108,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		facing = dirs[NBT.getInteger("face")];
 		hasMultiblock = NBT.getBoolean("multi");
+		depth = NBT.getInteger("depth");
 	}
 
 	@Override
@@ -116,6 +119,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			NBT.setInteger("face", facing.ordinal());
 
 		NBT.setBoolean("multi", hasMultiblock);
+		NBT.setInteger("depth", depth);
 	}
 
 	@Override
@@ -171,6 +175,17 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public boolean needsLineOfSight() {
 		return true;
+	}
+
+	@Override
+	public int getSignalDepth(CrystalElement e) {
+		return depth;
+	}
+
+	@Override
+	public void setSignalDepth(CrystalElement e, int d) {
+		if (e == this.getActiveColor())
+			depth = d;
 	}
 
 }

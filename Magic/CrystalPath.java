@@ -17,7 +17,6 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class CrystalPath {
 
@@ -87,7 +86,6 @@ public class CrystalPath {
 				CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
 				if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
 					if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
-						ReikaJavaLibrary.pConsole(tr+" >> "+tg);
 						return false;
 					}
 				}

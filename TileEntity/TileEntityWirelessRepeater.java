@@ -73,4 +73,16 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 		return false;
 	}
 
+	@Override
+	public int getSignalDepth(CrystalElement e) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setSignalDepth(CrystalElement e, int d) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

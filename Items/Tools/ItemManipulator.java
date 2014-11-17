@@ -37,10 +37,12 @@ import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -103,11 +105,15 @@ public class ItemManipulator extends ItemChromaTool {
 					te.redirect(s);
 				}
 			}
-			else {
+			else if (!world.isRemote) {
 				if (te.checkConnectivity()) {
 					CrystalElement e = te.getActiveColor();
 					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
-					ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+					int rd = e.getRed();
+					int gn = e.getGreen();
+					int bl = e.getBlue();
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, te.getSignalDepth(e));
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
@@ -125,11 +131,15 @@ public class ItemManipulator extends ItemChromaTool {
 					te.redirect(s);
 				}
 			}
-			else {
+			else if (!world.isRemote) {
 				if (te.checkConnectivity()) {
 					CrystalElement e = te.getActiveColor();
 					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
-					ReikaParticleHelper.spawnColoredParticlesWithOutset(world, x, y, z, e.getRed(), e.getGreen(), e.getBlue(), 32, 0.5);
+					int rd = e.getRed();
+					int gn = e.getGreen();
+					int bl = e.getBlue();
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, te.getSignalDepth(e));
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);

@@ -36,6 +36,8 @@ public class PylonFinder {
 	private final CrystalReceiver target;
 	private final CrystalElement element;
 
+	private static boolean invalid = false;
+
 	private static final HashMap<WorldLocation, EnumMap<CrystalElement, Collection<CrystalPath>>> paths = new HashMap();
 
 	PylonFinder(CrystalElement e, CrystalReceiver r) {
@@ -46,6 +48,7 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylon() {
+		invalid = false;
 		CrystalPath p = this.checkExistingPaths();
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
 		if (p != null)
@@ -64,6 +67,7 @@ public class PylonFinder {
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru) {
+		invalid = false;
 		CrystalPath p = this.checkExistingPaths();
 		if (p != null)
 			return new CrystalFlow(p, target, amount, maxthru);
@@ -135,6 +139,14 @@ public class PylonFinder {
 				//ReikaJavaLibrary.pConsole(c.size(), Side.SERVER);
 			}
 		}
+		for (int i = 0; i < p.nodes.size(); i++) {
+			WorldLocation loc = p.nodes.get(i);
+			CrystalNetworkTile te = (CrystalNetworkTile)loc.getTileEntity();
+			if (te instanceof CrystalRepeater) {
+				CrystalRepeater tile = (CrystalRepeater)te;
+				tile.setSignalDepth(p.element, p.nodes.size()-1-i);
+			}
+		}
 		//ReikaJavaLibrary.pConsole(paths, Side.SERVER);
 	}
 
@@ -165,6 +177,8 @@ public class PylonFinder {
 	}
 
 	private void findFrom(CrystalReceiver r) {
+		if (invalid)
+			return;
 		if (nodes.contains(getLocation(r))) {
 			return;
 		}
@@ -224,6 +238,10 @@ public class PylonFinder {
 
 	static final WorldLocation getLocation(CrystalNetworkTile te) {
 		return new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ());
+	}
+
+	static void stopAllSearches() {
+		invalid = true;
 	}
 
 }
