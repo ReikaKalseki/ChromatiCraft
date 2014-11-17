@@ -35,6 +35,7 @@ public class PylonFinder {
 	//private final int stepRange;
 	private final CrystalReceiver target;
 	private final CrystalElement element;
+	private int steps = 0;
 
 	private static boolean invalid = false;
 
@@ -180,6 +181,10 @@ public class PylonFinder {
 		if (invalid)
 			return;
 		if (nodes.contains(getLocation(r))) {
+			return;
+		}
+		steps++;
+		if (steps > 200) {
 			return;
 		}
 		nodes.add(getLocation(r));
