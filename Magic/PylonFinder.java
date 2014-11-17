@@ -25,10 +25,14 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
+	private final Collection<WorldLocation> blacklist = new ArrayList();
+	private final HashMap<WorldLocation, Collection<WorldLocation>> duplicates = new HashMap();
+
 	private final CrystalNetworker net;
 	private static final RayTracer tracer;
 
@@ -180,29 +184,39 @@ public class PylonFinder {
 	private void findFrom(CrystalReceiver r) {
 		if (invalid)
 			return;
-		if (nodes.contains(getLocation(r))) {
+		WorldLocation loc = getLocation(r);
+		if (nodes.contains(loc)) {
 			return;
 		}
 		steps++;
 		if (steps > 200) {
-			return;
+			//return;
 		}
-		nodes.add(getLocation(r));
+		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
 		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
 		for (CrystalTransmitter te : li) {
-			if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
-				if (te instanceof CrystalSource) {
-					nodes.add(getLocation(te));
-					return;
-				}
-				else if (te instanceof CrystalRepeater) {
-					this.findFrom((CrystalRepeater)te);
+			WorldLocation loc2 = getLocation(te);
+			if (!blacklist.contains(loc2) && !ReikaJavaLibrary.collectionMapContainsValue(duplicates, loc2)) {
+				if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
+					if (te instanceof CrystalSource) {
+						nodes.add(loc2);
+						return;
+					}
+					else if (te instanceof CrystalRepeater) {
+						Collection<WorldLocation> others = new ArrayList(li);
+						others.remove(te);
+						duplicates.put(loc2, others);
+						this.findFrom((CrystalRepeater)te);
+					}
 				}
 			}
 		}
-		if (!this.isComplete())
+		if (!this.isComplete()) {
 			nodes.removeLast();
+			blacklist.add(loc);
+			duplicates.remove(loc);
+		}
 	}
 
 	private boolean lineOfSight(CrystalNetworkTile te1, CrystalNetworkTile te) {
