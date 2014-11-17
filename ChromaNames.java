@@ -39,7 +39,7 @@ public class ChromaNames {
 	};
 
 	public static final String[] storageNames = {
-		"", "", "", "", "", "", ""
+		"Nula", "Daya", "Divi", "Sami", "Vier", "Lima", "Aru"
 	};
 
 	public static String getFluidName(int i) {

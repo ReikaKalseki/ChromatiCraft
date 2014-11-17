@@ -197,7 +197,7 @@ public enum ChromaItems implements ItemEnum {
 		case CRAFTING:
 			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
 		case STORAGE:
-			return StatCollector.translateToLocal(ChromaNames.storageNames[meta]);
+			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
 		default:
 			break;
 		}

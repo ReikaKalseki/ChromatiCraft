@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -35,6 +36,34 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+13), -4, 2);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+14), -4, 0);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+15), -4, -2);
+
+		if (out.getItemDamage() > 0) {
+			this.addAuxItem(ChromaStacks.chromaDust, -4, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, -2, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 0, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 2, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, -2);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 0);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 2);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, 2, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, 0, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -2, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 2);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 0);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, -2);
+
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 0, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 0, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, 0);
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, 0);
+		}
 
 		this.addRune(CrystalElement.BLUE, 4, 0, 1);
 		this.addRune(CrystalElement.BLUE, 4, 0, -1);
