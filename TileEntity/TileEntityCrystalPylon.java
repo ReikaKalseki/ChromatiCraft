@@ -368,7 +368,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && energy > 0;
+		return hasMultiblock && energy > 1000;
 	}
 
 	@Override

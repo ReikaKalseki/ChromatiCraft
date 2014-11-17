@@ -46,6 +46,18 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase {
 		}
 	}
 
+	protected final boolean hasEnergy(ElementTagCompound tag) {
+		for (CrystalElement e : tag.elementSet()) {
+			if (!this.hasEnergy(e, tag.getValue(e)))
+				return false;
+		}
+		return true;
+	}
+
+	protected final boolean hasEnergy(CrystalElement e, int amt) {
+		return this.getStoredEnergy(e) >= amt;
+	}
+
 	public abstract boolean canExtractItem(int slot, ItemStack is, int side);
 	public abstract boolean isItemValidForSlot(int slot, ItemStack is);
 

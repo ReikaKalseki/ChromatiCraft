@@ -29,8 +29,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -46,6 +48,14 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private boolean scanning = true;
 	private boolean fastscan = false;
 	private int scanY = 0;
+
+	private static final ElementTagCompound required = new ElementTagCompound();
+
+	static {
+		required.addTag(CrystalElement.CYAN, 250);
+		required.addTag(CrystalElement.BLACK, 100);
+		required.addTag(CrystalElement.LIME, 1000);
+	}
 
 	@Override
 	public int getSizeInventory() {
@@ -164,12 +174,12 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		else {
-			if (selected != null && this.canAddFluid(selected) /*&& has energy*/) {
+			if (selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
 				ArrayList<Coordinate> li = fluids.get(selected);
 				Coordinate c = li.get(rand.nextInt(li.size()));
 				this.addFluid(selected);
 				c.setBlock(world, Blocks.air);
-				//remove energy
+				this.useEnergy(required);
 			}
 			else {
 
