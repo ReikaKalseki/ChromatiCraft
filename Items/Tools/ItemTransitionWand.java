@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 public class ItemTransitionWand extends ItemChromaTool implements BreakerCallback {
@@ -38,24 +40,27 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		if (ep.isSneaking()) {
-			this.setStoredItem(is, ReikaBlockHelper.getWorldBlockAsItemStack(world, x, y, z));
-		}
-		else {
-			ItemStack store = this.getStoredItem(is);
-			if (store == null)
-				return false;
-			Block id = Block.getBlockFromItem(store.getItem());
-			int meta = store.getItemDamage();
-			if (id == null)
-				return false;
-			ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
-			br.call = this;
-			br.drops = false;
-			//br.extraSpread = true;
-			br.player = ep;
-			br.silkTouch = true;
-			breakers.put(br.hashCode(), new BlockReplace(ep, id, meta));
+		if (!world.isRemote) {
+			if (ep.isSneaking()) {
+				this.setStoredItem(is, ReikaBlockHelper.getWorldBlockAsItemStack(world, x, y, z));
+			}
+			else {
+				ItemStack store = this.getStoredItem(is);
+				if (store == null)
+					return false;
+				Block id = Block.getBlockFromItem(store.getItem());
+				int meta = store.getItemDamage();
+				if (id == null)
+					return false;
+				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
+				br.call = this;
+				br.drops = false;
+				//br.extraSpread = true;
+				//br.tickRate = 2;
+				br.player = ep;
+				br.silkTouch = true;
+				breakers.put(br.hashCode(), new BlockReplace(ep, id, meta));
+			}
 		}
 		return true;
 	}
@@ -90,10 +95,11 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 					ReikaInventoryHelper.decrStack(slot, r.player.inventory.mainInventory);
 				}
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
-				ItemStack is = new ItemStack(r.place, 1, r.placeM);
-				boolean add = ReikaInventoryHelper.addToIInv(is, r.player.inventory);
-				if (!add)
-					r.player.dropPlayerItemWithRandomChoice(is, true);
+				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
+				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
+				for (ItemStack is : li) {
+					r.drops.add(is);
+				}
 			}
 			else {
 				b.terminate();
@@ -117,6 +123,12 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 
 	@Override
 	public void onFinish(ProgressiveBreaker b) {
+		BlockReplace r = breakers.get(b.hashCode());
+		for (ItemStack is : r.drops) {
+			boolean add = ReikaInventoryHelper.addToIInv(is, r.player.inventory);
+			if (!add)
+				r.player.dropPlayerItemWithRandomChoice(is, true);
+		}
 		breakers.remove(b.hashCode());
 	}
 
@@ -124,6 +136,7 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 		private final EntityPlayer player;
 		private final Block place;
 		private final int placeM;
+		private ArrayList<ItemStack> drops = new ArrayList();
 
 		private BlockReplace(EntityPlayer ep, Block b, int meta) {
 			place = b;
