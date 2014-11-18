@@ -15,6 +15,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
@@ -100,6 +102,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
 	protected final Visibility getOCNetworkVisibility() {
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
 	}
