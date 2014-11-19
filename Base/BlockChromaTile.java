@@ -62,6 +62,8 @@ import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
@@ -71,6 +73,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DartItemHandler;
 
+@Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 
 	private static final Random par5Random = new Random();
@@ -318,10 +321,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super.breakBlock(world, x, y, z, par5, par6);
 	}
 
+	@ModDependent(ModList.WAILA)
 	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) {
 		return ChromaTiles.getTileFromIDandMetadata(this, accessor.getMetadata()).getCraftedProduct();
 	}
 
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		World world = acc.getWorld();
 		MovingObjectPosition mov = acc.getPosition();
@@ -334,6 +339,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		return currenttip;
 	}
 
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		te.syncAllData(false);
@@ -411,6 +417,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		return currenttip;
 	}
 
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		String s1 = EnumChatFormatting.ITALIC.toString();
 		String s2 = EnumChatFormatting.BLUE.toString();
