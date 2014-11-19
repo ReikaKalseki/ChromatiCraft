@@ -40,9 +40,13 @@ import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Interfaces.ConnectedTextureGlass;
 
+@Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockCrystalTank extends Block implements IWailaDataProvider, ConnectedTextureGlass {
 
 	private final ArrayList<Integer> allDirs = new ArrayList();
@@ -346,11 +350,13 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	@ModDependent(ModList.WAILA)
 	public ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler cfg) {
 		return new ItemStack(this);
 	}
 
 	@Override
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		World world = acc.getWorld();
 		MovingObjectPosition mov = acc.getPosition();
@@ -364,6 +370,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack is, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
 		CrystalTankAuxTile te = (CrystalTankAuxTile)acc.getTileEntity();
 		TileEntityCrystalTank tank = te.getTankController();
@@ -386,6 +393,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	}
 
 	@Override
+	@ModDependent(ModList.WAILA)
 	public List<String> getWailaTail(ItemStack is, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
 		String s1 = EnumChatFormatting.ITALIC.toString();
 		String s2 = EnumChatFormatting.BLUE.toString();

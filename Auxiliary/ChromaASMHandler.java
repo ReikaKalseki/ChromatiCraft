@@ -86,35 +86,25 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				switch(this) {
 				case ENDPROVIDER: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
-					if (m == null) {
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
-					}
-					else {
-						ReikaASMHelper.removeCodeLine(m, 330);
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
-					}
+					ReikaASMHelper.removeCodeLine(m, 330);
+					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 				}
 				break;
 				case REACHDIST: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
-					if (m == null) {
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Could not find method for "+this+" ASM handler!");
-					}
-					else {
-						m.instructions.insert(new InsnNode(Opcodes.I2F));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "playerReach", "I"));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/AbilityHelper;"));
-						AbstractInsnNode index = null;
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.FRETURN) {
-								index = ain;
-								break;
-							}
+					m.instructions.insert(new InsnNode(Opcodes.I2F));
+					m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "playerReach", "I"));
+					m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/AbilityHelper;"));
+					AbstractInsnNode index = null;
+					for (int i = 0; i < m.instructions.size(); i++) {
+						AbstractInsnNode ain = m.instructions.get(i);
+						if (ain.getOpcode() == Opcodes.FRETURN) {
+							index = ain;
+							break;
 						}
-						m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
-						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 					}
+					m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
+					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 				}
 				break;
 
