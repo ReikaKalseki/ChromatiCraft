@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -41,6 +42,8 @@ public class ChromaOverlays {
 
 	public static ChromaOverlays instance = new ChromaOverlays();
 
+	private boolean holding = false;
+
 	private ChromaOverlays() {
 
 	}
@@ -52,10 +55,20 @@ public class ChromaOverlays {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			ItemStack is = ep.getCurrentEquippedItem();
 			if (ChromaItems.TOOL.matchWith(is)) {
+				if (!holding)
+					this.syncBuffer(ep);
+				holding = true;
 				this.renderElementPie(ep, gsc);
+			}
+			else {
+				holding = false;
 			}
 			this.renderAbilityStatus(ep, gsc);
 		}
+	}
+
+	private void syncBuffer(EntityPlayer ep) {
+		ReikaPlayerAPI.syncCustomDataFromClient(ep);
 	}
 
 	private void renderAbilityStatus(EntityPlayer ep, int gsc) {

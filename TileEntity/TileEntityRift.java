@@ -11,8 +11,8 @@ package Reika.ChromatiCraft.TileEntity;
 
 import java.awt.Color;
 
-import li.cil.oc.api.network.Arguments;
-import li.cil.oc.api.network.Context;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;

@@ -88,8 +88,8 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.GRAY, 10);
-				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.YELLOW, 5);
+				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.GRAY, 2);
+				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.YELLOW, 1);
 				int slot = ReikaInventoryHelper.locateInInventory(r.place, r.placeM, r.player.inventory.mainInventory);
 				if (slot != -1) {
 					ReikaInventoryHelper.decrStack(slot, r.player.inventory.mainInventory);
@@ -113,8 +113,8 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				boolean b1 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.GRAY, 10);
-				boolean b2 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.YELLOW, 5);
+				boolean b1 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.GRAY, 2);
+				boolean b2 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.YELLOW, 1);
 				return b1 && b2 && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM);
 			}
 		}

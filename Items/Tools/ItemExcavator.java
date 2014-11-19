@@ -47,8 +47,8 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.BROWN, 5);
-				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.YELLOW, 5);
+				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.BROWN, 1);
+				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.YELLOW, 2);
 			}
 			else {
 				b.terminate();
@@ -62,8 +62,8 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				boolean b1 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.BROWN, 5);
-				boolean b2 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.YELLOW, 5);
+				boolean b1 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.BROWN, 1);
+				boolean b2 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.YELLOW, 2);
 				return b1 && b2;
 			}
 		}
