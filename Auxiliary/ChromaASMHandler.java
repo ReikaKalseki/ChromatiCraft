@@ -66,7 +66,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 		private static final HashMap<String, ClassPatch> classes = new HashMap();
 
 		private static enum ClassPatch {
-			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "aqr"),
+			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "ara"),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje");
 
 			private final String obfName;
