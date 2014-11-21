@@ -129,7 +129,7 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase implements Fibe
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 6000;
 	}
 

@@ -57,9 +57,9 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	}
 
 	private void checkAndRequest() {
-		int capacity = this.getMaxStorage();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
+			int capacity = this.getMaxStorage(e);
 			int space = capacity-this.getEnergy(e);
 			if (space > 0) {
 				this.requestEnergy(e, space);
@@ -134,7 +134,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 120000;
 	}
 

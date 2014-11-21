@@ -163,7 +163,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
 
 			sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.rawCrystal, " F ", "FSF", " F ", 'F', ChromaStacks.purityDust, 'S', shard);
-			this.addRecipe(new CastingRecipe(ChromaStacks.rawCrystal, sr));
+			this.addRecipe(new CastingRecipe(ReikaItemHelper.getSizedItemStack(ChromaStacks.rawCrystal, 2), sr));
 		}
 
 		this.addRecipe(new CrystalFocusRecipe(ChromaStacks.crystalFocus, ChromaStacks.primaryCluster));

@@ -102,7 +102,7 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 0;
 	}
 

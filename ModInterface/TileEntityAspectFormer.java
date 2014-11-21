@@ -117,7 +117,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		if (selected != null) {
 			ElementTagCompound tag = this.getCost().scale(64);
 			for (CrystalElement e : tag.elementSet()) {
-				int max = Math.min(tag.getValue(e), this.getMaxStorage());
+				int max = Math.min(tag.getValue(e), this.getMaxStorage(e));
 				int diff = max-this.getEnergy(e);
 				if (diff > 0) {
 					this.requestEnergy(e, diff);
@@ -161,7 +161,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 20000;
 	}
 

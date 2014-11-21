@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
+import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.BlockRift;
@@ -100,7 +101,8 @@ public enum ChromaBlocks implements BlockEnum {
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
 	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),
 	//GUI(BlockInWorldGui.class,													"GUI"),
-	FIBER(BlockFiberOptic.class,												"Fiber");
+	FIBER(BlockFiberOptic.class,												"Fiber"),
+	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powertree");
 
 	private Class blockClass;
 	private String blockName;

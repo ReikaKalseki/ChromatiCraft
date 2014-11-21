@@ -47,8 +47,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 	}
 
 	private void checkAndRequest() {
-		int capacity = this.getMaxStorage();
 		CrystalElement e = CrystalElement.RED;
+		int capacity = this.getMaxStorage(e);
 		int space = capacity-this.getEnergy(e);
 		if (space > 0) {
 			this.requestEnergy(e, space);
@@ -137,7 +137,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 250000;
 	}
 

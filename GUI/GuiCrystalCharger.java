@@ -32,19 +32,19 @@ public class GuiCrystalCharger extends GuiChromaBase {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		int max = tile.getMaxStorage();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		int mx = api.getMouseRealX();
 		int my = api.getMouseRealY();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int max = tile.getMaxStorage(e);
 			int dx = i%8 >= 4 ? 22 : 0;
 			int x1 = j+6+18*(i%8)+dx;
 			int x2 = x1+16;
 			int y1 = k+17+40*(i/8);
 			int y2 = y1+33;
 			if (api.isMouseInBox(x1, x2, y1, y2)) {
-				CrystalElement e = CrystalElement.elements[i];
 				int level = tile.getEnergy(e);
 				String s = String.format("%s: %d/%d", e.displayName, level, max);
 				api.drawTooltipAt(fontRendererObj, s, mx-32, my);

@@ -277,7 +277,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 30000;
 	}
 

@@ -47,10 +47,10 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		return receiveCooldown;
 	}
 
-	public abstract int getMaxStorage();
+	public abstract int getMaxStorage(CrystalElement e);
 
 	public final int getEnergyScaled(CrystalElement e, int a) {
-		return a * this.getEnergy(e) / this.getMaxStorage();
+		return a * this.getEnergy(e) / this.getMaxStorage(e);
 	}
 
 	protected final boolean requestEnergy(CrystalElement e, int amount) {
@@ -76,7 +76,11 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	public final int getRemainingSpace(CrystalElement e) {
-		return this.getMaxStorage()-this.getEnergy(e);
+		return this.getMaxStorage(e)-this.getEnergy(e);
+	}
+
+	public final float getFillFraction(CrystalElement e) {
+		return (float)energy.getValue(e)/this.getMaxStorage(e);
 	}
 
 	@Override
@@ -113,7 +117,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	private void clamp(CrystalElement e) {
-		int max = this.getMaxStorage();
+		int max = this.getMaxStorage(e);
 		if (this.getEnergy(e) > max)
 			energy.setTag(e, max);
 	}
