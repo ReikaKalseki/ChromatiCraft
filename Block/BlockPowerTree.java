@@ -11,6 +11,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
@@ -81,7 +85,11 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block old, int oldmeta) {
-
+		TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)world.getTileEntity(x, y, z);
+		TileEntityPowerTree tree = te.getCenter();
+		if (tree != null) {
+			tree.onBreakLeaf(world, x, y, z, CrystalElement.elements[oldmeta]);
+		}
 		super.breakBlock(world, x, y, z, old, oldmeta);
 	}
 
@@ -146,6 +154,67 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	public static class TileEntityPowerTreeAux extends TileEntity {
 
 		private int growth = 0;
+		public ForgeDirection direction;
+
+		private int originX = Integer.MIN_VALUE;
+		private int originY = Integer.MIN_VALUE;
+		private int originZ = Integer.MIN_VALUE;
+
+		public static final int MAX_GROWTH = 12;
+
+		public boolean grow() {
+			if (growth < MAX_GROWTH) {
+				growth++;
+				return true;
+			}
+			return false;
+		}
+
+		public int getGrowth() {
+			return growth;
+		}
+
+		public void setOrigin(TileEntityPowerTree te) {
+			originX = te.xCoord;
+			originY = te.yCoord;
+			originZ = te.zCoord;
+		}
+
+		private TileEntityPowerTree getCenter() {
+			ChromaTiles c = ChromaTiles.getTile(worldObj, originX, originY, originZ);
+			return c == ChromaTiles.POWERTREE ? (TileEntityPowerTree)worldObj.getTileEntity(originX, originY, originZ) : null;
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			NBT.setInteger("tx", originX);
+			NBT.setInteger("ty", originY);
+			NBT.setInteger("tz", originZ);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			originX = NBT.getInteger("tx");
+			originY = NBT.getInteger("ty");
+			originZ = NBT.getInteger("tz");
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+		}
 
 	}
 

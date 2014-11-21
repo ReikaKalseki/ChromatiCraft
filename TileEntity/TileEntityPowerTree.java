@@ -1,24 +1,32 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
-public class TileEntityPowerTree extends CrystalReceiverBase {
+public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, ArrayList<Coordinate>> locations = new EnumMap(CrystalElement.class);
+
+	private final EnumMap<CrystalElement, Integer> growth = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, Integer> steps = new EnumMap(CrystalElement.class);
+
+	private boolean hasMultiblock = true;
 
 	static {
 		/*
@@ -60,6 +68,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
+
 			BlockVector bv = origins.get(e);
 			ForgeDirection dir = bv.direction;
 			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
@@ -138,6 +147,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 		}
 	}
 
+	public TileEntityPowerTree() {
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			growth.put(e, 0);
+		}
+	}
+
 	private static void addLeaf(CrystalElement e, int x, int y, int z) {
 		ArrayList<Coordinate> li = locations.get(e);
 		if (li == null) {
@@ -155,13 +171,15 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (this.isOnTop() && rand.nextInt(50) == 0)
-			this.grow();
+		if (hasMultiblock) {
+			if (rand.nextInt(50) == 0)
+				this.grow();
 
-		if (rand.nextInt(100) == 0 && false) {
-			CrystalElement e = CrystalElement.randomElement();
-			if (this.getFillFraction(e) < 0.8) {
-				this.requestEnergy(e, this.getRemainingSpace(e));
+			if (rand.nextInt(100) == 0 && this.canConduct()) {
+				CrystalElement e = CrystalElement.randomElement();
+				if (this.getFillFraction(e) < 0.8) {
+					this.requestEnergy(e, this.getRemainingSpace(e));
+				}
 			}
 		}
 
@@ -185,19 +203,48 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 
 	}
 
-	public static class CoordinateSorter implements Comparator<Coordinate> {
+	public void validateStructure() {
 
-		@Override
-		public int compare(Coordinate o1, Coordinate o2) {
-			return Math.abs(o1.xCoord-o2.xCoord)+Math.abs(o1.zCoord-o2.zCoord);
-		}
 
+		this.syncAllData(true);
 	}
 
 	private void grow() {
 		CrystalElement e = CrystalElement.randomElement();
 		if (this.getRemainingSpace(e) == 0) {
-
+			int stage = growth.get(e);
+			ArrayList<Coordinate> li = locations.get(e);
+			if (stage < li.size()) {
+				Coordinate c = li.get(stage);
+				Block b = c.getBlock(worldObj);
+				if (b == ChromaBlocks.POWERTREE.getBlockInstance()) {
+					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
+					if (te.grow()) {
+						steps.put(e, te.getGrowth());
+					}
+					else {
+						stage++;
+						growth.put(e, stage);
+						steps.put(e, 0);
+					}
+				}
+				else {
+					c.setBlock(worldObj, ChromaBlocks.POWERTREE.getBlockInstance(), e.ordinal());
+					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
+					if (stage == 0) {
+						te.direction = origins.get(e).direction;
+					}
+					else {
+						Coordinate c1 = li.get(stage-1);
+						te.direction = ReikaDirectionHelper.getDirectionBetween(c1, c);
+					}
+					te.setOrigin(this);
+					steps.put(e, 0);
+				}
+			}
+			else {
+				steps.put(e, 0);
+			}
 		}
 	}
 
@@ -223,40 +270,23 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 
 	@Override
 	public boolean canConduct() {
-		return this.isOnTop();
+		return hasMultiblock && this.isOnTop();
 	}
 
 	private boolean isOnTop() {
-		return false;
+		return worldObj.getBlock(xCoord, yCoord+1, zCoord).isAir(worldObj, xCoord, yCoord+1, zCoord);
 	}
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		int s = this.getSize(e);
+		int s = 1+growth.get(e);
 		return 1000+s*s*s*4000;
 	}
-
-	private int getSize(CrystalElement e) {
-		BlockVector bv = origins.get(e);
-		int x = xCoord+bv.xCoord;
-		int y = yCoord+bv.yCoord;
-		int z = zCoord+bv.zCoord;
-		int c = 0;
-		int r = this.getMaxRadius();
-		for (int i = 1; i < r; i++) {
-			int dx = x+i*bv.xCoord;
-			int dy = y+i*bv.yCoord;
-			int dz = z+i*bv.zCoord;
-			Block b = worldObj.getBlock(dx, dy, dz);
-			int meta = worldObj.getBlockMetadata(dx, dy, dz);
-			if (b == ChromaBlocks.POWERTREE.getBlockInstance() && meta == e.ordinal())
-				c++;
-			else
-				break;
-		}
-		return c;
+	/*
+	private float getSize(CrystalElement e) {
+		return growth.get(e)+(float)steps.get(e)/TileEntityPowerTreeAux.MAX_GROWTH;
 	}
-
+	 */
 	private int getMaxRadius() {
 		return 5;
 	}
@@ -269,6 +299,97 @@ public class TileEntityPowerTree extends CrystalReceiverBase {
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public int getTransmissionStrength() {
+		return 50;
+	}
+
+	@Override
+	public boolean drain(CrystalElement e, int amt) {
+		if (energy.containsAtLeast(e, amt)) {
+			this.drainEnergy(e, amt);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getSendRange() {
+		return this.getReceiveRange();
+	}
+
+	@Override
+	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removeTarget(WorldLocation loc, CrystalElement e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void clearTargets() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean needsLineOfSight() {
+		return true;
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		hasMultiblock = NBT.getBoolean("multi");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("multi", hasMultiblock);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			steps.put(e, NBT.getInteger("step"+i));
+			growth.put(e, NBT.getInteger("grow"+i));
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			NBT.setInteger("step"+i, steps.get(e));
+			NBT.setInteger("grow"+i, growth.get(e));
+		}
+	}
+
+	public void onBreakLeaf(World world, int x, int y, int z, CrystalElement e) {
+		Coordinate c = new Coordinate(x-xCoord, y-yCoord, z-zCoord);
+		int index = locations.get(e).indexOf(c);
+		if (index >= 0) {
+			growth.put(e, index);
+			steps.put(e, 0);
+			this.clamp(e);
+		}
+		else {
+
+		}
 	}
 
 }

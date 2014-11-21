@@ -378,7 +378,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public int getTransmissionStrength() {
-		return 100;
+		return 500;
 	}
 
 	public void setColor(CrystalElement e) {

@@ -116,7 +116,7 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		energy.subtract(tag);
 	}
 
-	private void clamp(CrystalElement e) {
+	protected final void clamp(CrystalElement e) {
 		int max = this.getMaxStorage(e);
 		if (this.getEnergy(e) > max)
 			energy.setTag(e, max);

@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.FiberRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
@@ -58,6 +59,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final CrystalRenderer crystal = new CrystalRenderer();
 	private static final RuneRenderer rune = new RuneRenderer();
 	private static final TankBlockRenderer tank = new TankBlockRenderer();
+	private static final PowerTreeRenderer tree = new PowerTreeRenderer();
 	private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -146,6 +148,9 @@ public class ChromaClient extends ChromaCommon {
 
 		tankRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(tankRender, tank);
+
+		treeRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(treeRender, tree);
 
 		fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		fiber = new FiberRenderer(fiberRender);
