@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -50,6 +51,7 @@ public class PylonFinder {
 		target = r;
 		//stepRange = r;
 		net = CrystalNetworker.instance;
+		blacklist.add(this.getLocation(r));
 	}
 
 	CrystalPath findPylon() {
@@ -103,7 +105,7 @@ public class PylonFinder {
 	}
 
 	private CrystalPath checkExistingPaths() {
-		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(new WorldLocation(target.getWorld(), target.getX(), target.getY(), target.getZ()));
+		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(getLocation(target));
 		if (map != null) {
 			Collection<CrystalPath> c = map.get(element);
 			if (c != null) {
@@ -158,7 +160,7 @@ public class PylonFinder {
 	static void removePathsWithTile(CrystalNetworkTile te) {
 		if (te == null)
 			return;
-		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ()));
+		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(getLocation(te));
 		if (map != null) {
 			for (CrystalElement e : map.keySet()) {
 				Collection<CrystalPath> c = map.get(e);
@@ -199,7 +201,7 @@ public class PylonFinder {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !ReikaJavaLibrary.collectionMapContainsValue(duplicates, loc2)) {
 				if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
-					if (te instanceof CrystalSource) {
+					if (te instanceof CrystalSource && te != target) {
 						nodes.add(loc2);
 						return;
 					}
@@ -235,7 +237,9 @@ public class PylonFinder {
 	static {
 		tracer = new RayTracer(0, 0, 0, 0, 0, 0);
 		tracer.setInternalOffsets(0.5, 0.5, 0.5);
-		tracer.softBlocksOnly = true;/*
+		tracer.softBlocksOnly = true;
+		tracer.addTransparentBlock(Blocks.glass);
+		/*
 		tracer.addOpaqueBlock(Blocks.standing_sign);
 		tracer.addOpaqueBlock(Blocks.reeds);
 		tracer.addOpaqueBlock(Blocks.carpet);

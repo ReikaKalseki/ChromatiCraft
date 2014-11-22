@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
@@ -15,40 +18,24 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, ArrayList<Coordinate>> locations = new EnumMap(CrystalElement.class);
+	private static final ArrayList<Integer> directions = new ArrayList();
 
 	private final EnumMap<CrystalElement, Integer> growth = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> steps = new EnumMap(CrystalElement.class);
 
-	private boolean hasMultiblock = true;
+	private boolean hasMultiblock = false;
 
 	static {
-		/*
-		LIGHTBLUE:	[[-4, -3, -1], [-4, -3, 0], [-3, -3, -2], [-3, -3, -1], [-3, -2, -1], [-3, -3, 0], [-3, -2, 0], [-2, -3, -3], [-2, -3, -2], [-2, -2, -2], [-2, -3, -1], [-2, -2, -1], [-2, -3, 0], [-2, -2, 0]]
-				MAGENTA:	[[1, -7, -1], [1, -6, -1], [1, -7, 0], [1, -6, 0], [1, -7, 1], [1, -6, 1], [1, -7, 2], [2, -7, -1], [2, -6, -1], [2, -7, 0], [2, -6, 0], [2, -7, 1], [3, -7, -1], [3, -7, 0]]
-						ORANGE:		[[-4, -9, -1], [-4, -9, 0], [-3, -9, -2], [-3, -9, -1], [-3, -8, -1], [-3, -9, 0], [-3, -8, 0], [-2, -9, -3], [-2, -9, -2], [-2, -8, -2], [-2, -9, -1], [-2, -8, -1], [-2, -9, 0], [-2, -8, 0]]
-								WHITE:		[[-1, -3, -4], [-1, -3, -3], [-1, -2, -3], [-1, -3, -2], [-1, -2, -2], [0, -3, -4], [0, -3, -3], [0, -2, -3], [0, -3, -2], [0, -2, -2], [1, -3, -3], [1, -3, -2], [1, -2, -2], [2, -3, -2]]
-										BLACK:		[[-1, -9, -4], [-1, -9, -3], [-1, -8, -3], [-1, -9, -2], [-1, -8, -2], [0, -9, -4], [0, -9, -3], [0, -8, -3], [0, -9, -2], [0, -8, -2], [1, -9, -3], [1, -9, -2], [1, -8, -2], [2, -9, -2]]
-												RED:		[[1, -9, -1], [1, -8, -1], [1, -9, 0], [1, -8, 0], [1, -9, 1], [1, -8, 1], [1, -9, 2], [2, -9, -1], [2, -8, -1], [2, -9, 0], [2, -8, 0], [2, -9, 1], [3, -9, -1], [3, -9, 0]]
-														GREEN:		[[-3, -5, 1], [-2, -5, 1], [-2, -4, 1], [-2, -5, 2], [-1, -5, 1], [-1, -4, 1], [-1, -5, 2], [-1, -4, 2], [-1, -5, 3], [0, -5, 1], [0, -4, 1], [0, -5, 2], [0, -4, 2], [0, -5, 3]]
-																BROWN:		[[-4, -7, -1], [-4, -7, 0], [-3, -7, -2], [-3, -7, -1], [-3, -6, -1], [-3, -7, 0], [-3, -6, 0], [-2, -7, -3], [-2, -7, -2], [-2, -6, -2], [-2, -7, -1], [-2, -6, -1], [-2, -7, 0], [-2, -6, 0]]
-																		BLUE:		[[1, -3, -1], [1, -2, -1], [1, -3, 0], [1, -2, 0], [1, -3, 1], [1, -2, 1], [1, -3, 2], [2, -3, -1], [2, -2, -1], [2, -3, 0], [2, -2, 0], [2, -3, 1], [3, -3, -1], [3, -3, 0]]
-																				PURPLE:		[[1, -5, -1], [1, -4, -1], [1, -5, 0], [1, -4, 0], [1, -5, 1], [1, -4, 1], [1, -5, 2], [2, -5, -1], [2, -4, -1], [2, -5, 0], [2, -4, 0], [2, -5, 1], [3, -5, -1], [3, -5, 0]]
-																						CYAN:		[[-3, -3, 1], [-2, -3, 1], [-2, -2, 1], [-2, -3, 2], [-1, -3, 1], [-1, -2, 1], [-1, -3, 2], [-1, -2, 2], [-1, -3, 3], [0, -3, 1], [0, -2, 1], [0, -3, 2], [0, -2, 2], [0, -3, 3]]
-																								LIGHTGRAY:	[[-1, -5, -4], [-1, -5, -3], [-1, -4, -3], [-1, -5, -2], [-1, -4, -2], [0, -5, -4], [0, -5, -3], [0, -4, -3], [0, -5, -2], [0, -4, -2], [1, -5, -3], [1, -5, -2], [1, -4, -2], [2, -5, -2]]
-																										GRAY:		[[-1, -7, -4], [-1, -7, -3], [-1, -6, -3], [-1, -7, -2], [-1, -6, -2], [0, -7, -4], [0, -7, -3], [0, -6, -3], [0, -7, -2], [0, -6, -2], [1, -7, -3], [1, -7, -2], [1, -6, -2], [2, -7, -2]]
-																												PINK:		[[-4, -5, -1], [-4, -5, 0], [-3, -5, -2], [-3, -5, -1], [-3, -4, -1], [-3, -5, 0], [-3, -4, 0], [-2, -5, -3], [-2, -5, -2], [-2, -4, -2], [-2, -5, -1], [-2, -4, -1], [-2, -5, 0], [-2, -4, 0]]
-																														LIME:		[[-3, -7, 1], [-2, -7, 1], [-2, -6, 1], [-2, -7, 2], [-1, -7, 1], [-1, -6, 1], [-1, -7, 2], [-1, -6, 2], [-1, -7, 3], [0, -7, 1], [0, -6, 1], [0, -7, 2], [0, -6, 2], [0, -7, 3]]
-																																YELLOW:		[[-3, -9, 1], [-2, -9, 1], [-2, -8, 1], [-2, -9, 2], [-1, -9, 1], [-1, -8, 1], [-1, -9, 2], [-1, -8, 2], [-1, -9, 3], [0, -9, 1], [0, -8, 1], [0, -9, 2], [0, -8, 2], [0, -9, 3]]
-		 */
-		//addLeaf(CrystalElement.LIGHTBLUE, -4, -3, -1);
-
 		origins.put(CrystalElement.WHITE, new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
 		origins.put(CrystalElement.BLACK, new BlockVector(ForgeDirection.NORTH, 1, -9, -2));
 		origins.put(CrystalElement.RED, new BlockVector(ForgeDirection.EAST, 2, -9, 0));
@@ -66,6 +53,21 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		origins.put(CrystalElement.MAGENTA, new BlockVector(ForgeDirection.EAST, 2, -7, 0));
 		origins.put(CrystalElement.ORANGE, new BlockVector(ForgeDirection.WEST, -1, -9, -1));
 
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(0);
+		directions.add(90); //grows rightward
+		directions.add(0);
+		directions.add(90);
+		directions.add(0);
+		directions.add(0);
+		directions.add(90); //grows rightward
+
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 
@@ -77,54 +79,25 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			int z = bv.zCoord;
 			addLeaf(e, x, y, z);
 
-			x += dir.offsetX;
-			y += dir.offsetY;
-			z += dir.offsetZ;
-			addLeaf(e, x, y, z);
-
-			x += dir.offsetX;
-			y += dir.offsetY;
-			z += dir.offsetZ;
-			addLeaf(e, x, y, z);
-
 			x += left.offsetX;
 			y += left.offsetY;
 			z += left.offsetZ;
-			addLeaf(e, x, y, z);
-
-			x -= dir.offsetX;
-			y -= dir.offsetY;
-			z -= dir.offsetZ;
-			addLeaf(e, x, y, z);
-
-			x -= dir.offsetX;
-			y -= dir.offsetY;
-			z -= dir.offsetZ;
-			addLeaf(e, x, y, z);
-
-			x -= left.offsetX*2;
-			y -= left.offsetY*2;
-			z -= left.offsetZ*2;
 			addLeaf(e, x, y, z);
 
 			x -= left.offsetX;
 			y -= left.offsetY;
 			z -= left.offsetZ;
+			y++;
 			addLeaf(e, x, y, z);
 
 			x += left.offsetX;
 			y += left.offsetY;
 			z += left.offsetZ;
-			x += dir.offsetX;
-			y += dir.offsetY;
-			z += dir.offsetZ;
 			addLeaf(e, x, y, z);
 
 			x = bv.xCoord;
-			y = bv.yCoord+1;
+			y = bv.yCoord;
 			z = bv.zCoord;
-			addLeaf(e, x, y, z);
-
 			x += dir.offsetX;
 			y += dir.offsetY;
 			z += dir.offsetZ;
@@ -133,13 +106,54 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			x += left.offsetX;
 			y += left.offsetY;
 			z += left.offsetZ;
+			addLeaf(e, x, y, z);
+
+			x -= left.offsetX;
+			y -= left.offsetY;
+			z -= left.offsetZ;
+			y++;
+			addLeaf(e, x, y, z);
+
+			x += left.offsetX;
+			y += left.offsetY;
+			z += left.offsetZ;
+			addLeaf(e, x, y, z);
+
+			x = bv.xCoord;
+			y = bv.yCoord;
+			z = bv.zCoord;
+			x -= left.offsetX;
+			y -= left.offsetY;
+			z -= left.offsetZ;
+			addLeaf(e, x, y, z);
+
+			x += dir.offsetX;
+			y += dir.offsetY;
+			z += dir.offsetZ;
 			addLeaf(e, x, y, z);
 
 			x -= dir.offsetX;
 			y -= dir.offsetY;
 			z -= dir.offsetZ;
+			y++;
 			addLeaf(e, x, y, z);
 
+			x = bv.xCoord;
+			y = bv.yCoord;
+			z = bv.zCoord;
+			x += dir.offsetX*2;
+			y += dir.offsetY*2;
+			z += dir.offsetZ*2;
+			addLeaf(e, x, y, z);
+
+			x += left.offsetX;
+			y += left.offsetY;
+			z += left.offsetZ;
+			addLeaf(e, x, y, z);
+
+			x = bv.xCoord;
+			y = bv.yCoord;
+			z = bv.zCoord;
 			x -= left.offsetX*2;
 			y -= left.offsetY*2;
 			z -= left.offsetZ*2;
@@ -171,42 +185,45 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (hasMultiblock) {
+		if (hasMultiblock && !world.isRemote) {
 			if (rand.nextInt(50) == 0)
 				this.grow();
 
 			if (rand.nextInt(100) == 0 && this.canConduct()) {
-				CrystalElement e = CrystalElement.randomElement();
-				if (this.getFillFraction(e) < 0.8) {
-					this.requestEnergy(e, this.getRemainingSpace(e));
+				for (int i = 0; i < CrystalElement.elements.length; i++) {
+					CrystalElement e = CrystalElement.elements[i];
+					if (this.getFillFraction(e) < 0.8) {
+						this.requestEnergy(e, this.getRemainingSpace(e));
+					}
 				}
 			}
 		}
+	}
 
-		/*
-		if (!world.isRemote) { // TEMPORARY, to test tree growth
-			for (CrystalElement e : CrystalElement.elements) {
-				int tick = this.getTicksExisted()/20;
-				ArrayList<Coordinate> li = locations.get(e);
-				int step = tick%(li.size()+1);
-				if (step == li.size()) {
-					for (Coordinate c : li) {
-						world.setBlockToAir(x+c.xCoord, y+c.yCoord, z+c.zCoord);
-					}
-				}
-				else {
-					Coordinate c = li.get(step);
-					world.setBlock(x+c.xCoord, y+c.yCoord, z+c.zCoord, ChromaBlocks.POWERTREE.getBlockInstance(), e.ordinal(), 3);
-				}
-			}
-		}*/
+	@Override
+	public void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
 
+		this.validateStructure();
 	}
 
 	public void validateStructure() {
-
-
+		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord);
+		boolean flag = f.matchInWorld();
+		if (!flag && hasMultiblock) {
+			this.onBreakMultiblock();
+		}
+		hasMultiblock = flag;
 		this.syncAllData(true);
+	}
+
+	private void onBreakMultiblock() {
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			BlockVector c = origins.get(e);
+			worldObj.setBlock(xCoord+c.xCoord, yCoord+c.yCoord, zCoord+c.zCoord, Blocks.air);
+		}
+		energy.clear();
 	}
 
 	private void grow() {
@@ -215,8 +232,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			int stage = growth.get(e);
 			ArrayList<Coordinate> li = locations.get(e);
 			if (stage < li.size()) {
-				Coordinate c = li.get(stage);
+				Coordinate c = li.get(stage).offset(xCoord, yCoord, zCoord);
 				Block b = c.getBlock(worldObj);
+				//ReikaJavaLibrary.pConsole(e+": "+stage+" > "+b);
 				if (b == ChromaBlocks.POWERTREE.getBlockInstance()) {
 					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
 					if (te.grow()) {
@@ -231,12 +249,19 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 				else {
 					c.setBlock(worldObj, ChromaBlocks.POWERTREE.getBlockInstance(), e.ordinal());
 					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
-					if (stage == 0) {
-						te.direction = origins.get(e).direction;
-					}
-					else {
-						Coordinate c1 = li.get(stage-1);
-						te.direction = ReikaDirectionHelper.getDirectionBetween(c1, c);
+					int dir = stage < directions.size() ? directions.get(stage) : -1;
+					if (dir >= 0) {
+						ForgeDirection direc = origins.get(e).direction;
+						if (dir == 90) {
+							direc = ReikaDirectionHelper.getRightBy90(direc);
+						}
+						else if (dir == -90) {
+							direc = ReikaDirectionHelper.getLeftBy90(direc);
+						}
+						else if (dir == 180) {
+							direc = direc.getOpposite();
+						}
+						te.setDirection(direc);
 					}
 					te.setOrigin(this);
 					steps.put(e, 0);
@@ -279,7 +304,9 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		int s = 1+growth.get(e);
+		if (!this.canConduct())
+			return 0;
+		int s = growth.get(e);
 		return 1000+s*s*s*4000;
 	}
 	/*
@@ -374,18 +401,26 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			NBT.setInteger("step"+i, steps.get(e));
-			NBT.setInteger("grow"+i, growth.get(e));
+			NBT.setInteger("step"+i, steps.containsKey(e) ? steps.get(e) : 0);
+			NBT.setInteger("grow"+i, growth.containsKey(e) ? growth.get(e) : 0);
 		}
 	}
 
 	public void onBreakLeaf(World world, int x, int y, int z, CrystalElement e) {
 		Coordinate c = new Coordinate(x-xCoord, y-yCoord, z-zCoord);
-		int index = locations.get(e).indexOf(c);
+		ArrayList<Coordinate> li = locations.get(e);
+		int index = li.indexOf(c);
 		if (index >= 0) {
-			growth.put(e, index);
+			growth.put(e, Math.min(growth.get(e), index));
 			steps.put(e, 0);
 			this.clamp(e);
+			for (int i = index+1; i < li.size(); i++) {
+				Coordinate c2 = li.get(i).offset(xCoord, yCoord, zCoord);
+				ArrayList<ItemStack> items = c2.getBlock(world).getDrops(world, c2.xCoord, c2.yCoord, c2.zCoord, c2.getBlockMetadata(world), 0);
+				ReikaItemHelper.dropItems(world, c2.xCoord+rand.nextDouble(), c2.yCoord+rand.nextDouble(), c2.zCoord+rand.nextDouble(), items);
+				c2.setBlock(world, Blocks.air);
+				ReikaSoundHelper.playBreakSound(world, c2.xCoord, c2.yCoord, c2.zCoord, Blocks.glass);
+			}
 		}
 		else {
 

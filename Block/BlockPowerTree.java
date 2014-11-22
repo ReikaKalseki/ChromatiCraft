@@ -20,6 +20,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -44,7 +45,8 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 		return true;
 	}
 
-	public TileEntity createTileEntity(World world, int x, int y, int z) {
+	@Override
+	public TileEntity createTileEntity(World world, int meta) {
 		return new TileEntityPowerTreeAux();
 	}
 
@@ -100,7 +102,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	@Override
 	public int getRenderType() {
-		return 0;
+		return ChromatiCraft.proxy.treeRender;
 	}
 
 	@Override
@@ -154,7 +156,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	public static class TileEntityPowerTreeAux extends TileEntity {
 
 		private int growth = 0;
-		public ForgeDirection direction;
+		private ForgeDirection direction;
 
 		private int originX = Integer.MIN_VALUE;
 		private int originY = Integer.MIN_VALUE;
@@ -162,9 +164,15 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 		public static final int MAX_GROWTH = 12;
 
+		@Override
+		public boolean canUpdate() {
+			return false;
+		}
+
 		public boolean grow() {
 			if (growth < MAX_GROWTH) {
 				growth++;
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 				return true;
 			}
 			return false;
@@ -174,13 +182,22 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 			return growth;
 		}
 
+		public ForgeDirection getDirection() {
+			return direction;
+		}
+
+		public void setDirection(ForgeDirection dir) {
+			direction = dir;
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
 		public void setOrigin(TileEntityPowerTree te) {
 			originX = te.xCoord;
 			originY = te.yCoord;
 			originZ = te.zCoord;
 		}
 
-		private TileEntityPowerTree getCenter() {
+		public TileEntityPowerTree getCenter() {
 			ChromaTiles c = ChromaTiles.getTile(worldObj, originX, originY, originZ);
 			return c == ChromaTiles.POWERTREE ? (TileEntityPowerTree)worldObj.getTileEntity(originX, originY, originZ) : null;
 		}
@@ -192,6 +209,10 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 			NBT.setInteger("tx", originX);
 			NBT.setInteger("ty", originY);
 			NBT.setInteger("tz", originZ);
+
+			NBT.setInteger("grow", growth);
+
+			NBT.setInteger("dir", direction != null ? direction.ordinal() : -1);
 		}
 
 		@Override
@@ -201,6 +222,11 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 			originX = NBT.getInteger("tx");
 			originY = NBT.getInteger("ty");
 			originZ = NBT.getInteger("tz");
+
+			growth = NBT.getInteger("grow");
+
+			int dir = NBT.getInteger("dir");
+			direction = dir >= 0 ? ForgeDirection.VALID_DIRECTIONS[dir] : null;
 		}
 
 		@Override
@@ -214,6 +240,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 		@Override
 		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
 			this.readFromNBT(p.field_148860_e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 	}

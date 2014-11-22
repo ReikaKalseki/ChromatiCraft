@@ -22,8 +22,10 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -35,6 +37,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
+import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -164,31 +167,31 @@ public class ItemManipulator extends ItemChromaTool {
 
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 16, false);
+		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 24, false);
 		//PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player)/4);
 		//PlayerElementBuffer.instance.checkUpgrade(player, true);
 		//player.getEntityData().removeTag("CrystalBuffer");
 		if (mov != null) {
-			ChromaTiles c = ChromaTiles.getTile(player.worldObj, mov.blockX, mov.blockY, mov.blockZ);
+			World world = player.worldObj;
+			int x = mov.blockX;
+			int y = mov.blockY;
+			int z = mov.blockZ;
+			ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 			if (c == ChromaTiles.PYLON) {
-				TileEntityCrystalPylon te = (TileEntityCrystalPylon)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
+				TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
 				CrystalElement e = te.getColor();
 				this.chargeFromPylon(player, te, e, count);
 			}
-			else if (c == ChromaTiles.REPEATER) {
-				TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)player.worldObj.getTileEntity(mov.blockX, mov.blockY, mov.blockZ);
-				CrystalSource tr = te.getEnergySource();
-				if (tr instanceof TileEntityCrystalPylon) {
-					TileEntityCrystalPylon p = (TileEntityCrystalPylon)tr;
-					if (this.chargeFromPylon(player, p, p.getColor(), count)) {
-						te.onRelayPlayerCharge(player, p);
-					}
+			else if (world.getBlock(x, y, z) == ChromaBlocks.POWERTREE.getBlockInstance()) {
+				TileEntityPowerTree te = ((TileEntityPowerTreeAux)world.getTileEntity(x, y, z)).getCenter();
+				if (te != null && this.chargeFromPylon(player, te, CrystalElement.elements[world.getBlockMetadata(x, y, z)], count)) {
+
 				}
 			}
 		}
 	}
 
-	private boolean chargeFromPylon(EntityPlayer player, TileEntityCrystalPylon te, CrystalElement e, int count) {
+	private boolean chargeFromPylon(EntityPlayer player, CrystalSource te, CrystalElement e, int count) {
 		int add = PlayerElementBuffer.instance.getChargeSpeed(player);
 		int drain = add*4;
 		int energy = te.getEnergy(e);
@@ -203,7 +206,7 @@ public class ItemManipulator extends ItemChromaTool {
 			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
 			if (player.worldObj.isRemote) {
 				//this.spawnParticles(player, e);
-				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D);
+				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
 			}
 			return true;
 		}

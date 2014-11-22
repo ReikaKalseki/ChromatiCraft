@@ -35,7 +35,9 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 
 		if (DragonAPICore.debugtest && !world.isRemote) {
-			energy.addValueToColor(CrystalElement.randomElement(), 500);
+			CrystalElement e = CrystalElement.randomElement();
+			energy.addValueToColor(e, 500);
+			this.clamp(e);
 		}
 	}
 

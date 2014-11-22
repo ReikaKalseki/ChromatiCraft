@@ -21,6 +21,53 @@ import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 
 public class ChromaStructures {
 
+	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		for (int i = 0; i <= 12; i++) {
+			int dy = y-i;
+			if (i == 0) {
+				array.setBlock(x, dy, z-1, Blocks.glass);
+				array.setBlock(x+1, dy, z, Blocks.glass);
+				array.setBlock(x+1, dy, z-1, Blocks.glass);
+			}
+			else {
+				int meta = (i == 3 || i == 5 || i == 7 || i == 9) ? 15 : 11;
+				array.setBlock(x, dy, z, b, meta);
+				array.setBlock(x, dy, z-1, b, meta);
+				array.setBlock(x+1, dy, z, b, meta);
+				array.setBlock(x+1, dy, z-1, b, meta);
+			}
+
+			array.setBlock(x-1, dy, z, Blocks.air);
+			array.setBlock(x-1, dy, z-1, Blocks.air);
+			array.setBlock(x-1, dy, z-2, Blocks.air);
+			array.setBlock(x-1, dy, z+1, Blocks.air);
+			array.setBlock(x+2, dy, z, Blocks.air);
+			array.setBlock(x+2, dy, z-1, Blocks.air);
+			array.setBlock(x+2, dy, z+1, Blocks.air);
+			array.setBlock(x+2, dy, z-2, Blocks.air);
+			array.setBlock(x, dy, z-2, Blocks.air);
+			array.setBlock(x+1, dy, z-2, Blocks.air);
+			array.setBlock(x, dy, z+1, Blocks.air);
+			array.setBlock(x+1, dy, z+1, Blocks.air);
+		}
+
+		array.setBlock(x-1, y-1, z, b, 14);
+		array.setBlock(x-1, y-1, z-1, b, 14);
+
+		array.setBlock(x+2, y-1, z, b, 14);
+		array.setBlock(x+2, y-1, z-1, b, 14);
+
+		array.setBlock(x, y-1, z-2, b, 14);
+		array.setBlock(x+1, y-1, z-2, b, 14);
+
+		array.setBlock(x, y-1, z+1, b, 14);
+		array.setBlock(x+1, y-1, z+1, b, 14);
+
+		return array;
+	}
+
 	public static FilledBlockArray getInfusionStructure(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();

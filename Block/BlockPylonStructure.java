@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
@@ -106,7 +107,7 @@ public class BlockPylonStructure extends Block {
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
-			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-16, y-12, z-16, x+16, y+12, z+16);
+			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-16, y-16, z-16, x+16, y+16, z+16);
 		}
 
 		int mx = blocks.getMidX();
@@ -144,6 +145,11 @@ public class BlockPylonStructure extends Block {
 				}
 			}
 		}
+
+		te = world.getTileEntity(blocks.getMinX()+1, blocks.getMaxY()+1, blocks.getMaxZ()-1);
+		if (te instanceof TileEntityPowerTree) {
+			((TileEntityPowerTree)te).validateStructure();
+		}
 	}
 
 	@Override
@@ -156,7 +162,7 @@ public class BlockPylonStructure extends Block {
 	void triggerAddCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
-		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-12, z-16, x+16, y+12, z+16);
+		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-16, z-16, x+16, y+16, z+16);
 
 		int mx = blocks.getMidX();
 		int my = blocks.getMinY(); //intentionally bottom
@@ -190,6 +196,11 @@ public class BlockPylonStructure extends Block {
 					((TileEntityCrystalRepeater)te).validateStructure();
 				}
 			}
+		}
+
+		te = world.getTileEntity(blocks.getMinX()+1, blocks.getMaxY()+1, blocks.getMaxZ()-1);
+		if (te instanceof TileEntityPowerTree) {
+			((TileEntityPowerTree)te).validateStructure();
 		}
 	}
 
