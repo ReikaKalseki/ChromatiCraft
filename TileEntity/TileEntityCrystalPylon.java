@@ -56,7 +56,6 @@ import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
@@ -523,8 +522,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
-		ReikaJavaLibrary.pConsole(player);
-		if (this.canConduct()) {
+		if (!worldObj.isRemote && this.canConduct() && player.ticksExisted%5 == 0) {
 			AspectList al = ReikaThaumHelper.decompose(this.getAspects());
 			for (Aspect a : al.aspects.keySet()) {
 				int amt = 2;
