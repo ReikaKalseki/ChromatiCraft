@@ -43,8 +43,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Instantiable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockMap.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
@@ -415,6 +415,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				ProgressionManager.instance.stepPlayerTo(this.getPlacer(), ProgressStage.LINK);
 			}
 			recipe = this.getValidRecipe();
+			if (recipe instanceof PylonRecipe && !energy.containsAtLeast(((PylonRecipe)recipe).getRequiredAura()))
+				recipe = null;
 			//ReikaJavaLibrary.pConsole(count+": "+recipe, Side.SERVER);
 		}
 		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
@@ -572,7 +574,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public void onPathBroken(CrystalElement e) {
-		this.killCrafting();
+		//this.killCrafting();
 	}
 
 	@Override

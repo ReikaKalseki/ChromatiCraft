@@ -161,6 +161,7 @@ public class CrystalNetworker implements TickHandler {
 						if (p.isComplete()) {
 							p.resetTiles();
 							it.remove();
+							CrystalNetworkLogger.logFlowSatisfy(p);
 						}
 					}
 				}

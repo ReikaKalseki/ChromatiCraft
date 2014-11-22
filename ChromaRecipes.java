@@ -35,7 +35,9 @@ public class ChromaRecipes {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
+			ItemStack berry = ChromaItems.BERRY.getStackOfMetadata(i);
 			GameRegistry.addRecipe(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
+			GameRegistry.addShapelessRecipe(new ItemStack(Items.dye, 2, i), berry);
 		}
 
 		ChromaItems.TOOL.addRecipe("  s", " S ", "S  ", 'S', Items.stick, 's', ChromaItems.SHARD.getAnyMetaStack());

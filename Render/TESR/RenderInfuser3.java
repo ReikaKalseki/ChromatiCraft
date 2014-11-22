@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelInfuser2;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -36,7 +36,7 @@ public class RenderInfuser3 extends ChromaRenderBase {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
-		TileEntityAuraInfuser3 te = (TileEntityAuraInfuser3)tile;
+		TileEntityAuraInfuser te = (TileEntityAuraInfuser)tile;
 
 		GL11.glPushMatrix();
 
@@ -49,7 +49,7 @@ public class RenderInfuser3 extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	private void renderItem(TileEntityAuraInfuser3 te, double par2, double par4, double par6, float ptick) {
+	private void renderItem(TileEntityAuraInfuser te, double par2, double par4, double par6, float ptick) {
 		EntityItem ei = te.getItem();
 		if (ei != null) {
 			GL11.glPushMatrix();

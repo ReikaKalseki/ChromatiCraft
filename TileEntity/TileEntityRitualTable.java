@@ -47,7 +47,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	public void onPathBroken(CrystalElement e) {
-		abilityTick = 0;
+		//this.killRitual();
 	}
 
 	@Override
@@ -224,6 +224,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	public void setChosenAbility(Chromabilities c) {
+		this.killRitual();
 		ability = c;
 	}
 

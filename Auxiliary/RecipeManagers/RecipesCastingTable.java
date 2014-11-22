@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalTankRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.ElementUnitRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FabricatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
@@ -51,6 +52,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InventoryLink
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PylonFinderRecipe;
@@ -231,6 +233,10 @@ public class RecipesCastingTable {
 		this.addRecipe(new PylonFinderRecipe(is, sr));
 
 		this.addRecipe(new BatteryRecipe(ChromaTiles.POWERTREE.getCraftedProduct(), ChromaStacks.crystalStar));
+
+		this.addRecipe(new MinerRecipe(ChromaTiles.MINER.getCraftedProduct(), ChromaStacks.energyCore));
+
+		this.addRecipe(new FabricatorRecipe(ChromaTiles.FABRICATOR.getCraftedProduct(), ChromaStacks.transformCore));
 	}
 
 	private void addRecipe(CastingRecipe r) {

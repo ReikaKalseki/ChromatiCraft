@@ -22,7 +22,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
@@ -86,7 +86,7 @@ public enum ChromaTiles {
 	BEACON("chroma.beacon", 			ChromaBlocks.TILEMODELLED, TileEntityCrystalBeacon.class, 5, "RenderCrystalBeacon"),
 	ITEMRIFT("chroma.itemrift", 		ChromaBlocks.TILEMODELLED, TileEntityItemRift.class, 6, "RenderItemRift"),
 	CRYSTAL("chroma.chromacrystal", 	ChromaBlocks.RAINBOWCRYSTAL, TileEntityChromaCrystal.class, 0),
-	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser3.class, 7, "RenderInfuser3"),
+	INFUSER("chroma.infuser", 			ChromaBlocks.TILEMODELLED, TileEntityAuraInfuser.class, 7, "RenderInfuser3"),
 	FABRICATOR("chroma.fabricator",		ChromaBlocks.TILEMODELLED, TileEntityItemFabricator.class, 8, "RenderItemFabricator"),
 	MINER("chroma.miner",				ChromaBlocks.TILEMODELLED, TileEntityMiner.class, 9, "RenderMiner"),
 	HEATLILY("chroma.heatlily",			ChromaBlocks.DECOPLANT, TileEntityHeatLily.class, 0),

@@ -65,9 +65,9 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 		addDisallowedMob("TaintedVillager");
 		addDisallowedMob("TaintVillager");
 		addDisallowedMob("Thaumcraft.TaintacleTiny");
-		addDisallowedMob("Thaumcraft.TaintSpore");
+		//addDisallowedMob("Thaumcraft.TaintSpore");
 		addDisallowedMob("Thaumcraft.Golem");
-		addDisallowedMob("Thaumcraft.TaintSwarmer");
+		//addDisallowedMob("Thaumcraft.TaintSwarmer");
 		addDisallowedMob("Thaumcraft.TravelingTrunk");
 		addDisallowedMob("Thaumcraft.TaintedVillager");
 		addDisallowedMob("Thaumcraft.TaintSpider");

@@ -36,6 +36,13 @@ public class CrystalNetworkLogger {
 		}
 	}
 
+	public static void logFlowSatisfy(CrystalFlow p) {
+		if (active) {
+			String s = p.element+" flow from "+p.transmitter+" to "+p.receiver+" satisfied and terminated.";
+			ChromatiCraft.logger.log(s);
+		}
+	}
+
 	public static enum FlowFail {
 		SIGHT("Line of Sight"),
 		ENERGY("Insufficient Energy or Disabled Transmitter"),

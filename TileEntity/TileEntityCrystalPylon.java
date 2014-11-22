@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -28,6 +29,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.nodes.INode;
 import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
+import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
@@ -54,13 +56,15 @@ import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
-@Strippable(value = {"thaumcraft.api.nodes.INode"})
-public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode {
+@Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode, IWandable {
 
 	private boolean hasMultiblock = false;
 	private CrystalElement color = CrystalElement.WHITE;
@@ -501,5 +505,47 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public void setNodeVisBase(Aspect aspect, short nodeVisBase) {}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public int onWandRightClick(World world, ItemStack wandstack, EntityPlayer player, int x, int y, int z, int side, int mode) {
+		return -1;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public ItemStack onWandRightClick(World world, ItemStack wandstack, EntityPlayer player) {
+		player.setItemInUse(wandstack, Integer.MAX_VALUE);
+		ReikaThaumHelper.setWandInUse(wandstack, this);
+		return wandstack;
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
+		ReikaJavaLibrary.pConsole(player);
+		if (this.canConduct()) {
+			AspectList al = ReikaThaumHelper.decompose(this.getAspects());
+			for (Aspect a : al.aspects.keySet()) {
+				int amt = 2;
+				if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1"))
+					amt *= 2;
+				if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2"))
+					amt *= 2;
+				amt = Math.min(amt, al.getAmount(a));
+				amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));
+				int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
+				if (ret > 0) {
+					energy = Math.max(0, energy-ret*8);
+				}
+			}
+		}
+	}
+
+	@Override
+	@ModDependent(ModList.THAUMCRAFT)
+	public void onWandStoppedUsing(ItemStack wandstack, World world, EntityPlayer player, int count) {
+
+	}
 
 }

@@ -10,9 +10,11 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -23,6 +25,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -85,11 +88,25 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 					//ores.addBlockCoordinate(dx, dy, dz);
 					this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
 				}
+				else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
+					this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
+				}
 				this.updateReadPosition();
 			}
 		}
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	private void dropTieredResource(World world, int x, int y, int z, int dx,int dy, int dz, Block id, int meta2) {
+		Collection<ItemStack> li = ((BlockTieredResource)id).getHarvestResources(world, dx, dy, dz, 10, this.getPlacer());
+		this.dropItems(world, x, y, z, li);
+		world.setBlock(dx, dy, dz, id.getMaterial().isSolid() ? Blocks.stone : Blocks.air);
+	}
+
+	private boolean isTieredResource(World world, int x, int y, int z, Block id, int meta) {
+		EntityPlayer ep = this.getPlacer();
+		return ep != null && id instanceof BlockTieredResource && ((BlockTieredResource)id).isPlayerSufficientTier(world, x, y, z, ep);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -170,6 +187,11 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
 		ArrayList<ItemStack> li = id.getDrops(world, dx, dy, dz, meta2, 0);
+		this.dropItems(world, x, y, z, li);
+		world.setBlock(dx, dy, dz, Blocks.stone);
+	}
+
+	private void dropItems(World world, int x, int y, int z, Collection<ItemStack> li) {
 		for (ItemStack is : li) {
 			boolean flag = true;
 			for (int i = 0; i < 6 && flag; i++) {
@@ -182,7 +204,6 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 			if (flag)
 				ReikaItemHelper.dropItem(world, x+0.5, y+1.5, z+0.5, is);
 		}
-		world.setBlock(dx, dy, dz, Blocks.stone);
 	}
 
 	private void updateReadPosition() {

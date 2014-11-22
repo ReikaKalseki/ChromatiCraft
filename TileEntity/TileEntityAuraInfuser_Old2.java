@@ -29,7 +29,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAuraInfuser2 extends FluidReceiverInventoryBase {
+public class TileEntityAuraInfuser_Old2 extends FluidReceiverInventoryBase {
 
 	private InertItem[] items = new InertItem[this.getSizeInventory()];
 

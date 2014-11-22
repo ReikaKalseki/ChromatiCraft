@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser3;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
@@ -124,16 +124,16 @@ public class BlockPylonStructure extends Block {
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
 		}
-		if (te instanceof TileEntityAuraInfuser3) {
-			((TileEntityAuraInfuser3)te).validateMultiblock();
+		if (te instanceof TileEntityAuraInfuser) {
+			((TileEntityAuraInfuser)te).validateMultiblock();
 		}
 
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
 			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
 		}
-		if (te instanceof TileEntityAuraInfuser3) {
-			((TileEntityAuraInfuser3)te).validateMultiblock();
+		if (te instanceof TileEntityAuraInfuser) {
+			((TileEntityAuraInfuser)te).validateMultiblock();
 		}
 
 		for (int k = 0; k < 6; k++) {
@@ -179,8 +179,8 @@ public class BlockPylonStructure extends Block {
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
 		}
-		if (te instanceof TileEntityAuraInfuser3) {
-			((TileEntityAuraInfuser3)te).validateMultiblock();
+		if (te instanceof TileEntityAuraInfuser) {
+			((TileEntityAuraInfuser)te).validateMultiblock();
 		}
 
 		te = world.getTileEntity(mx, my+2, mz);

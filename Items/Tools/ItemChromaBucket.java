@@ -61,6 +61,8 @@ public class ItemChromaBucket extends ItemChromaTool {
 			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava)
 				return false;
 		}
+		if (world.getBlock(x, y, z) == this.getBlock(is))
+			return false;
 		world.setBlock(x, y, z, this.getBlock(is));
 		/*
 		if (is.getItemDamage() >= 2) {

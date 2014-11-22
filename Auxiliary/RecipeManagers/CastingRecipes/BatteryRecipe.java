@@ -54,4 +54,9 @@ public class BatteryRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.PURPLE, 2000);
 	}
 
+	@Override
+	public int getDuration() {
+		return 16*super.getDuration();
+	}
+
 }

@@ -17,10 +17,10 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser2;
+import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser_Old2;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 
-public class RenderInfuser2 extends ChromaRenderBase {
+public class RenderInfuser2_Old extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -29,7 +29,7 @@ public class RenderInfuser2 extends ChromaRenderBase {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
-		TileEntityAuraInfuser2 te = (TileEntityAuraInfuser2)tile;
+		TileEntityAuraInfuser_Old2 te = (TileEntityAuraInfuser_Old2)tile;
 
 		GL11.glPushMatrix();
 
@@ -42,7 +42,7 @@ public class RenderInfuser2 extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	private void renderItem(TileEntityAuraInfuser2 te, double par2, double par4, double par6, float ptick) {
+	private void renderItem(TileEntityAuraInfuser_Old2 te, double par2, double par4, double par6, float ptick) {
 		for (int i = 0; i < 16; i++) {
 			EntityItem ei = te.getItem(i);
 			if (ei != null) {
