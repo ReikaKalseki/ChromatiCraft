@@ -187,6 +187,15 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 			return false;
 		}
 
+		public boolean ungrow() {
+			if (growth > 0) {
+				growth--;
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				return true;
+			}
+			return false;
+		}
+
 		public int getGrowth() {
 			return growth;
 		}

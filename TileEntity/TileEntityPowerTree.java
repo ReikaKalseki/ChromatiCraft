@@ -195,7 +195,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.updateEntity(world, x, y, z, meta);
 
 		if (hasMultiblock && !world.isRemote && this.canConduct()) {
-			if (rand.nextInt(50) == 0)
+			if (rand.nextInt(150) == 0)
 				this.grow();
 
 			if (rand.nextInt(100) == 0) {
@@ -241,10 +241,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	private void grow() {
 		CrystalElement e = CrystalElement.randomElement();
+		int stage = growth.get(e);
+		ArrayList<Coordinate> li = locations.get(e);
 		if (this.getRemainingSpace(e) == 0) {
 			//ReikaJavaLibrary.pConsole(e+":"+growth.get(e)+">"+this.getMaxStorage(e));
-			int stage = growth.get(e);
-			ArrayList<Coordinate> li = locations.get(e);
 			if (stage < li.size()) {
 				Coordinate c = li.get(stage).offset(xCoord, yCoord, zCoord);
 				Block b = c.getBlock(worldObj);
@@ -285,6 +285,30 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 				steps.put(e, 0);
 			}
 		}
+		else if (stage > 0 ? energy.getValue(e) <= this.getStorageForStep(e, stage-1) : energy.getValue(e) <= 1000) {
+			if (stage < li.size()) {
+				Coordinate c = li.get(stage).offset(xCoord, yCoord, zCoord);
+				Block b = c.getBlock(worldObj);
+				//ReikaJavaLibrary.pConsole(e+": "+stage+" > "+b);
+				if (b == ChromaBlocks.POWERTREE.getBlockInstance()) {
+					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
+					if (te.ungrow()) {
+						steps.put(e, te.getGrowth());
+					}
+					else {
+						c.setBlock(worldObj, Blocks.air);
+						stage--;
+						growth.put(e, stage);
+						steps.put(e, 0);
+					}
+				}
+			}
+			else {
+				if (stage > 0)
+					stage--;
+				growth.put(e, stage);
+			}
+		}
 	}
 
 	@Override
@@ -321,8 +345,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		if (!this.canConduct())
 			return 0;
 		int s = growth.get(e);
-		return 1000+s*s*s*4000;
+		return this.getStorageForStep(e, s);
 	}
+
+	private int getStorageForStep(CrystalElement e, int step) {
+		return 1000+step*step*step*4000;
+	}
+
 	/*
 	private float getSize(CrystalElement e) {
 		return growth.get(e)+(float)steps.get(e)/TileEntityPowerTreeAux.MAX_GROWTH;
@@ -351,6 +380,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public boolean drain(CrystalElement e, int amt) {
 		if (energy.containsAtLeast(e, amt)) {
 			this.drainEnergy(e, amt);
+			this.grow();
 			return true;
 		}
 		return false;
