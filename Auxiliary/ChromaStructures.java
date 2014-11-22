@@ -39,18 +39,34 @@ public class ChromaStructures {
 				array.setBlock(x+1, dy, z-1, b, meta);
 			}
 
-			array.setBlock(x-1, dy, z, Blocks.air);
-			array.setBlock(x-1, dy, z-1, Blocks.air);
-			array.setBlock(x-1, dy, z-2, Blocks.air);
-			array.setBlock(x-1, dy, z+1, Blocks.air);
-			array.setBlock(x+2, dy, z, Blocks.air);
-			array.setBlock(x+2, dy, z-1, Blocks.air);
-			array.setBlock(x+2, dy, z+1, Blocks.air);
-			array.setBlock(x+2, dy, z-2, Blocks.air);
-			array.setBlock(x, dy, z-2, Blocks.air);
-			array.setBlock(x+1, dy, z-2, Blocks.air);
-			array.setBlock(x, dy, z+1, Blocks.air);
-			array.setBlock(x+1, dy, z+1, Blocks.air);
+			if (i > 1) {
+				array.addBlock(x-1, dy, z, Blocks.air);
+				array.addBlock(x-1, dy, z-1, Blocks.air);
+				array.addBlock(x-1, dy, z-2, Blocks.air);
+				array.addBlock(x-1, dy, z+1, Blocks.air);
+				array.addBlock(x+2, dy, z, Blocks.air);
+				array.addBlock(x+2, dy, z-1, Blocks.air);
+				array.addBlock(x+2, dy, z+1, Blocks.air);
+				array.addBlock(x+2, dy, z-2, Blocks.air);
+				array.addBlock(x, dy, z-2, Blocks.air);
+				array.addBlock(x+1, dy, z-2, Blocks.air);
+				array.addBlock(x, dy, z+1, Blocks.air);
+				array.addBlock(x+1, dy, z+1, Blocks.air);
+
+				Block b2 = ChromaBlocks.POWERTREE.getBlockInstance();
+				array.addBlock(x-1, dy, z, b2);
+				array.addBlock(x-1, dy, z-1, b2);
+				array.addBlock(x-1, dy, z-2, b2);
+				array.addBlock(x-1, dy, z+1, b2);
+				array.addBlock(x+2, dy, z, b2);
+				array.addBlock(x+2, dy, z-1, b2);
+				array.addBlock(x+2, dy, z+1, b2);
+				array.addBlock(x+2, dy, z-2, b2);
+				array.addBlock(x, dy, z-2, b2);
+				array.addBlock(x+1, dy, z-2, b2);
+				array.addBlock(x, dy, z+1, b2);
+				array.addBlock(x+1, dy, z+1, b2);
+			}
 		}
 
 		array.setBlock(x-1, y-1, z, b, 14);

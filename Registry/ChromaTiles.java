@@ -101,7 +101,7 @@ public enum ChromaTiles {
 	FIBERSINK("chroma.fibersink", 		ChromaBlocks.TILEMODELLED, TileEntityFiberTransmitter.class, 13, "RenderFiberEmitter"),
 	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, TileEntityAspectFormer.class, 14, "RenderAspectFormer", ModList.THAUMCRAFT),
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, TileEntityChromaLamp.class, 15, "RenderRainbowLamp"),
-	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3);
+	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3, "PowerTreeRender");
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
@@ -169,6 +169,7 @@ public enum ChromaTiles {
 		case FIBERSOURCE:
 		case ASPECT:
 		case LAMP:
+		case POWERTREE:
 			//case ITEMRIFT:
 			return true;
 		default:

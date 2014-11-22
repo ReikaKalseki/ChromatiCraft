@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AspectFormerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CompoundRepeaterRecipe;
@@ -129,6 +130,15 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, 6), "SSS", "S  ", "S  ", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 5, 6), sr));
 
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 11), " S ", " S ", " S ", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 3, 11), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, 14), "sSs", "ScS", "sSs", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard, 's', new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 15));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 4, 14), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 6, 15), "SSS", "ccc", "SSS", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard);
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 6, 15), sr));
+
 		this.addRecipe(new GuardianStoneRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), ChromaStacks.crystalStar));
 
 		for (int i = 0; i <= TileEntityAccelerator.MAX_TIER; i++)
@@ -219,6 +229,8 @@ public class RecipesCastingTable {
 		is = ChromaItems.FINDER.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SIS", "IAI", "SIS", 'A', ChromaStacks.auraDust, 'I', Items.iron_ingot, 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new PylonFinderRecipe(is, sr));
+
+		this.addRecipe(new BatteryRecipe(ChromaTiles.POWERTREE.getCraftedProduct(), ChromaStacks.crystalStar));
 	}
 
 	private void addRecipe(CastingRecipe r) {

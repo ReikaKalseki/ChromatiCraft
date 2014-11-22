@@ -64,6 +64,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			return ChromaIcons.REPEATER.getIcon();
 		case 2:
 			return ChromaIcons.MULTIREPEATER.getIcon();
+		case 3:
+			return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

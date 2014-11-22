@@ -37,7 +37,8 @@ public enum ChromaIcons {
 	CENTER("centerblur3"),
 	CHROMA("chroma_particle"),
 	NOENTER("noentry"),
-	BLUEFIRE("bluefire");
+	BLUEFIRE("bluefire"),
+	BATTERY("battery_outer");
 
 	private IIcon icon;
 	private final String iconName;

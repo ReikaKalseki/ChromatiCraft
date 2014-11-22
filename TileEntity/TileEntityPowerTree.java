@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
@@ -185,14 +194,14 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (hasMultiblock && !world.isRemote) {
+		if (hasMultiblock && !world.isRemote && this.canConduct()) {
 			if (rand.nextInt(50) == 0)
 				this.grow();
 
-			if (rand.nextInt(100) == 0 && this.canConduct()) {
+			if (rand.nextInt(100) == 0) {
 				for (int i = 0; i < CrystalElement.elements.length; i++) {
 					CrystalElement e = CrystalElement.elements[i];
-					if (this.getFillFraction(e) < 0.8) {
+					if (this.getRemainingSpace(e) > 0) {
 						this.requestEnergy(e, this.getRemainingSpace(e));
 					}
 				}
@@ -203,8 +212,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
-
-		this.validateStructure();
+		if (!world.isRemote)
+			this.validateStructure();
 	}
 
 	public void validateStructure() {
@@ -215,6 +224,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		}
 		hasMultiblock = flag;
 		this.syncAllData(true);
+	}
+
+	public boolean hasMultiBlock() {
+		return hasMultiblock;
 	}
 
 	private void onBreakMultiblock() {
@@ -229,6 +242,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private void grow() {
 		CrystalElement e = CrystalElement.randomElement();
 		if (this.getRemainingSpace(e) == 0) {
+			//ReikaJavaLibrary.pConsole(e+":"+growth.get(e)+">"+this.getMaxStorage(e));
 			int stage = growth.get(e);
 			ArrayList<Coordinate> li = locations.get(e);
 			if (stage < li.size()) {
