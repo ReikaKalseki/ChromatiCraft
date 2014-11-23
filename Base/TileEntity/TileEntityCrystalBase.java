@@ -56,4 +56,9 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 		return zCoord;
 	}
 
+	@Override
+	public int getUpdatePacketRadius() {
+		return 512;
+	}
+
 }

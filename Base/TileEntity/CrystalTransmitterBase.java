@@ -84,11 +84,6 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		this.syncAllData(true);
 	}
 
-	@Override
-	public final int getUpdatePacketRadius() {
-		return 128;
-	}
-
 	public final void removeTarget(WorldLocation loc, CrystalElement e) {
 		if (!worldObj.isRemote) {
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
@@ -97,7 +92,6 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
 		}
 	}
-
 
 	public final void clearTargets() {
 		if (!worldObj.isRemote) {

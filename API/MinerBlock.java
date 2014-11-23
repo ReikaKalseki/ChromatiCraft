@@ -7,14 +7,16 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Items;
+package Reika.ChromatiCraft.API;
 
-import Reika.ChromatiCraft.Base.ItemChromaMulti;
+import java.util.ArrayList;
 
-public class ItemChromaMisc extends ItemChromaMulti {
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
-	public ItemChromaMisc(int tex) {
-		super(tex);
-	}
+public interface MinerBlock {
+
+	public boolean isMineable(int meta);
+	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune);
 
 }

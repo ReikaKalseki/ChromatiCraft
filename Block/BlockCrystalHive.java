@@ -23,6 +23,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.ModList;
@@ -34,7 +35,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
 
-public class BlockCrystalHive extends Block {
+public class BlockCrystalHive extends Block implements MinerBlock {
 
 	private static final Random rand = new Random();
 
@@ -124,6 +125,16 @@ public class BlockCrystalHive extends Block {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		return icons[meta][s];
+	}
+
+	@Override
+	public boolean isMineable(int meta) {
+		return true;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
+		return this.getDrops(world, x, y, z, meta, fortune);
 	}
 
 }

@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -41,6 +42,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	private final EnumMap<CrystalElement, Integer> growth = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> steps = new EnumMap(CrystalElement.class);
+
+	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
 
 	private boolean hasMultiblock = false;
 
@@ -214,6 +217,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.onFirstTick(world, x, y, z);
 		if (!world.isRemote)
 			this.validateStructure();
+		targets.clear();
 	}
 
 	public void validateStructure() {
@@ -392,21 +396,33 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz) {
-		// TODO Auto-generated method stub
-
+	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz) {
+		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz);
+		if (!worldObj.isRemote) {
+			if (!targets.contains(tg))
+				targets.add(tg);
+			this.onTargetChanged();
+		}
 	}
 
-	@Override
-	public void removeTarget(WorldLocation loc, CrystalElement e) {
-		// TODO Auto-generated method stub
-
+	public final void removeTarget(WorldLocation loc, CrystalElement e) {
+		if (!worldObj.isRemote) {
+			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+			targets.remove(new CrystalTarget(loc, e));
+			this.onTargetChanged();
+			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
+		}
 	}
 
-	@Override
-	public void clearTargets() {
-		// TODO Auto-generated method stub
+	public final void clearTargets() {
+		if (!worldObj.isRemote) {
+			targets.clear();
+			this.onTargetChanged();
+		}
+	}
 
+	private void onTargetChanged() {
+		this.syncAllData(true);
 	}
 
 	@Override

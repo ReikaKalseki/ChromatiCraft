@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -36,13 +37,16 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
+import Reika.DragonAPI.Interfaces.SpecialOreBlock;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -51,7 +55,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	private boolean digging = false;
 	private boolean digReady = false;
 
-	private int range = 512;
+	private int range = 128;
 
 	private int readX = 0;
 	private int readY = 0;
@@ -68,7 +72,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private final ArrayList<Coordinate> coords = new ArrayList();
-	private final ItemHashMap<Integer> found = new ItemHashMap();
+	private final ItemHashMap<Integer> found = new ItemHashMap(); //pre-unified for display
 
 	static {
 		required.addTag(CrystalElement.YELLOW, 50);
@@ -110,12 +114,18 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 					Block id = world.getBlock(dx, dy, dz);
 					int meta2 = world.getBlockMetadata(dx, dy, dz);
 					//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-					if (ReikaBlockHelper.isOre(id, meta2)) {
+					if (id instanceof SpecialOreBlock) {
+						this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
+					}
+					else if (ReikaBlockHelper.isOre(id, meta2)) {
 						//ores.addBlockCoordinate(dx, dy, dz);
 						this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
 					}
 					else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
 						this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
+					}
+					else if (id instanceof MinerBlock) {
+						this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
 					}
 					this.useEnergy(required);
 					index++;
@@ -123,6 +133,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						digging = false;
 						digReady = false;
 						coords.clear();
+						found.clear();
 					}
 				}
 			}
@@ -144,9 +155,17 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						coords.add(new Coordinate(dx, dy, dz));
 						this.addFound(id, meta2);
 					}
+					else if (id instanceof MinerBlock && ((MinerBlock)id).isMineable(meta2)) {
+						coords.add(new Coordinate(dx, dy, dz));
+						this.addFound(id, meta2);
+					}
 					this.updateReadPosition();
-					if (readY >= worldObj.getActualHeight())
+					if (readY >= worldObj.getActualHeight()) {
 						digReady = true;
+						readX = 0;
+						readY = 0;
+						readZ = 0;
+					}
 				}
 			}
 		}
@@ -156,6 +175,16 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 
 	private void addFound(Block b, int meta) {
 		ItemStack is = new ItemStack(b, 1, meta);
+		if (ReikaBlockHelper.isOre(b, meta)) {
+			ReikaOreHelper ore = ReikaOreHelper.getEntryByOreDict(is);
+			ModOreList mod = ModOreList.getModOreFromOre(is);
+			if (ore != null) {
+				is = ore.getOreBlock();
+			}
+			else if (mod != null && mod != ModOreList.CERTUSQUARTZ) {
+				is = mod.getFirstOreBlock();
+			}
+		}
 		Integer i = found.get(is);
 		if (i == null)
 			i = 0;
@@ -169,12 +198,6 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	public int getNumberFound(ItemStack is) {
 		Integer i = found.get(is);
 		return i != null ? i.intValue() : 0;
-	}
-
-	private void dropTieredResource(World world, int x, int y, int z, int dx,int dy, int dz, Block id, int meta2) {
-		Collection<ItemStack> li = ((BlockTieredResource)id).getHarvestResources(world, dx, dy, dz, 10, this.getPlacer());
-		this.dropItems(world, x, y, z, li);
-		world.setBlock(dx, dy, dz, id.getMaterial().isSolid() ? Blocks.stone : Blocks.air);
 	}
 
 	private boolean isTieredResource(World world, int x, int y, int z, Block id, int meta) {
@@ -258,12 +281,38 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		}
 	}
 
+	private void dropSpecialOreBlock(World world, int x, int y, int z, int dx, int dy, int dz, SpecialOreBlock id, int meta2) {
+		if (this.silkTouch()) {
+			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(id.getSilkTouchVersion(world, dx, dy, dz)));
+		}
+		else {
+			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, 0));
+		}
+		ReikaWorldHelper.setBlock(world, dx, dy, dz, id.getReplacementBlock(world, dx, dy, dz));
+	}
+
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
 		if (this.silkTouch()) {
 			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
 		}
 		else {
 			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, meta2, 0));
+		}
+		world.setBlock(dx, dy, dz, Blocks.stone);
+	}
+
+	private void dropTieredResource(World world, int x, int y, int z, int dx,int dy, int dz, Block id, int meta2) {
+		Collection<ItemStack> li = ((BlockTieredResource)id).getHarvestResources(world, dx, dy, dz, 10, this.getPlacer());
+		this.dropItems(world, x, y, z, li);
+		world.setBlock(dx, dy, dz, id.getMaterial().isSolid() ? Blocks.stone : Blocks.air);
+	}
+
+	private void dropMineableBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
+		if (this.silkTouch()) {
+			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
+		}
+		else {
+			this.dropItems(world, x, y, z, ((MinerBlock)id).getHarvestItems(world, dx, dy, dz, meta2, 0));
 		}
 		world.setBlock(dx, dy, dz, Blocks.stone);
 	}
