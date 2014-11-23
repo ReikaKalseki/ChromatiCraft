@@ -84,6 +84,10 @@ public class ChromaStacks {
 	public static final ItemStack chargedOrangeShard = ChromaItems.SHARD.getStackOfMetadata(30);
 	public static final ItemStack chargedWhiteShard = ChromaItems.SHARD.getStackOfMetadata(31);
 
+	public static final ItemStack silkUpgrade = ChromaItems.MISC.getStackOfMetadata(0);
+	public static final ItemStack speedUpgrade = ChromaItems.MISC.getStackOfMetadata(1);
+	public static final ItemStack efficiencyUpgrade = ChromaItems.MISC.getStackOfMetadata(2);
+
 	public static ItemStack getShard(CrystalElement e) {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());
 	}

@@ -170,7 +170,7 @@ public class CastingRecipe {
 		private final HashMap<List<Integer>, ItemStack> inputs = new HashMap();
 		private final ItemStack main;
 
-		protected MultiBlockCastingRecipe(ItemStack out, ItemStack main) {
+		public MultiBlockCastingRecipe(ItemStack out, ItemStack main) {
 			this(out, main, RecipeType.MULTIBLOCK);
 		}
 

@@ -42,6 +42,10 @@ public class ChromaNames {
 		"Nula", "Daya", "Divi", "Sami", "Vier", "Lima", "Aru"
 	};
 
+	public static final String[] miscNames = {
+		"chromamisc.silktouch", "chromamisc.speed", "chromamisc.efficiency"
+	};
+
 	public static String getFluidName(int i) {
 		return fluidNames[i];
 	}

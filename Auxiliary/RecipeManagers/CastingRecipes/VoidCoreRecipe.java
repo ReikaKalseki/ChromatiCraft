@@ -35,8 +35,8 @@ public class VoidCoreRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, 2);
 		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, -2);
 
-		this.addRune(CrystalElement.BLACK, 3, 0, -2);
-		this.addRune(CrystalElement.BLACK, -3, 0, 2);
+		this.addRune(CrystalElement.BLACK, 3, -1, -2);
+		this.addRune(CrystalElement.BLACK, -3, -1, 2);
 	}
 
 }

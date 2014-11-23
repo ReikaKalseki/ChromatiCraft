@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.block.Block;
@@ -21,20 +20,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityMiner extends TileEntityChromaticBase {
+public class TileEntityMiner extends ChargedCrystalPowered {
 
 	private boolean digging;
 
@@ -50,6 +53,15 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 	private double particleVY;
 
 	private static int TICKSTEP = 2048;
+
+	private static final ElementTagCompound required = new ElementTagCompound();
+
+	static {
+		required.addTag(CrystalElement.YELLOW, 50);
+		required.addTag(CrystalElement.LIME, 30);
+		required.addTag(CrystalElement.GRAY, 20);
+		required.addTag(CrystalElement.BROWN, 40);
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -76,7 +88,7 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		digging = true;
 		if (!world.isRemote) {
-			for (int i = 0; i < TICKSTEP && digging; i++) {
+			for (int i = 0; i < TICKSTEP && digging && this.hasEnergy(required); i++) {
 				int dx = x+readX;
 				int dy = readY;
 				int dz = z+readZ;
@@ -91,6 +103,7 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 				else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
 					this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
 				}
+				this.useEnergy(required);
 				this.updateReadPosition();
 			}
 		}
@@ -186,9 +199,17 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 	}
 
 	private void dropBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
-		ArrayList<ItemStack> li = id.getDrops(world, dx, dy, dz, meta2, 0);
-		this.dropItems(world, x, y, z, li);
+		if (this.silkTouch()) {
+			this.dropItems(world, x, y, z, ReikaJavaLibrary.makeListFrom(new ItemStack(id, 1, meta2)));
+		}
+		else {
+			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, meta2, 0));
+		}
 		world.setBlock(dx, dy, dz, Blocks.stone);
+	}
+
+	private boolean silkTouch() {
+		return ReikaItemHelper.matchStacks(inv[1], ChromaStacks.silkUpgrade);
 	}
 
 	private void dropItems(World world, int x, int y, int z, Collection<ItemStack> li) {
@@ -245,18 +266,41 @@ public class TileEntityMiner extends TileEntityChromaticBase {
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		readX = NBT.getInteger("rx");
-		readY = NBT.getInteger("ry");
-		readZ = NBT.getInteger("rz");
+		silkTouch = NBT.getBoolean("silk");
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		NBT.setInteger("rx", readX);
-		NBT.setInteger("ry", readY);
-		NBT.setInteger("rz", readZ);
+		NBT.setBoolean("silk", silkTouch);
+	}*/
+
+	@Override
+	public int getSizeInventory() {
+		return 2;
 	}
-	 */
+
+	@Override
+	public int getInventoryStackLimit() {
+		return 1;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack is, int side) {
+		return false;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int slot, ItemStack is) {
+		switch(slot) {
+		case 0:
+			return ChromaItems.STORAGE.matchWith(is);
+		case 1:
+			return ReikaItemHelper.matchStacks(is, ChromaStacks.silkUpgrade);
+		default:
+			return false;
+		}
+	}
+
 }

@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
+import Reika.ChromatiCraft.Items.ItemChromaMisc;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
@@ -77,7 +78,8 @@ public enum ChromaItems implements ItemEnum {
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
 	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
-	WARP(6, false,			"chroma.warp",			ItemWarpProofer.class);
+	WARP(6, false,			"chroma.warp",			ItemWarpProofer.class),
+	MISC(224, true,			"chroma.misc",			ItemChromaMisc.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -192,6 +194,8 @@ public enum ChromaItems implements ItemEnum {
 			return StatCollector.translateToLocal(ChromaNames.tieredNames[meta]);
 		case SEED:
 			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
+		case MISC:
+			return ChromaNames.miscNames[meta];
 		case ENDERCRYSTAL:
 			return this.getBasicName();
 		case CRAFTING:
@@ -256,6 +260,8 @@ public enum ChromaItems implements ItemEnum {
 			return ChromaNames.clusterNames.length;
 		case TIERED:
 			return ChromaNames.tieredNames.length;
+		case MISC:
+			return ChromaNames.miscNames.length;
 		case SEED:
 			return 16; //was 32
 		case ENDERCRYSTAL:

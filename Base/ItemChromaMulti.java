@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemChromaMulti extends ItemChromaBasic {
+public abstract class ItemChromaMulti extends ItemChromaBasic {
 
 	public ItemChromaMulti(int tex) {
 		super(tex);
