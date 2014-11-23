@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
+import Reika.ChromatiCraft.Container.ContainerMiner;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
+import Reika.ChromatiCraft.GUI.GuiMiner;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
@@ -50,6 +52,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
+import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
@@ -94,6 +97,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerItemFabricator(player, (TileEntityItemFabricator) te);
 			if (te instanceof TileEntityTeleportationPump)
 				return new ContainerTelePump(player, (TileEntityTeleportationPump) te);
+			if (te instanceof TileEntityMiner)
+				return new ContainerMiner(player, (TileEntityMiner) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -150,6 +155,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiTelePump(player, (TileEntityTeleportationPump) te);
 			if (te instanceof TileEntityAspectFormer)
 				return new GuiAspectFormer(player, (TileEntityAspectFormer) te);
+			if (te instanceof TileEntityMiner)
+				return new GuiMiner(player, (TileEntityMiner) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

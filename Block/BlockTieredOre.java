@@ -113,14 +113,29 @@ public class BlockTieredOre extends BlockChromaTiered {
 				li.add(ChromaStacks.focusDust.copy());
 			break;
 		case PLACEHOLDER4:
+			n = 1+rand.nextInt(1+fortune)+fortune*fortune;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold1Dust.copy());
 			break;
 		case PLACEHOLDER5:
+			n = 1+rand.nextInt(6)+rand.nextInt(1+6*fortune);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold2Dust.copy());
 			break;
 		case PLACEHOLDER6:
+			n = 1+rand.nextInt(12)+fortune*8;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold3Dust.copy());
 			break;
 		case PLACEHOLDER7:
+			n = (1+fortune)*(1+4*rand.nextInt(5));
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold4Dust.copy());
 			break;
 		case PLACEHOLDER8:
+			n = (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8));
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold5Dust.copy());
 			break;
 		}
 		return li;

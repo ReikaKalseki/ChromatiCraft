@@ -21,8 +21,8 @@ public class StandRecipe extends TempleCastingRecipe {
 
 		this.addRune(CrystalElement.PURPLE, -2, 0, 3);
 		this.addRune(CrystalElement.PURPLE, 2, 0, -3);
-		this.addRune(CrystalElement.WHITE, -2, 0, -3);
-		this.addRune(CrystalElement.WHITE, 2, 0, 3);
+		this.addRune(CrystalElement.BLACK, -2, 0, -3);
+		this.addRune(CrystalElement.BLACK, 2, 0, 3);
 	}
 
 }

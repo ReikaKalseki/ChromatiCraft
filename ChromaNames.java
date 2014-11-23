@@ -35,7 +35,8 @@ public class ChromaNames {
 
 	public static final String[] tieredNames = {
 		"chromacraft.chromadust", "chromacraft.auradust", "chromacraft.puredust", "chromacraft.focusdust", "chromacraft.elementdust",
-		"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust"
+		"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust", "chromacraft.placeholder1", "chromacraft.placeholder2",
+		"chromacraft.placeholder3", "chromacraft.placeholder4", "chromacraft.placeholder5"
 	};
 
 	public static final String[] storageNames = {

@@ -80,7 +80,7 @@ public class ItemManipulator extends ItemChromaTool {
 			}
 		}
 		if (t == ChromaTiles.MINER) {
-			((TileEntityMiner)tile).triggerCalculation();
+			((TileEntityMiner)tile).triggerDigging();
 			return true;
 		}
 		if (t == ChromaTiles.ITEMRIFT) {

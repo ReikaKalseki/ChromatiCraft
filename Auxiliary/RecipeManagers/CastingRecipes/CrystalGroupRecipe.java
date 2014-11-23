@@ -21,12 +21,12 @@ public class CrystalGroupRecipe extends TempleCastingRecipe {
 		super(out, getRecipe(out, o));
 
 		ItemStack[] items = this.getArrayForDisplay();
-		int dy = Math.min(1, out.getItemDamage());
+		int r = out.getItemDamage() == 0 ? 3 : 4;
 		int dl = out.getItemDamage() == 2 ? -2 : (out.getItemDamage() == 3 ? 2 : 0);
-		this.addRune(CrystalElement.elements[items[1].getItemDamage()], 0+dl, dy, -3);
-		this.addRune(CrystalElement.elements[items[3].getItemDamage()], -3, dy, 0-dl);
-		this.addRune(CrystalElement.elements[items[5].getItemDamage()], 3, dy, 0+dl);
-		this.addRune(CrystalElement.elements[items[7].getItemDamage()], 0-dl, dy, 3);
+		this.addRune(CrystalElement.elements[items[1].getItemDamage()], 0+dl, 0, -r);
+		this.addRune(CrystalElement.elements[items[3].getItemDamage()], -r, 0, 0-dl);
+		this.addRune(CrystalElement.elements[items[5].getItemDamage()], r, 0, 0+dl);
+		this.addRune(CrystalElement.elements[items[7].getItemDamage()], 0-dl, 0, r);
 	}
 
 	private static IRecipe getRecipe(ItemStack out, Object... o) {

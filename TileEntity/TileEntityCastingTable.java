@@ -118,6 +118,17 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 		//this.addXP(3434);
 
+		/*
+		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(ChromaItems.SEED.getStackOfMetadata(1));
+		TempleCastingRecipe t = (TempleCastingRecipe)li.get(0);
+		Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
+		for (Coordinate c : map.keySet()) {
+			Coordinate c2 = c.offset(x, y, z);
+			CrystalElement e = map.get(c);
+			c2.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
+		}
+		 */
+
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
 
