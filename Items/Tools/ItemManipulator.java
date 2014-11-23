@@ -69,15 +69,13 @@ public class ItemManipulator extends ItemChromaTool {
 			}
 			return true;
 		}
-		if (!world.isRemote) {
-			if (t == ChromaTiles.TABLE) {
-				boolean flag = ((TileEntityCastingTable)tile).triggerCrafting(ep);
-				return flag;
-			}
-			if (t == ChromaTiles.RITUAL) {
-				((TileEntityRitualTable)tile).triggerRitual(is);
-				return true;
-			}
+		if (t == ChromaTiles.TABLE) {
+			boolean flag = ((TileEntityCastingTable)tile).triggerCrafting(ep);
+			return flag;
+		}
+		if (t == ChromaTiles.RITUAL) {
+			boolean flag = ((TileEntityRitualTable)tile).triggerRitual(is, ep);
+			return flag;
 		}
 		if (t == ChromaTiles.MINER) {
 			((TileEntityMiner)tile).triggerDigging();

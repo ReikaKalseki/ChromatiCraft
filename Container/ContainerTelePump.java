@@ -27,6 +27,9 @@ public class ContainerTelePump extends CoreContainer {
 		this.addSlot(0, 152, 35);
 		this.addSlot(1, 152, 54);
 
+		this.addSlot(2, 152, 54);
+		this.addSlot(3, 170, 35);
+
 		this.addPlayerInventoryWithOffset(player, 0, 2);
 	}
 

@@ -215,12 +215,16 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 	}
 
-	public void triggerRitual(ItemStack is) {
-		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability)) {
+	public boolean triggerRitual(ItemStack is, EntityPlayer ep) {
+		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isPlacer(ep)) {
+			if (worldObj.isRemote)
+				return true;
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 			this.requestEnergyDifference(tag);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
+			return true;
 		}
+		return false;
 	}
 
 	public void setChosenAbility(Chromabilities c) {

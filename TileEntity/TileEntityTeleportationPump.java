@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler {
@@ -59,7 +61,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public int getSizeInventory() {
-		return 2;
+		return 4;
 	}
 
 	@Override
@@ -174,15 +176,20 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		else {
-			if (selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
+			int n = this.hasSpeed() ? 2 : 1;
+			for (int i = 0; i < n; i++) {
 				ArrayList<Coordinate> li = fluids.get(selected);
-				Coordinate c = li.get(rand.nextInt(li.size()));
-				this.addFluid(selected);
-				c.setBlock(world, Blocks.air);
-				this.useEnergy(required);
-			}
-			else {
+				if (!li.isEmpty() && selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
+					int index = rand.nextInt(li.size());
+					Coordinate c = li.get(index);
+					this.addFluid(selected);
+					c.setBlock(world, Blocks.air);
+					this.useEnergy(required.scale(this.hasEfficiency() ? 0.5F : 1));
+					li.remove(index);
+				}
+				else {
 
+				}
 			}
 			Fluid f = tank.getActualFluid();
 			if (f != null && tank.getLevel() == 1000 && this.hasBucket(f)) {
@@ -244,6 +251,14 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private boolean hasBucket(Fluid f) {
 		FluidStack fs = new FluidStack(f, 1000);
 		return inv[1] != null && inv[1].getItem() == Items.bucket && FluidContainerRegistry.fillFluidContainer(fs, inv[1]) != null;
+	}
+
+	private boolean hasSpeed() {
+		return ReikaItemHelper.matchStacks(inv[2], ChromaStacks.speedUpgrade);
+	}
+
+	private boolean hasEfficiency() {
+		return ReikaItemHelper.matchStacks(inv[3], ChromaStacks.efficiencyUpgrade);
 	}
 
 	@Override

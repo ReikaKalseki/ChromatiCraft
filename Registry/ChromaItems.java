@@ -79,7 +79,7 @@ public enum ChromaItems implements ItemEnum {
 	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
 	WARP(6, false,			"chroma.warp",			ItemWarpProofer.class),
-	MISC(224, true,			"chroma.misc",			ItemChromaMisc.class);
+	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

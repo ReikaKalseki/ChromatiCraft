@@ -19,7 +19,10 @@ public class ContainerMiner extends CoreContainer {
 		super(player, te);
 
 		this.addSlot(0, 152, 16);
+
 		this.addSlot(1, 152, 92);
+		this.addSlot(2, 152, 74);
+		this.addSlot(3, 152, 56);
 
 		this.addPlayerInventoryWithOffset(player, 0, 40);
 	}

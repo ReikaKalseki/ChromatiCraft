@@ -343,6 +343,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	public boolean triggerCrafting(EntityPlayer ep) {
 		if (activeRecipe != null && craftingTick == 0) {
 			if (activeRecipe.canRunRecipe(ep) && this.isPlacer(ep)) {
+				if (worldObj.isRemote)
+					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				craftingTick = activeRecipe.getDuration();
 				if (activeRecipe instanceof PylonRecipe) {

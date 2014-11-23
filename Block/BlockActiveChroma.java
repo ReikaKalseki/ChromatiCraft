@@ -96,7 +96,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		int meta = world.getBlockMetadata(x, y, z);
 		if (meta == 0) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
-			return te.getColor();
+			return te != null ? te.getColor() : 0xffffff;
 		}
 		else {
 			if (world.getBlock(x, y+1, z) == this && world.getBlockMetadata(x, y+1, z) == 0)
