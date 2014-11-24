@@ -46,8 +46,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote && tile != null && ((TileEntityCastingTable)tile.getTileEntity(world)).getCraftingTick() > 0) {
-			this.spawnCraftParticles(world, x, y, z);
+		if (world.isRemote && tile != null) {
+			TileEntityCastingTable te = (TileEntityCastingTable)tile.getTileEntity(world);
+			if (te != null && te.getCraftingTick() > 0) {
+				this.spawnCraftParticles(world, x, y, z);
+			}
 		}
 		if (clickTick > 0)
 			clickTick--;
