@@ -100,7 +100,9 @@ public class BlockTieredOre extends BlockChromaTiered {
 				li.add(ChromaStacks.chromaDust.copy());
 			break;
 		case STONES:
-			li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
+			n = 1+fortune/2;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
 			break;
 		case BINDING:
 			n = 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2));
@@ -133,7 +135,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 				li.add(ChromaStacks.placehold4Dust.copy());
 			break;
 		case PLACEHOLDER8:
-			n = (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8));
+			n = Math.min(192, (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8)));
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.placehold5Dust.copy());
 			break;

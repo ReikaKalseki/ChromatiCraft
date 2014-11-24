@@ -162,17 +162,17 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		fortune = Math.max(fortune, EnchantmentHelper.getLootingModifier(player));
 		switch(TieredPlants.list[world.getBlockMetadata(x, y, z)]) {
 		case FLOWER:
-			n = 1+fortune;
+			n = 1+fortune*8;
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.auraDust.copy());
 			break;
 		case CAVE:
-			n = (1+rand.nextInt(3))*(1+fortune);
+			n = (1+rand.nextInt(3))*(1+fortune*4);
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.purityDust.copy());
 			break;
 		case LILY:
-			n = 4*(1+fortune);
+			n = 4*(1+fortune*fortune/2);
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.elementDust.copy());
 			break;

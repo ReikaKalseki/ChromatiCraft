@@ -475,9 +475,9 @@ public enum Chromabilities {
 		int lvl = base;
 		ElementTagCompound use = AbilityHelper.instance.getElementsFor(this).scale(0.01F);
 		for (CrystalElement e : use.elementSet()) {
-			lvl = Math.min(lvl, base*use.getValue(e));
+			lvl = (int)Math.min(lvl, base*PlayerElementBuffer.instance.getPlayerContent(ep, e)/(float)use.getValue(e));
 		}
-		return lvl;
+		return Math.max(1, lvl);
 	}
 
 	public int maxPower() {
