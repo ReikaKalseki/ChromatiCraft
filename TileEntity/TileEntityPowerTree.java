@@ -33,6 +33,7 @@ import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
 
@@ -264,7 +265,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 						steps.put(e, 0);
 					}
 				}
-				else {
+				else if (ReikaWorldHelper.softBlocks(worldObj, c.xCoord, c.yCoord, c.zCoord)) {
 					c.setBlock(worldObj, ChromaBlocks.POWERTREE.getBlockInstance(), e.ordinal());
 					TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)c.getTileEntity(worldObj);
 					int dir = stage < directions.size() ? directions.get(stage) : -1;

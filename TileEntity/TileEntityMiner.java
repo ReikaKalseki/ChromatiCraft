@@ -129,7 +129,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						else if (id instanceof MinerBlock) {
 							this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
 						}
-						this.useEnergy(required.scale(this.hasEfficiency() ? 0.25F : 1));
+						this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
 						index++;
 						if (index >= coords.size()) {
 							digging = false;

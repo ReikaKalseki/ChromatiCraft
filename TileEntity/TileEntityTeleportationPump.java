@@ -184,7 +184,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 					Coordinate c = li.get(index);
 					this.addFluid(selected);
 					c.setBlock(world, Blocks.air);
-					this.useEnergy(required.scale(this.hasEfficiency() ? 0.5F : 1));
+					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.5F : 1));
 					li.remove(index);
 				}
 				else {
