@@ -20,13 +20,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger {
+public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger, MinerBlock {
 
 	private static final Random rand = new Random();
 
@@ -111,5 +112,15 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	@Override
 	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
 		return new ProgressStage[]{ProgressStage.CRYSTALS};
+	}
+
+	@Override
+	public boolean isMineable(int meta) {
+		return true;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getHarvestItems(World world, int x, int y, int z, int meta, int fortune) {
+		return this.getDrops(world, x, y, z, meta, fortune);
 	}
 }

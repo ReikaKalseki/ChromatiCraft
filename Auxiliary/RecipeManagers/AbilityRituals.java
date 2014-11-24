@@ -61,6 +61,7 @@ public class AbilityRituals {
 		rit = new AbilityRitual(Chromabilities.COMMUNICATE);
 		rit.addAura(CrystalElement.BLACK, 10000);
 		rit.addAura(CrystalElement.RED, 4000);
+		rit.addAura(CrystalElement.PINK	, 8000);
 		rit.addAura(CrystalElement.LIGHTGRAY, 4000);
 		this.addRitual(rit);
 

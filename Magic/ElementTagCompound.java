@@ -136,6 +136,8 @@ public final class ElementTagCompound {
 		for (CrystalElement e : data.keySet()) {
 			int amt = data.get(e);
 			amt *= s;
+			if (amt == 0)
+				amt = 1;
 			this.setTag(e, amt);
 		}
 		this.clearEmptyKeys();
