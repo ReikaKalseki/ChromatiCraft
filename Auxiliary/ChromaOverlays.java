@@ -17,7 +17,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
@@ -26,6 +28,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -33,6 +36,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -49,7 +53,7 @@ public class ChromaOverlays {
 	}
 
 	@SubscribeEvent
-	public void renderHUD(RenderGameOverlayEvent evt) {
+	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
 		if (evt.type == ElementType.HELMET) {
 			int gsc = evt.resolution.getScaleFactor();
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
@@ -59,11 +63,52 @@ public class ChromaOverlays {
 					this.syncBuffer(ep);
 				holding = true;
 				this.renderElementPie(ep, gsc);
+				this.renderStorageOverlay(ep, gsc);
 			}
 			else {
 				holding = false;
 			}
 			this.renderAbilityStatus(ep, gsc);
+		}
+		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/crosshair.png");
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			Tessellator v5 = Tessellator.instance;
+			int w = 16;
+			int x = evt.resolution.getScaledWidth()/2;
+			int y = evt.resolution.getScaledHeight()/2;
+			v5.startDrawingQuads();
+			double u = (System.currentTimeMillis()/16%64)/64D;
+			double du = u+1/64D;
+			double v = (System.currentTimeMillis()/128%16)/16D;
+			double dv = v+1/16D;
+			v5.addVertexWithUV(x-w/2, y+w/2, 0, u, dv);
+			v5.addVertexWithUV(x+w/2, y+w/2, 0, du, dv);
+			v5.addVertexWithUV(x+w/2, y-w/2, 0, du, v);
+			v5.addVertexWithUV(x-w/2, y-w/2, 0, u, v);
+			v5.draw();
+			BlendMode.DEFAULT.apply();
+			GL11.glDisable(GL11.GL_BLEND);
+			evt.setCanceled(true);
+		}
+	}
+
+	private void renderStorageOverlay(EntityPlayer ep, int gsc) {
+		MovingObjectPosition pos = ReikaPlayerAPI.getLookedAtBlock(ep, 4, false);
+		if (pos != null) {
+			TileEntity te = ep.worldObj.getTileEntity(pos.blockX, pos.blockY, pos.blockZ);
+			if (te instanceof LumenTile) {
+				LumenTile lt = (LumenTile)te;
+				ElementTagCompound tag = lt.getEnergy();
+				int i = 0;
+				FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+				for (CrystalElement e : tag.elementSet()) {
+					String s = String.format("%s: %d/%d", e.displayName, tag.getValue(e), lt.getMaxStorage(e));
+					f.drawString(s, Minecraft.getMinecraft().displayWidth/(gsc*2), i*f.FONT_HEIGHT, e.getColor());
+					i++;
+				}
+			}
 		}
 	}
 

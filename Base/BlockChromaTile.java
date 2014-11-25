@@ -48,10 +48,8 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -71,8 +69,6 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DartItemHandler;
@@ -405,20 +401,21 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 				}
 			}
 		}
+		/*
 		if (te instanceof LumenTile) {
 			LumenTile lt = (LumenTile)te;
 			ElementTagCompound tag = lt.getEnergy();
 			currenttip.add("Stored Energy:");
-			StringBuilder sb = new StringBuilder();
+			//StringBuilder sb = new StringBuilder();
 			for (CrystalElement e : tag.elementSet()) {
 				int amt = tag.getValue(e);
 				int max = lt.getMaxStorage(e);
-				//String s = String.format("   %s%s: %d/%d", e.getChatColorString(), e.displayName, amt, max);
-				sb.append(String.format("%s%.0f%s%s%s", e.getChatColorString(), ReikaMathLibrary.getThousandBase(amt), ReikaEngLibrary.getSIPrefix(amt), EnumChatFormatting.RESET.toString(), "/"));
+				currenttip.add(String.format("   %s%s: %d/%d", e.getChatColorString(), e.displayName, amt, max));
+				//sb.append(String.format("%s%.0f%s%s%s", e.getChatColorString(), ReikaMathLibrary.getThousandBase(amt), ReikaEngLibrary.getSIPrefix(amt), EnumChatFormatting.RESET.toString(), "/"));
 			}
-			sb.deleteCharAt(sb.length()-1);
-			currenttip.add(sb.toString());
-		}
+			//sb.deleteCharAt(sb.length()-1);
+			//currenttip.add(sb.toString());
+		}*/
 		/*
 		if (te.getMachine().isEnchantable()) {
 			if (((EnchantableMachine)te).hasEnchantments()) {
