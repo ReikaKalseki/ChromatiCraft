@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
@@ -294,6 +295,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return ability != null && abilityTick > 0 ? AbilityHelper.instance.getElementsFor(ability) : null;
 	}
 
 }

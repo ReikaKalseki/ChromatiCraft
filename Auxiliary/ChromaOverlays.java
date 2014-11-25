@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @author Reika Kalseki
- * 
- * Copyright 2014
- * 
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
+ *@author Reika Kalseki
+ *
+ *Copyright 2014
+ *
+ *All rights reserved.
+ *Distribution of the software in any form is only allowed with
+ *explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
@@ -28,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -37,6 +39,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -52,12 +55,12 @@ public class ChromaOverlays {
 
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		ItemStack is = ep.getCurrentEquippedItem();
 		if (evt.type == ElementType.HELMET) {
 			int gsc = evt.resolution.getScaleFactor();
-			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			ItemStack is = ep.getCurrentEquippedItem();
 			if (ChromaItems.TOOL.matchWith(is)) {
 				if (!holding)
 					this.syncBuffer(ep);
@@ -70,7 +73,7 @@ public class ChromaOverlays {
 			}
 			this.renderAbilityStatus(ep, gsc);
 		}
-		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem())) {
+		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/crosshair.png");
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
@@ -92,6 +95,63 @@ public class ChromaOverlays {
 			GL11.glDisable(GL11.GL_BLEND);
 			evt.setCanceled(true);
 		}
+		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
+
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/health.png");
+
+			Tessellator v5 = Tessellator.instance;
+			int h = 9;
+			int w = 4;
+			int left = evt.resolution.getScaledWidth()/2 - 91;
+			int top = evt.resolution.getScaledHeight()-GuiIngameForge.left_height;
+			v5.startDrawingQuads();
+			boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
+			for (int i = 29; i >= 0; i--) {
+				double u = 16/128D+(i*3)/128D;
+				double du = u+w/128D;
+				double v = 9/128D;
+				if (ep.getMaxHealth()-1 < i*2) {
+					v = 27/128D;
+				}
+				double dv = v+h/128D;
+				if (highlight)
+					v += 18/128D;
+				int x = left+i*3;
+				int dx = x+w;
+				int y = top+0;
+				int dy = y+h;
+				v5.addVertexWithUV(x, dy, 0, u, dv);
+				v5.addVertexWithUV(dx, dy, 0, du, dv);
+				v5.addVertexWithUV(dx, y, 0, du, v);
+				v5.addVertexWithUV(x, y, 0, u, v);
+
+				boolean heart = ep.getHealth()-1 >= i*2;
+				if (heart) {
+					boolean half = ep.getHealth()-1 == i*2;
+					x = left+i*3+1;
+					dx = x+w-2;
+					y = top+1;
+					dy = y+h-2;
+					u = 17/128D+(i*3)/128D;
+					du = u+(w-2)/128D;
+					v = 1/128D;
+					dv = v+(h-2)/128D;
+					if (half) {
+						dx = x+(w-2)/2;
+						du = u+(w-2)/(2*128D);
+					}
+					v5.addVertexWithUV(x, dy, 0, u, dv);
+					v5.addVertexWithUV(dx, dy, 0, du, dv);
+					v5.addVertexWithUV(dx, y, 0, du, v);
+					v5.addVertexWithUV(x, y, 0, u, v);
+				}
+			}
+			v5.draw();
+
+			GuiIngameForge.left_height += h+1;
+			ReikaTextureHelper.bindHUDTexture();
+			evt.setCanceled(true);
+		}
 	}
 
 	private void renderStorageOverlay(EntityPlayer ep, int gsc) {
@@ -101,15 +161,126 @@ public class ChromaOverlays {
 			if (te instanceof LumenTile) {
 				LumenTile lt = (LumenTile)te;
 				ElementTagCompound tag = lt.getEnergy();
+				if (lt instanceof LumenRequestingTile) {
+					LumenRequestingTile lrt = (LumenRequestingTile)lt;
+					tag = lrt.getRequestedTotal();
+					if (tag == null)
+						return;
+				}
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glEnable(GL11.GL_BLEND);
+
+				Tessellator v5 = Tessellator.instance;
+				int r = 12;
+				int rb = r;
+				int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-r-8;
+				int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-r-8;
+
+				int n = tag.tagCount();
 				int i = 0;
-				FontRenderer f = Minecraft.getMinecraft().fontRenderer;
 				for (CrystalElement e : tag.elementSet()) {
-					String s = String.format("%s: %d/%d", e.displayName, tag.getValue(e), lt.getMaxStorage(e));
-					f.drawString(s, Minecraft.getMinecraft().displayWidth/(gsc*2), i*f.FONT_HEIGHT, e.getColor());
+					double min = i*360D/n;
+					double max = (i+1)*360D/n;
+					double maxe = lt.getMaxStorage(e);
+					if (lt instanceof LumenRequestingTile) {
+						maxe = ((LumenRequestingTile)lt).getRequestedTotal().getValue(e);
+					}
+
+					v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
+					int color = ReikaColorAPI.mixColors(e.getColor(), 0, 0.25F);
+					v5.setColorOpaque_I(color);
+					v5.setBrightness(240);
+					for (double a = min; a <= max; a += 2) {
+						double x = ox+r*Math.cos(Math.toRadians(a));
+						double y = oy+r*Math.sin(Math.toRadians(a));
+						//ReikaJavaLibrary.pConsole(x+", "+y);
+						v5.addVertex(x, y, 0);
+						v5.addVertex(ox, oy, 0);
+					}
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
+					color = e.getColor();
+					v5.setColorOpaque_I(color);
+					v5.setBrightness(240);
+					double dr = Math.min(r, r*lt.getEnergy(e)/maxe);
+					for (double a = min; a <= max; a += 2) {
+						double x = ox+dr*Math.cos(Math.toRadians(a));
+						double y = oy+dr*Math.sin(Math.toRadians(a));
+						//ReikaJavaLibrary.pConsole(x+", "+y);
+						v5.addVertex(x, y, 0);
+						v5.addVertex(ox, oy, 0);
+					}
+					v5.draw();
 					i++;
 				}
+
+				float wide = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+				GL11.glLineWidth(1);
+				if (n > 1) {
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorOpaque_I(0x000000);
+					v5.setBrightness(240);
+					for (double a = 0; a < 360; a += 360D/n) {
+						double x = ox+rb*Math.cos(Math.toRadians(a));
+						double y = oy+rb*Math.sin(Math.toRadians(a));
+						//ReikaJavaLibrary.pConsole(x+", "+y);
+						v5.addVertex(x, y, 0);
+						v5.addVertex(ox, oy, 0);
+					}
+					v5.draw();
+				}
+
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorOpaque_I(0x000000);
+				v5.setBrightness(240);
+				for (double a = 0; a <= 360; a += 5) {
+					double x = ox+r*Math.cos(Math.toRadians(a));
+					double y = oy+r*Math.sin(Math.toRadians(a));
+					//ReikaJavaLibrary.pConsole(x+", "+y);
+					v5.addVertex(x, y, 0);
+				}
+				v5.draw();
+
+				GL11.glLineWidth(2);
+				if (n > 1) {
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setColorRGBA_I(0x000000, 180);
+					v5.setBrightness(240);
+					for (double a = 0; a < 360; a += 360D/n) {
+						double x = ox+rb*Math.cos(Math.toRadians(a));
+						double y = oy+rb*Math.sin(Math.toRadians(a));
+						//ReikaJavaLibrary.pConsole(x+", "+y);
+						v5.addVertex(x, y, 0);
+						v5.addVertex(ox, oy, 0);
+					}
+					v5.draw();
+				}
+
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorRGBA_I(0x000000, 180);
+				v5.setBrightness(240);
+				for (double a = 0; a <= 360; a += 5) {
+					double x = ox+r*Math.cos(Math.toRadians(a));
+					double y = oy+r*Math.sin(Math.toRadians(a));
+					//ReikaJavaLibrary.pConsole(x+", "+y);
+					v5.addVertex(x, y, 0);
+				}
+				v5.draw();
+
+				GL11.glLineWidth(wide);
+
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glDisable(GL11.GL_BLEND);
+				/*
+				CrystalElement e = CrystalElement.elements[(int)(System.currentTimeMillis()/500%16)];
+				int amt = tag.getValue(e);
+				String s = String.format("%.0f%s", ReikaMathLibrary.getThousandBase(amt), ReikaEngLibrary.getSIPrefix(amt));
+				Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(s, ox, oy+r/2, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F));
+				 */
 			}
 		}
+
 	}
 
 	private void syncBuffer(EntityPlayer ep) {
@@ -255,21 +426,6 @@ public class ChromaOverlays {
 				v5.addVertex(ox, oy, 0);
 			}
 			v5.draw();
-
-			float wide = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-			GL11.glLineWidth(2);
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorOpaque_I(0x000000);
-			v5.setBrightness(240);
-			for (double a = 0; a < 360; a += 22.5) {
-				double x = ox+rb*Math.cos(Math.toRadians(a));
-				double y = oy+rb*Math.sin(Math.toRadians(a));
-				//ReikaJavaLibrary.pConsole(x+", "+y);
-				v5.addVertex(x, y, 0);
-				v5.addVertex(ox, oy, 0);
-			}
-			v5.draw();
-			GL11.glLineWidth(wide);
 			/*
 			v5.startDrawing(GL11.GL_LINE_LOOP);
 			v5.setColorOpaque_I(0x000000);
@@ -283,6 +439,21 @@ public class ChromaOverlays {
 			v5.draw();
 			 */
 		}
+
+		float wide = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+		GL11.glLineWidth(2);
+		v5.startDrawing(GL11.GL_LINES);
+		v5.setColorOpaque_I(0x000000);
+		v5.setBrightness(240);
+		for (double a = 0; a < 360; a += 22.5) {
+			double x = ox+rb*Math.cos(Math.toRadians(a));
+			double y = oy+rb*Math.sin(Math.toRadians(a));
+			//ReikaJavaLibrary.pConsole(x+", "+y);
+			v5.addVertex(x, y, 0);
+			v5.addVertex(ox, oy, 0);
+		}
+		v5.draw();
+		GL11.glLineWidth(wide);
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 

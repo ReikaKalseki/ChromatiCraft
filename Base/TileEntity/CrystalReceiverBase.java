@@ -17,12 +17,12 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
 
-public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenTile {
+public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = this.getCooldownLength();
@@ -136,6 +136,28 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	public final ElementTagCompound getEnergy() {
 		return energy.copy();
+	}
+
+	public ElementTagCompound getRequestedTotal() {
+		return this.getCapacity();
+	}
+
+	protected final ElementTagCompound getCapacity() {
+		ElementTagCompound tag = new ElementTagCompound();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			tag.setTag(e, this.getMaxStorage(e));
+		}
+		return tag;
+	}
+
+	protected final ElementTagCompound getDifference() {
+		ElementTagCompound tag = new ElementTagCompound();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			tag.setTag(e, this.getMaxStorage(e)-this.getEnergy(e));
+		}
+		return tag;
 	}
 
 }

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
@@ -37,11 +36,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings.GameType;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
-import Reika.ChromatiCraft.Auxiliary.ControllableReachPlayer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -57,8 +54,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public enum Chromabilities {
 
@@ -186,13 +181,17 @@ public enum Chromabilities {
 	}
 
 	private void setPlayerMaxHealth(EntityPlayer ep, int value) {
-		int add = Math.min(value, 60);
-		float added = add+20-ep.getMaxHealth();
+		float added = value+20-ep.getMaxHealth();
 		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
-		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", add/20D, 2));
-		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", add/20D, 2));
-		if (added > 0)
-			ep.heal(added);
+		if (ep.worldObj.isRemote)
+			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeAllModifiers();
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
+		if (value > 0) {
+			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
+			if (added > 0)
+				ep.heal(added);
+		}
+		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
 	}
 
 	public static ArrayList<Chromabilities> getFrom(EntityPlayer ep) {
@@ -313,27 +312,10 @@ public enum Chromabilities {
 		if (!player.worldObj.isRemote && player instanceof EntityPlayerMP) {
 			EntityPlayerMP ep = (EntityPlayerMP)player;
 			ep.theItemInWorldManager.setBlockReachDistance(dist > 0 ? dist : 5);
-			//ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.REACH.ordinal(), ep, dist);
 		}
 		else {
-			//Minecraft.getMinecraft().playerController.setReachDistance(data[0]); //set reach with ASM'd method
 			AbilityHelper.instance.playerReach = dist;
-
-			//until asm method is working, temporary application
-			//hackController();
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private static void hackController() {
-		Minecraft.getMinecraft().playerController = new ControllableReachPlayer(Minecraft.getMinecraft().playerController);
-	}
-
-	GameType currentGameType;
-
-	public float getBlockReachDistance()
-	{
-		return Math.max(AbilityHelper.instance.playerReach, currentGameType.isCreative() ? 5.0F : 4.5F);
 	}
 
 	private static void destroyBlocksAround(EntityPlayer ep, int power) {
@@ -475,7 +457,7 @@ public enum Chromabilities {
 		int lvl = base;
 		ElementTagCompound use = AbilityHelper.instance.getElementsFor(this).scale(0.01F);
 		for (CrystalElement e : use.elementSet()) {
-			lvl = (int)Math.min(lvl, base*PlayerElementBuffer.instance.getPlayerContent(ep, e)/(float)use.getValue(e));
+			lvl = (int)Math.min(lvl, PlayerElementBuffer.instance.getPlayerContent(ep, e)/(float)use.getValue(e));
 		}
 		return Math.max(1, lvl);
 	}
@@ -491,7 +473,7 @@ public enum Chromabilities {
 		case FIREBALL:
 			return 8;
 		case HEALTH:
-			return 20;
+			return 40;
 		default:
 			return 0;
 		}

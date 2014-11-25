@@ -15,6 +15,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityEntityCacher;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -104,6 +105,11 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 0;
+	}
+
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return null;
 	}
 
 }

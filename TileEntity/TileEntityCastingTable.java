@@ -643,4 +643,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 	}
 
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return craftingTick > 0 && activeRecipe instanceof PylonRecipe ? ((PylonRecipe)activeRecipe).getRequiredAura() : null;
+	}
+
 }

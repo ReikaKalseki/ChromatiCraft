@@ -180,4 +180,9 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		return AxisAlignedBB.getBoundingBox(xCoord, yCoord-1, zCoord, xCoord+1, yCoord+1, zCoord+2);
 	}
 
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return selected != null ? this.getCost() : null;
+	}
+
 }

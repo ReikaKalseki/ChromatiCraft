@@ -242,4 +242,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		return entity;
 	}
 
+	@Override
+	public ElementTagCompound getRequestedTotal() {
+		return craftingTick > 0 && recipe != null ? recipe.energy.copy() : null;
+	}
+
 }
