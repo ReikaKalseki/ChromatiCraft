@@ -33,6 +33,7 @@ import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
@@ -544,6 +545,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onWandStoppedUsing(ItemStack wandstack, World world, EntityPlayer player, int count) {
 
+	}
+
+	public final ElementTagCompound getEnergy() {
+		ElementTagCompound tag = new ElementTagCompound();
+		tag.setTag(color, energy);
+		return tag;
+	}
+
+	@Override
+	public int getMaxStorage(CrystalElement e) {
+		return MAX_ENERGY;
 	}
 
 }

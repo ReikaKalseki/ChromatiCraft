@@ -12,9 +12,10 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.API.FiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements FiberPowered {
+public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements FiberPowered, LumenTile {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 
@@ -29,7 +30,7 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 	public abstract boolean isAcceptingColor(CrystalElement e);
 
 	public final int getEnergyScaled(CrystalElement e, int a) {
-		return a * this.getEnergy(e) / this.getMaxStorage();
+		return a * this.getEnergy(e) / this.getMaxStorage(e);
 	}
 
 	public final int getEnergy(CrystalElement e) {
@@ -37,10 +38,10 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 	}
 
 	public final int getRemainingSpace(CrystalElement e) {
-		return this.getMaxStorage()-this.getEnergy(e);
+		return this.getMaxStorage(e)-this.getEnergy(e);
 	}
 
-	public abstract int getMaxStorage();
+	public abstract int getMaxStorage(CrystalElement e);
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
@@ -66,6 +67,10 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 
 	public final void setEnergy(CrystalElement e, int lvl) {
 		energy.setTag(e, lvl);
+	}
+
+	public final ElementTagCompound getEnergy() {
+		return energy.copy();
 	}
 
 }

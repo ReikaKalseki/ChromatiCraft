@@ -148,7 +148,7 @@ public class TileEntityCrystalFence extends TileEntityFiberPowered {
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 2000;
 	}
 

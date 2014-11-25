@@ -14,12 +14,10 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
 
-public interface CrystalSource extends CrystalTransmitter {
+public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public int getTransmissionStrength();
 
 	public boolean drain(CrystalElement e, int amt);
-
-	public int getEnergy(CrystalElement e);
 
 }

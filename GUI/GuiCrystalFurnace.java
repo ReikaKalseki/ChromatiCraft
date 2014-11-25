@@ -30,13 +30,13 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		int max = tile.getMaxStorage();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		int mx = api.getMouseRealX();
 		int my = api.getMouseRealY();
 		int i = 0;
 		for (CrystalElement e : tile.smeltTags().elementSet()) {
+			int max = tile.getMaxStorage(e);
 			int dx = 10;
 			int x1 = j+i*13+dx;
 			int x2 = x1+11;

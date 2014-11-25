@@ -227,7 +227,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 10000;
 	}
 

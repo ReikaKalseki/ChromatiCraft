@@ -17,11 +17,12 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
 
-public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver {
+public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenTile {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = this.getCooldownLength();
@@ -131,6 +132,10 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		return null;
+	}
+
+	public final ElementTagCompound getEnergy() {
+		return energy.copy();
 	}
 
 }

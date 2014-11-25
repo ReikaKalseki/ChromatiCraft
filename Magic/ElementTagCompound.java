@@ -179,24 +179,20 @@ public final class ElementTagCompound {
 		NBTTagCompound tag = NBT.getCompoundTag(name);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			if (tag.hasKey(e.name())) {
-				int amt = tag.getInteger(e.name());
-				if (amt > 0)
-					data.put(e, amt);
-			}
+			int amt = tag.getInteger(e.name());
+			data.put(e, amt);
 		}
+		this.clearEmptyKeys();
 	}
 
 	public static ElementTagCompound createFromNBT(NBTTagCompound tag) {
 		ElementTagCompound c = new ElementTagCompound();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			if (tag.hasKey(e.name())) {
-				int amt = tag.getInteger(e.name());
-				if (amt > 0)
-					c.data.put(e, amt);
-			}
+			int amt = tag.getInteger(e.name());
+			c.data.put(e, amt);
 		}
+		c.clearEmptyKeys();
 		return c;
 	}
 

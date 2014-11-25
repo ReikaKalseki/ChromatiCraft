@@ -224,7 +224,7 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 6000;
 	}
 

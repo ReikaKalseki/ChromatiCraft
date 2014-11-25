@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
@@ -314,6 +316,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 				growth.put(e, stage);
 			}
 		}
+		this.syncAllData(true);
 	}
 
 	@Override
@@ -328,7 +331,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public boolean isConductingElement(CrystalElement e) {
-		return e != null;
+		return e != null && energy.getValue(e) > 0;
 	}
 
 	@Override
@@ -454,6 +457,12 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			steps.put(e, NBT.getInteger("step"+i));
 			growth.put(e, NBT.getInteger("grow"+i));
 		}
+
+		targets = new ArrayList();
+		int num = NBT.getInteger("targetcount");
+		for (int i = 0; i < num; i++) {
+			targets.add(CrystalTarget.readFromNBT("target"+i, NBT));
+		}
 	}
 
 	@Override
@@ -465,6 +474,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			NBT.setInteger("step"+i, steps.containsKey(e) ? steps.get(e) : 0);
 			NBT.setInteger("grow"+i, growth.containsKey(e) ? growth.get(e) : 0);
 		}
+
+		NBT.setInteger("targetcount", targets.size());
+		for (int i = 0; i < targets.size(); i++)
+			targets.get(i).writeToNBT("target"+i, NBT);
 	}
 
 	public void onBreakLeaf(World world, int x, int y, int z, CrystalElement e) {
@@ -486,6 +499,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		else {
 
 		}
+	}
+
+	public Collection<CrystalTarget> getTargets() {
+		return Collections.unmodifiableCollection(targets);
 	}
 
 }

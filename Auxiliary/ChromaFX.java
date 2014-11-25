@@ -9,12 +9,23 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.Collection;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.opengl.GL11;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -57,6 +68,89 @@ public class ChromaFX {
 	public static void killPylonChargeBeam(TileEntityCrystalPylon te, EntityPlayer ep) {
 		//WorldLocation loc = new WorldLocation(ep);
 		//te.removeTarget(loc, te.getColor(), ep.posX-loc.xCoord, ep.posY+ep.getEyeHeight()-loc.yCoord, ep.posZ-loc.zCoord);
+	}
+
+	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li) {
+		if (!li.isEmpty()) {
+			double t = (System.currentTimeMillis()/600D)%360;
+			t /= 30D;
+			byte sides = 6;
+			double r = 0.35;//+0.025*Math.sin(t*12);
+			drawEnergyTransferBeams(src, li, r, sides, t);
+		}
+	}
+
+	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r, byte sides, double tick) {
+		if (!li.isEmpty()) {
+			ReikaRenderHelper.disableLighting();
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			//GL11.glEnable(GL11.GL_BLEND);
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			Tessellator v5 = Tessellator.instance;
+			//BlendMode.ADDITIVEDARK.apply();
+			GL11.glTranslated(0.5, 0.5, 0.5);
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
+
+			for (CrystalTarget ct : li) {
+				drawEnergyTransferBeam(src, ct, r, sides, tick);
+			}
+
+			//BlendMode.DEFAULT.apply();
+			//GL11.glDisable(GL11.GL_BLEND);
+			GL11.glShadeModel(GL11.GL_FLAT);
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			ReikaRenderHelper.enableLighting();
+		}
+	}
+
+	public static void drawEnergyTransferBeam(WorldLocation src, CrystalTarget ct, double r, byte sides, double tick) {
+		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
+		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
+		WorldLocation tgt = ct.location;
+		CrystalElement e = ct.color;
+		Tessellator v5 = Tessellator.instance;
+		double dx = tgt.xCoord-src.xCoord+ct.offsetX;
+		double dy = tgt.yCoord-src.yCoord+ct.offsetY;
+		double dz = tgt.zCoord-src.zCoord+ct.offsetZ;
+
+		GL11.glPushMatrix();
+		double f7 = Math.sqrt(dx*dx+dz*dz);
+		double f8 = Math.sqrt(dx*dx+dy*dy+dz*dz);
+		double ang1 = -Math.atan2(dz, dx) * 180 / Math.PI - 90;
+		double ang2 = -Math.atan2(f7, dy) * 180 / Math.PI - 90;
+		GL11.glRotated(ang1, 0, 1, 0);
+		GL11.glRotated(ang2, 1, 0, 0);
+
+		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
+		v5.setColorOpaque_I(e.getColor());
+		for (int i = 0; i <= sides; i++) {
+			double f11 = r*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f12 = r*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f13 = i % sides * 1 / sides;
+			v5.addVertexWithUV(f11, f12, 0, tick, tick+1);
+			v5.addVertexWithUV(f11, f12, f8, tick+1, tick);
+		}
+
+		v5.draw();
+		/*
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glPushMatrix();
+			double rx = -RenderManager.instance.playerViewX+ang2;
+			GL11.glRotated(rx, 0, 0, 1);
+			GL11.glTranslated(-0.5, -0.5, 0);
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/haze2.png");
+			v5.startDrawingQuads();
+			v5.addVertexWithUV(0, 0.5, 0, 1, 0);
+			v5.addVertexWithUV(1, 0.5, 0, 1, 1);
+			v5.addVertexWithUV(1, 0.5, f8, 0, 1);
+			v5.addVertexWithUV(0, 0.5, f8, 0, 0);
+			v5.draw();
+			GL11.glPopMatrix();
+			BlendMode.DEFAULT.apply();
+			GL11.glDisable(GL11.GL_BLEND);
+		 */
+		GL11.glPopMatrix();
 	}
 
 }

@@ -12,12 +12,13 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public abstract class ChargedCrystalPowered extends InventoriedChromaticBase {
+public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenTile {
 
-	protected final int getStoredEnergy(CrystalElement e) {
+	public final int getEnergy(CrystalElement e) {
 		if (e == null)
 			return 0;
 		if (ChromaItems.STORAGE.matchWith(inv[0])) {
@@ -40,6 +41,14 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase {
 		c.removeEnergy(inv[0], e, amt);
 	}
 
+	public final int getMaxStorage(CrystalElement e) {
+		if (ChromaItems.STORAGE.matchWith(inv[0])) {
+			ItemStack is = inv[0];
+			return ((ItemStorageCrystal)is.getItem()).getCapacity(is);
+		}
+		return 0;
+	}
+
 	protected final void useEnergy(ElementTagCompound tag) {
 		for (CrystalElement e : tag.elementSet()) {
 			this.useEnergy(e, tag.getValue(e));
@@ -55,7 +64,16 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase {
 	}
 
 	protected final boolean hasEnergy(CrystalElement e, int amt) {
-		return this.getStoredEnergy(e) >= amt;
+		return this.getEnergy(e) >= amt;
+	}
+
+	public final ElementTagCompound getEnergy() {
+		ElementTagCompound tag = new ElementTagCompound();
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			tag.setTag(e, this.getEnergy(e));
+		}
+		return tag;
 	}
 
 	public abstract boolean canExtractItem(int slot, ItemStack is, int side);

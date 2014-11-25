@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -25,38 +26,40 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public enum CrystalElement {
 
-	BLACK("Kuro", 0x191919), //Magic
-	RED("Karmir", 0xFF0000), //Endurance
-	GREEN("Kijani", 0x007F0E), //Nature
-	BROWN("Ruskea", 0x724528), //Mineral
-	BLUE("Nila", 0x0026FF), //Light
-	PURPLE("Zambarau", 0x8C00EA), //Enhancement
-	CYAN("Vadali", 0x009FBF), //Water
-	LIGHTGRAY("Argia", 0x979797), //Deception
-	GRAY("Ykri", 0x404040), //Change
-	PINK("Ruzova", 0xFFBAD9), //Aggression
-	LIME("Asveste", 0x00FF00), //Motion
-	YELLOW("Kitrino", 0xFFFF00), //Energy
-	LIGHTBLUE("Galazio", 0x7FD4FF), //Time
-	MAGENTA("Kurauri", 0xFF00DC), //Life
-	ORANGE("Portokali", 0xFF6A00), //Fire
-	WHITE("Tahara", 0xFFFFFF); //Purity
+	BLACK("Kuro", 0x191919, EnumChatFormatting.BLACK), //Magic
+	RED("Karmir", 0xFF0000, EnumChatFormatting.DARK_RED), //Endurance
+	GREEN("Kijani", 0x007F0E, EnumChatFormatting.DARK_GREEN), //Nature
+	BROWN("Ruskea", 0x724528, EnumChatFormatting.GOLD), //Mineral
+	BLUE("Nila", 0x0026FF, EnumChatFormatting.BLUE), //Light
+	PURPLE("Zambarau", 0x8C00EA, EnumChatFormatting.DARK_PURPLE), //Enhancement
+	CYAN("Vadali", 0x009FBF, EnumChatFormatting.DARK_AQUA), //Water
+	LIGHTGRAY("Argia", 0x979797, EnumChatFormatting.GRAY), //Deception
+	GRAY("Ykri", 0x404040, EnumChatFormatting.DARK_GRAY), //Change
+	PINK("Ruzova", 0xFFBAD9, EnumChatFormatting.RED), //Aggression
+	LIME("Asveste", 0x00FF00, EnumChatFormatting.GREEN), //Motion
+	YELLOW("Kitrino", 0xFFFF00, EnumChatFormatting.YELLOW), //Energy
+	LIGHTBLUE("Galazio", 0x7FD4FF, EnumChatFormatting.AQUA), //Time
+	MAGENTA("Kurauri", 0xFF00DC, EnumChatFormatting.LIGHT_PURPLE), //Life
+	ORANGE("Portokali", 0xFF6A00, EnumChatFormatting.GOLD), //Fire
+	WHITE("Tahara", 0xFFFFFF, EnumChatFormatting.WHITE); //Purity
 
 	private final ReikaDyeHelper color;
 	public final String displayName;
 	private IIcon glowIcon;
 	private IIcon animatedFace;
 	private final int rgb;
+	private final EnumChatFormatting chat;
 
 	private static final Random rand = new Random();
 
 	public static final CrystalElement[] elements = values();
 	private static final HashMap<Integer, ArrayList<CrystalElement>> levelMap = new HashMap();
 
-	private CrystalElement(String n, int rgb) {
+	private CrystalElement(String n, int rgb, EnumChatFormatting c) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
 		displayName = n;
 		this.rgb = 0xff000000 | rgb;
+		chat = c;
 	}
 
 	public String getEnglishName() {
@@ -177,6 +180,10 @@ public enum CrystalElement {
 			}
 			li.add(e);
 		}
+	}
+
+	public String getChatColorString() {
+		return chat.toString();
 	}
 
 }

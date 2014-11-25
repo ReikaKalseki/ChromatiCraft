@@ -9,18 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
-public interface CrystalTransmitter extends CrystalNetworkTile {
+public interface CrystalTransmitter extends CrystalNetworkTile, EnergyBeamRenderer {
 
 	public int getSendRange();
-
-	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz);
-
-	public void removeTarget(WorldLocation loc, CrystalElement e);
-
-	public void clearTargets();
 
 	public boolean needsLineOfSight();
 }

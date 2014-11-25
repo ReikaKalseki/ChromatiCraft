@@ -16,9 +16,11 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -95,6 +97,9 @@ public class PowerTreeRender extends ChromaRenderBase {
 
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glEnable(GL11.GL_LIGHTING);
+		}
+		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 0) {
+			ChromaFX.drawEnergyTransferBeams(new WorldLocation(te), te.getTargets());
 		}
 		GL11.glPopMatrix();
 	}

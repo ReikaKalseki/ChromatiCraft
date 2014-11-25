@@ -225,7 +225,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 12000;
 	}
 

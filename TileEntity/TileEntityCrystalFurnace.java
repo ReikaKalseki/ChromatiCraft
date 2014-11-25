@@ -164,7 +164,7 @@ public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements
 	}
 
 	@Override
-	public int getMaxStorage() {
+	public int getMaxStorage(CrystalElement e) {
 		return 12000;
 	}
 
