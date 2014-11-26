@@ -47,11 +47,11 @@ public class AcceleratorBlacklist {
 	 * You must specify a reason (from the {@link BlacklistReason} enum) which will be put into the loading log.
 	 * Arguments: TileEntity class, Reason.
 	 * Sample log message:<br>
-	 * <i> GEOSTRATA:
+	 * <i> CHROMATICRAFT:
 	 * "TileEntity "Miner" has been blacklisted from the TileEntity Accelerator, because the creator finds it unbalanced or overpowered."
 	 * </i>*/
 	public static void addBlacklist(Class<? extends TileEntity> cl, String name, BlacklistReason r) {
-		ReikaJavaLibrary.pConsole("GEOSTRATA: TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
+		ReikaJavaLibrary.pConsole("CHROMATICRAFT: TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
 		try {
 			add.invoke(null, cl);
 		}

@@ -56,7 +56,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		GL11.glDisable(GL11.GL_BLEND);
 		if (ability != null && ability.maxPower() > 0) {
 			int sc = data*64/ability.maxPower();
-			this.drawTexturedModalRect(width/2-12, 125-sc, 116, 76-sc, 24, sc);
+			this.drawTexturedModalRect(width/2-12, height/2+5-sc, 116, 76-sc, 24, sc);
 		}
 
 		int sep = 22;

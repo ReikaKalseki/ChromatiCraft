@@ -33,7 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAccelerator extends TileEntityChromaticBase implements NBTTile {
 
-	public static final long MAX_LAG = calculateLagLimit(); //1ms; make configurable?
+	public static final long MAX_LAG = calculateLagLimit();
 
 	public static final int MAX_TIER = 7;
 
@@ -45,6 +45,10 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 	static {
 		addEntry("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, BlacklistReason.BUGS); //by request
 		addEntry("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
+
+		addEntry(TileEntityCastingTable.class);
+		addEntry(TileEntityRitualTable.class);
+		addEntry(TileEntityAuraInfuser.class);
 	}
 
 	public static void addEntry(Class<? extends TileEntity> cl) {

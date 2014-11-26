@@ -55,7 +55,7 @@ public class ChromaOverlays {
 
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = EventPriority.HIGH) //Not highest because of Dualhotbar
 	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		ItemStack is = ep.getCurrentEquippedItem();

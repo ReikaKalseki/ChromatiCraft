@@ -208,9 +208,9 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			}
 		}
 		if (count != 1) {
-			CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
-			if (te != null) {
-				te.removeFromTank();
+			TileEntity te = world.getTileEntity(x, y, z);
+			if (te instanceof CrystalTankAuxTile) {
+				((CrystalTankAuxTile)te).removeFromTank();
 			}
 			for (int i = 0; i < blocks.getSize(); i++) {
 				int[] xyz = blocks.getNthBlock(i);

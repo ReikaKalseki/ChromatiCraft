@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -267,6 +268,9 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	}
 
 	public final int getTintColor(int meta) {
-		return ReikaDyeHelper.dyes[meta].color;
+		int c0 = ReikaColorAPI.getModifiedSat(CrystalElement.elements[meta].getColor(), 0.65F);
+		int c1 = ReikaDyeHelper.dyes[meta].color;
+		//int c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c0, 0.85F);
+		return ReikaColorAPI.mixColors(c0, c1, 0.65F);
 	}
 }

@@ -68,12 +68,12 @@ public class CrystalBees {
 			beeMap.put(color, bee);
 		}
 
-		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
+		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.ELONGATED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
 		luminous = new BasicBee("Luminous", "Vitreus Lumens", Speeds.SLOW, Life.SHORTER, Flowering.SLOWER, Fertility.HIGH, Territory.DEFAULT, 0xBAEBFF);
 		hostile = new BasicBee("Hostile", "Vitreus Inimicus", Speeds.SLOWEST, Life.SHORT, Flowering.SLOW, Fertility.LOW, Territory.DEFAULT, 0xFF6A00);
 
 		crystal = new BasicBee("Crystalline", "Vitreus Crystallum", Speeds.NORMAL, Life.SHORTEST, Flowering.SLOWEST, Fertility.LOW, Territory.DEFAULT, 0x46A7FF);
-		purity = new BasicBee("Pure", "Purus Mundi", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, 0xffffff);
+		purity = new BasicBee("Pure", "Purus Mundi", Speeds.SLOWER, Life.NORMAL, Flowering.AVERAGE, Fertility.NORMAL, Territory.DEFAULT, 0xffffff);
 		crystal.setCave();
 		purity.setCave();
 
