@@ -25,7 +25,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 
 import com.google.common.collect.HashBiMap;
 
-/** Specifies the magic elements present in each "fundamental" Items. */
+/** Specifies the magic elements present in each "fundamental" item. */
 public class ItemMagicRegistry {
 
 	public static final ItemMagicRegistry instance = new ItemMagicRegistry();

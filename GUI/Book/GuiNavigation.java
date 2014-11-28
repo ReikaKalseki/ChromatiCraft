@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -40,21 +41,23 @@ public class GuiNavigation extends ChromaBookGui {
 	private int paneWidth = 240;
 	private int paneHeight = 180;
 
-	private final TreeMap<ChromaBook, Zone> zones = new TreeMap();
-	private static final int zoneSpacing = 32;
+	private static final TreeMap<ChromaBook, Section> Sections = new TreeMap();
+	private static final int SectionSpacing = 32;
 
 	public GuiNavigation(EntityPlayer ep) {
 		super(ep, 256, 220);
+	}
 
-		Zone z = null;
+	static {
+		Section z = null;
 		for (int i = 0; i < ChromaBook.tabList.length; i++) {
 			ChromaBook b = ChromaBook.tabList[i];
 			if (b.isParent()) {
-				z = new Zone(b.getTitle());
-				zones.put(b, z);
+				z = new Section(b.getTitle());
+				Sections.put(b, z);
 			}
 			else {
-				z.addElement(new ZoneElement(b));
+				z.addElement(new SectionElement(b));
 			}
 		}
 	}
@@ -132,14 +135,14 @@ public class GuiNavigation extends ChromaBookGui {
 		int v = offsetY%256;
 		this.drawTexturedModalRect(j+8, k+24, u, v, paneWidth, paneHeight);
 
-		this.drawZones(j+12-offsetX, k+32-offsetY);
+		this.drawSections(j+12-offsetX, k+32-offsetY);
 	}
 
-	private void drawZones(int x, int y) {
+	private void drawSections(int x, int y) {
 		float line = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		GL11.glLineWidth(2);
 		int dy = y+1;
-		for (Zone z : zones.values()) {
+		for (Section z : Sections.values()) {
 			int dx = x+4;
 			int n = 7;
 			int c = 0xffffff;
@@ -151,25 +154,25 @@ public class GuiNavigation extends ChromaBookGui {
 			api.drawLine(dx, ddy, ddx, ddy, c);
 			fontRendererObj.drawString(z.title, dx+2, dy-fontRendererObj.FONT_HEIGHT, 0xffffff);
 			z.drawElements(dx, dy, n);
-			dy += z.getHeight(n)+zoneSpacing;
+			dy += z.getHeight(n)+SectionSpacing;
 		}
 		GL11.glLineWidth(line);
 	}
 
-	private static class Zone implements Comparable<Zone> {
+	private static class Section implements Comparable<Section> {
 
-		private final ArrayList<ZoneElement> elements = new ArrayList();
+		private final ArrayList<SectionElement> elements = new ArrayList();
 		public final String title;
 
 		private static final int elementWidth = 24;
 		private static final int margin = 8;
 		private static final int spacing = 4;
 
-		public Zone(String s) {
+		public Section(String s) {
 			title = s;
 		}
 
-		public void addElement(ZoneElement e) {
+		public void addElement(SectionElement e) {
 			elements.add(e);
 			Collections.sort(elements);
 		}
@@ -186,20 +189,20 @@ public class GuiNavigation extends ChromaBookGui {
 
 		private void drawElements(int x, int y, int cols) {
 			int i = 0;
-			for (ZoneElement e : elements) {
+			for (SectionElement e : elements) {
 				int dx = x+margin+(i%cols)*(elementWidth+spacing);
 				int dy = y+margin+(i/cols)*(elementWidth+spacing);
 				GL11.glPushMatrix();
 				double s = elementWidth/16D;
 				GL11.glScaled(s, s, 1);
-				api.drawItemStack(itemRender, e.destination.getTabIcon(), (int)(dx/s), (int)(dy/s));
+				api.drawItemStack(itemRender, e.getIcon(), (int)(dx/s), (int)(dy/s));
 				int mx = dx-1;
 				int mmx = mx+elementWidth;
 				int my = dy;
 				int mmy = my+elementWidth;
 				if (api.isMouseInBox(mx, mmx, my, mmy)) {
 					FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-					api.drawTooltipAt(fr, e.destination.getTitle(), (int)(api.getMouseRealX()/s), (int)(api.getMouseRealY()/s));
+					api.drawTooltipAt(fr, e.getName(), (int)(api.getMouseRealX()/s), (int)(api.getMouseRealY()/s));
 					int w = (int)(elementWidth/s);
 					int ox = i%cols%3 > 0 ? 1 : 0;
 					api.drawRectFrame((int)(mx/s)+ox, (int)(my/s), w, w, 0xffffff);
@@ -210,22 +213,30 @@ public class GuiNavigation extends ChromaBookGui {
 		}
 
 		@Override
-		public int compareTo(Zone o) {
+		public int compareTo(Section o) {
 			return elements.get(0).destination.ordinal()-o.elements.get(0).destination.ordinal();
 		}
 
 	}
 
-	private static class ZoneElement implements Comparable<ZoneElement> {
+	private static class SectionElement implements Comparable<SectionElement> {
 
-		public final ChromaBook destination;
+		private final ChromaBook destination;
 
-		private ZoneElement(ChromaBook b) {
+		private SectionElement(ChromaBook b) {
 			destination = b;
 		}
 
+		private ItemStack getIcon() {
+			return destination.getTabIcon();
+		}
+
+		public String getName() {
+			return destination.getTitle();
+		}
+
 		@Override
-		public int compareTo(ZoneElement o) {
+		public int compareTo(SectionElement o) {
 			return (destination.getParent().ordinal()-o.destination.getParent().ordinal())*10000+destination.ordinal()-o.destination.ordinal();
 		}
 
