@@ -23,7 +23,9 @@ public enum ChromaPackets {
 	BUFFERINC(1),
 	TELEPUMP(1),
 	TRANSMIT(3),
-	ASPECT();
+	ASPECT(),
+	LAMPCHANNEL(1),
+	LAMPCONTROL(2);
 
 	public final int numInts;
 	public final PacketTypes type;

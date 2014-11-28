@@ -51,7 +51,9 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InfuserRecipe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LampControlRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.LumenLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
@@ -113,6 +115,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new CastingRecipe(block, sr));
 
 			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i]));
+
+			this.addRecipe(new LumenLampRecipe(new ItemStack(ChromaBlocks.LAMPBLOCK.getBlockInstance(), 16, i), CrystalElement.elements[i]));
 		}
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		ShapedRecipes sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
@@ -238,6 +242,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new MinerRecipe(ChromaTiles.MINER.getCraftedProduct(), ChromaStacks.energyCore));
 
 		this.addRecipe(new FabricatorRecipe(ChromaTiles.FABRICATOR.getCraftedProduct(), ChromaStacks.transformCore));
+
+		this.addRecipe(new LampControlRecipe(ChromaTiles.LAMPCONTROL.getCraftedProduct(), new ItemStack(Items.quartz)));
 
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.silkUpgrade, new ItemStack(Items.diamond)));
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.speedUpgrade, new ItemStack(Items.redstone)));

@@ -336,7 +336,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int maxThroughput() {
-		return 5000;
+		return 1000;
 	}
 
 	@Override
@@ -381,7 +381,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int getTransmissionStrength() {
-		return 50;
+		return 100;
 	}
 
 	@Override
@@ -503,6 +503,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	public Collection<CrystalTarget> getTargets() {
 		return Collections.unmodifiableCollection(targets);
+	}
+
+	@Override
+	public int getSourcePriority() {
+		return 500;
 	}
 
 }

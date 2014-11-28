@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -29,6 +30,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
+import Reika.ChromatiCraft.TileEntity.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.TileEntityTeleportationPump;
@@ -176,6 +178,22 @@ public class ChromatiPackets implements IPacketHandler {
 			case ASPECT:
 				((TileEntityAspectFormer)tile).selectAspect(stringdata);
 				break;
+			case LAMPCHANNEL:
+				((TileEntityRangedLamp)tile).setChannel(data[0]);
+				break;
+			case LAMPCONTROL:
+				int mode = data[0];
+				switch(data[0]) {
+				case 0:
+					((TileEntityLampController)tile).setChannel(data[1]);
+					break;
+				case 1:
+					((TileEntityLampController)tile).incrementMode();
+					break;
+				case 2:
+					((TileEntityLampController)tile).toggleState();
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

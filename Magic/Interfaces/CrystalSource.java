@@ -20,4 +20,6 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public boolean drain(CrystalElement e, int amt);
 
+	public int getSourcePriority();
+
 }

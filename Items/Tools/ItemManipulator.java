@@ -41,10 +41,13 @@ import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -91,13 +94,18 @@ public class ItemManipulator extends ItemChromaTool {
 			ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
 			return true;
 		}
-		/*
-		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode) {
+
+		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;
 			cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+			BlockArray runes = cp.getRuneLocations(world, x, y, z);
+			for (int i = 0; i < runes.getSize(); i++) {
+				int[] xyz = runes.getNthBlock(i);
+				world.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], cp.getColor().ordinal(), 3);
+			}
 			return true;
 		}
-		 */
+
 		if (t == ChromaTiles.COMPOUND) {
 			TileEntityCompoundRepeater te = (TileEntityCompoundRepeater)tile;
 			if (ep.isSneaking()) {

@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
@@ -30,18 +31,20 @@ import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
-import Reika.ChromatiCraft.GUI.GuiChromaBook;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
+import Reika.ChromatiCraft.GUI.GuiLampController;
 import Reika.ChromatiCraft.GUI.GuiMiner;
 import Reika.ChromatiCraft.GUI.GuiOneSlot;
+import Reika.ChromatiCraft.GUI.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
+import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.TileEntity.TileEntityAutoEnchanter;
@@ -52,6 +55,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
+import Reika.ChromatiCraft.TileEntity.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
@@ -157,6 +161,11 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiAspectFormer(player, (TileEntityAspectFormer) te);
 			if (te instanceof TileEntityMiner)
 				return new GuiMiner(player, (TileEntityMiner) te);
+			if (te instanceof TileEntityLampController)
+				return new GuiLampController(player, (TileEntityLampController) te);
+
+			if (te instanceof TileEntityRangedLamp)
+				return new GuiRangedLamp(player, (TileEntityRangedLamp) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);
@@ -168,7 +177,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case ABILITY:
 			return new GuiAbilitySelect(player);
 		case HANDBOOK:
-			return new GuiChromaBook(player);
+			return new GuiNavigation(player);
+			//return new GuiChromaBook(player);
 		}
 		return null;
 	}

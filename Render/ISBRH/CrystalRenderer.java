@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {
@@ -30,7 +31,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//GL11.glDisable(GL11.GL_LIGHTING);
 		Tessellator v5 = Tessellator.instance;
 		//v5.setBrightness(240);
-		int color = ((CrystalRenderedBlock)b).getTintColor(meta);
+		int color = ReikaColorAPI.getColorWithBrightnessMultiplier(((CrystalRenderedBlock)b).getTintColor(meta), 0.8F);
 		int alpha = 255;
 		IIcon ico = ChromaBlocks.CRYSTAL.getBlockInstance().getIcon(0, meta);
 		double u = ico.getMinU();

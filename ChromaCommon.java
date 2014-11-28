@@ -18,6 +18,7 @@ public class ChromaCommon {
 	public static int tankRender;
 	public static int fiberRender;
 	public static int treeRender;
+	public static int lampRender;
 
 	public static int oreRender;
 	public static int plantRender;

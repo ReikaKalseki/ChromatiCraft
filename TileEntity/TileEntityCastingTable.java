@@ -17,8 +17,10 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -171,7 +173,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 		}
 		craftingTick--;
-		if (craftingTick == 0) {
+		if (craftingTick <= 0) {
 			this.craft();
 		}
 	}
@@ -349,10 +351,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				craftingTick = activeRecipe.getDuration();
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
-					tag.subtract(energy);
-					for (CrystalElement e : tag.elementSet()) {
-						this.requestEnergy(e, tag.getValue(e));
-					}
+					this.requestEnergyDifference(tag);
 				}
 				return true;
 			}
@@ -403,6 +402,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		CastingRecipe recipe = activeRecipe;
 		//ReikaJavaLibrary.pConsole(recipe, Side.SERVER);
 		int count = 0;
+		boolean repeat = false;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
 			this.addXP(activeRecipe.getExperience());
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
@@ -428,14 +428,28 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				ProgressionManager.instance.stepPlayerTo(this.getPlacer(), ProgressStage.LINK);
 			}
 			recipe = this.getValidRecipe();
-			if (recipe instanceof PylonRecipe && !energy.containsAtLeast(((PylonRecipe)recipe).getRequiredAura()))
-				recipe = null;
+			if (recipe instanceof PylonRecipe && recipe == activeRecipe) {
+				craftingTick = recipe.getDuration();
+				ChromaSounds.CAST.playSoundAtBlock(this);
+				repeat = true;
+				break;
+			}
 			//ReikaJavaLibrary.pConsole(count+": "+recipe, Side.SERVER);
 		}
 		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
-		activeRecipe = null;
-		craftSoundTimer = 20000;
-		craftingTick = 0;
+		if (inv[9] != null) {
+			for (int i = 0; i < 6; i++) {
+				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
+				if (te instanceof IInventory)
+					ReikaInventoryHelper.addToIInv(inv[9], (IInventory)te);
+			}
+			inv[9] = null;
+		}
+		if (!repeat) {
+			activeRecipe = null;
+			craftSoundTimer = 20000;
+			craftingTick = 0;
+		}
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 		if (worldObj.isRemote)
 			this.particleBurst();

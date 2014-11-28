@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,14 +26,14 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
+import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
 	private final Collection<WorldLocation> blacklist = new ArrayList();
-	private final HashMap<WorldLocation, Collection<WorldLocation>> duplicates = new HashMap();
+	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap();
 
 	private final CrystalNetworker net;
 	private static final RayTracer tracer;
@@ -44,7 +45,7 @@ public class PylonFinder {
 
 	private static boolean invalid = false;
 
-	private static final HashMap<WorldLocation, EnumMap<CrystalElement, Collection<CrystalPath>>> paths = new HashMap();
+	private static final HashMap<WorldLocation, EnumMap<CrystalElement, ArrayList<CrystalPath>>> paths = new HashMap();
 
 	PylonFinder(CrystalElement e, CrystalReceiver r) {
 		element = e;
@@ -105,9 +106,9 @@ public class PylonFinder {
 	}
 
 	private CrystalPath checkExistingPaths() {
-		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(getLocation(target));
+		EnumMap<CrystalElement, ArrayList<CrystalPath>> map = paths.get(getLocation(target));
 		if (map != null) {
-			Collection<CrystalPath> c = map.get(element);
+			ArrayList<CrystalPath> c = map.get(element);
 			if (c != null) {
 				Iterator<CrystalPath> it = c.iterator();
 				while (it.hasNext()) {
@@ -125,16 +126,16 @@ public class PylonFinder {
 	}
 
 	private void addValidPath(CrystalPath p) {
-		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(p.origin);
+		EnumMap<CrystalElement, ArrayList<CrystalPath>> map = paths.get(p.origin);
 		if (map == null) {
-			Collection<CrystalPath> c = new ArrayList();
+			ArrayList<CrystalPath> c = new ArrayList();
 			map = new EnumMap(CrystalElement.class);
 			c.add(p);
 			map.put(element, c);
 			paths.put(p.origin, map);
 		}
 		else {
-			Collection<CrystalPath> c = map.get(p.element);
+			ArrayList<CrystalPath> c = map.get(p.element);
 			if (c == null) {
 				c = new ArrayList();
 				c.add(p);
@@ -155,15 +156,16 @@ public class PylonFinder {
 			}
 		}
 		//ReikaJavaLibrary.pConsole(paths, Side.SERVER);
+		Collections.sort(paths.get(p.origin).get(p.element));
 	}
 
 	static void removePathsWithTile(CrystalNetworkTile te) {
 		if (te == null)
 			return;
-		EnumMap<CrystalElement, Collection<CrystalPath>> map = paths.get(getLocation(te));
+		EnumMap<CrystalElement, ArrayList<CrystalPath>> map = paths.get(getLocation(te));
 		if (map != null) {
 			for (CrystalElement e : map.keySet()) {
-				Collection<CrystalPath> c = map.get(e);
+				ArrayList<CrystalPath> c = map.get(e);
 				Iterator<CrystalPath> it = c.iterator();
 				while (it.hasNext()) {
 					CrystalPath p = it.next();
@@ -199,7 +201,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
 		for (CrystalTransmitter te : li) {
 			WorldLocation loc2 = getLocation(te);
-			if (!blacklist.contains(loc2) && !ReikaJavaLibrary.collectionMapContainsValue(duplicates, loc2)) {
+			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
 					if (te instanceof CrystalSource && te != target) {
 						nodes.add(loc2);

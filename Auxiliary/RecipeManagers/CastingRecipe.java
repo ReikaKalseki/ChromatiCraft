@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
 import Reika.DragonAPI.Instantiable.RecipePattern;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -117,6 +118,27 @@ public class CastingRecipe {
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {
+
+		protected static final BlockArray runeRing = new BlockArray();
+
+		static {
+			runeRing.addBlockCoordinate(-2, -1, -2);
+			runeRing.addBlockCoordinate(-1, -1, -2);
+			runeRing.addBlockCoordinate(0, -1, -2);
+			runeRing.addBlockCoordinate(1, -1, -2);
+			runeRing.addBlockCoordinate(2, -1, -2);
+			runeRing.addBlockCoordinate(2, -1, -1);
+			runeRing.addBlockCoordinate(2, -1, 0);
+			runeRing.addBlockCoordinate(2, -1, 1);
+			runeRing.addBlockCoordinate(2, -1, 2);
+			runeRing.addBlockCoordinate(1, -1, 2);
+			runeRing.addBlockCoordinate(0, -1, 2);
+			runeRing.addBlockCoordinate(-1, -1, 2);
+			runeRing.addBlockCoordinate(-2, -1, 2);
+			runeRing.addBlockCoordinate(-2, -1, 1);
+			runeRing.addBlockCoordinate(-2, -1, 0);
+			runeRing.addBlockCoordinate(-2, -1, -1);
+		}
 
 		private final RuneShape runes = new RuneShape();
 

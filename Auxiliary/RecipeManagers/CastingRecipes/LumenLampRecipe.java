@@ -9,19 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes;
 
-import net.minecraft.init.Items;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
-public class CrystalSeedRecipe extends TempleCastingRecipe {
+public class LumenLampRecipe extends TempleCastingRecipe {
 
-	public CrystalSeedRecipe(ItemStack out, CrystalElement e) {
-		super(out, ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SsS", "GSG", 'G', Items.glowstone_dust, 'S', getShard(e), 's', Items.wheat_seeds));
+	public LumenLampRecipe(ItemStack out, CrystalElement e) {
+		super(out, getRecipe(out, e));
 
-		int[] xyz = runeRing.getNthBlock(e.ordinal());
-		this.addRune(e, xyz[0], xyz[1], xyz[2]);
+		this.addRune(CrystalElement.BLACK, 0, -1, -3);
+		this.addRune(CrystalElement.BLUE, 0, -1, 3);
+	}
+
+	private static IRecipe getRecipe(ItemStack out, CrystalElement e) {
+		return ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SLS", "GSG", 'G', Blocks.glass, 'L', Blocks.redstone_lamp, 'S', getShard(e));
 	}
 
 }

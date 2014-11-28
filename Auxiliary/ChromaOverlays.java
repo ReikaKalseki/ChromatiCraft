@@ -17,6 +17,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -50,6 +51,7 @@ public class ChromaOverlays {
 	public static ChromaOverlays instance = new ChromaOverlays();
 
 	private boolean holding = false;
+	private int tick = 0;
 
 	private ChromaOverlays() {
 
@@ -57,6 +59,7 @@ public class ChromaOverlays {
 
 	@SubscribeEvent(priority = EventPriority.HIGH) //Not highest because of Dualhotbar
 	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
+		tick++;
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (evt.type == ElementType.HELMET) {
@@ -104,6 +107,13 @@ public class ChromaOverlays {
 			int w = 4;
 			int left = evt.resolution.getScaledWidth()/2 - 91;
 			int top = evt.resolution.getScaledHeight()-GuiIngameForge.left_height;
+
+			int regen = -1;
+			if (ep.isPotionActive(Potion.regeneration)) {
+				int rl = ep.getActivePotionEffect(Potion.regeneration).getAmplifier();
+				regen = (int)(tick/300D*(1+0.33*rl)%30);
+			}
+
 			v5.startDrawingQuads();
 			boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
 			for (int i = 29; i >= 0; i--) {
@@ -119,6 +129,8 @@ public class ChromaOverlays {
 				int x = left+i*3;
 				int dx = x+w;
 				int y = top+0;
+				if (i == regen)
+					y -= 2;
 				int dy = y+h;
 				v5.addVertexWithUV(x, dy, 0, u, dv);
 				v5.addVertexWithUV(dx, dy, 0, du, dv);
@@ -131,10 +143,18 @@ public class ChromaOverlays {
 					x = left+i*3+1;
 					dx = x+w-2;
 					y = top+1;
+					if (i == regen)
+						y -= 2;
 					dy = y+h-2;
 					u = 17/128D+(i*3)/128D;
 					du = u+(w-2)/128D;
 					v = 1/128D;
+					if (ep.isPotionActive(Potion.poison)) {
+						v = 37/128D;
+					}
+					else if (ep.isPotionActive(Potion.wither)) {
+						v = 46/128D;
+					}
 					dv = v+(h-2)/128D;
 					if (half) {
 						dx = x+(w-2)/2;

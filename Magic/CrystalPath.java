@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
-public class CrystalPath {
+public class CrystalPath implements Comparable<CrystalPath> {
 
 	protected final LinkedList<WorldLocation> nodes;
 	public final CrystalSource transmitter;
@@ -95,6 +95,11 @@ public class CrystalPath {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int compareTo(CrystalPath o) {
+		return o.transmitter.getSourcePriority()-transmitter.getSourcePriority();
 	}
 
 }

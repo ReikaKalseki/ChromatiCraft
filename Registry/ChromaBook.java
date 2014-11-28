@@ -45,10 +45,10 @@ public enum ChromaBook implements HandbookEntry {
 	INTRO("Introduction", ""),
 	ELEMENTS("Crystal Energy", ChromaItems.ELEMENTAL.getStackOfMetadata(CrystalElement.BLUE.ordinal())),
 	PYLONS("Pylons", ChromaTiles.PYLON.getCraftedProduct(), ProgressStage.PYLON),
-	CRYSTALS("Crystals", ChromaBlocks.CRYSTAL.getBlockInstance(), ProgressStage.CRYSTALS),
+	CRYSTALS("Crystals", new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, 4), ProgressStage.CRYSTALS),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust),
 
-	MACHINESDESC("Machines", ""),
+	MACHINESDESC("Constructs", ""),
 	REPEATER(ChromaTiles.REPEATER),
 	GUARDIAN(ChromaTiles.GUARDIAN),
 	REPROGRAMMER(ChromaTiles.REPROGRAMMER),

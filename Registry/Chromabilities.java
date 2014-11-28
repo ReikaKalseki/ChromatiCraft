@@ -417,7 +417,7 @@ public enum Chromabilities {
 		List<EntityMob> li = ep.worldObj.getEntitiesWithinAABB(EntityMob.class, box);
 		for (EntityMob e : li) {
 			if (!(e instanceof EntityEnderman || e instanceof EntityPigZombie)) {
-				if (e.getEntityToAttack() == ep) {
+				if (e.getEntityToAttack() == ep || e.getEntityToAttack() == null) {
 					//e.setAttackTarget(null);
 					e.attackEntityFrom(DamageSource.causeMobDamage(ReikaEntityHelper.getDummyMob(ep.worldObj)), 0);
 				}

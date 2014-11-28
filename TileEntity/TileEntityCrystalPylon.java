@@ -242,7 +242,23 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		}
 	}
 
-	private BlockArray getBoosterCrystals(World world, int x, int y, int z) {
+	public BlockArray getRuneLocations(World world, int x, int y, int z) {
+		BlockArray blocks = new BlockArray();
+		blocks.addBlockCoordinate(x-3, y-4, z-1);
+		blocks.addBlockCoordinate(x-1, y-4, z-3);
+
+		blocks.addBlockCoordinate(x+3, y-4, z-1);
+		blocks.addBlockCoordinate(x+1, y-4, z-3);
+
+		blocks.addBlockCoordinate(x-3, y-4, z+1);
+		blocks.addBlockCoordinate(x-1, y-4, z+3);
+
+		blocks.addBlockCoordinate(x+3, y-4, z+1);
+		blocks.addBlockCoordinate(x+1, y-4, z+3);
+		return blocks;
+	}
+
+	public BlockArray getBoosterCrystals(World world, int x, int y, int z) {
 		BlockArray blocks = new BlockArray();
 		Block b = ChromaTiles.CRYSTAL.getBlock();
 		int meta = ChromaTiles.CRYSTAL.getBlockMetadata();
@@ -372,17 +388,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && energy > 1000;
+		return hasMultiblock && energy >= 5000;
 	}
 
 	@Override
 	public int maxThroughput() {
-		return 1000;
+		return 5000;
 	}
 
 	@Override
 	public int getTransmissionStrength() {
-		return 500;
+		return 10000;
 	}
 
 	public void setColor(CrystalElement e) {
@@ -556,6 +572,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return MAX_ENERGY;
+	}
+
+	@Override
+	public int getSourcePriority() {
+		return 0;
 	}
 
 }

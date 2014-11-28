@@ -30,7 +30,7 @@ public enum ChromaIcons {
 	LASEREND("laser_end_2"),
 	BIGFLARE("bigflare"),
 	ROUNDFLARE("roundflare"),
-	RINGS("rings_blur"),
+	RINGS("ringrow_fade"),
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
 	FADE("fade"),
@@ -38,7 +38,8 @@ public enum ChromaIcons {
 	CHROMA("chroma_particle"),
 	NOENTER("noentry"),
 	BLUEFIRE("bluefire"),
-	BATTERY("battery_outer");
+	BATTERY("battery_outer"),
+	BLANK("blank");
 
 	private IIcon icon;
 	private final String iconName;

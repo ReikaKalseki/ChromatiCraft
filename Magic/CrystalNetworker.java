@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Magic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,6 +29,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -45,7 +45,7 @@ public class CrystalNetworker implements TickHandler {
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
-	private final HashMap<Integer, Collection<CrystalFlow>> flows = new HashMap();
+	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
 
 	private int losTimer = 0;
 
@@ -116,7 +116,7 @@ public class CrystalNetworker implements TickHandler {
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
-			this.addFlow(world, p);
+			flows.addValue(world.provider.dimensionId, p);
 			return true;
 		}
 		return false;
@@ -124,22 +124,11 @@ public class CrystalNetworker implements TickHandler {
 
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
 		Collection<CrystalFlow> li = flows.get(world.provider.dimensionId);
-		if (li == null)
-			return false;
 		for (CrystalFlow f : li) {
 			if (f.element == e && f.receiver == r)
 				return true;
 		}
 		return false;
-	}
-
-	private void addFlow(World world, CrystalFlow p) {
-		Collection<CrystalFlow> li = flows.get(world.provider.dimensionId);
-		if (li == null) {
-			li = new ArrayList();
-			flows.put(world.provider.dimensionId, li);
-		}
-		li.add(p);
 	}
 
 	public void tick(TickType type, Object... data) {
@@ -191,12 +180,10 @@ public class CrystalNetworker implements TickHandler {
 	public void clear(int dim) {
 		//do not clear tiles!
 		Collection<CrystalFlow> li = flows.get(dim);
-		if (li != null) {
-			for (CrystalFlow f : li) {
-				f.resetTiles();
-			}
-			flows.remove(dim);
+		for (CrystalFlow f : li) {
+			f.resetTiles();
 		}
+		flows.remove(dim);
 	}
 
 	public void addTile(CrystalNetworkTile te) {
@@ -249,16 +236,14 @@ public class CrystalNetworker implements TickHandler {
 				c.remove(tile);
 		}
 		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
-		if (li != null) {
-			Iterator<CrystalFlow> it = li.iterator();
-			while (it.hasNext()) {
-				CrystalFlow p = it.next();
-				if (p.contains(te)) {
-					CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
-					p.resetTiles();
-					p.receiver.onPathBroken(p.element);
-					it.remove();
-				}
+		Iterator<CrystalFlow> it = li.iterator();
+		while (it.hasNext()) {
+			CrystalFlow p = it.next();
+			if (p.contains(te)) {
+				CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
+				p.resetTiles();
+				p.receiver.onPathBroken(p.element);
+				it.remove();
 			}
 		}
 		PylonFinder.removePathsWithTile(te);
@@ -267,16 +252,14 @@ public class CrystalNetworker implements TickHandler {
 
 	public void breakPaths(CrystalNetworkTile te) {
 		Collection<CrystalFlow> li = flows.get(te.getWorld().provider.dimensionId);
-		if (li != null) {
-			Iterator<CrystalFlow> it = li.iterator();
-			while (it.hasNext()) {
-				CrystalFlow p = it.next();
-				if (p.contains(te)) {
-					CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
-					p.receiver.onPathBroken(p.element);
-					p.resetTiles();
-					it.remove();
-				}
+		Iterator<CrystalFlow> it = li.iterator();
+		while (it.hasNext()) {
+			CrystalFlow p = it.next();
+			if (p.contains(te)) {
+				CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
+				p.receiver.onPathBroken(p.element);
+				p.resetTiles();
+				it.remove();
 			}
 		}
 	}
