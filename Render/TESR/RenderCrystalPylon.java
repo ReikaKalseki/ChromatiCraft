@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;

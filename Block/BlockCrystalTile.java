@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

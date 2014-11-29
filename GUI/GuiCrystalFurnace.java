@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 
 public class GuiCrystalFurnace extends GuiChromaBase {
 

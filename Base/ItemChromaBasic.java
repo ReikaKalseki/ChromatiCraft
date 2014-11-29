@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.IndexedItemSprites;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -96,11 +97,19 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack is) {
+	public final String getItemStackDisplayName(ItemStack is) {
 		ChromaItems ir = ChromaItems.getEntry(is);
 		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
-		if (this instanceof TieredItem && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			name = this.obfuscateIf(name, is);
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			if (this instanceof TieredItem) {
+				name = this.obfuscateIf(name, is);
+			}
+			else if (this instanceof ItemCrystalBasic) {
+				CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
+				if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
+					name = EnumChatFormatting.OBFUSCATED.toString()+name;
+				}
+			}
 		}
 		return name;
 	}

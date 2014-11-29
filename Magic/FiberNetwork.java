@@ -22,9 +22,9 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberSource;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberReceiver;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberTransmitter;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class FiberNetwork {

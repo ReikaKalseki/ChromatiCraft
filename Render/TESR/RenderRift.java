@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;

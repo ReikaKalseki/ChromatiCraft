@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelFiberEmitter;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberTransmitter;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 
 public class RenderFiberEmitter extends ChromaRenderBase {

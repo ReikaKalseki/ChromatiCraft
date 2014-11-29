@@ -47,7 +47,7 @@ public class ProgressionManager {
 		RUNEUSE(), //Placed runes
 		PYLON(), //Found pylon
 		LINK(), //Made a network connection/high-tier crafting
-		CHARGE(), //charge frolm a pylon
+		CHARGE(), //charge from a pylon
 		ABILITY(), //use an ability
 		RAINBOWLEAF(), //harvest a rainbow leaf
 		CHROMA(), //step in liquid chroma
@@ -56,15 +56,15 @@ public class ProgressionManager {
 	}
 
 	private ProgressionManager() {
-		progressMap.addParent(ProgressStage.RUNEUSE, ProgressStage.CRYSTALS);
-		progressMap.addParent(ProgressStage.MULTIBLOCK, ProgressStage.RUNEUSE);
-		progressMap.addParent(ProgressStage.LINK, ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.LINK, ProgressStage.PYLON);
-		progressMap.addParent(ProgressStage.CHARGE, ProgressStage.PYLON);
-		progressMap.addParent(ProgressStage.CHARGE, ProgressStage.CRYSTALS);
-		progressMap.addParent(ProgressStage.ABILITY, ProgressStage.CHARGE);
-		progressMap.addParent(ProgressStage.ABILITY, ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.STONES, ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CRYSTALS);
+		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
+		progressMap.addParent(ProgressStage.LINK,		ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
+		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
+		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
@@ -152,6 +152,9 @@ public class ProgressionManager {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false);
+		}
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		this.updateChunks(ep);
@@ -161,6 +164,9 @@ public class ProgressionManager {
 		ProgressStage[] list = ProgressStage.values();
 		for (int i = 0; i < list.length; i++) {
 			this.setPlayerStage(ep, list[i], true);
+		}
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true);
 		}
 	}
 

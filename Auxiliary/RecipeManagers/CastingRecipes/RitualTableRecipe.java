@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class RitualTableRecipe extends CastingRecipe {
 

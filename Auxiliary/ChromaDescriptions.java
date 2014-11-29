@@ -11,12 +11,11 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBook;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
@@ -28,14 +27,14 @@ public final class ChromaDescriptions {
 	public static final String DESC_SUFFIX = ":desc";
 	public static final String NOTE_SUFFIX = ":note";
 
-	private static HashMap<ChromaBook, String> data = new HashMap<ChromaBook, String>();
-	private static HashMap<ChromaBook, String> notes = new HashMap<ChromaBook, String>();
+	private static HashMap<ChromaResearch, String> data = new HashMap<ChromaResearch, String>();
+	private static HashMap<ChromaResearch, String> notes = new HashMap<ChromaResearch, String>();
 
 	private static HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
 	private static HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
-	private static HashMap<ChromaBook, Object[]> miscData = new HashMap<ChromaBook, Object[]>();
+	private static HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
 
-	private static ArrayList<ChromaBook> categories = new ArrayList<ChromaBook>();
+	private static ArrayList<ChromaResearch> categories = new ArrayList<ChromaResearch>();
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
 	private static final XMLInterface parents = new XMLInterface(ChromatiCraft.class, PARENT+"categories.xml", mustLoad);
@@ -47,7 +46,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
 
-	public static void addCategory(ChromaBook h) {
+	public static void addCategory(ChromaResearch h) {
 		categories.add(h);
 	}
 
@@ -70,7 +69,7 @@ public final class ChromaDescriptions {
 	public static int getCategoryCount() {
 		return categories.size();
 	}
-
+	/*
 	public static String getTOC() {
 		List<ChromaBook> toctabs = ChromaBook.getTOCTabs();
 		StringBuilder sb = new StringBuilder();
@@ -85,7 +84,7 @@ public final class ChromaDescriptions {
 		}
 		return sb.toString();
 	}
-
+	 */
 	public static String getHoverText(String key) {
 		return hover.getValueAtNode(key);
 	}
@@ -94,11 +93,11 @@ public final class ChromaDescriptions {
 		machineData.put(m, data);
 	}
 
-	private static void addData(ChromaBook h, Object... data) {
+	private static void addData(ChromaResearch h, Object... data) {
 		miscData.put(h, data);
 	}
 
-	private static void addData(ChromaBook h, int[] data) {
+	private static void addData(ChromaResearch h, int[] data) {
 		Object[] o = new Object[data.length];
 		for (int i = 0; i < o.length; i++)
 			o[i] = data[i];
@@ -126,7 +125,7 @@ public final class ChromaDescriptions {
 		loadData();
 	}
 
-	private static void addEntry(ChromaBook h, String sg) {
+	private static void addEntry(ChromaResearch h, String sg) {
 		data.put(h, sg);
 	}
 
@@ -224,13 +223,13 @@ public final class ChromaDescriptions {
 		return abilities.getValueAtNode("abilities:"+c.name().toLowerCase());
 	}
 
-	public static String getData(ChromaBook h) {
+	public static String getData(ChromaResearch h) {
 		if (!data.containsKey(h))
 			return "";
 		return data.get(h);
 	}
 
-	public static String getNotes(ChromaBook h) {
+	public static String getNotes(ChromaResearch h) {
 		if (!notes.containsKey(h))
 			return "";
 		return notes.get(h);

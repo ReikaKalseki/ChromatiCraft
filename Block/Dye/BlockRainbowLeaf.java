@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.TileEntity.TileEntityRainbowBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;

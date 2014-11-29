@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemRift;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 

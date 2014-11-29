@@ -19,12 +19,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
-import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
 public class BlockPylonStructure extends Block {

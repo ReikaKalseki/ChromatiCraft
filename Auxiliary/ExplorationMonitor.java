@@ -15,6 +15,8 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -48,6 +50,10 @@ public class ExplorationMonitor implements TickHandler {
 							ProgressionManager.instance.stepPlayerTo(ep, p);
 						}
 					}
+				}
+				else if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
+					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
+					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true);
 				}
 			}
 		}

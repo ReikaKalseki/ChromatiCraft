@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelLampControl;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.TileEntity.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;

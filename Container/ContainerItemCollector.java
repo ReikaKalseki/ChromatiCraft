@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.GUI.Slot.SlotXItems;
 

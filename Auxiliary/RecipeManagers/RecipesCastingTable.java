@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -75,9 +77,10 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityAccelerator;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -302,6 +305,19 @@ public class RecipesCastingTable {
 			}
 		}
 		return li;
+	}
+
+	public static boolean playerHasCrafted(EntityPlayer ep, RecipeType type) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
+		return cast.getBoolean(type.name().toLowerCase());
+	}
+
+	public static void setPlayerHasCrafted(EntityPlayer ep, RecipeType type) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
+		cast.setBoolean(type.name().toLowerCase(), true);
+		nbt.setTag("castingprog", cast);
 	}
 
 }

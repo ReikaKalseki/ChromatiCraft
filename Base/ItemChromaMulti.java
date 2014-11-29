@@ -35,13 +35,26 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 	public final void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
 		for (int i = 0; i < this.getNumberTypes(); i++) {
-			ItemStack item = new ItemStack(par1, 1, i);
-			par3List.add(item);
+			if (this.isMetaInCreative(i)) {
+				ItemStack item = new ItemStack(par1, 1, i);
+				par3List.add(item);
+			}
 		}
+	}
+
+	protected boolean isMetaInCreative(int meta) {
+		return true;
 	}
 
 	@Override
 	public int getItemSpriteIndex(ItemStack item) {
-		return super.getItemSpriteIndex(item)+item.getItemDamage();
+		int base = super.getItemSpriteIndex(item);
+		if (this.incrementTextureIndexWithMeta())
+			base += item.getItemDamage();
+		return base;
+	}
+
+	protected boolean incrementTextureIndexWithMeta() {
+		return true;
 	}
 }

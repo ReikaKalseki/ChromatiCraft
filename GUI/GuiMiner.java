@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerMiner;
-import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 
 public class GuiMiner extends GuiChromaBase {
 

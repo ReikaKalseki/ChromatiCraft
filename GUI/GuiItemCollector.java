@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

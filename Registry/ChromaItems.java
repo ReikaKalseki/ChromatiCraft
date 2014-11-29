@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemElementalStone;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
@@ -79,7 +80,8 @@ public enum ChromaItems implements ItemEnum {
 	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
 	WARP(6, false,			"chroma.warp",			ItemWarpProofer.class),
-	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class);
+	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
+	FRAGMENT(8, true,		"chroma.fragment",		ItemInfoFragment.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -202,6 +204,8 @@ public enum ChromaItems implements ItemEnum {
 			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
 		case STORAGE:
 			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
+		case FRAGMENT:
+			return this.getBasicName();
 		default:
 			break;
 		}
@@ -270,6 +274,8 @@ public enum ChromaItems implements ItemEnum {
 			return ChromaNames.craftingNames.length;
 		case STORAGE:
 			return ChromaNames.storageNames.length;
+		case FRAGMENT:
+			return ChromaResearch.researchList.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}
@@ -296,6 +302,10 @@ public enum ChromaItems implements ItemEnum {
 
 	public ItemStack getStackOfMetadata(int meta) {
 		return this.getCraftedMetadataProduct(1, meta);
+	}
+
+	public ItemStack getStackOfElement(CrystalElement e) {
+		return this.getStackOfMetadata(e.ordinal());
 	}
 
 	public boolean overridesRightClick(ItemStack is) {

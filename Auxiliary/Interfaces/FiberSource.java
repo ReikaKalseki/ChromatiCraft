@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberTransmitter;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberTransmitter;
 
 public interface FiberSource extends FiberIO {
 

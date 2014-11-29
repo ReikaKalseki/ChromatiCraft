@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 

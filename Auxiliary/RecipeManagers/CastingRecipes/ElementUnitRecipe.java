@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 

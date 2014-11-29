@@ -18,7 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Registry.ChromaBook;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -37,13 +37,16 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 	protected static final ReikaGuiAPI api = ReikaGuiAPI.instance;
 
-	protected ChromaBook page;
+	protected ChromaResearch page;
 
 	private static long time;
 	private long buttontime;
 	private int buttoni = 0;
 	protected int buttontimer = 0;
 	public static final long SECOND = 2000000000;
+
+	protected static int leftX;
+	protected static int topY;
 
 	protected ChromaBookGui(EntityPlayer ep, int x, int y) {
 		player = ep;
@@ -59,7 +62,7 @@ public abstract class ChromaBookGui extends GuiScreen {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		buttonList.add(new GuiButton(12, j+xSize-27, k-2, 20, 20, "X"));	//Close gui button
+		//buttonList.add(new GuiButton(12, j+xSize-27, k-4, 20, 20, "X"));	//Close gui button
 	}
 
 	@Override

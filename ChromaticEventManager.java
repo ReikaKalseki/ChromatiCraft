@@ -21,8 +21,10 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -41,23 +43,26 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityAIShutdown;
-import Reika.ChromatiCraft.TileEntity.TileEntityChromaLamp;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBeacon;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -134,6 +139,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void sendLinkedItems(EntityItemPickupEvent ev) {
+		this.fillFragments(ev);
 		EntityPlayer ep = ev.entityPlayer;
 		EntityItem e = ev.item;
 		ItemStack picked = e.getEntityItem();
@@ -334,6 +340,31 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void pylonDrops(LivingDropsEvent ev) {
+		if (ev.source instanceof PylonDamage) {
+			EntityLivingBase e = ev.entityLiving;
+			int n = ReikaRandomHelper.getInverseLinearRandom(3);
+			if (e instanceof EntityVillager || e instanceof EntityWitch || e instanceof EntityPlayer)
+				n++;
+			if (e instanceof EntityPlayer)
+				n *= 2;
+			n = Math.min(n, 4);
+			World world = e.worldObj;
+			for (int i = 0; i < n; i++) {
+				ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOfMetadata(0));
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void fillFragments(EntityItemPickupEvent ev) {
+		ItemStack is = ev.item.getEntityItem();
+		if (ChromaItems.FRAGMENT.matchWith(is) && is.getItemDamage() == 0 && !ev.entityPlayer.capabilities.isCreativeMode) {
+			ItemInfoFragment.programShardAndGiveData(is, ev.entityPlayer);
+		}
+	}
+
+	@SubscribeEvent
 	public void biomeDrops(LivingDropsEvent ev) {
 		EntityLivingBase e = ev.entityLiving;
 		ArrayList<EntityItem> drops = ev.drops;
@@ -357,8 +388,8 @@ public class ChromaticEventManager {
 				int mult = def-spawn;
 				if (e instanceof EntityAnimal) {
 					for (int i = 0; i < mult; i++) {
-						for (int k = 0; k < drops.size(); k++)
-							ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, drops.get(k).getEntityItem());
+						for (EntityItem is : drops)
+							ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, is.getEntityItem());
 					}
 				}
 			}

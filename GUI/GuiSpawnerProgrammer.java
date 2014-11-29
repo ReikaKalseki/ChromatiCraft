@@ -25,7 +25,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;

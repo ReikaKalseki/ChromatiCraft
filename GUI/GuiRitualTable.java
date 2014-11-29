@@ -13,7 +13,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.TileEntity.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 

@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Magic.FiberPath;
 import Reika.ChromatiCraft.Models.ModelFiberReceiver;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;

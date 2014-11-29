@@ -34,7 +34,7 @@ import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;

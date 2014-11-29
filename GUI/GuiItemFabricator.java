@@ -17,7 +17,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemFabricator;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
 
 public class GuiItemFabricator extends GuiChromaBase {
 

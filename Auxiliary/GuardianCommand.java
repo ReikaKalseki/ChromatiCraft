@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumChatFormatting;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 

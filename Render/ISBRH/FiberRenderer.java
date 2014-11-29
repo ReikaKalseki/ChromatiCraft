@@ -20,7 +20,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
 import Reika.DragonAPI.Instantiable.Rendering.WorldPipingRenderer;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 

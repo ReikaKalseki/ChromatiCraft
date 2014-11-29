@@ -26,8 +26,8 @@ import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.TileEntityItemStand;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiCastingTable extends GuiChromaBase {

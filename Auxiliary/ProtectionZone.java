@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public final class ProtectionZone {

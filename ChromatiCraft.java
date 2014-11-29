@@ -44,12 +44,14 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.ChromaResearchCommand;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
@@ -66,7 +68,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
@@ -121,6 +123,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final TabChromatiCraft tabChroma = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft");
 	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Tools");
 	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Items");
+	public static final TabChromatiCraft tabChromaFragments = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Fragments");
 
 	static final Random rand = new Random();
 
@@ -140,6 +143,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static PotionGrowthHormone growth;
 	public static PotionBetterSaturation betterSat;
+
+	public static final PylonDamage pylon = new PylonDamage("got too close to a Crystal Pylon");
 
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
@@ -237,6 +242,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
+		tabChromaFragments.setIcon(ChromaItems.FRAGMENT.getStackOf());
 
 		if (!this.isLocked()) {
 			//if (ConfigRegistry.ACHIEVEMENTS.getState()) {
@@ -415,6 +421,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
 		evt.registerServerCommand(new ProgressionStageCommand());
+		evt.registerServerCommand(new ChromaResearchCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
 	}
 

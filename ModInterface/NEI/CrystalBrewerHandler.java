@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalBrewer;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;

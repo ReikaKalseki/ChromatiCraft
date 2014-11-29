@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

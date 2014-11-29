@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
-import Reika.ChromatiCraft.TileEntity.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Base.CoreContainer;
 
 public class ContainerSpawnerProgrammer extends CoreContainer {

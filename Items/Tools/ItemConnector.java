@@ -18,7 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.TileEntity.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.Interfaces.Connectable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 

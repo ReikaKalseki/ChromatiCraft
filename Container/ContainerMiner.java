@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Container;
 
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.TileEntity.TileEntityMiner;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.DragonAPI.Base.CoreContainer;
 
 public class ContainerMiner extends CoreContainer {

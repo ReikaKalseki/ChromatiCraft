@@ -18,7 +18,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
 
 public class BlockFiberOptic extends BlockCrystalTile {
 
