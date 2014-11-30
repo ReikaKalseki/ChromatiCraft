@@ -39,8 +39,8 @@ import com.google.common.collect.TreeMultimap;
 
 public class GuiNavigation extends ChromaBookGui {
 
-	private int offsetX = 0;
-	private int offsetY = 0;
+	private static int offsetX = 0;
+	private static int offsetY = 0;
 
 	private int maxX = 0;
 	private int maxY = 0;
@@ -53,6 +53,11 @@ public class GuiNavigation extends ChromaBookGui {
 	private final TreeMap<ChromaResearch, Section> sections = new TreeMap();
 	private static final int SectionSpacing = 32;
 	private static RegionMap<SectionElement> locations = new RegionMap();
+
+	public static void resetOffset() {
+		offsetX = 0;
+		offsetY = 0;
+	}
 
 	public GuiNavigation(EntityPlayer ep) {
 		super(ep, 256, 220);
@@ -195,7 +200,7 @@ public class GuiNavigation extends ChromaBookGui {
 		int dy = y+1;
 		for (Section z : sections.values()) {
 			int dx = x+4;
-			int n = 4;
+			int n = z.allOneLevel() ? 10 : 4;
 			int c = 0xffffff;
 			int ddx = dx+z.getWidth(n);
 			int ddy = dy+z.getHeight(n);
@@ -236,6 +241,14 @@ public class GuiNavigation extends ChromaBookGui {
 
 		public Section(String s) {
 			title = s;
+		}
+
+		public int getLevelCount() {
+			return elements.keySet().size();
+		}
+
+		public boolean allOneLevel() {
+			return this.getLevelCount() == 1;
 		}
 
 		public void addElement(SectionElement e) {
@@ -381,6 +394,8 @@ public class GuiNavigation extends ChromaBookGui {
 				return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
 			case INTRO:
 				return ChromaGuis.INFO;
+			case STRUCTUREDESC:
+				return ChromaGuis.STRUCTURE;
 			default:
 				return null;
 			}

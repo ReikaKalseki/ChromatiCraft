@@ -29,9 +29,4 @@ public class GuiResourceItem extends GuiDescription {
 		super.drawScreen(x, y, f);
 	}
 
-	@Override
-	protected int getMaxSubpage() {
-		return 0;
-	}
-
 }

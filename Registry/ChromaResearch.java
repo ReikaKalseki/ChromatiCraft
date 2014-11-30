@@ -17,6 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -64,11 +66,32 @@ public enum ChromaResearch {
 	CRYSTAL(		ChromaTiles.CRYSTAL, 		ResearchLevel.PYLONCRAFT),
 	INFUSER(		ChromaTiles.INFUSER, 		ResearchLevel.RUNECRAFT),
 	FABRICATOR(		ChromaTiles.FABRICATOR, 	ResearchLevel.PYLONCRAFT),
+	ENCHANTER(		ChromaTiles.ENCHANTER, 		ResearchLevel.MULTICRAFT),
+	CHROMAFLOWER(	ChromaTiles.CHROMAFLOWER, 	ResearchLevel.RUNECRAFT),
+	COLLECTOR(		ChromaTiles.COLLECTOR, 		ResearchLevel.ENERGYEXPLORE),
+	BREWER(			ChromaTiles.BREWER, 		ResearchLevel.BASICCRAFT),
+	RITUALTABLE(	ChromaTiles.RITUAL, 		ResearchLevel.ENERGYEXPLORE),
+	CASTTABLE(		ChromaTiles.TABLE, 			ResearchLevel.ENTRY),
+	BEACON(			ChromaTiles.BEACON, 		ResearchLevel.PYLONCRAFT),
+	ITEMCOLLECTOR(	ChromaTiles.ITEMCOLLECTOR, 	ResearchLevel.MULTICRAFT),
+	AISHUTDOWN(		ChromaTiles.AISHUTDOWN, 	ResearchLevel.MULTICRAFT),
+	ASPECT(			ChromaTiles.ASPECT, 		ResearchLevel.ENERGYEXPLORE),
+	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
+	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.PYLONCRAFT),
+	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.BASICCRAFT),
 
 	TOOLDESC("Tools", ""),
 	FINDER(			ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
 	EXCAVATOR(		ChromaItems.EXCAVATOR, 		ResearchLevel.CHARGESELF),
 	TRANSITION(		ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
+	INVLINK(		ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
+	PENDANT(		ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
+	VACUUMGUN(		ChromaItems.VACUUMGUN, 		ResearchLevel.MULTICRAFT),
+	LENS(			ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
+	STORAGE(		ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
+	LINKTOOL(		ChromaItems.LINKTOOL, 		ResearchLevel.MULTICRAFT),
+	WARP(			ChromaItems.WARP, 			ResearchLevel.ENERGYEXPLORE),
+	FRAGMENT(		ChromaItems.FRAGMENT, 		ResearchLevel.ENTRY),
 
 	RESOURCEDESC("Resources", ""),
 	SHARDS("Shards",				ChromaStacks.redShard, 							ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
@@ -76,12 +99,30 @@ public enum ChromaResearch {
 	GROUPS("Groups",				ChromaStacks.crystalCore, 						ResearchLevel.BASICCRAFT),
 	BINDING("Ores",					ChromaStacks.bindingCrystal,					ResearchLevel.RUNECRAFT),
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 	ResearchLevel.BASICCRAFT),
+	SEED("Crystal Seeds",			ChromaItems.TRANSITION, 						ResearchLevel.RAWEXPLORE),
 
 	ABILITYDESC("Abilities", ""),
-	REACH("Reach",					Chromabilities.REACH),
-	MAGNET("Magnetism",				Chromabilities.MAGNET),
-	SONIC("Blast",					Chromabilities.SONIC),
-	SHIFT("Shift",					Chromabilities.SHIFT)
+	REACH(			Chromabilities.REACH),
+	MAGNET(			Chromabilities.MAGNET),
+	SONIC(			Chromabilities.SONIC),
+	SHIFT(			Chromabilities.SHIFT),
+	HEAL(			Chromabilities.HEAL),
+	SHIELD(			Chromabilities.SHIELD),
+	FIREBALL(		Chromabilities.FIREBALL),
+	COMMUNICATE(	Chromabilities.COMMUNICATE),
+	HEALTH(			Chromabilities.HEALTH),
+	PYLONPROTECT(	Chromabilities.PYLON),
+
+	STRUCTUREDESC("Structures", ""),
+	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	CASTING1(		ChromaStructures.Structures.CASTING1,	0,	ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
+	CASTING2(		ChromaStructures.Structures.CASTING2,	1,	ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
+	CASTING3(		ChromaStructures.Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	RITUAL	(		ChromaStructures.Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	INFUSION(		ChromaStructures.Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
+	TREE(			ChromaStructures.Structures.TREE,		14,	ResearchLevel.PYLONCRAFT,		ProgressStage.LINK),
+	REPEATERSTRUCT(	ChromaStructures.Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
+	COMPOUNDSTRUCT(	ChromaStructures.Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
 	;
 
 	private final ItemStack iconItem;
@@ -91,7 +132,8 @@ public enum ChromaResearch {
 	private ChromaItems item;
 	private final ProgressStage[] progress;
 	public final ResearchLevel level;
-	private final Chromabilities ability;
+	private Chromabilities ability;
+	private Structures struct;
 
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
@@ -140,15 +182,22 @@ public enum ChromaResearch {
 		pageTitle = name;
 		progress = p;
 		level = rl;
-		ability = null;
 	}
 
-	private ChromaResearch(String name, Chromabilities c, ProgressStage... p) {
+	private ChromaResearch(Chromabilities c, ProgressStage... p) {
 		iconItem = ChromaTiles.RITUAL.getCraftedProduct();
-		pageTitle = name;
+		pageTitle = c.getDisplayName();
 		progress = p;
 		level = ResearchLevel.PYLONCRAFT;
 		ability = c;
+	}
+
+	private ChromaResearch(Structures s, int meta, ResearchLevel r, ProgressStage... p) {
+		iconItem = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, meta);
+		pageTitle = s.getDisplayName();
+		progress = p;
+		level = r;
+		struct = s;
 	}
 
 	public boolean playerCanSee(EntityPlayer ep) {
@@ -172,6 +221,10 @@ public enum ChromaResearch {
 
 	public Chromabilities getAbility() {
 		return ability;
+	}
+
+	public Structures getStructure() {
+		return struct;
 	}
 
 	public ChromaTiles getMachine() {
@@ -211,6 +264,8 @@ public enum ChromaResearch {
 			return true;
 		if (this == GROUPS)
 			return true;
+		if (this == CRYSTALSTONE)
+			return true;
 		return false;
 	}
 
@@ -221,6 +276,21 @@ public enum ChromaResearch {
 	private ArrayList<ItemStack> getItemStacks() {
 		if (this.isMachine())
 			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
+		if (this == STORAGE) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
+				li.add(ChromaItems.STORAGE.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == PENDANT) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaItems.PENDANT.getStackOfMetadata(i));
+				li.add(ChromaItems.PENDANT3.getStackOfMetadata(i));
+			}
+			return li;
+		}
 		if (item != null) {
 			return ReikaJavaLibrary.makeListFrom(item.getStackOf());
 		}
@@ -228,6 +298,13 @@ public enum ChromaResearch {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < 13; i++) {
 				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == CRYSTALSTONE) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.PYLONSTRUCT.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, i));
 			}
 			return li;
 		}

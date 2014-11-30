@@ -78,7 +78,7 @@ public enum ChromaBlocks implements BlockEnum {
 	//ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
-	RAINBOWCRYSTAL(BlockRainbowCrystal.class, 										"crystal.rainbow"),
+	RAINBOWCRYSTAL(BlockRainbowCrystal.class, 									"crystal.rainbow"),
 	LAMP(BlockCrystalLamp.class, 				ItemBlockCrystal.class, 		"crystal.lamp"),
 	SUPER(BlockSuperCrystal.class, 				ItemBlockCrystal.class, 		"crystal.super"),
 	PLANT(BlockCrystalPlant.class, 				ItemBlockCrystalPlant.class, 	"crystal.plant"),

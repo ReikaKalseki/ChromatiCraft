@@ -33,6 +33,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -84,6 +85,10 @@ public enum Chromabilities {
 	private static final HashMap<String, Chromabilities> tagMap = new HashMap();
 
 	public static final Chromabilities[] abilities = values();
+
+	public String getDisplayName() {
+		return StatCollector.translateToLocal("chromability."+this.name().toLowerCase());
+	}
 
 	public ElementTagCompound getTickCost() {
 		if (tickBased) {

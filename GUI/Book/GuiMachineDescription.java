@@ -9,11 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiMachineDescription extends GuiDescription {
+
+	private float renderq = 22.5F;
 
 	public GuiMachineDescription(EntityPlayer ep, ChromaResearch r) {
 		super(ep, r, 256, 220);
@@ -31,38 +44,80 @@ public class GuiMachineDescription extends GuiDescription {
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		boolean disable = page.isConfigDisabled();
-		int c = disable ? 0x777777 : 0xffffff;
-		int px = posX+descX;
-		if (subpage == 0 || page.sameTextAllSubpages()) {
-			fontRendererObj.drawSplitString(String.format("%s", page.getData()), px, posY+descY, 242, c);
-		}
-		else {
-			fontRendererObj.drawSplitString(String.format("%s", page.getNotes()), px, posY+descY, 242, c);
-		}
-		if (disable) {
-			fontRendererObj.drawSplitString("This machine has been disabled by your server admin or modpack creator.", px, posY+descY, 242, 0xffffff);
-			fontRendererObj.drawSplitString("Contact them for further information or to request that they remove this restriction.", px, posY+descY+27, 242, 0xffffff);
-			fontRendererObj.drawSplitString("If you are the server admin or pack creator, use the configuration files to change this setting.", px, posY+descY+54, 242, 0xffffff);
-		}
-
-		//if (subpage == 0)
-		//	this.drawMachineRender(posX, posY);
+		if (subpage == 0)
+			this.drawMachineRender(posX, posY);
 	}
 
-	@Override
-	protected int getMaxSubpage() {
-		return 0;
-	}
+	private void drawMachineRender(int posX, int posY) {
+		GL11.glTranslated(0, 0, 32);
+		GL11.glColor4f(1, 1, 1, 1);
+		double x = posX+167;
+		double y = posY+44;
+		//float q = 12.5F + fscale*(float)Math.sin(System.nanoTime()/1000000000D); //wobble
+		//ReikaJavaLibrary.pConsole(y-ReikaGuiAPI.instance.getMouseScreenY(height));
+		int range = 64;
+		boolean rotate = ReikaGuiAPI.instance.isMouseInBox((int)x-range/2, (int)x+range/2, (int)y-range, (int)y+range);
 
-	@Override
-	public String getPageTitle() {
-		return page.isConfigDisabled() ? page.getTitle()+" (Disabled)" : super.getPageTitle();
-	}
+		if (Mouse.isButtonDown(0) && rotate) {
+			int mvy = Mouse.getDY();
+			if (mvy < 0 && renderq < 45) {
+				renderq++;
+			}
+			if (mvy > 0 && renderq > -45) {
+				renderq--;
+			}
+		}
+		y -= 8*Math.sin(Math.abs(Math.toRadians(renderq)));
 
-	@Override
-	public int getTitleColor() {
-		return page.isConfigDisabled() ? 0xffffff : super.getTitleColor();
+		ChromaTiles m = page.getMachine();
+
+		if (m.isPlant())
+			renderq = 22.5F;
+
+		GL11.glEnable(GL11.GL_BLEND);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		double sc = 48;
+		GL11.glPushMatrix();
+		int r = (int)(System.nanoTime()/20000000)%360;
+		if (m.isPlant())
+			r = -45;
+		if (m.hasRender()) {
+			double dx = x;
+			double dy = y+m.getRenderOffset();
+			double dz = 0;
+			GL11.glPushMatrix();
+			GL11.glTranslated(dx, dy, dz);
+			GL11.glScaled(sc, -sc, sc);
+			GL11.glRotatef(renderq, 1, 0, 0);
+			GL11.glRotatef(r, 0, 1, 0);
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(m.createTEInstanceForRender(), -0.5, 0, -0.5, 0);
+			GL11.glPopMatrix();
+		}
+		if (m.hasBlockRender()) {
+			double dx = x;
+			double dy = y;
+			double dz = 0;
+			GL11.glPushMatrix();
+			GL11.glTranslated(dx, dy, dz);
+			GL11.glScaled(sc, -sc, sc);
+			GL11.glRotatef(renderq, 1, 0, 0);
+			GL11.glRotatef(r, 0, 1, 0);
+			if (m == ChromaTiles.CRYSTAL) {
+				GL11.glTranslated(-0.5, -0.33, -0.5);
+				CrystalRenderer.renderAllArmsInInventory = true;
+			}
+			ReikaTextureHelper.bindTerrainTexture();
+			rb.renderBlockAsItem(m.getBlock(), m.getBlockMetadata(), 1);
+			CrystalRenderer.renderAllArmsInInventory = false;
+			GL11.glPopMatrix();
+		}
+		GL11.glPopMatrix();
+
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glTranslated(0, 0, -32);
 	}
 
 }

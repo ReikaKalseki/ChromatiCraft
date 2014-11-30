@@ -10,16 +10,62 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaStructures {
+
+	public static enum Structures {
+		PYLON(),
+		CASTING1(),
+		CASTING2(),
+		CASTING3(),
+		RITUAL(),
+		INFUSION(),
+		TREE(),
+		REPEATER(),
+		COMPOUND();
+
+		@SideOnly(Side.CLIENT)
+		public FilledBlockArray getStructureForDisplay() {
+			World w = Minecraft.getMinecraft().theWorld;
+			switch(this) {
+			case PYLON:
+				return getPylonStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/1000)%16]);
+			case CASTING1:
+				return getCastingLevelOne(w, 0, 0, 0);
+			case CASTING2:
+				return getCastingLevelTwo(w, 0, 0, 0);
+			case CASTING3:
+				return getCastingLevelThree(w, 0, 0, 0);
+			case RITUAL:
+				return getRitualStructure(w, 0, 0, 0);
+			case INFUSION:
+				return getInfusionStructure(w, 0, 0, 0);
+			case TREE:
+				return getTreeStructure(w, 0, 0, 0);
+			case REPEATER:
+				return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/1000)%16]);
+			case COMPOUND:
+				return getCompoundRepeaterStructure(w, 0, 0, 0);
+			}
+			return null;
+		}
+
+		public String getDisplayName() {
+			return StatCollector.translateToLocal("chromastruct."+this.name().toLowerCase());
+		}
+	}
 
 	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
@@ -510,6 +556,26 @@ public class ChromaStructures {
 		array.remove(x+3, y+6, z+1);
 		array.remove(x+1, y+6, z+3);
 
+		return array;
+	}
+
+	public static FilledBlockArray getRepeaterStructure(World world, int x, int y, int z, CrystalElement e) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		array.setBlock(x, y-1, z, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
+		array.setBlock(x, y-2, z, b, 0);
+		array.setBlock(x, y-3, z, b, 0);
+		return array;
+	}
+
+	public static FilledBlockArray getCompoundRepeaterStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		array.setBlock(x, y-1, z, b, 9);
+		array.setBlock(x, y-2, z, b, 2);
+		array.setBlock(x, y-3, z, b, 13);
+		array.setBlock(x, y-4, z, b, 2);
+		array.setBlock(x, y-5, z, b, 9);
 		return array;
 	}
 

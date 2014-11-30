@@ -17,7 +17,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -25,6 +24,7 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 
 	public static int renderPass;
+	public static boolean renderAllArmsInInventory = false;
 
 	@Override
 	public void renderInventoryBlock(Block b, int meta, int modelID, RenderBlocks rb) {
@@ -33,7 +33,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//v5.setBrightness(240);
 		int color = ReikaColorAPI.getColorWithBrightnessMultiplier(((CrystalRenderedBlock)b).getTintColor(meta), 0.8F);
 		int alpha = 255;
-		IIcon ico = ChromaBlocks.CRYSTAL.getBlockInstance().getIcon(0, meta);
+		IIcon ico = b.getIcon(0, meta);
 		double u = ico.getMinU();
 		double v = ico.getMinV();
 		double xu = ico.getMaxU();
@@ -51,6 +51,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_I(color, alpha);
 		this.renderXAngledSpike(u, v, xu, xv, 0.1875, w);
+		if (renderAllArmsInInventory)
+			this.renderXAngledSpike(u, v, xu, xv, -0.1875, w);
 		v5.draw();
 
 		v5.startDrawingQuads();
@@ -58,6 +60,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.setNormal(0, 0.5F, 0);
 		v5.setColorRGBA_I(color, alpha);
 		this.renderZAngledSpike(u, v, xu, xv, 0.1875, w);
+		if (renderAllArmsInInventory)
+			this.renderZAngledSpike(u, v, xu, xv, -0.1875, w);
 		v5.draw();
 		//GL11.glEnable(GL11.GL_LIGHTING);
 

@@ -225,7 +225,7 @@ public final class ChromaDescriptions {
 
 	public static String getData(ChromaResearch h) {
 		if (!data.containsKey(h))
-			return "";
+			return "This item has no handbook text yet.";
 		return data.get(h);
 	}
 

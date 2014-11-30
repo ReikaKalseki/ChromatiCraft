@@ -19,6 +19,8 @@ import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
+import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
@@ -62,6 +64,8 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockMap;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public enum ChromaTiles {
 
@@ -326,6 +330,29 @@ public enum ChromaTiles {
 
 	public double getMaxZ(TileEntityChromaticBase te) {
 		return 1;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public int getRenderOffset() {
+		switch(this) {
+		case LASER:
+		case REPEATER:
+		case COMPOUND:
+			return 0;
+		case CHARGER:
+			return 29;
+		default:
+			return 21;
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean hasBlockRender() {
+		return !this.hasRender() || this == ChromaTiles.TANK;
+	}
+
+	public boolean isPlant() {
+		return this.getBlock() instanceof BlockChromaPlantTile || this.getBlock() instanceof BlockDecoPlant;
 	}
 
 }

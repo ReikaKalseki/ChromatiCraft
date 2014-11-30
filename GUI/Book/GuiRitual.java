@@ -75,7 +75,7 @@ public class GuiRitual extends GuiBookSection {
 
 	@Override
 	public String getPageTitle() {
-		return ability.name()+" Ritual";
+		return ability.getDisplayName()+" Ritual";
 	}
 
 	@Override
