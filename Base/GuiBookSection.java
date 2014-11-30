@@ -69,9 +69,6 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			this.initGui();
 			return;
 		}
-		if (buttontimer > 0)
-			return;
-		//Do things
 	}
 
 	protected abstract int getMaxSubpage();
@@ -100,7 +97,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		RUNES("runes"),
 		MULTICAST("multicast"),
 		PYLONCAST("pyloncast"),
-		STRUCT("structure");
+		STRUCT("structure"),
+		RITUAL("ritual");
 
 		private final String endString;
 

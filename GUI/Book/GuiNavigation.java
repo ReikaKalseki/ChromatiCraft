@@ -18,6 +18,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 
 import org.lwjgl.input.Keyboard;
@@ -26,11 +27,13 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.RegionMap;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -44,6 +47,8 @@ public class GuiNavigation extends ChromaBookGui {
 
 	private static final int paneWidth = 242;
 	private static final int paneHeight = 206;
+
+	private static boolean craftMode = false;
 
 	private final TreeMap<ChromaResearch, Section> sections = new TreeMap();
 	private static final int SectionSpacing = 32;
@@ -72,14 +77,14 @@ public class GuiNavigation extends ChromaBookGui {
 			if (s.elements.isEmpty())
 				it.remove();
 			else {
-				System.out.print(maxX+" > ");
 				maxX = Math.max(maxX, leftX+15+s.getWidth(4));
-				System.out.println(maxX);
 				maxY += SectionSpacing+s.getHeight(4);
 			}
 		}
 		maxX -= paneWidth+Section.sectionSpacing+Section.margin*2;
 		maxY -= paneHeight+SectionSpacing/2;
+
+		craftMode = false;
 	}
 
 	@Override
@@ -89,15 +94,30 @@ public class GuiNavigation extends ChromaBookGui {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		//add tabs or whatever
+		String file = "Textures/GUIs/Handbook/buttons.png";
+		if (craftMode) {
+			buttonList.add(new ImagedGuiButton(0, j-13, k-7, 13, 88, 15, 95, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(1, j-13, k+27, 13, 88, 15, 4, file, ChromatiCraft.class));
+		}
+		else {
+			buttonList.add(new ImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class));
+		}
 	}
 
 	@Override
 	public void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
-		if (buttontimer > 0)
-			return;
 		//Do things
+		if (button.id == 0) {
+			craftMode = false;
+			buttonList.clear();
+		}
+		else if (button.id == 1) {
+			craftMode = true;
+			buttonList.clear();
+		}
+		this.initGui();
 	}
 
 	@Override
@@ -198,6 +218,10 @@ public class GuiNavigation extends ChromaBookGui {
 				break;
 		}
 		GL11.glLineWidth(line);
+	}
+
+	private static boolean craftMode() {
+		return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ^ craftMode;
 	}
 
 	private static class Section/* implements Comparable<Section>*/ {
@@ -323,25 +347,38 @@ public class GuiNavigation extends ChromaBookGui {
 
 		public void draw(int x, int y) {
 			api.drawItemStack(itemRender, this.getIcon(), x, y);
-			if (destination.isCrafting()) {
-				ReikaJavaLibrary.pConsole(this);
+			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
+				GL11.glPushMatrix();
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glTranslated(0, 0, 400);
+				ReikaTextureHelper.bindTerrainTexture();
+				IIcon ico = ChromaTiles.TABLE.getBlock().getIcon(1, ChromaTiles.TABLE.getBlockMetadata());
+				if (destination.isAbility()) {
+					ico = ChromaTiles.RITUAL.getBlock().getIcon(1, ChromaTiles.RITUAL.getBlockMetadata());
+				}
+				api.drawTexturedModelRectFromIcon(x+8, y+8, ico, 9, 9);
+				if (destination.isCrafting() && !destination.isCraftable()) {
+					GL11.glEnable(GL11.GL_BLEND);
+					ico = ChromaIcons.NOENTER.getIcon();
+					GL11.glColor4f(1, 1, 1, 0.75F);
+					api.drawTexturedModelRectFromIcon(x+8, y+8, ico, 9, 9);
+					GL11.glDisable(GL11.GL_BLEND);
+				}
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glPopMatrix();
 			}
 		}
 
 		public ChromaGuis getGuiType() {
-			if (false) {
-				//return ChromaGuis.RECIPE;
-				//return ChromaGuis.RITUAL;
-			}
 			switch(destination.getParent()) {
 			case MACHINEDESC:
-				return ChromaGuis.MACHINEDESC;
+				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.MACHINEDESC;
 			case RESOURCEDESC:
 				return ChromaGuis.RESOURCEDESC;
 			case TOOLDESC:
-				return ChromaGuis.TOOLDESC;
+				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.TOOLDESC;
 			case ABILITYDESC:
-				return ChromaGuis.ABILITYDESC;
+				return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
 			case INTRO:
 				return ChromaGuis.INFO;
 			default:

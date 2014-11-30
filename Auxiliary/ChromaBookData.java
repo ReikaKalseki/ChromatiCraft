@@ -31,7 +31,7 @@ public class ChromaBookData {
 
 	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY) {
 		if (h.isCrafting()) {
-			ArrayList<CastingRecipe> li = h.getCrafting();
+			ArrayList<CastingRecipe> li = h.getCraftingRecipes();
 			if (!li.isEmpty()) {
 				CastingRecipe c = li.get(recipe);
 				drawCastingRecipe(fr, ri, c, subpage, posX, posY);
@@ -50,7 +50,7 @@ public class ChromaBookData {
 				ItemStack in = arr[i];
 				if (in != null) {
 					int x = subpage == 0 ? 54 : 102;
-					int y = subpage == 0 ? 10 : 53;
+					int y = subpage == 0 ? 10 : 76;
 					int dx = x+posX+i%3*18;
 					int dy = y+posY+i/3*18;
 					gui.drawItemStackWithTooltip(ri, fr, in, dx, dy);
@@ -70,7 +70,7 @@ public class ChromaBookData {
 				int tx = Math.abs(i) == 2 ? 38 : 64;
 				int ty = Math.abs(k) == 2 ? 38 : 63;
 				int dx = 205+sx*(tx);
-				int dy = 81+sy*(ty);
+				int dy = 104+sy*(ty);
 				ItemStack out = items.get(key);
 				gui.drawItemStackWithTooltip(ri, fr, out, dx, dy);
 			}

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Instantiable.RecipePattern;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -115,6 +117,20 @@ public class CastingRecipe {
 	@Override
 	public String toString() {
 		return super.toString()+" _ "+type+" > "+out.getDisplayName();
+	}
+
+	public ItemHashMap<Integer> getItemCounts() {
+		ItemHashMap<Integer> map = new ItemHashMap();
+		ItemStack[] items = this.getArrayForDisplay();
+		for (int i = 0; i < 9; i++) {
+			ItemStack is = items[i];
+			if (is != null) {
+				Integer num = map.get(is);
+				int n = num != null ? num.intValue() : 0;
+				map.put(is, n+1);
+			}
+		}
+		return map;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {
@@ -284,6 +300,20 @@ public class CastingRecipe {
 		@Override
 		protected ProgressStage getRequiredProgress() {
 			return ProgressStage.MULTIBLOCK;
+		}
+
+		@Override
+		public ItemHashMap<Integer> getItemCounts() {
+			ItemHashMap<Integer> map = new ItemHashMap();
+			ItemStack[] items = this.getArrayForDisplay();
+			map.put(items[4], 1);
+			Collection<ItemStack> c = this.getAuxItems().values();
+			for (ItemStack is : c) {
+				Integer num = map.get(is);
+				int n = num != null ? num.intValue() : 0;
+				map.put(is, n+1);
+			}
+			return map;
 		}
 	}
 

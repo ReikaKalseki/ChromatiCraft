@@ -198,23 +198,19 @@ public enum ChromaResearch {
 		return false;
 	}
 
-	public boolean isCrafting() {
+	public boolean isAbility() {
 		if (isParent)
 			return false;
-		if (this.isSmelting())
+		return this.getParent() == ABILITYDESC;
+	}
+
+	public boolean isCrafting() {
+		if (isParent)
 			return false;
 		if (this.isMachine() || this.isTool())
 			return true;
 		if (this == GROUPS)
 			return true;
-		//if (this.getParent() == TOC || this.getParent() == TERMS)
-		//	return false;
-		//if (this == MODINTERFACE)
-		//	return false;
-		return false;
-	}
-
-	public boolean isSmelting() {
 		return false;
 	}
 
@@ -239,10 +235,14 @@ public enum ChromaResearch {
 	}
 
 	public int getRecipeCount() {
-		return this.getCrafting().size();
+		return this.getCraftingRecipes().size();
 	}
 
-	public ArrayList<CastingRecipe> getCrafting() {
+	public boolean isCraftable() {
+		return !this.isConfigDisabled() && this.isCrafting() ? this.getRecipeCount() > 0  : false;
+	}
+
+	public ArrayList<CastingRecipe> getCraftingRecipes() {
 		if (!this.isCrafting())
 			return new ArrayList();
 		ArrayList<ItemStack> li = this.getItemStacks();
@@ -256,7 +256,7 @@ public enum ChromaResearch {
 	}
 
 	public RecipeType getRecipeLevel(int recipe) {
-		ArrayList<CastingRecipe> li = this.getCrafting();
+		ArrayList<CastingRecipe> li = this.getCraftingRecipes();
 		if (li.isEmpty())
 			return null;
 		return li.get(recipe).type;

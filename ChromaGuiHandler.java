@@ -11,8 +11,6 @@ package Reika.ChromatiCraft;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
@@ -57,7 +55,6 @@ import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -192,9 +189,9 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case RESOURCEDESC:
 			return new GuiResourceItem(player, ChromaResearch.researchList[x]);
 		case RECIPE:
-			return new GuiCastingRecipe(player, new ItemStack(Item.getItemById(x), 1, y));
+			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getTabIcon());
 		case RITUAL:
-			return new GuiRitual(player, Chromabilities.abilities[x]);
+			return new GuiRitual(player, ChromaResearch.researchList[x].getAbility());
 		case ABILITYDESC:
 			return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
 		case INFO:

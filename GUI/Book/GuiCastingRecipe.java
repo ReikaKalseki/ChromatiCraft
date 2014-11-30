@@ -16,14 +16,22 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
@@ -44,15 +52,27 @@ public class GuiCastingRecipe extends GuiBookSection {
 	@Override
 	public void initGui() {
 		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		if (recipes.size() > 1) {
+			String file = "Textures/GUIs/Handbook/buttons.png";
+			buttonList.add(new ImagedGuiButton(0, j+135, k-3, 36, 10, 126, 6, "Prev", 0x000000, false, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(1, j+185, k-3, 36, 10, 126, 6, "Next", 0x000000, false, file, ChromatiCraft.class));
+		}
 	}
 
 	@Override
 	public void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
-		if (buttontimer > 0)
-			return;
-		buttontimer = 20;
-		subpage = 0; //?
+
+		if (button.id == 0 && index > 0) {
+			index--;
+		}
+		else if (button.id == 1 && index < recipes.size()-1) {
+			index++;
+		}
 		//renderq = 22.5F;
 		this.initGui();
 	}
@@ -107,7 +127,28 @@ public class GuiCastingRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxGraphics(int posX, int posY) {
-		//HandbookAuxData.drawGraphics((ChromaBook)this.getEntry(), posX, posY, xSize, ySize, fontRendererObj, ri, subpage);
+		if (subpage == 0) {
+			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCounts();
+			int i = 0;
+			for (ItemStack is : items.keySet()) {
+				int num = items.get(is);
+				String s = String.format("%s%s: x%d", is.getDisplayName(), EnumChatFormatting.RESET.toString(), num);
+				fontRendererObj.drawString(s, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, 0xffffff);
+				i++;
+			}
+		}
+		if (subpage == 3) {
+			ElementTagCompound tag = ((PylonRecipe)this.getActiveRecipe()).getRequiredAura();
+			int i = 0;
+			for (CrystalElement e : tag.elementSet()) {
+				String s1 = String.format("%s:", e.displayName);
+				String s2 = String.format("%d Lumens", tag.getValue(e));
+				int color = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
+				fontRendererObj.drawString(s1, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, color);
+				fontRendererObj.drawString(s2, posX+descX+3+56, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, color);
+				i++;
+			}
+		}
 	}
 
 	@Override
@@ -128,7 +169,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	public String getPageTitle() {
-		return "Casting";
+		return this.getActiveRecipe().getOutput().getDisplayName()+" Casting";
 	}
 
 }

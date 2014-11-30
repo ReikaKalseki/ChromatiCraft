@@ -284,7 +284,7 @@ public class RecipesCastingTable {
 			if (ir != null) {
 				for (int i = 0; i < ir.size(); i++) {
 					CastingRecipe r = ir.get(i);
-					if (ReikaItemHelper.matchStacks(result, r.getOutput()) && ItemStack.areItemStackTagsEqual(result, r.getOutput()))
+					if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
 						li.add(r);
 				}
 			}
