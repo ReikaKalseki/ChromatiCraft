@@ -24,7 +24,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -39,10 +38,11 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	private final ArrayList<CastingRecipe> recipes;
 	private int index = 0;
+	private int recipeTextOffset = 0;
 
-	public GuiCastingRecipe(EntityPlayer ep, ItemStack out) {
+	public GuiCastingRecipe(EntityPlayer ep, ArrayList<CastingRecipe> out) {
 		super(ep, null, 256, 220);
-		recipes = RecipesCastingTable.instance.getAllRecipesMaking(out);
+		recipes = new ArrayList(out);
 	}
 
 	private CastingRecipe getActiveRecipe() {
@@ -56,10 +56,15 @@ public class GuiCastingRecipe extends GuiBookSection {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		String file = "Textures/GUIs/Handbook/buttons.png";
 		if (recipes.size() > 1) {
-			String file = "Textures/GUIs/Handbook/buttons.png";
-			buttonList.add(new ImagedGuiButton(0, j+135, k-3, 36, 10, 126, 6, "Prev", 0x000000, false, file, ChromatiCraft.class));
-			buttonList.add(new ImagedGuiButton(1, j+185, k-3, 36, 10, 126, 6, "Next", 0x000000, false, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(0, j+195, k-3, 10, 12, 183, 6, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(1, j+205, k-3, 10, 12, 193, 6, file, ChromatiCraft.class));
+		}
+
+		if (subpage == 0 && this.getActiveRecipe().getItemCounts().size() > 10) {
+			buttonList.add(new ImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class));
 		}
 	}
 
@@ -72,6 +77,12 @@ public class GuiCastingRecipe extends GuiBookSection {
 		}
 		else if (button.id == 1 && index < recipes.size()-1) {
 			index++;
+		}
+		if (button.id == 2 && recipeTextOffset > 0) {
+			recipeTextOffset--;
+		}
+		else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCounts().size()-11) {
+			recipeTextOffset++;
 		}
 		//renderq = 22.5F;
 		this.initGui();
@@ -129,12 +140,14 @@ public class GuiCastingRecipe extends GuiBookSection {
 	protected void drawAuxGraphics(int posX, int posY) {
 		if (subpage == 0) {
 			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCounts();
-			int i = 0;
-			for (ItemStack is : items.keySet()) {
+			ArrayList<ItemStack> li = new ArrayList(items.keySet());
+			for (int i = recipeTextOffset; i < li.size(); i++) {
+				ItemStack is = li.get(i);
 				int num = items.get(is);
 				String s = String.format("%s%s: x%d", is.getDisplayName(), EnumChatFormatting.RESET.toString(), num);
-				fontRendererObj.drawString(s, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, 0xffffff);
-				i++;
+				fontRendererObj.drawString(s, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*(i-recipeTextOffset), 0xffffff);
+				if (i-recipeTextOffset > 9)
+					break;
 			}
 		}
 		if (subpage == 3) {

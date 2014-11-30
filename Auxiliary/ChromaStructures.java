@@ -180,6 +180,8 @@ public class ChromaStructures {
 
 		array.setBlock(x, y+2, z, ChromaTiles.RITUAL.getBlock(), ChromaTiles.RITUAL.getBlockMetadata());
 
+		array.remove(x, y, z);
+
 		return array;
 	}
 
@@ -316,6 +318,8 @@ public class ChromaStructures {
 			array.remove(x+i, y, z+2);
 		}
 
+		array.remove(x, y, z);
+
 		array.setBlock(x-6, y+5, z-6, Blocks.redstone_block);
 		array.setBlock(x+6, y+5, z-6, Blocks.redstone_block);
 		array.setBlock(x+6, y+5, z+6, Blocks.redstone_block);
@@ -413,6 +417,9 @@ public class ChromaStructures {
 		array.setBlock(x, y+6, z+6, Blocks.diamond_block);
 		array.setBlock(x+6, y+6, z, Blocks.diamond_block);
 		array.setBlock(x-6, y+6, z, Blocks.diamond_block);
+
+		array.remove(x, y, z);
+
 		return array;
 	}
 

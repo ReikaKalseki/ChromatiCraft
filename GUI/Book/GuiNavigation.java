@@ -374,7 +374,7 @@ public class GuiNavigation extends ChromaBookGui {
 			case MACHINEDESC:
 				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.MACHINEDESC;
 			case RESOURCEDESC:
-				return ChromaGuis.RESOURCEDESC;
+				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.RESOURCEDESC;
 			case TOOLDESC:
 				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.TOOLDESC;
 			case ABILITYDESC:

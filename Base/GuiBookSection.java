@@ -40,10 +40,12 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		buttonList.add(new GuiButton(50, j+xSize-27, k-2, 20, 20, "R"));	//back to main navigation
+		buttonList.add(new GuiButton(50, j+xSize-27, k-2, 20, 20, "X"));	//back to main navigation
 
-		buttonList.add(new GuiButton(13, j+xSize-27, k+32, 20, 20, ">"));
-		buttonList.add(new GuiButton(14, j+xSize-27, k+52, 20, 20, "<"));
+		if (this.getMaxSubpage() > 0) {
+			buttonList.add(new GuiButton(13, j+xSize-27, k+32, 20, 20, ">"));
+			buttonList.add(new GuiButton(14, j+xSize-27, k+52, 20, 20, "<"));
+		}
 	}
 
 	protected final void reloadXMLData() {

@@ -40,6 +40,7 @@ import ttftcuts.atg.api.ATGBiomes;
 import ttftcuts.atg.api.ATGBiomes.BiomeType;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.ReachApplier;
+import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
@@ -81,6 +82,7 @@ import Reika.DragonAPI.Auxiliary.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.CompatibilityTracker;
 import Reika.DragonAPI.Auxiliary.IntegrityChecker;
+import Reika.DragonAPI.Auxiliary.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.PlayerHandler;
 import Reika.DragonAPI.Auxiliary.PotionCollisionTracker;
 import Reika.DragonAPI.Auxiliary.SuggestedModsTracker;
@@ -284,6 +286,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
+		ChromaChests.addToChests();
+
 		if (!this.isLocked())
 			;//RotaryNames.addNames();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ChromaGuiHandler());
@@ -308,8 +312,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			PlayerHandler.instance.registerTracker(ReachApplier.instance);
 		}
 
-		//if (ConfigRegistry.HANDBOOK.getState())
-		;//PlayerFirstTimeTracker.addTracker(new ChromatiBookTracker());
+		if (ChromaOptions.HANDBOOK.getState())
+			PlayerFirstTimeTracker.addTracker(new ChromaBookSpawner());
 
 		ReikaMystcraftHelper.disableFluidPage("chroma");
 

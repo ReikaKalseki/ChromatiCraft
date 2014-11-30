@@ -21,10 +21,8 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -62,7 +60,6 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event;
@@ -343,15 +340,17 @@ public class ChromaticEventManager {
 	public void pylonDrops(LivingDropsEvent ev) {
 		if (ev.source instanceof PylonDamage) {
 			EntityLivingBase e = ev.entityLiving;
-			int n = ReikaRandomHelper.getInverseLinearRandom(3);
-			if (e instanceof EntityVillager || e instanceof EntityWitch || e instanceof EntityPlayer)
-				n++;
-			if (e instanceof EntityPlayer)
-				n *= 2;
-			n = Math.min(n, 4);
-			World world = e.worldObj;
-			for (int i = 0; i < n; i++) {
-				ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOfMetadata(0));
+			int n = 0;
+			int r = rand.nextInt(6);
+			if (r == 0)
+				n = 2;
+			else if (r <= 2)
+				n = 1;
+			if (n > 0) {
+				World world = e.worldObj;
+				for (int i = 0; i < n; i++) {
+					ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOfMetadata(0));
+				}
 			}
 		}
 	}

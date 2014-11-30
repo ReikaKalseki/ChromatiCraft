@@ -10,28 +10,13 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
-public class GuiAbilityDesc extends GuiBookSection {
+public class GuiAbilityDesc extends GuiDescription {
 
 	public GuiAbilityDesc(EntityPlayer ep, ChromaResearch r) {
 		super(ep, r, 256, 220);
-	}
-
-	@Override
-	protected PageType getGuiLayout() {
-		return PageType.PLAIN;
-	}
-
-	@Override
-	public final void drawScreen(int x, int y, float f) {
-		super.drawScreen(x, y, f);
-	}
-
-	@Override
-	protected int getMaxSubpage() {
-		return 0;
 	}
 
 }

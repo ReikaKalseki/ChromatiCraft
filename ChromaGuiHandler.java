@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.GUI.Book.GuiResourceItem;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
+import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -189,13 +190,15 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case RESOURCEDESC:
 			return new GuiResourceItem(player, ChromaResearch.researchList[x]);
 		case RECIPE:
-			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getTabIcon());
+			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes());
 		case RITUAL:
 			return new GuiRitual(player, ChromaResearch.researchList[x].getAbility());
 		case ABILITYDESC:
 			return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
 		case INFO:
 			return new GuiChromaInfo(player, ChromaResearch.researchList[x]);
+		case STRUCTURE:
+			return new GuiStructure(player, ChromaResearch.researchList[x]);
 		default:
 			break;
 		}

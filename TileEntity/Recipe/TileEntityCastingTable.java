@@ -440,10 +440,13 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (inv[9] != null) {
 			for (int i = 0; i < 6; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
-				if (te instanceof IInventory)
-					ReikaInventoryHelper.addToIInv(inv[9], (IInventory)te);
+				if (te instanceof IInventory) {
+					if (ReikaInventoryHelper.addToIInv(inv[9], (IInventory)te)) {
+						inv[9] = null;
+						break;
+					}
+				}
 			}
-			inv[9] = null;
 		}
 		RecipesCastingTable.setPlayerHasCrafted(this.getPlacer(), activeRecipe.type);
 		if (!repeat) {
