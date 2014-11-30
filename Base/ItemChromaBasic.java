@@ -101,14 +101,20 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		ChromaItems ir = ChromaItems.getEntry(is);
 		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			if (this instanceof TieredItem) {
-				name = this.obfuscateIf(name, is);
-			}
-			else if (this instanceof ItemCrystalBasic) {
-				CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
-				if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
-					name = EnumChatFormatting.OBFUSCATED.toString()+name;
-				}
+			name = this.obfuscate(name, is);
+		}
+		return name;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private String obfuscate(String name, ItemStack is) {
+		if (this instanceof TieredItem) {
+			name = this.obfuscateIf(name, is);
+		}
+		else if (this instanceof ItemCrystalBasic) {
+			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
+			if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
+				name = EnumChatFormatting.OBFUSCATED.toString()+name;
 			}
 		}
 		return name;
