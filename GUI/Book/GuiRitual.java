@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Base.GuiBookSection;
@@ -20,7 +21,7 @@ public class GuiRitual extends GuiBookSection {
 	private final Chromabilities ability;
 
 	public GuiRitual(EntityPlayer ep, Chromabilities r) {
-		super(ep, 256, 220);
+		super(ep, null, 256, 220);
 		ability = r;
 	}
 
@@ -41,6 +42,27 @@ public class GuiRitual extends GuiBookSection {
 	@Override
 	protected int getMaxSubpage() {
 		return 0;
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Ritual";
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+	}
+
+	@Override
+	public void actionPerformed(GuiButton button) {
+		super.actionPerformed(button);
+		if (buttontimer > 0)
+			return;
+		buttontimer = 20;
+		subpage = 0; //?
+		//renderq = 22.5F;
+		this.initGui();
 	}
 
 }

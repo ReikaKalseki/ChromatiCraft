@@ -14,7 +14,14 @@ public enum ChromaGuis {
 	TILE(),
 	LINK(),
 	ABILITY(),
-	HANDBOOK();
+	BOOKNAV(),
+	INFO(),
+	RECIPE(),
+	RITUAL(),
+	ABILITYDESC(),
+	MACHINEDESC(),
+	TOOLDESC(),
+	RESOURCEDESC();
 
 	public static final ChromaGuis[] guiList = values();
 

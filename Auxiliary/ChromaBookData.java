@@ -23,32 +23,11 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingR
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.ArrayMap;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 
 public class ChromaBookData {
 
-	private static final ArrayMap<ChromaResearch> tabMappings = new ArrayMap(2);
 	private static final ReikaGuiAPI gui = ReikaGuiAPI.instance;
-
-	private static void mapHandbook() {
-		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch h = ChromaResearch.researchList[i];
-			tabMappings.putV(h, h.getScreen(), h.getPage());
-		}
-	}
-
-	public static ChromaResearch getMapping(int screen, int page) {
-		return tabMappings.getV(screen, page);
-	}
-
-	static {
-		mapHandbook();
-	}
-
-	public static void drawPage(FontRenderer fr, RenderItem ri, int screen, int page, int subpage, int recipe, int posX, int posY) {
-		drawPage(fr, ri, ChromaResearch.getEntry(screen, page), subpage, recipe, posX, posY);
-	}
 
 	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY) {
 		if (h.isCrafting()) {

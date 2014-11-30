@@ -10,16 +10,11 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -29,7 +24,6 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.Instantiable.Data.MultiMap;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public enum ChromaResearch {
@@ -50,7 +44,7 @@ public enum ChromaResearch {
 	PYLONS("Pylons", ChromaTiles.PYLON.getCraftedProduct(), 								ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 							ResearchLevel.ENERGYEXPLORE),
 
-	MACHINESDESC("Constructs", ""),
+	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.MULTICRAFT),
 	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.MULTICRAFT),
@@ -81,7 +75,13 @@ public enum ChromaResearch {
 	DUSTS("Dusts",					ChromaStacks.auraDust, 							ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 						ResearchLevel.BASICCRAFT),
 	BINDING("Ores",					ChromaStacks.bindingCrystal,					ResearchLevel.RUNECRAFT),
-	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 	ResearchLevel.BASICCRAFT),//**
+	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 	ResearchLevel.BASICCRAFT),
+
+	ABILITYDESC("Abilities", ""),
+	REACH("Reach",					Chromabilities.REACH),
+	MAGNET("Magnetism",				Chromabilities.MAGNET),
+	SONIC("Blast",					Chromabilities.SONIC),
+	SHIFT("Shift",					Chromabilities.SHIFT)
 	;
 
 	private final ItemStack iconItem;
@@ -91,6 +91,7 @@ public enum ChromaResearch {
 	private ChromaItems item;
 	private final ProgressStage[] progress;
 	public final ResearchLevel level;
+	private final Chromabilities ability;
 
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
@@ -139,14 +140,15 @@ public enum ChromaResearch {
 		pageTitle = name;
 		progress = p;
 		level = rl;
+		ability = null;
 	}
 
-	public static ChromaResearch getEntry(int screen, int page) {
-		//ReikaJavaLibrary.pConsole(screen+"   "+page);
-		//if (screen < INTRO.getScreen())
-		//	return TOC;
-		ChromaResearch h = ChromaBookData.getMapping(screen, page);
-		return h != null ? h : null;//TOC;
+	private ChromaResearch(String name, Chromabilities c, ProgressStage... p) {
+		iconItem = ChromaTiles.RITUAL.getCraftedProduct();
+		pageTitle = name;
+		progress = p;
+		level = ResearchLevel.PYLONCRAFT;
+		ability = c;
 	}
 
 	public boolean playerCanSee(EntityPlayer ep) {
@@ -164,65 +166,12 @@ public enum ChromaResearch {
 		return this.playerCanSee(ep) || ChromaResearchManager.instance.canPlayerStepTo(ep, this);
 	}
 
-	public static void addRelevantButtons(int j, int k, int screen, List<GuiButton> li) {
-		int id = 0;
-		for (int i = 0; i < researchList.length; i++) {
-			if (researchList[i].getScreen() == screen && researchList[i].playerCanSee(Minecraft.getMinecraft().thePlayer)) {
-				li.add(new ImagedGuiButton(id, j-20, k+id*20-8, 20, 20, 0, 0, researchList[i].getTabImageFile(), ChromatiCraft.class));
-				//ReikaJavaLibrary.pConsole("Adding "+tabList[i]+" with ID "+id+" to screen "+screen);
-				id++;
-			}
-		}
-	}
-
-	public static List<ChromaResearch> getEntriesForScreen(int screen) {
-		//ReikaJavaLibrary.pConsole(screen);
-		List<ChromaResearch> li = new ArrayList<ChromaResearch>();
-		for (int i = 0; i < researchList.length; i++) {
-			if (researchList[i].getScreen() == screen) {
-				li.add(researchList[i]);
-			}
-		}
-		return li;
-	}
-	/*
-	public static List<ChromaBook> getTOCTabs() {
-		ArrayList<ChromaBook> li = new ArrayList<ChromaBook>();
-		for (int i = 0; i < tabList.length; i++) {
-			if (tabList[i].isParent && tabList[i] != TOC)
-				li.add(tabList[i]);
-		}
-		return li;
-	}
-	 */
-	public static List<ChromaResearch> getMachineTabs() {
-		List<ChromaResearch> tabs = new ArrayList<ChromaResearch>();
-		for (int i = 0; i < researchList.length; i++) {
-			ChromaResearch h = researchList[i];
-			if (h.isMachine() && !h.isParent)
-				tabs.add(h);
-		}
-		return tabs;
-	}
-
-	public static ChromaResearch[] getResourceTabs() {
-		int size = researchList.length-RESOURCEDESC.ordinal()-1;
-		ChromaResearch[] tabs = new ChromaResearch[size];
-		System.arraycopy(researchList, RESOURCEDESC.ordinal()+1, tabs, 0, size);
-		return tabs;
-	}
-	/*
-	public static List<ChromaBook> getCategoryTabs() {
-		ArrayList<ChromaBook> li = new ArrayList<ChromaBook>();
-		for (int i = 0; i < tabList.length; i++) {
-			if (tabList[i].isParent && tabList[i] != TOC)
-				li.add(tabList[i]);
-		}
-		return li;
-	}
-	 */
 	public boolean isMachine() {
 		return machine != null;
+	}
+
+	public Chromabilities getAbility() {
+		return ability;
 	}
 
 	public ChromaTiles getMachine() {
@@ -238,8 +187,6 @@ public enum ChromaResearch {
 	}
 
 	public String getData() {
-		//if (this == TOC)
-		//	return ChromaDescriptions.getTOC();
 		return ChromaDescriptions.getData(this);
 	}
 
@@ -323,15 +270,6 @@ public enum ChromaResearch {
 		return this.isCrafting();
 	}
 
-	public static String getTabImageFile() {
-		return "Textures/GUIs/Handbook/tabs.png";
-	}
-
-	public int getRelativeScreen() {
-		int offset = this.ordinal()-this.getParent().ordinal();
-		return offset/8;
-	}
-
 	public ChromaResearch getParent() {
 		ChromaResearch parent = null;
 		for (int i = 0; i < researchList.length; i++) {
@@ -349,17 +287,6 @@ public enum ChromaResearch {
 		return isParent;
 	}
 
-	public int getBaseScreen() {
-		int sc = 0;
-		for (int i = 0; i < this.ordinal(); i++) {
-			ChromaResearch h = researchList[i];
-			if (h.isParent) {
-				sc += h.getNumberChildren()/8+1;
-			}
-		}
-		return sc;
-	}
-
 	public int getNumberChildren() {
 		if (!isParent)
 			return 0;
@@ -374,24 +301,6 @@ public enum ChromaResearch {
 			}
 		}
 		return ch;
-	}
-
-	public int getRelativePage() {
-		int offset = this.ordinal()-this.getParent().ordinal();
-		return offset;
-	}
-
-	public int getRelativeTabPosn() {
-		int offset = this.ordinal()-this.getParent().ordinal();
-		return offset-this.getRelativeScreen()*8;
-	}
-
-	public int getScreen() {
-		return this.getParent().getBaseScreen()+this.getRelativeScreen();
-	}
-
-	public int getPage() {
-		return (this.ordinal()-this.getParent().ordinal())%8;
 	}
 
 	public boolean isConfigDisabled() {

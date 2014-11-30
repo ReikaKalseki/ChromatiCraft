@@ -11,11 +11,12 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 
 public class GuiMachineDescription extends GuiBookSection {
 
-	public GuiMachineDescription(EntityPlayer ep) {
-		super(ep, 256, 220);
+	public GuiMachineDescription(EntityPlayer ep, ChromaResearch r) {
+		super(ep, r, 256, 220);
 	}
 
 	@Override

@@ -13,10 +13,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
-public class GuiAbilityDesc extends GuiBookSection {
+public class GuiToolDescription extends GuiBookSection {
 
-	public GuiAbilityDesc(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220);
+	public GuiToolDescription(EntityPlayer ep, ChromaResearch i) {
+		super(ep, i, 256, 220);
 	}
 
 	@Override

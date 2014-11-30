@@ -24,7 +24,7 @@ public class ItemChromaBook extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		ep.openGui(ChromatiCraft.instance, ChromaGuis.HANDBOOK.ordinal(), world, 0, 0, 0);
+		ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKNAV.ordinal(), world, 0, 0, 0);
 		return is;
 	}
 

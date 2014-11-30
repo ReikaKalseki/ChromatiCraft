@@ -11,6 +11,8 @@ package Reika.ChromatiCraft;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
@@ -44,9 +46,18 @@ import Reika.ChromatiCraft.GUI.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
+import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
+import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
+import Reika.ChromatiCraft.GUI.Book.GuiChromaInfo;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
+import Reika.ChromatiCraft.GUI.Book.GuiResourceItem;
+import Reika.ChromatiCraft.GUI.Book.GuiRitual;
+import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -115,10 +126,6 @@ public class ChromaGuiHandler implements IGuiHandler {
 			if (te instanceof IInventory && !(te instanceof InertIInv))
 				return new ContainerBasicStorage(player, te);
 			break;
-		case ABILITY:
-			return null;
-		case HANDBOOK:
-			return null;
 		default:
 			break;
 		}
@@ -176,9 +183,24 @@ public class ChromaGuiHandler implements IGuiHandler {
 			break;
 		case ABILITY:
 			return new GuiAbilitySelect(player);
-		case HANDBOOK:
+		case BOOKNAV:
 			return new GuiNavigation(player);
-			//return new GuiChromaBook(player);
+		case MACHINEDESC:
+			return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
+		case TOOLDESC:
+			return new GuiToolDescription(player, ChromaResearch.researchList[x]);
+		case RESOURCEDESC:
+			return new GuiResourceItem(player, ChromaResearch.researchList[x]);
+		case RECIPE:
+			return new GuiCastingRecipe(player, new ItemStack(Item.getItemById(x), 1, y));
+		case RITUAL:
+			return new GuiRitual(player, Chromabilities.abilities[x]);
+		case ABILITYDESC:
+			return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
+		case INFO:
+			return new GuiChromaInfo(player, ChromaResearch.researchList[x]);
+		default:
+			break;
 		}
 		return null;
 	}

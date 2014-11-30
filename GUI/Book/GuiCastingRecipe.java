@@ -9,16 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -26,11 +29,16 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class GuiCastingRecipe extends GuiBookSection {
 
-	private final CastingRecipe recipe;
+	private final ArrayList<CastingRecipe> recipes;
+	private int index = 0;
 
-	public GuiCastingRecipe(EntityPlayer ep, CastingRecipe c) {
-		super(ep, 256, 220);
-		recipe = c;
+	public GuiCastingRecipe(EntityPlayer ep, ItemStack out) {
+		super(ep, null, 256, 220);
+		recipes = RecipesCastingTable.instance.getAllRecipesMaking(out);
+	}
+
+	private CastingRecipe getActiveRecipe() {
+		return recipes.get(index);
 	}
 
 	@Override
@@ -79,7 +87,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxData(int posX, int posY) {
-		ChromaBookData.drawCastingRecipe(fontRendererObj, ri, recipe, subpage, posX, posY);
+		ChromaBookData.drawCastingRecipe(fontRendererObj, ri, this.getActiveRecipe(), subpage, posX, posY);
 	}
 
 	private final void drawGraphics() {
@@ -95,7 +103,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	public int getMaxSubpage() {
-		return recipe.type.ordinal();
+		return this.getActiveRecipe().type.ordinal();
 	}
 
 	protected void drawAuxGraphics(int posX, int posY) {
@@ -116,6 +124,11 @@ public class GuiCastingRecipe extends GuiBookSection {
 		this.drawGraphics();
 
 		RenderHelper.disableStandardItemLighting();
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Casting";
 	}
 
 }

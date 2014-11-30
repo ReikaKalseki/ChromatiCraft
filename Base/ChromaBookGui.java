@@ -9,15 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -37,8 +40,6 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 	protected static final ReikaGuiAPI api = ReikaGuiAPI.instance;
 
-	protected ChromaResearch page;
-
 	private static long time;
 	private long buttontime;
 	private int buttoni = 0;
@@ -48,10 +49,16 @@ public abstract class ChromaBookGui extends GuiScreen {
 	protected static int leftX;
 	protected static int topY;
 
+	private static int preMouseX;
+	private static int preMouseY;
+	private boolean cacheMouse;
+
 	protected ChromaBookGui(EntityPlayer ep, int x, int y) {
 		player = ep;
 		xSize = x;
 		ySize = y;
+
+		cacheMouse = true;
 	}
 
 	@Override
@@ -61,6 +68,11 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
+
+		if (cacheMouse) {
+			Mouse.setCursorPosition(preMouseX, preMouseY);
+			cacheMouse = false;
+		}
 
 		//buttonList.add(new GuiButton(12, j+xSize-27, k-4, 20, 20, "X"));	//Close gui button
 	}
@@ -106,6 +118,14 @@ public abstract class ChromaBookGui extends GuiScreen {
 	@Override
 	public final boolean doesGuiPauseGame() {
 		return false;
+	}
+
+	protected final void goTo(ChromaGuis next, ChromaResearch to) {
+		Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+		preMouseX = Mouse.getX();
+		preMouseY = Mouse.getY();
+		player.closeScreen();
+		player.openGui(ChromatiCraft.instance, next.ordinal(), null, to != null ? to.ordinal() : -1, 0, 0);
 	}
 
 }

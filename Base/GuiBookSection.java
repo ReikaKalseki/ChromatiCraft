@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
@@ -22,8 +22,12 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected int subpage = 0;
 
-	protected GuiBookSection(EntityPlayer ep, int x, int y) {
+	protected final ChromaResearch page;
+
+	protected GuiBookSection(EntityPlayer ep, ChromaResearch r, int x, int y) {
 		super(ep, x, y);
+
+		page = r;
 
 		if (ChromaOptions.DYNAMICHANDBOOK.getState() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()))
 			this.reloadXMLData();
@@ -50,8 +54,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	public void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		if (button.id == 50) {
-			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(ChromatiCraft.instance, ChromaGuis.HANDBOOK.ordinal(), null, 0, 0, 0);
+			this.goTo(ChromaGuis.BOOKNAV, null);
 			return;
 		}
 		else if (button.id == 13) {
@@ -117,7 +120,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	}
 
 	protected int getTitleColor() {
-		return 0x777777;
+		return 0x333333;
 	}
 
 }

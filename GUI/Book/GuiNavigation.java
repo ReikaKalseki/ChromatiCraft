@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.TreeMap;
 
 import net.minecraft.client.Minecraft;
@@ -24,9 +25,12 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.DragonAPI.Instantiable.Data.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -35,17 +39,15 @@ public class GuiNavigation extends ChromaBookGui {
 	private int offsetX = 0;
 	private int offsetY = 0;
 
-	//private int mouseX;
-	//private int mouseY;
-
-	private int maxX = 500;
-	private int maxY = 250;
+	private int maxX = 0;
+	private int maxY = 0;
 
 	private static final int paneWidth = 242;
 	private static final int paneHeight = 206;
 
 	private final TreeMap<ChromaResearch, Section> sections = new TreeMap();
 	private static final int SectionSpacing = 32;
+	private static RegionMap<SectionElement> locations = new RegionMap();
 
 	public GuiNavigation(EntityPlayer ep) {
 		super(ep, 256, 220);
@@ -54,9 +56,8 @@ public class GuiNavigation extends ChromaBookGui {
 		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
 			ChromaResearch b = ChromaResearch.researchList[i];
 			if (b.isParent()) {
-				if (z != null && !z.elements.isEmpty())
-					sections.put(b, z);
 				z = new Section(b.getTitle());
+				sections.put(b, z);
 			}
 			else {
 				if (b.playerCanSee(ep)) {
@@ -64,6 +65,21 @@ public class GuiNavigation extends ChromaBookGui {
 				}
 			}
 		}
+		Iterator<ChromaResearch> it = sections.keySet().iterator();
+		while (it.hasNext()) {
+			ChromaResearch r = it.next();
+			Section s = sections.get(r);
+			if (s.elements.isEmpty())
+				it.remove();
+			else {
+				System.out.print(maxX+" > ");
+				maxX = Math.max(maxX, leftX+15+s.getWidth(4));
+				System.out.println(maxX);
+				maxY += SectionSpacing+s.getHeight(4);
+			}
+		}
+		maxX -= paneWidth+Section.sectionSpacing+Section.margin*2;
+		maxY -= paneHeight+SectionSpacing/2;
 	}
 
 	@Override
@@ -91,7 +107,6 @@ public class GuiNavigation extends ChromaBookGui {
 
 	@Override
 	public void drawScreen(int x, int y, float f) {
-
 		leftX = (width - xSize) / 2;
 		topY = (height - ySize) / 2;
 
@@ -99,12 +114,7 @@ public class GuiNavigation extends ChromaBookGui {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			sp = 2;
 		}
-		/*
-		if (Mouse.isButtonDown(0)) {
-			offsetX += mouseX-x;
-			offsetY += mouseY-y;
-		}
-		else */if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			offsetY -= sp;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
@@ -130,14 +140,12 @@ public class GuiNavigation extends ChromaBookGui {
 			offsetY = maxY;
 		}
 
-		//mouseX = x;
-		//mouseY = y;
-
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/Handbook/navbcg.png");
 		int u = offsetX%256;
 		int v = offsetY%256;
 		this.drawTexturedModalRect(leftX+7, topY-1, u, v, paneWidth, paneHeight);
 
+		locations.clear();
 		this.drawSections(leftX+11-offsetX, topY+11-offsetY);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -145,6 +153,20 @@ public class GuiNavigation extends ChromaBookGui {
 		GL11.glTranslated(0, 0, 500);
 		super.drawScreen(x, y, f);
 		GL11.glPopMatrix();
+	}
+
+	@Override
+	public void mouseClicked(int x, int y, int b) {
+		super.mouseClicked(x, y, b);
+
+		SectionElement e = this.getSectionElementAt(x, y);
+		if (e != null && e.getGuiType() != null) {
+			this.goTo(e.getGuiType(), e.destination);
+		}
+	}
+
+	private SectionElement getSectionElementAt(int x, int y) {
+		return locations.getRegion(x, y);
 	}
 
 	private void drawSections(int x, int y) {
@@ -184,7 +206,7 @@ public class GuiNavigation extends ChromaBookGui {
 		public final String title;
 
 		private static final int elementWidth = 24;
-		private static final int sectionSpacing = 48;
+		private static final int sectionSpacing = 64;
 		private static final int margin = 8;
 		private static final int spacing = 4;
 
@@ -212,11 +234,11 @@ public class GuiNavigation extends ChromaBookGui {
 				sum += sectionSpacing;
 			}
 			sum -= sectionSpacing;
-			return sum+margin;
+			return sum+margin+Minecraft.getMinecraft().fontRenderer.getStringWidth(elements.keySet().last().getDisplayName())-elementWidth-margin;
 		}
 
 		public int getSubSectionHeight(int cols, Collection<SectionElement> se) {
-			int num = 1+se.size()/cols;
+			int num = 1+(se.size()-1)/cols;
 			return num*elementWidth+(num-1)*spacing+margin-1;
 		}
 
@@ -229,7 +251,6 @@ public class GuiNavigation extends ChromaBookGui {
 			int dox = 0;
 			for (ResearchLevel rl : elements.keySet()) {
 				Collection<SectionElement> se = elements.get(rl);
-				int i = 0;
 				int c = 0xffffff;
 				int dx2 = x+dox+4;
 				int dy2 =  y+4;
@@ -252,6 +273,7 @@ public class GuiNavigation extends ChromaBookGui {
 						GL11.glEnable(GL11.GL_LIGHTING);
 					}
 				}
+				int i = 0;
 				for (SectionElement e : se) {
 					int dx = x+margin+(i%cols)*(elementWidth+spacing)+dox;
 					int dy = y+margin+(i/cols)*(elementWidth+spacing);
@@ -262,16 +284,18 @@ public class GuiNavigation extends ChromaBookGui {
 					int iy = (int)(dy/s);
 					if (dx >= leftX && dx <= leftX+paneWidth-elementWidth) {
 						if (dy >= topY && dy <= topY+paneHeight-elementWidth) {
-							api.drawItemStack(itemRender, e.getIcon(), ix, iy);
-							int mx = dx-1;
+							e.draw(ix, iy);
+							int mx = dx;
 							int mmx = mx+elementWidth;
 							int my = dy;
 							int mmy = my+elementWidth;
 							if (api.isMouseInBox(mx, mmx, my, mmy)) {
 								api.drawTooltipAt(fr, e.getName(), (int)(api.getMouseRealX()/s), (int)(api.getMouseRealY()/s));
 								int w = (int)(elementWidth/s);
-								int ox = i%cols%3 > 0 ? 1 : 0;
-								api.drawRectFrame((int)(mx/s)+ox, (int)(my/s), w, w, 0xffffff);
+								int mxs = (int)(mx/s);
+								int mys = (int)(my/s);
+								api.drawRectFrame(mxs, mys, w, w, 0xffffff);
+								locations.addRegionByWH(mx, my, elementWidth, elementWidth, e);
 							}
 						}
 					}
@@ -297,6 +321,38 @@ public class GuiNavigation extends ChromaBookGui {
 			destination = b;
 		}
 
+		public void draw(int x, int y) {
+			api.drawItemStack(itemRender, this.getIcon(), x, y);
+			if (destination.isCrafting()) {
+				ReikaJavaLibrary.pConsole(this);
+			}
+		}
+
+		public ChromaGuis getGuiType() {
+			if (false) {
+				//return ChromaGuis.RECIPE;
+				//return ChromaGuis.RITUAL;
+			}
+			switch(destination.getParent()) {
+			case MACHINEDESC:
+				return ChromaGuis.MACHINEDESC;
+			case RESOURCEDESC:
+				return ChromaGuis.RESOURCEDESC;
+			case TOOLDESC:
+				return ChromaGuis.TOOLDESC;
+			case ABILITYDESC:
+				return ChromaGuis.ABILITYDESC;
+			case INTRO:
+				return ChromaGuis.INFO;
+			default:
+				return null;
+			}
+		}
+
+		public int getGuiID() {
+			return destination.ordinal();
+		}
+
 		private ItemStack getIcon() {
 			return destination.getTabIcon();
 		}
@@ -312,6 +368,11 @@ public class GuiNavigation extends ChromaBookGui {
 		@Override
 		public int compareTo(SectionElement o) {
 			return (destination.getParent().ordinal()-o.destination.getParent().ordinal())*10000+destination.ordinal()-o.destination.ordinal();
+		}
+
+		@Override
+		public String toString() {
+			return "ELEMENT{"+destination.toString()+"}";
 		}
 
 	}
