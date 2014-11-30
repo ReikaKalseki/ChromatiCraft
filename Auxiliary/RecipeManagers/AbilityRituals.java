@@ -59,15 +59,15 @@ public class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.COMMUNICATE);
-		rit.addAura(CrystalElement.BLACK, 10000);
-		rit.addAura(CrystalElement.RED, 4000);
-		rit.addAura(CrystalElement.PINK	, 8000);
-		rit.addAura(CrystalElement.LIGHTGRAY, 4000);
+		rit.addAura(CrystalElement.BLACK, 40000);
+		rit.addAura(CrystalElement.RED, 10000);
+		rit.addAura(CrystalElement.PINK	, 12000);
+		rit.addAura(CrystalElement.LIGHTGRAY, 8000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.HEALTH);
 		rit.addAura(CrystalElement.MAGENTA, 25000);
-		rit.addAura(CrystalElement.PURPLE, 5000);
+		rit.addAura(CrystalElement.PURPLE, 25000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.PYLON);

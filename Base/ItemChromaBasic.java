@@ -114,7 +114,7 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		else if (this instanceof ItemCrystalBasic) {
 			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 			if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
-				name = EnumChatFormatting.OBFUSCATED.toString()+name;
+				name = EnumChatFormatting.OBFUSCATED.toString()+name+EnumChatFormatting.RESET.toString();
 			}
 		}
 		return name;

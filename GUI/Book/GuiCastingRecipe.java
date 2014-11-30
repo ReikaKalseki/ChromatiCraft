@@ -74,9 +74,11 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 		if (button.id == 0 && index > 0) {
 			index--;
+			subpage = Math.min(subpage, this.getMaxSubpage());
 		}
 		else if (button.id == 1 && index < recipes.size()-1) {
 			index++;
+			subpage = Math.min(subpage, this.getMaxSubpage());
 		}
 		if (button.id == 2 && recipeTextOffset > 0) {
 			recipeTextOffset--;
@@ -182,7 +184,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	public String getPageTitle() {
-		return this.getActiveRecipe().getOutput().getDisplayName()+" Casting";
+		return this.getActiveRecipe().getOutput().getDisplayName();//+" Casting";
 	}
 
 }

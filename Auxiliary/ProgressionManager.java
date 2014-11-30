@@ -172,8 +172,12 @@ public class ProgressionManager {
 
 	public void setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
-		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG2);
-		nbt.setBoolean(e.name(), disc);
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
+		tag.setBoolean(e.name(), disc);
+		nbt.setTag(NBT_TAG2, tag);
+		if (ep instanceof EntityPlayerMP)
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		this.updateChunks(ep);
 	}
 

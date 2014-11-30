@@ -33,8 +33,8 @@ public class NEIChromaConfig implements IConfigureNEI {
 		API.registerRecipeHandler(crystal);
 		API.registerUsageHandler(crystal);
 
-		API.registerRecipeHandler(casting);
-		API.registerUsageHandler(casting);
+		//API.registerRecipeHandler(casting);
+		//API.registerUsageHandler(casting);
 
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
