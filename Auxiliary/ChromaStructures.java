@@ -41,7 +41,7 @@ public class ChromaStructures {
 			World w = Minecraft.getMinecraft().theWorld;
 			switch(this) {
 			case PYLON:
-				return getPylonStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/1000)%16]);
+				return getPylonStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			case CASTING1:
 				return getCastingLevelOne(w, 0, 0, 0);
 			case CASTING2:
@@ -55,7 +55,7 @@ public class ChromaStructures {
 			case TREE:
 				return getTreeStructure(w, 0, 0, 0);
 			case REPEATER:
-				return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/1000)%16]);
+				return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			case COMPOUND:
 				return getCompoundRepeaterStructure(w, 0, 0, 0);
 			}
@@ -323,6 +323,7 @@ public class ChromaStructures {
 		array.setBlock(x, y+6, z+6, Blocks.lapis_block);
 		array.setBlock(x+6, y+6, z, Blocks.lapis_block);
 		array.setBlock(x-6, y+6, z, Blocks.lapis_block);
+
 		return array;
 	}
 
@@ -562,6 +563,7 @@ public class ChromaStructures {
 	public static FilledBlockArray getRepeaterStructure(World world, int x, int y, int z, CrystalElement e) {
 		FilledBlockArray array = new FilledBlockArray(world);
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		array.setBlock(x, y, z, ChromaTiles.REPEATER.getBlock(), ChromaTiles.REPEATER.getBlockMetadata());
 		array.setBlock(x, y-1, z, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
 		array.setBlock(x, y-2, z, b, 0);
 		array.setBlock(x, y-3, z, b, 0);
@@ -571,11 +573,12 @@ public class ChromaStructures {
 	public static FilledBlockArray getCompoundRepeaterStructure(World world, int x, int y, int z) {
 		FilledBlockArray array = new FilledBlockArray(world);
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
-		array.setBlock(x, y-1, z, b, 9);
+		array.setBlock(x, y, z, ChromaTiles.COMPOUND.getBlock(), ChromaTiles.COMPOUND.getBlockMetadata());
+		array.setBlock(x, y-1, z, b, 12);
 		array.setBlock(x, y-2, z, b, 2);
 		array.setBlock(x, y-3, z, b, 13);
 		array.setBlock(x, y-4, z, b, 2);
-		array.setBlock(x, y-5, z, b, 9);
+		array.setBlock(x, y-5, z, b, 12);
 		return array;
 	}
 
