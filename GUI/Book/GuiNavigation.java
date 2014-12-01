@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 
 import net.minecraft.client.Minecraft;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Instantiable.Data.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.RegionMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -53,6 +55,7 @@ public class GuiNavigation extends ChromaBookGui {
 	private final TreeMap<ChromaResearch, Section> sections = new TreeMap();
 	private static final int SectionSpacing = 32;
 	private static RegionMap<SectionElement> locations = new RegionMap();
+	private static PluralMap<String> tooltips = new PluralMap(2);
 
 	public static void resetOffset() {
 		offsetX = 0;
@@ -171,6 +174,7 @@ public class GuiNavigation extends ChromaBookGui {
 		this.drawTexturedModalRect(leftX+7, topY-1, u, v, paneWidth, paneHeight);
 
 		locations.clear();
+		tooltips.clear();
 		this.drawSections(leftX+11-offsetX, topY+11-offsetY);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -178,6 +182,13 @@ public class GuiNavigation extends ChromaBookGui {
 		GL11.glTranslated(0, 0, 500);
 		super.drawScreen(x, y, f);
 		GL11.glPopMatrix();
+
+		for (List<Object> o : tooltips.pluralKeySet()) {
+			int a = (Integer)o.get(0);
+			int b = (Integer)o.get(1);
+			String s = tooltips.get(a, b);
+			api.drawTooltipAt(fontRendererObj, s, a, b);
+		}
 	}
 
 	@Override
@@ -327,7 +338,7 @@ public class GuiNavigation extends ChromaBookGui {
 							int my = dy;
 							int mmy = my+elementWidth;
 							if (api.isMouseInBox(mx, mmx, my, mmy)) {
-								api.drawTooltipAt(fr, e.getName(), (int)(api.getMouseRealX()/s), (int)(api.getMouseRealY()/s));
+								tooltips.put(e.getName(), api.getMouseRealX(), api.getMouseRealY());
 								int w = (int)(elementWidth/s);
 								int mxs = (int)(mx/s);
 								int mys = (int)(my/s);

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -29,8 +30,54 @@ public class GuiStructure extends GuiBookSection {
 	private double ry = 0;
 	private double rz = 0;
 
+	private int secY = 0;
+
+	private int mode = 0;
+
+	private int tick = 0;
+
 	public GuiStructure(EntityPlayer ep, ChromaResearch r) {
 		super(ep, r, 256, 220);
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+		rx = ry = rz = 0;
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		buttonList.add(new GuiButton(0, j+185, k-2, 20, 20, "3D"));
+		buttonList.add(new GuiButton(1, j+205, k-2, 20, 20, "2D"));
+
+		if (mode == 1) {
+			buttonList.add(new GuiButton(2, j+165, k-2, 20, 20, "+"));
+			buttonList.add(new GuiButton(3, j+145, k-2, 20, 20, "-"));
+		}
+	}
+
+	@Override
+	public void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+
+		if (b.id == 0) {
+			mode = 0;
+			secY = 0;
+			this.initGui();
+		}
+		else if (b.id == 1) {
+			mode = 1;
+			rx = ry = rz = 0;
+			this.initGui();
+		}
+		else if (b.id == 2 && secY < page.getStructure().getStructureForDisplay().getSizeY()-1) {
+			secY++;
+			this.initGui();
+		}
+		else if (b.id == 3 && secY > 0) {
+			secY--;
+			this.initGui();
+		}
 	}
 
 	@Override
@@ -50,20 +97,55 @@ public class GuiStructure extends GuiBookSection {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		tick++;
+
 		FilledBlockArray arr = page.getStructure().getStructureForDisplay();
 		if (page.name().toLowerCase().contains("casting")) {
 			arr.setBlock(arr.getMidX(), arr.getMinY()+1, arr.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
 		}
-		int dd = 12;
-		int ddy = 12;
 
-		if (Mouse.isButtonDown(0)) {
+		switch(mode) {
+		case 0:
+			this.draw3d(arr, j, k);
+			break;
+		case 1:
+			this.drawSlice(arr, j, k);
+			break;
+		}
+	}
+
+	private void drawSlice(FilledBlockArray arr, int j, int k) {
+		int y = arr.getMinY()+secY;
+		int max = Math.max(arr.getSizeX(), arr.getSizeZ());
+		int dd = max > 16 ? 28-max : 14;
+		int ox = 120;
+		int oy = 105;
+		for (int x = arr.getMinX(); x <= arr.getMaxX(); x++) {
+			for (int z = arr.getMinZ(); z <= arr.getMaxZ(); z++) {
+				ItemStack is = arr.getDisplayAt(x, y, z);
+				if (page.name().toLowerCase().contains("pylon") && x == arr.getMidX() && y == arr.getMinY()+9 && z == arr.getMidZ()) {
+					is = ChromaTiles.PYLON.getCraftedProduct();
+				}
+				if (is != null) {
+					int dx = (x-arr.getMidX())*dd;
+					int dz = (z-arr.getMidZ())*dd;
+					api.drawItemStack(itemRender, is, j+dx+ox, k+dz+oy);
+				}
+			}
+		}
+	}
+
+	private void draw3d(FilledBlockArray arr, int j, int k) {
+		if (Mouse.isButtonDown(0) && tick > 2) {
 			rx += 0.25*Mouse.getDY();
 			ry -= 0.25*Mouse.getDX();
 		}
 		else if (Mouse.isButtonDown(1)) {
 			rx = ry = rz = 0;
 		}
+
+		int dd = 12;
+		int ddy = 12;
 
 		HashMap<Vector3f, CoordStack> render = new HashMap();
 
@@ -130,10 +212,15 @@ public class GuiStructure extends GuiBookSection {
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, is.coord.zCoord);
 			double scale = 1;
-			if (ReikaItemHelper.matchStacks(is.item, ChromaTiles.PYLON.getCraftedProduct()))
-				scale = 3;
+			int ox2 = 0;
+			int oy2 = 0;
+			if (ReikaItemHelper.matchStacks(is.item, ChromaTiles.PYLON.getCraftedProduct())) {
+				scale = 2;
+				ox2 = -4;
+				oy2 = -6;
+			}
 			GL11.glScaled(scale, scale, 1);
-			api.drawItemStack(itemRender, is.item, is.coord.xCoord+(int)(ox/scale), is.coord.yCoord+(int)(oy/scale));
+			api.drawItemStack(itemRender, is.item, (int)((is.coord.xCoord+ox)/scale)+ox2, (int)((is.coord.yCoord+oy)/scale)+oy2);
 			GL11.glPopMatrix();
 		}
 
