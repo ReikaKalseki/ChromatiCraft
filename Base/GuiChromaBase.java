@@ -64,11 +64,11 @@ public abstract class GuiChromaBase extends GuiContainer {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		api.drawCenteredStringNoShadow(fontRendererObj, tile.getName(), xSize/2, this.getTitlePosition(), 4210752);
+		api.drawCenteredStringNoShadow(fontRendererObj, tile.getName(), xSize/2, this.getTitlePosition(), 0xffffff);
 
 		if (tile instanceof IInventory && this.labelInventory()) {
 			int dx = this.inventoryLabelLeft() ? 8 : xSize-58;
-			fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), dx, (ySize - 96) + 3, 4210752);
+			fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), dx, (ySize - 96) + 3, 0xffffff);
 		}
 	}
 
@@ -91,7 +91,11 @@ public abstract class GuiChromaBase extends GuiContainer {
 		String i = this.getFullTexturePath();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
+		GL11.glEnable(GL11.GL_BLEND);
+		//BlendMode.ADDITIVE2.apply();
 		this.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+		//BlendMode.DEFAULT.apply();
+		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
 	}

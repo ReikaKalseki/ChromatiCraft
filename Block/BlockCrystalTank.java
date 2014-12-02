@@ -417,8 +417,6 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		if (world.getBlockMetadata(x, y, z) == 0)
 			return li;
 
-		li.remove(new Integer(5)); //glass tex
-
 		if (face.offsetX != 0) { //test YZ
 			//sides; removed if have adjacent on side
 			if (world.getBlock(x, y, z+1) == this || ChromaTiles.getTile(world, x, y, z+1) == ChromaTiles.TANK)
@@ -482,6 +480,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			if (world.getBlock(x-1, y+1, z) == this && !li.contains(4) && !li.contains(8))
 				li.remove(new Integer(7));
 		}
+
+		if (!li.contains(2) && !li.contains(4) && !li.contains(6) && !li.contains(8) && (x+z)%2 != 0) {
+			li.remove(new Integer(5)); //glass tex
+		}
+
 		return li;
 	}
 

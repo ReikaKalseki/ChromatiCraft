@@ -14,6 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class CrystalStarRecipe extends MultiBlockCastingRecipe {
 
@@ -40,6 +41,11 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+13), -4, 2);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+14), -4, 0);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+15), -4, -2);
+
+		this.addRune(CrystalElement.BLACK, -3, -1, -3);
+		this.addRune(CrystalElement.BLACK, 3, -1, -3);
+		this.addRune(CrystalElement.BLACK, -3, -1, 3);
+		this.addRune(CrystalElement.BLACK, 3, -1, 3);
 	}
 
 	@Override

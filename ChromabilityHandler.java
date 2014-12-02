@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -47,8 +48,9 @@ public class ChromabilityHandler implements TickHandler {
 				}
 			}
 		}
-		//for (Chromabilities c : Chromabilities.values())
-		//	c.give(ep);
+		if (DragonAPICore.debugtest)
+			for (Chromabilities c : Chromabilities.values())
+				c.give(ep);
 	}
 
 	@Override

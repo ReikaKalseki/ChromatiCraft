@@ -137,16 +137,16 @@ public class GuiChromability extends GuiScreen {
 
 		this.drawPreview(c, j, k);
 
-		fontRendererObj.drawString(c.name(), 175+dx, 36, 0x000000);
+		fontRendererObj.drawString(c.getDisplayName(), 175+dx, 36, 0x000000);
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = Chromabilities.abilities[index-1];
-				fontRendererObj.drawString(c.name(), 175+dx-width, 36, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), 175+dx-width, 36, 0x000000);
 			}
 
 			if (index < Chromabilities.abilities.length-1) {
 				c = Chromabilities.abilities[index+1];
-				fontRendererObj.drawString(c.name(), 175+dx+width, 36, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), 175+dx+width, 36, 0x000000);
 			}
 		}
 

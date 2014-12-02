@@ -9,12 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,12 +25,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderSpawnerProgrammer extends ChromaRenderBase {
 
-	private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 	private final ModelSpawnerProgram model = new ModelSpawnerProgram();
-
-	public static void bindGlint() {
-		Minecraft.getMinecraft().renderEngine.bindTexture(RES_ITEM_GLINT);
-	}
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -99,7 +92,7 @@ public class RenderSpawnerProgrammer extends ChromaRenderBase {
 
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
-		this.bindGlint();
+		ReikaTextureHelper.bindEnchantmentTexture();
 		f = 0.12F;
 		h = 0;
 		float r = 4000;

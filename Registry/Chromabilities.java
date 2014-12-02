@@ -133,6 +133,8 @@ public enum Chromabilities {
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
 		if (this == HEALTH)
 			use.scale(5);
+		if (this == SHIFT)
+			use.scale(10);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = this.enabledOn(ep) || this.isPureEventDriven();
 		this.setToPlayer(ep, !flag);
@@ -151,11 +153,11 @@ public enum Chromabilities {
 			case SHIFT:
 				if (this.enabledOn(ep)) {
 					AbilityHelper.instance.startDrawingBoxes(ep);
-					AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
+					AbilityHelper.instance.shifts.put(ep.getCommandSenderName(), new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
 				}
 				else {
 					AbilityHelper.instance.stopDrawingBoxes(ep);
-					AbilityHelper.instance.shifts.remove(ep);
+					AbilityHelper.instance.shifts.remove(ep.getCommandSenderName());
 				}
 				break;
 			case HEAL:
@@ -176,7 +178,6 @@ public enum Chromabilities {
 	private boolean isPureEventDriven() {
 		switch(this) {
 		case SONIC:
-		case SHIFT:
 		case HEAL:
 		case FIREBALL:
 			return true;
@@ -378,6 +379,7 @@ public enum Chromabilities {
 			toDel.clearArea();
 			moved.place();
 		}
+		Chromabilities.SHIFT.setToPlayer(ep, false);
 	}
 
 	private static void healPlayer(EntityPlayer ep, int health) {

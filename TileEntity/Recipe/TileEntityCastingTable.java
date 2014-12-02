@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
@@ -118,7 +119,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
-		//this.addXP(3434);
+		if (DragonAPICore.debugtest)
+			this.addXP(3434);
 
 		/*
 		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(ChromaItems.SEED.getStackOfMetadata(1));

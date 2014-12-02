@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
@@ -33,8 +34,10 @@ public class NEIChromaConfig implements IConfigureNEI {
 		API.registerRecipeHandler(crystal);
 		API.registerUsageHandler(crystal);
 
-		//API.registerRecipeHandler(casting);
-		//API.registerUsageHandler(casting);
+		if (ReikaObfuscationHelper.isDeObfEnvironment()) {
+			API.registerRecipeHandler(casting);
+			API.registerUsageHandler(casting);
+		}
 
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {

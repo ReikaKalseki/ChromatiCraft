@@ -176,9 +176,14 @@ public class ItemManipulator extends ItemChromaTool {
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
 		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 24, false);
-		//PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player)/2);
-		//PlayerElementBuffer.instance.checkUpgrade(player, true);
-		//player.getEntityData().removeTag("CrystalBuffer");
+		if (DragonAPICore.debugtest) {
+			if (player.isSneaking())
+				player.getEntityData().removeTag("CrystalBuffer");
+			else {
+				PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player)/2);
+				PlayerElementBuffer.instance.checkUpgrade(player, true);
+			}
+		}
 		if (mov != null) {
 			World world = player.worldObj;
 			int x = mov.blockX;

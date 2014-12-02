@@ -59,7 +59,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 			recipe = null;
 			this.onRecipeChanged();
 		}
-		else if (craftingTick >= 0) {
+		else if (recipe == null || !ReikaItemHelper.matchStacks(recipe.output, out) || craftingTick == 0) {
 			ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
 			if (tag != null) {
 				recipe = new Recipe(tag, out);
@@ -89,6 +89,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
+
 		//ReikaJavaLibrary.pConsole(recipe.energy+" <"+craftingTick+"> "+energy, Side.SERVER);
 		if (recipe != null && energy.containsAtLeast(recipe.energy) && craftingTick > 0) {
 			this.onCraftingTick(world, x, y, z);

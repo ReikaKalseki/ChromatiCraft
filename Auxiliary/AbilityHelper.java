@@ -43,9 +43,9 @@ public class AbilityHelper {
 	//Client Side
 	public int playerReach = -1;
 
-	private final HashMap<EntityPlayer, WorldLocation> playerClicks = new HashMap();
-	private final HashMap<EntityPlayer, Boolean> isDrawingBox = new HashMap();
-	public final HashMap<EntityPlayer, ScaledDirection> shifts = new HashMap();
+	private final HashMap<String, WorldLocation> playerClicks = new HashMap();
+	private final HashMap<String, Boolean> isDrawingBox = new HashMap();
+	public final HashMap<String, ScaledDirection> shifts = new HashMap();
 
 	private final EnumMap<Chromabilities, ElementTagCompound> tagMap = new EnumMap(Chromabilities.class);
 
@@ -60,37 +60,38 @@ public class AbilityHelper {
 	}
 
 	public void startDrawingBoxes(EntityPlayer ep) {
-		isDrawingBox.put(ep, true);
+		isDrawingBox.put(ep.getCommandSenderName(), true);
 	}
 
 	public void stopDrawingBoxes(EntityPlayer ep) {
-		isDrawingBox.put(ep, false);
+		isDrawingBox.put(ep.getCommandSenderName(), false);
 		this.removePlayerClick(ep);
 	}
 
 	public void addPlayerClick(EntityPlayer ep, World world, int x, int y, int z) {
 		if (!world.isRemote) {
-			if (isDrawingBox.containsKey(ep) && isDrawingBox.get(ep)) {
+			String s = ep.getCommandSenderName();
+			if (isDrawingBox.containsKey(s) && isDrawingBox.get(s)) {
 				WorldLocation loc = new WorldLocation(world, x, y, z);
-				if (playerClicks.containsKey(ep)) {
-					WorldLocation loc2 = playerClicks.get(ep);
+				if (playerClicks.containsKey(s)) {
+					WorldLocation loc2 = playerClicks.get(s);
 					BlockBox b = new BlockBox(loc, loc2);
 					this.playerMakeBox(ep, b);
 					this.removePlayerClick(ep);
 				}
 				else
-					playerClicks.put(ep, loc);
+					playerClicks.put(s, loc);
 			}
 		}
 	}
 
 	public void removePlayerClick(EntityPlayer ep) {
-		playerClicks.remove(ep);
+		playerClicks.remove(ep.getCommandSenderName());
 	}
 
 	private void playerMakeBox(EntityPlayer ep, BlockBox box) {
 		if (!ep.worldObj.isRemote && Chromabilities.SHIFT.enabledOn(ep)) {
-			ScaledDirection dir = shifts.get(ep);
+			ScaledDirection dir = shifts.get(ep.getCommandSenderName());
 			Chromabilities.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, ep);
 		}
 	}

@@ -35,9 +35,11 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
 		World world = ep.worldObj;
-		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
-		b.call = this;
-		breakers.put(b.hashCode(), ep);
+		if (!world.isRemote) {
+			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
+			b.call = this;
+			breakers.put(b.hashCode(), ep);
+		}
 		return true;
 	}
 
