@@ -4,6 +4,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.opengl.GL11;
 
@@ -15,6 +17,7 @@ import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class GuiEnderTNT extends GuiContainer {
 
@@ -39,6 +42,9 @@ public class GuiEnderTNT extends GuiContainer {
 		super(new CoreContainer(player, te));
 		tile = te;
 
+		ySize = 106;
+		xSize = 176;
+
 		WorldLocation loc = tile.getTarget();
 		if (loc != null) {
 			dim = loc.dimensionID;
@@ -53,21 +59,21 @@ public class GuiEnderTNT extends GuiContainer {
 		super.initGui();
 		int j = (width - xSize) / 2+8;
 		int k = (height - ySize) / 2 - 12;
-		input = new GuiTextField(fontRendererObj, j+xSize/2-6, k+33, 26, 16);
+		input = new GuiTextField(fontRendererObj, j+xSize/2-46, k+33, 40, 16);
 		input.setFocused(false);
-		input.setMaxStringLength(3);
+		input.setMaxStringLength(5);
 
-		input2 = new GuiTextField(fontRendererObj, j+xSize/2-6, k+53, 26, 16);
+		input2 = new GuiTextField(fontRendererObj, j+xSize/2-46, k+53, 40, 16);
 		input2.setFocused(false);
-		input2.setMaxStringLength(3);
+		input2.setMaxStringLength(5);
 
-		input3 = new GuiTextField(fontRendererObj, j+xSize/2-6, k+73, 26, 16);
+		input3 = new GuiTextField(fontRendererObj, j+xSize/2-46, k+73, 40, 16);
 		input3.setFocused(false);
-		input3.setMaxStringLength(3);
+		input3.setMaxStringLength(5);
 
-		input4 = new GuiTextField(fontRendererObj, j+xSize/2-6, k+93, 26, 16);
+		input4 = new GuiTextField(fontRendererObj, j+xSize/2-46, k+93, 40, 16);
 		input4.setFocused(false);
-		input4.setMaxStringLength(3);
+		input4.setMaxStringLength(5);
 	}
 
 	@Override
@@ -91,10 +97,14 @@ public class GuiEnderTNT extends GuiContainer {
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
-		dim = this.parseInt(input);
-		tx = this.parseInt(input2);
-		ty = this.parseInt(input3);
-		tz = this.parseInt(input4);
+		if (input.isFocused())
+			dim = this.parseInt(input);
+		if (input2.isFocused())
+			tx = this.parseInt(input2);
+		if (input3.isFocused())
+			ty = this.parseInt(input3);
+		if (input4.isFocused())
+			tz = this.parseInt(input4);
 
 		if (this.isChanged())
 			this.sendData();
@@ -108,11 +118,11 @@ public class GuiEnderTNT extends GuiContainer {
 		if (g.getText().isEmpty()) {
 			return 0;
 		}
-		if (!(g.getText().matches("^[0-9 ]+$"))) {
+		if (!g.getText().isEmpty() && !ReikaJavaLibrary.isValidInteger(g.getText())) {
 			g.deleteFromCursor(-1);
 			return 0;
 		}
-		return Integer.parseInt(g.getText());
+		return ReikaJavaLibrary.safeIntParse(g.getText());
 	}
 
 	private void sendData() {
@@ -131,22 +141,25 @@ public class GuiEnderTNT extends GuiContainer {
 		int k = (height - ySize) / 2;
 		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, StatCollector.translateToLocal("chroma.endertnt"), xSize/2, 5, 0xffffff);
 
-		fontRendererObj.drawString("World:", xSize/2-72, 25, 0xffffff);
-		fontRendererObj.drawString("X:", xSize/2-72, 45, 0xffffff);
-		fontRendererObj.drawString("Y:", xSize/2-72, 65, 0xffffff);
-		fontRendererObj.drawString("Z:", xSize/2-72, 85, 0xffffff);
+		String[] s = new String[]{"World:", "X:", "Y:", "Z:"};
+		for (int i = 0; i < 4; i++)
+			fontRendererObj.drawString(s[i], xSize/2-48-fontRendererObj.getStringWidth(s[i]), 25+20*i, 0xffffff);
 		if (!input.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", dim), xSize/2+6, 25, 0xffffffff);
+			fontRendererObj.drawString(String.format("%d", dim), xSize/2-34, 25, 0xffffffff);
 		}
 		if (!input2.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", tx), xSize/2+6, 45, 0xffffffff);
+			fontRendererObj.drawString(String.format("%d", tx), xSize/2-34, 45, 0xffffffff);
 		}
 		if (!input3.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", ty), xSize/2+6, 65, 0xffffffff);
+			fontRendererObj.drawString(String.format("%d", ty), xSize/2-34, 65, 0xffffffff);
 		}
 		if (!input4.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", tz), xSize/2+6, 85, 0xffffffff);
+			fontRendererObj.drawString(String.format("%d", tz), xSize/2-34, 85, 0xffffffff);
 		}
+		World world = DimensionManager.getWorld(dim);
+		String sn = world != null ? world.provider.getDimensionName() : "NO SUCH WORLD";
+		int c = world != null ? 0xffffff : 0xff0000;
+		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, String.format("[%s]", sn), xSize/2+46, 25, c);
 	}
 
 	@Override

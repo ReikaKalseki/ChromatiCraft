@@ -124,13 +124,16 @@ public class BlockEnderTNT extends Block {
 		}
 
 		private void detonate() {
-			if (target != null && target.getWorld() != null) {
-				target.getWorld().createExplosion(null, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 6, true);
+			if (target != null && target.getWorld() != null && !target.getWorld().isRemote) {
+				target.getWorld().createExplosion(null, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 9, true);
 			}
+			if (!worldObj.isRemote)
+				worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
 		}
 
 		public void setTarget(int dim, int x, int y, int z) {
 			target = new WorldLocation(dim, x, y, z);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		public int getCountdown() {
@@ -142,15 +145,15 @@ public class BlockEnderTNT extends Block {
 			super.writeToNBT(NBT);
 
 			NBT.setInteger("tick", countdown);
-			//if (target != null)
-			//	target.writeToNBT("loc", NBT);
+			if (target != null)
+				target.writeToNBT("loc", NBT);
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 
-			//target = WorldLocation.readFromNBT("loc", NBT);
+			target = WorldLocation.readFromNBT("loc", NBT);
 			countdown = NBT.getInteger("tick");
 		}
 
