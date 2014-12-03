@@ -317,7 +317,7 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public boolean match(ItemStack is) {
-		return is.getItem() == Item.getItemFromBlock(this.getBlockInstance());
+		return is != null && is.getItem() == Item.getItemFromBlock(this.getBlockInstance());
 	}
 
 	public ItemStack getStackOf() {

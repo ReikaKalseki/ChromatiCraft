@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
+import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
@@ -34,6 +35,7 @@ import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
+import Reika.ChromatiCraft.GUI.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
@@ -57,6 +59,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
@@ -112,6 +115,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerTelePump(player, (TileEntityTeleportationPump) te);
 			if (te instanceof TileEntityMiner)
 				return new ContainerMiner(player, (TileEntityMiner) te);
+			if (te instanceof TileEntityCrystalTank)
+				return new ContainerCrystalTank(player, (TileEntityCrystalTank) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -168,9 +173,10 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiMiner(player, (TileEntityMiner) te);
 			if (te instanceof TileEntityLampController)
 				return new GuiLampController(player, (TileEntityLampController) te);
-
 			if (te instanceof TileEntityRangedLamp)
 				return new GuiRangedLamp(player, (TileEntityRangedLamp) te);
+			if (te instanceof TileEntityCrystalTank)
+				return new GuiCrystalTank(player, (TileEntityCrystalTank) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

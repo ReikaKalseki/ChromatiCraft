@@ -176,8 +176,8 @@ public enum ChromaTiles {
 		case ASPECT:
 		case LAMP:
 		case POWERTREE:
-		case TANK:
 		case LAMPCONTROL:
+			//case TANK:
 			//case ITEMRIFT:
 			return true;
 		default:

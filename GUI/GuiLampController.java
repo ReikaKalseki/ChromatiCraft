@@ -21,7 +21,6 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController.Control;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -112,7 +111,7 @@ public class GuiLampController extends GuiChromaBase {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		fontRendererObj.drawString("Channel:", xSize/2-72, 25, 4210752);
+		fontRendererObj.drawString("Channel:", xSize/2-72, 25, 0xffffff);
 		if (!input.isFocused()) {
 			fontRendererObj.drawString(String.format("%d", lamp.getChannel()), xSize/2+6, 25, 0xffffffff);
 		}
@@ -146,8 +145,6 @@ public class GuiLampController extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		input.drawTextBox();
-		int color = 4210752;
-		ImagedGuiButton.drawCenteredStringNoShadow(fontRendererObj, String.format("(%d)", lamp.getChannel()), j+xSize/2+58, k+25, color);
 	}
 
 	@Override

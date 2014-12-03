@@ -38,6 +38,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.ModList;
@@ -76,9 +78,9 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
+		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+		TileEntityCrystalTank tk = te.getTankController();
 		if (is != null) {
-			CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
-			TileEntityCrystalTank tk = te.getTankController();
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 			if (fs != null) {
 				int drain = tk.fill(null, fs, false);
@@ -106,7 +108,10 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				return true;
 			}
 		}
-		return false;
+		if (ChromaBlocks.TANK.match(is))
+			return false;
+		ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, tk.xCoord, tk.yCoord, tk.zCoord);
+		return true;
 	}
 
 	@Override

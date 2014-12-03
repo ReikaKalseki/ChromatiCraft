@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public abstract class GuiChromaBase extends GuiContainer {
 
@@ -64,12 +65,16 @@ public abstract class GuiChromaBase extends GuiContainer {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		api.drawCenteredStringNoShadow(fontRendererObj, tile.getName(), xSize/2, this.getTitlePosition(), 0xffffff);
+		api.drawCenteredStringNoShadow(fontRendererObj, this.getGuiName(), xSize/2, this.getTitlePosition(), 0xffffff);
 
 		if (tile instanceof IInventory && this.labelInventory()) {
 			int dx = this.inventoryLabelLeft() ? 8 : xSize-58;
 			fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), dx, (ySize - 96) + 3, 0xffffff);
 		}
+	}
+
+	protected String getGuiName() {
+		return tile.getName();
 	}
 
 	protected int getTitlePosition() {
@@ -88,16 +93,22 @@ public abstract class GuiChromaBase extends GuiContainer {
 	protected void drawGuiContainerBackgroundLayer(float f, int a, int b) {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
+		this.drawFromBackground(j, k, 0, 0, xSize, ySize);
+	}
+
+	protected final void drawFromBackground(int j, int k, int u, int v, int w, int h) {
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.5F);
 		String i = this.getFullTexturePath();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
 		GL11.glEnable(GL11.GL_BLEND);
-		//BlendMode.ADDITIVE2.apply();
-		this.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-		//BlendMode.DEFAULT.apply();
+		BlendMode.ALPHA.apply();
+		this.drawTexturedModalRect(j, k, u, v, w, h);
+		BlendMode.DEFAULT.apply();
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.25F);
+		this.drawTexturedModalRect(j, k, u, v, w, h);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
+		//ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
 	}
 
 	public abstract String getGuiTexture();

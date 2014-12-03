@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 
@@ -32,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -40,9 +40,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class TankRender extends ChromaRenderBase {
 
-	private HashMap<List<Float>, CrystalElement> colors = new HashMap();
-	private int ptick = 0;
-	private int lastptick = 0;
+	private HashMap<WorldLocation, HashMap<List<Float>, CrystalElement>> runes = new HashMap();
+	private HashMap<WorldLocation, Integer> ptick = new HashMap();
+	private HashMap<WorldLocation, Integer> lastptick = new HashMap();
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -53,7 +53,7 @@ public class TankRender extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityCrystalTank te = (TileEntityCrystalTank)tile;
 		Fluid f = te.getFluid();
-		if (te.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (te.hasWorldObj()) {
 			if (f != null && te.getLevel() > 0) {
 				this.renderLiquid(te, par2, par4, par6, par8, f);
 				this.renderRunes(te, par2, par4, par6, par8);
@@ -66,14 +66,23 @@ public class TankRender extends ChromaRenderBase {
 	}
 
 	private void renderRunes(TileEntityCrystalTank te, double par2, double par4, double par6, float par8) {
-		ptick = te.getTicksExisted();
-		int d = 5;
-		int tick = te.getTicksExisted()/d;
+		WorldLocation loc = new WorldLocation(te);
+		ptick.put(loc, te.getTicksExisted());
 		BlockArray blocks = te.getBlocks();
+		int d = Math.max(5, 100-blocks.getSize()/2);
+		int tick = te.getTicksExisted()/d;
+		HashMap<List<Float>, CrystalElement> colors = runes.get(loc);
+		if (colors == null) {
+			colors = new HashMap();
+			runes.put(loc, colors);
+		}
 		CrystalElement et = getRune(tick, te.getFluid());
-		if (et != null && ptick != lastptick && te.getTicksExisted()%d == 0) {
+		Integer lastp = lastptick.get(loc);
+		int last = lastp != null ? lastp.intValue() : -1;
+		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0) {
 			int[] dat = blocks.getRandomBlock();
 			colors.put(Arrays.asList((float)dat[0], (float)dat[1], (float)dat[2]), et);
+			lastptick.put(loc, te.getTicksExisted());
 		}
 		if (!colors.isEmpty()) {
 			GL11.glPushMatrix();
@@ -176,7 +185,6 @@ public class TankRender extends ChromaRenderBase {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glPopMatrix();
 		}
-		lastptick = ptick;
 	}
 
 	private static CrystalElement getRune(int tick, Fluid fluid) {
@@ -191,9 +199,13 @@ public class TankRender extends ChromaRenderBase {
 		if (fluid.getLuminosity() > 0)
 			li.add(CrystalElement.BLUE);
 		if (fluid.getDensity() > 4000)
+			li.add(CrystalElement.RED);
+		if (fluid.getName().toLowerCase().contains("oil"))
 			li.add(CrystalElement.BROWN);
 		if (fluid.getName().toLowerCase().contains("fuel"))
 			li.add(CrystalElement.YELLOW);
+		if (fluid.getName().toLowerCase().contains("xp"))
+			li.add(CrystalElement.PURPLE);
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 
@@ -314,56 +326,81 @@ public class TankRender extends ChromaRenderBase {
 
 			if (h > 0) {
 				v5.addTranslation(x-te.xCoord, y-te.yCoord, z-te.zCoord);
-				double o = 0.0001;
+				double o = 0.0025;
+				h = Math.max(o, te.getFillLevelForY(y));
 
 				v5.setBrightness(f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z));
 
 				if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.UP);
-					v5.addVertexWithUV(0+o, h-o, 1-o, u, dv);
-					v5.addVertexWithUV(1-o, h-o, 1-o, du, dv);
-					v5.addVertexWithUV(1-o, h-o, 0+o, du, v);
-					v5.addVertexWithUV(0+o, h-o, 0+o, u, v);
+					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, h-o, es, u, dv);
+					v5.addVertexWithUV(ee, h-o, es, du, dv);
+					v5.addVertexWithUV(ee, h-o, en, du, v);
+					v5.addVertexWithUV(ew, h-o, en, u, v);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.DOWN.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.DOWN);
-					v5.addVertexWithUV(0+o, 0, 0+o, u, v);
-					v5.addVertexWithUV(1-o, 0, 0+o, du, v);
-					v5.addVertexWithUV(1-o, 0, 1-o, du, dv);
-					v5.addVertexWithUV(0+o, 0, 1-o, u, dv);
+					this.setFaceBrightness(v5, ForgeDirection.DOWN, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, 0, en, u, v);
+					v5.addVertexWithUV(ee, 0, en, du, v);
+					v5.addVertexWithUV(ee, 0, es, du, dv);
+					v5.addVertexWithUV(ew, 0, es, u, dv);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.NORTH.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.NORTH);
-					v5.addVertexWithUV(0+o, h-o, 0+o, u, dv);
-					v5.addVertexWithUV(1-o, h-o, 0+o, du, dv);
-					v5.addVertexWithUV(1-o, 0, 0+o, du, v);
-					v5.addVertexWithUV(0+o, 0, 0+o, u, v);
+					this.setFaceBrightness(v5, ForgeDirection.NORTH, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, eu, 0+o, u, dv);
+					v5.addVertexWithUV(ee, eu, 0+o, du, dv);
+					v5.addVertexWithUV(ee, ed, 0+o, du, v);
+					v5.addVertexWithUV(ew, ed, 0+o, u, v);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.SOUTH.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.SOUTH);
-					v5.addVertexWithUV(0+o, 0, 1-o, u, v);
-					v5.addVertexWithUV(1-o, 0, 1-o, du, v);
-					v5.addVertexWithUV(1-o, h-o, 1-o, du, dv);
-					v5.addVertexWithUV(0+o, h-o, 1-o, u, dv);
+					this.setFaceBrightness(v5, ForgeDirection.SOUTH, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, ed, 1-o, u, v);
+					v5.addVertexWithUV(ee, ed, 1-o, du, v);
+					v5.addVertexWithUV(ee, eu, 1-o, du, dv);
+					v5.addVertexWithUV(ew, eu, 1-o, u, dv);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.WEST.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.WEST);
-					v5.addVertexWithUV(0+o, 0, 1-o, u, v);
-					v5.addVertexWithUV(0+o, h-o, 1-o, u, dv);
-					v5.addVertexWithUV(0+o, h-o, 0+o, du, dv);
-					v5.addVertexWithUV(0+o, 0, 0+o, du, v);
+					this.setFaceBrightness(v5, ForgeDirection.WEST, f.getLuminosity());
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
+					v5.addVertexWithUV(0+o, ed, es, u, v);
+					v5.addVertexWithUV(0+o, eu, es, u, dv);
+					v5.addVertexWithUV(0+o, eu, en, du, dv);
+					v5.addVertexWithUV(0+o, ed, en, du, v);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.EAST.ordinal())) {
-					this.setFaceBrightness(v5, ForgeDirection.EAST);
-					v5.addVertexWithUV(1-o, 0, 0+o, u, dv);
-					v5.addVertexWithUV(1-o, h-o, 0+o, u, v);
-					v5.addVertexWithUV(1-o, h-o, 1-o, du, v);
-					v5.addVertexWithUV(1-o, 0, 1-o, du, dv);
+					this.setFaceBrightness(v5, ForgeDirection.EAST, f.getLuminosity());
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
+					v5.addVertexWithUV(1-o, ed, en, u, dv);
+					v5.addVertexWithUV(1-o, eu, en, u, v);
+					v5.addVertexWithUV(1-o, eu, es, du, v);
+					v5.addVertexWithUV(1-o, ed, es, du, dv);
 				}
 				v5.addTranslation(-x+te.xCoord, -y+te.yCoord, -z+te.zCoord);
 			}
@@ -376,30 +413,35 @@ public class TankRender extends ChromaRenderBase {
 		GL11.glPopMatrix();
 	}
 
-	private void setFaceBrightness(Tessellator v5, ForgeDirection dir) {
+	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int brightness) {
 		float f = 1;
+		float sub = 0;
 		switch(dir) {
 		case DOWN:
-			f = 0.4F;
+			sub = 0.4F;
 			break;
 		case EAST:
-			f = 0.5F;
+			sub = 0.5F;
 			break;
 		case NORTH:
-			f = 0.65F;
+			sub = 0.65F;
 			break;
 		case SOUTH:
-			f = 0.65F;
+			sub = 0.65F;
 			break;
 		case UP:
-			f = 1F;
+			sub = 0F;
 			break;
 		case WEST:
-			f = 0.5F;
+			sub = 0.5F;
 			break;
 		default:
 			break;
 		}
+		float osub = sub;
+		sub *= (16-brightness)/4F;
+		sub = Math.min(sub, osub);
+		f -= sub*0.75F;
 		v5.setColorOpaque_F(f, f, f);
 	}
 

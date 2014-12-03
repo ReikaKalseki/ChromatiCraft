@@ -120,7 +120,7 @@ public class GuiCastingTable extends GuiChromaBase {
 		super.drawGuiContainerBackgroundLayer(f, a, b);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		this.drawTexturedModalRect(j+xSize, k, 176, 0, 43, ySize);
+		this.drawFromBackground(j+xSize, k, 176, 0, 43, ySize);
 	}
 
 	@Override

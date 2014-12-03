@@ -87,6 +87,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 			}
 		}
 		blocks.addBlockCoordinate(x, y, z);
+		blocks.recalcLimits();
 	}
 
 	@Override
