@@ -14,7 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public interface NBTTile {
 
-	public NBTTagCompound getTagsToWriteToStack();
+	public void getTagsToWriteToStack(NBTTagCompound NBT);
 
 	public void setDataFromItemStackTag(ItemStack is);
 

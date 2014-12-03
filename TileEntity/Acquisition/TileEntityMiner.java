@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -65,6 +66,8 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	private double particleY;
 	private double particleVX;
 	private double particleVY;
+
+	public int progress;
 
 	private static int TICKSTEP = 2048;
 	private int index;
@@ -171,9 +174,18 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 					}
 				}
 			}
+			progress = readY;
 		}
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	public float getDigCompletion() {
+		return this.isReady() ? 1 : (float)progress/worldObj.getActualHeight();
+	}
+
+	public boolean isReady() {
+		return digReady;
 	}
 
 	private void addFound(World world, int x, int y, int z, Block b, int meta) {
@@ -371,18 +383,13 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		}
 	}
 
-	public void triggerCalculation() {
-		digging = true;
-		readX = -range;
-		readY = 1;
-		readZ = -range;
-	}
-
 	public boolean triggerDigging() {
-		if (digReady) {
+		if (this.isReady()) {
 			digging = true;
+			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;
 		}
+		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
 	}
 

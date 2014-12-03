@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
@@ -105,7 +106,8 @@ public enum ChromaBlocks implements BlockEnum {
 	FIBER(BlockFiberOptic.class,												"Fiber"),
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
-	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock");
+	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
+	TNT(BlockEnderTNT.class,													"chroma.endertnt");
 
 	private Class blockClass;
 	private String blockName;
@@ -150,6 +152,8 @@ public enum ChromaBlocks implements BlockEnum {
 		case PYLON:
 		case FIBER:
 			return Material.glass;
+		case TNT:
+			return Material.tnt;
 		default:
 			return Material.rock;
 		}

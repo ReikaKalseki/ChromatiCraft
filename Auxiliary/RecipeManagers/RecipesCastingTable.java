@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalSeedRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalStarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.CrystalTankRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.ElementUnitRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnchanterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnergyCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.EnhancedPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FabricatorRecipe;
@@ -61,6 +62,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PendantRecipe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PotionCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeCrystalRepeater;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeEnderTNT;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.RitualTableRecipe;
@@ -158,6 +160,10 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', Blocks.cobblestone, 'S', ReikaItemHelper.stoneSlab, 'L', ReikaItemHelper.lapisDye);
 		this.addRecipe(new StandRecipe(is, sr));
 
+		is = ChromaTiles.ENCHANTER.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "eGe", "OEO", "BOB", 'e', Items.emerald, 'O', Blocks.obsidian, 'B', ReikaItemHelper.stoneBricks, 'E', Blocks.enchanting_table, 'G', Items.gold_ingot);
+		this.addRecipe(new EnchanterRecipe(is, sr));
+
 		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CastingRecipe(ChromaStacks.crystalMirror, sr));
 
@@ -251,6 +257,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.silkUpgrade, new ItemStack(Items.diamond)));
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.speedUpgrade, new ItemStack(Items.redstone)));
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.efficiencyUpgrade, new ItemStack(Items.emerald)));
+
+		this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(1)));
 	}
 
 	private void addRecipe(CastingRecipe r) {

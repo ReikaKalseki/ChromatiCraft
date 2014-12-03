@@ -40,6 +40,7 @@ public class ChromaStacks {
 	public static final ItemStack elementUnit = ChromaItems.CRAFTING.getStackOfMetadata(8);
 	public static final ItemStack iridCrystal = ChromaItems.CRAFTING.getStackOfMetadata(9);
 	public static final ItemStack iridChunk = ChromaItems.CRAFTING.getStackOfMetadata(10);
+	public static final ItemStack chassis = ChromaItems.CRAFTING.getStackOfMetadata(11);
 
 	public static final ItemStack chromaDust = ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust = ChromaItems.TIERED.getStackOfMetadata(1);

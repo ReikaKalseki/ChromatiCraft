@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
@@ -194,6 +195,9 @@ public class ChromatiPackets implements IPacketHandler {
 					((TileEntityLampController)tile).toggleState();
 					break;
 				}
+			case TNT:
+				((TileEntityEnderTNT)tile).setTarget(data[0], data[1], data[2], data[3]);
+				break;
 			}
 		}
 		catch (NullPointerException e) {

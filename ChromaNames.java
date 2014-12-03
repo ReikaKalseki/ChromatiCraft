@@ -30,7 +30,7 @@ public class ChromaNames {
 	public static final String[] craftingNames = {
 		"chromacraft.void", "chromacraft.lens", "chromacraft.focus", "chromacraft.mirror", "chromacraft.rawcrystal",
 		"chromacraft.energycore", "chromacraft.crystaldust", "chromacraft.transformcore", "chromacraft.elementunit",
-		"chromacraft.iridcrystal", "chromacraft.iridchunk"
+		"chromacraft.iridcrystal", "chromacraft.iridchunk", "chromacraft.chassis"
 	};
 
 	public static final String[] tieredNames = {

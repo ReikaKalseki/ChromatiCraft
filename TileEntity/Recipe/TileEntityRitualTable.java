@@ -223,8 +223,10 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 			this.requestEnergyDifference(tag);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
+			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;
 		}
+		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
 	}
 

@@ -132,7 +132,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		int h = prog.getProgressScaled(78);
-		this.drawTexturedModalRect(j+49, k+21, 177, 1, h, 16);
+		this.drawTexturedModalRect(j+49, k+21, 2, 168, h, 16);
 	}
 
 	@Override

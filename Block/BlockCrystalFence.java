@@ -64,9 +64,11 @@ public class BlockCrystalFence extends Block {
 	}
 
 	private void addToFence(CrystalFenceAuxTile te, TileEntityCrystalFence con) {
-		te.setTile(con);
-		//world.setBlockMetadataWithNotify(x, y, z, 1, 3);
-		te.addToFence();
+		if (con != null) {
+			te.setTile(con);
+			//world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+			te.addToFence();
+		}
 	}
 
 	@Override

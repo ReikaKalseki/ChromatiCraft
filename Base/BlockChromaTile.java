@@ -238,8 +238,9 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		}*/
 		if (m.hasNBTVariants()) {
 			NBTTile nb = (NBTTile)tile;
-			NBTTagCompound nbt = nb.getTagsToWriteToStack();
-			core.stackTagCompound = nbt;
+			NBTTagCompound nbt = new NBTTagCompound();
+			nb.getTagsToWriteToStack(nbt);
+			core.stackTagCompound = nbt.hasNoTags() ? null : (NBTTagCompound)nbt.copy();
 		}
 		return core;
 	}
@@ -280,8 +281,9 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 				ReikaEnchantmentHelper.applyEnchantments(is, map);
 			}*/
 			if (m.hasNBTVariants()) {
-				NBTTagCompound nbt = ((NBTTile)te).getTagsToWriteToStack();
-				is.stackTagCompound = (NBTTagCompound)(nbt != null ? nbt.copy() : null);
+				NBTTagCompound nbt = new NBTTagCompound();
+				((NBTTile)te).getTagsToWriteToStack(nbt);
+				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
 			}
 			li = ReikaJavaLibrary.makeListFrom(is);
 			ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);

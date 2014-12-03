@@ -177,18 +177,15 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 		else {
 			int n = this.hasSpeed() ? 2 : 1;
-			for (int i = 0; i < n; i++) {
-				ArrayList<Coordinate> li = fluids.get(selected);
-				if (!li.isEmpty() && selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
+			ArrayList<Coordinate> li = fluids.get(selected);
+			if (li != null && !li.isEmpty() && selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
+				for (int i = 0; i < n; i++) {
 					int index = rand.nextInt(li.size());
 					Coordinate c = li.get(index);
 					this.addFluid(selected);
 					c.setBlock(world, Blocks.air);
 					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.5F : 1));
 					li.remove(index);
-				}
-				else {
-
 				}
 			}
 			Fluid f = tank.getActualFluid();

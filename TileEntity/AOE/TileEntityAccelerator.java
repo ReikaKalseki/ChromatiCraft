@@ -204,10 +204,8 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 	}
 
 	@Override
-	public NBTTagCompound getTagsToWriteToStack() {
-		NBTTagCompound NBT = new NBTTagCompound();
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		NBT.setInteger("tier", this.getTier());
-		return NBT;
 	}
 
 }

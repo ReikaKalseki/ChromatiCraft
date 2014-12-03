@@ -358,6 +358,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				return true;
 			}
 		}
+		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
 	}
 
@@ -645,14 +646,14 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	@Override
-	public NBTTagCompound getTagsToWriteToStack() {
-		NBTTagCompound NBT = new NBTTagCompound();
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("lvl", this.getTier().ordinal());
-		return NBT;
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
+		super.setDataFromItemStackTag(is);
 		if (ChromaItems.PLACER.matchWith(is)) {
 			if (is.getItemDamage() == this.getTile().ordinal()) {
 				if (is.stackTagCompound != null) {

@@ -58,8 +58,8 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		if (recipes.size() > 1) {
-			buttonList.add(new ImagedGuiButton(0, j+195, k-3, 10, 12, 183, 6, file, ChromatiCraft.class));
-			buttonList.add(new ImagedGuiButton(1, j+205, k-3, 10, 12, 193, 6, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class));
 		}
 
 		if (subpage == 0 && this.getActiveRecipe().getItemCounts().size() > 10) {

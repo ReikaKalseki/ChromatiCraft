@@ -47,6 +47,15 @@ public class GuiMiner extends GuiChromaBase {
 			}
 			i++;
 		}
+
+		String s = String.format("Scan: %.2f%s done", 100*tile.getDigCompletion(), "%");
+		fontRendererObj.drawString(s, 4, 111, 0xffffff);
+
+		if (tile.isReady()) {
+			int g = 160+(int)(95*Math.sin(Math.toRadians(System.currentTimeMillis()/3%360)));
+			int color = 0xff000000 | (g << 8);
+			this.drawRect(156, 40, 164, 48, color);
+		}
 	}
 
 	@Override

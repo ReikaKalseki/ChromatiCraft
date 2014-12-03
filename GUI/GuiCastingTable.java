@@ -106,8 +106,8 @@ public class GuiCastingTable extends GuiChromaBase {
 					int x = 183+e.ordinal()%4*w*2;
 					int h = energy*35/tag.getValue(e);
 					int dy = Math.max(35-h, 0); //prevent gui overflow
-					int y1 = 33+e.ordinal()/4*38;
-					int y = 68+e.ordinal()/4*38;
+					int y1 = 35+e.ordinal()/4*40;
+					int y = 70+e.ordinal()/4*40;
 					this.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
 					this.drawRect(x, y1+dy, x+w, y, e.getColor());
 				}

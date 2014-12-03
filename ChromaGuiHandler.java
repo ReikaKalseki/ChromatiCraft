@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiCrystalTank;
+import Reika.ChromatiCraft.GUI.GuiEnderTNT;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
@@ -177,6 +179,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiRangedLamp(player, (TileEntityRangedLamp) te);
 			if (te instanceof TileEntityCrystalTank)
 				return new GuiCrystalTank(player, (TileEntityCrystalTank) te);
+			if (te instanceof TileEntityEnderTNT)
+				return new GuiEnderTNT(player, (TileEntityEnderTNT) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

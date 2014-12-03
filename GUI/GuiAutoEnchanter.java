@@ -118,7 +118,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			GL11.glColor3f(1, 1, 1);
 			int h = 54 * level / ench.getCapacity();
-			this.drawTexturedModelRectFromIcon(35, 70-h, ico, 16, h);
+			this.drawTexturedModelRectFromIcon(35, 68-h, ico, 16, h);
 		}
 
 		String display = this.getEnchantDisplayString();

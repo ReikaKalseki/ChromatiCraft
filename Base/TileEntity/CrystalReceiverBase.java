@@ -9,11 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -22,7 +24,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
 
-public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile {
+public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile, NBTTile {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = this.getCooldownLength();
@@ -158,6 +160,16 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 			tag.setTag(e, this.getMaxStorage(e)-this.getEnergy(e));
 		}
 		return tag;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		energy.writeToNBT("energy", NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		energy.readFromNBT("energy", is.stackTagCompound);
 	}
 
 }

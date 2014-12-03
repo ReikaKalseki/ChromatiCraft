@@ -20,7 +20,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -87,11 +86,11 @@ public class GuiRangedLamp extends GuiContainer {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, StatCollector.translateToLocal("chroma.lampblock"), xSize/2, 5, 4210752);
+		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, StatCollector.translateToLocal("chroma.lampblock"), xSize/2, 5, 0xffffff);
 
-		fontRendererObj.drawString("Channel:", xSize/2-72, 25, 4210752);
+		fontRendererObj.drawString("Channel:", xSize/2-72, 25, 0xffffff);
 		if (!input.isFocused()) {
-			fontRendererObj.drawString(String.format("%d", lamp.getChannel()), xSize/2+6, 25, 0xffffffff);
+			fontRendererObj.drawString(String.format("%d", lamp.getChannel()), xSize/2+6, 25, 0xffffff);
 		}
 	}
 
@@ -107,8 +106,6 @@ public class GuiRangedLamp extends GuiContainer {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, i);
 
 		input.drawTextBox();
-		int color = 4210752;
-		ImagedGuiButton.drawCenteredStringNoShadow(fontRendererObj, String.format("(%d)", lamp.getChannel()), j+xSize/2+58, k+25, color);
 	}
 
 	public final String getFullTexturePath() {

@@ -13,9 +13,19 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import codechicken.lib.vec.Rectangle4i;
+import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiAdapter;
 
 public class ChromaNEITabOccluder extends INEIGuiAdapter {
+
+	@Override
+	public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData data)
+	{
+		if (gui instanceof GuiCastingTable) {
+			data.showItemSection = false;
+		}
+		return data;
+	}
 
 	@Override
 	public boolean hideItemPanelSlot(GuiContainer gui, int x, int y, int w, int h)
