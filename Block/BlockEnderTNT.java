@@ -14,6 +14,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -125,7 +126,8 @@ public class BlockEnderTNT extends Block {
 
 		private void detonate() {
 			if (target != null && target.getWorld() != null && !target.getWorld().isRemote) {
-				target.getWorld().createExplosion(null, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 9, true);
+				World w = target.dimensionID == worldObj.provider.dimensionId ? worldObj : target.getWorld();
+				new FlyingBlocksExplosion(w, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 4).doExplosion();
 			}
 			if (!worldObj.isRemote)
 				worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
