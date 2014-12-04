@@ -262,6 +262,10 @@ public enum ChromaBlocks implements BlockEnum {
 	public boolean hasMultiValuedName() {
 		if (this == TANK)
 			return false;
+		if (this == TNT)
+			return false;
+		if (this == FENCE)
+			return false;
 		return true;
 	}
 

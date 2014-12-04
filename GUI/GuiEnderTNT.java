@@ -180,7 +180,7 @@ public class GuiEnderTNT extends GuiContainer {
 	}
 
 	public final String getFullTexturePath() {
-		return "/Reika/ChromatiCraft/Textures/GUIs/tnt.png";
+		return "/Reika/ChromatiCraft/Textures/GUIs/endertnt.png";
 	}
 
 }

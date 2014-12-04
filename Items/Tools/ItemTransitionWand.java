@@ -17,8 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
@@ -28,7 +27,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
-public class ItemTransitionWand extends ItemChromaTool implements BreakerCallback {
+public class ItemTransitionWand extends ItemWandBase implements BreakerCallback {
 
 	private static HashMap<Integer, BlockReplace> breakers = new HashMap();
 
@@ -36,6 +35,8 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 
 	public ItemTransitionWand(int index) {
 		super(index);
+		this.addEnergyCost(CrystalElement.GRAY, 2);
+		this.addEnergyCost(CrystalElement.YELLOW, 1);
 	}
 
 	@Override
@@ -88,8 +89,7 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.GRAY, 2);
-				PlayerElementBuffer.instance.removeFromPlayer(r.player, CrystalElement.YELLOW, 1);
+				this.drainPlayer(r.player);
 				int slot = ReikaInventoryHelper.locateInInventory(r.place, r.placeM, r.player.inventory.mainInventory);
 				if (slot != -1) {
 					ReikaInventoryHelper.decrStack(slot, r.player.inventory.mainInventory);
@@ -113,9 +113,7 @@ public class ItemTransitionWand extends ItemChromaTool implements BreakerCallbac
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				boolean b1 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.GRAY, 2);
-				boolean b2 = PlayerElementBuffer.instance.playerHas(r.player, CrystalElement.YELLOW, 1);
-				return b1 && b2 && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM);
+				return this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM);
 			}
 		}
 		return false;

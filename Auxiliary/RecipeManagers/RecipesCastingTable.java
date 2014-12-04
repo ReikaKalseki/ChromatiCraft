@@ -77,6 +77,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.UpgradeRecipe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.VoidCoreRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
@@ -258,7 +259,8 @@ public class RecipesCastingTable {
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.speedUpgrade, new ItemStack(Items.redstone)));
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.efficiencyUpgrade, new ItemStack(Items.emerald)));
 
-		this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(1)));
+		if (ChromaOptions.ENDERTNT.getState())
+			this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(1)));
 	}
 
 	private void addRecipe(CastingRecipe r) {

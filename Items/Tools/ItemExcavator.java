@@ -15,14 +15,13 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 
-public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
+public class ItemExcavator extends ItemWandBase implements BreakerCallback {
 
 	public static final int MAX_DEPTH = 12;
 
@@ -30,6 +29,8 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 
 	public ItemExcavator(int index) {
 		super(index);
+		this.addEnergyCost(CrystalElement.BROWN, 1);
+		this.addEnergyCost(CrystalElement.YELLOW, 2);
 	}
 
 	@Override
@@ -49,8 +50,7 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.BROWN, 1);
-				PlayerElementBuffer.instance.removeFromPlayer(ep, CrystalElement.YELLOW, 2);
+				this.drainPlayer(ep);
 			}
 			else {
 				b.terminate();
@@ -64,9 +64,7 @@ public class ItemExcavator extends ItemChromaTool implements BreakerCallback {
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				boolean b1 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.BROWN, 1);
-				boolean b2 = PlayerElementBuffer.instance.playerHas(ep, CrystalElement.YELLOW, 2);
-				return b1 && b2;
+				return this.sufficientEnergy(ep);
 			}
 		}
 		return false;

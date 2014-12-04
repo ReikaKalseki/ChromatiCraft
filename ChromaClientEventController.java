@@ -12,7 +12,9 @@ package Reika.ChromatiCraft;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -25,10 +27,12 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Items.Tools.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
@@ -36,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -68,7 +73,183 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	public void drawHighlight(DrawBlockHighlightEvent evt) {
+	public void drawPlacerHighlight(DrawBlockHighlightEvent evt) {
+		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
+			if (evt.currentItem != null && ChromaItems.DUPLICATOR.matchWith(evt.currentItem)) {
+				StructuredBlockArray blocks = ItemDuplicationWand.getStructureFor(Minecraft.getMinecraft().thePlayer);
+				if (blocks != null) {
+					blocks.offset(ForgeDirection.VALID_DIRECTIONS[evt.target.sideHit], 1);
+					GL11.glPushMatrix();
+					int x = evt.target.blockX;
+					int y = evt.target.blockY;
+					int z = evt.target.blockZ;
+					double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
+					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
+					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
+					//GL11.glTranslated(p2, p4, p6);
+					GL11.glDisable(GL11.GL_LIGHTING);
+					GL11.glEnable(GL11.GL_BLEND);
+					Tessellator v5 = Tessellator.instance;
+					double o = 0.0125;
+					int r = 255;
+					int g = 255;
+					int b = 255;
+					ReikaTextureHelper.bindTerrainTexture();
+					for (int i = 0; i < blocks.getSize(); i++) {
+						int[] xyz = blocks.getNthBlock(i);
+						float dx = xyz[0]+x-(float)TileEntityRendererDispatcher.staticPlayerX;
+						float dy = xyz[1]+y-(float)TileEntityRendererDispatcher.staticPlayerY;
+						float dz = xyz[2]+z-(float)TileEntityRendererDispatcher.staticPlayerZ;
+						Block bk = blocks.getBlockAt(xyz[0], xyz[1], xyz[2]);
+						if (bk != null && bk != Blocks.air && bk.getMaterial() != Material.air) {
+							v5.addTranslation(dx, dy, dz);
+							/*
+							GL11.glDisable(GL11.GL_TEXTURE_2D);
+							v5.startDrawing(GL11.GL_LINE_LOOP);
+							v5.setBrightness(240);
+							v5.setColorRGBA(r, g, b, 96);
+							v5.addVertex(0, 0, 0);
+							v5.addVertex(1, 0, 0);
+							v5.addVertex(1, 0, 1);
+							v5.addVertex(0, 0, 1);
+							v5.draw();
+
+							v5.startDrawing(GL11.GL_LINE_LOOP);
+							v5.setBrightness(240);
+							v5.setColorRGBA(r, g, b, 96);
+							v5.addVertex(0, 1, 0);
+							v5.addVertex(1, 1, 0);
+							v5.addVertex(1, 1, 1);
+							v5.addVertex(0, 1, 1);
+							v5.draw();
+
+							v5.startDrawing(GL11.GL_LINES);
+							v5.setBrightness(240);
+							v5.setColorRGBA(r, g, b, 96);
+							v5.addVertex(0, 0, 0);
+							v5.addVertex(0, 1, 0);
+							v5.addVertex(1, 0, 0);
+							v5.addVertex(1, 1, 0);
+							v5.addVertex(0, 0, 1);
+							v5.addVertex(0, 1, 1);
+							v5.addVertex(1, 0, 1);
+							v5.addVertex(1, 1, 1);
+							v5.draw();
+							GL11.glEnable(GL11.GL_TEXTURE_2D);
+							 */
+							v5.startDrawingQuads();
+							v5.setBrightness(240);
+							v5.setColorRGBA(r, g, b, 96);
+							int meta = blocks.getMetaAt(xyz[0], xyz[1], xyz[2]);
+							if (!blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2])) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.DOWN.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(ew, 0-o, en, u, v);
+								v5.addVertexWithUV(ee, 0-o, en, du, v);
+								v5.addVertexWithUV(ee, 0-o, es, du, dv);
+								v5.addVertexWithUV(ew, 0-o, es, u, dv);
+							}
+
+							if (!blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2])) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.UP.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(ew, 1+o, es, u, dv);
+								v5.addVertexWithUV(ee, 1+o, es, du, dv);
+								v5.addVertexWithUV(ee, 1+o, en, du, v);
+								v5.addVertexWithUV(ew, 1+o, en, u, v);
+							}
+
+							if (!blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2])) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.EAST.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(1+o, ed, en, du, dv);
+								v5.addVertexWithUV(1+o, eu, en, du, v);
+								v5.addVertexWithUV(1+o, eu, es, u, v);
+								v5.addVertexWithUV(1+o, ed, es, u, dv);
+							}
+
+							if (!blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2])) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.WEST.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(0-o, ed, es, u, dv);
+								v5.addVertexWithUV(0-o, eu, es, u, v);
+								v5.addVertexWithUV(0-o, eu, en, du, v);
+								v5.addVertexWithUV(0-o, ed, en, du, dv);
+							}
+
+							if (!blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1)) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.NORTH.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(ew, ed, 0-o, u, dv);
+								v5.addVertexWithUV(ew, eu, 0-o, u, v);
+								v5.addVertexWithUV(ee, eu, 0-o, du, v);
+								v5.addVertexWithUV(ee, ed, 0-o, du, dv);
+							}
+
+							if (!blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1)) {
+								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.SOUTH.ordinal(), meta));
+								float u = ico.getMinU();
+								float du = ico.getMaxU();
+								float v = ico.getMinV();
+								float dv = ico.getMaxV();
+								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								v5.addVertexWithUV(ee, ed, 1+o, du, dv);
+								v5.addVertexWithUV(ee, eu, 1+o, du, v);
+								v5.addVertexWithUV(ew, eu, 1+o, u, v);
+								v5.addVertexWithUV(ew, ed, 1+o, u, dv);
+							}
+							v5.draw();
+							v5.addTranslation(-dx, -dy, -dz);
+						}
+					}
+					GL11.glEnable(GL11.GL_LIGHTING);
+					GL11.glDisable(GL11.GL_BLEND);
+					GL11.glPopMatrix();
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void drawExcavatorHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			if (evt.currentItem != null && ChromaItems.EXCAVATOR.matchWith(evt.currentItem)) {
 				int x = evt.target.blockX;

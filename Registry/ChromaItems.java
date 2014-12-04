@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
+import Reika.ChromatiCraft.Items.Tools.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -81,7 +82,8 @@ public enum ChromaItems implements ItemEnum {
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
 	WARP(6, false,			"chroma.warp",			ItemWarpProofer.class),
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
-	FRAGMENT(8, true,		"chroma.fragment",		ItemInfoFragment.class);
+	FRAGMENT(8, true,		"chroma.fragment",		ItemInfoFragment.class),
+	DUPLICATOR(9, false,	"chroma.duplicator",	ItemDuplicationWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
