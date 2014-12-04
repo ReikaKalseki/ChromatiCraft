@@ -17,6 +17,10 @@ public abstract class ItemWandBase extends ItemChromaTool {
 		energy.addValueToColor(e, amt);
 	}
 
+	protected final void drainPlayer(EntityPlayer ep, float factor) {
+		PlayerElementBuffer.instance.removeFromPlayer(ep, energy.copy().scale(factor));
+	}
+
 	protected final void drainPlayer(EntityPlayer ep) {
 		PlayerElementBuffer.instance.removeFromPlayer(ep, energy);
 	}
