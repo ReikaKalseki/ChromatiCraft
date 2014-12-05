@@ -66,7 +66,7 @@ public class ChromatiPackets implements IPacketHandler {
 				double sz = inputStream.readDouble();
 				float v = inputStream.readFloat();
 				float p = inputStream.readFloat();
-				ReikaSoundHelper.playSound(s, sx, sy, sz, v, p);
+				ReikaSoundHelper.playClientSound(s, sx, sy, sz, v, p);
 				return;
 			case STRING:
 				stringdata = packet.readString();

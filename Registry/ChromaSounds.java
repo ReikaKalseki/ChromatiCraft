@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.SoundEnum;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -36,7 +36,6 @@ public enum ChromaSounds implements SoundEnum {
 	ERROR("error"),
 	INFUSE("infuse"),
 	INFUSION("infuse2"),
-	RUMBLE("rumble2"),
 	USE("use2");
 
 	public static final ChromaSounds[] soundList = values();
@@ -84,7 +83,7 @@ public enum ChromaSounds implements SoundEnum {
 	public void playSound(World world, double x, double y, double z, float vol, float pitch) {
 		if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER)
 			return;
-		ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, this, world, x, y, z, vol*this.getModVolume(), pitch);
+		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol*this.getModVolume(), pitch);
 	}
 
 	public void playSoundAtBlock(World world, int x, int y, int z, float vol, float pitch) {

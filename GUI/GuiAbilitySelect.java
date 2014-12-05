@@ -148,8 +148,8 @@ public class GuiAbilitySelect extends GuiScreen {
 					player.closeScreen();
 				}
 				else {
-					ReikaSoundHelper.playSound(ChromaSounds.ERROR, player, 1, 1);
-					ReikaSoundHelper.playSound(ChromaSounds.ERROR, player, 1, 2);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 2);
 				}
 			}
 		}
