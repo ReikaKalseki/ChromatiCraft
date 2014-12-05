@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -242,7 +243,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		}
 	}
 
-	public BlockArray getRuneLocations(World world, int x, int y, int z) {
+	private BlockArray getRuneLocations(World world, int x, int y, int z) {
 		BlockArray blocks = new BlockArray();
 		blocks.addBlockCoordinate(x-3, y-4, z-1);
 		blocks.addBlockCoordinate(x-1, y-4, z-3);
@@ -401,8 +402,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		return 10000;
 	}
 
-	public void setColor(CrystalElement e) {
+	public void generateColor(CrystalElement e) {
 		color = e;
+	}
+
+	public void setColor(CrystalElement e) {
+		if (worldObj.isRemote)
+			return;
+		color = e;
+		BlockArray runes = this.getRuneLocations(worldObj, xCoord, yCoord, zCoord);
+		for (int i = 0; i < runes.getSize(); i++) {
+			int[] xyz = runes.getNthBlock(i);
+			if (worldObj.getBlock(xyz[0], xyz[1], xyz[2]) == ChromaBlocks.RUNE.getBlockInstance())
+				worldObj.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], color.ordinal(), 3);
+		}
 	}
 
 	@Override

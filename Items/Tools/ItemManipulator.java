@@ -43,7 +43,6 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
-import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -98,11 +97,6 @@ public class ItemManipulator extends ItemChromaTool {
 		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;
 			cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
-			BlockArray runes = cp.getRuneLocations(world, x, y, z);
-			for (int i = 0; i < runes.getSize(); i++) {
-				int[] xyz = runes.getNthBlock(i);
-				world.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], cp.getColor().ordinal(), 3);
-			}
 			return true;
 		}
 

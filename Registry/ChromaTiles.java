@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
@@ -107,7 +108,8 @@ public enum ChromaTiles {
 	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, TileEntityAspectFormer.class, 14, "RenderAspectFormer", ModList.THAUMCRAFT),
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, TileEntityChromaLamp.class, 15, "RenderRainbowLamp"),
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3, "PowerTreeRender"),
-	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 0, "RenderLampControl");
+	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 0, "RenderLampControl"),
+	CREATIVEPYLON("chroma.creativepylon",	ChromaBlocks.PYLON, TileEntityCreativeSource.class, 4);
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),

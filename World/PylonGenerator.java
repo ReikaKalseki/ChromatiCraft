@@ -355,7 +355,7 @@ public final class PylonGenerator implements IWorldGenerator {
 		//TileEntity
 		world.setBlock(x, y+9, z, ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata(), 3);
 		TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
-		te.setColor(e);
+		te.generateColor(e);
 		if (broken)
 			te.invalidateMultiblock();
 		else

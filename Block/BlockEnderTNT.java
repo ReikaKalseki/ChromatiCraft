@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -26,13 +28,16 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.GuiController;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class BlockEnderTNT extends Block {
 
 	private IIcon top;
 	private IIcon side;
 	private IIcon bottom;
+	private IIcon active;
 
 	public BlockEnderTNT(Material mat) {
 		super(mat);
@@ -60,7 +65,7 @@ public class BlockEnderTNT extends Block {
 		case 1:
 			return top;
 		default:
-			return side;
+			return meta > 0 ? active : side;
 		}
 	}
 
@@ -69,6 +74,7 @@ public class BlockEnderTNT extends Block {
 		side = ico.registerIcon("chromaticraft:basic/enderbomb_side");
 		top = ico.registerIcon("chromaticraft:basic/enderbomb_top");
 		bottom = ico.registerIcon("chromaticraft:basic/enderbomb_bottom");
+		active = ico.registerIcon("chromaticraft:basic/enderbomb_active");
 	}
 
 	@Override
@@ -94,11 +100,19 @@ public class BlockEnderTNT extends Block {
 			((TileEntityEnderTNT)te).testDetonation();
 	}
 
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileEntityEnderTNT)
+			((TileEntityEnderTNT)te).owner = e.getCommandSenderName();
+	}
+
 	public static class TileEntityEnderTNT extends TileEntity implements GuiController {
 
 		private WorldLocation target = null;
 		private int countdown = -1;
 		private int existed = 0;
+		private String owner;
 
 		public void testDetonation() {
 			if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
@@ -108,6 +122,7 @@ public class BlockEnderTNT extends Block {
 		public void prime() {
 			if (target != null) {
 				countdown = 200;
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 3);
 				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "game.tnt.primed");
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			}
@@ -128,8 +143,11 @@ public class BlockEnderTNT extends Block {
 				countdown--;
 			}
 
-			if (countdown > 0 && countdown%5 == 0) {
-				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click");
+			if (countdown > 0) {
+				ReikaParticleHelper.SMOKE.spawnAt(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5);
+				if (countdown%5 == 0) {
+					ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click");
+				}
 			}
 		}
 
@@ -137,9 +155,12 @@ public class BlockEnderTNT extends Block {
 			if (target != null && target.getWorld() != null && !target.getWorld().isRemote) {
 				World w = target.dimensionID == worldObj.provider.dimensionId ? worldObj : target.getWorld();
 				new FlyingBlocksExplosion(w, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 4).doExplosion();
+				if (!worldObj.isRemote)
+					worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
+				String s = "Ender TNT placed by "+owner+" has just detonated at "+target;
+				ChromatiCraft.logger.log(s);
+				ReikaPlayerAPI.notifyAdmins(s);
 			}
-			if (!worldObj.isRemote)
-				worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
 		}
 
 		public void setTarget(int dim, int x, int y, int z) {
@@ -158,6 +179,7 @@ public class BlockEnderTNT extends Block {
 			NBT.setInteger("tick", countdown);
 			if (target != null)
 				target.writeToNBT("loc", NBT);
+			NBT.setString("owner", owner);
 		}
 
 		@Override
@@ -166,6 +188,7 @@ public class BlockEnderTNT extends Block {
 
 			target = WorldLocation.readFromNBT("loc", NBT);
 			countdown = NBT.getInteger("tick");
+			owner = NBT.getString("owner");
 		}
 
 		@Override
