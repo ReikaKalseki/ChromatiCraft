@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
@@ -9,10 +18,13 @@ import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.block.BlockGlass;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -20,13 +32,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.TickRegistry;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
@@ -34,6 +49,9 @@ import cpw.mods.fml.relauncher.Side;
 public class ItemDuplicationWand extends ItemWandBase {
 
 	private static HashMap<String, StructuredBlockArray> structures = new HashMap();
+	private HashMap<String, Boolean> region = new HashMap();
+	private HashMap<String, Coordinate> centers = new HashMap();
+	private HashMap<String, Coordinate> lastClick = new HashMap();
 	private static Collection<String> lock = new ArrayList();
 
 	private static final PlacementTicker ticker = new PlacementTicker();
@@ -41,59 +59,112 @@ public class ItemDuplicationWand extends ItemWandBase {
 	public ItemDuplicationWand(int index) {
 		super(index);
 		this.addEnergyCost(CrystalElement.BLACK, 4);
-		this.addEnergyCost(CrystalElement.PURPLE, 4);
-		this.addEnergyCost(CrystalElement.LIGHTBLUE, 2);
+		this.addEnergyCost(CrystalElement.PURPLE, 2);
+		this.addEnergyCost(CrystalElement.LIGHTBLUE, 4);
 		TickRegistry.instance.registerTickHandler(ticker, Side.SERVER);
 	}
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
-		if (lock.contains(ep.getCommandSenderName()))
+		String sg = ep.getCommandSenderName();
+		if (world.isRemote)
+			return true;
+		if (lock.contains(sg))
 			return false;
 		if (this.sufficientEnergy(ep)) {
 			if (ep.isSneaking())
-				this.makeStructureCache(world, x, y, z, ep);
-			else if (structures.containsKey(ep.getCommandSenderName()))
-				this.copyStructure(world, x, y, z, s, ep);
+				this.addToStructureCache(world, x, y, z, sg);
+			else {
+				StructuredBlockArray struct = structures.get(sg);
+				if (struct != null && !struct.isEmpty() && this.hasItems(struct, ep)) {
+					this.copyStructure(world, x, y, z, s, sg);
+					this.drainPlayer(ep, 1+struct.getSize()/16F);
+					this.removeFromInventory(ep, struct);
+				}
+			}
 			return true;
 		}
 		return false;
 	}
 
+	private boolean hasItems(StructuredBlockArray blocks, EntityPlayer ep) {
+		if (ep.capabilities.isCreativeMode)
+			return true;
+		ItemHashMap<Integer> items = blocks.getItems();
+		return ReikaInventoryHelper.inventoryContains(items, ep.inventory);
+	}
+
+	private void removeFromInventory(EntityPlayer ep, StructuredBlockArray blocks) {
+		ItemHashMap<Integer> items = blocks.getItems();
+		ReikaInventoryHelper.removeFromInventory(items, ep.inventory);
+	}
+
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		this.finishPlacement(ep.getCommandSenderName());
+		this.clearStructureCache(ep.getCommandSenderName());
 		return is;
 	}
 
-	private void makeStructureCache(World world, int x, int y, int z, EntityPlayer ep) {
-		StructuredBlockArray all = new StructuredBlockArray(world);
-		int r = 5;
-		for (int i = -r; i <= r; i++) {
-			for (int j = -r; j <= r; j++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = x+i;
-					int dy = y+j;
-					int dz = z+k;
-					if (dy >= 0) {
-						Block b = world.getBlock(dx, dy, dz);
-						all.addBlockCoordinate(dx, dy, dz);
+	private void clearStructureCache(String s) {
+		region.remove(s);
+		centers.remove(s);
+	}
+
+	private void addToStructureCache(World world, int x, int y, int z, String s) {
+		StructuredBlockArray all = structures.get(s);
+		Coordinate cx = new Coordinate(x, y, z);
+		boolean second = region.containsKey(s) && region.get(s);
+		if (all == null) {
+			all = new StructuredBlockArray(world);
+			if (!second)
+				centers.put(s, cx);
+		}
+
+		if (second) {
+			Coordinate last = lastClick.get(s);
+			StructuredBlockArray add = new StructuredBlockArray(world);
+			int x1 = Math.min(last.xCoord, x);
+			int x2 = Math.max(last.xCoord, x);
+			int y1 = Math.min(last.yCoord, y);
+			int y2 = Math.max(last.yCoord, y);
+			int z1 = Math.min(last.zCoord, z);
+			int z2 = Math.max(last.zCoord, z);
+			int ct = 0;
+			for (int dx = x1; dx <= x2; dx++) {
+				for (int dy = y1; dy <= y2; dy++) {
+					for (int dz = z1; dz <= z2; dz++) {
+						if (dy >= 0) {
+							add.addBlockCoordinate(dx, dy, dz);
+							ct++;
+						}
 					}
 				}
 			}
+			if (add.getSize() < 1000) {
+				Coordinate c = centers.get(s);
+				add.offset(-c.xCoord, -c.yCoord, -c.zCoord);
+				all.addAll(add, true);
+				structures.put(s, all);
+				ChromatiCraft.logger.debug("Added "+ct+" blocks to region, from "+cx+" to "+last+", for "+s+". Now has "+all.getSize()+" blocks.");
+				region.put(s, false);
+				lastClick.remove(s);
+			}
 		}
-		all.offset(-x, -y, -z);
-		structures.put(ep.getCommandSenderName(), all);
+		else {
+			ChromatiCraft.logger.debug("Started drawing subregion for "+s);
+			lastClick.put(s, cx);
+			region.put(s, true);
+		}
 	}
 
-	private void copyStructure(World world, int x, int y, int z, int s, EntityPlayer ep) {
-		lock.add(ep.getCommandSenderName());
-		triggerPlacement(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s], ep);
-		this.drainPlayer(ep, 1+structures.get(ep.getCommandSenderName()).getSize()/16F);
+	private void copyStructure(World world, int x, int y, int z, int s, String sg) {
+		lock.add(sg);
+		triggerPlacement(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s], sg);
 	}
 
-	private static void triggerPlacement(World world, int x, int y, int z, ForgeDirection dir, EntityPlayer ep) {
-		StructuredBlockArray struct = structures.get(ep.getCommandSenderName());
+	private static void triggerPlacement(World world, int x, int y, int z, ForgeDirection dir, String s) {
+		StructuredBlockArray struct = structures.get(s);
 		ArrayList<PositionedBlock> ls = new ArrayList();
 		for (int i = 0; i < struct.getSize(); i++) {
 			int[] xyz = struct.getNthBlock(i);
@@ -103,17 +174,19 @@ public class ItemDuplicationWand extends ItemWandBase {
 			ls.add(new PositionedBlock(dx, dy, dz, struct.getBlockAt(xyz[0], xyz[1], xyz[2]), struct.getMetaAt(xyz[0], xyz[1], xyz[2])));
 		}
 
-		ticker.placing.put(ep.getCommandSenderName(), new OperationList(world, ls));
+		ticker.placing.put(s, new OperationList(world, ls));
 	}
 
 	private static void finishPlacement(String s) {
 		lock.remove(s);
 		structures.remove(s);
+		ticker.placing.remove(s);
 	}
 
 	public static StructuredBlockArray getStructureFor(EntityPlayer ep) {
-		StructuredBlockArray a = structures.get(ep.getCommandSenderName());
-		return !lock.contains(ep.getCommandSenderName()) && a != null ? (StructuredBlockArray)a.copy() : null;
+		String s = ep.getCommandSenderName();
+		StructuredBlockArray a = structures.get(s);
+		return !lock.contains(s) && a != null ? (StructuredBlockArray)a.copy() : null;
 	}
 
 	public static class PlacementTicker implements TickHandler {
@@ -133,8 +206,8 @@ public class ItemDuplicationWand extends ItemWandBase {
 				if (o.dimension == world.provider.dimensionId) {
 					ArrayList<PositionedBlock> li = o.list;
 					PositionedBlock b = li.get(o.index);
-					Block bf = b.coord.getBlock(world);
-					int mf = b.coord.getBlockMetadata(world);
+					//Block bf = b.coord.getBlock(world);
+					//int mf = b.coord.getBlockMetadata(world);
 					b.place(world);
 					o.index++;
 					if (o.isDone()) {
@@ -236,7 +309,9 @@ public class ItemDuplicationWand extends ItemWandBase {
 		private static int getIndex(Block b) {
 			if (b.isOpaqueCube())
 				return 0;
-			if (b instanceof BlockFarmland || b instanceof BlockSlab || b == Blocks.glass || b instanceof BlockLeavesBase)
+			if (b instanceof BlockFarmland || b instanceof BlockSlab || b instanceof BlockGlass)
+				return 1;
+			if (b instanceof BlockLeavesBase || b instanceof BlockStairs)
 				return 1;
 			if (b instanceof BlockBush || b.getMaterial() == Material.cactus || b.getMaterial() == Material.plants)
 				return 2;
@@ -244,7 +319,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 				return 2;
 			if (b.getMaterial() == Material.vine || b.getMaterial() == Material.web || b.getMaterial() == Material.snow)
 				return 2;
-			if (b == Blocks.torch || b == Blocks.redstone_torch || b == Blocks.unlit_redstone_torch)
+			if (b == Blocks.torch || b == Blocks.redstone_torch || b == Blocks.unlit_redstone_torch || b instanceof BlockDoor)
 				return 2;
 			if (b instanceof BlockLiquid || b instanceof BlockFluidBase || b.getMaterial() == Material.water || b.getMaterial() == Material.lava)
 				return 3;
