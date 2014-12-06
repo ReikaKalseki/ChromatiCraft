@@ -332,4 +332,10 @@ public enum ChromaBlocks implements BlockEnum {
 		return new ItemStack(this.getBlockInstance());
 	}
 
+	public boolean hasModel() {
+		if (this == TILEMODELLED || this == TILEMODELLED2 || this == PYLON || this == TILECRYSTALNONCUBE)
+			return true;
+		return false;
+	}
+
 }

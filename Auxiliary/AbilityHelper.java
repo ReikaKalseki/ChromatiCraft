@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Auxiliary.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
@@ -106,7 +107,7 @@ public class AbilityHelper {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void middleMouseUse(MouseEvent e) {
-		if (e.buttonstate && e.button == 2) { //what about people with no mousewheels? config option to use keybind?
+		if (e.buttonstate && e.button == 2 && !ChromaOptions.KEYBINDABILITY.getState()) {
 			Minecraft mc = Minecraft.getMinecraft();
 			if (mc.thePlayer.capabilities.isCreativeMode) {
 				MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(5, false);

@@ -187,4 +187,9 @@ public class GuiCastingRecipe extends GuiBookSection {
 		return this.getActiveRecipe().getOutput().getDisplayName();//+" Casting";
 	}
 
+	@Override
+	protected int getTitleOffset() {
+		return 27;
+	}
+
 }

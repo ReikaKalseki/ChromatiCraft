@@ -109,7 +109,7 @@ public enum ChromaTiles {
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, TileEntityChromaLamp.class, 15, "RenderRainbowLamp"),
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3, "PowerTreeRender"),
 	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 0, "RenderLampControl"),
-	CREATIVEPYLON("chroma.creativepylon",	ChromaBlocks.PYLON, TileEntityCreativeSource.class, 4);
+	CREATIVEPYLON("chroma.creativepylon",	ChromaBlocks.PYLON, TileEntityCreativeSource.class, 4, "RenderCreativePylon");
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
@@ -211,6 +211,7 @@ public enum ChromaTiles {
 				throw new RegistrationException(ChromatiCraft.instance, "Could not create TE instance to render "+this);
 			}
 		}
+		((TileEntityChromaticBase)renderInstance).animateItem();
 		return renderInstance;
 	}
 
@@ -356,6 +357,22 @@ public enum ChromaTiles {
 
 	public boolean isPlant() {
 		return this.getBlock() instanceof BlockChromaPlantTile || this.getBlock() instanceof BlockDecoPlant;
+	}
+
+	public boolean isDummiedOut() {
+		return false;
+	}
+
+	public boolean hasPrerequisite() {
+		return dependency != null;
+	}
+
+	public ModList getPrerequisite() {
+		return dependency;
+	}
+
+	public boolean isIncomplete() {
+		return block.hasModel() && !this.hasRender();
 	}
 
 }

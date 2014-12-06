@@ -392,4 +392,40 @@ public enum ChromaResearch {
 		}
 	}
 
+	public static ArrayList<ChromaResearch> getInfoTabs() {
+		return getAllUnder(INTRO);
+	}
+
+	public static ArrayList<ChromaResearch> getMachineTabs() {
+		return getAllUnder(MACHINEDESC);
+	}
+
+	public static ArrayList<ChromaResearch> getAbilityTabs() {
+		return getAllUnder(ABILITYDESC);
+	}
+
+	public static ArrayList<ChromaResearch> getToolTabs() {
+		return getAllUnder(TOOLDESC);
+	}
+
+	public static ArrayList<ChromaResearch> getResourceTabs() {
+		return getAllUnder(RESOURCEDESC);
+	}
+
+	public static ArrayList<ChromaResearch> getStructureTabs() {
+		return getAllUnder(STRUCTUREDESC);
+	}
+
+	private static ArrayList<ChromaResearch> getAllUnder(ChromaResearch parent) {
+		ArrayList<ChromaResearch> li = new ArrayList();
+		for (int i = parent.ordinal()+1; i < researchList.length; i++) {
+			ChromaResearch r = researchList[i];
+			if (r.getParent() == parent)
+				li.add(r);
+			else
+				break;
+		}
+		return li;
+	}
+
 }

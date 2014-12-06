@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -20,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ChromaItemRenderer;
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Auxiliary.KeybindHandler;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
@@ -71,6 +74,8 @@ public class ChromaClient extends ChromaCommon {
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
+	public static KeyBinding key_ability;
+
 	@Override
 	public void registerSounds() {
 		new SoundLoader(ChromaSounds.soundList).register();
@@ -93,6 +98,15 @@ public class ChromaClient extends ChromaCommon {
 		RenderSlime slimeRenderer = (RenderSlime)RenderManager.instance.entityRenderMap.get(EntitySlime.class);
 		slimeRenderer.scaleAmount = new ColorizableSlimeModel(0);
 		ChromatiCraft.logger.log("Overriding Slime Renderer Edge Model.");
+	}
+
+	@Override
+	public void registerKeys() {
+		if (ChromaOptions.KEYBINDABILITY.getState()) {
+			key_ability = new KeyBinding("Use Ability", -98, "ChromatiCraft"); //Middle mouse
+			//ClientRegistry.registerKeyBinding(key_ability);
+			KeybindHandler.instance.addKeybind(key_ability);
+		}
 	}
 
 	@Override

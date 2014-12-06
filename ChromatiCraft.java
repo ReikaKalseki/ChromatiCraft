@@ -158,8 +158,6 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static BiomeRainbowForest rainbowforest;
 	public static BiomeEnderForest enderforest;
 
-	//private String version;
-
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
 
@@ -237,9 +235,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		ChromaTiles.loadMappings();
 		ChromaBlocks.loadMappings();
 		ChromaItems.loadMappings();
-		//DimensionManager.registerProviderType(1, CustomEndProvider.class, false); if ASM turns out to be impossible
 
 		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
+
+		proxy.registerKeys();
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());

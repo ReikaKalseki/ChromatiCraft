@@ -82,7 +82,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		fontRendererObj.drawString(this.getPageTitle(), posX+27, posY+6, this.getTitleColor());
+		fontRendererObj.drawString(this.getPageTitle(), posX+this.getTitleOffset(), posY+6, this.getTitleColor());
 	}
 
 	@Override
@@ -121,6 +121,10 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected int getTitleColor() {
 		return 0xffffff;
+	}
+
+	protected int getTitleOffset() {
+		return 6;
 	}
 
 }

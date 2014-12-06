@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import java.awt.Color;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -23,11 +21,12 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class CrystalPlantRenderer extends ChromaRenderBase {
 
@@ -63,9 +62,8 @@ public class CrystalPlantRenderer extends ChromaRenderBase {
 
 			if (tile.emitsLight()) {
 				GL11.glColor4f(1, 1, 1, 1);
-				ReikaDyeHelper dye = tile.getColor();
-				Color c = dye.getJavaColor().brighter();
-				GL11.glColor4f(c.getRed()/255F, c.getGreen()/255F, c.getBlue()/255F, 1);
+				CrystalElement dye = tile.getColor();
+				GL11.glColor4f(dye.getRed()/255F, dye.getGreen()/255F, dye.getBlue()/255F, 1);
 				double s = 0.25;
 				GL11.glTranslated(0.5, -0.25, 0.5);
 				GL11.glScaled(s, s, s);
@@ -134,11 +132,12 @@ public class CrystalPlantRenderer extends ChromaRenderBase {
 
 		GL11.glColor4f(1, 1, 1, 0.25F);
 
-		ReikaDyeHelper dye = tile.getColor();
-		Color c = dye.getJavaColor().brighter();
-		GL11.glColor4f(c.getRed()/255F, c.getGreen()/255F, c.getBlue()/255F, 1);
+		CrystalElement dye = tile.getColor();
+		//GL11.glColor4f(dye.getRed()/255F, dye.getGreen()/255F, dye.getBlue()/255F, 1);
 		BlendMode.DEFAULT.apply();
 		v5.startDrawingQuads();
+		int color = ReikaColorAPI.getModifiedSat(dye.getColor(), 0.75F);
+		v5.setColorRGBA_I(color, 255);
 		//Bottom
 		v5.addVertexWithUV(0.5-s, 0, 0.5+s, u, dv);
 		v5.addVertexWithUV(0.5+s, 0, 0.5+s, du, dv);

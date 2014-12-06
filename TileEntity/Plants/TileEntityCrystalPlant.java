@@ -21,8 +21,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityCrystalPlant extends TileEntity {
@@ -87,8 +87,8 @@ public class TileEntityCrystalPlant extends TileEntity {
 		return growthTick == 0;
 	}
 
-	public ReikaDyeHelper getColor() {
-		return ReikaDyeHelper.getColorFromDamage(worldObj.getBlockMetadata(xCoord, yCoord, zCoord));
+	public CrystalElement getColor() {
+		return CrystalElement.elements[worldObj.getBlockMetadata(xCoord, yCoord, zCoord)];
 	}
 
 	@Override

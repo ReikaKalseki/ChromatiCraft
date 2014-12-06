@@ -12,10 +12,8 @@ package Reika.ChromatiCraft.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -80,7 +78,7 @@ public class BlockEnderTNT extends Block {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		if (ep.getCurrentEquippedItem() != null && ep.getCurrentEquippedItem().getItem() == Items.flint_and_steel)
-			((TileEntityEnderTNT)world.getTileEntity(x, y, z)).prime();
+			((TileEntityEnderTNT)world.getTileEntity(x, y, z)).prime(100);
 		else
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
 		return true;
@@ -100,28 +98,23 @@ public class BlockEnderTNT extends Block {
 			((TileEntityEnderTNT)te).testDetonation();
 	}
 
-	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof TileEntityEnderTNT)
-			((TileEntityEnderTNT)te).owner = e.getCommandSenderName();
-	}
-
 	public static class TileEntityEnderTNT extends TileEntity implements GuiController {
 
 		private WorldLocation target = null;
 		private int countdown = -1;
 		private int existed = 0;
-		private String owner;
+		private String owner = null;
+		private int fuse;
 
 		public void testDetonation() {
 			if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
-				this.prime();
+				this.prime(200);
 		}
 
-		public void prime() {
-			if (target != null) {
-				countdown = 200;
+		public void prime(int delay) {
+			if (target != null && owner != null) {
+				fuse = delay;
+				countdown = fuse;
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 3);
 				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "game.tnt.primed");
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -145,8 +138,9 @@ public class BlockEnderTNT extends Block {
 
 			if (countdown > 0) {
 				ReikaParticleHelper.SMOKE.spawnAt(worldObj, xCoord+0.5, yCoord+1, zCoord+0.5);
-				if (countdown%5 == 0) {
-					ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click");
+				if (countdown%10 == 0 || (countdown <= fuse*2/5 && countdown%5 == 0) || countdown <= fuse/10) {
+					float p = countdown <= fuse/10 ? 1.5F : countdown < fuse*2/5 ? 1.25F : countdown%20 == 0 ? 1F : 1.25F;
+					ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 1, p);
 				}
 			}
 		}
@@ -157,15 +151,16 @@ public class BlockEnderTNT extends Block {
 				new FlyingBlocksExplosion(w, target.xCoord+0.5, target.yCoord+0.5, target.zCoord+0.5, 4).doExplosion();
 				if (!worldObj.isRemote)
 					worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 4, true);
-				String s = "Ender TNT placed by "+owner+" has just detonated at "+target;
+				String s = owner+" has just detonated Ender TNT at "+target;
 				ChromatiCraft.logger.log(s);
 				ReikaPlayerAPI.notifyAdmins(s);
 			}
 		}
 
-		public void setTarget(int dim, int x, int y, int z) {
+		public void setTarget(EntityPlayer ep, int dim, int x, int y, int z) {
 			target = new WorldLocation(dim, x, y, z);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			owner = ep.getCommandSenderName();
 		}
 
 		public int getCountdown() {
@@ -179,7 +174,8 @@ public class BlockEnderTNT extends Block {
 			NBT.setInteger("tick", countdown);
 			if (target != null)
 				target.writeToNBT("loc", NBT);
-			NBT.setString("owner", owner);
+			if (owner != null && !owner.isEmpty())
+				NBT.setString("owner", owner);
 		}
 
 		@Override

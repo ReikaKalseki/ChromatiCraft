@@ -29,8 +29,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.RotaryCraft.API.BlowableCrop;
 
@@ -189,7 +189,7 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 		center = ico.registerIcon("chromaticraft:crystal/bloom");
 	}
 
-	public IIcon getBulbIcon(ReikaDyeHelper color) {
+	public IIcon getBulbIcon(CrystalElement color) {
 		return center;//bulb[color.ordinal()];
 	}
 

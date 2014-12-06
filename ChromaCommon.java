@@ -43,4 +43,8 @@ public class ChromaCommon {
 
 	}
 
+	public void registerKeys() {
+
+	}
+
 }

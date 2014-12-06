@@ -37,7 +37,8 @@ public enum ChromaOptions implements ConfigList {
 	FLATGEN("Run Worldgen in Superflat Worlds", false),
 	HANDBOOK("Spawn with CC Lexicon", true),
 	CHESTGEN("Chest Generation Tier", 4),
-	ENDERTNT("Enable Ender TNT", true);
+	ENDERTNT("Enable Ender TNT", true),
+	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false);
 
 	private String label;
 	private boolean defaultState;

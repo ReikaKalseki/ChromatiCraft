@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
 public final class ChromaDescriptions {
 
@@ -33,22 +35,19 @@ public final class ChromaDescriptions {
 	private static HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
 	private static HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
 	private static HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
+	private static HashMap<ChromaResearch, Object[]> abilityData = new HashMap<ChromaResearch, Object[]>();
+	private static HashMap<ChromaResearch, Object[]> hoverData = new HashMap<ChromaResearch, Object[]>();
 
-	private static ArrayList<ChromaResearch> categories = new ArrayList<ChromaResearch>();
+	private static HashMap<String, String> hoverText = new HashMap<String, String>();
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
-	private static final XMLInterface parents = new XMLInterface(ChromatiCraft.class, PARENT+"categories.xml", mustLoad);
 	private static final XMLInterface machines = new XMLInterface(ChromatiCraft.class, PARENT+"machines.xml", mustLoad);
 	private static final XMLInterface abilities = new XMLInterface(ChromatiCraft.class, PARENT+"abilities.xml", mustLoad);
+	private static final XMLInterface structures = new XMLInterface(ChromatiCraft.class, PARENT+"structure.xml", mustLoad);
 	private static final XMLInterface tools = new XMLInterface(ChromatiCraft.class, PARENT+"tools.xml", mustLoad);
 	private static final XMLInterface resources = new XMLInterface(ChromatiCraft.class, PARENT+"resource.xml", mustLoad);
-	private static final XMLInterface miscs = new XMLInterface(ChromatiCraft.class, PARENT+"misc.xml", mustLoad);
 	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
-
-	public static void addCategory(ChromaResearch h) {
-		categories.add(h);
-	}
 
 	private static String getParent() {
 		Language language = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
@@ -66,27 +65,8 @@ public final class ChromaDescriptions {
 		return o != null;
 	}
 
-	public static int getCategoryCount() {
-		return categories.size();
-	}
-	/*
-	public static String getTOC() {
-		List<ChromaBook> toctabs = ChromaBook.getTOCTabs();
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < toctabs.size(); i++) {
-			ChromaBook h = toctabs.get(i);
-			sb.append("Page ");
-			sb.append(h.getScreen());
-			sb.append(" - ");
-			sb.append(h.getTitle());
-			if (i < toctabs.size()-1)
-				sb.append("\n");
-		}
-		return sb.toString();
-	}
-	 */
 	public static String getHoverText(String key) {
-		return hover.getValueAtNode(key);
+		return hoverText.get(key);
 	}
 
 	private static void addData(ChromaTiles m, Object... data) {
@@ -108,7 +88,6 @@ public final class ChromaDescriptions {
 		machineNotes.put(m, data);
 	}
 
-	/** Call this from the SERVER side! */
 	public static void reload() {
 		loadNumericalData();
 
@@ -116,11 +95,9 @@ public final class ChromaDescriptions {
 		abilities.reread();
 		tools.reread();
 		resources.reread();
-		miscs.reread();
 		infos.reread();
+		structures.reread();
 		hover.reread();
-
-		parents.reread();
 
 		loadData();
 	}
@@ -130,24 +107,15 @@ public final class ChromaDescriptions {
 	}
 
 	public static void loadData() {
-		/*
-		List<ChromaBook> parenttabs = ChromaBook.getCategoryTabs();
-
-		List<ChromaBook> machinetabs = ChromaBook.getMachineTabs();
-		ChromaBook[] abilitytabs = ChromaBook.getAbilityTabs();
-		ChromaBook[] tooltabs = ChromaBook.getToolTabs();
-		ChromaBook[] resourcetabs = ChromaBook.getResourceTabs();
-		ChromaBook[] misctabs = ChromaBook.getMiscTabs();
-		ChromaBook[] infotabs = ChromaBook.getInfoTabs();
-
-		for (int i = 0; i < parenttabs.size(); i++) {
-			ChromaBook h = parenttabs.get(i);
-			String desc = parents.getValueAtNode("categories:"+h.name().toLowerCase().substring(0, h.name().length()-4));
-			addEntry(h, desc);
-		}
+		ArrayList<ChromaResearch> infotabs = ChromaResearch.getInfoTabs();
+		ArrayList<ChromaResearch> machinetabs = ChromaResearch.getMachineTabs();
+		ArrayList<ChromaResearch> abilitytabs = ChromaResearch.getAbilityTabs();
+		ArrayList<ChromaResearch> tooltabs = ChromaResearch.getToolTabs();
+		ArrayList<ChromaResearch> resourcetabs = ChromaResearch.getResourceTabs();
+		ArrayList<ChromaResearch> structuretabs = ChromaResearch.getStructureTabs();
 
 		for (int i = 0; i < machinetabs.size(); i++) {
-			ChromaBook h = machinetabs.get(i);
+			ChromaResearch h = machinetabs.get(i);
 			ChromaTiles m = h.getMachine();
 			String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase()+DESC_SUFFIX);
 			String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase()+NOTE_SUFFIX);
@@ -177,45 +145,38 @@ public final class ChromaDescriptions {
 			notes.put(h, aux);
 		}
 
-		for (int i = 0; i < tooltabs.length; i++) {
-			ChromaBook h = tooltabs[i];
+		for (ChromaResearch h : tooltabs) {
 			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase());
 			addEntry(h, desc);
 		}
 
-		for (int i = 0; i < resourcetabs.length; i++) {
-			ChromaBook h = resourcetabs[i];
+		for (ChromaResearch h : resourcetabs) {
 			String desc = resources.getValueAtNode("resource:"+h.name().toLowerCase());
 			addEntry(h, desc);
 		}
 
-		for (int i = 0; i < misctabs.length; i++) {
-			ChromaBook h = misctabs[i];
-			String desc = miscs.getValueAtNode("misc:"+h.name().toLowerCase());
-			//ReikaJavaLibrary.pConsole(desc);
+		for (ChromaResearch h : structuretabs) {
+			String desc = structures.getValueAtNode("structure:"+h.name().toLowerCase());
+			addEntry(h, desc);
+		}
+
+		for (ChromaResearch h : infotabs) {
+			String desc = infos.getValueAtNode("info:"+h.name().toLowerCase());
 			desc = String.format(desc, miscData.get(h));
 			addEntry(h, desc);
 		}
 
-		for (int i = 0; i < infotabs.length; i++) {
-			ChromaBook h = infotabs[i];
-			String desc = infos.getValueAtNode("info:"+h.name().toLowerCase());
-			desc = String.format(desc, miscData.get(h));
+		for (ChromaResearch h : abilitytabs) {
+			String desc = abilities.getValueAtNode("ability:"+h.name().toLowerCase());
+			desc = String.format(desc, abilityData.get(h));
 			addEntry(h, desc);
-		}*/
+		}
 
-		for (int i = 0; i < Chromabilities.abilities.length; i++) {
-			Chromabilities c = Chromabilities.abilities[i];
-			String desc;
-			String aux;
-			desc = abilities.getValueAtNode("abilities:"+c.name().toLowerCase()+DESC_SUFFIX);
-			aux = abilities.getValueAtNode("abilities:"+c.name().toLowerCase()+NOTE_SUFFIX);
-
-			desc = String.format(desc);
-			aux = String.format(aux);
-
-			//data.put(h, desc);
-			//notes.put(h, aux);
+		Collection<String> keys = ChromaHelpData.instance.getHelpKeys();
+		for (String s : keys) {
+			String desc = hover.getValueAtNode("hover:"+s);
+			desc = String.format(desc, hoverData.get(s));
+			hoverText.put(s, desc);
 		}
 	}
 
@@ -225,7 +186,7 @@ public final class ChromaDescriptions {
 
 	public static String getData(ChromaResearch h) {
 		if (!data.containsKey(h))
-			return "This item has no handbook text yet.";
+			return "This item has no lexicon info yet.";
 		return data.get(h);
 	}
 

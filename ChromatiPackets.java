@@ -196,7 +196,7 @@ public class ChromatiPackets implements IPacketHandler {
 					break;
 				}
 			case TNT:
-				((TileEntityEnderTNT)tile).setTarget(data[0], data[1], data[2], data[3]);
+				((TileEntityEnderTNT)tile).setTarget(ep, data[0], data[1], data[2], data[3]);
 				break;
 			}
 		}

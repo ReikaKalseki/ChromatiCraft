@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -69,6 +72,16 @@ public class ChromaHelpData {
 	public String getText(World world, MovingObjectPosition mov) {
 		return this.getText(world, mov.blockX, mov.blockY, mov.blockZ);
 	}*/
+
+	public Collection<String> getHelpKeys() {
+		Collection<String> c = new ArrayList();
+		for (HelpKey h : data.values()) {
+			String s = h.key;
+			if (!c.contains(s))
+				c.add(s);
+		}
+		return c;
+	}
 
 	private static class HelpKey {
 
