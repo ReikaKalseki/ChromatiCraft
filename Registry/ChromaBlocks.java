@@ -329,7 +329,11 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public ItemStack getStackOf() {
-		return new ItemStack(this.getBlockInstance());
+		return this.getStackOf(0);
+	}
+
+	public ItemStack getStackOf(int meta) {
+		return new ItemStack(this.getBlockInstance(), 1, meta);
 	}
 
 	public boolean hasModel() {

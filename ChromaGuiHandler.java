@@ -95,7 +95,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case LINK:
 			return new ContainerInventoryLinker(player, world);
 		case BOOKPAGES:
-			return new ContainerBookPages(player);
+			return new ContainerBookPages(player, x);
 		case TILE:
 			TileEntity te = world.getTileEntity(x, y, z);
 
@@ -198,7 +198,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case BOOKNAV:
 			return new GuiNavigation(player);
 		case BOOKPAGES:
-			return new GuiBookPages(player);
+			return new GuiBookPages(player, x);
 		case MACHINEDESC:
 			return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
 		case TOOLDESC:

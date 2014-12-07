@@ -306,7 +306,7 @@ public enum ChromaItems implements ItemEnum {
 		return this.getCraftedMetadataProduct(1, meta);
 	}
 
-	public ItemStack getStackOfElement(CrystalElement e) {
+	public ItemStack getStackOf(CrystalElement e) {
 		return this.getStackOfMetadata(e.ordinal());
 	}
 

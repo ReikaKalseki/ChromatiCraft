@@ -55,7 +55,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (ep.isSneaking()) {
-			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), world, 0, 0, 0);
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, 0, 0, 0);
 		}
 		else {
 			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {

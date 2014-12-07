@@ -10,6 +10,8 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,25 +32,17 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public enum ChromaResearch {
 
-	//---------------------TOC--------------------//
-	/*
-	TOC("Table Of Contents", ""),
-	INFO("Info", ChromaItems.HELP.getStackOf()),
-	CRAFTING("Crafting", ChromaTiles.TABLE.getCraftedProduct()),
-	MACHINES("Constructs", ChromaTiles.RIFT.getCraftedProduct()),
-	TOOLS("Tools", ChromaItems.FINDER.getStackOf()),
-	ABILITY("Rituals", ChromaTiles.RITUAL.getCraftedProduct()),
-	RESOURCE("Resources", ChromaItems.BERRY.getStackOf()),*/
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
-	ELEMENTS("Crystal Energy", ChromaItems.ELEMENTAL.getStackOfElement(CrystalElement.BLUE),ResearchLevel.BASICCRAFT),
-	CRYSTALS("Crystals", new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, 4), 		ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
-	PYLONS("Pylons", ChromaTiles.PYLON.getCraftedProduct(), 								ResearchLevel.ENTRY, 		ProgressStage.PYLON),
-	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 							ResearchLevel.ENERGYEXPLORE),
+	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT),
+	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOf(4), 					ResearchLevel.ENTRY, 	ProgressStage.CRYSTALS),
+	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
+	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.MULTICRAFT),
+	LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
 	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.MULTICRAFT),
 	ACCEL(			ChromaTiles.ACCELERATOR, 	ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
@@ -94,12 +88,12 @@ public enum ChromaResearch {
 	FRAGMENT(		ChromaItems.FRAGMENT, 		ResearchLevel.ENTRY),
 
 	RESOURCEDESC("Resources", ""),
-	SHARDS("Shards",				ChromaStacks.redShard, 							ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
-	DUSTS("Dusts",					ChromaStacks.auraDust, 							ResearchLevel.ENERGYEXPLORE),
-	GROUPS("Groups",				ChromaStacks.crystalCore, 						ResearchLevel.BASICCRAFT),
-	BINDING("Ores",					ChromaStacks.bindingCrystal,					ResearchLevel.RUNECRAFT),
-	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 	ResearchLevel.BASICCRAFT),
-	SEED("Crystal Seeds",			ChromaItems.TRANSITION, 						ResearchLevel.RAWEXPLORE),
+	SHARDS("Shards",				ChromaStacks.redShard, 								ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
+	DUSTS("Dusts",					ChromaStacks.auraDust, 								ResearchLevel.ENERGYEXPLORE),
+	GROUPS("Groups",				ChromaStacks.crystalCore, 							ResearchLevel.BASICCRAFT),
+	BINDING("Ores",					ChromaStacks.bindingCrystal,						ResearchLevel.RUNECRAFT),
+	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 		ResearchLevel.BASICCRAFT),
+	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.RED),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -137,6 +131,7 @@ public enum ChromaResearch {
 
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
+	private static final List<ChromaResearch> nonParents = new ArrayList();
 
 	private ChromaResearch() {
 		this("");
@@ -389,6 +384,8 @@ public enum ChromaResearch {
 			ChromaResearch r = ChromaResearch.researchList[i];
 			if (r.level != null)
 				levelMap.addValue(r.level, r);
+			if (!r.isParent)
+				nonParents.add(r);
 		}
 	}
 
@@ -426,6 +423,10 @@ public enum ChromaResearch {
 				break;
 		}
 		return li;
+	}
+
+	private static List<ChromaResearch> getAllNonParents(ChromaResearch parent) {
+		return Collections.unmodifiableList(nonParents);
 	}
 
 }

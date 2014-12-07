@@ -30,4 +30,9 @@ public class ItemWarpProofer extends ItemChromaTool { //maybe make ability inste
 		}
 	}
 
+	@Override
+	public boolean hasEffect(ItemStack is) {
+		return true;
+	}
+
 }
