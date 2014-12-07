@@ -21,8 +21,10 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -341,11 +343,10 @@ public class ChromaticEventManager {
 		if (ev.source instanceof PylonDamage) {
 			EntityLivingBase e = ev.entityLiving;
 			int n = 0;
-			int r = rand.nextInt(6);
-			if (r == 0)
-				n = 2;
-			else if (r <= 2)
-				n = 1;
+			if (e instanceof EntityPlayer)
+				n = 1+rand.nextInt(2);
+			else if (e instanceof EntityVillager || e instanceof EntityWitch)
+				n = rand.nextInt(4) == 0 ? 1 : 0;
 			if (n > 0) {
 				World world = e.worldObj;
 				for (int i = 0; i < n; i++) {

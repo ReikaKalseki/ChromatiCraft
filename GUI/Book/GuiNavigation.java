@@ -27,6 +27,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -73,7 +74,8 @@ public class GuiNavigation extends ChromaBookGui {
 				sections.put(b, z);
 			}
 			else {
-				if (b.playerCanSee(ep)) {
+				if (ItemChromaBook.hasPage(player.getCurrentEquippedItem(), b)) {
+					//if (b.playerCanSee(ep)) {
 					z.addElement(new SectionElement(b));
 				}
 			}

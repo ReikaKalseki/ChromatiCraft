@@ -16,21 +16,17 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
-import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 
-public class ContainerInventoryLinker extends Container {
+public class ContainerBookPages extends Container {
 
 	private static final int width = 9;
 	private static final int height = 3;
 
 	public InventoryCrafting inventory = new InventoryCrafting(this, width, height);
-	private World worldObj;
 
-	public ContainerInventoryLinker(EntityPlayer player, World par2World)
+	public ContainerBookPages(EntityPlayer player)
 	{
-		worldObj = par2World;
 		int var6;
 		int var7;
 
@@ -47,7 +43,7 @@ public class ContainerInventoryLinker extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 142));
 
 		ItemStack tool = player.getCurrentEquippedItem();
-		ItemInventoryLinker iil = (ItemInventoryLinker)tool.getItem();
+		ItemChromaBook iil = (ItemChromaBook)tool.getItem();
 		ArrayList<ItemStack> li = iil.getItemList(tool);
 		for (int i = 0; i < li.size(); i++) {
 			inventory.setInventorySlotContents(i, li.get(i));
@@ -58,15 +54,7 @@ public class ContainerInventoryLinker extends Container {
 
 	@Override
 	public ItemStack slotClick(int slot, int par2, int par3, EntityPlayer ep) {
-		boolean inGUI = slot < width*height && slot >= 0;
-		if (inGUI) {
-			ItemStack held = ep.inventory.getItemStack();
-			ItemStack is = held != null ? ReikaItemHelper.getSizedItemStack(held, 1) : null;
-			inventory.setInventorySlotContents(slot, is);
-			return held;
-		}
-		else
-			return super.slotClick(slot, par2, par3, ep);
+		return super.slotClick(slot, par2, par3, ep);
 	}
 
 	@Override
@@ -82,7 +70,7 @@ public class ContainerInventoryLinker extends Container {
 		}
 
 		ItemStack is = ep.getCurrentEquippedItem();
-		ItemInventoryLinker iil = (ItemInventoryLinker)is.getItem();
+		ItemChromaBook iil = (ItemChromaBook)is.getItem();
 		iil.setItems(is, li);
 	}
 
@@ -91,13 +79,10 @@ public class ContainerInventoryLinker extends Container {
 		return true;
 	}
 
-	/**
-	 * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
-	 */
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
 	{
-		return this.getSlot(0).getStack();
+		return null;
 	}
 
 }

@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
+import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
+import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
 import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiChromaInfo;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
@@ -92,6 +94,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 		switch(gui) {
 		case LINK:
 			return new ContainerInventoryLinker(player, world);
+		case BOOKPAGES:
+			return new ContainerBookPages(player);
 		case TILE:
 			TileEntity te = world.getTileEntity(x, y, z);
 
@@ -193,6 +197,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiAbilitySelect(player);
 		case BOOKNAV:
 			return new GuiNavigation(player);
+		case BOOKPAGES:
+			return new GuiBookPages(player);
 		case MACHINEDESC:
 			return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
 		case TOOLDESC:

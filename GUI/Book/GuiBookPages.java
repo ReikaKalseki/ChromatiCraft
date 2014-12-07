@@ -7,43 +7,35 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.GUI;
+package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
+import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiInventoryLinker extends GuiContainer
+public class GuiBookPages extends GuiContainer
 {
-	public GuiInventoryLinker(EntityPlayer p5ep, World par2World)
-	{
-		super(new ContainerInventoryLinker(p5ep, par2World));
+	public GuiBookPages(EntityPlayer p5ep) {
+		super(new ContainerBookPages(p5ep));
 	}
 
-	/**
-	 * Draw the foreground layer for the GuiContainer (everything in front of the items)
-	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2)
 	{
-		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Item Filter", xSize/2, 6, 0xffffff);
+		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Pages", xSize/2, 6, 0xffffff);
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
 	}
 
-	/**
-	 * Draw the background layer for the GuiContainer (everything behind the items)
-	 */
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
 	{

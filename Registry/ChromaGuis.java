@@ -15,6 +15,7 @@ public enum ChromaGuis {
 	LINK(),
 	ABILITY(),
 	BOOKNAV(),
+	BOOKPAGES(),
 	INFO(),
 	STRUCTURE(),
 	RECIPE(),
