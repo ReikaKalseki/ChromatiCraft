@@ -106,15 +106,21 @@ public class ItemChromaBook extends ItemChromaTool {
 		return this.hasAllPages(is) ? base+1 : base;
 	}
 
-	private boolean hasAllPages(ItemStack is) {
+	private static boolean hasAllPages(ItemStack is) {
 		for (int i = 1; i < ChromaResearch.researchList.length; i++) {
 			ChromaResearch r = ChromaResearch.researchList[i];
 			if (!r.isParent()) {
-				if (!this.hasPage(is, r))
+				if (!hasPage(is, r))
 					return false;
 			}
 		}
 		return true;
+	}
+
+	public static int getNumberPages(ItemStack is) {
+		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
+			return 0;
+		return is.stackTagCompound.getTagList("pages", NBTTypes.INT.ID).tagCount();
 	}
 
 }

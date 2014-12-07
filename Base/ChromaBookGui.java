@@ -75,7 +75,7 @@ public abstract class ChromaBookGui extends GuiScreen {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		buttoncooldown = 20;
 		if (button.id == 12) {
 			mc.thePlayer.closeScreen();

@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -197,6 +198,9 @@ public class ChromatiPackets implements IPacketHandler {
 				}
 			case TNT:
 				((TileEntityEnderTNT)tile).setTarget(ep, data[0], data[1], data[2], data[3]);
+				break;
+			case BOOKINVSCROLL:
+				((ContainerBookPages)ep.openContainer).scroll(data[0] > 0);
 				break;
 			}
 		}

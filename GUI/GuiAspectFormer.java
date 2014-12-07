@@ -80,7 +80,7 @@ public class GuiAspectFormer extends GuiChromaBase {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton b) {
+	protected void actionPerformed(GuiButton b) {
 		switch(b.id) {
 		case 0:
 			if (dx == 0 && index > 0) {

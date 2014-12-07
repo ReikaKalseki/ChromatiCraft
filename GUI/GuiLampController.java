@@ -61,7 +61,7 @@ public class GuiLampController extends GuiChromaBase {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton b) {
+	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
 
 		if (lockout == 0) {

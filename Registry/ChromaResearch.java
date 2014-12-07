@@ -425,7 +425,7 @@ public enum ChromaResearch {
 		return li;
 	}
 
-	private static List<ChromaResearch> getAllNonParents(ChromaResearch parent) {
+	public static List<ChromaResearch> getAllNonParents() {
 		return Collections.unmodifiableList(nonParents);
 	}
 

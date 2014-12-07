@@ -57,7 +57,7 @@ public class ItemInfoFragment extends ItemChromaMulti {
 			else
 				format = EnumChatFormatting.RESET;
 			String pre = ""+format.toString();
-			String title = r.getTitle();
+			String title = r.getParent().getTitle()+": "+r.getTitle();
 			String s = read || has ? pre+" "+title : pre+" "+EnumChatFormatting.OBFUSCATED.toString()+title;
 			li.add(s);
 		}

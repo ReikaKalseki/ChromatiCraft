@@ -84,7 +84,7 @@ public class GuiRitual extends GuiBookSection {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		subpage = 0; //?
 		//renderq = 22.5F;

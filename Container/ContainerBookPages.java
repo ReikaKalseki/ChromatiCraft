@@ -16,57 +16,96 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import cpw.mods.fml.relauncher.Side;
 
 public class ContainerBookPages extends Container {
 
-	private int rowOffset = 0;
+	private int scroll = 0;
 
 	public static final int width = 9;
 	public static final int height = 3;
 
 	public static final int MAX_SCROLL = 1+ChromaResearch.researchList.length/width-height;
 
-	public BookInventory inventory = new BookInventory();
+	public final BookInventory inventory = new BookInventory();
+
+	private final EntityPlayer player;
 
 	public ContainerBookPages(EntityPlayer player, int scroll) {
 		int var6;
 		int var7;
+		this.player = player;
 
-		rowOffset = Math.min(scroll, MAX_SCROLL);
+		scroll = Math.min(scroll, MAX_SCROLL);
 
 		this.populate();
-
-		for (var6 = 0; var6 < 3; ++var6)
-			for (var7 = 0; var7 < 9; ++var7)
-				this.addSlotToContainer(new Slot(player.inventory, var7 + var6 * 9 + 9, 8 + var7 * 18, 84 + var6 * 18));
-		for (var6 = 0; var6 < 9; ++var6)
-			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 142));
 
 		ItemStack tool = player.getCurrentEquippedItem();
 		ItemChromaBook iil = (ItemChromaBook)tool.getItem();
 		ArrayList<ItemStack> li = iil.getItemList(tool);
-		for (int i = 0; i < li.size(); i++) {
-			inventory.setInventorySlotContents(i, li.get(i));
+		for (ItemStack is : li) {
+			int idx = ChromaResearch.getAllNonParents().indexOf(ChromaResearch.researchList[is.getItemDamage()]);
+			inventory.setInventorySlotContents(idx, is);
 		}
 
 		this.onCraftMatrixChanged(inventory);
 	}
 
-	private void populate() {
-		int offset = rowOffset*width;
-		for (int i = 0; i < height; i++) {
-			for (int k = 0; k < width; k++) {
-				int id = i*width+k+offset;
-				ReikaJavaLibrary.pConsole("Added ID "+id, Side.SERVER);
-				this.addSlotToContainer(new Slot(inventory, id, 8+k*18, 17+i*18));
+	@Override
+	public void onCraftMatrixChanged(IInventory ii) {
+		super.onCraftMatrixChanged(ii);
+
+		ArrayList<ItemStack> li = new ArrayList();
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			ItemStack in = inventory.getStackInSlot(i);
+			if (in != null) {
+				li.add(in);
 			}
 		}
+
+		ItemStack is = player.getCurrentEquippedItem();
+		ItemChromaBook iil = (ItemChromaBook)is.getItem();
+		iil.setItems(is, li);
+	}
+
+	public int getSize() {
+		return inventory.getSizeInventory();
+	}
+
+	public void populate() {
+		inventorySlots.clear();
+		inventoryItemStacks.clear();
+		int offset = scroll*9;
+		int lim = ChromaResearch.getAllNonParents().size();
+		int max = Math.min(lim, offset+27);
+		//ReikaJavaLibrary.pConsole(0+">"+offset+"|"+offset+">"+max+"|"+max+">"+lim);
+
+		for (int i = 0; i < offset; i++) {
+			Slot s = new SlotBook(inventory, i, -200, -200); //offscreen
+			this.addSlotToContainer(s);
+		}
+
+		for (int i = offset; i < max; i++) {
+			int d = i-offset;
+			int dx = 8+(d%9)*18;
+			int dy = 17+(d/9)*18;
+			Slot s = new SlotBook(inventory, i, dx, dy);
+			this.addSlotToContainer(s);
+		}
+
+		for (int i = max; i < lim; i++) {
+			Slot s = new SlotBook(inventory, i, -200, -200); //offscreen
+			this.addSlotToContainer(s);
+		}
+		for (int i = 0; i < 3; ++i)
+			for (int k = 0; k < 9; ++k)
+				this.addSlotToContainer(new Slot(player.inventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));
+		for (int i = 0; i < 9; ++i)
+			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142));
 	}
 
 	@Override
@@ -75,12 +114,13 @@ public class ContainerBookPages extends Container {
 	}
 
 	public void scroll(boolean up) {
-		if (up && rowOffset >= 9) {
-			return;
-		}
-		if (!up && rowOffset <= 0) {
-			return;
-		}
+		scroll += up ? 1 : -1;
+		scroll = MathHelper.clamp_int(scroll, 0, ContainerBookPages.MAX_SCROLL);
+		//mouseX = Mouse.getX();
+		//mouseY = Mouse.getY();
+		//player.closeScreen();
+		//player.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, scroll, 0, 0);
+		this.populate();
 	}
 
 	@Override
@@ -111,9 +151,18 @@ public class ContainerBookPages extends Container {
 		return null;
 	}
 
+	public int getPageCount() {
+		int c = 0;
+		for (int i = 0; i < inventory.slots.length; i++) {
+			if (inventory.slots[i] != null)
+				c++;
+		}
+		return c;
+	}
+
 	private static class BookInventory implements IInventory {
 
-		private final ItemStack[] slots = new ItemStack[ChromaResearch.researchList.length];
+		private final ItemStack[] slots = new ItemStack[ChromaResearch.getAllNonParents().size()];
 
 		@Override
 		public int getSizeInventory() {
@@ -179,6 +228,20 @@ public class ContainerBookPages extends Container {
 		public boolean isItemValidForSlot(int slot, ItemStack is) {
 			return ChromaItems.FRAGMENT.matchWith(is);
 		}
+	}
+
+	public static final class SlotBook extends Slot {
+
+		public SlotBook(IInventory ii, int id, int x, int y) {
+			super(ii, id, x, y);
+		}
+
+		@Override
+		public boolean isItemValid(ItemStack is)
+		{
+			return ChromaItems.FRAGMENT.matchWith(is);
+		}
+
 	}
 
 }

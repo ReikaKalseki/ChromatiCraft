@@ -70,7 +70,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton b) {
+	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 		case 0:
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0);

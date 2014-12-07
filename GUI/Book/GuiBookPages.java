@@ -9,17 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,58 +34,54 @@ public class GuiBookPages extends GuiContainer {
 
 	private int scroll;
 
-	//private static int mouseX;
-	//private static int mouseY;
-	//private boolean cacheMouse;
-	private static int scrollCooldown = 0;
+	private ContainerBookPages inv;
 
 	public GuiBookPages(EntityPlayer p5ep, int sc) {
 		super(new ContainerBookPages(p5ep, sc));
 		player = p5ep;
 		scroll = sc;
+		player.openContainer = inventorySlots;
 		//cacheMouse = true;
+		inv = ((ContainerBookPages)inventorySlots);
+		inv.populate();
 	}
-	/*
+
 	@Override
 	public void initGui() {
 		super.initGui();
+		buttonList.clear();
 
-		if (cacheMouse) {
-			Mouse.setCursorPosition(mouseX, mouseY);
-			cacheMouse = false;
-		}
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+		String tex = "Textures/GUIs/buttons.png";
+		buttonList.add(new ImagedGuiButton(0, j+148, k+4, 10, 10, 90, 16, tex, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(1, j+158, k+4, 10, 10, 90, 26, tex, ChromatiCraft.class));
 	}
-	 */
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+		this.initGui();
+		this.scroll(b.id > 0);
+	}
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2)
 	{
-		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Pages", xSize/2, 6, 0xffffff);
+		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Pages: "+inv.getPageCount()+"/"+inv.getSize(), xSize/2, 6, 0xffffff);
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
 	}
 
-	//Use something like this
-	//GuiContainerCreative:627 -> ((GuiContainerCreative.ContainerCreative)this.inventorySlots).scrollTo(this.currentScroll);
 	private void scroll(boolean up) {
 		scroll += up ? 1 : -1;
 		scroll = MathHelper.clamp_int(scroll, 0, ContainerBookPages.MAX_SCROLL);
-		//mouseX = Mouse.getX();
-		//mouseY = Mouse.getY();
-		//player.closeScreen();
-		//player.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, scroll, 0, 0);
-		scrollCooldown = 15;
+		inv.scroll(up);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BOOKINVSCROLL.ordinal(), player.worldObj, 0, 0, 0, up ? 1 : 0);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
 	{
-		if (scrollCooldown > 0)
-			scrollCooldown--;
-		else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			this.scroll(false);
-		}
-		else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			this.scroll(true);
-		}
 		String var4 = "/Reika/ChromatiCraft/Textures/GUIs/basicstorage_small.png";
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);

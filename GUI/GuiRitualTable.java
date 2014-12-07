@@ -37,7 +37,7 @@ public class GuiRitualTable extends GuiChromability {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton b) {
+	protected void actionPerformed(GuiButton b) {
 		if (b.id == 2) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, index);
 			player.closeScreen();

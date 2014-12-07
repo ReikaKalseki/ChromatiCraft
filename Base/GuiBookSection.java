@@ -53,7 +53,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		if (button.id == 50) {
 			this.goTo(ChromaGuis.BOOKNAV, null);

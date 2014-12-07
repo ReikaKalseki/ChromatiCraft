@@ -69,7 +69,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton b) {
+	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
 		case 0:
 			if (selectedMob > 0)
