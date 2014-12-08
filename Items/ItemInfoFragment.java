@@ -12,19 +12,27 @@ package Reika.ChromatiCraft.Items;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.DragonAPI.Interfaces.SpriteRenderCallback;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemInfoFragment extends ItemChromaMulti {
+public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCallback {
 
 	public ItemInfoFragment(int tex) {
 		super(tex);
@@ -137,6 +145,23 @@ public class ItemInfoFragment extends ItemChromaMulti {
 			is.setItemDamage(r.ordinal());
 			ChromaResearchManager.instance.givePlayerFragment(ep, getResearch(is));
 		}
+	}
+
+	@Override
+	public boolean onRender(RenderItem ri, ItemStack is, ItemRenderType type) {
+		if (type == ItemRenderType.INVENTORY) {
+			ChromaResearch r = this.getResearch(is);
+			ItemStack out = r.getTabIcon();
+			if (out != null) {
+				boolean key = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+				double s = key ? 0.063 : 0.0315;
+				GL11.glScaled(s, -s, s);
+				int dx = key ? 0 : 16;
+				ReikaGuiAPI.instance.drawItemStack(ri, out, dx, -16);
+				return key && out.getItem() != this;
+			}
+		}
+		return false;
 	}
 
 }

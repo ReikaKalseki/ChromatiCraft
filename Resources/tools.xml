@@ -1,36 +1,36 @@
 ﻿<?xml version="1.0"?>
 <tools>
 	<finder>
-		This is a test
+		The pylon compass scans the energy field that permeates the world and analyzes it to calculate the location of the nearest pylon of each crystal element. Due to the fact that the energy is always in flux, there is some inaccuracy to the calculation, but the location you are directed to should be within a short walk of the actual pylon.
 	</finder>
 	<excavator>
-		
+		By concentrating elements associated with energy and minerals, you have found that you can apply them to the terrain and excavate a large area. When you release the energy into the ground, it seems to only get conducted along identical materials, but this nonetheless allows you to clear a large area of rock, ores, or other materials with a single stroke.
 	</excavator>
 	<transition>
-		
+		Gray-colored energy seems to have the power to transmute and change, so it is a reasonable guess to think that if applied to the world, with some information of what blocks to place and replace, this power could be used to change large swaths of one block into another, greatly expediting the landscaping process.
 	</transition>
 	<invlink>
-		
+		Mining and other activities tend to fill your inventory with useless junk that seems to accumulate faster than you can get rid of it. By leveraging the power of elements associated with movement, you discover that you can create a linkage between your inventory and one placed somewhere in the world, and one for which you can control the items it transports.
 	</invlink>
 	<pendant>
-		
+		As you have already discovered, crystallized elemental energy can be found scattered around the world, and its proximity imbues the effects of that element on yourself. However, the effect is rather less than convenient to transport in a form that bulky, so a logical next step would be to wear a small part of the crystal to allow you to benefit from its effects at any location.
 	</pendant>
 	<vacuumgun>
 		
 	</vacuumgun>
 	<lens>
-		
+		Crystal Lenses work much like their optical counterparts, focusing, tinting, and otherwise manipulating a beam of energy so that it can apply its effects more strongly over a smaller area.
 	</lens>
 	<storage>
-		
+		Merging small amounts of all the types of crystal yields a crystal that seems to have the ability to store large amounts of energy delivered to it, almost like a battery. This may be convenient for some things that drain this energy yet are too portable for a true crystal network.
 	</storage>
 	<linktool>
 		
 	</linktool>
 	<warp>
-		
+		By experimenting with the darker aspects of another branch of magic, you have suffered some serious consequences, including impaired vision and a nasty tendency for the air around you to come alive with hostile and destructive manifestations of that power. With this mixture, you should be able to keep at least some of those effects at bay.
 	</warp>
 	<fragment>
-		
+		Scattered around the world, and occasionally dropped by those investigating the pylons too closely, are scraps of information on the fundamental elements of the universe or its applications. You will likely find those useful later.
 	</fragment>
 </tools>

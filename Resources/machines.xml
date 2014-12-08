@@ -1,5 +1,23 @@
 ﻿<?xml version="1.0"?>
 <machines>
+	<accelerator>
+		<desc>
+			As you have already learned, light blue energy is associated most with time and its manipulation. By concentrating this energy and binding it in a crystal structure - a vast improvement over the previous design you scribbled out after slipping and knocking yourself unconscious on a cauldron - you might be able to set up a localized field in which time progresses at a greatly increased rate.
+		</desc>
+		<note>
+			Comes in various tiers, each tier being twice as powerful as the last
+			Localized effects may be ineffective over things whose essence is less concentrated
+		</note>
+	</accelerator>
+	<guardian>
+		<desc>
+			Too often you come home to find your constructions damaged or outright destroyed - or just half of your valuables missing - because someone snooping around your property helped themselves to your stocks or got too close to dangerous machinery. Sometimes you are fortunate enough to have those in a position of power apply magical protection spells over your territory, but they are often of fairly limited range, and the less scrupulous enforcers will demand a steep payment from you. Finally, however, you can protect yourself by applying a smaller version of that yourself; each stone emits an aura that prevents those you do not trust from helping themselves to your resources or your structures.
+		</desc>
+		<note>
+			Protects against block placement and breaking, and the opening of GUIs within a %d block range
+			Owners and admins always have permissions; the owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access
+		</note>
+	</guardian>
 	<name>
 		<desc>
 			

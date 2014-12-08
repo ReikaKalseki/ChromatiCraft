@@ -21,7 +21,6 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import Reika.ChromatiCraft.API.ElementController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
@@ -105,10 +104,12 @@ public class ItemElementCalculator {
 
 	//check : Crafting, TE3 machines, BC laser table, ChromatiCraft manufacture, TiC
 	private ElementTagCompound calculateTag(ItemStack is) {
+		/*
 		ElementTagCompound mod = ElementController.getRequestedTagFor(is); //this allows mods to create exploits...
 		if (mod != null) {
 			return mod;
 		}
+		 */
 
 		ElementTagCompound tag = new ElementTagCompound();
 		try {

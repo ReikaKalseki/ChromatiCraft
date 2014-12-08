@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0"?>
-<abilities>
+<ability>
 	<reach>
-		This ability allows you to extend your reach distance, giving you the ability to break and place blocks up to 192 blocks away. You cannot, however, attack mobs or open GUIs outside the normal range.
+		Improving the range at which you can interact with blocks is one of the most sought-after powers of all, to the point where many before you have gone to great lengths, often violating the natural order so badly that they find themselves exiled from the world itself. Finally, however, you have found a real way to acquire this ability yourself, allowing you to break and place blocks up to 192 blocks away. You cannot, however, attack mobs or open GUIs outside the normal range.
 	</reach>
 	<magnet>
-		The magnet ability draws in all items and experience in a large radius around you. To avoid potential problems, they become indestructible while in transit.
+		Many activities tend to scatter items far and wide, leading to a tedious cleanup at best and the destruction of many valuable materials at worst. Fortunately, you have discovered a way to create a magnetic aura around yourself, drawing in items and experience orbs from a large range. Conveniently, items in transit also appear shielded from environmental effects, negating the concern of pesky lava flows and other hazards normally responsible for large losses.
 	</magnet>
 	<sonic>
-		This ability gives you the power to clear a sphere of blocks around you, dropping them as items. More power means a larger radius, and harder blocks may require more power to break.
+		With enough of the energetic elements concentrated on your fingertips, you can release a small shock wave that can clear blocks in a small area, a useful tool if buried or trying to clear an area.
 	</sonic>
 	<shift>
-		The shift capability allows you to move a region of blocks, minus any TileEntities, in one direction by a specified distance. This is often very convenient for relocating buildings or correcting minor build errors.
+		With the application of a lot of energy related to movement and terrain, you have found that you can move entire regions of the terrain - though some more complex blocks tend to get left behind - allowing for easy correction of small build errors or large-scale terraforming.
 	</shift>
-</abilities>
+	<pylonprotect>
+		After one too many energy discharges to the face - or perhaps as a result of it - you have finally devised a way to "ground" yourself, causing the pylons's surplus energy to seek alternate routes to dissipate itself. This is of course of obvious utility.
+	</pylonprotect>
+</ability>

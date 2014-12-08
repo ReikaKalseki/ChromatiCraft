@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.nbt.NBTTagCompound;
-import Reika.ChromatiCraft.API.FiberPowered;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;

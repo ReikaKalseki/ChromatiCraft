@@ -7,16 +7,17 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.API;
+package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
+
 
 public interface FiberPowered {
 
 	/** Returns the amount successfully added. Args: Color, maxAdd */
-	public int addEnergy(CrystalElement e, int amt);
+	public int addEnergy(CrystalElement element, int amt);
 
 	/** Self-explanatory. */
-	public boolean isAcceptingColor(CrystalElement e);
+	public boolean isAcceptingColor(CrystalElement element);
 
 }

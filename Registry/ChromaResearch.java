@@ -35,14 +35,14 @@ public enum ChromaResearch {
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
 	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT),
-	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOf(4), 					ResearchLevel.ENTRY, 	ProgressStage.CRYSTALS),
+	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOf(4), 					ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.MULTICRAFT),
-	LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
+	//LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
 	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.MULTICRAFT),
 	ACCEL(			ChromaTiles.ACCELERATOR, 	ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
@@ -66,13 +66,21 @@ public enum ChromaResearch {
 	BREWER(			ChromaTiles.BREWER, 		ResearchLevel.BASICCRAFT),
 	RITUALTABLE(	ChromaTiles.RITUAL, 		ResearchLevel.ENERGYEXPLORE),
 	CASTTABLE(		ChromaTiles.TABLE, 			ResearchLevel.ENTRY),
-	BEACON(			ChromaTiles.BEACON, 		ResearchLevel.PYLONCRAFT),
+	BEACON(			ChromaTiles.BEACON, 		ResearchLevel.ENDGAME),
 	ITEMCOLLECTOR(	ChromaTiles.ITEMCOLLECTOR, 	ResearchLevel.MULTICRAFT),
 	AISHUTDOWN(		ChromaTiles.AISHUTDOWN, 	ResearchLevel.MULTICRAFT),
 	ASPECT(			ChromaTiles.ASPECT, 		ResearchLevel.ENERGYEXPLORE),
 	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
 	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.PYLONCRAFT),
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.BASICCRAFT),
+
+	BLOCKS("Other Blocks", ""),
+	TNT(			ChromaBlocks.TNT,			ResearchLevel.PYLONCRAFT),
+	TANKAUX(		ChromaBlocks.TANK,			ResearchLevel.MULTICRAFT),
+	FENCEAUX(		ChromaBlocks.FENCE,			ResearchLevel.MULTICRAFT),
+	LUMENLEAVES(	ChromaBlocks.POWERTREE,		ResearchLevel.PYLONCRAFT),
+	DYELEAVES(		ChromaBlocks.DYELEAF,		ResearchLevel.ENTRY),
+	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,	ResearchLevel.RAWEXPLORE),
 
 	TOOLDESC("Tools", ""),
 	FINDER(			ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
@@ -123,6 +131,7 @@ public enum ChromaResearch {
 	private final String pageTitle;
 	private boolean isParent = false;
 	private ChromaTiles machine;
+	private ChromaBlocks block;
 	private ChromaItems item;
 	private final ProgressStage[] progress;
 	public final ResearchLevel level;
@@ -140,6 +149,16 @@ public enum ChromaResearch {
 	private ChromaResearch(ChromaTiles r, ResearchLevel rl, ProgressStage... p) {
 		this(r.getName(), r.getCraftedProduct(), rl, p);
 		machine = r;
+	}
+
+	private ChromaResearch(ChromaBlocks r, ResearchLevel rl, ProgressStage... p) {
+		this(r.getBasicName(), r.getStackOf(), rl, p);
+		block = r;
+	}
+
+	private ChromaResearch(ChromaBlocks r, int meta, ResearchLevel rl, ProgressStage... p) {
+		this(r.getBasicName(), r.getStackOf(meta), rl, p);
+		block = r;
 	}
 
 	private ChromaResearch(ChromaItems i, ResearchLevel rl, ProgressStage... p) {
@@ -224,6 +243,10 @@ public enum ChromaResearch {
 
 	public ChromaTiles getMachine() {
 		return machine;
+	}
+
+	public ChromaBlocks getBlock() {
+		return block;
 	}
 
 	public ChromaItems getItem() {
@@ -395,6 +418,10 @@ public enum ChromaResearch {
 
 	public static ArrayList<ChromaResearch> getMachineTabs() {
 		return getAllUnder(MACHINEDESC);
+	}
+
+	public static ArrayList<ChromaResearch> getBlockTabs() {
+		return getAllUnder(BLOCKS);
 	}
 
 	public static ArrayList<ChromaResearch> getAbilityTabs() {

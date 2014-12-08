@@ -31,7 +31,6 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.RotaryCraft.API.Screwdriverable;
-import Reika.RotaryCraft.TileEntities.Transmission.TileEntityBeltHub;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -161,14 +160,14 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 		if (!isEmitting) {
 			ChromaTiles m = ChromaTiles.getTile(worldObj, target[0], target[1], target[2]);
 			if (m == this.getTile()) {
-				TileEntityBeltHub te = (TileEntityBeltHub)worldObj.getTileEntity(target[0], target[1], target[2]);
+				TileEntityItemRift te = (TileEntityItemRift)worldObj.getTileEntity(target[0], target[1], target[2]);
 				te.reset();
 			}
 		}
 		else {
 			ChromaTiles m = ChromaTiles.getTile(worldObj, source[0], source[1], source[2]);
 			if (m == this.getTile()) {
-				TileEntityBeltHub te = (TileEntityBeltHub)worldObj.getTileEntity(source[0], source[1], source[2]);
+				TileEntityItemRift te = (TileEntityItemRift)worldObj.getTileEntity(source[0], source[1], source[2]);
 				te.reset();
 			}
 		}

@@ -17,8 +17,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -46,7 +46,7 @@ public class ItemChromaBook extends ItemChromaTool {
 		for (int i = 1; i < ChromaResearch.researchList.length; i++) {
 			ChromaResearch r = ChromaResearch.researchList[i];
 			if (!r.isParent())
-				list.appendTag(new NBTTagInt(i));
+				list.appendTag(new NBTTagString(r.name()));
 		}
 		is.stackTagCompound.setTag("pages", list);
 		li.add(is);
@@ -74,7 +74,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
 		NBTTagList list = new NBTTagList();
 		for (ItemStack in : li) {
-			NBTTagInt tag = new NBTTagInt(in.getItemDamage());
+			NBTTagString tag = new NBTTagString(ChromaResearch.researchList[in.getItemDamage()].name());
 			list.appendTag(tag);
 		}
 		if (is.stackTagCompound == null)
@@ -85,10 +85,10 @@ public class ItemChromaBook extends ItemChromaTool {
 	public ArrayList<ItemStack> getItemList(ItemStack tool) {
 		ArrayList<ItemStack> li = new ArrayList();
 		if (tool.stackTagCompound != null) {
-			NBTTagList list = tool.stackTagCompound.getTagList("pages", NBTTypes.INT.ID);
+			NBTTagList list = tool.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID);
 			for (Object o : list.tagList) {
-				NBTTagInt tag = (NBTTagInt)o;
-				li.add(ChromaItems.FRAGMENT.getStackOfMetadata(tag.func_150287_d()));
+				NBTTagString tag = (NBTTagString)o;
+				li.add(ChromaItems.FRAGMENT.getStackOfMetadata(ChromaResearch.valueOf(tag.func_150285_a_()).ordinal()));
 			}
 		}
 		return li;
@@ -97,7 +97,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public static boolean hasPage(ItemStack is, ChromaResearch b) {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return false;
-		return is.stackTagCompound.getTagList("pages", NBTTypes.INT.ID).tagList.contains(new NBTTagInt(b.ordinal()));
+		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagList.contains(new NBTTagString(b.name()));
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public static int getNumberPages(ItemStack is) {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return 0;
-		return is.stackTagCompound.getTagList("pages", NBTTypes.INT.ID).tagCount();
+		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagCount();
 	}
 
 }

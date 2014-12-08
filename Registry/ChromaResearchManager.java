@@ -16,8 +16,8 @@ import java.util.Random;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -86,7 +86,7 @@ public final class ChromaResearchManager {
 
 	public boolean givePlayerFragment(EntityPlayer ep, ChromaResearch r) {
 		if (!this.playerHasFragment(ep, r)) {
-			this.getNBTFragments(ep).appendTag(new NBTTagInt(r.ordinal()));
+			this.getNBTFragments(ep).appendTag(new NBTTagString(r.name()));
 			this.checkForUpgrade(ep);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -154,7 +154,7 @@ public final class ChromaResearchManager {
 		Collection<ChromaResearch> c = new ArrayList();
 		NBTTagList li = this.getNBTFragments(ep);
 		for (Object o : li.tagList) {
-			c.add(ChromaResearch.researchList[((NBTTagInt)o).func_150287_d()]);
+			c.add(ChromaResearch.valueOf(((NBTTagString)o).func_150285_a_()));
 		}
 		return c;
 	}
@@ -163,7 +163,7 @@ public final class ChromaResearchManager {
 		NBTTagCompound tag = this.getNBT(ep);
 		if (!tag.hasKey("fragments"))
 			tag.setTag("fragments", new NBTTagList());
-		NBTTagList li = tag.getTagList("fragments", NBTTypes.INT.ID);
+		NBTTagList li = tag.getTagList("fragments", NBTTypes.STRING.ID);
 		return li;
 	}
 

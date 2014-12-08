@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
@@ -42,6 +43,7 @@ public final class ChromaDescriptions {
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
 	private static final XMLInterface machines = new XMLInterface(ChromatiCraft.class, PARENT+"machines.xml", mustLoad);
+	private static final XMLInterface blocks = new XMLInterface(ChromatiCraft.class, PARENT+"blocks.xml", mustLoad);
 	private static final XMLInterface abilities = new XMLInterface(ChromatiCraft.class, PARENT+"abilities.xml", mustLoad);
 	private static final XMLInterface structures = new XMLInterface(ChromatiCraft.class, PARENT+"structure.xml", mustLoad);
 	private static final XMLInterface tools = new XMLInterface(ChromatiCraft.class, PARENT+"tools.xml", mustLoad);
@@ -109,13 +111,13 @@ public final class ChromaDescriptions {
 	public static void loadData() {
 		ArrayList<ChromaResearch> infotabs = ChromaResearch.getInfoTabs();
 		ArrayList<ChromaResearch> machinetabs = ChromaResearch.getMachineTabs();
+		ArrayList<ChromaResearch> blocktabs = ChromaResearch.getBlockTabs();
 		ArrayList<ChromaResearch> abilitytabs = ChromaResearch.getAbilityTabs();
 		ArrayList<ChromaResearch> tooltabs = ChromaResearch.getToolTabs();
 		ArrayList<ChromaResearch> resourcetabs = ChromaResearch.getResourceTabs();
 		ArrayList<ChromaResearch> structuretabs = ChromaResearch.getStructureTabs();
 
-		for (int i = 0; i < machinetabs.size(); i++) {
-			ChromaResearch h = machinetabs.get(i);
+		for (ChromaResearch h : machinetabs) {
 			ChromaTiles m = h.getMachine();
 			String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase()+DESC_SUFFIX);
 			String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase()+NOTE_SUFFIX);
@@ -124,7 +126,6 @@ public final class ChromaDescriptions {
 
 			if (XMLInterface.NULL_VALUE.equals(desc))
 				desc = "There is no handbook data for this machine yet.";
-
 			//ReikaJavaLibrary.pConsole(m.name().toLowerCase()+":"+desc);
 
 			if (m.isDummiedOut()) {
@@ -143,6 +144,11 @@ public final class ChromaDescriptions {
 
 			addEntry(h, desc);
 			notes.put(h, aux);
+		}
+
+		for (ChromaResearch h : blocktabs) {
+			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase()+DESC_SUFFIX);
+			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : tooltabs) {
@@ -201,6 +207,6 @@ public final class ChromaDescriptions {
 	}
 
 	private static void loadNumericalData() {
-
+		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 	}
 }
