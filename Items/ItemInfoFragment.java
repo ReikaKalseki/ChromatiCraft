@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.DragonAPI.Interfaces.SpriteRenderCallback;
@@ -92,6 +93,10 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 
 	public static ChromaResearch getResearch(ItemStack is) {
 		return ChromaResearch.researchList[is.getItemDamage()];
+	}
+
+	public static ItemStack getItem(ChromaResearch r) {
+		return ChromaItems.FRAGMENT.getStackOfMetadata(r.ordinal());
 	}
 
 	/*

@@ -11,11 +11,13 @@
 	</accelerator>
 	<guardian>
 		<desc>
-			Too often you come home to find your constructions damaged or outright destroyed - or just half of your valuables missing - because someone snooping around your property helped themselves to your stocks or got too close to dangerous machinery. Sometimes you are fortunate enough to have those in a position of power apply magical protection spells over your territory, but they are often of fairly limited range, and the less scrupulous enforcers will demand a steep payment from you. Finally, however, you can protect yourself by applying a smaller version of that yourself; each stone emits an aura that prevents those you do not trust from helping themselves to your resources or your structures.
+			Too often you come home to find your constructions damaged or half of your valuables missing because someone snooping around your property helped themselves to your supplies. Sometimes you are fortunate and have those in power apply magical protection spells over your territory, but they are often of fairly limited range, and the less scrupulous will demand a steep payment from you to do so. Finally, however, you can protect yourself by applying a version of that yourself; each stone emits an aura that prevents those you do not trust from helping themselves to your resources or your structures.
 		</desc>
 		<note>
 			Protects against block placement and breaking, and the opening of GUIs within a %d block range
-			Owners and admins always have permissions; the owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access
+			
+			Owners and admins always have permissions
+			The owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access
 		</note>
 	</guardian>
 	<name>
