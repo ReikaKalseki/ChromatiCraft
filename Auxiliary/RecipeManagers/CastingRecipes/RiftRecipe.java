@@ -38,4 +38,9 @@ public class RiftRecipe extends PylonRecipe {
 		return 200+super.getDuration();
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 4;
+	}
+
 }

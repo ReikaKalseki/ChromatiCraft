@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -151,6 +152,19 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (Mouse.isButtonDown(1)) {
 			rx = ry = rz = 0;
+		}
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			ry += 0.75;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			ry -= 0.75;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			rx -= 0.75;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			rx += 0.75;
 		}
 
 		int dd = 12;
