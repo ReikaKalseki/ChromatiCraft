@@ -36,10 +36,23 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	private final BlockArray blocks = new BlockArray();
 	private int size = 1;
+	private Fluid fluidType;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
+	}
+
+	public int getViscosity() {
+		return fluidType.getViscosity(tank.getFluid());
+	}
+
+	public int getDensity() {
+		return fluidType.getDensity(tank.getFluid());
+	}
+
+	public boolean isInvertedFilled() {
+		return false;//this.getDensity() < 0;
 	}
 
 	@Override
@@ -49,6 +62,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	private void update() {
+		fluidType = tank.getActualFluid();
 		for (int i = 0; i < blocks.getSize(); i++) {
 			int[] a = blocks.getNthBlock(i);
 			worldObj.markBlockForUpdate(a[0], a[1], a[2]);
@@ -153,7 +167,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	public Fluid getFluid() {
-		return tank.getActualFluid();
+		return fluidType;
 	}
 
 	public int getLevel() {
@@ -174,7 +188,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 			size--;
 		blocks.remove(x, y, z);
 		if (tank.getLevel() > this.getCapacity())
-			tank.setContents(this.getCapacity(), tank.getActualFluid());
+			tank.setContents(this.getCapacity(), fluidType);
 	}
 
 	@Override
@@ -219,25 +233,27 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		int max = blocks.getMaxY();
 		double per = this.getFillPercentage();
 		int fy = (int)(min+height*per);
+		boolean flip = this.isInvertedFilled();
 		//ReikaJavaLibrary.pConsole(per+":"+fy);
 		if (y < fy)
-			return 1;
+			return flip ? 0 : 1;
 		else if (y > fy)
-			return 0;
+			return flip ? 1 : 0;
 		else {
 			double fracfull = (fy-min);
-			return per*height-fracfull;
+			double ret = per*height-fracfull;
+			return flip ? 1-ret : ret;
 		}
 	}
 
-	public double getHeightOffsetAtCorner(int x, int z, int dx, int dz, double h) {
-		if (h <= 0.01 || h > 0.99)
+	public double getHeightOffsetAtCorner(int x, int y, int z, int dx, int dz, double h, float ptick) {
+		if (h == 1 || h == 0)
 			return 0;
-		Fluid f = tank.getActualFluid();
+		Fluid f = fluidType;
 		FluidStack fs = tank.getFluid();
 		int visc = f.getViscosity(fs);
-		double idx = 4D*this.getTicksExisted()+48*((x+z+(dx+dz)*0.5)%16);
-		double idx2 = 4D*this.getTicksExisted()+128*((x+z+(dx+dz)*0.5)%32);
+		double idx = 4D*(this.getTicksExisted()+ptick)+48*((x+z+(dx+dz)*0.5)%16);
+		double idx2 = 4D*(this.getTicksExisted()+ptick)+128*((x+z+(dx+dz)*0.5)%32);
 		double pow = visc < 1000 ? 0.5 : 0.5;
 		double fac = Math.pow(1000D/visc, pow);
 		if (f.isGaseous(fs)) {
@@ -249,6 +265,18 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		double offset = 0.075+0.05*Math.sin(Math.toRadians(idx))+0.05*Math.sin(Math.toRadians(idx2));
 		if (f.isGaseous(fs))
 			offset *= 1.25;
+		if (this.isInvertedFilled()) {
+			if (!blocks.hasBlock(x, y-1, z)) {
+				offset = -offset;
+				offset = Math.max(-h+0.005, offset);
+			}
+		}
+		else {
+			if (!blocks.hasBlock(x, y+1, z)) {
+				offset = Math.min(offset, 1-h);
+			}
+		}
+		offset *= Math.min(1, 8F*tank.getLevel()/this.getCapacity());
 		return offset;
 	}
 
