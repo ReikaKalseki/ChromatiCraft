@@ -230,6 +230,28 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		}
 	}
 
+	public double getHeightOffsetAtCorner(int x, int z, int dx, int dz, double h) {
+		if (h <= 0.01 || h > 0.99)
+			return 0;
+		Fluid f = tank.getActualFluid();
+		FluidStack fs = tank.getFluid();
+		int visc = f.getViscosity(fs);
+		double idx = 4D*this.getTicksExisted()+48*((x+z+(dx+dz)*0.5)%16);
+		double idx2 = 4D*this.getTicksExisted()+128*((x+z+(dx+dz)*0.5)%32);
+		double pow = visc < 1000 ? 0.5 : 0.5;
+		double fac = Math.pow(1000D/visc, pow);
+		if (f.isGaseous(fs)) {
+			fac *= 0.75;
+			//idx2 = 0;
+		}
+		idx *= fac;
+		idx2 *= fac;
+		double offset = 0.075+0.05*Math.sin(Math.toRadians(idx))+0.05*Math.sin(Math.toRadians(idx2));
+		if (f.isGaseous(fs))
+			offset *= 1.25;
+		return offset;
+	}
+
 	public double getFillPercentage() {
 		return (double)tank.getLevel()/this.getCapacity();
 	}

@@ -95,7 +95,7 @@ public class TankRender extends ChromaRenderBase {
 			v5.startDrawingQuads();
 			v5.setBrightness(240);
 			v5.setColorOpaque_I(0xffffff);
-			float sp = 0.5F/ReikaRenderHelper.getFPS();
+			float sp = Math.min(0.0025F, 0.25F/ReikaRenderHelper.getFPS());
 			HashMap<List<Float>, CrystalElement> add = new HashMap();
 			ArrayList<List<Float>> remove = new ArrayList();
 			for (List<Float> key : colors.keySet()) {
@@ -340,10 +340,10 @@ public class TankRender extends ChromaRenderBase {
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
 					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-					v5.addVertexWithUV(ew, h-o, es, u, dv);
-					v5.addVertexWithUV(ee, h-o, es, du, dv);
-					v5.addVertexWithUV(ee, h-o, en, du, v);
-					v5.addVertexWithUV(ew, h-o, en, u, v);
+					v5.addVertexWithUV(ew, h-o+te.getHeightOffsetAtCorner(x, z, -1, 1, h), es, u, dv);
+					v5.addVertexWithUV(ee, h-o+te.getHeightOffsetAtCorner(x, z, 1, 1, h), es, du, dv);
+					v5.addVertexWithUV(ee, h-o+te.getHeightOffsetAtCorner(x, z, 1, -1, h), en, du, v);
+					v5.addVertexWithUV(ew, h-o+te.getHeightOffsetAtCorner(x, z, -1, -1, h), en, u, v);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.DOWN.ordinal())) {
@@ -364,8 +364,8 @@ public class TankRender extends ChromaRenderBase {
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
 					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
-					v5.addVertexWithUV(ew, eu, 0+o, u, dv);
-					v5.addVertexWithUV(ee, eu, 0+o, du, dv);
+					v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, z, -1, -1, h), 0+o, u, dv);
+					v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, z, 1, -1, h), 0+o, du, dv);
 					v5.addVertexWithUV(ee, ed, 0+o, du, v);
 					v5.addVertexWithUV(ew, ed, 0+o, u, v);
 				}
@@ -378,8 +378,8 @@ public class TankRender extends ChromaRenderBase {
 					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
 					v5.addVertexWithUV(ew, ed, 1-o, u, v);
 					v5.addVertexWithUV(ee, ed, 1-o, du, v);
-					v5.addVertexWithUV(ee, eu, 1-o, du, dv);
-					v5.addVertexWithUV(ew, eu, 1-o, u, dv);
+					v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, z, 1, 1, h), 1-o, du, dv);
+					v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, z, -1, 1, h), 1-o, u, dv);
 				}
 
 				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.WEST.ordinal())) {
@@ -389,8 +389,8 @@ public class TankRender extends ChromaRenderBase {
 					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
 					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
 					v5.addVertexWithUV(0+o, ed, es, u, v);
-					v5.addVertexWithUV(0+o, eu, es, u, dv);
-					v5.addVertexWithUV(0+o, eu, en, du, dv);
+					v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, z, -1, 1, h), es, u, dv);
+					v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, z, -1, -1, h), en, du, dv);
 					v5.addVertexWithUV(0+o, ed, en, du, v);
 				}
 
@@ -401,8 +401,8 @@ public class TankRender extends ChromaRenderBase {
 					double eu = blocks.hasBlock(x, y+1, z) ? h : h-o;
 					double ed = blocks.hasBlock(x, y-1, z) ? 0 : 0+o;
 					v5.addVertexWithUV(1-o, ed, en, u, dv);
-					v5.addVertexWithUV(1-o, eu, en, u, v);
-					v5.addVertexWithUV(1-o, eu, es, du, v);
+					v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, z, 1, -1, h), en, u, v);
+					v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, z, 1, 1, h), es, du, v);
 					v5.addVertexWithUV(1-o, ed, es, du, dv);
 				}
 				v5.addTranslation(-x+te.xCoord, -y+te.yCoord, -z+te.zCoord);
