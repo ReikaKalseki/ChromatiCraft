@@ -116,6 +116,14 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case NBT:
 				break;
+			case STRINGINT:
+				stringdata = packet.readString();
+				control = inputStream.readInt();
+				pack = ChromaPackets.getPacket(control);
+				data = new int[pack.numInts];
+				for (int i = 0; i < data.length; i++)
+					data[i] = inputStream.readInt();
+				break;
 			}
 			if (packetType.hasCoordinates()) {
 				x = inputStream.readInt();

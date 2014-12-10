@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -94,7 +95,7 @@ public class TankRender extends ChromaRenderBase {
 			v5.startDrawingQuads();
 			v5.setBrightness(240);
 			v5.setColorOpaque_I(0xffffff);
-			float sp = 0.005F;
+			float sp = 0.5F/ReikaRenderHelper.getFPS();
 			HashMap<List<Float>, CrystalElement> add = new HashMap();
 			ArrayList<List<Float>> remove = new ArrayList();
 			for (List<Float> key : colors.keySet()) {
@@ -206,6 +207,8 @@ public class TankRender extends ChromaRenderBase {
 			li.add(CrystalElement.YELLOW);
 		if (fluid.getName().toLowerCase().contains("xp"))
 			li.add(CrystalElement.PURPLE);
+		if (fluid.getName().toLowerCase().contains("bio") || fluid.getName().toLowerCase().contains("honey"))
+			li.add(CrystalElement.GREEN);
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 

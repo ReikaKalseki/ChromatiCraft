@@ -80,6 +80,8 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		ItemStack is = ep.getCurrentEquippedItem();
 		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
 		TileEntityCrystalTank tk = te.getTankController();
+		if (tk == null)
+			return false;
 		if (is != null) {
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 			if (fs != null) {

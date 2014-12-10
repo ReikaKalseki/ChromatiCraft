@@ -127,4 +127,9 @@ public enum ChromaSounds implements SoundEnum {
 	public SoundCategory getCategory() {
 		return SoundCategory.MASTER;
 	}
+
+	@Override
+	public boolean canOverlap() {
+		return this == CAST || this == USE || this == ERROR || this == INFUSE;
+	}
 }

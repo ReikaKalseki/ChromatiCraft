@@ -124,13 +124,13 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 	@Override
 	public Fluid getFluid() {
-		return FluidRegistry.getFluid("activechroma");
+		return FluidRegistry.getFluid("chroma");
 	}
 
 	@Override
 	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
 		super.drain(world, x, y, z, doDrain);
-		return new FluidStack(FluidRegistry.getFluid("activechroma"), 1000);
+		return new FluidStack(FluidRegistry.getFluid("chroma"), 1000);
 	}
 
 	public static class TileEntityChroma extends TileEntity {
