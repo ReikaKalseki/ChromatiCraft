@@ -62,7 +62,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@SideOnly(Side.CLIENT)
 	private void spawnCraftParticles(World world, int x, int y, int z) {
-		if (rand.nextInt(8) == 0) {
+		if (rand.nextInt(32) == 0) {
 			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.375);
 			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.375);
 			EntityFX fx = new EntityCenterBlurFX(world, rx, y, rz, 0, 0.1, 0);

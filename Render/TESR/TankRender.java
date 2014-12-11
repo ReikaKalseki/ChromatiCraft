@@ -330,94 +330,94 @@ public class TankRender extends ChromaRenderBase {
 			int z = xyz[2];
 
 			double h = te.getFillLevelForY(y);
-			//boolean disp = flip ? h < 1 : h > 0;
+			boolean disp = flip ? (h < 1 || te.getFillLevelForY(y+1) == 1) : (h > 0 || te.getFillLevelForY(y-1) == 1);
 
-			//if (disp) {
-			v5.addTranslation(x-te.xCoord, y-te.yCoord, z-te.zCoord);
-			double o = 0.0025;
-			h = Math.max(o, h);
-			double min = flip ? 1-o : 0+o;
-			double max = flip ? h+o : h-o;
+			if (disp) {
+				v5.addTranslation(x-te.xCoord, y-te.yCoord, z-te.zCoord);
+				double o = 0.0025;
+				h = Math.max(o, h);
+				double min = flip ? 1-o : 0+o;
+				double max = flip ? h+o : h-o;
 
-			v5.setBrightness(f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z));
+				v5.setBrightness(f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z));
 
-			if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());
-				double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
-				double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
-				double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
-				double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-				v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
-				v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, dv);
-				v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, du, v);
-				v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, u, v);
+				if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
+					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, dv);
+					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, du, v);
+					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, u, v);
+				}
+
+				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.DOWN.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.DOWN, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					v5.addVertexWithUV(ew, min, en, u, v);
+					v5.addVertexWithUV(ee, min, en, du, v);
+					v5.addVertexWithUV(ee, min, es, du, dv);
+					v5.addVertexWithUV(ew, min, es, u, dv);
+				}
+
+				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.NORTH.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.NORTH, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
+					v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), 0+o, u, dv);
+					v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), 0+o, du, dv);
+					v5.addVertexWithUV(ee, ed, 0+o, du, v);
+					v5.addVertexWithUV(ew, ed, 0+o, u, v);
+				}
+
+				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.SOUTH.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.SOUTH, f.getLuminosity());
+					double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
+					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
+					v5.addVertexWithUV(ew, ed, 1-o, u, v);
+					v5.addVertexWithUV(ee, ed, 1-o, du, v);
+					v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), 1-o, du, dv);
+					v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), 1-o, u, dv);
+				}
+
+				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.WEST.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.WEST, f.getLuminosity());
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
+					v5.addVertexWithUV(0+o, ed, es, u, v);
+					v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
+					v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, du, dv);
+					v5.addVertexWithUV(0+o, ed, en, du, v);
+				}
+
+				if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.EAST.ordinal())) {
+					this.setFaceBrightness(v5, ForgeDirection.EAST, f.getLuminosity());
+					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
+					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					double eu = blocks.hasBlock(x, y+1, z) ? h : max;
+					double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
+					v5.addVertexWithUV(1-o, ed, en, u, dv);
+					v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, u, v);
+					v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, v);
+					v5.addVertexWithUV(1-o, ed, es, du, dv);
+				}
+				v5.addTranslation(-x+te.xCoord, -y+te.yCoord, -z+te.zCoord);
 			}
-
-			if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.DOWN.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.DOWN, f.getLuminosity());
-				double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
-				double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
-				double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
-				double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-				v5.addVertexWithUV(ew, min, en, u, v);
-				v5.addVertexWithUV(ee, min, en, du, v);
-				v5.addVertexWithUV(ee, min, es, du, dv);
-				v5.addVertexWithUV(ew, min, es, u, dv);
-			}
-
-			if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.NORTH.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.NORTH, f.getLuminosity());
-				double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
-				double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
-				double eu = blocks.hasBlock(x, y+1, z) ? h : max;
-				double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
-				v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), 0+o, u, dv);
-				v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), 0+o, du, dv);
-				v5.addVertexWithUV(ee, ed, 0+o, du, v);
-				v5.addVertexWithUV(ew, ed, 0+o, u, v);
-			}
-
-			if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.SOUTH.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.SOUTH, f.getLuminosity());
-				double ee = blocks.hasBlock(x+1, y, z) ? 1 : 1-o;
-				double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
-				double eu = blocks.hasBlock(x, y+1, z) ? h : max;
-				double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
-				v5.addVertexWithUV(ew, ed, 1-o, u, v);
-				v5.addVertexWithUV(ee, ed, 1-o, du, v);
-				v5.addVertexWithUV(ee, eu+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), 1-o, du, dv);
-				v5.addVertexWithUV(ew, eu+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), 1-o, u, dv);
-			}
-
-			if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.WEST.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.WEST, f.getLuminosity());
-				double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
-				double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-				double eu = blocks.hasBlock(x, y+1, z) ? h : max;
-				double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
-				v5.addVertexWithUV(0+o, ed, es, u, v);
-				v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
-				v5.addVertexWithUV(0+o, eu+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, du, dv);
-				v5.addVertexWithUV(0+o, ed, en, du, v);
-			}
-
-			if (b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.EAST.ordinal())) {
-				this.setFaceBrightness(v5, ForgeDirection.EAST, f.getLuminosity());
-				double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
-				double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
-				double eu = blocks.hasBlock(x, y+1, z) ? h : max;
-				double ed = blocks.hasBlock(x, y-1, z) ? 0 : min;
-				v5.addVertexWithUV(1-o, ed, en, u, dv);
-				v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, u, v);
-				v5.addVertexWithUV(1-o, eu+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, v);
-				v5.addVertexWithUV(1-o, ed, es, du, dv);
-			}
-			v5.addTranslation(-x+te.xCoord, -y+te.yCoord, -z+te.zCoord);
 		}
-		//}
 
 		v5.draw();
-		GL11.glFrontFace(GL11.GL_CCW);
+		//GL11.glFrontFace(GL11.GL_CCW);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_BLEND);
 

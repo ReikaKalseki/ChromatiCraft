@@ -48,6 +48,12 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		return 40;
 	}
 
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		checkTimer.setTick(rand.nextInt(checkTimer.getCap()));
+	}
+
 	protected final int getCooldown() {
 		return receiveCooldown;
 	}

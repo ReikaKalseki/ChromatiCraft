@@ -38,4 +38,8 @@ public abstract class ItemWandBase extends ItemChromaTool {
 		return ep.capabilities.isCreativeMode || PlayerElementBuffer.instance.playerHas(ep, energy);
 	}
 
+	public ElementTagCompound getEnergy(float scale) {
+		return energy.copy().scale(scale);
+	}
+
 }

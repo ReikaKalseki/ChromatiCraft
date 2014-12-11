@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
-import Reika.DragonAPI.Auxiliary.PlayerHandler.PlayerTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;

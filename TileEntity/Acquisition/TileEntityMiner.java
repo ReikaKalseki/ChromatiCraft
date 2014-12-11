@@ -164,6 +164,10 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 							coords.add(new Coordinate(dx, dy, dz));
 							this.addFound(world, dx, dy, dz, id, meta2);
 						}
+						else if (this.shouldMine(id, meta2)) {
+							coords.add(new Coordinate(dx, dy, dz));
+							this.addFound(world, dx, dy, dz, id, meta2);
+						}
 						this.updateReadPosition();
 						if (readY >= worldObj.getActualHeight()) {
 							digReady = true;
@@ -178,6 +182,12 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		}
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	private boolean shouldMine(Block id, int meta2) {
+		if (id == Blocks.glowstone)
+			return true;
+		return false;
 	}
 
 	public float getDigCompletion() {

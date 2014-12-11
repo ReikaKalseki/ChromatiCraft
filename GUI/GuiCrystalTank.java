@@ -82,7 +82,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 		if (f != null) {
 			int amt = tank.getLevel();
 			int cap = tank.getCapacity();
-			int frac = 100*amt/cap;
+			int frac = (int)(100L*amt/cap);
 			int num = frac/16;
 			int rem = frac-num*16;
 			ReikaTextureHelper.bindTerrainTexture();

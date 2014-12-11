@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
+import Reika.ChromatiCraft.Items.Tools.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemTransitionWand;
@@ -83,7 +84,8 @@ public enum ChromaItems implements ItemEnum {
 	WARP(7, false,			"chroma.warp",			ItemWarpProofer.class),
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
-	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class);
+	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
+	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -199,7 +201,7 @@ public enum ChromaItems implements ItemEnum {
 		case SEED:
 			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case MISC:
-			return ChromaNames.miscNames[meta];
+			return StatCollector.translateToLocal(ChromaNames.miscNames[meta]);
 		case ENDERCRYSTAL:
 			return this.getBasicName();
 		case CRAFTING:

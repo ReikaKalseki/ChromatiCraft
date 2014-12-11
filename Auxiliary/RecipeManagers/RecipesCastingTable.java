@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.SpawnerReprog
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.StorageCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.TelePumpRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.TeleportWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.TransitionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.UpgradeRecipe;
@@ -261,6 +262,8 @@ public class RecipesCastingTable {
 
 		if (ChromaOptions.ENDERTNT.getState())
 			this.addRecipe(new RecipeEnderTNT(ChromaBlocks.TNT.getStackOf(), ChromaItems.BUCKET.getStackOfMetadata(1)));
+
+		this.addRecipe(new TeleportWandRecipe(ChromaItems.TELEPORT.getStackOf(), ChromaStacks.transformCore));
 	}
 
 	private void addRecipe(CastingRecipe r) {

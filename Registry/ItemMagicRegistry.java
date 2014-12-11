@@ -131,8 +131,10 @@ public class ItemMagicRegistry {
 		this.addElement(Items.string, CrystalElement.GREEN, 1);
 		this.addElement(Items.magma_cream, CrystalElement.ORANGE, 4);
 		this.addElement(Items.magma_cream, CrystalElement.RED, 4);
+		this.addElement(Items.magma_cream, CrystalElement.GREEN, 1);
 		this.addElement(Items.slime_ball, CrystalElement.CYAN, 2);
 		this.addElement(Items.slime_ball, CrystalElement.PINK, 2);
+		this.addElement(Items.slime_ball, CrystalElement.GREEN, 1);
 		this.addElement(Items.leather, CrystalElement.GREEN, 1);
 		this.addElement(Items.rotten_flesh, CrystalElement.GREEN, 1);
 		this.addElement(Items.feather, CrystalElement.GREEN, 1);
@@ -148,9 +150,13 @@ public class ItemMagicRegistry {
 		this.addElement(Items.porkchop, CrystalElement.GREEN, 1);
 		this.addElement(Items.beef, CrystalElement.GREEN, 1);
 		this.addElement(Items.blaze_rod, CrystalElement.ORANGE, 4);
+		this.addElement(Items.blaze_rod, CrystalElement.GREEN, 1);
 		this.addElement(Items.saddle, CrystalElement.PURPLE, 1);
 		this.addElement(Items.ender_pearl, CrystalElement.LIME, 4);
+		this.addElement(Items.ender_pearl, CrystalElement.GREEN, 1);
+		this.addElement(Items.ender_pearl, CrystalElement.BLACK, 4);
 		this.addElement(Items.ghast_tear, CrystalElement.BLACK, 1);
+		this.addElement(Items.ghast_tear, CrystalElement.GREEN, 1);
 		this.addElement(Items.skull, CrystalElement.PINK, 4);
 		/*
 		this.addElement(Items.record_11, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.GREED, 4));
