@@ -83,6 +83,7 @@ public enum ChromaResearch {
 	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,										ResearchLevel.RAWEXPLORE),
 
 	TOOLDESC("Tools", ""),
+	WAND(			ChromaItems.TOOL,			ResearchLevel.ENTRY),
 	FINDER(			ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
 	EXCAVATOR(		ChromaItems.EXCAVATOR, 		ResearchLevel.CHARGESELF),
 	TRANSITION(		ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),

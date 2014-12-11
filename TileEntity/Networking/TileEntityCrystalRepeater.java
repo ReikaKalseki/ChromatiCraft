@@ -32,6 +32,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	protected boolean hasMultiblock;
 	private int depth = -1;
 
+	public static final int RANGE = 32;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.REPEATER;
@@ -51,12 +53,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSendRange() {
-		return 32;
+		return RANGE;
 	}
 
 	@Override
 	public int getReceiveRange() {
-		return 32;
+		return RANGE;
 	}
 
 	@Override

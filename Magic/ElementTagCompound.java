@@ -292,4 +292,16 @@ public final class ElementTagCompound {
 		return min;
 	}
 
+	public String toDisplay() {
+		StringBuilder sb = new StringBuilder();
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			if (amt > 0) {
+				sb.append(e.displayName+": "+amt+" Lumens");
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
+	}
+
 }

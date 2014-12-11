@@ -17,9 +17,260 @@
 			Protects against block placement and breaking, and the opening of GUIs within a %d block range
 			
 			Owners and admins always have permissions
-			The owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access
+			The owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access <!-- The &# tags are for angle brackets. Do not touch those. -->
 		</note>
 	</guardian>
+	<telepump>
+		<desc>
+			You already have all sorts of automated pumps and devices to drain large pools of liquid. However, some liquids, irritatingly, occur not in large lakes or wells but in scattered ponds all over the place and thus force you to either bucket it manually or spend more time moving the pump and pipes than actually pumping. The teleportation pump, by using movement energy, solves this problem by draining a large area of disconnected lakes at once, greatly expediting fluid acquisition.
+		</desc>
+		<note>
+			Needs to scan the area after being placed
+			Requires:
+			%s
+		</note>
+	</telepump>
+	<miner>
+		<desc>
+			Most of your time mining is wasted digging out mountains of rock to find scattered blocks of ore or other valuables, making the whole process a tedious chore that is done more out of necessity than any sort of enjoyment. Even most automated methods of acquiring resources have this problem, wasting a large amount of time and energy, leaving you with nothing to show for it except 50 chests of cobblestone. The mineral extractor, however, is able to sense the presence of value in the world, allowing it to pinpoint the locations of ores and other valuables.
+		</desc>
+		<note>
+			Needs to scan the area after being placed, and can be triggered with the manipulator
+			Requires:
+			%s
+		</note>
+	</miner>
+	<reprogrammer>
+		<desc>
+			Some madman has scattered dark metal cages throughout the world, in cobblestone rooms underground to old mining tunnels to red brick bridges in the Nether. These cages pump forth endless mobs, making them not only a dangerous hazard but a very useful device for farming the creature's drops. Unfortunately, while many have tried to replicate these structures, all have either failed or yielded a pale imitation of the original, and few designs allow you to customize the type of mob in the cage; after all, you can only use so much rotten flesh and spider eyes. This device will finally change that.
+		</desc>
+		<note>
+			
+		</note>
+	</reprogrammer>
+	<repeater>
+		<desc>
+			The transmission range of a Crystal Pylon is limited to %d blocks, and its beams are blocked by just about anything aside from air and glass; this means that unless you built your base next to one of every pylon - a dangerous endeavour - you need some way to relay the signal. This is exactly the function of a repeater, which can repeat a signal and do so around obstacles. However, repeaters do incur a small signal attenuation, so optimizing the path is a good idea.
+		</desc>
+		<note>
+			Range: %d blocks receiving and transmitting
+		</note>
+	</repeater>
+	<rift>
+		<desc>
+			Transporting things long-distance or between dimensions is one of the most annoying tasks you have to face; whether you built a structure in another world because of fear of a destructive failure or you are trying to transport a fluid from a source thousands of blocks away to your base, you often find yourself stymied by an inability to bridge the gap. Now, however, you can tie two disparate locations in the world together - no matter the distance or differences in dimension - and transport items, fluids, redstone, power of all kinds, and more through a link to the void.
+		</desc>
+		<note>
+			Always placed in pairs
+			
+			What goes in one side of one rift comes out the opposite side of the other
+			
+			Item transport is directional, and a side must be chosen with the manipulator
+		</note>
+	</rift>
+	<tank>
+		<desc>
+			Items are easy to store en masse - particularly after you found a way to digitize them and store them in patterns on some strange purple crystals - but too often you find yourself out of storage for fluids that you collect or produce. Tanks of all sizes are already available to you, but even the largest ones, these mysterious metal boxes that only seem structurally stable in a few preset sizes, hold a few tens of thousands of buckets. By trapping a link to the void hole inside a glass frame and adding large quantities of fluid energy, you have a multiblock tank that can quickly reach enormous capacities.
+		</desc>
+		<note>
+			Capacity is approximately %d*n^2 buckets, where n is the number of blocks in the tank
+			
+			Can be built to any size and shape, up to a capacity of %d buckets
+		</note>
+	</tank>
+	<compound>
+		<desc>
+			Repeaters are all well and good, but they suffer two problems. One, if you have a number of pylons all along the same path, laying multiple tracks of repeaters is messy and costly. Two, if your base is not easily accessed from the outside, you are forced to punch one hole for each color channel. The multi-aura repeater solves both of these; though larger and much more costly, they can carry all sixteen colors - including simultaneously. They do, however, have a larger per-node attenuation, meaning you will want to keep their use to a minimum.
+		</desc>
+		<note>
+			
+		</note>
+	</compound>
+	<charger>
+		<desc>
+			You have already figured out how to make a crystal that can selectively take in and release crystal energy, but you are in need of a way to funnel that energy - which unfiltered would probably violently overload the crystal - safely and efficiently. Recalling something about sharp corners concentrating stress in materials - the details escape you due to the lack of attention you paid at the time (a decision you now regret) - you try to do the same for the crystal, building a frame to shield the edges and focus the energy into the center. As to why it spins...what you don't know can't hurt you, right?
+		</desc>
+		<note>
+			Stores up to %d lumens of each color
+		</note>
+	</charger>
+	<lily>
+		<desc>
+			You, in your (less than) infinite wisdom, decided to make a sugarcane farm in a snow biome. It worked perfectly...until the water froze and your sugarcane rotted on the ground. You need some way to heat the water and stave off the cold in a small area around the farm. Maybe if you used some essence of those mechanical-sounding fire creatures from the Nether bridges, you could make a plant that not only served that purpose, but was aesthetically pleasing as well. This should also help prevent your high-drop landing pools from freezing over. (Ow.)
+		</desc>
+		<note>
+			
+		</note>
+	</lily>
+	<ticker>
+		<desc>
+			You spent quite a lot of effort making the perfect set of tools; some are made of a blend of different materials, including some exotic alloys (a hard purple one seems particularly useful). Fortunately for you, you can put moss all over the tool and this (somehow) makes it regenerate its durability. The only problem is, the moss seems to be triggered by your body heat, so sticking the tools in a chest to let them repair does you little good. If you could somehow concentrate life energy, along with some amount of time, you may be able to construct something to achieve the same effect, and possibly faster as well.
+		</desc>
+		<note>
+			Requires:
+			%s
+		</note>
+	</ticker>
+	<fence>
+		<desc>
+			You need some way of protecting your base from the hordes of mobs outside, and fences are rather boring. You already tried using moats (how does a spider the size of a cow swim!?) to no effect, and you tried using unshielding wires as an impromptu electric fence, an experiment that ended after you had the misfortune of touching it yourself. However, with (a large amount of) energy associated with protection and shielding, you can make a barrier that will stop creatures of all types while letting you pass unharmed, and can be built into any shape between connected nodes.
+		</desc>
+		<note>
+			
+		</note>
+	</fence>
+	<furnace>
+		<desc>
+			Smelting. One of the most boring, mundane tasks you nonetheless still find yourself forced to do. Sure, there are all sorts of ways to speed up the process - although the external heating methods have a nastly tendency of liquefying the whole setup - but you might now be able to enhance the yield with a new kind of furnace able to harness not only fire but also enhancement energy as well.
+		</desc>
+		<note>
+			Yields %dx output for anything smelted inside it except for ingot dusts
+		</note>
+	</furnace>
+	<laser>
+		<desc>
+			Standard light can be focused into a beam, so it stands to reason that you can do the same with lumen energy with the appropriate lens. That is exactly the function of this device. With it, you can focus energy of any color in a thin beam along a line of blocks - up to %d blocks away - thus applying the effects of that color. Now if only you had any idea what each color did...
+		</desc>
+		<note>
+			
+		</note>
+	</laser>
+	<itemrift>
+		<desc>
+			A classic transport problem involves two inventories within a clear line of each other but separated by several blocks. You once saw a device you can attach to each block and rapidly transport the contents, but it was limited to a single block of space; this, however, is a longer-ranged variant.
+		</desc>
+		<note>
+			
+		</note>
+	</itemrift>
+	<crystal>
+		<desc>
+			Once you started to do a lot of pylon-driven crafting, or started to charge yourself with large quantities of crystal energy, you made a crucial observation: Pylons are not infinite, but lose their color as they are drained. Granted, they do recharge, but slowly - though planting similarly colored trees around them helps a bit. However, you have found that these crystals can dramatically increase the charging speed of a pylon, with a full, balanced ring of eight speeding it up enormously.
+		</desc>
+		<note>
+			
+		</note>
+	</crystal>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
 	<name>
 		<desc>
 			

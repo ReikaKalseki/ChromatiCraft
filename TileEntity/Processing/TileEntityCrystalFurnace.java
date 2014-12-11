@@ -163,6 +163,10 @@ public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements
 		smelt.addTag(CrystalElement.PURPLE, 500);
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return smelt.copy();
+	}
+
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 12000;

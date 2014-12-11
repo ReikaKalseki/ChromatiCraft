@@ -41,6 +41,10 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 		required.addTag(CrystalElement.BLACK, 20);
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
 	public int getExperience() {
 		return experience;
 	}

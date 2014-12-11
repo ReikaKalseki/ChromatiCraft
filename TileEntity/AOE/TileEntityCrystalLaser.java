@@ -34,6 +34,8 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 	private int range;
 	private StepTimer rangeTimer = new StepTimer(20);
 
+	public static final int MAX_RANGE = 128;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.LASER;
@@ -63,7 +65,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 		if (!this.isActive())
 			return 0;
 		int energy = this.getEnergy(this.getColor());
-		int max = (int)Math.min(Math.sqrt(energy), 128);
+		int max = (int)Math.min(Math.sqrt(energy), MAX_RANGE);
 		for (int i = 1; i <= max; i++) {
 			int dx = xCoord+dir.offsetX*i;
 			int dy = yCoord+dir.offsetY*i;

@@ -21,7 +21,10 @@ import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityCrystalCharger extends InventoriedCrystalReceiver implements OneSlotMachine {
+
 	private float angle;
+
+	public static final int CAPACITY = 120000;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -135,7 +138,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 120000;
+		return CAPACITY;
 	}
 
 	public boolean hasItem() {

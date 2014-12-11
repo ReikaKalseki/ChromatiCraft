@@ -59,6 +59,10 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		required.addTag(CrystalElement.LIME, 1000);
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
 	@Override
 	public int getSizeInventory() {
 		return 4;

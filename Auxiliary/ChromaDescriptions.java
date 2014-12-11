@@ -19,7 +19,17 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
@@ -207,6 +217,17 @@ public final class ChromaDescriptions {
 	}
 
 	private static void loadNumericalData() {
+		addData(ChromaTiles.REPEATER, TileEntityCrystalPylon.RANGE);
+		addData(ChromaTiles.LASER, TileEntityCrystalLaser.MAX_RANGE);
+
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
+		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
+		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
+		addNotes(ChromaTiles.REPROGRAMMER, TileEntitySpawnerReprogrammer.getRequiredEnergy().toDisplay());
+		addNotes(ChromaTiles.REPEATER, TileEntityCrystalRepeater.RANGE);
+		addNotes(ChromaTiles.TANK, TileEntityCrystalTank.FACTOR/1000, TileEntityCrystalTank.MAXCAPACITY/1000);
+		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
+		addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
+		addNotes(ChromaTiles.FURNACE, TileEntityCrystalFurnace.MULTIPLY);
 	}
 }

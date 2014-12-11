@@ -84,6 +84,10 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		required.addTag(CrystalElement.BROWN, 40);
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.MINER;

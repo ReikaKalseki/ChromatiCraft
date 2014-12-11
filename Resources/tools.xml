@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0"?>
 <tools>
+	<wand>
+		The manipulator is your first foray into this strange new field of crystal elements and chromatic forces. The tool seems to be your main way of activating blocks, either to start some operation or to change settings on a device. It also seems capable of testing the connectivity of segments of a crystal network.
+	</wand>
 	<finder>
 		The pylon compass scans the energy field that permeates the world and analyzes it to calculate the location of the nearest pylon of each crystal element. Due to the fact that the energy is always in flux, there is some inaccuracy to the calculation, but the location you are directed to should be within a short walk of the actual pylon.
 	</finder>
@@ -33,4 +36,10 @@
 	<fragment>
 		Scattered around the world, and occasionally dropped by those investigating the pylons too closely, are scraps of information on the fundamental elements of the universe or its applications. You will likely find those useful later.
 	</fragment>
+	<duplicator>
+		Building structures that consist of many repeated parts is a tedious task involving less in the way mental vigour and more in the way of running around. Finally, however, you have found a way to scan regions of a structure and allow it to be replicated as many times as you see fit and can afford.
+	</duplicator>
+	<teleport>
+		Long-distance travel has often been a major headache for you, and even with more advanced powers like gliding and flight, you find yourself spending a great deal of time in transit between distant locations. With the mobility wand, you can fling yourself at a distant location, appearing there instantaneously.
+	</teleport>
 </tools>

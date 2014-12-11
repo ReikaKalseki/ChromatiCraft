@@ -32,11 +32,15 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher {
 
-	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", 1000000000);
+	public static final int MAXCAPACITY = 1000000000;
+
+	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", MAXCAPACITY);
 
 	private final BlockArray blocks = new BlockArray();
 	private int size = 1;
 	private Fluid fluidType;
+
+	public static final int FACTOR = 4000;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -151,7 +155,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	public int getCapacity() {
 		int base = Math.min(size*size, 500000);
-		int lin = base*4000;
+		int lin = base*FACTOR;
 		double fac = Math.pow(1.005, size-1);
 		int bucket = (int)(lin*fac/1000D);
 		int rnd = 1;

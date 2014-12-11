@@ -96,6 +96,10 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 		addDisallowedMob("Robit");
 	}
 
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
 	private static void addDisallowedMob(String name) {
 		disallowedMobs.add(name);
 	}

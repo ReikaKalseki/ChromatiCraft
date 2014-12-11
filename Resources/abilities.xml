@@ -15,4 +15,19 @@
 	<pylonprotect>
 		After one too many energy discharges to the face - or perhaps as a result of it - you have finally devised a way to "ground" yourself, causing the pylons's surplus energy to seek alternate routes to dissipate itself. This is of course of obvious utility.
 	</pylonprotect>
+	<heal>
+		Useful if low on food or desperately low on health, the ability to instantly heal a heart or two is an expensive yet indispensable asset.
+	</heal>
+	<health>
+		Even with the most powerful armor available, and with all sorts of other protections active, you often find yourself still in mortal danger simply due to the fact that some things deal more damage than you can withstand. Fortunately, you have found that you have the ability to increase your life force up to a factor of three with the application of a great deal of associated energy.
+	</health>
+	<communicate>
+		You are not alone in this world; you share it with many other creatures, ranging from basic animals to beings advanced enough to try and scam you out of emeralds. However, some of these creatures seem to harbor an irrational hatred for you, attempting to kill you on sight, even if it costs them their own lives. Using the magic elements, combined with the application of a healthy amount of deception, you might be able to stave off their aggression.
+	</communicate>
+	<fireball>
+		You made the mistake of building a frame of obsidian and stepping into the fiery nightmare on the other side, where you were promptly attacked by tentacled clouds that sound like injured children. Their attacks were long-range and difficult to dodge, leading you to wonder if you can find some utility in that if you could replicate that yourself. Fire and heat energy are obvious, but combined with others, like aggression, you have successfully reproduced this capability, and potentially more powerfully as well.
+	</fireball>
+	<shield>
+		Perhaps the most annoying of the creatures you find yourself up against - even outdoing the kamikaze leaf bombs - are skeletons, with their ranged attack and, when in groups, their irriating tendency to imitate a gatling gun. Usefully, however, protective energy can create a field around you to deflect their assault.
+	</shield>
 </ability>

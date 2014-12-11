@@ -74,6 +74,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	private int energy = MAX_ENERGY;
 	private int energyStep = 1;
 
+	public static final int RANGE = 48;
+
 	private static Class node;
 	private static HashMap<String, ArrayList<Integer>> nodeCache;
 
@@ -384,7 +386,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public int getSendRange() {
-		return 48;
+		return RANGE;
 	}
 
 	@Override

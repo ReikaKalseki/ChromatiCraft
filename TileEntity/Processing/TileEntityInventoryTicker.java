@@ -27,6 +27,11 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 
 	static {
 		required.addTag(CrystalElement.LIGHTBLUE, 25);
+		required.addTag(CrystalElement.GREEN, 10);
+	}
+
+	public static ElementTagCompound getRequiredEnergy() {
+		return required.copy();
 	}
 
 	@Override
