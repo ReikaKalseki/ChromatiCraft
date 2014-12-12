@@ -32,10 +32,10 @@ public class ContainerCrystalCharger extends CoreContainer {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		for (int i = 0; i < 16; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			for (int k = 0; k < crafters.size(); k++) {
-				ICrafting icrafting = (ICrafting)crafters.get(k);
+		for (int k = 0; k < crafters.size(); k++) {
+			ICrafting icrafting = (ICrafting)crafters.get(k);
+			for (int i = 0; i < 16; i++) {
+				CrystalElement e = CrystalElement.elements[i];
 				icrafting.sendProgressBarUpdate(this, i, tile.getEnergy(e));
 			}
 		}

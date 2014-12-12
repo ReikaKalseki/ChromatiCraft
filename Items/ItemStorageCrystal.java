@@ -58,7 +58,7 @@ public class ItemStorageCrystal extends ItemChromaTool {
 	}
 
 	public int getCapacity(ItemStack is) {
-		return (int)(1000*Math.pow(4, is.getItemDamage()-1));
+		return (int)(1000*Math.pow(8, is.getItemDamage()-1));
 	}
 
 	public void addEnergy(ItemStack is, CrystalElement e, int value) {

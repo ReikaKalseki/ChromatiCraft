@@ -122,6 +122,10 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
+		if (world == null) {
+			angle = 0;
+			return;
+		}
 		int energy = this.energy.getTotalEnergy();
 		if (this.hasItem()) {
 			ElementTagCompound tag = this.item().getStoredTags(inv[0]);
