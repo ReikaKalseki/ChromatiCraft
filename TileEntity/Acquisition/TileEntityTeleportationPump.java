@@ -56,7 +56,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	static {
 		required.addTag(CrystalElement.CYAN, 250);
 		required.addTag(CrystalElement.BLACK, 100);
-		required.addTag(CrystalElement.LIME, 1000);
+		required.addTag(CrystalElement.LIME, 500);
 	}
 
 	public static ElementTagCompound getRequiredEnergy() {
@@ -180,7 +180,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		else {
-			int n = this.hasSpeed() ? 2 : 1;
+			int n = this.hasSpeed() ? 4 : 1;
 			ArrayList<Coordinate> li = fluids.get(selected);
 			if (li != null && !li.isEmpty() && selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
 				for (int i = 0; i < n; i++) {
@@ -188,7 +188,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 					Coordinate c = li.get(index);
 					this.addFluid(selected);
 					c.setBlock(world, Blocks.air);
-					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.5F : 1));
+					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
 					li.remove(index);
 				}
 			}
