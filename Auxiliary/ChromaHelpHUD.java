@@ -92,12 +92,15 @@ public class ChromaHelpHUD {
 	private void renderPanel(int gsc) {
 		Tessellator v5 = Tessellator.instance;
 
+		boolean big = gsc > 2;
+		double sc = big ? 1.375 : 0.75;
+
 		int n1 = gsc;
 		int n2 = 2*gsc;
 
-		int w = rollx*2/gsc;
-		int h = rolly*2/gsc;
-		int hm = ySize*2/gsc;
+		int w = (int)(sc*rollx*2/gsc);
+		int h = (int)(sc*rolly*2/gsc);
+		int hm = (int)(sc*ySize*2/gsc);
 
 		int dx = Minecraft.getMinecraft().displayWidth/n1-w-3;
 		int dy = Minecraft.getMinecraft().displayHeight/n2-hm/2;
@@ -130,11 +133,14 @@ public class ChromaHelpHUD {
 		}
 		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
 		GL11.glPushMatrix();
-		double d = 1D/gsc;//Math.max(0.5, 1D/gsc);
+		boolean big = gsc > 2;
+		double ft = big ? 2 : 1;
+		double d = ft/gsc;//Math.max(0.5, 1D/gsc);
+		double fac = big ? 1.375 : 0.75;
 
-		int w = rollx*2/gsc;
-		int wm = xSize*2/gsc;
-		int hm = ySize*2/gsc;
+		int w = (int)(fac*rollx*2/gsc);
+		int wm = (int)(fac*xSize*2/gsc);
+		int hm = (int)(fac*ySize*2/gsc);
 
 		int n1 = gsc;
 		int n2 = 2*gsc;
@@ -142,7 +148,7 @@ public class ChromaHelpHUD {
 		GL11.glScaled(d, d, d);
 		int dx = (int)((Minecraft.getMinecraft().displayWidth/n1-w-1)/d);
 		int dy = (int)((Minecraft.getMinecraft().displayHeight/n2-hm/2+2)/d);
-		int tw = gsc*wm-4;
+		int tw = (int)((gsc*wm-10)/ft);
 		f.drawSplitString(s, dx, dy, tw, 0xffffff);
 		GL11.glPopMatrix();
 	}
