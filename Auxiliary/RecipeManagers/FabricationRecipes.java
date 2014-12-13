@@ -26,6 +26,9 @@ public class FabricationRecipes {
 	private final Map<KeyedItemStack, ElementTagCompound> data;
 	private static final float SCALE = 0.8F;
 
+	public static final int FACTOR = 100;
+	public static final int POWER2 = 2;
+
 	public static FabricationRecipes recipes() {
 		return instance;
 	}
@@ -33,9 +36,9 @@ public class FabricationRecipes {
 	private FabricationRecipes() {
 		data = ItemMagicRegistry.instance.getMap();
 		for (ElementTagCompound tag : data.values()) {
-			tag.square();
-			tag.square();
-			tag.scale(100);
+			for (int i = 0; i < POWER2; i++)
+				tag.square();
+			tag.scale(FACTOR);
 		}
 	}
 

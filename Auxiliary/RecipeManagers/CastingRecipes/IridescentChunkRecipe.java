@@ -23,10 +23,10 @@ public class IridescentChunkRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.iridCrystal, 0, 2);
 		this.addAuxItem(ChromaStacks.iridCrystal, 0, -2);
 
-		this.addAuxItem(ChromaStacks.elementDust, -2, -2);
-		this.addAuxItem(ChromaStacks.elementDust, 2, -2);
-		this.addAuxItem(ChromaStacks.elementDust, -2, 2);
-		this.addAuxItem(ChromaStacks.elementDust, 2, 2);
+		this.addAuxItem(ChromaStacks.resonanceDust, -2, -2);
+		this.addAuxItem(ChromaStacks.resonanceDust, 2, -2);
+		this.addAuxItem(ChromaStacks.focusDust, -2, 2);
+		this.addAuxItem(ChromaStacks.beaconDust, 2, 2);
 	}
 
 }

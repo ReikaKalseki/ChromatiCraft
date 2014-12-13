@@ -190,6 +190,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 					c.setBlock(world, Blocks.air);
 					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
 					li.remove(index);
+					this.decrFluid(selected);
 				}
 			}
 			Fluid f = tank.getActualFluid();
@@ -197,6 +198,15 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				this.fillBucket(f);
 			}
 		}
+	}
+
+	private void decrFluid(Fluid f) {
+		Integer i = counts.get(f);
+		int amt = i != null ? i.intValue() : 0;
+		if (amt > 1)
+			counts.put(f, amt-1);
+		else
+			counts.remove(i);
 	}
 
 	@Override

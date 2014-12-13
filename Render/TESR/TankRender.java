@@ -318,7 +318,8 @@ public class TankRender extends ChromaRenderBase {
 		v5.startDrawingQuads();
 
 		BlockArray blocks = te.getBlocks();
-		blocks.remove(te.xCoord, te.yCoord, te.zCoord);
+		if (!blocks.hasBlock(te.xCoord, te.yCoord+1, te.zCoord))
+			blocks.remove(te.xCoord, te.yCoord, te.zCoord);
 
 		boolean flip = te.isInvertedFilled();
 		if (flip)
@@ -339,7 +340,10 @@ public class TankRender extends ChromaRenderBase {
 				double min = flip ? 1-o : 0+o;
 				double max = flip ? h+o : h-o;
 
-				v5.setBrightness(f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z));
+				int br = f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
+				if (x == te.xCoord && y == te.yCoord && z == te.zCoord)
+					br = te.worldObj.getBlock(x, y+1, z).getMixedBrightnessForBlock(te.worldObj, x, y+1, z);
+				v5.setBrightness(br);
 
 				if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
 					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());

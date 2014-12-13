@@ -17,8 +17,8 @@ public class ChromaNames {
 
 	};
 
-	private static final String[] fluidNames = {
-		"fluid.chroma", "fluid.endere", "fluid.activechroma"
+	public static final String[] fluidNames = {
+		"fluid.chroma", "fluid.endere", "fluid.potioncrystal"
 	};
 
 	public static final String[] clusterNames = {
@@ -46,10 +46,6 @@ public class ChromaNames {
 	public static final String[] miscNames = {
 		"chromamisc.silktouch", "chromamisc.speed", "chromamisc.efficiency"
 	};
-
-	public static String getFluidName(int i) {
-		return fluidNames[i];
-	}
 
 	private static String getName(String[] names, int i) {
 		return StatCollector.translateToLocal(names[i]);

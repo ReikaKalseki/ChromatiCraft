@@ -16,7 +16,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 public class GuiChromaInfo extends GuiBookSection {
 
 	public GuiChromaInfo(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 220, 256);
+		super(ep, r, 220, 256, false);
 	}
 
 	@Override

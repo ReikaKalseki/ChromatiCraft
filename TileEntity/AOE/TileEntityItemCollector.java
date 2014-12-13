@@ -32,6 +32,9 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 	private int experience = 0;
 	public boolean canIntake = false;
 
+	public static final int MAXRANGE = 16;
+	public static final int MAXYRANGE = 3;
+
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
@@ -113,7 +116,7 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 		if (!energy.containsAtLeast(required))
 			return false;
 		if (e instanceof EntityItem || e instanceof EntityXPOrb) {
-			if (Math.abs(e.posX-x) <= 16 && Math.abs(e.posY-y) <= 3 && Math.abs(e.posZ-z) <= 16) {
+			if (Math.abs(e.posX-x) <= MAXRANGE && Math.abs(e.posY-y) <= MAXYRANGE && Math.abs(e.posZ-z) <= MAXRANGE) {
 				if (e instanceof EntityItem) {
 					EntityItem ei = (EntityItem)e;
 					if (this.canAbsorbItem(ei.getEntityItem())) {

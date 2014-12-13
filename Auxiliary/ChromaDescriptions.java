@@ -16,13 +16,21 @@ import java.util.HashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -219,6 +227,7 @@ public final class ChromaDescriptions {
 	private static void loadNumericalData() {
 		addData(ChromaTiles.REPEATER, TileEntityCrystalPylon.RANGE);
 		addData(ChromaTiles.LASER, TileEntityCrystalLaser.MAX_RANGE);
+		addData(ChromaTiles.BEACON, CrystalElement.RED.displayName);
 
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
@@ -229,5 +238,12 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.FURNACE, TileEntityCrystalFurnace.MULTIPLY);
+		addNotes(ChromaTiles.FABRICATOR, FabricationRecipes.FACTOR, FabricationRecipes.POWER2*2);
+		addNotes(ChromaTiles.BEACON, TileEntityCrystalBeacon.RATIO, TileEntityCrystalBeacon.POWER, TileEntityCrystalBeacon.MAXRANGE);
+		addNotes(ChromaTiles.COLLECTOR, TileEntityCollector.XP_PER_CHROMA);
+		addNotes(ChromaTiles.ITEMCOLLECTOR, TileEntityItemCollector.MAXRANGE, TileEntityItemCollector.MAXYRANGE);
+		addNotes(ChromaTiles.LAMP, TileEntityChromaLamp.FACTOR);
+		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
+		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 	}
 }

@@ -34,6 +34,7 @@ import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -49,6 +50,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
 
 	private boolean hasMultiblock = false;
+
+	public static final int BASE = 1000;
+	public static final int RATIO = 4000;
+	public static final int POWER = 3;
 
 	static {
 		origins.put(CrystalElement.WHITE, new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
@@ -357,7 +362,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	private int getStorageForStep(CrystalElement e, int step) {
-		return 1000+step*step*step*4000;
+		return BASE+ReikaMathLibrary.intpow2(step, POWER)*RATIO;
 	}
 
 	/*

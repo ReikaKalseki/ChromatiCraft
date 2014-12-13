@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,8 +28,11 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public enum ChromaResearch {
 
@@ -75,6 +79,8 @@ public enum ChromaResearch {
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
+	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
+	CHROMA(			ChromaBlocks.CHROMA,											ResearchLevel.RAWEXPLORE),
 	TNT(			ChromaBlocks.TNT,												ResearchLevel.PYLONCRAFT),
 	TANKAUX(		ChromaBlocks.TANK,												ResearchLevel.MULTICRAFT),
 	FENCEAUX(		ChromaBlocks.FENCE,												ResearchLevel.MULTICRAFT),
@@ -141,6 +147,7 @@ public enum ChromaResearch {
 
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
+	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
 
 	private ChromaResearch() {
@@ -216,6 +223,8 @@ public enum ChromaResearch {
 	}
 
 	public boolean playerCanSee(EntityPlayer ep) {
+		if (this.getMachine() != null && this.getMachine().isDummiedOut())
+			return DragonAPICore.isReikasComputer();
 		if (progress != null) {
 			for (int i = 0; i < progress.length; i++) {
 				ProgressStage p = progress[i];
@@ -283,6 +292,14 @@ public enum ChromaResearch {
 			return true;
 		if (this == GROUPS)
 			return true;
+		if (this == RUNES)
+			return true;
+		if (this == TANKAUX)
+			return true;
+		if (this == FENCEAUX)
+			return true;
+		if (this == TNT)
+			return true;
 		if (this == CRYSTALSTONE)
 			return true;
 		return false;
@@ -320,6 +337,15 @@ public enum ChromaResearch {
 			}
 			return li;
 		}
+		if (this == RUNES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaBlocks.RUNE.getStackOf(i));
+			}
+			return li;
+		}
+		if (this == FENCEAUX || this == TNT || this == TANKAUX)
+			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());
 		if (this == CRYSTALSTONE) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaBlocks.PYLONSTRUCT.getNumberMetadatas(); i++) {
@@ -349,6 +375,15 @@ public enum ChromaResearch {
 			rec.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is));
 		}
 		return rec;
+	}
+
+	public int getRecipeIndex(ItemStack is) {
+		ArrayList<CastingRecipe> li = this.getCraftingRecipes();
+		for (int i = 0; i < li.size(); i++) {
+			if (ReikaItemHelper.matchStacks(is, li.get(i).getOutput()))
+				return i;
+		}
+		return 0;
 	}
 
 	public RecipeType getRecipeLevel(int recipe) {
@@ -410,6 +445,12 @@ public enum ChromaResearch {
 				levelMap.addValue(r.level, r);
 			if (!r.isParent)
 				nonParents.add(r);
+			Collection<ItemStack> c = r.getItemStacks();
+			if (c != null) {
+				for (ItemStack is : c) {
+					itemMap.put(is, r);
+				}
+			}
 		}
 	}
 
@@ -455,6 +496,10 @@ public enum ChromaResearch {
 
 	public static List<ChromaResearch> getAllNonParents() {
 		return Collections.unmodifiableList(nonParents);
+	}
+
+	public static ChromaResearch getPageFor(ItemStack is) {
+		return itemMap.get(is);
 	}
 
 }

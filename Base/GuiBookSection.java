@@ -24,10 +24,13 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected final ChromaResearch page;
 
-	protected GuiBookSection(EntityPlayer ep, ChromaResearch r, int x, int y) {
+	protected final boolean NEItrigger;
+
+	protected GuiBookSection(EntityPlayer ep, ChromaResearch r, int x, int y, boolean nei) {
 		super(ep, x, y);
 
 		page = r;
+		NEItrigger = nei;
 
 		if (ChromaOptions.DYNAMICHANDBOOK.getState() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()))
 			this.reloadXMLData();
@@ -56,7 +59,10 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	protected void actionPerformed(GuiButton button) {
 		super.actionPerformed(button);
 		if (button.id == 50) {
-			this.goTo(ChromaGuis.BOOKNAV, null);
+			if (NEItrigger)
+				player.closeScreen();
+			else
+				this.goTo(ChromaGuis.BOOKNAV, null);
 			return;
 		}
 		else if (button.id == 13) {

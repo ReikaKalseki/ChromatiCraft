@@ -306,7 +306,12 @@ public enum ChromaTiles {
 	}
 
 	public double getMinX(TileEntityChromaticBase te) {
-		return 0;
+		switch(this) {
+		case CHARGER:
+			return 0.125;
+		default:
+			return 0;
+		}
 	}
 
 	public double getMinY(TileEntityChromaticBase te) {
@@ -314,11 +319,21 @@ public enum ChromaTiles {
 	}
 
 	public double getMinZ(TileEntityChromaticBase te) {
-		return 0;
+		switch(this) {
+		case CHARGER:
+			return 0.125;
+		default:
+			return 0;
+		}
 	}
 
 	public double getMaxX(TileEntityChromaticBase te) {
-		return 1;
+		switch(this) {
+		case CHARGER:
+			return 0.875;
+		default:
+			return 1;
+		}
 	}
 
 	public double getMaxY(TileEntityChromaticBase te) {
@@ -333,7 +348,12 @@ public enum ChromaTiles {
 	}
 
 	public double getMaxZ(TileEntityChromaticBase te) {
-		return 1;
+		switch(this) {
+		case CHARGER:
+			return 0.875;
+		default:
+			return 1;
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

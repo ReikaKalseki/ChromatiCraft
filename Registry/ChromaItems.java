@@ -182,7 +182,7 @@ public enum ChromaItems implements ItemEnum {
 		case BUCKET:
 			//if (meta >= 2)
 			//	meta = 2;
-			return StatCollector.translateToLocal(ChromaNames.getFluidName(meta))+" "+this.getBasicName();
+			return StatCollector.translateToLocal(ChromaNames.fluidNames[meta])+" "+this.getBasicName();
 		case SHARD:
 			String s = meta >= 16 ? /*EnumChatFormatting.GREEN.toString()*/"Boosted " : "";
 			return s+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
@@ -251,7 +251,7 @@ public enum ChromaItems implements ItemEnum {
 			return 1;
 		switch(this) {
 		case BUCKET:
-			return 2;
+			return ChromaNames.fluidNames.length;
 		case PLACER:
 			return ChromaTiles.TEList.length;
 		case SHARD:

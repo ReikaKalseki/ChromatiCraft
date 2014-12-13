@@ -11,7 +11,10 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -60,6 +63,16 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 		//}
 		this.setBounds(box, x, y, z);
 		return box;
+	}
+
+	@Override
+	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		if (e instanceof EntityLivingBase) {
+			if (c == ChromaTiles.CHARGER && ((EntityLivingBase)e).getHealth() > 1) {
+				e.attackEntityFrom(DamageSource.generic, 0.25F);
+			}
+		}
 	}
 
 }

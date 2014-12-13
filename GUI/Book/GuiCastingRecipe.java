@@ -18,6 +18,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -39,10 +41,12 @@ public class GuiCastingRecipe extends GuiBookSection {
 	private final ArrayList<CastingRecipe> recipes;
 	private int index = 0;
 	private int recipeTextOffset = 0;
+	private boolean centeredMouse = false;
 
-	public GuiCastingRecipe(EntityPlayer ep, ArrayList<CastingRecipe> out) {
-		super(ep, null, 256, 220);
+	public GuiCastingRecipe(EntityPlayer ep, ArrayList<CastingRecipe> out, int offset, boolean nei) {
+		super(ep, null, 256, 220, nei);
 		recipes = new ArrayList(out);
+		index = offset;
 	}
 
 	private CastingRecipe getActiveRecipe() {
@@ -65,6 +69,11 @@ public class GuiCastingRecipe extends GuiBookSection {
 		if (subpage == 0 && this.getActiveRecipe().getItemCounts().size() > 10) {
 			buttonList.add(new ImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class));
 			buttonList.add(new ImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class));
+		}
+
+		if (NEItrigger && !centeredMouse) {
+			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
+			centeredMouse = true;
 		}
 	}
 

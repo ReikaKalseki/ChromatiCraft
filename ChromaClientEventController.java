@@ -14,12 +14,14 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -39,15 +41,20 @@ import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -62,6 +69,27 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent
+	public void interceptNEI(NEIRecipeCheckEvent evt) {
+		if (this.loadLexiconRecipe(evt.gui, evt.getItem()))
+			evt.setCanceled(true);
+	}
+
+	private boolean loadLexiconRecipe(GuiContainer gui, ItemStack is) {
+		if (is != null && is.getItem() != null) {
+			UniqueIdentifier uid = GameRegistry.findUniqueIdentifierFor(is.getItem());
+			if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
+				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+				ChromaResearch r = ChromaResearch.getPageFor(is);
+				if (r != null && r.playerCanSee(ep) && r.isCrafting()) {
+					ep.openGui(ChromatiCraft.instance, ChromaGuis.RECIPE.ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@SubscribeEvent

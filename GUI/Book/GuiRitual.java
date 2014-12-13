@@ -28,7 +28,7 @@ public class GuiRitual extends GuiBookSection {
 	private final Chromabilities ability;
 
 	public GuiRitual(EntityPlayer ep, Chromabilities r) {
-		super(ep, null, 256, 220);
+		super(ep, null, 256, 220, false);
 		ability = r;
 	}
 

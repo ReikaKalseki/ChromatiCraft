@@ -160,10 +160,12 @@ public final class ChromaResearchManager {
 	}
 
 	private NBTTagList getNBTFragments(EntityPlayer ep) {
+		String key = "fragments";
 		NBTTagCompound tag = this.getNBT(ep);
-		if (!tag.hasKey("fragments"))
-			tag.setTag("fragments", new NBTTagList());
-		NBTTagList li = tag.getTagList("fragments", NBTTypes.STRING.ID);
+		if (!tag.hasKey(key))
+			tag.setTag(key, new NBTTagList());
+		NBTTagList li = tag.getTagList(key, NBTTypes.STRING.ID);
+		tag.setTag(key, li);
 		return li;
 	}
 

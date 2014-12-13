@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 public abstract class GuiDescription extends GuiBookSection {
 
 	protected GuiDescription(EntityPlayer ep, ChromaResearch r, int x, int y) {
-		super(ep, r, x, y);
+		super(ep, r, x, y, false);
 	}
 
 	@Override

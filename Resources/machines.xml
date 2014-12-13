@@ -70,7 +70,7 @@
 	</rift>
 	<tank>
 		<desc>
-			Items are easy to store en masse - particularly after you found a way to digitize them and store them in patterns on some strange purple crystals - but too often you find yourself out of storage for fluids that you collect or produce. Tanks of all sizes are already available to you, but even the largest ones, these mysterious metal boxes that only seem structurally stable in a few preset sizes, hold a few tens of thousands of buckets. By trapping a link to the void hole inside a glass frame and adding large quantities of fluid energy, you have a multiblock tank that can quickly reach enormous capacities.
+			Items are easy to store en masse - particularly after you found a way to store them in patterns on some strange purple crystals - but too often you find yourself out of storage for fluids that you collect or produce. Tanks of all sizes are already available to you, but even the largest ones, these mysterious metal boxes that only seem structurally stable in a few preset sizes, hold a few tens of thousands of buckets. By trapping a link to the void hole inside a glass frame and adding large quantities of fluid energy, you have a multiblock tank that can quickly reach enormous capacities.
 		</desc>
 		<note>
 			Capacity is approximately %d*n^2 buckets, where n is the number of blocks in the tank
@@ -145,132 +145,136 @@
 	</itemrift>
 	<crystal>
 		<desc>
-			Once you started to do a lot of pylon-driven crafting, or started to charge yourself with large quantities of crystal energy, you made a crucial observation: Pylons are not infinite, but lose their color as they are drained. Granted, they do recharge, but slowly - though planting similarly colored trees around them helps a bit. However, you have found that these crystals can dramatically increase the charging speed of a pylon, with a full, balanced ring of eight speeding it up enormously.
+			Once you started to do a lot of pylon-driven crafting, or started to charge yourself with large quantities of crystal energy, you made a crucial observation: Pylons are not infinite, but lose their color as they are drained. Granted, they do recharge, but slowly - though planting similarly colored trees around them helps a bit. However, you have found that these crystals, being raw elemental energy cast into crystal form, can dramatically increase the charging speed of a pylon, with a full, balanced ring of eight speeding it up enormously.
 		</desc>
 		<note>
 			
 		</note>
 	</crystal>
-	<name>
+	<infuser>
 		<desc>
-			
+			Tossing raw shards into pools of chroma is one thing, but the purified shards you made do not seem to respond to such a crude attempt at infusion. A better strategy would be to build a dedicated receptacle for the items, and surround it with a moat of chroma, thus setting up a vortex to funnel the energy into the items.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</infuser>
+	<fabricator>
 		<desc>
-			
+			You have already seen how many items contain trace amounts of various crystal elements, leading you to wonder if the reverse is also true. After much experimentation, you devise an odd contraption that collects crystal energy on large paddles, and funnels it to the center, where it can be formed into an item. You do of course require one item first, as a sort of blueprint, and you note that only some more simplistic items can be fabricated.
+		</desc>
+		<note>
+			Requires %dn^%d lumens per unit naturally present on the item
+		</note>
+	</fabricator>
+	<beacon>
+		<desc>
+			After an unfortunate encounter with an engine intake, you have been desperately seeking a way to protect yourself from the more hazardous situations you always seem to end up in. Recalling the enormous protective power of %s crystal energy to protect, you try building a beacon that radiates the energy into the air. As long as it stays supplied with energy - not an easy task, given the large energy expenditure - you may well be impossible to kill.
+		</desc>
+		<note>
+			Uses %dn^%d lumens per half-heart of damage
+			Max range %d blocks
+		</note>
+	</beacon>
+	<enchanting>
+		<desc>
+			Enchanting has always been a random and infurating process. Spend a week collecting experience and you might get Bane of Arthropods I, or you might be lucky enough to get Fortune III and Efficiency V off of a few levels. Rather than tear your hair out trying to spend your experience efficiently, you recall the liquid chroma, which, being concentrated experience, may allow you not only automatic enchanting, but to allow you more fine control over the actual enchantments as well.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</enchanting>
+	<chromaflower>
 		<desc>
-			
+			You may not be that guy that builds 9x9 cobblestone boxes for a house, but nonetheless your ability to make your territory visually appealing has rested more on access to fancy decorations than raw architectural design. With that in mind, you work on enhancing a lowly flower with crystal energy. The end result is certainly interesting, with its gently pulsing colors, but it may also have a functional use as well.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</chromaflower>
+	<collector>
 		<desc>
-			
+			Being able to convert and concentrate experience into chroma is one thing, but until now you have been at a loss as to how to actually do that. Fortunately for you, you stumbed upon the answer while fiddling with some crystal shards; running experience over them, either draining off yourself or pumped in in liquid form, seems to catalyze the reaction.
+		</desc>
+		<note>
+			%d xp = 1 mB of Chroma
+		</note>
+	</collector>
+	<brewer>
+		<desc>
+			Everyone loves making potions...OK, no. Between collecting a hideous red weed that seems to grow so slowly you could mine a chunk before it grew, to fiddling with arcane procedures that seem designed as a last-resort replacement for something even worse, to burning through valuable ingredients for effects that last mere minutes - and at the expense of a boosted effect too! - nobody sane enjoys this process. At the very least, maybe, you can forgo most of the process by using the energy from the crystal shards instead, making the process actually worth your time.
+		</desc>
+		<note>
+			Standard shards yield Level I 3:00 potions
+			Boosted shards yield Level II 8:00 potions
+		</note>
+	</brewer>
+	<ritual>
+		<desc>
+			You have heard mention of all these special abilities you can gain by imbuing yourself with large quantities of crystal energy, but you need some means to carry out the infusion. After an incident that shall never be mentioned again - and if anyone asks, no, you do not have anything to do with the crater where that village used to be - you recall the shards' infusion process. If it worked for items, maybe it will work for you as well.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</ritual>
+	<table>
 		<desc>
-			
+			Wooden crafting tables, useful as they are, have their limitations. To that end, you have found a way to affix crystal plating to a table, allowing it to store and process crystal energy, this allowing you to craft items that require magical interaction. Hopefully this one will turn out better than your other design, given that this one is not asking you to surround it with skulls or face the consequences of lightning, explosions, and noxious purple gas.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</table>
+	<itemcollector>
 		<desc>
-			
+			Despite your best attempts, you have not been able to totally avert the need for farming, and your mountain of grey seeds and beige goo can attest to that. Unfortunately, farms tend to scatter items far and wide, leading to the need for either powerful item collection systems - which have their own problems - or a problem with so many items on the ground you find it hard to move. The item collector at last is an answer to this problem, being able to collect items anywhere in its range as soon as they are created.
+		</desc>
+		<note>
+			Range: +/- %d blocks horizontally, +/- %d blocks vertically
+		</note>
+	</itemcollector>
+	<aishutdown>
+		<desc>
+			Animal farms are an eternal headache. Between cows' endless noise and chickens' tendency to get out of any enclosure you try to keep them in, you would gleefully exterminate every one of them if not for the fact that you need a supply of leather, feathers, wool, and meat. If there was some way to stun them, to freeze their thought processes, this would probably help a great deal.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</aishutdown>
+	<aspect>
 		<desc>
-			
+			Aside from their use as impromptu musical instruments, those jars of colored liquids you get when melting down random items have an actual use; When you decided to pursue another branch of magic, you found yourself in need of endless numbers of them. The problem is, the process of melting items into raw essentia is slow and hard to automate. With your knowledge of crystal energy, however, you have finally made a device capable of collecting crystal energy and converting it into essentia, though not exactly cheaply.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</aspect>
+	<lamp>
 		<desc>
-			
+			The standard method of keeping unwanted creatures away is to light the area, but that is often difficult or ugly to do, and the best designs can be rendered worthless with one block left a bit too dark. With that in mind, you seek to concentrate crystal energy, being luminous itself, in some sort of lamp to keep the mobs at bay.
 		</desc>
 		<note>
-			
+			Range: %d for each element in the lamp
 		</note>
-	</name>
-	<name>
+	</lamp>
+	<powertree>
 		<desc>
-			
+			Even with power crystals in place, pylons still remain incapable of handling very heavy load. That, combined with the tedium of venturing to them every time you need to recharge yourself, leads you to dream of a way to store energy in larger quantities, effectively a battery. Obviously a simple box would not be the correct approach, but maybe if you built some sort of structure, it could grow organically. As long as the energy remains pure...
 		</desc>
 		<note>
-			
+			Capacity: %d+%dn^%d, where n is the number of leaf blocks
 		</note>
-	</name>
-	<name>
+	</powertree>
+	<lampcontrol>
 		<desc>
-			
+			You often find yourself in need of controllable lighting, but redstone, even when you figured out how to alloy it into iron and stick it on the ceiling, is clumsy and requires false floors and ceiling in order to hide unslightly wiring. However, the magic aura, which you can control, may allow you to manipulate many separate lamps at a distance, obviating that need.
 		</desc>
 		<note>
-			
+			Max Range: %d
+			Max Channel: %d
+			Can be controlled manually, with redstone, by the charge state of an RF battery, or with shaft power
 		</note>
-	</name>
-	<name>
-		<desc>
-			
-		</desc>
-		<note>
-			
-		</note>
-	</name>
-	<name>
-		<desc>
-			
-		</desc>
-		<note>
-			
-		</note>
-	</name>
-	<name>
-		<desc>
-			
-		</desc>
-		<note>
-			
-		</note>
-	</name>
-	<name>
-		<desc>
-			
-		</desc>
-		<note>
-			
-		</note>
-	</name>
-	<name>
-		<desc>
-			
-		</desc>
-		<note>
-			
-		</note>
-	</name>
+	</lampcontrol>
 	<name>
 		<desc>
 			

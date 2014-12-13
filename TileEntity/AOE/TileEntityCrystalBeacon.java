@@ -30,6 +30,10 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
+	public static final int RATIO = 100;
+	public static final int POWER = 2;
+	public static final int MAXRANGE = 32;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.BEACON;
@@ -54,26 +58,6 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 			this.requestEnergy(e, space);
 		}
 	}
-	/*
-	@SideOnly(Side.CLIENT)
-	private void spawnParticles(World world, int x, int y, int z) {
-		double ang = Math.toRadians((this.getTicksExisted()*4)%360);
-		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			//int da = 120;
-			//int n = 360/da;
-			//for (int i = 0; i < 360; i += da) {
-			double r = 0.75;
-			double a = ang+i*10;
-			double dx = x+0.5+r*Math.sin(a);
-			double dz = z+0.5+r*Math.cos(a);
-			double dy = y+(((this.getTicksExisted()+i*20)/4)%80)/40D;
-
-			EntityGlobeFX fx = new EntityGlobeFX(e, world, dx, dy, dz, 0, 0, 0);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
-		//}
-	}*/
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
@@ -94,7 +78,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
 		for (WorldLocation loc : cache) {
-			if (Math.abs(ep.posY-loc.yCoord) <= 8 && loc.getDistanceTo(ep) <= 32) {
+			if (Math.abs(ep.posY-loc.yCoord) <= 8 && loc.getDistanceTo(ep) <= MAXRANGE) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity();
 				return te.isPlacer(ep) && te.prevent(dmg);
 			}
@@ -103,7 +87,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Brea
 	}
 
 	private boolean prevent(float dmg) {
-		int amt = (int)(dmg*dmg*100);
+		int amt = (int)(RATIO*Math.pow(dmg, POWER));
 		if (energy.containsAtLeast(CrystalElement.RED, amt)) {
 			this.drainEnergy(CrystalElement.RED, amt);
 			return true;

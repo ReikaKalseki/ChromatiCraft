@@ -123,6 +123,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						Block id = world.getBlock(dx, dy, dz);
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+						this.removeFound(world, dx, dy, dz, id, meta2);
 						if (id instanceof SpecialOreBlock) {
 							this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
 						}
@@ -155,23 +156,22 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						Block id = world.getBlock(dx, dy, dz);
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+						boolean add = false;
 						if (ReikaBlockHelper.isOre(id, meta2)) {
 							//ores.addBlockCoordinate(dx, dy, dz);
-							coords.add(new Coordinate(dx, dy, dz));
-							this.addFound(world, dx, dy, dz, id, meta2);
+							add = coords.add(new Coordinate(dx, dy, dz));
 						}
 						else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-							coords.add(new Coordinate(dx, dy, dz));
-							this.addFound(world, dx, dy, dz, id, meta2);
+							add = coords.add(new Coordinate(dx, dy, dz));
 						}
 						else if (id instanceof MinerBlock && ((MinerBlock)id).isMineable(meta2)) {
-							coords.add(new Coordinate(dx, dy, dz));
-							this.addFound(world, dx, dy, dz, id, meta2);
+							add = coords.add(new Coordinate(dx, dy, dz));
 						}
 						else if (this.shouldMine(id, meta2)) {
-							coords.add(new Coordinate(dx, dy, dz));
-							this.addFound(world, dx, dy, dz, id, meta2);
+							add = coords.add(new Coordinate(dx, dy, dz));
 						}
+						if (add)
+							this.addFound(world, dx, dy, dz, id, meta2);
 						this.updateReadPosition();
 						if (readY >= worldObj.getActualHeight()) {
 							digReady = true;
@@ -191,6 +191,8 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	private boolean shouldMine(Block id, int meta2) {
 		if (id == Blocks.glowstone)
 			return true;
+		if (id == Blocks.mob_spawner) //need an item
+			;//return true;
 		return false;
 	}
 
@@ -200,6 +202,30 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 
 	public boolean isReady() {
 		return digReady;
+	}
+
+	private void removeFound(World world, int x, int y, int z, Block b, int meta) {
+		ItemStack is = new ItemStack(b, 1, meta);
+		if (b instanceof SpecialOreBlock) {
+			is = ((SpecialOreBlock)b).getDisplayItem(world, x, y, z);
+		}
+		else if (ReikaBlockHelper.isOre(b, meta)) {
+			ReikaOreHelper ore = ReikaOreHelper.getEntryByOreDict(is);
+			ModOreList mod = ModOreList.getModOreFromOre(is);
+			if (ore != null) {
+				is = ore.getOreBlock();
+			}
+			else if (mod != null && mod != ModOreList.CERTUSQUARTZ) {
+				is = mod.getFirstOreBlock();
+			}
+		}
+		Integer i = found.get(is);
+		if (i == null)
+			i = 0;
+		if (i > 1)
+			found.put(is, i-1);
+		else
+			found.remove(is);
 	}
 
 	private void addFound(World world, int x, int y, int z, Block b, int meta) {

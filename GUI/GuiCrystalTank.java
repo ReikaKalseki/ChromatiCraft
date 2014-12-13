@@ -44,7 +44,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 		if (f != null) {
 			if (api.isMouseInBox(j+24, j+151, k+16, k+115)) {
 				String s = String.format("%s: %d/%d", f.getLocalizedName(), Math.round(tank.getLevel()/1000F), tank.getCapacity()/1000);
-				api.drawTooltip(fontRendererObj, s);
+				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
 			}
 		}
 		String i = this.getFullTexturePath();

@@ -47,7 +47,7 @@ public class GuiStructure extends GuiBookSection {
 	private int tick = 0;
 
 	public GuiStructure(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220);
+		super(ep, r, 256, 220, false);
 	}
 
 	@Override

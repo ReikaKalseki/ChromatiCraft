@@ -33,6 +33,9 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	private static final MultiMap<Integer, LightSource> map = new MultiMap();
 	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap();
 
+	public static final int MAXRANGE = 64;
+	public static final int MAXCHANNEL = 999;
+
 	public static enum Control {
 		MANUAL(),
 		REDSTONE(),
@@ -237,7 +240,7 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	}
 
 	private static int getRange() {
-		return 64;
+		return MAXRANGE;
 	}
 
 	@Override

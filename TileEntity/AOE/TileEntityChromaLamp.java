@@ -24,6 +24,8 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Bre
 
 	private static final HashMap<WorldLocation, Integer> cache = new HashMap();
 
+	public static final int FACTOR = 8;
+
 	private final ElementTagCompound colors = new ElementTagCompound();
 
 	@Override
@@ -42,7 +44,7 @@ public class TileEntityChromaLamp extends TileEntityChromaticBase implements Bre
 	}
 
 	public int getRange() {
-		return 8*colors.tagCount();
+		return FACTOR*colors.tagCount();
 	}
 
 	@Override

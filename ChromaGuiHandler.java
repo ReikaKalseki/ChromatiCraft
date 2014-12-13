@@ -206,7 +206,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case RESOURCEDESC:
 			return new GuiResourceItem(player, ChromaResearch.researchList[x]);
 		case RECIPE:
-			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes());
+			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes(), y, z > 0);
 		case RITUAL:
 			return new GuiRitual(player, ChromaResearch.researchList[x].getAbility());
 		case ABILITYDESC:
