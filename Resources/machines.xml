@@ -94,14 +94,14 @@
 			Stores up to %d lumens of each color
 		</note>
 	</charger>
-	<lily>
+	<heatlily>
 		<desc>
 			You, in your (less than) infinite wisdom, decided to make a sugarcane farm in a snow biome. It worked perfectly...until the water froze and your sugarcane rotted on the ground. You need some way to heat the water and stave off the cold in a small area around the farm. Maybe if you used some essence of those mechanical-sounding fire creatures from the Nether bridges, you could make a plant that not only served that purpose, but was aesthetically pleasing as well. This should also help prevent your high-drop landing pools from freezing over. (Ow.)
 		</desc>
 		<note>
 			
 		</note>
-	</lily>
+	</heatlily>
 	<ticker>
 		<desc>
 			You spent quite a lot of effort making the perfect set of tools; some are made of a blend of different materials, including some exotic alloys (a hard purple one seems particularly useful). Fortunately for you, you can put moss all over the tool and this (somehow) makes it regenerate its durability. The only problem is, the moss seems to be triggered by your body heat, so sticking the tools in a chest to let them repair does you little good. If you could somehow concentrate life energy, along with some amount of time, you may be able to construct something to achieve the same effect, and possibly faster as well.
@@ -176,14 +176,14 @@
 			Max range %d blocks
 		</note>
 	</beacon>
-	<enchanting>
+	<enchanter>
 		<desc>
 			Enchanting has always been a random and infurating process. Spend a week collecting experience and you might get Bane of Arthropods I, or you might be lucky enough to get Fortune III and Efficiency V off of a few levels. Rather than tear your hair out trying to spend your experience efficiently, you recall the liquid chroma, which, being concentrated experience, may allow you not only automatic enchanting, but to allow you more fine control over the actual enchantments as well.
 		</desc>
 		<note>
 			
 		</note>
-	</enchanting>
+	</enchanter>
 	<chromaflower>
 		<desc>
 			You may not be that guy that builds 9x9 cobblestone boxes for a house, but nonetheless your ability to make your territory visually appealing has rested more on access to fancy decorations than raw architectural design. With that in mind, you work on enhancing a lowly flower with crystal energy. The end result is certainly interesting, with its gently pulsing colors, but it may also have a functional use as well.
