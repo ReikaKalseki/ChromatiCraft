@@ -50,12 +50,12 @@ import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
+import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
 import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
 import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
-import Reika.ChromatiCraft.GUI.Book.GuiChromaInfo;
+import Reika.ChromatiCraft.GUI.Book.GuiCraftableDesc;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
-import Reika.ChromatiCraft.GUI.Book.GuiResourceItem;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
@@ -203,8 +203,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
 		case TOOLDESC:
 			return new GuiToolDescription(player, ChromaResearch.researchList[x]);
-		case RESOURCEDESC:
-			return new GuiResourceItem(player, ChromaResearch.researchList[x]);
+		case BASICDESC:
+			return new GuiCraftableDesc(player, ChromaResearch.researchList[x]);
 		case RECIPE:
 			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes(), y, z > 0);
 		case RITUAL:
@@ -212,7 +212,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case ABILITYDESC:
 			return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
 		case INFO:
-			return new GuiChromaInfo(player, ChromaResearch.researchList[x]);
+			return new GuiBasicInfo(player, ChromaResearch.researchList[x]);
 		case STRUCTURE:
 			return new GuiStructure(player, ChromaResearch.researchList[x]);
 		default:

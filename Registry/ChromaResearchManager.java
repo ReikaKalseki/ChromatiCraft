@@ -213,17 +213,17 @@ public final class ChromaResearchManager {
 			case ENERGYEXPLORE:
 				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.PYLON);
 			case BASICCRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
+				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.CRYSTALS); //for now
 			case RUNECRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
+				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
 			case MULTICRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
+				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
 			case PYLONCRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
+				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
 			case NETWORKING:
-				return true; //for now
+				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
 			case ENDGAME:
-				return true; //for now
+				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
 			default:
 				return false;
 			}
@@ -231,6 +231,14 @@ public final class ChromaResearchManager {
 
 		public String getDisplayName() {
 			return StatCollector.translateToLocal("chromaresearch."+this.name().toLowerCase());
+		}
+
+		public ResearchLevel pre() {
+			return this.ordinal() > 0 ? levelList[this.ordinal()-1] : this;
+		}
+
+		public ResearchLevel post() {
+			return this.ordinal() < levelList.length-1 ? levelList[this.ordinal()+1] : this;
 		}
 	}
 

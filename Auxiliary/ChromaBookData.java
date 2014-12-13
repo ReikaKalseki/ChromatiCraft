@@ -16,6 +16,9 @@ import java.util.Map;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
@@ -57,6 +60,7 @@ public class ChromaBookData {
 				}
 			}
 		}
+		GL11.glColor4f(1, 1, 1, 1);
 		if (subpage == 1) {
 			RuneShapeRenderer.instance.render(((TempleCastingRecipe)c).getRunes(), posX+128, posY+110);
 		}

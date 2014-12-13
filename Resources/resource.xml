@@ -1,5 +1,41 @@
 ﻿<?xml version="1.0"?>
 <resource>
+	<shards>
+		Crystals cannot be easily harvested; when they are broken, they drop shards, which only have traces of the magic contained in the original crystal. Nonetheless, they are your primary substrate for other materials.
+	</shards>
+	<dusts>
+		As you have become better acquainted with the nature of the crystal elements, you have become able to notice plants scattered around the landscape. No doubt they hold some of the secrets you need.
+	</dusts>
+	<groups>
+		Rarely are individual elements used in final construction procedures; more often, several or even all colors need to work in harmony. To accomplish this, you will find yourself joining, fusing, and otherwise restructuring the shards.
+	</groups>
+	<ores>
+		With your increased knowledge and understanding, patches of rock that you once mistook for smooth stone now reveal themselves to you. Harvesting these is of obvious importance.
+	</ores>
+	<crystalstone>
+		All the magic structures you have found thus far have been built of a smooth, dark stone, so it must be able to channel and conduct crystal energy. To that end, all of your constructions will probably use this material.
+	</crystalstone>
+	<seed>
+		Searching for and harvesting crystals is often a tedious task; however, you have found a way to imbue the magic off of the shards onto a plant, turning it into a brillant crystal flower that can help supplement your shard requirements.
+	</seed>
+	<fragment>
+		Scattered around the world, and occasionally dropped by those investigating the pylons too closely, are scraps of information on the fundamental elements of the universe or its applications. You will likely find those useful later.
+	</fragment>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>

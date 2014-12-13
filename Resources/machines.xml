@@ -197,7 +197,7 @@
 			Being able to convert and concentrate experience into chroma is one thing, but until now you have been at a loss as to how to actually do that. Fortunately for you, you stumbed upon the answer while fiddling with some crystal shards; running experience over them, either draining off yourself or pumped in in liquid form, seems to catalyze the reaction.
 		</desc>
 		<note>
-			%d xp = 1 mB of Chroma
+			%d XP = 1 mB of Chroma
 		</note>
 	</collector>
 	<brewer>

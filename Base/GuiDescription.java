@@ -31,7 +31,7 @@ public abstract class GuiDescription extends GuiBookSection {
 		super.drawScreen(x, y, f);
 
 		boolean disable = page.isConfigDisabled();
-		int c = disable ? 0x777777 : 0xffffff;
+		int c = disable ? 0xff7777 : 0xffffff;
 		int px = posX+descX;
 		if (subpage == 0 || page.sameTextAllSubpages()) {
 			fontRendererObj.drawSplitString(String.format("%s", page.getData()), px, posY+descY, 242, c);
@@ -47,7 +47,7 @@ public abstract class GuiDescription extends GuiBookSection {
 	}
 
 	@Override
-	protected final int getMaxSubpage() {
+	protected int getMaxSubpage() {
 		return 1;
 	}
 

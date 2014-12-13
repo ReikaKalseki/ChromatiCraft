@@ -1,5 +1,23 @@
 ﻿<?xml version="1.0"?>
 <info>
+	<elements>
+		You quickly realized that the magic elements that shape and drive the world are divided into sixteen types, each with an associated color.
+	</elements>
+	<crystals>
+		Crystal energy, if it reaches a critical density, seems to coalesce and crystallize, forming interesting structures that radiate an aura related to the crystal. Aside from their obvious utility as a source of mild effect boosts, their stored crystal energy is clearly going to be invaluable. One wonders how they handle the corrupting influence of the Nether...
+	</crystals>
+	<pylons>
+		At points where the energy field seems to be the strongest, you tend to find dark stone structures adorned with sparkling aura and topped with a beacon that visibly and audibly radiates raw power. Unfiltered and uncontained, they seem too powerful and unstable - a lesson you quickly learned - to be easily used, but you suspect that later on they will be a key component of your research.
+	</pylons>
+	<transmission>
+		Pylons are the power sources, radiating crystal energy of their color. It stands to reason that you will have or make receivers requiring that energy. How, though, are you to transport that energy over the long distances between the pylons and where it is needed?
+	</transmission>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>

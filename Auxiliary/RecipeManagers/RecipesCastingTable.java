@@ -19,12 +19,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AspectFormerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.AuraCleanerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.BreakerRecipe;
@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.FiberRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.HeatLilyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InfuserRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InvTickerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.IridescentCrystalRecipe;
@@ -166,6 +167,14 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "eGe", "OEO", "BOB", 'e', Items.emerald, 'O', Blocks.obsidian, 'B', ReikaItemHelper.stoneBricks, 'E', Blocks.enchanting_table, 'G', Items.gold_ingot);
 		this.addRecipe(new EnchanterRecipe(is, sr));
 
+		is = ChromaTiles.BREWER.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "S S", "ScS", "CCC", 'C', Blocks.stone, 'c', Items.cauldron, 'S', ChromaItems.SHARD.getAnyMetaStack());
+		this.addRecipe(new CastingRecipe(is, sr));
+
+		is = ChromaTiles.CHROMAFLOWER.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LFL", "GsG", 'L', Blocks.leaves, 'F', Blocks.red_flower, 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getAnyMetaStack());
+		this.addRecipe(new CastingRecipe(is, sr));
+
 		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CastingRecipe(ChromaStacks.crystalMirror, sr));
 
@@ -209,11 +218,11 @@ public class RecipesCastingTable {
 		this.addRecipe(new HeatLilyRecipe(is, sr));
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SSS", "CSC", "CCC", 'C', Blocks.cobblestone, 'S', new ItemStack(ChromaItems.SHARD.getItemInstance(), 1, OreDictionary.WILDCARD_VALUE));
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SSS", "CSC", "CCC", 'C', Blocks.cobblestone, 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new RitualTableRecipe(is, sr));
 
 		is = ChromaTiles.COLLECTOR.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "S S", "ScS", "CCC", 'C', Blocks.stone, 'c', Items.cauldron, 'S', new ItemStack(ChromaItems.SHARD.getItemInstance(), 1, OreDictionary.WILDCARD_VALUE));
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SES", "ScS", "CCC", 'E', Items.ender_eye, 'C', Blocks.stone, 'c', Blocks.glowstone, 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new CastingRecipe(is, sr));
 
 		this.addRecipe(new SpawnerReprogrammerRecipe(ChromaTiles.REPROGRAMMER.getCraftedProduct(), ChromaStacks.transformCore));
@@ -249,6 +258,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new PylonFinderRecipe(is, sr));
 
 		this.addRecipe(new BatteryRecipe(ChromaTiles.POWERTREE.getCraftedProduct(), ChromaStacks.crystalStar));
+
+		this.addRecipe(new InvTickerRecipe(ChromaTiles.TICKER.getCraftedProduct(), new ItemStack(Blocks.chest)));
+
+		is = ChromaItems.WARP.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " g ", "sps", "sss", 's', ChromaStacks.getShard(CrystalElement.WHITE), 'g', Blocks.glowstone, 'p', Items.potionitem);
+		this.addRecipe(new AuraCleanerRecipe(is, sr));
 
 		this.addRecipe(new MinerRecipe(ChromaTiles.MINER.getCraftedProduct(), ChromaStacks.energyCore));
 

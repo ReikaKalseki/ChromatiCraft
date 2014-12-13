@@ -51,6 +51,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.ItemEnum;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -279,7 +280,7 @@ public enum ChromaItems implements ItemEnum {
 		case STORAGE:
 			return ChromaNames.storageNames.length;
 		case FRAGMENT:
-			return ChromaResearch.researchList.length;
+			return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

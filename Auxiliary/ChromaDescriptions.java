@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -48,19 +49,22 @@ public final class ChromaDescriptions {
 	public static final String DESC_SUFFIX = ":desc";
 	public static final String NOTE_SUFFIX = ":note";
 
-	private static HashMap<ChromaResearch, String> data = new HashMap<ChromaResearch, String>();
-	private static HashMap<ChromaResearch, String> notes = new HashMap<ChromaResearch, String>();
+	private static final HashMap<ChromaResearch, String> data = new HashMap<ChromaResearch, String>();
+	private static final HashMap<ChromaResearch, String> notes = new HashMap<ChromaResearch, String>();
 
-	private static HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
-	private static HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
-	private static HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
-	private static HashMap<ChromaResearch, Object[]> abilityData = new HashMap<ChromaResearch, Object[]>();
-	private static HashMap<ChromaResearch, Object[]> hoverData = new HashMap<ChromaResearch, Object[]>();
+	private static final HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
+	private static final HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
+	private static final HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
+	private static final HashMap<ChromaResearch, Object[]> abilityData = new HashMap<ChromaResearch, Object[]>();
+	private static final HashMap<String, Object[]> hoverData = new HashMap<String, Object[]>();
+	private static final HashMap<CrystalElement, Object[]> elementData = new HashMap<CrystalElement, Object[]>();
 
-	private static HashMap<String, String> hoverText = new HashMap<String, String>();
+	private static final HashMap<String, String> hoverText = new HashMap<String, String>();
+	private static final EnumMap<CrystalElement, String> elementText = new EnumMap(CrystalElement.class);
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
 	private static final XMLInterface machines = new XMLInterface(ChromatiCraft.class, PARENT+"machines.xml", mustLoad);
+	private static final XMLInterface elements = new XMLInterface(ChromatiCraft.class, PARENT+"elements.xml", mustLoad);
 	private static final XMLInterface blocks = new XMLInterface(ChromatiCraft.class, PARENT+"blocks.xml", mustLoad);
 	private static final XMLInterface abilities = new XMLInterface(ChromatiCraft.class, PARENT+"abilities.xml", mustLoad);
 	private static final XMLInterface structures = new XMLInterface(ChromatiCraft.class, PARENT+"structure.xml", mustLoad);
@@ -97,6 +101,14 @@ public final class ChromaDescriptions {
 		miscData.put(h, data);
 	}
 
+	private static void addData(CrystalElement e, Object... data) {
+		elementData.put(e, data);
+	}
+
+	private static void addData(String s, Object... data) {
+		hoverData.put(s, data);
+	}
+
 	private static void addData(ChromaResearch h, int[] data) {
 		Object[] o = new Object[data.length];
 		for (int i = 0; i < o.length; i++)
@@ -112,6 +124,8 @@ public final class ChromaDescriptions {
 		loadNumericalData();
 
 		machines.reread();
+		elements.reread();
+		blocks.reread();
 		abilities.reread();
 		tools.reread();
 		resources.reread();
@@ -165,7 +179,7 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : blocktabs) {
-			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase()+DESC_SUFFIX);
+			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase());
 			addEntry(h, desc);
 		}
 
@@ -196,6 +210,12 @@ public final class ChromaDescriptions {
 			addEntry(h, desc);
 		}
 
+		for (CrystalElement e : CrystalElement.elements) {
+			String desc = elements.getValueAtNode("elements:"+e.name().toLowerCase());
+			desc = String.format(desc, elementData.get(e));
+			elementText.put(e, desc);
+		}
+
 		Collection<String> keys = ChromaHelpData.instance.getHelpKeys();
 		for (String s : keys) {
 			String desc = hover.getValueAtNode("hover:"+s);
@@ -206,6 +226,10 @@ public final class ChromaDescriptions {
 
 	public static String getAbilityDescription(Chromabilities c) {
 		return abilities.getValueAtNode("abilities:"+c.name().toLowerCase());
+	}
+
+	public static String getElementDescription(CrystalElement e) {
+		return elementText.get(e);
 	}
 
 	public static String getData(ChromaResearch h) {
@@ -245,5 +269,13 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.LAMP, TileEntityChromaLamp.FACTOR);
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			if (e == CrystalElement.LIGHTGRAY)
+				addData(e, e.displayName, CrystalElement.WHITE.displayName);
+			else
+				addData(e, e.displayName);
+		}
 	}
 }

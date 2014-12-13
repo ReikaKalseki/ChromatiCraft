@@ -1,9 +1,30 @@
 ﻿<?xml version="1.0"?>
 <blocks>
 	<tnt>
-		
+		TNT cannons are fun, but they are large and easy to sabotage, something you learned the hard way the last time you tried to use it. How else, though, are you to cause explosions at a distance? Ender TNT allows you to create an explosion at any coordinate in any dimension.
 	</tnt>
 	<chroma>
 		Experience you gain can be condensed and purified into an iridescent, freeflowing liquid that seems to have magical properties. You wonder if this fluid can be bound into various items to better harness crystal energy.
 	</chroma>
+	<runes>
+		Engraved with strange symbols - some of which look vaguely familiar - these glowing stones are found around the pylons and seem to focus and direct crystal energy. To that end, they are likely going to be a core component of your designs.
+	</runes>
+	<tankaux>
+		Combined with the controller, these crystalline blocks widen the bridge to the void, allowing you to store more and more fluid.
+	</tankaux>
+	<fenceaux>
+		These seem to relay and redirect the beam from the crystal fence, allowing you to draw a perimeter.
+	</fenceaux>
+	<lumenleaves>
+		The leaves of the lumen tree throb with crystal energy. Because of this, you likely can use them to charge yourself. Seeing as they are the storage for the three, breaking them means losing all the stored energy, but you wonder what result that may give...
+	</lumenleaves>
+	<dyeleaves>
+		Weakly magical trees dot the landscape, and ocasionally congregate together in forests where the magical energy is strong enough to drive away hostile mobs.
+	</dyeleaves>
+	<lampaux>
+		Scatter these around your base, and you have a network of lights that can be remotely controlled with the flick of a switch.
+	</lampaux>
+	<rainbowleaves>
+		Aside from the comparatively common single-color trees, you have occasionally spotted towering flame-shaped trees whose leaves sparkle with every color of the rainbow. They are more than aesthetically pleasing; they seem to change the very air around them, cleaning it, stabilizing it. You recall the purple blight you ran into elsewhere, and wonder if this can keep that at bay. It might even be able to stabilize those worlds you found, rich with dense ores but being eaten by spongy masses and giant meteros.
+	</rainbowleaves>
 </blocks>

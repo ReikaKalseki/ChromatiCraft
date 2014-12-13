@@ -235,6 +235,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		ChromaTiles.loadMappings();
 		ChromaBlocks.loadMappings();
 		ChromaItems.loadMappings();
+		//ChromaResearch.loadCache();
 
 		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
 
