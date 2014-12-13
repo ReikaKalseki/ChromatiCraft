@@ -275,11 +275,16 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			TileEntityCrystalTank te = this.getTankController();
 			if (te != null)
 				te.removeCoordinate(xCoord, yCoord, zCoord);
+			this.reset();
+		}
+
+		public void reset() {
 			tileX = tileY = tileZ = Integer.MIN_VALUE;
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
 		}
 
 		public boolean hasTile() {
-			return tileY != Integer.MIN_VALUE;
+			return tileY != Integer.MIN_VALUE && this.getTankController() != null;
 		}
 
 		public TileEntityCrystalTank getTankController() {

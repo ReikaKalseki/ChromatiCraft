@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -21,6 +22,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.BreakAction;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -30,7 +32,7 @@ import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher {
+public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction {
 
 	public static final int MAXCAPACITY = 1000000000;
 
@@ -295,6 +297,19 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	public boolean isEmpty() {
 		return tank.isEmpty();
+	}
+
+	@Override
+	public void breakBlock() {
+		for (int i = 0; i < blocks.getSize(); i++) {
+			int[] xyz = blocks.getNthBlock(i);
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			TileEntity te = worldObj.getTileEntity(dx, dy, dz);
+			if (te instanceof CrystalTankAuxTile)
+				((CrystalTankAuxTile)te).reset();
+		}
 	}
 
 }

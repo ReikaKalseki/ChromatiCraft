@@ -20,6 +20,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -164,10 +165,12 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 						int dy = scanY;
 						int dz = z+k;
 						Block b = world.getBlock(dx, dy, dz);
-						Fluid f = FluidRegistry.lookupFluidForBlock(b);
-						if (f != null) {
-							this.addFluidBlock(dx, dy, dz, f);
-							//ReikaJavaLibrary.pConsole(f.getName()+" @ "+dx+","+dy+","+dz, Side.SERVER, f.getName().startsWith("o"));
+						if (world.getBlockMetadata(dx, dy, dz) == 0) {
+							Fluid f = FluidRegistry.lookupFluidForBlock(b);
+							if (f != null) {
+								this.addFluidBlock(dx, dy, dz, f);
+								//ReikaJavaLibrary.pConsole(f.getName()+" @ "+dx+","+dy+","+dz, Side.SERVER, f.getName().startsWith("o"));
+							}
 						}
 					}
 				}
@@ -181,21 +184,52 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 		else {
 			int n = this.hasSpeed() ? 4 : 1;
-			ArrayList<Coordinate> li = fluids.get(selected);
-			if (li != null && !li.isEmpty() && selected != null && this.canAddFluid(selected) && this.hasEnergy(required)) {
+			if (selected != null) {
+				ArrayList<Coordinate> li = fluids.get(selected);
 				for (int i = 0; i < n; i++) {
-					int index = rand.nextInt(li.size());
-					Coordinate c = li.get(index);
-					this.addFluid(selected);
-					c.setBlock(world, Blocks.air);
-					this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
-					li.remove(index);
-					this.decrFluid(selected);
+					if (li != null && !li.isEmpty() && this.canAddFluid(selected) && this.hasEnergy(required)) {
+						int index = rand.nextInt(li.size());
+						Coordinate c = li.get(index);
+						tank.addLiquid(1000, selected);
+						c.setBlock(world, Blocks.air);
+						this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+						li.remove(index);
+						this.decrFluid(selected);
+					}
+
+					Fluid f = tank.getActualFluid();
+					if (f != null) {
+						if (tank.getLevel() >= 1000) {
+							this.fillBucket(f);
+						}
+						if (!tank.isEmpty()) {
+							for (int k = 0; k < 6; k++) {
+								ForgeDirection dir = dirs[k];
+								TileEntity te = this.getAdjacentTileEntity(dir);
+								if (te instanceof IFluidHandler) {
+									IFluidHandler ifl = (IFluidHandler)te;
+									int amt = ifl.fill(dir.getOpposite(), tank.getFluid(), true);
+									if (amt > 0) {
+										tank.removeLiquid(amt);
+										if (tank.isEmpty())
+											break;
+									}
+								}
+							}
+						}
+					}
 				}
 			}
-			Fluid f = tank.getActualFluid();
-			if (f != null && tank.getLevel() == 1000 && this.hasBucket(f)) {
-				this.fillBucket(f);
+		}
+	}
+
+	private void fillBucket(Fluid f) {
+		if (inv[0] != null) {
+			int amt = FluidContainerRegistry.getContainerCapacity(inv[0]);
+			ItemStack is = FluidContainerRegistry.fillFluidContainer(new FluidStack(f, amt), inv[1]);
+			if (is != null) {
+				inv[1] = is;
+				tank.removeLiquid(amt);
 			}
 		}
 	}
@@ -207,6 +241,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			counts.put(f, amt-1);
 		else
 			counts.remove(i);
+		//ReikaJavaLibrary.pConsole(counts.get(f));
 	}
 
 	@Override
@@ -242,26 +277,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	private boolean canAddFluid(Fluid f) {
-		return tank.canTakeIn(1000) || this.hasBucket(f);
-	}
-
-	private void addFluid(Fluid f) {
-		if (this.hasBucket(f)) {
-			this.fillBucket(f);
-		}
-		else {
-			tank.addLiquid(1000, f);
-		}
-	}
-
-	private void fillBucket(Fluid f) {
-		ItemStack is = FluidContainerRegistry.fillFluidContainer(new FluidStack(f, 1000), inv[1]);
-		inv[1] = is;
-	}
-
-	private boolean hasBucket(Fluid f) {
-		FluidStack fs = new FluidStack(f, 1000);
-		return inv[1] != null && inv[1].getItem() == Items.bucket && FluidContainerRegistry.fillFluidContainer(fs, inv[1]) != null;
+		return tank.canTakeIn(1000);
 	}
 
 	private boolean hasSpeed() {

@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 
@@ -169,7 +170,7 @@ public class TankRender extends ChromaRenderBase {
 				}
 
 				f2 -= sp;
-				int y2 = Math.round(f2);
+				int y2 = MathHelper.floor_double(f2);
 				if (blocks.hasBlock(x, y2, z)) {
 					add.put(Arrays.asList(f1, f2, f3), e);
 				}
