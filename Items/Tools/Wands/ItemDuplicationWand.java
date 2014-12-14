@@ -33,11 +33,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.UnCopyableBlock;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
@@ -135,8 +138,18 @@ public class ItemDuplicationWand extends ItemWandBase {
 				for (int dy = y1; dy <= y2; dy++) {
 					for (int dz = z1; dz <= z2; dz++) {
 						if (dy >= 0) {
-							add.addBlockCoordinate(dx, dy, dz);
-							ct++;
+							Block b = world.getBlock(dx, dy, dz);
+							int meta = world.getBlockMetadata(dx, dy, dz);
+							if (b instanceof UnCopyableBlock && ((UnCopyableBlock)b).disallowCopy(meta)) {
+
+							}
+							else if (!ChromaOptions.COPYTILE.getState() && world.getTileEntity(dx, dy, dz) instanceof TileEntityBase) {
+
+							}
+							else {
+								add.addBlockCoordinate(dx, dy, dz);
+								ct++;
+							}
 						}
 					}
 				}

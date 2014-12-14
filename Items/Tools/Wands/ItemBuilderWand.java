@@ -74,7 +74,6 @@ public class ItemBuilderWand extends ItemWandBase {
 		int m = world.getBlockMetadata(x, y, z);
 
 		BlockArray base = new BlockArray();
-		base.maxDepth = RANGE*2;
 		base.recursiveAddWithBoundsMetadata(world, x, y, z, b, m, x-RANGE, y-RANGE, z-RANGE, x+RANGE, y+RANGE, z+RANGE);
 
 		ArrayList<Coordinate> li = new ArrayList();
@@ -115,7 +114,7 @@ public class ItemBuilderWand extends ItemWandBase {
 		return true;
 	}
 
-	public static class ProximitySorter implements Comparator<Coordinate> {
+	private static class ProximitySorter implements Comparator<Coordinate> {
 
 		private final int posX;
 		private final int posY;

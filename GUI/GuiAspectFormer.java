@@ -83,17 +83,25 @@ public class GuiAspectFormer extends GuiChromaBase {
 	protected void actionPerformed(GuiButton b) {
 		switch(b.id) {
 		case 0:
-			if (dx == 0 && index > 0) {
-				//index--;
-				dx++;
-				this.markButtons(false);
+			if (dx == 0) {
+				if (index > 0) {
+					dx++;
+					this.markButtons(false);
+				}
+				else {
+					index = list.size()-1;
+				}
 			}
 			break;
 		case 1:
-			if (dx == 0 && index < list.size()-1) {
-				//index++;
-				dx--;
-				this.markButtons(false);
+			if (dx == 0) {
+				if (index < list.size()-1) {
+					dx--;
+					this.markButtons(false);
+				}
+				else {
+					index = 0;
+				}
 			}
 			break;
 		}

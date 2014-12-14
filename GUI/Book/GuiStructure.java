@@ -250,7 +250,7 @@ public class GuiStructure extends GuiBookSection {
 		GL11.glPopMatrix();
 	}
 
-	public static class VisibilityComparator implements Comparator<Vector3f> {
+	private static class VisibilityComparator implements Comparator<Vector3f> {
 
 		private boolean posX = true;
 		private boolean posY = true;

@@ -58,7 +58,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	private static final Comparator comparator = new PosComparator();
 
-	public static class PosComparator implements Comparator<Coordinate> {
+	private static class PosComparator implements Comparator<Coordinate> {
 
 		private PosComparator() {
 

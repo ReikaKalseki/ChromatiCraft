@@ -38,7 +38,8 @@ public enum ChromaOptions implements ConfigList {
 	HANDBOOK("Spawn with CC Lexicon", true),
 	CHESTGEN("Chest Generation Tier", 4),
 	ENDERTNT("Enable Ender TNT", true),
-	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false);
+	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false),
+	COPYTILE("Allow duplication wand to copy TileEntities", false);
 
 	private String label;
 	private boolean defaultState;
