@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -72,6 +73,10 @@ public class ItemBuilderWand extends ItemWandBase {
 		Block b = world.getBlock(x, y, z);
 		int m = world.getBlockMetadata(x, y, z);
 
+		BlockArray base = new BlockArray();
+		base.maxDepth = RANGE*2;
+		base.recursiveAddWithBoundsMetadata(world, x, y, z, b, m, x-RANGE, y-RANGE, z-RANGE, x+RANGE, y+RANGE, z+RANGE);
+
 		ArrayList<Coordinate> li = new ArrayList();
 		for (int i = -d1.offsetX*RANGE-d2.offsetX*RANGE; i <= d1.offsetX*RANGE+d2.offsetX*RANGE; i++) {
 			for (int j = -d1.offsetY*RANGE-d2.offsetY*RANGE; j <= d1.offsetY*RANGE+d2.offsetY*RANGE; j++) {
@@ -85,7 +90,11 @@ public class ItemBuilderWand extends ItemWandBase {
 					Block db = world.getBlock(dmx, dmy, dmz);
 					int dm = world.getBlockMetadata(dmx, dmy, dmz);
 					if (db == b && dm == m && ReikaWorldHelper.softBlocks(world, ddx, ddy, ddz)) {
-						li.add(new Coordinate(ddx, ddy, ddz));
+						if (base.hasBlock(dmx, dmy, dmz)) {
+							if (ReikaWorldHelper.lineOfSight(world, ddx+0.5, ddy+0.5, ddz+0.5, dx+0.5, dy+0.5, dz+0.5)) {
+								li.add(new Coordinate(ddx, ddy, ddz));
+							}
+						}
 					}
 				}
 			}

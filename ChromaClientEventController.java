@@ -132,7 +132,7 @@ public class ChromaClientEventController {
 					GL11.glTranslated(p2, p4, p6);
 					ReikaRenderHelper.prepareGeoDraw(true);
 					Tessellator v5 = Tessellator.instance;
-					double o = 0.0125;
+					double o = 0;//0.0125;
 					int red = 255;
 					int green = 255;
 					int blue = 255;
