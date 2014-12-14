@@ -30,7 +30,7 @@ public class ContainerTelePump extends CoreContainer {
 		this.addSlot(2, 170, 54);
 		this.addSlot(3, 170, 35);
 
-		this.addPlayerInventoryWithOffset(player, 8, 2);
+		this.addPlayerInventoryWithOffset(player, 9, 2);
 	}
 
 	@Override

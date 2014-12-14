@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -34,8 +35,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Items.Tools.ItemDuplicationWand;
-import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -47,6 +49,7 @@ import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
@@ -108,6 +111,79 @@ public class ChromaClientEventController {
 			r.mainModel = new ColorizableSlimeModel(16);
 			editedSlimeModel = true;
 			ChromatiCraft.instance.logger.log("Overriding Slime Renderer Core Model.");
+		}
+	}
+
+	@SubscribeEvent
+	public void drawBuilderFrame(DrawBlockHighlightEvent evt) {
+		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
+			if (evt.currentItem != null && ChromaItems.BUILDER.matchWith(evt.currentItem)) {
+				ForgeDirection dir = evt.target.sideHit >= 0 ? ForgeDirection.VALID_DIRECTIONS[evt.target.sideHit] : null;
+				if (dir != null) {
+					World world = evt.player.worldObj;
+					int x = evt.target.blockX;
+					int y = evt.target.blockY;
+					int z = evt.target.blockZ;
+
+					GL11.glPushMatrix();
+					double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
+					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
+					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
+					GL11.glTranslated(p2, p4, p6);
+					ReikaRenderHelper.prepareGeoDraw(true);
+					Tessellator v5 = Tessellator.instance;
+					double o = 0.0125;
+					int red = 255;
+					int green = 255;
+					int blue = 255;
+
+					ArrayList<Coordinate> li = ItemBuilderWand.getCoordinatesFor(world, x, y, z, dir);
+					for (Coordinate c : li) {
+						int dx = c.xCoord-x;
+						int dy = c.yCoord-y;
+						int dz = c.zCoord-z;
+						v5.addTranslation(dx, dy, dz);
+						v5.startDrawing(GL11.GL_LINE_LOOP);
+						v5.setBrightness(240);
+						v5.setColorRGBA(red, green, blue, 255);
+						v5.addVertex(0-o, 0-o, 0-o);
+						v5.addVertex(1+o, 0-o, 0-o);
+						v5.addVertex(1+o, 0-o, 1+o);
+						v5.addVertex(0-o, 0-o, 1+o);
+						v5.draw();
+
+						v5.startDrawing(GL11.GL_LINE_LOOP);
+						v5.setBrightness(240);
+						v5.setColorRGBA(red, green, blue, 255);
+						v5.addVertex(0-o, 1+o, 0-o);
+						v5.addVertex(1+o, 1+o, 0-o);
+						v5.addVertex(1+o, 1+o, 1+o);
+						v5.addVertex(0-o, 1+o, 1+o);
+						v5.draw();
+
+						v5.startDrawing(GL11.GL_LINES);
+						v5.setBrightness(240);
+						v5.setColorRGBA(red, green, blue, 255);
+						v5.addVertex(0-o, 0-o, 0-o);
+						v5.addVertex(0-o, 1+o, 0-o);
+
+						v5.addVertex(1+o, 0-o, 0-o);
+						v5.addVertex(1+o, 1+o, 0-o);
+
+						v5.addVertex(0-o, 0-o, 1+o);
+						v5.addVertex(0-o, 1+o, 1+o);
+
+						v5.addVertex(1+o, 0-o, 1+o);
+						v5.addVertex(1+o, 1+o, 1+o);
+						v5.draw();
+
+						v5.addTranslation(-dx, -dy, -dz);
+					}
+
+					ReikaRenderHelper.exitGeoDraw();
+					GL11.glPopMatrix();
+				}
+			}
 		}
 	}
 

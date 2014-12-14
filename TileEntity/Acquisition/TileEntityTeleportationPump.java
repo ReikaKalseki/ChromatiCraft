@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.TileEntity.Acquisition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +55,21 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private int scanY = 0;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private static final Comparator comparator = new PosComparator();
+
+	public static class PosComparator implements Comparator<Coordinate> {
+
+		private PosComparator() {
+
+		}
+
+		@Override
+		public int compare(Coordinate o1, Coordinate o2) {
+			return o1.yCoord-o2.yCoord;
+		}
+
+	}
 
 	static {
 		required.addTag(CrystalElement.CYAN, 250);
@@ -178,6 +195,11 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				if (scanY > 255) {
 					scanning = false;
 					fastscan = false;
+					Collection<ArrayList<Coordinate>> vals = fluids.values();
+					for (ArrayList<Coordinate> li : vals) {
+						Collections.shuffle(li);
+						Collections.sort(li, comparator);
+					}
 				}
 				n++;
 			}
@@ -188,12 +210,11 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				ArrayList<Coordinate> li = fluids.get(selected);
 				for (int i = 0; i < n; i++) {
 					if (li != null && !li.isEmpty() && this.canAddFluid(selected) && this.hasEnergy(required)) {
-						int index = rand.nextInt(li.size());
-						Coordinate c = li.get(index);
+						Coordinate c = li.get(0);
 						tank.addLiquid(1000, selected);
 						c.setBlock(world, Blocks.air);
 						this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
-						li.remove(index);
+						li.remove(0);
 						this.decrFluid(selected);
 					}
 

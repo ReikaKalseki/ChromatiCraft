@@ -36,16 +36,17 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
-import Reika.ChromatiCraft.Items.Tools.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
-import Reika.ChromatiCraft.Items.Tools.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
-import Reika.ChromatiCraft.Items.Tools.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
-import Reika.ChromatiCraft.Items.Tools.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -86,7 +87,8 @@ public enum ChromaItems implements ItemEnum {
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
 	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
-	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class);
+	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
+	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

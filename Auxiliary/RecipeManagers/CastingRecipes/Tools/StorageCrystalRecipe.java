@@ -1,0 +1,87 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
+package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
+
+import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+
+public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
+
+	public StorageCrystalRecipe(ItemStack out, ItemStack main) {
+		super(out, main);
+
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+0), -4, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+1), -2, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+2), 0, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+3), 2, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+4), 4, -4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+5), 4, -2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+6), 4, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+7), 4, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+8), 4, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+9), 2, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+10), 0, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+11), -2, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+12), -4, 4);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+13), -4, 2);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+14), -4, 0);
+		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(16+15), -4, -2);
+
+		if (out.getItemDamage() > 0) {
+			this.addAuxItem(ChromaStacks.chromaDust, -4, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, -2, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 0, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 2, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, -4);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, -2);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 0);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 2);
+			this.addAuxItem(ChromaStacks.chromaDust, 4, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, 2, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, 0, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -2, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 4);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 2);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, 0);
+			this.addAuxItem(ChromaStacks.chromaDust, -4, -2);
+
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 0, -2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 0, 2);
+			this.addAuxItem(ChromaStacks.resonanceDust, 2, 0);
+			this.addAuxItem(ChromaStacks.resonanceDust, -2, 0);
+		}
+
+		this.addRune(CrystalElement.BLUE, 4, 0, 1);
+		this.addRune(CrystalElement.BLUE, 4, 0, -1);
+		this.addRune(CrystalElement.GREEN, -4, 0, 1);
+		this.addRune(CrystalElement.GREEN, -4, 0, -1);
+		this.addRune(CrystalElement.RED, 1, 0, -4);
+		this.addRune(CrystalElement.RED, -1, 0, -4);
+		this.addRune(CrystalElement.YELLOW, 1, 0, 4);
+		this.addRune(CrystalElement.YELLOW, -1, 0, 4);
+		this.addRune(CrystalElement.WHITE, 4, 0, -4);
+		this.addRune(CrystalElement.WHITE, -4, 0, 4);
+		this.addRune(CrystalElement.BLACK, -4, 0, -4);
+		this.addRune(CrystalElement.BLACK, 4, 0, 4);
+	}
+
+	@Override
+	public int getDuration() {
+		return 8*super.getDuration();
+	}
+
+}

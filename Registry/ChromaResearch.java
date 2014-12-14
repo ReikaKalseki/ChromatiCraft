@@ -103,6 +103,7 @@ public enum ChromaResearch {
 	WARP(			ChromaItems.WARP, 			ResearchLevel.ENERGYEXPLORE),
 	TELEPORT(		ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
 	DUPLICATOR(		ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
+	BUILDER(		ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
