@@ -23,8 +23,8 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -74,7 +74,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
 		NBTTagList list = new NBTTagList();
 		for (ItemStack in : li) {
-			NBTTagString tag = new NBTTagString(ChromaResearch.researchList[in.getItemDamage()].name());
+			NBTTagString tag = new NBTTagString(ItemInfoFragment.getResearch(in).name());
 			list.appendTag(tag);
 		}
 		if (is.stackTagCompound == null)
@@ -88,13 +88,15 @@ public class ItemChromaBook extends ItemChromaTool {
 			NBTTagList list = tool.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID);
 			for (Object o : list.tagList) {
 				NBTTagString tag = (NBTTagString)o;
-				li.add(ChromaItems.FRAGMENT.getStackOfMetadata(ChromaResearch.valueOf(tag.func_150285_a_()).ordinal()));
+				li.add(ItemInfoFragment.getItem(ChromaResearch.valueOf(tag.func_150285_a_())));
 			}
 		}
 		return li;
 	}
 
 	public static boolean hasPage(ItemStack is, ChromaResearch b) {
+		if (b == ChromaResearch.START)
+			return true;
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return false;
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagList.contains(new NBTTagString(b.name()));

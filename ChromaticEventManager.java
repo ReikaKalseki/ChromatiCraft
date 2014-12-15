@@ -350,7 +350,7 @@ public class ChromaticEventManager {
 			if (n > 0) {
 				World world = e.worldObj;
 				for (int i = 0; i < n; i++) {
-					ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOfMetadata(0));
+					ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOf());
 				}
 			}
 		}

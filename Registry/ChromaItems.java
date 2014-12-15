@@ -52,7 +52,6 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.ItemEnum;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -85,7 +84,7 @@ public enum ChromaItems implements ItemEnum {
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
 	WARP(7, false,			"chroma.warp",			ItemWarpProofer.class),
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
-	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
+	FRAGMENT(9, false,		"chroma.fragment",		ItemInfoFragment.class),
 	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
 	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
 	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class);
@@ -211,8 +210,6 @@ public enum ChromaItems implements ItemEnum {
 			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
 		case STORAGE:
 			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
-		case FRAGMENT:
-			return this.getBasicName();
 		default:
 			break;
 		}
@@ -281,8 +278,6 @@ public enum ChromaItems implements ItemEnum {
 			return ChromaNames.craftingNames.length;
 		case STORAGE:
 			return ChromaNames.storageNames.length;
-		case FRAGMENT:
-			return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

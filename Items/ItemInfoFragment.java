@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
@@ -55,7 +56,7 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 			li.add(EnumChatFormatting.ITALIC.toString()+"Blank");
 		}
 		else {
-			ChromaResearch r = ChromaResearch.researchList[dmg];
+			ChromaResearch r = this.getResearch(is);
 			EnumChatFormatting format = null;
 			boolean read = r.playerCanRead(ep);
 			boolean has = ChromaResearchManager.instance.playerHasFragment(ep, r);
@@ -73,11 +74,6 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 	}
 
 	@Override
-	protected boolean isMetaInCreative(int meta) {
-		return meta == 0 || !ChromaResearch.researchList[meta].isParent();
-	}
-
-	@Override
 	protected boolean incrementTextureIndexWithMeta() {
 		return false;
 	}
@@ -92,62 +88,33 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 	}
 
 	public static ChromaResearch getResearch(ItemStack is) {
-		return ChromaResearch.researchList[is.getItemDamage()];
+		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("page")) {
+			is.setItemDamage(0);
+			return null;
+		}
+		return ChromaResearch.valueOf(is.stackTagCompound.getString("page"));
+		//return ChromaResearch.researchList[is.getItemDamage()];
 	}
 
 	public static ItemStack getItem(ChromaResearch r) {
-		return ChromaItems.FRAGMENT.getStackOfMetadata(r.ordinal());
+		ItemStack is = ChromaItems.FRAGMENT.getStackOf();
+		setResearch(is, r);
+		return is;
+		//return ChromaItems.FRAGMENT.getStackOfMetadata(r.ordinal());
 	}
 
-	/*
-	@Override
-	public boolean hasCustomEntity(ItemStack stack)
-	{
-		return true;
+	private static void setResearch(ItemStack is, ChromaResearch r) {
+		if (ChromaItems.FRAGMENT.matchWith(is)) {
+			is.stackTagCompound = new NBTTagCompound();
+			is.stackTagCompound.setString("page", r.name());
+			//is.setItemDamage(r.ordinal());
+		}
 	}
-
-	@Override
-	public Entity createEntity(World world, Entity location, ItemStack itemstack)
-	{
-		return new EntityInfoFragment((EntityItem)location);
-	}
-
-	public static class EntityInfoFragment extends EntityItem {
-
-		public EntityInfoFragment(EntityItem ei) {
-			super(ei.worldObj, ei.posX, ei.posY, ei.posZ, ei.getEntityItem());
-			motionX = ei.motionX;
-			motionY = ei.motionY;
-			motionZ = ei.motionZ;
-			lifespan = ei.lifespan;
-			age = ei.age;
-			delayBeforeCanPickup = ei.delayBeforeCanPickup;
-		}
-
-		public EntityInfoFragment(World world) {
-			super(world);
-		}
-
-		@Override
-		public boolean isEntityInvulnerable()
-		{
-			return true;
-		}
-
-		@Override
-		public void onCollideWithPlayer(EntityPlayer ep)
-		{
-			if (this.getEntityItem().getItemDamage() == 0)
-				this.getEntityItem().setItemDamage(ChromaResearch.instance.getRandomNextResearchFor(ep).ID);
-			super.onCollideWithPlayer(ep);
-		}
-
-	}*/
 
 	public static void programShardAndGiveData(ItemStack is, EntityPlayer ep) {
 		ChromaResearch r = ChromaResearchManager.instance.getRandomNextResearchFor(ep);
 		if (r != null) {
-			is.setItemDamage(r.ordinal());
+			setResearch(is, r);
 			ChromaResearchManager.instance.givePlayerFragment(ep, getResearch(is));
 		}
 	}

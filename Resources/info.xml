@@ -12,9 +12,9 @@
 	<transmission>
 		Pylons are the power sources, radiating crystal energy of their color. It stands to reason that you will have or make receivers requiring that energy. How, though, are you to transport that energy over the long distances between the pylons and where it is needed?
 	</transmission>
-	<name>
-		
-	</name>
+	<start>
+		This world is stange, confusing, and unknown. You have no idea what drives or forms it, something you will need to learn before you can possibly begin to exploit it and bend the forces to your needs. Fortunately for you, you have a notebook of sorts, though you will need to populate it with information you collect as you explore and experiment.
+	</start>
 	<name>
 		
 	</name>
