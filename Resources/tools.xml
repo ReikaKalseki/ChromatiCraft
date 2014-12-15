@@ -39,4 +39,7 @@
 	<teleport>
 		Long-distance travel has often been a major headache for you, and even with more advanced powers like gliding and flight, you find yourself spending a great deal of time in transit between distant locations. With the mobility wand, you can fling yourself at a distant location, appearing there instantaneously.
 	</teleport>
+	<builder>
+		Building walls and paths is tedious and time-consuming. Fortunately, with the aid of the construction wand, you can extend any continuous surface you like, greatly expediting this process.
+	</builder>
 </tools>
