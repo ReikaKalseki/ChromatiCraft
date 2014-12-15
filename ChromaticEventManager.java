@@ -359,7 +359,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void fillFragments(EntityItemPickupEvent ev) {
 		ItemStack is = ev.item.getEntityItem();
-		if (ChromaItems.FRAGMENT.matchWith(is) && is.getItemDamage() == 0 && !ev.entityPlayer.capabilities.isCreativeMode) {
+		if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.isBlank(is) && !ev.entityPlayer.capabilities.isCreativeMode) {
 			ItemInfoFragment.programShardAndGiveData(is, ev.entityPlayer);
 		}
 	}

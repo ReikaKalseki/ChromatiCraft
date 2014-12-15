@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Registry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -154,6 +155,7 @@ public enum ChromaResearch {
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
+	private static final HashMap<String, ChromaResearch> byName = new HashMap();
 
 	private ChromaResearch() {
 		this("");
@@ -425,31 +427,16 @@ public enum ChromaResearch {
 		return isParent;
 	}
 
-	public int getNumberChildren() {
-		if (!isParent)
-			return 0;
-		int ch = 0;
-		for (int i = this.ordinal()+1; i < researchList.length; i++) {
-			ChromaResearch h = researchList[i];
-			if (h.isParent) {
-				return ch;
-			}
-			else {
-				ch++;
-			}
-		}
-		return ch;
-	}
-
 	public boolean isConfigDisabled() {
 		return false;
 	}
 
 	static {
-		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch r = ChromaResearch.researchList[i];
+		for (int i = 0; i < researchList.length; i++) {
+			ChromaResearch r = researchList[i];
 			if (r.level != null)
 				levelMap.addValue(r.level, r);
+			byName.put(r.name(), r);
 			if (!r.isParent)
 				nonParents.add(r);
 			Collection<ItemStack> c = r.getItemStacks();
@@ -501,12 +488,16 @@ public enum ChromaResearch {
 		return li;
 	}
 
+	public static ChromaResearch getPageFor(ItemStack is) {
+		return itemMap.get(is);
+	}
+
 	public static List<ChromaResearch> getAllNonParents() {
 		return Collections.unmodifiableList(nonParents);
 	}
 
-	public static ChromaResearch getPageFor(ItemStack is) {
-		return itemMap.get(is);
+	public static ChromaResearch getByName(String s) {
+		return byName.get(s);
 	}
 
 }

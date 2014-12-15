@@ -17,6 +17,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -29,7 +30,7 @@ public class ContainerBookPages extends Container {
 	public static final int width = 9;
 	public static final int height = 3;
 
-	public static final int MAX_SCROLL = 1+ChromaResearch.researchList.length/width-height;
+	public static final int MAX_SCROLL = 1+ChromaResearch.getAllNonParents().size()/width-height;
 
 	public final BookInventory inventory = new BookInventory();
 
@@ -48,7 +49,7 @@ public class ContainerBookPages extends Container {
 		ItemChromaBook iil = (ItemChromaBook)tool.getItem();
 		ArrayList<ItemStack> li = iil.getItemList(tool);
 		for (ItemStack is : li) {
-			int idx = ChromaResearch.getAllNonParents().indexOf(ChromaResearch.researchList[is.getItemDamage()]);
+			int idx = ChromaResearch.getAllNonParents().indexOf(ItemInfoFragment.getResearch(is));
 			inventory.setInventorySlotContents(idx, is);
 		}
 

@@ -13,8 +13,10 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -25,7 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ItemChromaMulti;
+import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -34,7 +36,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCallback {
+public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCallback {
 
 	public ItemInfoFragment(int tex) {
 		super(tex);
@@ -50,9 +52,17 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 	}
 
 	@Override
+	public final void getSubItems(Item i, CreativeTabs tab, List li)
+	{
+		li.add(ChromaItems.FRAGMENT.getStackOf());
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+			li.add(this.getItem(r));
+		}
+	}
+
+	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
-		int dmg = is.getItemDamage();
-		if (dmg == 0) {
+		if (this.isBlank(is)) {
 			li.add(EnumChatFormatting.ITALIC.toString()+"Blank");
 		}
 		else {
@@ -74,11 +84,6 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 	}
 
 	@Override
-	protected boolean incrementTextureIndexWithMeta() {
-		return false;
-	}
-
-	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean hasEffect(ItemStack is, int pass) {
 		if (is.getItemDamage() == 0)
@@ -87,27 +92,32 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 		return ChromaResearchManager.instance.canPlayerStepTo(Minecraft.getMinecraft().thePlayer, r);
 	}
 
+	public static boolean isBlank(ItemStack is) {
+		return is.stackTagCompound == null;
+		//return is.getItemDamage() == 0;
+	}
+
 	public static ChromaResearch getResearch(ItemStack is) {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("page")) {
-			is.setItemDamage(0);
+			is.stackTagCompound = null;
 			return null;
 		}
-		return ChromaResearch.valueOf(is.stackTagCompound.getString("page"));
-		//return ChromaResearch.researchList[is.getItemDamage()];
+		return ChromaResearch.getByName(is.stackTagCompound.getString("page"));
+		//return ChromaResearch.getResearch(is.getItemDamage());
 	}
 
 	public static ItemStack getItem(ChromaResearch r) {
 		ItemStack is = ChromaItems.FRAGMENT.getStackOf();
 		setResearch(is, r);
 		return is;
-		//return ChromaItems.FRAGMENT.getStackOfMetadata(r.ordinal());
+		//return ChromaItems.FRAGMENT.getStackOfMetadata(r.index());
 	}
 
 	private static void setResearch(ItemStack is, ChromaResearch r) {
 		if (ChromaItems.FRAGMENT.matchWith(is)) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setString("page", r.name());
-			//is.setItemDamage(r.ordinal());
+			//is.setItemDamage(r.index());
 		}
 	}
 
@@ -123,14 +133,16 @@ public class ItemInfoFragment extends ItemChromaMulti implements SpriteRenderCal
 	public boolean onRender(RenderItem ri, ItemStack is, ItemRenderType type) {
 		if (type == ItemRenderType.INVENTORY) {
 			ChromaResearch r = this.getResearch(is);
-			ItemStack out = r.getTabIcon();
-			if (out != null) {
-				boolean key = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-				double s = key ? 0.063 : 0.0315;
-				GL11.glScaled(s, -s, s);
-				int dx = key ? 0 : 16;
-				ReikaGuiAPI.instance.drawItemStack(ri, out, dx, -16);
-				return key && out.getItem() != this;
+			if (r != null) {
+				ItemStack out = r.getTabIcon();
+				if (out != null) {
+					boolean key = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+					double s = key ? 0.063 : 0.0315;
+					GL11.glScaled(s, -s, s);
+					int dx = key ? 0 : 16;
+					ReikaGuiAPI.instance.drawItemStack(ri, out, dx, -16);
+					return key && out.getItem() != this;
+				}
 			}
 		}
 		return false;

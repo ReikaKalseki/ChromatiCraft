@@ -47,6 +47,12 @@ public class GuiBasicInfo extends GuiBookSection {
 		if (this.isElementPage()) {
 			this.renderElementPage(CrystalElement.elements[subpage-1], posX, posY, px, c);
 		}
+		else if (page == ChromaResearch.CRYSTALS) {
+			--draw crystal, fading through colors--
+		}
+		else if (page == ChromaResearch.PYLONS) {
+			--draw pylon, fading through colors--
+		}
 	}
 
 	private boolean isElementPage() {

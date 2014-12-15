@@ -48,9 +48,8 @@ public final class ChromaResearchManager {
 	public ArrayList<ChromaResearch> getNextResearchesFor(EntityPlayer ep) {
 		this.checkForUpgrade(ep);
 		ArrayList<ChromaResearch> li = new ArrayList();
-		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch r = ChromaResearch.researchList[i];
-			if (!r.isParent() && !this.playerHasFragment(ep, r)) {
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+			if (!this.playerHasFragment(ep, r)) {
 				if (r.level == null || this.getPlayerResearchLevel(ep).ordinal() >= r.level.ordinal()) {
 					Collection<ChromaResearch> deps = data.getParents(r);
 					boolean missingdep = false;
@@ -63,7 +62,7 @@ public final class ChromaResearchManager {
 						}
 					}
 					if (!missingdep)
-						li.add(ChromaResearch.researchList[i]);
+						li.add(r);
 				}
 			}
 		}
@@ -136,8 +135,7 @@ public final class ChromaResearchManager {
 
 	public void maxPlayerResearch(EntityPlayer ep) {
 		this.setPlayerResearchLevel(ep, ResearchLevel.levelList[ResearchLevel.levelList.length-1]);
-		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch r = ChromaResearch.researchList[i];
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
 			this.givePlayerFragment(ep, r);
 		}
 		if (ep instanceof EntityPlayerMP)

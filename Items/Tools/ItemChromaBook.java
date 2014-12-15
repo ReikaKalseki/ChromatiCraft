@@ -43,10 +43,8 @@ public class ItemChromaBook extends ItemChromaTool {
 		ItemStack is = new ItemStack(this);
 		is.stackTagCompound = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
-		for (int i = 1; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch r = ChromaResearch.researchList[i];
-			if (!r.isParent())
-				list.appendTag(new NBTTagString(r.name()));
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+			list.appendTag(new NBTTagString(r.name()));
 		}
 		is.stackTagCompound.setTag("pages", list);
 		li.add(is);
@@ -109,12 +107,9 @@ public class ItemChromaBook extends ItemChromaTool {
 	}
 
 	private static boolean hasAllPages(ItemStack is) {
-		for (int i = 1; i < ChromaResearch.researchList.length; i++) {
-			ChromaResearch r = ChromaResearch.researchList[i];
-			if (!r.isParent()) {
-				if (!hasPage(is, r))
-					return false;
-			}
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+			if (!hasPage(is, r))
+				return false;
 		}
 		return true;
 	}
