@@ -22,7 +22,7 @@ public class AcceleratorBlacklist {
 
 	static {
 		try {
-			tile = Class.forName("Reika.ChromatiCraft.TileEntity.TileEntityAccelerator");
+			tile = Class.forName("Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator");
 			add = tile.getMethod("addEntry", Class.class);
 		}
 		catch (ClassNotFoundException e) {
@@ -51,7 +51,6 @@ public class AcceleratorBlacklist {
 	 * "TileEntity "Miner" has been blacklisted from the TileEntity Accelerator, because the creator finds it unbalanced or overpowered."
 	 * </i>*/
 	public static void addBlacklist(Class<? extends TileEntity> cl, String name, BlacklistReason r) {
-		ReikaJavaLibrary.pConsole("CHROMATICRAFT: TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
 		try {
 			add.invoke(null, cl);
 		}
@@ -71,6 +70,7 @@ public class AcceleratorBlacklist {
 			ReikaJavaLibrary.pConsole("Error adding Accelerator Blacklist: Class not loaded properly!");
 			e.printStackTrace();
 		}
+		ReikaJavaLibrary.pConsole("CHROMATICRAFT: TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
 	}
 
 	public static void addBlacklist(Class<? extends TileEntity> cl, BlacklistReason r) {

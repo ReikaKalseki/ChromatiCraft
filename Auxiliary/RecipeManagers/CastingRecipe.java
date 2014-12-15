@@ -106,7 +106,7 @@ public class CastingRecipe {
 		return ProgressStage.CRYSTALS;
 	}
 
-	public final boolean canRunRecipe(EntityPlayer ep) {
+	public boolean canRunRecipe(EntityPlayer ep) {
 		return ProgressionManager.instance.isPlayerAtStage(ep, this.getRequiredProgress());
 	}
 

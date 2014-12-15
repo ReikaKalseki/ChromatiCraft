@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -555,18 +556,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	@ModDependent(ModList.THAUMCRAFT)
 	public void onUsingWandTick(ItemStack wandstack, EntityPlayer player, int count) {
 		if (!worldObj.isRemote && this.canConduct() && player.ticksExisted%5 == 0) {
-			AspectList al = ReikaThaumHelper.decompose(this.getAspects());
-			for (Aspect a : al.aspects.keySet()) {
-				int amt = 2;
-				if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1"))
-					amt *= 2;
-				if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2"))
-					amt *= 2;
-				amt = Math.min(amt, al.getAmount(a));
-				amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));
-				int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
-				if (ret > 0) {
-					energy = Math.max(0, energy-ret*8);
+			if (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2")) {
+				AspectList al = ReikaThaumHelper.decompose(this.getAspects());
+				for (Aspect a : al.aspects.keySet()) {
+					int amt = 2;
+					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER1"))
+						amt *= 2;
+					if (ReikaThaumHelper.isResearchComplete(player, "NODETAPPER2"))
+						amt *= 2;
+					amt = Math.min(amt, al.getAmount(a));
+					amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));
+					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
+					if (ret > 0) {
+						energy = Math.max(0, energy-ret*8);
+					}
 				}
 			}
 		}

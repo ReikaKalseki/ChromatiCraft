@@ -39,7 +39,8 @@ public enum ChromaOptions implements ConfigList {
 	CHESTGEN("Chest Generation Tier", 4),
 	ENDERTNT("Enable Ender TNT", true),
 	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false),
-	COPYTILE("Allow duplication wand to copy TileEntities", false);
+	COPYTILE("Allow duplication wand to copy TileEntities", false),
+	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false);
 
 	private String label;
 	private boolean defaultState;

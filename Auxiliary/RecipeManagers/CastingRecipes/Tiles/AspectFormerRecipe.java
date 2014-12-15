@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
 
 public class AspectFormerRecipe extends MultiBlockCastingRecipe {
 
@@ -31,6 +34,11 @@ public class AspectFormerRecipe extends MultiBlockCastingRecipe {
 
 		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 2);
 		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 4);
+	}
+
+	@Override
+	public boolean canRunRecipe(EntityPlayer ep) {
+		return super.canRunRecipe(ep) && (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(ep, "INFUSION"));
 	}
 
 }
