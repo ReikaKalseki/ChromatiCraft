@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
@@ -209,6 +210,9 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case BOOKINVSCROLL:
 				((ContainerBookPages)ep.openContainer).scroll(data[0] > 0);
+				break;
+			case TICKER:
+				((TileEntityInventoryTicker)tile).ticks = data[0];
 				break;
 			}
 		}

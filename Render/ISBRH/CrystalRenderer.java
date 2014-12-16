@@ -25,6 +25,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 
 	public static int renderPass;
 	public static boolean renderAllArmsInInventory = false;
+	public static int staticColor = -1;
 
 	@Override
 	public void renderInventoryBlock(Block b, int meta, int modelID, RenderBlocks rb) {
@@ -32,6 +33,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		Tessellator v5 = Tessellator.instance;
 		//v5.setBrightness(240);
 		int color = ReikaColorAPI.getColorWithBrightnessMultiplier(((CrystalRenderedBlock)b).getTintColor(meta), 0.8F);
+		if (staticColor >= 0)
+			color = staticColor;
 		int alpha = 255;
 		IIcon ico = b.getIcon(0, meta);
 		double u = ico.getMinU();

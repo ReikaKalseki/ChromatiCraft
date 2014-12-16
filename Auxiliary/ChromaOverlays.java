@@ -95,7 +95,7 @@ public class ChromaOverlays {
 			v5.addVertexWithUV(x-w/2, y-w/2, 0, u, v);
 			v5.draw();
 			BlendMode.DEFAULT.apply();
-			GL11.glDisable(GL11.GL_BLEND);
+			//GL11.glDisable(GL11.GL_BLEND);
 			evt.setCanceled(true);
 		}
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
@@ -291,7 +291,7 @@ public class ChromaOverlays {
 				GL11.glLineWidth(wide);
 
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
-				GL11.glDisable(GL11.GL_BLEND);
+				//GL11.glDisable(GL11.GL_BLEND);
 				/*
 				CrystalElement e = CrystalElement.elements[(int)(System.currentTimeMillis()/500%16)];
 				int amt = tag.getValue(e);
@@ -485,7 +485,7 @@ public class ChromaOverlays {
 		v5.addVertexWithUV(ox+r*2, oy-r*2, 0, 1, 0);
 		v5.addVertexWithUV(ox-r*2, oy-r*2, 0, 0, 0);
 		v5.draw();
-		GL11.glDisable(GL11.GL_BLEND);
+		//GL11.glDisable(GL11.GL_BLEND);
 
 		int cap = PlayerElementBuffer.instance.getElementCap(ep);
 		String s = "Cap: "+cap;

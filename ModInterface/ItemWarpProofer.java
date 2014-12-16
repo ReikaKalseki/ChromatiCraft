@@ -9,8 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -23,16 +24,30 @@ public class ItemWarpProofer extends ItemChromaTool { //maybe make ability inste
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity e, int par4, boolean par5) {
-		if (e instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer) e;
-			ReikaThaumHelper.giveWarpProtection(ep, 20);
-		}
+	public ItemStack onEaten(ItemStack is, World world, EntityPlayer ep) {
+		ReikaThaumHelper.giveWarpProtection(ep, 1728000); //24h
+		return new ItemStack(Items.glass_bottle);
+	}
+
+	@Override
+	public int getMaxItemUseDuration(ItemStack is) {
+		return 32;
+	}
+
+	@Override
+	public EnumAction getItemUseAction(ItemStack is) {
+		return EnumAction.drink;
 	}
 
 	@Override
 	public boolean hasEffect(ItemStack is) {
 		return true;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		ep.setItemInUse(is, this.getMaxItemUseDuration(is));
+		return is;
 	}
 
 }

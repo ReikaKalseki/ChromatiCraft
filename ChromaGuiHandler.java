@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
@@ -25,6 +24,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
+import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerMiner;
@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.GuiEnderTNT;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
+import Reika.ChromatiCraft.GUI.GuiInventoryTicker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
 import Reika.ChromatiCraft.GUI.GuiLampController;
@@ -72,17 +73,16 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
-import Reika.DragonAPI.Base.ContainerBasicStorage;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Interfaces.GuiController;
-import Reika.DragonAPI.Interfaces.InertIInv;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class ChromaGuiHandler implements IGuiHandler {
@@ -123,6 +123,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerMiner(player, (TileEntityMiner) te);
 			if (te instanceof TileEntityCrystalTank)
 				return new ContainerCrystalTank(player, (TileEntityCrystalTank) te);
+			if (te instanceof TileEntityInventoryTicker)
+				return new ContainerInventoryTicker(player, (TileEntityInventoryTicker) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -132,8 +134,9 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new OneSlotContainer(player, te);
 			if (te instanceof GuiController)
 				return new CoreContainer(player, te);
-			if (te instanceof IInventory && !(te instanceof InertIInv))
-				return new ContainerBasicStorage(player, te);
+
+			//if (te instanceof IInventory && !(te instanceof InertIInv))
+			//	return new ContainerBasicStorage(player, te);
 			break;
 		default:
 			break;
@@ -185,6 +188,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiCrystalTank(player, (TileEntityCrystalTank) te);
 			if (te instanceof TileEntityEnderTNT)
 				return new GuiEnderTNT(player, (TileEntityEnderTNT) te);
+			if (te instanceof TileEntityInventoryTicker)
+				return new GuiInventoryTicker(player, (TileEntityInventoryTicker) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

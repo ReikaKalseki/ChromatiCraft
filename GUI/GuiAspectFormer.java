@@ -66,13 +66,6 @@ public class GuiAspectFormer extends GuiChromaBase {
 		String tex = "Textures/GUIs/aspect.png";
 		buttonList.add(new ImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 184, 0, tex, ChromatiCraft.class));
 		buttonList.add(new ImagedGuiButton(1, midx+out, midy-h/2, w, h, 176, 0, tex, ChromatiCraft.class));
-
-		/*
-		for (int i = 0; i < available.size(); i++) {
-			Chromabilities c = available.get(i);
-			String name = c.name();
-			buttonList.add(new GuiButton(i, 30, 30+i*20, 40, 20, name));
-		}*/
 	}
 
 	private Aspect getActive() {

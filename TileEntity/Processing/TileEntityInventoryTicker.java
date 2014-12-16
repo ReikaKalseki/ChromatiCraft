@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
@@ -20,7 +21,10 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 
-	private int ticks = 1;
+	public int ticks = 1;
+
+	public static final int MAX_RATE = 8;
+
 	private boolean hotbar = true;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -61,19 +65,19 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		for (int i = 0; i < ticks; i++) {
-			this.updateItems();
-		}
+		this.updateItems();
 	}
 
 	private void updateItems() {
 		EntityPlayer ep = this.getPlacer();
 		if (ep != null) {
-			for (int i = 0; i < this.getSizeInventory() && energy.containsAtLeast(required); i++) {
+			for (int i = 0; i < this.getSizeInventory(); i++) {
 				ItemStack is = inv[i];
 				if (is != null) {
-					is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
-					this.drainEnergy(required);
+					for (int k = 0; k < ticks && energy.containsAtLeast(required); k++) {
+						is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
+						this.drainEnergy(required);
+					}
 				}
 			}
 		}
@@ -92,6 +96,20 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 4000;
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		ticks = NBT.getInteger("ticks");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("ticks", ticks);
 	}
 
 }
