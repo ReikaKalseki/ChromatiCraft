@@ -47,6 +47,7 @@ public enum CrystalElement {
 	public final String displayName;
 	private IIcon glowIcon;
 	private IIcon animatedFace;
+	private IIcon engraving;
 	private final int rgb;
 	private final EnumChatFormatting chat;
 
@@ -132,6 +133,7 @@ public enum CrystalElement {
 	public void setIcons(IIconRegister ico) {
 		glowIcon = ico.registerIcon("chromaticraft:runes/glow/tile"+this.ordinal()+"_0");
 		animatedFace = ico.registerIcon("chromaticraft:runes/frontpng/tile"+this.ordinal()+"_0");
+		engraving = ico.registerIcon("chromaticraft:runes/engraved/tile"+this.ordinal()+"_0");
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -147,6 +149,11 @@ public enum CrystalElement {
 	@SideOnly(Side.CLIENT)
 	public IIcon getBlockRune() {
 		return ChromaBlocks.RUNE.getBlockInstance().getIcon(0, this.ordinal());
+	}
+
+	@SideOnly(Side.CLIENT)
+	public IIcon getEngravingRune() {
+		return engraving;
 	}
 
 	public static CrystalElement randomElement() {

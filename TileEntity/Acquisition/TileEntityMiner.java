@@ -110,6 +110,13 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	}
 
 	@Override
+	public void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		digging = digReady = false;
+		readY = 0;
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
 			int n = this.hasSpeed() ? 4 : 1;

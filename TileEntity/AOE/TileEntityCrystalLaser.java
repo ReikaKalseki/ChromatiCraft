@@ -43,6 +43,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		ForgeDirection dir = this.getFacing();
 
 		rangeTimer.update();
@@ -141,6 +142,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 			double pz = ReikaRandomHelper.getRandomPlusMinus(rz, 0.25);
 			EntityLaserFX fx = new EntityLaserFX(this.getColor(), world, px, py, pz);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			//ParticleEngine.instance.addEffect(world, fx);
 		}
 	}
 

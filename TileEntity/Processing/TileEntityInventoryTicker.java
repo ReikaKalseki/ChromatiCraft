@@ -65,6 +65,7 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		this.updateItems();
 	}
 

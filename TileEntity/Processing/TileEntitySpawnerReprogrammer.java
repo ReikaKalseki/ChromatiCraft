@@ -122,6 +122,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		if (this.canConvert()) {
 			progress.update();
 			if (progress.checkCap()) {

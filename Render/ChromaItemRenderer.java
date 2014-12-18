@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class ChromaItemRenderer implements IItemRenderer {
@@ -52,17 +53,22 @@ public class ChromaItemRenderer implements IItemRenderer {
 		if (item.getItemDamage() >= ChromaTiles.TEList.length)
 			return;
 		ChromaTiles machine = item.getItem() == ChromaItems.RIFT.getItemInstance() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
-		if (machine.hasRender() && machine != ChromaTiles.TANK) {
+		boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
+		if (machine.hasRender() && !machine.hasBlockRender()) {
 			TileEntity te = machine.createTEInstanceForRender();
 			if (machine.hasNBTVariants() && item.stackTagCompound != null) {
 				((NBTTile)te).setDataFromItemStackTag(item);
 			}
-			boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, entity ? -1 : 0);
 		}
 		else {
 			ReikaTextureHelper.bindTerrainTexture();
+			if (entity && machine == ChromaTiles.CRYSTAL) {
+				GL11.glTranslated(-0.5, -0.5, -0.5);
+				CrystalRenderer.renderAllArmsInInventory = true;
+			}
 			rb.renderBlockAsItem(machine.getBlock(), machine.getBlockMetadata(), 1);
+			CrystalRenderer.renderAllArmsInInventory = false;
 		}
 	}
 }

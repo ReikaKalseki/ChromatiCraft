@@ -240,7 +240,7 @@ public class ContainerBookPages extends Container {
 		@Override
 		public boolean isItemValid(ItemStack is)
 		{
-			return ChromaItems.FRAGMENT.matchWith(is);
+			return ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.getResearch(is) != null;
 		}
 
 	}

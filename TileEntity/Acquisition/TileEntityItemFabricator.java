@@ -202,7 +202,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 200000;
+		return 500000;
 	}
 
 	@Override

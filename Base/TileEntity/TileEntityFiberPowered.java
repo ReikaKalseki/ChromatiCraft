@@ -10,14 +10,24 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 
 public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements FiberPowered, LumenTile {
 
 	protected ElementTagCompound energy = new ElementTagCompound();
+
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (DragonAPICore.debugtest && !world.isRemote) {
+			CrystalElement e = CrystalElement.randomElement();
+			energy.addValueToColor(e, 500);
+		}
+	}
 
 	public final int addEnergy(CrystalElement e, int amt) {
 		if (e == null || !this.isAcceptingColor(e))

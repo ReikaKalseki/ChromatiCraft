@@ -72,8 +72,11 @@ public class ItemChromaBook extends ItemChromaTool {
 	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
 		NBTTagList list = new NBTTagList();
 		for (ItemStack in : li) {
-			NBTTagString tag = new NBTTagString(ItemInfoFragment.getResearch(in).name());
-			list.appendTag(tag);
+			ChromaResearch r = ItemInfoFragment.getResearch(in);
+			if (r != null) {
+				NBTTagString tag = new NBTTagString(r.name());
+				list.appendTag(tag);
+			}
 		}
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();

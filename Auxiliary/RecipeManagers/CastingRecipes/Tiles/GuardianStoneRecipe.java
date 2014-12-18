@@ -32,4 +32,9 @@ public class GuardianStoneRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.BLUE, 500);
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 4;
+	}
+
 }

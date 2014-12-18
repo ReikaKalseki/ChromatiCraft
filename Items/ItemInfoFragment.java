@@ -46,7 +46,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity ep, int slot, boolean held) {
-		if (is.getItemDamage() == 0 && ep instanceof EntityPlayer) {
+		if (this.isBlank(is) && ep instanceof EntityPlayer) {
 			this.programShardAndGiveData(is, (EntityPlayer)ep);
 		}
 	}

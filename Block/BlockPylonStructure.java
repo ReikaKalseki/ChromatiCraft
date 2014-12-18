@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.Explosion;
@@ -19,12 +20,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 
 public class BlockPylonStructure extends Block {
@@ -97,6 +101,21 @@ public class BlockPylonStructure extends Block {
 		this.triggerBreakCheck(world, x, y, z);
 
 		super.breakBlock(world, x, y, z, oldB, oldM);
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		int dy = y;
+		TileEntity te = world.getTileEntity(x, dy, z);
+		while (dy-y < 5 && !(te instanceof CrystalNetworkTile)) {
+			dy++;
+			te = world.getTileEntity(x, dy, z);
+		}
+		if (!(te instanceof TileEntityBase))
+			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+		if (te instanceof CrystalSource)
+			return -1;
+		return ((TileEntityBase)te).isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	void triggerBreakCheck(World world, int x, int y, int z) {

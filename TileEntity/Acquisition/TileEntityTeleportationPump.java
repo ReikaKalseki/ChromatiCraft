@@ -66,7 +66,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 		@Override
 		public int compare(Coordinate o1, Coordinate o2) {
-			return o1.yCoord-o2.yCoord;
+			return o2.yCoord-o1.yCoord; //higher first
 		}
 
 	}

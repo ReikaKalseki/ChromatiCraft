@@ -285,6 +285,9 @@ public enum Chromabilities {
 					ent.motionX += dx/ddt/ddt/1;
 					ent.motionY += dy/ddt/ddt/2;
 					ent.motionZ += dz/ddt/ddt/1;
+					ent.motionX = MathHelper.clamp_double(ent.motionX, -0.75, 0.75);
+					ent.motionY = MathHelper.clamp_double(ent.motionY, -0.75, 0.75);
+					ent.motionZ = MathHelper.clamp_double(ent.motionZ, -0.75, 0.75);
 					if (ent.posY < y)
 						ent.motionY += 0.125;
 					if (!world.isRemote)
@@ -306,6 +309,9 @@ public enum Chromabilities {
 				ent.motionX += dx/ddt/ddt/2;
 				ent.motionY += dy/ddt/ddt/2;
 				ent.motionZ += dz/ddt/ddt/2;
+				ent.motionX = MathHelper.clamp_double(ent.motionX, -0.75, 0.75);
+				ent.motionY = MathHelper.clamp_double(ent.motionY, -0.75, 0.75);
+				ent.motionZ = MathHelper.clamp_double(ent.motionZ, -0.75, 0.75);
 				if (ent.posY < y)
 					ent.motionY += 0.1;
 				if (!world.isRemote)

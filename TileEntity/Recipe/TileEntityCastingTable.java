@@ -21,6 +21,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -51,6 +52,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -122,6 +124,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (DragonAPICore.debugtest)
 			this.addXP(3434);
 
+		//if (world.isRemote)
+		//	this.spawnIdleParticles(world, x, y, z);
+
 		/*
 		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(ChromaItems.SEED.getStackOfMetadata(1));
 		TempleCastingRecipe t = (TempleCastingRecipe)li.get(0);
@@ -135,7 +140,14 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
-
+	/*
+	@SideOnly(Side.CLIENT)
+	private void spawnIdleParticles(World world, int x, int y, int z) {
+		CrystalElement e = CrystalElement.randomElement();
+		EngravedRuneFX fx = new EngravedRuneFX(world, x, y, z, e, ForgeDirection.UP);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+	 */
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.validateStructure(null, world, x, y-1, z);
@@ -667,6 +679,26 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public ElementTagCompound getRequestedTotal() {
 		return craftingTick > 0 && activeRecipe instanceof PylonRecipe ? ((PylonRecipe)activeRecipe).getRequiredAura() : null;
+	}
+
+	public BlockArray getBlocks() {
+		switch(tier) {
+		case CRAFTING:
+			return null;
+		case TEMPLE:
+			return ChromaStructures.getCastingLevelOne(worldObj, xCoord, yCoord-1, zCoord);
+		case MULTIBLOCK:
+			return ChromaStructures.getCastingLevelTwo(worldObj, xCoord, yCoord-1, zCoord);
+		case PYLON:
+			return ChromaStructures.getCastingLevelThree(worldObj, xCoord, yCoord-1, zCoord);
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(12, 6, 12);
 	}
 
 }

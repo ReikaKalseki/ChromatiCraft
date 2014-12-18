@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
@@ -308,7 +307,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 		ChromaSounds.DISCHARGE.playSound(worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
-		e.attackEntityFrom(DamageSource.magic, 5);
+		e.attackEntityFrom(ChromatiCraft.pylon, 5);
 	}
 
 	private void sendClientAttack(CrystalTransmitter te, EntityLivingBase e) {

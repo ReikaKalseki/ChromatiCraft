@@ -12,10 +12,10 @@ package Reika.ChromatiCraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -25,9 +25,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ThermalRecipeHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.GrinderAPI;
-import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ChromaRecipes {
@@ -58,13 +58,9 @@ public class ChromaRecipes {
 			FluidStack crystal = FluidRegistry.getFluidStack("potion crystal", 500);
 			int energy = 40000;
 			for (int i = 0; i < 16; i++) {
-				NBTTagCompound toSend = new NBTTagCompound();
-				toSend.setInteger("energy", energy);
-				toSend.setTag("input", new NBTTagCompound());
-				toSend.setTag("output", new NBTTagCompound());
-				ChromaItems.SHARD.getStackOfMetadata(i).writeToNBT(toSend.getCompoundTag("input"));
-				crystal.writeToNBT(toSend.getCompoundTag("output"));
-				FMLInterModComms.sendMessage(ModList.THERMALEXPANSION.modLabel, "CrucibleRecipe", toSend);
+				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
+				ThermalRecipeHelper.addCrucibleRecipe(shard, crystal, energy);
+				ThermalRecipeHelper.addPulverizerRecipe(shard, ChromaStacks.crystalPowder, 1000);
 			}
 		}
 	}
@@ -83,6 +79,7 @@ public class ChromaRecipes {
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
+				GrinderAPI.addRecipe(shard, ChromaStacks.crystalPowder);
 			}
 		}
 	}

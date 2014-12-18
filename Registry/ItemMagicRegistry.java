@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.ModRegistry.ModOreList;
 
 import com.google.common.collect.HashBiMap;
 
@@ -52,8 +53,10 @@ public class ItemMagicRegistry {
 
 		this.addElement("gemDiamond", CrystalElement.BROWN, 6);
 		this.addElement("gemDiamond", CrystalElement.PURPLE, 4);
+		this.addElement("gemDiamond", CrystalElement.WHITE, 1);
 		this.addElement("gemEmerald", CrystalElement.BROWN, 6);
 		this.addElement("gemEmerald", CrystalElement.PURPLE, 4);
+		this.addElement("gemEmerald", CrystalElement.WHITE, 1);
 		this.addElement("gemQuartz", CrystalElement.BROWN, 4);
 		this.addElement("gemQuartz", CrystalElement.YELLOW, 2);
 		this.addElement("ingotIron", CrystalElement.BROWN, 4);
@@ -64,11 +67,26 @@ public class ItemMagicRegistry {
 		this.addElement("dustRedstone", CrystalElement.YELLOW, 2);
 		this.addElement("dustRedstone", CrystalElement.LIME, 2);
 		this.addElement("dustGlowstone", CrystalElement.BLUE, 4);
+		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.BROWN, 3);
+		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.WHITE, 2);
+		this.addElement(ModOreList.APATITE.getProductOreDictName(), CrystalElement.BROWN, 2);
+		this.addElement(ModOreList.APATITE.getProductOreDictName(), CrystalElement.WHITE, 1);
+		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.BROWN, 2);
+		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.ORANGE, 2);
 
 		this.addElement("ingotCopper", CrystalElement.BROWN, 2);
 		this.addElement("ingotTin", CrystalElement.BROWN, 2);
 		this.addElement("ingotSilver", CrystalElement.BROWN, 3);
 		this.addElement("ingotLead", CrystalElement.BROWN, 3);
+		this.addElement("ingotNickel", CrystalElement.BROWN, 2);
+		this.addElement("ingotAluminum", CrystalElement.BROWN, 2);
+		this.addElement("ingotUranium", CrystalElement.BROWN, 4);
+		this.addElement("ingotIridium", CrystalElement.BROWN, 8);
+		this.addElement("ingotIridium", CrystalElement.WHITE, 2);
+		this.addElement("ingotIridium", CrystalElement.PURPLE, 8);
+		this.addElement("ingotPlatinum", CrystalElement.BROWN, 6);
+		this.addElement("ingotPlatinum", CrystalElement.WHITE, 1);
+		this.addElement("ingotPlatinum", CrystalElement.PURPLE, 6);
 
 		this.addElement(Blocks.sand, CrystalElement.BROWN, 1);
 		this.addElement(Blocks.grass, CrystalElement.GREEN, 1);

@@ -372,7 +372,7 @@ public enum ChromaTiles {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == ChromaTiles.TANK;
+		return !this.hasRender() || this == ChromaTiles.TANK || this == ChromaTiles.TABLE;
 	}
 
 	public boolean isPlant() {

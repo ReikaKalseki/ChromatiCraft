@@ -59,6 +59,7 @@ public class TileEntityCrystalFence extends TileEntityFiberPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		if (fence.isEmpty()) {
 			fence.prependPoint(x, y, z);
 			fence.appendPoint(x, y, z);

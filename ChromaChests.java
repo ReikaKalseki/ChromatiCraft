@@ -33,7 +33,11 @@ public class ChromaChests {
 		data.addItem(1, Location.JUNGLE_PUZZLE, ChromaItems.FRAGMENT.getStackOf(), 1, 2, 20);
 		data.addItem(1, Location.PYRAMID, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 20);
 		data.addItem(1, Location.STRONGHOLD_LIBRARY, ChromaItems.FRAGMENT.getStackOf(), 1, 3, 50);
+		data.addItem(1, Location.STRONGHOLD_CROSSING, ChromaItems.FRAGMENT.getStackOf(), 1, 3, 20);
+		data.addItem(1, Location.STRONGHOLD_HALLWAY, ChromaItems.FRAGMENT.getStackOf(), 1, 3, 20);
 		data.addItem(3, Location.VILLAGE, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 10);
+
+		data.addItem(3, Location.MINESHAFT, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 8);
 
 		data.registerToWorldGen(ChromatiCraft.instance, ChromaOptions.CHESTGEN.getValue());
 	}

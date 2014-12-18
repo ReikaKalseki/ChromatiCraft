@@ -88,7 +88,7 @@ public class ItemBlockCrystal extends ItemBlock {
 				}
 			}
 		}
-		else {
+		else if (field_150939_a != ChromaBlocks.LAMP.getBlockInstance()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Hold ");
 			sb.append(EnumChatFormatting.GREEN.toString());

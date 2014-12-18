@@ -35,6 +35,7 @@ public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
 		if (this.canSmelt()) {
 			smeltTimer += this.getSmeltSpeed();
 			if (smeltTimer >= SMELT_TIME) {
