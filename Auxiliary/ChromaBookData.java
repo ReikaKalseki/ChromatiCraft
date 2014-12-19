@@ -73,8 +73,8 @@ public class ChromaBookData {
 				int sy = k == 0 ? 0 : k < 0 ? -1 : 1;
 				int tx = Math.abs(i) == 2 ? 38 : 64;
 				int ty = Math.abs(k) == 2 ? 38 : 63;
-				int dx = 205+sx*(tx);
-				int dy = 104+sy*(ty);
+				int dx = posX+120+sx*tx;
+				int dy = posY+94+sy*ty;
 				ItemStack out = items.get(key);
 				gui.drawItemStackWithTooltip(ri, fr, out, dx, dy);
 			}

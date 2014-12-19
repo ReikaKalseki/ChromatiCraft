@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -39,15 +40,17 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
+import Reika.DragonAPI.Instantiable.Event.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public final class ChromaDescriptions {
 
-	public static final String PARENT = getParent();
-	public static final String DESC_SUFFIX = ":desc";
-	public static final String NOTE_SUFFIX = ":note";
+	private static String PARENT = getParent();
+	private static final String DESC_SUFFIX = ":desc";
+	private static final String NOTE_SUFFIX = ":note";
 
 	private static final HashMap<ChromaResearch, String> data = new HashMap<ChromaResearch, String>();
 	private static final HashMap<ChromaResearch, String> notes = new HashMap<ChromaResearch, String>();
@@ -121,6 +124,8 @@ public final class ChromaDescriptions {
 	}
 
 	public static void reload() {
+		PARENT = getParent();
+
 		loadNumericalData();
 
 		machines.reread();
@@ -205,7 +210,7 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : abilitytabs) {
-			String desc = abilities.getValueAtNode("ability:"+h.name().toLowerCase());
+			String desc = abilities.getValueAtNode("ability:"+h.getAbility().name().toLowerCase());
 			desc = String.format(desc, abilityData.get(h));
 			addEntry(h, desc);
 		}
@@ -225,7 +230,7 @@ public final class ChromaDescriptions {
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
-		return abilities.getValueAtNode("abilities:"+c.name().toLowerCase());
+		return abilities.getValueAtNode("ability:"+c.name().toLowerCase());
 	}
 
 	public static String getElementDescription(CrystalElement e) {
@@ -246,6 +251,16 @@ public final class ChromaDescriptions {
 
 	static {
 		loadNumericalData();
+		MinecraftForge.EVENT_BUS.register(new ReloadListener());
+	}
+
+	private static class ReloadListener {
+
+		@SubscribeEvent
+		public void reload(ResourceReloadEvent evt) {
+			ChromaDescriptions.reload();
+		}
+
 	}
 
 	private static void loadNumericalData() {

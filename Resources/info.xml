@@ -15,6 +15,9 @@
 	<start>
 		This world is stange, confusing, and unknown. You have no idea what drives or forms it, something you will need to learn before you can possibly begin to exploit it and bend the forces to your needs. Fortunately for you, you have a notebook of sorts, though you will need to populate it with information you collect as you explore and experiment.
 	</start>
+	<crafting>
+		At first, the casting table seemed identical to a wooden worktable, but you soon realized that in that form it can only make the most basic of items. In all likelihood, you will need to build a structure around the table to help focus the energy and allow you to advance your crafting. Additionally, the directionality to the recipes is likely important; one can only hope that the logical mapping of upwards to North has been chosen.
+	</crafting>
 	<name>
 		
 	</name>

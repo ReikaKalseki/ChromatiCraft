@@ -18,6 +18,7 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -33,6 +34,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -44,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
@@ -54,6 +57,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public enum Chromabilities {
@@ -67,7 +71,8 @@ public enum Chromabilities {
 	FIREBALL(null, false),
 	COMMUNICATE(Phase.START, false),
 	HEALTH(null, true),
-	PYLON(null, false);
+	PYLON(null, false),
+	LIGHTNING(null, false);
 
 	public final boolean tickBased;
 	public final Phase tickPhase;
@@ -132,8 +137,10 @@ public enum Chromabilities {
 		ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.ABILITY);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
 		if (this == HEALTH)
-			use.scale(5);
+			use.scale(10);
 		if (this == SHIFT)
+			use.scale(25);
+		if (this == LIGHTNING)
 			use.scale(10);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = this.enabledOn(ep) || this.isPureEventDriven();
@@ -169,6 +176,9 @@ public enum Chromabilities {
 			case HEALTH:
 				this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
 				break;
+			case LIGHTNING:
+				this.spawnLightning(ep, data);
+				break;
 			default:
 				break;
 			}
@@ -180,24 +190,11 @@ public enum Chromabilities {
 		case SONIC:
 		case HEAL:
 		case FIREBALL:
+		case LIGHTNING:
 			return true;
 		default:
 			return false;
 		}
-	}
-
-	private void setPlayerMaxHealth(EntityPlayer ep, int value) {
-		float added = value+20-ep.getMaxHealth();
-		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
-		if (ep.worldObj.isRemote)
-			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeAllModifiers();
-		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
-		if (value > 0) {
-			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
-			if (added > 0)
-				ep.heal(added);
-		}
-		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
 	}
 
 	public static ArrayList<Chromabilities> getFrom(EntityPlayer ep) {
@@ -262,6 +259,51 @@ public enum Chromabilities {
 		default:
 			break;
 		}
+	}
+
+	private static void spawnLightning(EntityPlayer ep, int power) {
+		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 128, false);
+		if (mov != null) {
+			World world = ep.worldObj;
+			int x = mov.blockX;
+			int y = mov.blockY;
+			int z = mov.blockZ;
+			if (world.canBlockSeeTheSky(x, y, z)) {
+				world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
+				int r = 2+power*4;
+				if (power == 2) {
+					new FlyingBlocksExplosion(world, x+0.5, y-2.5, z+0.5, 6).doExplosion();
+				}
+				else if (power == 1) {
+					world.newExplosion(null, x+0.5, y-0.5, z+0.5, 4, true, true);
+				}
+				for (int i = -r; i <= r; i++) {
+					for (int j = -r; j <= r; j++) {
+						for (int k = -r; k <= r; k++) {
+							int dx = x+i;
+							int dy = y+j;
+							int dz = z+k;
+							if (ReikaWorldHelper.flammable(world, dx, dy, dz))
+								ReikaWorldHelper.ignite(world, dx, dy, dz);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static void setPlayerMaxHealth(EntityPlayer ep, int value) {
+		float added = value+20-ep.getMaxHealth();
+		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
+		if (ep.worldObj.isRemote)
+			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeAllModifiers();
+		ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).removeModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
+		if (value > 0) {
+			ep.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier(uid_health, "Chroma", value/20D, 2));
+			if (added > 0)
+				ep.heal(added);
+		}
+		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
 	}
 
 	private static void attractItemsAndXP(EntityPlayer ep, int range) {
@@ -487,6 +529,8 @@ public enum Chromabilities {
 			return 8;
 		case HEALTH:
 			return 40;
+		case LIGHTNING:
+			return 2;
 		default:
 			return 0;
 		}

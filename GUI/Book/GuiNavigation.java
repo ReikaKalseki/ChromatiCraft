@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.RegionMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import com.google.common.collect.TreeMultimap;
@@ -140,9 +141,9 @@ public class GuiNavigation extends ChromaBookGui {
 		leftX = (width - xSize) / 2;
 		topY = (height - ySize) / 2;
 
-		int sp = 1;
+		int sp = Math.max(1, 180/Math.max(1, ReikaRenderHelper.getFPS()));
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			sp = 2;
+			sp *= 2;
 		}
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			offsetY -= sp;
@@ -331,8 +332,8 @@ public class GuiNavigation extends ChromaBookGui {
 					GL11.glPushMatrix();
 					double s = elementWidth/16D;
 					GL11.glScaled(s, s, 1);
-					int ix = (int)(dx/s);
-					int iy = (int)(dy/s);
+					int ix = (int)Math.round(dx/s);
+					int iy = (int)Math.round(dy/s);
 					if (dx >= leftX && dx <= leftX+paneWidth-elementWidth) {
 						if (dy >= topY && dy <= topY+paneHeight-elementWidth) {
 							e.draw(ix, iy);
@@ -342,9 +343,9 @@ public class GuiNavigation extends ChromaBookGui {
 							int mmy = my+elementWidth;
 							if (api.isMouseInBox(mx, mmx, my, mmy)) {
 								tooltips.put(e.getName(), api.getMouseRealX(), api.getMouseRealY());
-								int w = (int)(elementWidth/s);
-								int mxs = (int)(mx/s);
-								int mys = (int)(my/s);
+								int w = (int)Math.round(elementWidth/s);
+								int mxs = (int)Math.round(mx/s);
+								int mys = (int)Math.round(my/s);
 								api.drawRectFrame(mxs, mys, w, w, 0xffffff);
 								locations.addRegionByWH(mx, my, elementWidth, elementWidth, e);
 							}

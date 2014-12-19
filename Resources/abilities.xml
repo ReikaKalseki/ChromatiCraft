@@ -12,9 +12,9 @@
 	<shift>
 		With the application of a lot of energy related to movement and terrain, you have found that you can move entire regions of the terrain - though some more complex blocks tend to get left behind - allowing for easy correction of small build errors or large-scale terraforming.
 	</shift>
-	<pylonprotect>
+	<pylon>
 		After one too many energy discharges to the face - or perhaps as a result of it - you have finally devised a way to "ground" yourself, causing the pylons's surplus energy to seek alternate routes to dissipate itself. This is of course of obvious utility.
-	</pylonprotect>
+	</pylon>
 	<heal>
 		Useful if low on food or desperately low on health, the ability to instantly heal a heart or two is an expensive yet indispensable asset.
 	</heal>
@@ -30,4 +30,7 @@
 	<shield>
 		Perhaps the most annoying of the creatures you find yourself up against - even outdoing the kamikaze leaf bombs - are skeletons, with their ranged attack and, when in groups, their irriating tendency to imitate a gatling gun. Usefully, however, protective energy can create a field around you to deflect their assault.
 	</shield>
+	<lightning>
+		From the Greek deity Zeus to a malicious shrouded man, harnessing lightning is one of the classic demonstrations of strong power. With the ability to bring a massive bolt from the sky, you can smite a mob or player or ignite a structure. Better yet, at high charge levels, the shockwave the thunder generates is rather more powerful than the corresponding effect from the natural counterpart and has the capacity to blow apart whatever it hits.
+	</lightning>
 </ability>

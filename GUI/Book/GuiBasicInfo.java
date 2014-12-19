@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -106,8 +107,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			int w = 96;
-			int x = 200;
-			int y = -3;
+			int x = posX+115;
+			int y = posY-4;
 			v5.addVertexWithUV(x, y+w, 0, u, dv);
 			v5.addVertexWithUV(x+w, y+w, 0, du, dv);
 			v5.addVertexWithUV(x+w, y, 0, du, v);
@@ -128,7 +129,7 @@ public class GuiBasicInfo extends GuiBookSection {
 				v5.addVertexWithUV(p.posX+w, p.posY, 0, du, v);
 				v5.addVertexWithUV(p.posX, p.posY, 0, u, v);
 
-				p.move(1);
+				p.move(180D/ReikaRenderHelper.getFPS());
 
 				p.age++;
 				if (!ReikaMathLibrary.isValueInsideBounds(posX, posX+xSize, p.posX) || !ReikaMathLibrary.isValueInsideBounds(posY, posY+80, p.posY)) {

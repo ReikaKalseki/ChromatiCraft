@@ -19,4 +19,9 @@ public class GuiToolDescription extends GuiDescription {
 		super(ep, i, 256, 220);
 	}
 
+	@Override
+	protected int getMaxSubpage() {
+		return 0;
+	}
+
 }

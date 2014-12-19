@@ -42,4 +42,7 @@
 	<builder>
 		Building walls and paths is tedious and time-consuming. Fortunately, with the aid of the construction wand, you can extend any continuous surface you like, greatly expediting this process.
 	</builder>
+	<capture>
+		Moving creatures is nearly impossible. Cows and other animals can be led with food, but they are so stupid that they frequently forget you exist and go wander off a cliff. Wolves have trouble telling the difference between water and lava - which would not be so much of a problem if not for their love of swimming - and cannot find their way through a door if their life depends on it. Finally, most hostile mobs would rather eat/shoot/explode your face than chase you hundreds of blocks. With the capture wand, however, you can ignore these obstacles and carry the mob - in suspension of course - wherever you need.
+	</capture>
 </tools>

@@ -44,6 +44,7 @@ public enum ChromaResearch {
 	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOf(4), 					ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
+	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),

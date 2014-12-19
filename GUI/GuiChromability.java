@@ -105,7 +105,7 @@ public class GuiChromability extends GuiScreen {
 		Chromabilities c = Chromabilities.abilities[index];
 		boolean has = c.playerHasAbility(player);
 		double px = 2D*Math.abs(dx)/width;
-		int sp = (int)(90D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px)));
+		int sp = (int)(180D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px)));
 		if (dx > 0) {
 			dx += sp;
 		}
@@ -137,23 +137,23 @@ public class GuiChromability extends GuiScreen {
 
 		this.drawPreview(c, j, k);
 
-		fontRendererObj.drawString(c.getDisplayName(), 175+dx, 36, 0x000000);
+		fontRendererObj.drawString(c.getDisplayName(), j+63+dx, k+9, 0x000000);
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = Chromabilities.abilities[index-1];
-				fontRendererObj.drawString(c.getDisplayName(), 175+dx-width, 36, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), j+63+dx-width, k+9, 0x000000);
 			}
 
 			if (index < Chromabilities.abilities.length-1) {
 				c = Chromabilities.abilities[index+1];
-				fontRendererObj.drawString(c.getDisplayName(), 175+dx+width, 36, 0x000000);
+				fontRendererObj.drawString(c.getDisplayName(), j+63+dx+width, k+9, 0x000000);
 			}
 		}
 
 		int fx = 10;
 		int fy = 65;
 		if (!has)
-			return;
+			;//return;
 		String desc = ChromaDescriptions.getAbilityDescription(c);
 		fontRendererObj.drawSplitString(desc, j+dx+fx, k+fy, xSize-fx*2, 0xffffff);
 

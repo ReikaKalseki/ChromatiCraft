@@ -92,7 +92,7 @@ public class GuiAbilitySelect extends GuiScreen {
 
 		ability = Chromabilities.abilities[-dx/step];
 
-		double sp = 90D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, Math.abs(offset-dx)/4)/5D;
+		double sp = 270D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, Math.abs(offset-dx)/4)/5D;
 		if (offset > dx) {
 			offset -= sp;
 		}

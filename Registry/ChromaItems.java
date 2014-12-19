@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
@@ -88,7 +89,8 @@ public enum ChromaItems implements ItemEnum {
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
 	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
 	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
-	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class);
+	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class),
+	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
