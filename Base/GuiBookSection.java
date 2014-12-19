@@ -9,13 +9,23 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public abstract class GuiBookSection extends ChromaBookGui {
@@ -132,6 +142,48 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected int getTitleOffset() {
 		return 6;
+	}
+
+	protected final void drawBlockRender(int posX, int posY, Block b, int meta) {
+		GL11.glTranslated(0, 0, 32);
+		GL11.glColor4f(1, 1, 1, 1);
+		double x = posX+167;
+		double y = posY+44;
+		//float q = 12.5F + fscale*(float)Math.sin(System.nanoTime()/1000000000D); //wobble
+		//ReikaJavaLibrary.pConsole(y-ReikaGuiAPI.instance.getMouseScreenY(height));
+		int range = 64;
+		boolean rotate = ReikaGuiAPI.instance.isMouseInBox((int)x-range/2, (int)x+range/2, (int)y-range, (int)y+range);
+
+		y -= 8*Math.sin(Math.abs(Math.toRadians(22.5F)));
+
+		GL11.glEnable(GL11.GL_BLEND);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		double sc = 48;
+		GL11.glPushMatrix();
+		int r = (int)(System.nanoTime()/20000000)%360;
+		double dx = x;
+		double dy = y;
+		double dz = 0;
+		GL11.glPushMatrix();
+		GL11.glTranslated(dx, dy, dz);
+		GL11.glScaled(sc, -sc, sc);
+		GL11.glRotatef(22.5F, 1, 0, 0);
+		GL11.glRotatef(r, 0, 1, 0);
+		ReikaTextureHelper.bindTerrainTexture();
+		if (b instanceof CrystalRenderedBlock) {
+			CrystalRenderer.renderAllArmsInInventory = true;
+			GL11.glTranslated(-0.5, -0.33, -0.5);
+		}
+		rb.renderBlockAsItem(b, meta, 1);
+		CrystalRenderer.renderAllArmsInInventory = false;
+		GL11.glPopMatrix();
+		GL11.glPopMatrix();
+
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glTranslated(0, 0, -32);
 	}
 
 }

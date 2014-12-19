@@ -12,8 +12,6 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -22,23 +20,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Interfaces.SpriteRenderCallback;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallback {
+public class ItemCaptureWand extends ItemWandBase {
 
 	private final ElementTagCompound perTick;
 	private static final String NBT_TAG = "mob";
@@ -65,6 +58,24 @@ public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallbac
 				}
 			}
 		}
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		if (this.hasMob(is, world)) {
+			double x = ep.posX;
+			double y = ep.posY;
+			double z = ep.posZ;
+			Vec3 vec = ep.getLookVec();
+			vec.xCoord *= 2;
+			vec.yCoord *= 5;
+			vec.zCoord *= 2;
+			int dx = MathHelper.floor_double(x+vec.xCoord);
+			int dy = MathHelper.floor_double(y+vec.yCoord);
+			int dz = MathHelper.floor_double(z+vec.zCoord);
+			this.releaseMob(is, ep, world, dx, dy, dz);
+		}
+		return is;
 	}
 
 	@Override
@@ -100,7 +111,7 @@ public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallbac
 
 	@Override
 	public boolean itemInteractionForEntity(ItemStack is, EntityPlayer ep, EntityLivingBase elb) {
-		if (!hasMob(is, ep.worldObj) && elb instanceof EntityLiving) {
+		if (!hasMob(is, ep.worldObj) && elb instanceof EntityLiving && this.sufficientEnergy(ep)) {
 			this.captureMob(is, ep, (EntityLiving)elb);
 			ep.setCurrentItemOrArmor(0, is);
 			return true;
@@ -140,7 +151,7 @@ public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallbac
 		is.stackTagCompound.setTag(NBT_TAG, nbt);
 	}
 
-	private static EntityLiving getMob(ItemStack is, World world) {
+	public static EntityLiving getMob(ItemStack is, World world) {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey(NBT_TAG))
 			return null;
 		NBTTagCompound mob = is.stackTagCompound.getCompoundTag(NBT_TAG);
@@ -156,7 +167,7 @@ public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallbac
 	private static boolean hasMob(ItemStack is, World world) {
 		return is.stackTagCompound != null && is.stackTagCompound.hasKey(NBT_TAG);
 	}
-
+	/*
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean onRender(RenderItem ri, ItemStack is, ItemRenderType type) {
@@ -165,18 +176,26 @@ public class ItemCaptureWand extends ItemWandBase implements SpriteRenderCallbac
 			if (e != null) {
 				GL11.glPushMatrix();
 				//GL11.glScaled(0.2, 0.2, 0.2);
-				GL11.glRotated(30, 0, 1, 0);
-				GL11.glRotated(-45, 1, 0, 0);
-				//GL11.glTranslated(0, 0, 0);
-				GL11.glTranslated(type == ItemRenderType.EQUIPPED_FIRST_PERSON ? 1.5 : 1, type == ItemRenderType.EQUIPPED_FIRST_PERSON ? 0.25 : 1, 1);
+				//GL11.glRotated(30, 0, 1, 0);
+				//GL11.glRotated(-45, 1, 0, 0);
+				//GL11.glTranslated(0, 1.5, -1);
+				//GL11.glTranslated(type == ItemRenderType.EQUIPPED_FIRST_PERSON ? 1.5 : 1, type == ItemRenderType.EQUIPPED_FIRST_PERSON ? 0.25 : 1, 1);
 				//GL11.glTranslated(EntityRenderDispatcher., y, z);
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 				Render r = ReikaEntityHelper.getEntityRenderer(e.getClass());
-				r.doRender(e, 0, 0, 0, 0, 0);
+				if (r == null)
+					ChromatiCraft.logger.logError("Cannot render "+e+", has no renderer!");
+				else
+					r.doRender(e, 0, 0, 0, 0, 0);
 				GL11.glPopMatrix();
 			}
 		}
 		return false;
 	}
 
+	@Override
+	public boolean doPreGLTransforms(ItemStack is, ItemRenderType type) {
+		return false;
+	}
+	 */
 }

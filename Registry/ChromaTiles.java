@@ -395,4 +395,8 @@ public enum ChromaTiles {
 		return block.hasModel() && !this.hasRender();
 	}
 
+	public boolean isConfigDisabled() {
+		return false;
+	}
+
 }

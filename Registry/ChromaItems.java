@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -84,13 +85,14 @@ public enum ChromaItems implements ItemEnum {
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
 	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
-	WARP(7, false,			"chroma.warp",			ItemWarpProofer.class),
+	WARP(7, false,			"chroma.warp",			ItemWarpProofer.class, ModList.THAUMCRAFT),
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
 	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
 	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
 	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class),
-	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class);
+	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class),
+	VOIDCELL(10, false,		"chroma.aecell",		ItemVoidStorage.class, ModList.APPENG);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -473,5 +475,9 @@ public enum ChromaItems implements ItemEnum {
 
 	public ItemStack getAnyMetaStack() {
 		return this.getStackOfMetadata(OreDictionary.WILDCARD_VALUE);
+	}
+
+	public boolean isConfigDisabled() {
+		return false;
 	}
 }

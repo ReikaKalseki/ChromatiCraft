@@ -268,7 +268,7 @@ public enum Chromabilities {
 			int x = mov.blockX;
 			int y = mov.blockY;
 			int z = mov.blockZ;
-			if (world.canBlockSeeTheSky(x, y, z)) {
+			if (world.canBlockSeeTheSky(x, y+1, z)) {
 				world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
 				int r = 2+power*4;
 				if (power == 2) {
@@ -288,6 +288,9 @@ public enum Chromabilities {
 						}
 					}
 				}
+			}
+			else {
+				ChromaSounds.ERROR.playSound(ep);
 			}
 		}
 	}

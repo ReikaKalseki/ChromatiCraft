@@ -107,6 +107,8 @@ public enum ChromaResearch {
 	TELEPORT(		ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
 	DUPLICATOR(		ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
 	BUILDER(		ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
+	CAPTURE(		ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT),
+	VOIDCELL(		ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
 
 	RESOURCEDESC("Resources", ""),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
@@ -429,21 +431,35 @@ public enum ChromaResearch {
 	}
 
 	public boolean isConfigDisabled() {
+		if (machine != null)
+			return machine.isConfigDisabled();
+		if (item != null)
+			return item.isConfigDisabled();
+		return false;
+	}
+
+	public boolean isDummiedOut() {
+		if (machine != null)
+			return machine.isDummiedOut();
+		if (item != null)
+			return item.isDummiedOut();
 		return false;
 	}
 
 	static {
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
-			if (r.level != null)
-				levelMap.addValue(r.level, r);
-			byName.put(r.name(), r);
-			if (!r.isParent)
-				nonParents.add(r);
-			Collection<ItemStack> c = r.getItemStacks();
-			if (c != null) {
-				for (ItemStack is : c) {
-					itemMap.put(is, r);
+			if (!r.isDummiedOut()) {
+				if (r.level != null)
+					levelMap.addValue(r.level, r);
+				byName.put(r.name(), r);
+				if (!r.isParent)
+					nonParents.add(r);
+				Collection<ItemStack> c = r.getItemStacks();
+				if (c != null) {
+					for (ItemStack is : c) {
+						itemMap.put(is, r);
+					}
 				}
 			}
 		}

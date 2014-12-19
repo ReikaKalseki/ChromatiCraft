@@ -148,4 +148,9 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		return false;
 	}
 
+	@Override
+	public boolean doPreGLTransforms(ItemStack is, ItemRenderType type) {
+		return true;
+	}
+
 }

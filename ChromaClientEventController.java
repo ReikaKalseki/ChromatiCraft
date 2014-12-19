@@ -18,8 +18,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +38,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -52,7 +55,9 @@ import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
+import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -111,6 +116,50 @@ public class ChromaClientEventController {
 			r.mainModel = new ColorizableSlimeModel(16);
 			editedSlimeModel = true;
 			ChromatiCraft.instance.logger.log("Overriding Slime Renderer Core Model.");
+		}
+	}
+
+	@SubscribeEvent
+	public void heldMobFirstPerson(RenderFirstPersonItemEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (ChromaItems.CAPTURE.matchWith(ep.getCurrentEquippedItem())) {
+			EntityLiving e = ItemCaptureWand.getMob(ep.getCurrentEquippedItem(), ep.worldObj);
+			if (e != null) {
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, -ep.height+ep.getEyeHeight()+1, -2);
+				GL11.glRotated(45, 0, 1, 0);
+				GL11.glColor4f(1, 1, 1, 1);
+				//GL11.glEnable(GL11.GL_LIGHTING);
+				e.setLocationAndAngles(ep.posX, ep.posY, ep.posZ, 0, 0);
+				Render r = ReikaEntityHelper.getEntityRenderer(e.getClass());
+				if (r == null)
+					;//ChromatiCraft.logger.logError("Cannot render "+e+", has no renderer!");
+				else
+					r.doRender(e, 0, 0, 0, 0, 0);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void heldMob(RenderLivingEvent.Pre evt) {
+		if (evt.entity == Minecraft.getMinecraft().thePlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.entity;
+			if (ChromaItems.CAPTURE.matchWith(ep.getCurrentEquippedItem())) {
+				EntityLiving e = ItemCaptureWand.getMob(ep.getCurrentEquippedItem(), ep.worldObj);
+				if (e != null) {
+					GL11.glPushMatrix();
+					GL11.glRotated(215-ep.rotationYaw, 0, 1, 0);
+					GL11.glTranslated(1, -ep.height+ep.getEyeHeight()+0.5, -1);
+					Render r = ReikaEntityHelper.getEntityRenderer(e.getClass());
+					if (r == null)
+						;//ChromatiCraft.logger.logError("Cannot render "+e+", has no renderer!");
+					else
+						r.doRender(e, 0, 0, 0, 0, 0);
+					GL11.glPopMatrix();
+				}
+			}
 		}
 	}
 

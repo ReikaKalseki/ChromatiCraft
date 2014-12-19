@@ -45,4 +45,7 @@
 	<capture>
 		Moving creatures is nearly impossible. Cows and other animals can be led with food, but they are so stupid that they frequently forget you exist and go wander off a cliff. Wolves have trouble telling the difference between water and lava - which would not be so much of a problem if not for their love of swimming - and cannot find their way through a door if their life depends on it. Finally, most hostile mobs would rather eat/shoot/explode your face than chase you hundreds of blocks. With the capture wand, however, you can ignore these obstacles and carry the mob - in suspension of course - wherever you need.
 	</capture>
+	<voidcell>
+		Your mining efforts have yielded you untold riches in the form of metals, gems, and other materials, but it has also left you with mountains of stone - you literally could build a mountain if you felt like it. Being something of a pack rat, you cannot bring yourself to throw it away, and your crystal-based item storage system is rapidly approaching capacity. After some time spent reverse-engineering it, you hit upon a solution. Like the crystal tanks, you could probably use a void link to store basically infinite quantities of an item, though only one item per storage unit.
+	</voidcell>
 </tools>

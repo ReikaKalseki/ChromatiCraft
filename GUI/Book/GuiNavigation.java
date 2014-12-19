@@ -373,8 +373,9 @@ public class GuiNavigation extends ChromaBookGui {
 			destination = b;
 		}
 
-		public void draw(int x, int y) {
-			api.drawItemStack(itemRender, this.getIcon(), x, y);
+		public void draw(int ex, int ey) {
+			api.drawItemStack(itemRender, this.getIcon(), ex, ey);
+			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glColor4f(1, 1, 1, 1);
 			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
 				GL11.glPushMatrix();
@@ -385,11 +386,11 @@ public class GuiNavigation extends ChromaBookGui {
 				if (destination.isAbility()) {
 					ico = ChromaTiles.RITUAL.getBlock().getIcon(1, ChromaTiles.RITUAL.getBlockMetadata());
 				}
-				api.drawTexturedModelRectFromIcon(x+8, y+8, ico, 9, 9);
+				api.drawTexturedModelRectFromIcon(ex+8, ey+8, ico, 9, 9);
 				if (destination.isCrafting() && !destination.isCraftable()) {
 					ico = ChromaIcons.NOENTER.getIcon();
 					GL11.glColor4f(1, 1, 1, 0.75F);
-					api.drawTexturedModelRectFromIcon(x+8, y+8, ico, 9, 9);
+					api.drawTexturedModelRectFromIcon(ex+8, ey+8, ico, 9, 9);
 				}
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glPopMatrix();
