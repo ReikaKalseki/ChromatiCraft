@@ -6,9 +6,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.DummyInventory;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
@@ -23,13 +25,25 @@ import appeng.api.storage.data.IAEItemStack;
 @Strippable(value = "appeng.api.implementations.items.IStorageCell")
 public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 
+	private static class CellInventory extends BasicInventory {
+
+		public CellInventory() {
+			super(ChromaItems.VOIDCELL.getBasicName(), 1, 1);
+		}
+
+		@Override
+		public boolean isItemValidForSlot(int i, ItemStack is) {
+			return true;
+		}
+	}
+
 	public ItemVoidStorage(int index) {
 		super(index);
 	}
 
 	@Override
 	public boolean isEditable(ItemStack is) {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -39,12 +53,12 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 
 	@Override
 	public IInventory getConfigInventory(ItemStack is) {
-		return new DummyInventory();
+		return new CellInventory();
 	}
 
 	@Override
 	public FuzzyMode getFuzzyMode(ItemStack is) {
-		return null;
+		return FuzzyMode.IGNORE_ALL;
 	}
 
 	@Override
@@ -55,7 +69,7 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 
 	@Override
 	public int getBytes(ItemStack cellItem) { //Total storage
-		return Integer.MAX_VALUE;
+		return (Integer.MAX_VALUE/2+1)/4;//67108864;//Integer.MAX_VALUE/2+1;
 	}
 
 	@Override
