@@ -18,6 +18,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -106,6 +107,19 @@ public class GuardianStoneManager {
 	@Override
 	public String toString() {
 		return zones.toString();
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void guardArea(BreakEvent event) {
+		EntityPlayer ep = event.getPlayer();
+		World world = event.world;
+		int x = event.x;
+		int y = event.y;
+		int z = event.z;
+		if (!world.isRemote) {
+			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
+				event.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

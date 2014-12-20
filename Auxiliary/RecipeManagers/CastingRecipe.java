@@ -75,9 +75,7 @@ public class CastingRecipe {
 	}
 
 	public ItemStack[] getArrayForDisplay() {
-		ItemStack[] iss = new ItemStack[9];
-		ReikaRecipeHelper.copyRecipeToItemStackArray(iss, recipe);
-		return iss;
+		return ReikaRecipeHelper.getPermutedRecipeArray(recipe);
 	}
 
 	public boolean usesItem(ItemStack is) {

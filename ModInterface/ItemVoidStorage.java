@@ -28,7 +28,7 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 	private static class CellInventory extends BasicInventory {
 
 		public CellInventory() {
-			super(ChromaItems.VOIDCELL.getBasicName(), 1, 1);
+			super(ChromaItems.VOIDCELL.getBasicName(), 63, 1);
 		}
 
 		@Override

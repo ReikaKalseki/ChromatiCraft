@@ -262,35 +262,37 @@ public enum Chromabilities {
 	}
 
 	private static void spawnLightning(EntityPlayer ep, int power) {
-		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 128, false);
-		if (mov != null) {
-			World world = ep.worldObj;
-			int x = mov.blockX;
-			int y = mov.blockY;
-			int z = mov.blockZ;
-			if (world.canBlockSeeTheSky(x, y+1, z)) {
-				world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
-				int r = 2+power*4;
-				if (power == 2) {
-					new FlyingBlocksExplosion(world, x+0.5, y-2.5, z+0.5, 6).doExplosion();
-				}
-				else if (power == 1) {
-					world.newExplosion(null, x+0.5, y-0.5, z+0.5, 4, true, true);
-				}
-				for (int i = -r; i <= r; i++) {
-					for (int j = -r; j <= r; j++) {
-						for (int k = -r; k <= r; k++) {
-							int dx = x+i;
-							int dy = y+j;
-							int dz = z+k;
-							if (ReikaWorldHelper.flammable(world, dx, dy, dz))
-								ReikaWorldHelper.ignite(world, dx, dy, dz);
+		if (!ep.worldObj.isRemote) {
+			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 128, false);
+			if (mov != null) {
+				World world = ep.worldObj;
+				int x = mov.blockX;
+				int y = mov.blockY;
+				int z = mov.blockZ;
+				if (world.canBlockSeeTheSky(x, y+1, z) && ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, ep)) {
+					world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
+					int r = 2+power*4;
+					if (power == 2) {
+						new FlyingBlocksExplosion(world, x+0.5, y-2.5, z+0.5, 6).doExplosion();
+					}
+					else if (power == 1) {
+						world.newExplosion(null, x+0.5, y-0.5, z+0.5, 4, true, true);
+					}
+					for (int i = -r; i <= r; i++) {
+						for (int j = -r; j <= r; j++) {
+							for (int k = -r; k <= r; k++) {
+								int dx = x+i;
+								int dy = y+j;
+								int dz = z+k;
+								if (ReikaWorldHelper.flammable(world, dx, dy, dz))
+									ReikaWorldHelper.ignite(world, dx, dy, dz);
+							}
 						}
 					}
 				}
-			}
-			else {
-				ChromaSounds.ERROR.playSound(ep);
+				else {
+					ChromaSounds.ERROR.playSound(ep);
+				}
 			}
 		}
 	}
