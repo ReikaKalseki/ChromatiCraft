@@ -80,14 +80,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	private static HashMap<String, ArrayList<Integer>> nodeCache;
 
 	static {
-		try {
-			node = Class.forName("thaumcraft.common.tiles.TileNode");
-			Field f = node.getDeclaredField("locations");
-			f.setAccessible(true);
-			nodeCache = (HashMap<String, ArrayList<Integer>>)f.get(null);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			try {
+				node = Class.forName("thaumcraft.common.tiles.TileNode");
+				Field f = node.getDeclaredField("locations");
+				f.setAccessible(true);
+				nodeCache = (HashMap<String, ArrayList<Integer>>)f.get(null);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

@@ -62,6 +62,7 @@ public enum ChromaResearch {
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
 	MINER(			ChromaTiles.MINER, 			ResearchLevel.PYLONCRAFT),
+	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
 	CRYSTAL(		ChromaTiles.CRYSTAL, 		ResearchLevel.ENDGAME),

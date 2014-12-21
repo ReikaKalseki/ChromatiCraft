@@ -121,7 +121,7 @@ public class GuiBasicInfo extends GuiBookSection {
 			p.move(180D/ReikaRenderHelper.getFPS());
 
 			p.age++;
-			if (!ReikaMathLibrary.isValueInsideBounds(posX, posX+xSize, p.posX) || !ReikaMathLibrary.isValueInsideBounds(posY, posY+80, p.posY)) {
+			if (!ReikaMathLibrary.isValueInsideBounds(posX, posX+xSize-8, p.posX) || !ReikaMathLibrary.isValueInsideBounds(posY, posY+80, p.posY)) {
 				it.remove();
 			}
 		}

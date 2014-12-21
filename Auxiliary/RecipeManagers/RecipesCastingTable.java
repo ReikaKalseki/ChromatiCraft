@@ -17,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -130,7 +130,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new LumenLampRecipe(new ItemStack(ChromaBlocks.LAMPBLOCK.getBlockInstance(), 16, i), CrystalElement.elements[i]));
 		}
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
-		ShapedRecipes sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
+		IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 2), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, 12), "SS", "SS", 'S', new ItemStack(block, 1, 0));
@@ -163,7 +163,7 @@ public class RecipesCastingTable {
 			this.addRecipe(new AcceleratorRecipe(i));
 
 		ItemStack is = ChromaTiles.STAND.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', Blocks.cobblestone, 'S', ReikaItemHelper.stoneSlab, 'L', ReikaItemHelper.lapisDye);
+		sr = new ShapedOreRecipe(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', "cobblestone", 'S', ReikaItemHelper.stoneSlab, 'L', ReikaItemHelper.lapisDye);
 		this.addRecipe(new StandRecipe(is, sr));
 
 		is = ChromaTiles.ENCHANTER.getCraftedProduct();
@@ -171,7 +171,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new EnchanterRecipe(is, sr));
 
 		is = ChromaTiles.BREWER.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "S S", "ScS", "CCC", 'C', Blocks.stone, 'c', Items.cauldron, 'S', ChromaItems.SHARD.getAnyMetaStack());
+		sr = new ShapedOreRecipe(is, "S S", "ScS", "CCC", 'C', "stone", 'c', Items.cauldron, 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new CastingRecipe(is, sr));
 
 		is = ChromaTiles.CHROMAFLOWER.getCraftedProduct();
@@ -221,11 +221,11 @@ public class RecipesCastingTable {
 		this.addRecipe(new HeatLilyRecipe(is, sr));
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SSS", "CSC", "CCC", 'C', Blocks.cobblestone, 'S', ChromaItems.SHARD.getAnyMetaStack());
+		sr = new ShapedOreRecipe(is, "SSS", "CSC", "CCC", 'C', "cobblestone", 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new RitualTableRecipe(is, sr));
 
 		is = ChromaTiles.COLLECTOR.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SES", "ScS", "CCC", 'E', Items.ender_eye, 'C', Blocks.stone, 'c', Blocks.glowstone, 'S', ChromaItems.SHARD.getAnyMetaStack());
+		sr = new ShapedOreRecipe(is, "SES", "ScS", "CCC", 'E', Items.ender_eye, 'C', "stone", 'c', Blocks.glowstone, 'S', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new CastingRecipe(is, sr));
 
 		this.addRecipe(new SpawnerReprogrammerRecipe(ChromaTiles.REPROGRAMMER.getCraftedProduct(), ChromaStacks.transformCore));

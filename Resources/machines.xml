@@ -20,6 +20,14 @@
 			The owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access <!-- The &# tags are for angle brackets. Do not touch those. -->
 		</note>
 	</guardian>
+	<stand>
+		<desc>
+			In order to achieve your more grandoise casting arrangements, you will need to expand the grid beyond a 3x3, and that means you need a receptacle on which to store the items. Integrated into the structures around your table, these stands serve exactly that purpose, allowing you a 5x5 grid. The outer ring will need to be elevated by a block so that they have a clear line of sight to the table.
+		</desc>
+		<note>
+			In order to place a stack of more than one item, double-right-click on the stand with a stack
+		</note>
+	</stand>
 	<telepump>
 		<desc>
 			You already have all sorts of automated pumps and devices to drain large pools of liquid. However, some liquids, irritatingly, occur not in large lakes or wells but in scattered ponds all over the place and thus force you to either bucket it manually or spend more time moving the pump and pipes than actually pumping. The teleportation pump, by using movement energy, solves this problem by draining a large area of disconnected lakes at once, greatly expediting fluid acquisition.

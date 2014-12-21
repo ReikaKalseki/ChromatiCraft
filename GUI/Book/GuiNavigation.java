@@ -85,8 +85,9 @@ public class GuiNavigation extends ChromaBookGui {
 		while (it.hasNext()) {
 			ChromaResearch r = it.next();
 			Section s = sections.get(r);
-			if (s.elements.isEmpty())
+			if (s.elements.isEmpty()) {
 				it.remove();
+			}
 			else {
 				maxX = Math.max(maxX, leftX+15+s.getWidth(4));
 				maxY += SectionSpacing+s.getHeight(4);
@@ -164,10 +165,10 @@ public class GuiNavigation extends ChromaBookGui {
 		if (offsetY < 0) {
 			offsetY = 0;
 		}
-		if (offsetX > maxX) {
+		if (offsetX > maxX && maxX > 0) {
 			offsetX = maxX;
 		}
-		if (offsetY > maxY) {
+		if (offsetY > maxY && maxY > 0) {
 			offsetY = maxY;
 		}
 
@@ -178,6 +179,7 @@ public class GuiNavigation extends ChromaBookGui {
 
 		locations.clear();
 		tooltips.clear();
+
 		this.drawSections(leftX+11-offsetX, topY+11-offsetY);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
