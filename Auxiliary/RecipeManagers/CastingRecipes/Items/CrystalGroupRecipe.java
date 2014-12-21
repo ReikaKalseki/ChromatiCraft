@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
@@ -20,13 +22,13 @@ public class CrystalGroupRecipe extends TempleCastingRecipe {
 	public CrystalGroupRecipe(ItemStack out, Object... o) {
 		super(out, getRecipe(out, o));
 
-		ItemStack[] items = this.getArrayForDisplay();
+		List<ItemStack>[] items = this.getRecipeArray();
 		int r = out.getItemDamage() == 0 ? 3 : 4;
 		int dl = out.getItemDamage() == 2 ? -2 : (out.getItemDamage() == 3 ? 2 : 0);
-		this.addRune(CrystalElement.elements[items[1].getItemDamage()], 0+dl, 0, -r);
-		this.addRune(CrystalElement.elements[items[3].getItemDamage()], -r, 0, 0-dl);
-		this.addRune(CrystalElement.elements[items[5].getItemDamage()], r, 0, 0+dl);
-		this.addRune(CrystalElement.elements[items[7].getItemDamage()], 0-dl, 0, r);
+		this.addRune(items[1].get(0).getItemDamage(), 0+dl, 0, -r);
+		this.addRune(items[3].get(0).getItemDamage(), -r, 0, 0-dl);
+		this.addRune(items[5].get(0).getItemDamage(), r, 0, 0+dl);
+		this.addRune(items[7].get(0).getItemDamage(), 0-dl, 0, r);
 	}
 
 	private static IRecipe getRecipe(ItemStack out, Object... o) {

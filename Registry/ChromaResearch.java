@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
@@ -112,9 +113,12 @@ public enum ChromaResearch {
 	VOIDCELL(		ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
 
 	RESOURCEDESC("Resources", ""),
+	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	DUSTS("Dusts",					ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.BASICCRAFT),
+	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
+	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
 	ORES("Ores",					ChromaStacks.bindingCrystal,							ResearchLevel.RUNECRAFT),
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 			ResearchLevel.BASICCRAFT),
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
@@ -305,6 +309,12 @@ public enum ChromaResearch {
 			return true;
 		if (this == GROUPS)
 			return true;
+		if (this == CORES)
+			return true;
+		if (this == IRID)
+			return true;
+		if (this == SEED)
+			return true;
 		if (this == RUNES)
 			return true;
 		if (this == TANKAUX)
@@ -322,7 +332,7 @@ public enum ChromaResearch {
 		return this.getParent() == TOOLDESC;
 	}
 
-	private ArrayList<ItemStack> getItemStacks() {
+	public ArrayList<ItemStack> getItemStacks() {
 		if (this.isMachine())
 			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
 		if (this == STORAGE) {
@@ -343,11 +353,53 @@ public enum ChromaResearch {
 		if (item != null) {
 			return ReikaJavaLibrary.makeListFrom(item.getStackOf());
 		}
+		if (iconItem != null && iconItem.getItem() instanceof ItemCrystalBasic) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(new ItemStack(iconItem.getItem(), 1, i));
+			}
+			return li;
+		}
+		/*
+		if (this == BERRIES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaItems.BERRY.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == SEED) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaItems.SEED.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == SHARDS) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaItems.SHARD.getStackOfMetadata(i));
+			}
+			return li;
+		}*/
 		if (this == GROUPS) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < 13; i++) {
 				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
 			}
+			return li;
+		}
+		if (this == IRID) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.iridCrystal);
+			li.add(ChromaStacks.iridChunk);
+			return li;
+		}
+		if (this == CORES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.energyCore);
+			li.add(ChromaStacks.transformCore);
+			li.add(ChromaStacks.voidCore);
 			return li;
 		}
 		if (this == RUNES) {

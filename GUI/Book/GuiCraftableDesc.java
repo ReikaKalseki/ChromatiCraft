@@ -9,7 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
@@ -33,6 +39,20 @@ public class GuiCraftableDesc extends GuiDescription {
 
 		if (page.getParent() == ChromaResearch.BLOCKS) {
 			this.renderBlock(posX, posY);
+		}
+		if (page.getParent() == ChromaResearch.RESOURCEDESC) {
+			GL11.glPushMatrix();
+			double s = 4;
+			GL11.glScaled(s, s, 1);
+			GL11.glTranslated(-30, 1, 0);
+			ItemStack is = page.getTabIcon();
+			ArrayList<ItemStack> li = page.getItemStacks();
+			if (li != null && !li.isEmpty()) {
+				int tick = (int)((System.currentTimeMillis()/500)%li.size());
+				is = li.get(tick);
+			}
+			api.drawItemStack(itemRender, is, posX, posY);
+			GL11.glPopMatrix();
 		}
 	}
 

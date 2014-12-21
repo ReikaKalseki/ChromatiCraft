@@ -21,15 +21,15 @@
 	<fragment>
 		Scattered around the world, and occasionally dropped by those investigating the pylons too closely, are scraps of information on the fundamental elements of the universe or its applications. You will likely find those useful later.
 	</fragment>
-	<name>
-		
-	</name>
-	<name>
-		
-	</name>
-	<name>
-		
-	</name>
+	<berries>
+		When harvesting the colored trees from around the world, you noticed that in addition to saplings and apples, they drop berries of the same color. They are too foul-tasting to be of much use for sustenance, but you can feel the tingle of energy contained within, making them a viable way to augment your own energy stores. They may also play a key role in enriching the power of crystal shards, though you will need some magical solvent.
+	</berries>
+	<cores>
+		Some constructs need to perform special functions, like transforming their surroundings or opening a hole to the void. In order to do this, they will need to contain an appropriate core.
+	</cores>
+	<irid>
+		You have already figured out that you can purify and then infuse shards with the essence of chroma. Now you can assemble them into larger parts which will ultimately be used to make the Power Crystals.
+	</irid>
 	<name>
 		
 	</name>

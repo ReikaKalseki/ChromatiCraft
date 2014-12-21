@@ -17,11 +17,24 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class CrystalSeedRecipe extends TempleCastingRecipe {
 
-	public CrystalSeedRecipe(ItemStack out, CrystalElement e) {
-		super(out, ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SsS", "GSG", 'G', Items.glowstone_dust, 'S', getShard(e), 's', Items.wheat_seeds));
+	private final boolean enhanced;
+
+	public CrystalSeedRecipe(ItemStack out, CrystalElement e, boolean en) {
+		super(out, ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SsS", "GSG", 'G', Items.glowstone_dust, 'S', getUsedShard(en, e), 's', Items.wheat_seeds));
 
 		int[] xyz = runeRing.getNthBlock(e.ordinal());
 		this.addRune(e, xyz[0], xyz[1], xyz[2]);
+
+		enhanced = en;
+	}
+
+	private static ItemStack getUsedShard(boolean enhanced, CrystalElement e) {
+		return enhanced ? getChargedShard(e) : getShard(e);
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return enhanced ? 8 : 1;
 	}
 
 }

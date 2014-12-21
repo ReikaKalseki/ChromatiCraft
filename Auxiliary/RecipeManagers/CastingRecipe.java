@@ -36,6 +36,8 @@ import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class CastingRecipe {
@@ -74,8 +76,13 @@ public class CastingRecipe {
 		return 5;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public ItemStack[] getArrayForDisplay() {
 		return ReikaRecipeHelper.getPermutedRecipeArray(recipe);
+	}
+
+	protected final List<ItemStack>[] getRecipeArray() {
+		return ReikaRecipeHelper.getRecipeArray(recipe);
 	}
 
 	public boolean usesItem(ItemStack is) {

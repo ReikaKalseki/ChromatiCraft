@@ -12,7 +12,6 @@ package Reika.ChromatiCraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -25,7 +24,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.ShapelessNBTRecipe;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ThermalRecipeHelper;
@@ -53,9 +51,6 @@ public class ChromaRecipes {
 			ItemStack output = ItemInfoFragment.getItem(r);
 			GameRegistry.addRecipe(new ShapelessNBTRecipe(ReikaItemHelper.getSizedItemStack(output, 2), output, Items.paper/*, ReikaItemHelper.inksac*/));
 		}
-
-		ReikaJavaLibrary.pConsole(CraftingManager.getInstance().getRecipeList());
-		ReikaJavaLibrary.pConsole("----");
 
 		//GameRegistry.addRecipe(ChromaTiles.BREWER.getCraftedProduct(), "NNN", "NBN", "SSS", 'N', Items.quartz, 'S', Blocks.stone, 'B', Items.brewing_stand);
 		//GameRegistry.addRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), "ISI", "SCS", "ISI", 'I', Items.iron_ingot, 'S', getShard(ReikaDyeHelper.WHITE), 'C', ChromaItems.CLUSTER.getStackOfMetadata(11));

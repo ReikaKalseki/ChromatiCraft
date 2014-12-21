@@ -43,6 +43,7 @@ public class ProgressionManager {
 	public static enum ProgressStage {
 
 		CRYSTALS(), //Found a crystal
+		DYETREE(), //Harvest a dye tree
 		MULTIBLOCK(), //Assembled a multiblock
 		RUNEUSE(), //Placed runes
 		PYLON(), //Found pylon

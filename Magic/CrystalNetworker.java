@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
 import java.util.Iterator;
 
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -57,16 +59,22 @@ public class CrystalNetworker implements TickHandler {
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		PylonFinder.stopAllSearches();
 		int dim = evt.world.provider.dimensionId;
-		this.clear(dim);
-		for (WorldLocation c : tiles.keySet()) {
-			CrystalNetworkTile te = tiles.get(c);
-			PylonFinder.removePathsWithTile(te);
-			if (te instanceof CrystalTransmitter)
-				((CrystalTransmitter)te).clearTargets();
+		try {
+			this.clear(dim);
+			for (WorldLocation c : tiles.keySet()) {
+				CrystalNetworkTile te = tiles.get(c);
+				PylonFinder.removePathsWithTile(te);
+				if (te instanceof CrystalTransmitter)
+					((CrystalTransmitter)te).clearTargets();
+			}
+			tiles.removeWorld(evt.world);
+			for (TileEntityCache c : pylons.values())
+				c.removeWorld(evt.world);
 		}
-		tiles.removeWorld(evt.world);
-		for (TileEntityCache c : pylons.values())
-			c.removeWorld(evt.world);
+		catch (ConcurrentModificationException e) {
+			ChromatiCraft.logger.logError("Clearing the crystal network on world unload caused a CME. This is indicative of a deeper problem.");
+			e.printStackTrace();
+		}
 	}
 
 	private void save(NBTTagCompound NBT) {

@@ -125,7 +125,8 @@ public class RecipesCastingTable {
 			ShapedOreRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
 			this.addRecipe(new CastingRecipe(block, sr));
 
-			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i]));
+			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], false));
+			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], true));
 
 			this.addRecipe(new LumenLampRecipe(new ItemStack(ChromaBlocks.LAMPBLOCK.getBlockInstance(), 16, i), CrystalElement.elements[i]));
 		}
