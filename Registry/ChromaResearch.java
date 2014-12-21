@@ -115,11 +115,11 @@ public enum ChromaResearch {
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
 	SHARDS("Shards",				ChromaStacks.redShard, 									ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
-	DUSTS("Dusts",					ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
+	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.BASICCRAFT),
 	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
 	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
-	ORES("Ores",					ChromaStacks.bindingCrystal,							ResearchLevel.RUNECRAFT),
+	ORES("Buried Secrets",			ChromaStacks.bindingCrystal,							ResearchLevel.RUNECRAFT),
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 			ResearchLevel.BASICCRAFT),
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
@@ -387,6 +387,24 @@ public enum ChromaResearch {
 			for (int i = 0; i < 13; i++) {
 				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
 			}
+			return li;
+		}
+		if (this == ORES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.chromaDust);
+			for (int i = 0; i < 16; i++)
+				li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(i));
+			li.add(ChromaStacks.focusDust);
+			li.add(ChromaStacks.bindingCrystal);
+			return li;
+		}
+		if (this == DUSTS) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.auraDust);
+			li.add(ChromaStacks.purityDust);
+			li.add(ChromaStacks.elementDust);
+			li.add(ChromaStacks.beaconDust);
+			li.add(ChromaStacks.resonanceDust);
 			return li;
 		}
 		if (this == IRID) {

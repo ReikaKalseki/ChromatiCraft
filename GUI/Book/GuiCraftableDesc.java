@@ -48,7 +48,7 @@ public class GuiCraftableDesc extends GuiDescription {
 			ItemStack is = page.getTabIcon();
 			ArrayList<ItemStack> li = page.getItemStacks();
 			if (li != null && !li.isEmpty()) {
-				int tick = (int)((System.currentTimeMillis()/500)%li.size());
+				int tick = (int)((System.currentTimeMillis()/1000)%li.size());
 				is = li.get(tick);
 			}
 			api.drawItemStack(itemRender, is, posX, posY);
