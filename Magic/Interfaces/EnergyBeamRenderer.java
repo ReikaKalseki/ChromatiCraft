@@ -23,6 +23,6 @@ public interface EnergyBeamRenderer {
 
 	public void removeTarget(WorldLocation loc, CrystalElement e);
 
-	public void clearTargets();
+	public void clearTargets(boolean unload);
 
 }

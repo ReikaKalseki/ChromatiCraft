@@ -127,7 +127,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						int dx = c.xCoord;
 						int dy = c.yCoord;
 						int dz = c.zCoord;
-						Block id = world.getBlock(dx, dy, dz);
+						Block id = this.parseBlock(world.getBlock(x, y, z));
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
 						this.removeFound(world, dx, dy, dz, id, meta2);
@@ -160,7 +160,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						int dy = readY;
 						int dz = z+readZ;
 						ReikaWorldHelper.forceGenAndPopulate(world, dx, dy, dz, meta);
-						Block id = world.getBlock(dx, dy, dz);
+						Block id = this.parseBlock(world.getBlock(dx, dy, dz));
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
 						boolean add = false;
@@ -193,6 +193,12 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		}
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	private Block parseBlock(Block b) {
+		if (b == Blocks.lit_redstone_ore)
+			return Blocks.redstone_ore;
+		return b;
 	}
 
 	private boolean shouldMine(Block id, int meta2) {

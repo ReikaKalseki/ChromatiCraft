@@ -285,20 +285,18 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	private void fightInstability(World world, int x, int y, int z) {
-		if (ReikaMystcraftHelper.loadedCorrectly) {
-			if (ReikaMystcraftHelper.getBonusInstabilityForAge(world) > 0) {
-				ReikaMystcraftHelper.addBonusInstabilityForAge(world, -1);
-				//ReikaJavaLibrary.pConsole("bon: "+ReikaMystcraftHelper.getBonusInstabilityForAge(world));
-			}
-			else if (ReikaMystcraftHelper.getBaseInstabilityForAge(world) > 0) {
-				ReikaMystcraftHelper.addBaseInstabilityForAge(world, (short)-1);
-				//ReikaJavaLibrary.pConsole("base: "+ReikaMystcraftHelper.getBaseInstabilityForAge(world));
-			}
-			else {
-				//REMOVED//ReikaMystcraftHelper.addStabilityForAge(world, 1);
+		if (ReikaMystcraftHelper.getBonusInstabilityForAge(world) > 0) {
+			ReikaMystcraftHelper.addBonusInstabilityForAge(world, -1);
+			//ReikaJavaLibrary.pConsole("bon: "+ReikaMystcraftHelper.getBonusInstabilityForAge(world));
+		}
+		else if (ReikaMystcraftHelper.getBaseInstabilityForAge(world) > 0) {
+			ReikaMystcraftHelper.addBaseInstabilityForAge(world, (short)-1);
+			//ReikaJavaLibrary.pConsole("base: "+ReikaMystcraftHelper.getBaseInstabilityForAge(world));
+		}
+		else {
+			//REMOVED//ReikaMystcraftHelper.addStabilityForAge(world, 1);
 
-				//ReikaJavaLibrary.pConsole("sta: "+ReikaMystcraftHelper.getStabilityForAge(world));
-			}
+			//ReikaJavaLibrary.pConsole("sta: "+ReikaMystcraftHelper.getStabilityForAge(world));
 		}
 	}
 

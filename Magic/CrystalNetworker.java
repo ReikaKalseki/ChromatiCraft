@@ -65,7 +65,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalNetworkTile te = tiles.get(c);
 				PylonFinder.removePathsWithTile(te);
 				if (te instanceof CrystalTransmitter)
-					((CrystalTransmitter)te).clearTargets();
+					((CrystalTransmitter)te).clearTargets(true);
 			}
 			tiles.removeWorld(evt.world);
 			for (TileEntityCache c : pylons.values())

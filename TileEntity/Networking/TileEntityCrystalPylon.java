@@ -332,7 +332,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 				this.invalidatationParticles();
 		}
 		hasMultiblock = false;
-		this.clearTargets();
+		this.clearTargets(false);
 		energy = 0;
 		this.syncAllData(true);
 	}

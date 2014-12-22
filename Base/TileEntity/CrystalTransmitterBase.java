@@ -93,10 +93,11 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		}
 	}
 
-	public final void clearTargets() {
+	public final void clearTargets(boolean unload) {
 		if (!worldObj.isRemote) {
 			targets.clear();
-			this.onTargetChanged();
+			if (!unload)
+				this.onTargetChanged();
 		}
 	}
 
