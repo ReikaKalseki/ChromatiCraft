@@ -122,14 +122,20 @@ public class RecipesCastingTable {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack block = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 8, 0);
-			ShapedOreRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
+			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
+
+			IRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
 			this.addRecipe(new CastingRecipe(block, sr));
 
 			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], false));
 			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], true));
 
 			this.addRecipe(new LumenLampRecipe(new ItemStack(ChromaBlocks.LAMPBLOCK.getBlockInstance(), 16, i), CrystalElement.elements[i]));
+
+			sr = ReikaRecipeHelper.getShapedRecipeFor(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
+			this.addRecipe(new CastingRecipe(lamp, sr));
 		}
+
 		Block block = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 2, 2), "S", "S", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 2, 2), sr));

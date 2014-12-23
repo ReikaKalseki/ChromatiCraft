@@ -29,6 +29,9 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeColors;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
@@ -93,6 +96,8 @@ public enum ChromaResearch {
 	DYELEAVES(		ChromaBlocks.DYELEAF,											ResearchLevel.ENTRY),
 	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,										ResearchLevel.RAWEXPLORE,	ProgressStage.RAINBOWLEAF),
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),
+	CRYSTALLAMP(	ChromaBlocks.LAMP,			CrystalElement.YELLOW.ordinal(),	ResearchLevel.RAWEXPLORE),
+	SUPERLAMP(		ChromaBlocks.SUPER,			CrystalElement.MAGENTA.ordinal(),	ResearchLevel.PYLONCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(			ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -323,6 +328,10 @@ public enum ChromaResearch {
 			return true;
 		if (this == TNT)
 			return true;
+		if (this == LAMPAUX)
+			return true;
+		if (this == CRYSTALLAMP || this == SUPERLAMP)
+			return true;
 		if (this == CRYSTALSTONE)
 			return true;
 		return false;
@@ -420,12 +429,15 @@ public enum ChromaResearch {
 			li.add(ChromaStacks.voidCore);
 			return li;
 		}
-		if (this == RUNES) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < 16; i++) {
-				li.add(ChromaBlocks.RUNE.getStackOf(i));
+		if (block != null) {
+			Item item = Item.getItemFromBlock(block.getBlockInstance());
+			if (item instanceof ItemBlockDyeTypes || item instanceof ItemBlockDyeColors || item instanceof ItemBlockCrystal) {
+				ArrayList<ItemStack> li = new ArrayList();
+				for (int i = 0; i < 16; i++) {
+					li.add(block.getStackOf(i));
+				}
+				return li;
 			}
-			return li;
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());

@@ -25,6 +25,12 @@
 		Scatter these around your base, and you have a network of lights that can be remotely controlled with the flick of a switch.
 	</lampaux>
 	<rainbowleaves>
-		Aside from the comparatively common single-color trees, you have occasionally spotted towering flame-shaped trees whose leaves sparkle with every color of the rainbow. They are more than aesthetically pleasing; they seem to change the very air around them, cleaning it, stabilizing it. You recall the purple blight you ran into elsewhere, and wonder if this can keep that at bay. It might even be able to stabilize those worlds you found, rich with dense ores but being eaten by spongy masses and giant meteros.
+		Aside from the comparatively common single-color trees, you have occasionally spotted towering flame-shaped trees whose leaves sparkle with every color of the rainbow. They are more than aesthetically pleasing; they seem to change the very air around them, cleaning it, stabilizing it. You recall the purple blight you ran into elsewhere, and wonder if this can keep that at bay. It might even be able to stabilize those worlds you found, rich with dense ores but being eaten by spongy masses and giant meteors.
 	</rainbowleaves>
+	<crystallamp>
+		Lighting your house is a necessary task, but torches, while effective, are boring, and other lighting methods often involve glowstone, a costly and rare material. Recalling the weak glow given off by crystals, you wonder if you may be able to fashion them into far more attractive and powerful lamps.
+	</crystallamp>
+	<superlamp>
+		Crystal-based lamps are nice, but you long for the stat boosts given by the original crystals. Recalling their creation, you hit upon an idea: if you use a complete crystal, rather than shards as the base, and dump in a healthy amount of crystal energy, you should get a lamp that not only glows brightly, but emits a powerful effect over a significant radius.
+	</superlamp>
 </blocks>

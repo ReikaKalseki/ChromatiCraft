@@ -67,6 +67,10 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		}
 		else {
 			ChromaResearch r = this.getResearch(is);
+			if (r == null) {
+				li.add("[ERROR: NO RESEARCH FOR NAME '"+is.stackTagCompound.getString("page")+"'");
+				return;
+			}
 			EnumChatFormatting format = null;
 			boolean read = r.playerCanRead(ep);
 			boolean has = ChromaResearchManager.instance.playerHasFragment(ep, r);
