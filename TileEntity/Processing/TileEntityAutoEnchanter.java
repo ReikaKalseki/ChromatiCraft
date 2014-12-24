@@ -87,6 +87,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private void applyEnchants() {
+		if (inv[0].getItem() == Items.book)
+			inv[0] = new ItemStack(Items.enchanted_book);
 		ReikaEnchantmentHelper.applyEnchantments(inv[0], selected);
 		tank.removeLiquid(this.getConsumedChroma());
 	}

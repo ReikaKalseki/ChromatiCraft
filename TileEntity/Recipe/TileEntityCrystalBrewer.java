@@ -22,7 +22,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 
@@ -60,13 +59,13 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 		if (is == null)
 			return false;
 		if (is.getItem() == Items.potionitem) {
-			if (zd == ReikaDyeHelper.BLACK.ordinal() || zd == ReikaDyeHelper.BROWN.ordinal() || zd == ReikaDyeHelper.PURPLE.ordinal())
+			if (zd == CrystalElement.BLACK.ordinal() || zd == CrystalElement.BROWN.ordinal() || zd == CrystalElement.PURPLE.ordinal())
 				return ReikaPotionHelper.isActualPotion(is.getItemDamage());
 			else
 				return true;
 		}
 		else if (is.getItem() == ChromaItems.POTION.getItemInstance()) {
-			return zd == ReikaDyeHelper.BLACK.ordinal() || zd == ReikaDyeHelper.BROWN.ordinal() || zd == ReikaDyeHelper.PURPLE.ordinal();
+			return zd == CrystalElement.BLACK.ordinal() || zd == CrystalElement.BROWN.ordinal() || zd == CrystalElement.PURPLE.ordinal();
 		}
 		return false;
 	}

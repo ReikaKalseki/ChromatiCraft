@@ -41,6 +41,12 @@ public class ExplorationMonitor implements TickHandler {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
+
+				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
+					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
+					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true);
+				}
+
 				Block b = world.getBlock(x, y, z);
 				if (b instanceof ProgressionTrigger) {
 					ProgressStage[] ps = ((ProgressionTrigger)b).getTriggers(ep, world, x, y, z);
@@ -50,10 +56,6 @@ public class ExplorationMonitor implements TickHandler {
 							ProgressionManager.instance.stepPlayerTo(ep, p);
 						}
 					}
-				}
-				else if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
-					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true);
 				}
 			}
 		}

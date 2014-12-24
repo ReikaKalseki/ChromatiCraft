@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Interfaces.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -154,42 +153,58 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 	public String getPotionEffect(ItemStack is)
 	{
 		String ret = "";
-		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(is.getItemDamage());
+		CrystalElement dye = CrystalElement.elements[is.getItemDamage()];
 		switch(dye) {
 		case BLACK:
 			ret += PotionHelper.fermentedSpiderEyeEffect;
+			break;
 		case BLUE:
 			ret += PotionHelper.goldenCarrotEffect;
+			break;
 		case BROWN:
 			ret += PotionHelper.redstoneEffect;
+			break;
 		case CYAN: //water breathing
 			ret += "";
+			break;
 		case GRAY: //slowness
 			ret += PotionHelper.sugarEffect;
+			break;
 		case GREEN:
 			ret += PotionHelper.spiderEyeEffect;
+			break;
 		case LIGHTBLUE:
 			ret += PotionHelper.sugarEffect;
+			break;
 		case LIGHTGRAY: //weakness
 			ret += PotionHelper.blazePowderEffect;
+			break;
 		case LIME: //jump boost
 			ret += "";
+			break;
 		case MAGENTA:
 			ret += PotionHelper.ghastTearEffect;
+			break;
 		case ORANGE:
 			ret += PotionHelper.magmaCreamEffect;
+			break;
 		case PINK:
 			ret += PotionHelper.blazePowderEffect;
+			break;
 		case PURPLE: //xp -> level2?
 			ret += PotionHelper.glowstoneEffect;
+			break;
 		case RED: //resistance
 			ret += "";
 		case WHITE:
 			ret += PotionHelper.goldenCarrotEffect;
+			break;
 		case YELLOW: //haste
 			ret += "";
+			break;
 		default:
 			ret += "";
+			break;
 		}
 		if (is.getItemDamage() >= 16) {
 			ret += "+5+6-7"; //level II and extended
