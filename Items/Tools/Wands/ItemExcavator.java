@@ -15,11 +15,13 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemExcavator extends ItemWandBase implements BreakerCallback {
 
@@ -64,7 +66,7 @@ public class ItemExcavator extends ItemWandBase implements BreakerCallback {
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				return this.sufficientEnergy(ep);
+				return this.sufficientEnergy(ep) && (world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, ep));
 			}
 		}
 		return false;

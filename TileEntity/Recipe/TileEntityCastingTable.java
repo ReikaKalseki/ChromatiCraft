@@ -120,7 +120,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
+		//ChromaStructures.getCastingLevelTwo(world, x, y-1, z).place();
 		if (DragonAPICore.debugtest)
 			this.addXP(3434);
 
@@ -503,6 +503,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 	}
 
+	public int getXP() {
+		return tableXP;
+	}
+
 	private void spawnParticles(World world, int x, int y, int z) {
 
 	}
@@ -661,6 +665,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("lvl", this.getTier().ordinal());
+		NBT.setInteger("xp", tableXP);
 	}
 
 	@Override
@@ -671,6 +676,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				if (is.stackTagCompound != null) {
 					int lvl = is.stackTagCompound.getInteger("lvl");
 					tier = RecipeType.typeList[lvl];
+					tableXP = is.stackTagCompound.getInteger("xp");
 				}
 			}
 		}

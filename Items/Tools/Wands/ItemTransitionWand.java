@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
@@ -113,7 +114,9 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				return this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM);
+				if (this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM)) {
+					return world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, r.player);
+				}
 			}
 		}
 		return false;
