@@ -159,7 +159,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		int base = Math.min(size*size, 500000);
 		int lin = base*FACTOR;
 		double fac = Math.pow(1.005, size-1);
-		int bucket = (int)(lin*fac/1000D);
+		int bucket = (int)Math.min(2000000D, (lin*fac/1000D));
 		int rnd = 1;
 		if (bucket > 100)
 			rnd = 10;

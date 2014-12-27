@@ -64,7 +64,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean canProgress() {
-		return inv[0] != null && this.isValid(inv[0]) && this.hasChroma(this.getConsumedChroma()) && this.enchanting();
+		return inv[0] != null && this.isValid(inv[0]) && this.getChroma() >= this.getConsumedChroma() && this.enchanting();
 	}
 
 	private boolean enchanting() {
@@ -78,8 +78,16 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		return false;
 	}
 
-	public boolean hasChroma(int amt) {
-		return !tank.isEmpty() && tank.getLevel() >= amt && tank.getActualFluid().equals(FluidRegistry.getFluid("chroma"));
+	public int getChroma() {
+		return tank.getLevel();
+	}
+
+	public boolean addChroma(int amt) {
+		if (tank.canTakeIn(amt)) {
+			tank.addLiquid(amt, FluidRegistry.getFluid("chroma"));
+			return true;
+		}
+		return false;
 	}
 
 	private boolean isValid(ItemStack is) {

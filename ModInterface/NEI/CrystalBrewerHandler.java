@@ -16,13 +16,13 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 
@@ -31,13 +31,11 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 	private class CrystalRecipe extends CachedRecipe {
 
 		public final CrystalElement color;
+		public final boolean boosted;
 
-		public CrystalRecipe(int color) {
-			this(CrystalElement.elements[color]);
-		}
-
-		public CrystalRecipe(CrystalElement color) {
-			this.color = color;
+		public CrystalRecipe(int dmg) {
+			color = CrystalElement.elements[dmg%16];
+			boosted = dmg >= 16;
 		}
 
 		@Override
@@ -52,7 +50,7 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		}
 
 		public ItemStack getInputShard() {
-			return ChromaItems.SHARD.getStackOfMetadata(color.ordinal());
+			return ChromaItems.SHARD.getStackOfMetadata(boosted ? 16+color.ordinal() : color.ordinal());
 		}
 
 		public Potion getOutputPotion() {
@@ -62,9 +60,15 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		@Override
 		public List<PositionedStack> getOtherStacks()
 		{
-			ItemStack out = TileEntityCrystalBrewer.getPotionStackFromColor(color);
+			ItemStack in = new ItemStack(Items.potionitem); //water bottle
+			if (CrystalPotionController.isPotionModifier(color)) {
+				ArrayList<ItemStack> li = ReikaPotionHelper.getBasePotionItems();
+				int tick = (int)((System.currentTimeMillis()/1000)%li.size());
+				in = li.get(tick);
+			}
+			ItemStack out = TileEntityCrystalBrewer.getPotionStackFromColor(in.getItemDamage(), color, boosted);
 			ArrayList<PositionedStack> stacks = new ArrayList<PositionedStack>();
-			stacks.add(new PositionedStack(new ItemStack(Items.potionitem), 51, 35));
+			stacks.add(new PositionedStack(in, 51, 35));
 			//stacks.add(new PositionedStack(out, 74, 42));
 			stacks.add(new PositionedStack(out, 97, 35));
 			return stacks;
@@ -88,15 +92,11 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 		}
 		else if (result.getItem() == Items.potionitem) {
 			int id = ReikaPotionHelper.getPotionID(result.getItemDamage());
-			for (int i = 0; i < 16; i++) {
-				CrystalElement color = CrystalElement.elements[i];
-				PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
-				if (eff != null) {
-					int potid = eff.getPotionID();
-					if (potid == id) {
-						arecipes.add(new CrystalRecipe(color));
-						return;
-					}
+			for (int i = 0; i < 32; i++) {
+				CrystalElement color = CrystalElement.elements[i%16];
+				ItemStack out = TileEntityCrystalBrewer.getPotionStackFromColor(result.getItemDamage(), color, i >= 16);
+				if (ReikaItemHelper.matchStacks(result, out)) {
+					arecipes.add(new CrystalRecipe(i));
 				}
 			}
 		}
@@ -105,9 +105,24 @@ public class CrystalBrewerHandler extends TemplateRecipeHandler {
 	@Override
 	public void loadUsageRecipes(ItemStack ingredient) {
 		if (ingredient.getItem() == ChromaItems.SHARD.getItemInstance()) {
-			CrystalElement color = CrystalElement.elements[ingredient.getItemDamage()%16];
-			if (!CrystalPotionController.isPotionModifier(color))
-				arecipes.add(new CrystalRecipe(color));
+			arecipes.add(new CrystalRecipe(ingredient.getItemDamage()));
+		}
+		else if (ingredient.getItem() == Items.potionitem) {
+			int dmg = ingredient.getItemDamage();
+			if (dmg == 0) {
+				for (int i = 0; i < 32; i++) {
+					CrystalElement color = CrystalElement.elements[i%16];
+					if (!CrystalPotionController.isPotionModifier(color))
+						arecipes.add(new CrystalRecipe(i));
+				}
+			}
+			else if (ReikaPotionHelper.getPotionValues().values().contains(dmg)) {
+				for (int i = 0; i < 32; i++) {
+					CrystalElement color = CrystalElement.elements[i%16];
+					if (CrystalPotionController.isPotionModifier(color))
+						arecipes.add(new CrystalRecipe(i));
+				}
+			}
 		}
 	}
 

@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
 public interface ChromaPowered {
 
-	public boolean hasChroma(int amt);
+	public int getChroma();
+
+	public boolean addChroma(int amt);
 
 }

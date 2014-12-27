@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -199,7 +198,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 				break;
 			default:
 				PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
-				if (isPotionAllowed(eff, e))
+				if (CrystalPotionController.isPotionAllowed(eff, e))
 					e.addPotionEffect(eff);
 			}
 		}
@@ -226,33 +225,12 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 			default:
 				PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
 				if (eff != null) {
-					if (isPotionAllowed(eff, e)) {
+					if (CrystalPotionController.isPotionAllowed(eff, e)) {
 						e.addPotionEffect(eff);
 					}
 				}
 			}
 		}
-	}
-
-	private static boolean isPotionAllowed(PotionEffect eff, EntityLivingBase e) {
-		if (eff == null)
-			return false;
-		Potion pot = Potion.potionTypes[eff.getPotionID()];
-		PotionEffect has = e.getActivePotionEffect(pot);
-		if (has != null) {
-			if (has.getAmplifier() > eff.getAmplifier())
-				return false;
-			if (has.getDuration() > eff.getDuration())
-				return false;
-		}
-		if (!(e instanceof EntityPlayer)) {
-			return e.worldObj.provider.isHellWorld ? !ReikaPotionHelper.isBadEffect(pot) : true;
-		}
-		if (e.worldObj.provider.isHellWorld)
-			return eff.getPotionID() == Potion.nightVision.id || ReikaPotionHelper.isBadEffect(pot);
-		if (e.worldObj.provider.dimensionId == 1)
-			return true;
-		return !ReikaPotionHelper.isBadEffect(pot);
 	}
 
 	@Override

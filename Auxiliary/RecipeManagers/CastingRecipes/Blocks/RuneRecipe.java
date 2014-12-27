@@ -32,7 +32,7 @@ public class RuneRecipe extends CastingRecipe {
 
 	@Override
 	public int getExperience() {
-		return isBoosted ? 20 : 8;
+		return isBoosted ? 4*super.getExperience() : 2*super.getExperience();
 	}
 
 }

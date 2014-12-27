@@ -59,34 +59,39 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 		if (is == null)
 			return false;
 		if (is.getItem() == Items.potionitem) {
-			if (zd == CrystalElement.BLACK.ordinal() || zd == CrystalElement.BROWN.ordinal() || zd == CrystalElement.PURPLE.ordinal())
+			if (CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]))
 				return ReikaPotionHelper.isActualPotion(is.getItemDamage());
 			else
 				return true;
 		}
 		else if (is.getItem() == ChromaItems.POTION.getItemInstance()) {
-			return zd == CrystalElement.BLACK.ordinal() || zd == CrystalElement.BROWN.ordinal() || zd == CrystalElement.PURPLE.ordinal();
+			return CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]);
 		}
 		return false;
 	}
 
 	private void brew() {
-		CrystalElement color = CrystalElement.elements[inv[0].getItemDamage()];
-		boolean custom = CrystalPotionController.requiresCustomPotion(color);
+		CrystalElement color = CrystalElement.elements[inv[0].getItemDamage()%16];
+		boolean boost = inv[0].getItemDamage() >= 16;
 		inv[0] = null;
 
 		for (int i = 1; i < 4; i++) {
 			if (inv[i] != null) {
-				inv[i] = this.getPotionStackFromColor(color);
+				inv[i] = this.getPotionStackFromColor(inv[i].getItemDamage(), color, boost);
 			}
 		}
 	}
 
-	public static ItemStack getPotionStackFromColor(CrystalElement color) {
+	public static ItemStack getPotionStackFromColor(int dmg, CrystalElement color, boolean boost) {
 		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(color.ordinal());
 		String eff = shard.getItem().getPotionEffect(shard);
 		boolean custom = CrystalPotionController.requiresCustomPotion(color);
 		ItemStack is = new ItemStack(Items.potionitem, 1, ReikaPotionHelper.AWKWARD_META);
+
+		if (CrystalPotionController.isPotionModifier(color)) {
+			is.setItemDamage(dmg);
+		}
+
 		if (custom) {
 			is = new ItemStack(ChromaItems.POTION.getItemInstance(), 1, color.ordinal());
 		}
@@ -102,8 +107,28 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 				is = new ItemStack(is.getItem(), 1, newmeta);
 			}
 		}
+		if (boost) {
+			is.setItemDamage(is.getItemDamage() | ReikaPotionHelper.BOOST_BIT | ReikaPotionHelper.EXTENDED_BIT);
+		}
 		return is;
 	}
+	/*
+	public static List<ItemStack> getPotionsForColor(CrystalElement color) {
+		if (CrystalPotionController.isPotionModifier(color)) {
+			Map<Potion, Integer> map = ReikaPotionHelper.getPotionValues();
+			ArrayList<ItemStack> li = new ArrayList();
+			for (Potion p : map.keySet()) {
+				int meta = map.get(p);
+				ItemStack is = getPotionStackFromColor(meta, color);
+				li.add(is);
+			}
+			//ReikaJavaLibrary.pConsole(li);
+			return li;
+		}
+		else {
+			return ReikaJavaLibrary.makeListFrom(getPotionStackFromColor(ReikaPotionHelper.AWKWARD_META, color));
+		}
+	}*/
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {

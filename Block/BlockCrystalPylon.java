@@ -12,14 +12,18 @@ package Reika.ChromatiCraft.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
 
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger {
@@ -32,6 +36,13 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public int getRenderBlockPass() {
 		return 1;
+	}
+
+	@Override
+	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		TileEntity te = iba.getTileEntity(x, y, z);
+		int color = te instanceof TileEntityCrystalPylon ? ((TileEntityCrystalPylon)te).getColor().getColor() : 0xffffff;
+		return ModList.COLORLIGHT.isLoaded() ? color&0xff << 15 | color&0xff00 << 10 | color&0xff0000 << 5 | 15 : 15;
 	}
 
 	@Override

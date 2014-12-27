@@ -11,12 +11,15 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.HashMap;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 
 public class CrystalPotionController {
@@ -66,6 +69,27 @@ public class CrystalPotionController {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return true;
 		return world.provider.isHellWorld;
+	}
+
+	public static boolean isPotionAllowed(PotionEffect eff, EntityLivingBase e) {
+		if (eff == null)
+			return false;
+		Potion pot = Potion.potionTypes[eff.getPotionID()];
+		PotionEffect has = e.getActivePotionEffect(pot);
+		if (has != null) {
+			if (has.getAmplifier() > eff.getAmplifier())
+				return false;
+			if (has.getDuration() > eff.getDuration())
+				return false;
+		}
+		if (!(e instanceof EntityPlayer)) {
+			return e.worldObj.provider.isHellWorld ? !ReikaPotionHelper.isBadEffect(pot) : true;
+		}
+		if (e.worldObj.provider.isHellWorld)
+			return eff.getPotionID() == Potion.nightVision.id || ReikaPotionHelper.isBadEffect(pot);
+		if (e.worldObj.provider.dimensionId == 1)
+			return true;
+		return !ReikaPotionHelper.isBadEffect(pot);
 	}
 
 	public static PotionEffect getEffectFromColor(CrystalElement color, int dura, int level) {

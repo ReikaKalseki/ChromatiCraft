@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -32,6 +33,7 @@ import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -310,6 +312,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		ChromaSounds.DISCHARGE.playSound(worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		e.attackEntityFrom(ChromatiCraft.pylon, 5);
+		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
+		if (eff != null) {
+			e.addPotionEffect(eff);
+		}
 	}
 
 	private void sendClientAttack(CrystalTransmitter te, EntityLivingBase e) {

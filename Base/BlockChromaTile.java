@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -39,6 +40,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -164,6 +166,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			((TileEntityBase)te).syncAllData(true);
 			ep.setCurrentItemOrArmor(0, ret);
 			return true;
+		}
+
+		if (ChromaItems.BUCKET.matchWith(is) && is.getItemDamage() == 0 && te instanceof ChromaPowered) {
+			if (((ChromaPowered)te).addChroma(1000)) {
+				if (!ep.capabilities.isCreativeMode)
+					ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket));
+				return true;
+			}
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && te instanceof FiberIO) {
