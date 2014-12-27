@@ -19,10 +19,10 @@ public class EnchanterRecipe extends TempleCastingRecipe {
 	public EnchanterRecipe(ItemStack out, IRecipe in) {
 		super(out, in);
 
-		this.addRune(CrystalElement.BLACK, -4, -3, 0);
-		this.addRune(CrystalElement.PURPLE, -3, -4, 0);
-		this.addRune(CrystalElement.BLACK, 4, 3, 0);
-		this.addRune(CrystalElement.PURPLE, 3, 4, 0);
+		this.addRune(CrystalElement.BLACK, -4, 0, -3);
+		this.addRune(CrystalElement.PURPLE, -3, 0, -4);
+		this.addRune(CrystalElement.BLACK, 4, 0, 3);
+		this.addRune(CrystalElement.PURPLE, 3, 0, 4);
 	}
 
 }

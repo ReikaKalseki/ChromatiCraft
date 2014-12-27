@@ -18,13 +18,21 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class RuneRecipe extends CastingRecipe {
 
+	private final boolean isBoosted;
+
 	public RuneRecipe(ItemStack out, int meta) {
 		super(out, getRecipe(out, meta));
+		isBoosted = meta >= 16;
 	}
 
 	private static ShapedRecipes getRecipe(ItemStack out, int meta) {
 		ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(meta);
 		return ReikaRecipeHelper.getShapedRecipeFor(out, "SSS", "SCS", "SSS", 'C', shard, 'S', ChromaBlocks.PYLONSTRUCT.getStackOf());
+	}
+
+	@Override
+	public int getExperience() {
+		return isBoosted ? 20 : 8;
 	}
 
 }

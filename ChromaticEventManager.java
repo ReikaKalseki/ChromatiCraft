@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -62,7 +63,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -190,7 +191,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void extraXP(AttackEntityEvent ev) {
+	public void carryPotionEffect(AttackEntityEvent ev) {
 		EntityPlayer ep = ev.entityPlayer;
 		Entity tg = ev.target;
 		if (tg instanceof EntityLivingBase) {
@@ -215,27 +216,36 @@ public class ChromaticEventManager {
 		DamageSource src = ev.source;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
-			int meta = ReikaDyeHelper.PURPLE.ordinal();
+			int meta = CrystalElement.PURPLE.ordinal();
 			int val = e instanceof EntityPlayer ? 25 : e instanceof EntityLiving ? ((EntityLiving)e).experienceValue : 5;
 			if (val == 0)
 				val = 5;
 			if (e instanceof EntityDragon)
 				val = 10000;
-			if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOfMetadata(meta), ep.inventory, false)) {
-				for (int i = 0; i < 3; i++) {
+			if (CrystalPotionController.shouldBeHostile(e.worldObj)) {
+				if (e instanceof EntityLiving)
+					((EntityLiving)e).experienceValue = 0;
+				else if (e instanceof EntityPlayer) {
+					ReikaPlayerAPI.clearExperience((EntityPlayer)e);
+				}
+			}
+			else {
+				if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOfMetadata(meta), ep.inventory, false)) {
+					for (int i = 0; i < 3; i++) {
+						double px = e.posX;
+						double pz = e.posZ;
+						EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
+						if (!e.worldObj.isRemote)
+							e.worldObj.spawnEntityInWorld(xp);
+					}
+				}
+				else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOfMetadata(meta), ep.inventory, false)) {
 					double px = e.posX;
 					double pz = e.posZ;
 					EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
 					if (!e.worldObj.isRemote)
 						e.worldObj.spawnEntityInWorld(xp);
 				}
-			}
-			else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOfMetadata(meta), ep.inventory, false)) {
-				double px = e.posX;
-				double pz = e.posZ;
-				EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
-				if (!e.worldObj.isRemote)
-					e.worldObj.spawnEntityInWorld(xp);
 			}
 		}
 	}

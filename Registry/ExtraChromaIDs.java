@@ -58,10 +58,6 @@ public enum ExtraChromaIDs implements IDRegistry {
 		return ChromatiCraft.config.getOtherID(this.ordinal());
 	}
 
-	public int getShiftedValue() {
-		return ChromatiCraft.config.getOtherID(this.ordinal())+256;
-	}
-
 	@Override
 	public String getConfigName() {
 		return this.getName();

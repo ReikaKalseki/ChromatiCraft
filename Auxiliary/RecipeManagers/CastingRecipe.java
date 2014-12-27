@@ -68,7 +68,7 @@ public class CastingRecipe {
 
 	}
 
-	public final int getExperience() {
+	public int getExperience() {
 		return type.experience;
 	}
 

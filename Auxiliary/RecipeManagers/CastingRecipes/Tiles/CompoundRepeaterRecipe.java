@@ -52,4 +52,9 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe {
 		return 8*super.getDuration();
 	}
 
+	@Override
+	public int getExperience() {
+		return 3*super.getExperience();
+	}
+
 }

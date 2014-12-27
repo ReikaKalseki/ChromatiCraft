@@ -14,8 +14,10 @@ import java.util.HashMap;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 
 public class CrystalPotionController {
 
@@ -58,6 +60,12 @@ public class CrystalPotionController {
 
 	private static void addNetherPotion(CrystalElement color, Potion pot) {
 		nethermap.put(color, pot);
+	}
+
+	public static boolean shouldBeHostile(World world) {
+		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
+			return true;
+		return world.provider.isHellWorld;
 	}
 
 	public static PotionEffect getEffectFromColor(CrystalElement color, int dura, int level) {

@@ -35,6 +35,7 @@ public enum ChromaOptions implements ConfigList {
 	BROKENPYLON("Generate Some Pylons as Broken", false),
 	DYNAMICHANDBOOK("Reload Handbook Data on Open", false),
 	FLATGEN("Run Worldgen in Superflat Worlds", false),
+	MYSTGEN("Generate Pylons in MystCraft Worlds", false),
 	HANDBOOK("Spawn with CC Lexicon", true),
 	CHESTGEN("Chest Generation Tier", 4),
 	ENDERTNT("Enable Ender TNT", true),

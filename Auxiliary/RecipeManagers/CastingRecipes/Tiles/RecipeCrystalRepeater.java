@@ -78,4 +78,9 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 		return 16;
 	}
 
+	@Override
+	public int getExperience() {
+		return 2*super.getExperience();
+	}
+
 }

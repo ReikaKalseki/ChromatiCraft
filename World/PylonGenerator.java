@@ -179,6 +179,8 @@ public final class PylonGenerator implements IWorldGenerator {
 	}
 
 	private boolean canGenerateIn(World world) {
+		if (world.provider.dimensionId == 0)
+			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
 			return false;
 		if (world.provider.isHellWorld || world.provider.hasNoSky)
@@ -189,7 +191,7 @@ public final class PylonGenerator implements IWorldGenerator {
 			return false;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return ChromaOptions.FLATGEN.getState();
-		return true;
+		return ChromaOptions.MYSTGEN.getState();
 	}
 
 	private boolean canGenerateAt(World world, int x, int y, int z) {

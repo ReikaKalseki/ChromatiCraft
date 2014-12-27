@@ -58,4 +58,9 @@ public class CrystalStarRecipe extends MultiBlockCastingRecipe {
 		return 4;
 	}
 
+	@Override
+	public int getExperience() {
+		return 2*super.getExperience();
+	}
+
 }

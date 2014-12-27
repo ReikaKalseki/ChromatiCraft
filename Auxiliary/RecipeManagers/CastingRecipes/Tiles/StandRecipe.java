@@ -25,4 +25,9 @@ public class StandRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.BLACK, 2, 0, 3);
 	}
 
+	@Override
+	public int getExperience() {
+		return 2*super.getExperience();
+	}
+
 }

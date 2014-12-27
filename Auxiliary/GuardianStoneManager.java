@@ -22,6 +22,7 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -112,6 +113,11 @@ public class GuardianStoneManager {
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void guardArea(BreakEvent event) {
 		EntityPlayer ep = event.getPlayer();
+		if (ep == null) {
+			ChromatiCraft.logger.logError("Something tried a null-player break event!");
+			ReikaJavaLibrary.dumpStack();
+			return;
+		}
 		World world = event.world;
 		int x = event.x;
 		int y = event.y;
@@ -125,6 +131,11 @@ public class GuardianStoneManager {
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void guardArea(PlayerInteractEvent event) {
 		EntityPlayer ep = event.entityPlayer;
+		if (ep == null) {
+			ChromatiCraft.logger.logError("Something tried a null-player interact event!");
+			ReikaJavaLibrary.dumpStack();
+			return;
+		}
 		World world = ep.worldObj;
 		int x = event.x;
 		int y = event.y;

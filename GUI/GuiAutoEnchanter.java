@@ -105,6 +105,11 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	}
 
 	@Override
+	protected int getTitlePosition() {
+		return 4;
+	}
+
+	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
