@@ -31,6 +31,7 @@ import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
@@ -301,6 +302,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			EntityFlareFX f = new EntityFlareFX(color, worldObj, rx, ry, rz, vx, vy, vz).setNoGravity();
 			Minecraft.getMinecraft().effectRenderer.addEffect(f);
 		}
+
+		ChromaOverlays.instance.triggerPylonEffect(color);
 	}
 
 	void attackEntityByProxy(EntityPlayer player, CrystalRepeater te) {

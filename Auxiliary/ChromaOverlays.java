@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -55,6 +56,8 @@ public class ChromaOverlays {
 	private boolean holding = false;
 	private int tick = 0;
 
+	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
+
 	private ChromaOverlays() {
 
 	}
@@ -87,15 +90,51 @@ public class ChromaOverlays {
 		}
 	}
 
+	public void triggerPylonEffect(CrystalElement e) {
+		factors.put(e, 2F);
+	}
+
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aura-bar-half.png");
+		BlendMode.ADDITIVEDARK.apply();
+		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+		Tessellator v5 = Tessellator.instance;
+		double w = Minecraft.getMinecraft().displayWidth/gsc;
+		double h = Minecraft.getMinecraft().displayHeight/gsc;
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
 			double dd = c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
-			if (dd < 24) {
-
+			if (dd < 32) {
+				int step = 40;
+				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
+				int imgw = 20;
+				int imgh = 1;
+				double u = frame%imgw/(double)imgw;
+				double du = u+1D/imgw;
+				double v = frame/imgw/(double)imgh;
+				double dv = v+1D/imgh;
+				int alpha = 255;
+				v5.startDrawingQuads();
+				v5.setBrightness(240);
+				float cache = factors.containsKey(e) ? factors.get(e) : 0;
+				float bright = (float)(1.5-dd/24);
+				float res = Math.max(cache, bright);
+				factors.put(e, res*0.9975F);
+				if (res > 0) {
+					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
+					v5.setColorRGBA_I(color, alpha);
+					v5.addVertexWithUV(0, h, 0, u, dv);
+					v5.addVertexWithUV(w, h, 0, du, dv);
+					v5.addVertexWithUV(w, 0, 0, du, v);
+					v5.addVertexWithUV(0, 0, 0, u, v);
+					v5.draw();
+				}
 			}
 		}
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+		BlendMode.DEFAULT.apply();
+		GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 	}
 
 	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {

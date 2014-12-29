@@ -124,7 +124,7 @@ public class ChromaHelpHUD {
 		v5.addVertexWithUV(dx+w, dy, 0, u, 0);
 		v5.addVertexWithUV(dx, dy, 0, 0, 0);
 		v5.draw();
-		GL11.glDisable(GL11.GL_BLEND);
+		//GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	private void renderText(String s, int gsc, boolean know) {
