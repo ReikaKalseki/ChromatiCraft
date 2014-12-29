@@ -99,6 +99,7 @@ public enum ChromaResearch {
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),
 	CRYSTALLAMP(	ChromaBlocks.LAMP,			CrystalElement.YELLOW.ordinal(),	ResearchLevel.RAWEXPLORE),
 	SUPERLAMP(		ChromaBlocks.SUPER,			CrystalElement.MAGENTA.ordinal(),	ResearchLevel.PYLONCRAFT),
+	PATH(			ChromaBlocks.PATH,												ResearchLevel.PYLONCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(			ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -336,6 +337,8 @@ public enum ChromaResearch {
 			return true;
 		if (this == CRYSTALSTONE)
 			return true;
+		if (this == PATH)
+			return true;
 		return false;
 	}
 
@@ -443,6 +446,13 @@ public enum ChromaResearch {
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());
+		if (this == PATH) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.PATH.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.PATH.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
 		if (this == CRYSTALSTONE) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaBlocks.PYLONSTRUCT.getNumberMetadatas(); i++) {
