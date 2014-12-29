@@ -190,7 +190,7 @@ public class RenderCrystalBeacon extends ChromaRenderBase {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		BlendMode.ADDITIVEDARK.apply();
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/temp/fire/done2.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/fire.png");
 		int r = 3;
 		double u = 0;//(0.0001*System.currentTimeMillis())%8;
 		double du = 1;//u+0.5;
