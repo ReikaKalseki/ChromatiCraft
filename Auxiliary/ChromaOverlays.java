@@ -35,6 +35,8 @@ import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -75,103 +77,122 @@ public class ChromaOverlays {
 				holding = false;
 			}
 			this.renderAbilityStatus(ep, gsc);
+			this.renderPylonAura(ep, gsc);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/crosshair.png");
-			GL11.glEnable(GL11.GL_BLEND);
-			BlendMode.ADDITIVEDARK.apply();
-			Tessellator v5 = Tessellator.instance;
-			int w = 16;
-			int x = evt.resolution.getScaledWidth()/2;
-			int y = evt.resolution.getScaledHeight()/2;
-			v5.startDrawingQuads();
-			double u = (System.currentTimeMillis()/16%64)/64D;
-			double du = u+1/64D;
-			double v = (System.currentTimeMillis()/128%16)/16D;
-			double dv = v+1/16D;
-			v5.addVertexWithUV(x-w/2, y+w/2, 0, u, dv);
-			v5.addVertexWithUV(x+w/2, y+w/2, 0, du, dv);
-			v5.addVertexWithUV(x+w/2, y-w/2, 0, du, v);
-			v5.addVertexWithUV(x-w/2, y-w/2, 0, u, v);
-			v5.draw();
-			BlendMode.DEFAULT.apply();
-			//GL11.glDisable(GL11.GL_BLEND);
-			evt.setCanceled(true);
+			this.renderCustomCrosshair(evt);
 		}
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
+			this.renderBoostedHealthBar(evt, ep);
+		}
+	}
 
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/health.png");
+	private void renderPylonAura(EntityPlayer ep, int gsc) {
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
+			double dd = c != null ? c.getDistanceTo(ep.posX, ep.posY, ep.posZ) : Double.POSITIVE_INFINITY;
+			if (dd < 24) {
 
-			Tessellator v5 = Tessellator.instance;
-			int h = 9;
-			int w = 4;
-			int left = evt.resolution.getScaledWidth()/2 - 91;
-			int top = evt.resolution.getScaledHeight()-GuiIngameForge.left_height;
-
-			int regen = -1;
-			if (ep.isPotionActive(Potion.regeneration)) {
-				int rl = ep.getActivePotionEffect(Potion.regeneration).getAmplifier();
-				regen = (int)(tick/300D*(1+0.33*rl)%30);
 			}
+		}
+	}
 
-			v5.startDrawingQuads();
-			boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
-			for (int i = 29; i >= 0; i--) {
-				double u = 16/128D+(i*3)/128D;
-				double du = u+w/128D;
-				double v = 9/128D;
-				if (ep.getMaxHealth()-1 < i*2) {
-					v = 27/128D;
-				}
-				double dv = v+h/128D;
-				if (highlight)
-					v += 18/128D;
-				int x = left+i*3;
-				int dx = x+w;
-				int y = top+0;
+	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/crosshair.png");
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ADDITIVEDARK.apply();
+		Tessellator v5 = Tessellator.instance;
+		int w = 16;
+		int x = evt.resolution.getScaledWidth()/2;
+		int y = evt.resolution.getScaledHeight()/2;
+		v5.startDrawingQuads();
+		double u = (System.currentTimeMillis()/16%64)/64D;
+		double du = u+1/64D;
+		double v = (System.currentTimeMillis()/128%16)/16D;
+		double dv = v+1/16D;
+		v5.addVertexWithUV(x-w/2, y+w/2, 0, u, dv);
+		v5.addVertexWithUV(x+w/2, y+w/2, 0, du, dv);
+		v5.addVertexWithUV(x+w/2, y-w/2, 0, du, v);
+		v5.addVertexWithUV(x-w/2, y-w/2, 0, u, v);
+		v5.draw();
+		BlendMode.DEFAULT.apply();
+		//GL11.glDisable(GL11.GL_BLEND);
+		evt.setCanceled(true);
+	}
+
+	private void renderBoostedHealthBar(RenderGameOverlayEvent.Pre evt, EntityPlayer ep) {
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/health.png");
+
+		Tessellator v5 = Tessellator.instance;
+		int h = 9;
+		int w = 4;
+		int left = evt.resolution.getScaledWidth()/2 - 91;
+		int top = evt.resolution.getScaledHeight()-GuiIngameForge.left_height;
+
+		int regen = -1;
+		if (ep.isPotionActive(Potion.regeneration)) {
+			int rl = ep.getActivePotionEffect(Potion.regeneration).getAmplifier();
+			regen = (int)(tick/300D*(1+0.33*rl)%30);
+		}
+
+		v5.startDrawingQuads();
+		boolean highlight = ep.hurtResistantTime >= 10 && ep.hurtResistantTime / 3 % 2 == 1;
+		for (int i = 29; i >= 0; i--) {
+			double u = 16/128D+(i*3)/128D;
+			double du = u+w/128D;
+			double v = 9/128D;
+			if (ep.getMaxHealth()-1 < i*2) {
+				v = 27/128D;
+			}
+			double dv = v+h/128D;
+			if (highlight)
+				v += 18/128D;
+			int x = left+i*3;
+			int dx = x+w;
+			int y = top+0;
+			if (i == regen)
+				y -= 2;
+			int dy = y+h;
+			v5.addVertexWithUV(x, dy, 0, u, dv);
+			v5.addVertexWithUV(dx, dy, 0, du, dv);
+			v5.addVertexWithUV(dx, y, 0, du, v);
+			v5.addVertexWithUV(x, y, 0, u, v);
+
+			boolean heart = ep.getHealth()-1 >= i*2;
+			if (heart) {
+				boolean half = ep.getHealth()-1 == i*2;
+				x = left+i*3+1;
+				dx = x+w-2;
+				y = top+1;
 				if (i == regen)
 					y -= 2;
-				int dy = y+h;
+				dy = y+h-2;
+				u = 17/128D+(i*3)/128D;
+				du = u+(w-2)/128D;
+				v = 1/128D;
+				if (ep.isPotionActive(Potion.poison)) {
+					v = 37/128D;
+				}
+				else if (ep.isPotionActive(Potion.wither)) {
+					v = 46/128D;
+				}
+				dv = v+(h-2)/128D;
+				if (half) {
+					dx = x+(w-2)/2;
+					du = u+(w-2)/(2*128D);
+				}
 				v5.addVertexWithUV(x, dy, 0, u, dv);
 				v5.addVertexWithUV(dx, dy, 0, du, dv);
 				v5.addVertexWithUV(dx, y, 0, du, v);
 				v5.addVertexWithUV(x, y, 0, u, v);
-
-				boolean heart = ep.getHealth()-1 >= i*2;
-				if (heart) {
-					boolean half = ep.getHealth()-1 == i*2;
-					x = left+i*3+1;
-					dx = x+w-2;
-					y = top+1;
-					if (i == regen)
-						y -= 2;
-					dy = y+h-2;
-					u = 17/128D+(i*3)/128D;
-					du = u+(w-2)/128D;
-					v = 1/128D;
-					if (ep.isPotionActive(Potion.poison)) {
-						v = 37/128D;
-					}
-					else if (ep.isPotionActive(Potion.wither)) {
-						v = 46/128D;
-					}
-					dv = v+(h-2)/128D;
-					if (half) {
-						dx = x+(w-2)/2;
-						du = u+(w-2)/(2*128D);
-					}
-					v5.addVertexWithUV(x, dy, 0, u, dv);
-					v5.addVertexWithUV(dx, dy, 0, du, dv);
-					v5.addVertexWithUV(dx, y, 0, du, v);
-					v5.addVertexWithUV(x, y, 0, u, v);
-				}
 			}
-			v5.draw();
-
-			GuiIngameForge.left_height += h+1;
-			ReikaTextureHelper.bindHUDTexture();
-			evt.setCanceled(true);
 		}
+		v5.draw();
+
+		GuiIngameForge.left_height += h+1;
+		ReikaTextureHelper.bindHUDTexture();
+		evt.setCanceled(true);
 	}
 
 	private void renderStorageOverlay(EntityPlayer ep, int gsc) {

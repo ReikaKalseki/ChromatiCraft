@@ -48,18 +48,15 @@ import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerHandler;
-import buildcraft.api.power.PowerHandler.PowerReceiver;
 import cofh.api.energy.IEnergyHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
-@Strippable(value = {"buildcraft.api.power.IPowerReceptor", "cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
+@Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 "li.cil.oc.api.network.ManagedPeripheral"})
-public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, IFluidHandler, IPowerReceptor, IEnergyHandler,
+public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, IFluidHandler, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral  {
 
 	private WorldLocation target;
@@ -413,26 +410,6 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			return ((IEnergyHandler)this.getAdjacentTargetTile(from.getOpposite())).getMaxEnergyStored(from);
 		}
 		return 0;
-	}
-
-	@Override
-	public PowerReceiver getPowerReceiver(ForgeDirection side) {
-		if (this.getOther() != null && this.getAdjacentTargetTile(side.getOpposite()) instanceof IPowerReceptor) {
-			return ((IPowerReceptor)this.getAdjacentTargetTile(side.getOpposite())).getPowerReceiver(side);
-		}
-		return null;
-	}
-
-	@Override
-	public void doWork(PowerHandler workProvider) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof IPowerReceptor) {
-			((IPowerReceptor)this.getSingleDirTile()).doWork(workProvider);
-		}
-	}
-
-	@Override
-	public World getWorld() {
-		return this.isLinked() ? target.getWorld() : null;
 	}
 
 	@Override

@@ -42,7 +42,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -134,7 +133,7 @@ public enum Chromabilities {
 				return;
 		}
 
-		ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.ABILITY);
+		ProgressStage.ABILITY.stepPlayerTo(ep);
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
 		if (this == HEALTH)
 			use.scale(10);

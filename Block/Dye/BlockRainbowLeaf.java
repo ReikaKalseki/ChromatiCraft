@@ -26,7 +26,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -108,7 +107,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
 		if (willHarvest)
-			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.RAINBOWLEAF);
+			ProgressStage.RAINBOWLEAF.stepPlayerTo(player);
 		return super.removedByPlayer(world, player, x, y, z, willHarvest);
 	}
 

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 
@@ -23,6 +25,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -30,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -47,6 +51,7 @@ public class AbilityHelper {
 	private final HashMap<String, WorldLocation> playerClicks = new HashMap();
 	private final HashMap<String, Boolean> isDrawingBox = new HashMap();
 	public final HashMap<String, ScaledDirection> shifts = new HashMap();
+	private final MultiMap<Chromabilities, ProgressStage> progressMap = new MultiMap();
 
 	private final EnumMap<Chromabilities, ElementTagCompound> tagMap = new EnumMap(Chromabilities.class);
 
@@ -58,6 +63,9 @@ public class AbilityHelper {
 			ElementTagCompound tag = AbilityRituals.instance.getAura(c);
 			tagMap.put(c, tag);
 		}
+
+		progressMap.addValue(Chromabilities.FIREBALL, ProgressStage.NETHER);
+		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
 	}
 
 	public void startDrawingBoxes(EntityPlayer ep) {
@@ -185,6 +193,21 @@ public class AbilityHelper {
 
 	public ElementTagCompound getUsageElementsFor(Chromabilities c) {
 		return tagMap.get(c).copy().scale(0.0002F);
+	}
+
+	public boolean playerCanGetAbility(Chromabilities c, EntityPlayer ep) {
+		Collection<ProgressStage> li = progressMap.get(c);
+		if (li == null)
+			return true;
+		for (ProgressStage p : li) {
+			if (!ProgressionManager.instance.isPlayerAtStage(ep, p))
+				return false;
+		}
+		return true;
+	}
+
+	public Collection<ProgressStage> getProgressFor(Chromabilities c) {
+		return Collections.unmodifiableCollection(progressMap.get(c));
 	}
 
 }

@@ -53,7 +53,13 @@ public class ProgressionManager {
 		RAINBOWLEAF(), //harvest a rainbow leaf
 		CHROMA(), //step in liquid chroma
 		STONES(), //craft all elemental stones together
+		SHOCK(), //get hit by a pylon
+		NETHER(), //go to the nether
 		;
+
+		public boolean stepPlayerTo(EntityPlayer ep) {
+			return instance.stepPlayerTo(ep, this);
+		}
 	}
 
 	private ProgressionManager() {
@@ -95,7 +101,7 @@ public class ProgressionManager {
 		return this.getPlayerData(ep).contains(s);
 	}
 
-	public boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
+	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
 		if (ep instanceof FakePlayer)
 			return false;
 		if (this.isPlayerAtStage(ep, s))

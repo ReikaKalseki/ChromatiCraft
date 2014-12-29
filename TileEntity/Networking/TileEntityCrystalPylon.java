@@ -32,6 +32,7 @@ import thaumcraft.api.nodes.NodeType;
 import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -316,6 +317,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (eff != null) {
 			e.addPotionEffect(eff);
 		}
+
+		if (e instanceof EntityPlayer)
+			ProgressStage.SHOCK.stepPlayerTo((EntityPlayer)e);
 	}
 
 	private void sendClientAttack(CrystalTransmitter te, EntityLivingBase e) {

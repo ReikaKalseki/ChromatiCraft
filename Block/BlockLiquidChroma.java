@@ -25,7 +25,6 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -99,7 +98,7 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 		super.onEntityCollidedWithBlock(world, x, y, z, e);
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
-			ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.CHROMA);
+			ProgressStage.CHROMA.stepPlayerTo(ep);
 		}
 	}
 

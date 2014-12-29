@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -47,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaResearchCommand;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
@@ -141,7 +141,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static Achievement[] achievements;
 
-	public static final Material enderMat = new Material(MapColor.ironColor);
+	public static final Material crystalMat = new CrystalMaterial();
 
 	public static PotionGrowthHormone growth;
 	public static PotionBetterSaturation betterSat;
@@ -191,6 +191,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.verifyVersions();
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
+		FMLCommonHandler.instance().bus().register(ChromaticEventManager.instance);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
 			MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);

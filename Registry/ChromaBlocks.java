@@ -39,6 +39,8 @@ import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
+import Reika.ChromatiCraft.Block.BlockPath;
+import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
@@ -62,6 +64,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -107,7 +110,8 @@ public enum ChromaBlocks implements BlockEnum {
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
 	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
-	TNT(BlockEnderTNT.class,													"chroma.endertnt");
+	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
+	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path");
 
 	private Class blockClass;
 	private String blockName;
@@ -138,7 +142,7 @@ public enum ChromaBlocks implements BlockEnum {
 
 	public Material getBlockMaterial() {
 		if (this.isCrystal())
-			return Material.glass;
+			return ChromatiCraft.crystalMat;
 		switch(this) {
 		case TILEPLANT:
 		case TIEREDPLANT:
@@ -151,7 +155,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILECRYSTALNONCUBE:
 		case PYLON:
 		case FIBER:
-			return Material.glass;
+			return ChromatiCraft.crystalMat;
 		case TNT:
 			return Material.tnt;
 		default:
@@ -253,6 +257,8 @@ public enum ChromaBlocks implements BlockEnum {
 		case TIEREDORE:
 		case TIEREDPLANT:
 			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
+		case PATH:
+			return PathType.list[meta].name+" "+this.getBasicName();
 		default:
 			return "";
 		}
@@ -287,6 +293,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return 2;
 		case PYLONSTRUCT:
 			return 16;
+		case PATH:
+			return BlockPath.PathType.list.length;
 		default:
 			return 1;
 		}

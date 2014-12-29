@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -111,7 +112,7 @@ public class ItemCaptureWand extends ItemWandBase {
 
 	@Override
 	public boolean itemInteractionForEntity(ItemStack is, EntityPlayer ep, EntityLivingBase elb) {
-		if (!hasMob(is, ep.worldObj) && elb instanceof EntityLiving && this.sufficientEnergy(ep)) {
+		if (!hasMob(is, ep.worldObj) && elb instanceof EntityLiving && isEntityCapturable((EntityLiving)elb) && this.sufficientEnergy(ep)) {
 			this.captureMob(is, ep, (EntityLiving)elb);
 			ep.setCurrentItemOrArmor(0, is);
 			return true;
@@ -136,6 +137,10 @@ public class ItemCaptureWand extends ItemWandBase {
 			return true;
 		}
 		return false;
+	}
+
+	private static boolean isEntityCapturable(EntityLiving e) {
+		return !ReikaEntityHelper.isBossMob(e);
 	}
 
 	private static void setMob(ItemStack is, EntityLiving e) {

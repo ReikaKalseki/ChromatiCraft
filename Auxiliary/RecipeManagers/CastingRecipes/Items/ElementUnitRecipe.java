@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -42,7 +41,7 @@ public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	protected void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-		ProgressionManager.instance.stepPlayerTo(ep, ProgressStage.STONES);
+		ProgressStage.STONES.stepPlayerTo(ep);
 	}
 
 }

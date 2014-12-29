@@ -19,7 +19,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
@@ -210,7 +209,7 @@ public class ItemManipulator extends ItemChromaTool {
 			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
 				te.drain(e, drain);
 			PlayerElementBuffer.instance.checkUpgrade(player, true);
-			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.CHARGE);
+			ProgressStage.CHARGE.stepPlayerTo(player);
 			if (player.worldObj.isRemote) {
 				//this.spawnParticles(player, e);
 				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);

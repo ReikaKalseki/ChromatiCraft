@@ -22,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -90,7 +89,7 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	@Override
 	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
 		if (willHarvest)
-			ProgressionManager.instance.stepPlayerTo(player, ProgressStage.DYETREE);
+			ProgressStage.DYETREE.stepPlayerTo(player);
 		return super.removedByPlayer(world, player, x, y, z, willHarvest);
 	}
 

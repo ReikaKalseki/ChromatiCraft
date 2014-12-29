@@ -19,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -226,10 +227,11 @@ public enum ChromaResearch {
 		level = rl;
 	}
 
-	private ChromaResearch(Chromabilities c, ProgressStage... p) {
+	private ChromaResearch(Chromabilities c) {
 		iconItem = ChromaTiles.RITUAL.getCraftedProduct();
 		pageTitle = c.getDisplayName();
-		progress = p;
+		Collection<ProgressStage> p = AbilityHelper.instance.getProgressFor(c);
+		progress = p.toArray(new ProgressStage[p.size()]);
 		level = ResearchLevel.PYLONCRAFT;
 		ability = c;
 	}
