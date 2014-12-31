@@ -43,7 +43,7 @@ public class ColorTreeGenerator implements IWorldGenerator {
 					Block b = world.getBlock(x, y, z);
 					if (r.nextInt(this.getRainbowChance(world)) == 0) {
 						if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
-							RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z);
+							RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
 						}
 						else {
 							TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);

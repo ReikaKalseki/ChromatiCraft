@@ -20,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
@@ -178,8 +179,11 @@ public class CastingRecipe {
 		}
 
 		protected CastingRecipe addRune(int color, int rx, int ry, int rz) {
-			this.addRune(CrystalElement.elements[color], rx, ry, rz);
-			return this;
+			return this.addRune(CrystalElement.elements[color], rx, ry, rz);
+		}
+
+		protected CastingRecipe addRune(CrystalElementProxy color, int rx, int ry, int rz) {
+			return this.addRune(CrystalElement.getFromAPI(color), rx, ry, rz);
 		}
 
 		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
@@ -226,8 +230,9 @@ public class CastingRecipe {
 			return main.copy();
 		}
 
-		protected void addAuxItem(ItemStack is, int dx, int dz) {
+		protected MultiBlockCastingRecipe addAuxItem(ItemStack is, int dx, int dz) {
 			inputs.put(Arrays.asList(dx, dz), is);
+			return this;
 		}
 
 		public Map<List<Integer>, ItemStack> getAuxItems() {
@@ -334,8 +339,8 @@ public class CastingRecipe {
 			return elements.copy();
 		}
 
-		protected CastingRecipe addAuraRequirement(int e, int amt) {
-			return this.addAuraRequirement(CrystalElement.elements[e], amt);
+		protected CastingRecipe addAuraRequirement(CrystalElementProxy e, int amt) {
+			return this.addAuraRequirement(CrystalElement.getFromAPI(e), amt);
 		}
 
 		protected CastingRecipe addAuraRequirement(CrystalElement e, int amt) {

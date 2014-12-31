@@ -43,10 +43,10 @@ public class BlockRainbowSapling extends BlockSapling {
 
 	@Override
 	public void func_149878_d(World world, int x, int y, int z, Random r) {
-		this.growTree(world, x, y, z);
+		this.growTree(world, x, y, z, r);
 	}
 
-	public void growTree(World world, int x, int y, int z)
+	public void growTree(World world, int x, int y, int z, Random r)
 	{
 		if (world.isRemote)
 			return;
@@ -58,7 +58,7 @@ public class BlockRainbowSapling extends BlockSapling {
 		if (id == this)
 			z++;
 
-		RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z);
+		RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class BlockRainbowSapling extends BlockSapling {
 			return false;
 		int color = world.getBlockMetadata(x, y, z);
 		if (this.canGrowAt(world, x, y, z))
-			this.growTree(world, x, y, z);
+			this.growTree(world, x, y, z, r);
 		else
 			world.spawnParticle("happyVillager", x+r.nextDouble(), y+r.nextDouble(), z+r.nextDouble(), 0, 0, 0);
 		if (!ep.capabilities.isCreativeMode)

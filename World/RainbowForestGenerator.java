@@ -32,7 +32,7 @@ public class RainbowForestGenerator extends WorldGenerator {
 			ReikaDyeHelper color = this.getColor(x, y, z);
 			if (random.nextInt(10) == 0) {
 				if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
-					RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z);
+					RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, random);
 					if (ModList.THAUMCRAFT.isLoaded() && ChromaOptions.ETHEREAL.getState()) {
 						for (int i = 0; i < 8; i++) {
 							int dx = ReikaRandomHelper.getRandomPlusMinus(x, 6);

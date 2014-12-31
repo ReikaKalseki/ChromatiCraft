@@ -46,7 +46,7 @@ public class CrystalGenerator implements IWorldGenerator {
 			int meta = random.nextInt(16);
 			if (this.canGenerateAt(world, posX, posY, posZ)) {
 				world.setBlock(posX, posY, posZ, id, meta, 3);
-				MinecraftForge.EVENT_BUS.post(new CrystalGenEvent(world, posX, posY, posZ, meta, random));
+				MinecraftForge.EVENT_BUS.post(new CrystalGenEvent(world, posX, posY, posZ, random, meta));
 				//ReikaJavaLibrary.pConsole("Generating "+ReikaDyeHelper.dyes[meta].getName()+" Crystal at "+posX+", "+posY+", "+posZ);
 			}
 			int r = 3;

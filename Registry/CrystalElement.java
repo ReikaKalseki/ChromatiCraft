@@ -17,6 +17,7 @@ import java.util.Random;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -41,7 +42,7 @@ public enum CrystalElement {
 	LIGHTBLUE("Galazio", 0x7FD4FF, EnumChatFormatting.AQUA), //Time
 	MAGENTA("Kurauri", 0xFF00DC, EnumChatFormatting.LIGHT_PURPLE), //Life
 	ORANGE("Portokali", 0xFF6A00, EnumChatFormatting.GOLD), //Fire
-	WHITE("Tahara", 0xFFFFFF, EnumChatFormatting.WHITE); //Purity
+	WHITE("Tahara", 0xFFFFFF, EnumChatFormatting.WHITE); //Purity/Harmony
 
 	private final ReikaDyeHelper color;
 	public final String displayName;
@@ -191,6 +192,14 @@ public enum CrystalElement {
 
 	public String getChatColorString() {
 		return chat.toString();
+	}
+
+	public CrystalElementProxy getAPIProxy() {
+		return CrystalElementProxy.list[this.ordinal()];
+	}
+
+	public static CrystalElement getFromAPI(CrystalElementProxy e) {
+		return elements[e.ordinal()];
 	}
 
 }

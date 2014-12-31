@@ -74,6 +74,7 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
+import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -283,6 +284,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
 		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
+		GameRegistry.registerWorldGenerator(DungeonGenerator.instance, Integer.MIN_VALUE);
 		GameRegistry.registerWorldGenerator(new TieredWorldGenerator(), Integer.MIN_VALUE);
 
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);

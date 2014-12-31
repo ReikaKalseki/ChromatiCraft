@@ -34,7 +34,9 @@ public class ChromaStructures {
 		INFUSION(),
 		TREE(),
 		REPEATER(),
-		COMPOUND();
+		COMPOUND(),
+		DUNGEON1(),
+		DUNGEON2();
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {

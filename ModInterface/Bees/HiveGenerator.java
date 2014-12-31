@@ -21,8 +21,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.API.CrystalGenEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.CrystalGenerator;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -41,8 +41,8 @@ public class HiveGenerator implements IWorldGenerator {
 	public void onGenCrystal(CrystalGenEvent evt) {
 		int dim = evt.world.provider.dimensionId;
 		if (dim != -1 && dim != 1) {
-			if (evt.color == ReikaDyeHelper.WHITE) {
-				if (evt.rand.nextInt(4) == 0) {
+			if (evt.color == CrystalElement.WHITE.getAPIProxy()) {
+				if (evt.getRandomInt(4) == 0) {
 					Block idb = evt.world.getBlock(evt.x, evt.y-1, evt.z);
 					if (idb.isReplaceableOreGen(evt.world, evt.x, evt.y-1, evt.z, Blocks.stone)) {
 						evt.world.setBlock(evt.x, evt.y-1, evt.z, ChromaBlocks.HIVE.getBlockInstance(), 1, 3);

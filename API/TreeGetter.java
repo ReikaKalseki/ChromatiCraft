@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.API;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
+/** Use this to fetch and/or compare against ChromatiCraft foliage blocks. */
 public class TreeGetter {
 
 	private static Class dyeTreeBlocks;

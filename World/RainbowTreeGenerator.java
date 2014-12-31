@@ -15,10 +15,13 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.RainbowTreeEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Interfaces.TreeType;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -26,8 +29,6 @@ import Reika.DragonAPI.ModRegistry.ModWoodList;
 public class RainbowTreeGenerator {
 
 	private static final RainbowTreeGenerator instance = new RainbowTreeGenerator();
-
-	private final Random rand = new Random();
 
 	private final ArrayList<TreeType> validLogs = new ArrayList();
 
@@ -1119,12 +1120,13 @@ public class RainbowTreeGenerator {
 		return true;
 	}
 
-	public void generateRainbowTree(World world, int x, int y, int z) {
+	public void generateRainbowTree(World world, int x, int y, int z, Random rand) {
 		//to compensate for the offset Mithion's generator added
 		x -= 5;
 		y -= 2;
 		z -= 5;
 		ChromatiCraft.logger.debug("Generating Rainbow Tree @ "+x+", "+y+", "+z);
+		MinecraftForge.EVENT_BUS.post(new RainbowTreeEvent(world, x, y, z, rand));
 
 		Block id = ChromaBlocks.RAINBOWLEAF.getBlockInstance();
 		TreeType wood = this.getLogType();
@@ -2194,7 +2196,7 @@ public class RainbowTreeGenerator {
 	}
 
 	private TreeType getLogType() {
-		return validLogs.get(rand.nextInt(validLogs.size()));
+		return ReikaJavaLibrary.getRandomListEntry(validLogs);
 	}
 
 }

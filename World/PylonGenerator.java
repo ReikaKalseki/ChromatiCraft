@@ -31,6 +31,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.PylonGenerationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;
@@ -364,6 +365,7 @@ public final class PylonGenerator implements IWorldGenerator {
 			te.validateMultiblock();
 		world.func_147451_t(x, y+9, z);
 		this.addToCache(te, e);
+		MinecraftForge.EVENT_BUS.post(new PylonGenerationEvent(world, x, y+9, z, rand, broken, e.getAPIProxy()));
 	}
 
 	public void cachePylon(TileEntityCrystalPylon te) {
