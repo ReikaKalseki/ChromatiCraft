@@ -134,7 +134,7 @@ public class ChromaOverlays {
 		}
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 		BlendMode.DEFAULT.apply();
-		GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
+		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 	}
 
 	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {

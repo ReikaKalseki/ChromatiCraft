@@ -28,6 +28,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -362,8 +363,16 @@ public class ChromaticEventManager {
 		if (ev.source instanceof PylonDamage) {
 			EntityLivingBase e = ev.entityLiving;
 			int n = 0;
-			if (e instanceof EntityPlayer)
-				n = 1+rand.nextInt(2);
+			if (e instanceof EntityPlayer) {
+				NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT((EntityPlayer)e);
+				String tag = "pylondeath";
+				long time = nbt.getLong(tag);
+				long cur = e.worldObj.getTotalWorldTime();
+				if (cur-time > 6000) {
+					n = 1+rand.nextInt(2);
+				}
+				nbt.setLong(tag, cur);
+			}
 			else if (e instanceof EntityVillager || e instanceof EntityWitch)
 				n = rand.nextInt(4) == 0 ? 1 : 0;
 			if (n > 0) {

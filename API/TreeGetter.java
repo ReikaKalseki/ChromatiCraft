@@ -41,7 +41,7 @@ public class TreeGetter {
 	}
 
 	public static boolean isDyeFlower(ItemStack block) {
-		return Block.getBlockFromItem(block.getItem()) == dyeBlocks[RAINBOW_SAPLING_INDEX];
+		return Block.getBlockFromItem(block.getItem()) == dyeBlocks[FLOWER_INDEX];
 	}
 
 	public static ItemStack getDyeSapling(int dyeMeta) {

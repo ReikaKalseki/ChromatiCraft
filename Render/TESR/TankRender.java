@@ -57,7 +57,9 @@ public class TankRender extends ChromaRenderBase {
 		Fluid f = te.getFluid();
 		if (te.hasWorldObj()) {
 			if (f != null && te.getLevel() > 0) {
+				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
 				this.renderLiquid(te, par2, par4, par6, par8, f);
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 				this.renderRunes(te, par2, par4, par6, par8);
 			}
 			//this.renderGlint(te, par2, par4, par6, par8);

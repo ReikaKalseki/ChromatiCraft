@@ -423,6 +423,7 @@ public enum ChromaResearch {
 		}
 		if (this == IRID) {
 			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.rawCrystal);
 			li.add(ChromaStacks.iridCrystal);
 			li.add(ChromaStacks.iridChunk);
 			return li;
