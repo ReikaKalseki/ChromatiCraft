@@ -9,17 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public class AbilityRituals {
 
-	private final EnumMap<Chromabilities, AbilityRitual> data = new EnumMap(Chromabilities.class);
+	private final HashMap<Ability, AbilityRitual> data = new HashMap();
 
 	public static final AbilityRituals instance = new AbilityRituals();
+
+	private static Collection<WorldLocation> tables = new ArrayList();
 
 	private AbilityRituals() {
 
@@ -87,25 +97,55 @@ public class AbilityRituals {
 		data.put(ar.ability, ar);
 	}
 
-	public boolean hasRitual(Chromabilities c) {
+	public void addRitual(Ability a, HashMap<CrystalElementProxy, Integer> elements) {
+		AbilityRitual rit = new AbilityRitual(a);
+		for (CrystalElementProxy e : elements.keySet()) {
+			rit.addAura(CrystalElement.getFromAPI(e), elements.get(e));
+		}
+		this.addRitual(rit);
+	}
+
+	public boolean hasRitual(Ability c) {
 		return data.containsKey(c);
 	}
 
-	public ElementTagCompound getAura(Chromabilities c) {
+	public ElementTagCompound getAura(Ability c) {
 		return this.hasRitual(c) ? data.get(c).getRequiredAura() : new ElementTagCompound();
 	}
 
-	public int getDuration(Chromabilities c) {
+	public int getDuration(Ability c) {
 		return this.hasRitual(c) ? data.get(c).duration : 0;
+	}
+
+	public static boolean isPlayerUndergoingRitual(EntityPlayer ep) {
+		for (WorldLocation loc : tables) {
+			TileEntity te = ep.worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+			if (te instanceof TileEntityRitualTable) {
+				TileEntityRitualTable rit = (TileEntityRitualTable)te;
+				if (rit.isActive() && rit.isPlayerUsing(ep))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	public static void addTable(TileEntityRitualTable te) {
+		WorldLocation loc = new WorldLocation(te);
+		if (!tables.contains(loc))
+			tables.add(loc);
+	}
+
+	public static void removeTable(TileEntityRitualTable te) {
+		tables.remove(new WorldLocation(te));
 	}
 
 	private static class AbilityRitual {
 
 		private final ElementTagCompound energy = new ElementTagCompound();
 		public final int duration;
-		public final Chromabilities ability;
+		public final Ability ability;
 
-		private AbilityRitual(Chromabilities c) {
+		private AbilityRitual(Ability c) {
 			ability = c;
 			duration = 950;
 		}

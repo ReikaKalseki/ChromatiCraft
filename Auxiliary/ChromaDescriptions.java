@@ -293,4 +293,8 @@ public final class ChromaDescriptions {
 				addData(e, e.displayName);
 		}
 	}
+
+	public static String getParentPage() {
+		return PARENT;
+	}
 }

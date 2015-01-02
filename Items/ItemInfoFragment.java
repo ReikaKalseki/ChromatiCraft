@@ -45,9 +45,16 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity ep, int slot, boolean held) {
-		if (this.isBlank(is) && ep instanceof EntityPlayer) {
-			this.programShardAndGiveData(is, (EntityPlayer)ep);
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
+		if (e instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)e;
+			ChromaResearch r = getResearch(is);
+			if (r == null) {
+				this.programShardAndGiveData(is, ep);
+			}
+			else {
+				ChromaResearchManager.instance.givePlayerFragment(ep, r);
+			}
 		}
 	}
 

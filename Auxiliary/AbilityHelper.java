@@ -11,8 +11,8 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.IEntitySelector;
@@ -25,6 +25,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -51,15 +52,15 @@ public class AbilityHelper {
 	private final HashMap<String, WorldLocation> playerClicks = new HashMap();
 	private final HashMap<String, Boolean> isDrawingBox = new HashMap();
 	public final HashMap<String, ScaledDirection> shifts = new HashMap();
-	private final MultiMap<Chromabilities, ProgressStage> progressMap = new MultiMap();
+	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap();
 
-	private final EnumMap<Chromabilities, ElementTagCompound> tagMap = new EnumMap(Chromabilities.class);
+	private final HashMap<Ability, ElementTagCompound> tagMap = new HashMap();
 
 	public static final AbilityHelper instance = new AbilityHelper();
 
 	private AbilityHelper() {
-		for (int i = 0; i < Chromabilities.abilities.length; i++) {
-			Chromabilities c = Chromabilities.abilities[i];
+		List<Ability> li = Chromabilities.getAbilities();
+		for (Ability c : li) {
 			ElementTagCompound tag = AbilityRituals.instance.getAura(c);
 			tagMap.put(c, tag);
 		}
@@ -137,7 +138,7 @@ public class AbilityHelper {
 		@Override
 		public void onPlayerLogin(EntityPlayer ep) {
 			if (Chromabilities.REACH.enabledOn(ep)) {
-				Chromabilities.REACH.trigger(ep, 0);
+				Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0);
 			}
 		}
 
@@ -187,11 +188,11 @@ public class AbilityHelper {
 
 	}
 
-	public ElementTagCompound getElementsFor(Chromabilities c) {
-		return tagMap.get(c).copy();
+	public ElementTagCompound getElementsFor(Ability a) {
+		return tagMap.get(a).copy();
 	}
 
-	public ElementTagCompound getUsageElementsFor(Chromabilities c) {
+	public ElementTagCompound getUsageElementsFor(Ability c) {
 		return tagMap.get(c).copy().scale(0.0002F);
 	}
 

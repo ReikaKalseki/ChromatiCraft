@@ -276,8 +276,7 @@ public class RecipesCastingTable {
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			is = ChromaItems.WARP.getStackOf();
-			sr = ReikaRecipeHelper.getShapedRecipeFor(is, " g ", "sps", "sss", 's', ChromaStacks.getShard(CrystalElement.WHITE), 'g', Blocks.glowstone, 'p', Items.potionitem);
-			this.addRecipe(new AuraCleanerRecipe(is, sr));
+			this.addRecipe(new AuraCleanerRecipe(is, new ItemStack(Items.potionitem)));
 		}
 
 		this.addRecipe(new MinerRecipe(ChromaTiles.MINER.getCraftedProduct(), ChromaStacks.energyCore));

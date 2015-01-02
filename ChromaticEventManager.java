@@ -67,6 +67,7 @@ import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -90,6 +91,12 @@ public class ChromaticEventManager {
 	public void onLogin(PlayerEvent.PlayerChangedDimensionEvent evt) {
 		if (evt.toDim == -1) {
 			ProgressStage.NETHER.stepPlayerTo(evt.player);
+		}
+		else if (evt.toDim == 1) {
+			ProgressStage.END.stepPlayerTo(evt.player);
+		}
+		else if (evt.toDim == ReikaTwilightHelper.getDimensionID()) {
+			ProgressStage.TWILIGHT.stepPlayerTo(evt.player);
 		}
 	}
 

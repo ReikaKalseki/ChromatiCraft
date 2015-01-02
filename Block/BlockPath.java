@@ -75,7 +75,8 @@ public class BlockPath extends Block {
 		return icons[meta];
 	}
 
-	public void registerIcons(IIconRegister ico) {
+	@Override
+	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < icons.length; i++) {
 			icons[i] = ico.registerIcon("chromaticraft:path_"+i);
 		}

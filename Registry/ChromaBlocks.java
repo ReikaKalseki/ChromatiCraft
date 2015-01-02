@@ -337,10 +337,10 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public ItemStack getStackOf() {
-		return this.getStackOf(0);
+		return this.getStackOfMetadata(0);
 	}
 
-	public ItemStack getStackOf(int meta) {
+	public ItemStack getStackOfMetadata(int meta) {
 		return new ItemStack(this.getBlockInstance(), 1, meta);
 	}
 

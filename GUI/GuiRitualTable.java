@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.GUI;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -42,9 +42,9 @@ public class GuiRitualTable extends GuiChromability {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		if (b.id == 2) {
-			Chromabilities ability = Chromabilities.abilities[index];
-			if (AbilityHelper.instance.playerCanGetAbility(ability, player)) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, index);
+			Ability a = this.getActiveAbility();
+			if (a.isAvailableToPlayer(player)) {
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITYCHOOSE.ordinal(), tile, Chromabilities.getAbilityInt(a));
 				player.closeScreen();
 			}
 			else {

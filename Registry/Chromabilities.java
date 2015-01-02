@@ -10,6 +10,9 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +44,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -49,6 +54,7 @@ import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -57,9 +63,14 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
-public enum Chromabilities {
+import com.google.common.collect.HashBiMap;
+
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public enum Chromabilities implements Ability {
 
 	REACH(null, true),
 	MAGNET(Phase.END, false),
@@ -73,9 +84,9 @@ public enum Chromabilities {
 	PYLON(null, false),
 	LIGHTNING(null, false);
 
-	public final boolean tickBased;
-	public final Phase tickPhase;
-	public final boolean actOnClient;
+	private final boolean tickBased;
+	private final Phase tickPhase;
+	private final boolean actOnClient;
 
 	private static final UUID uid_health = UUID.randomUUID();
 
@@ -86,27 +97,76 @@ public enum Chromabilities {
 	}
 
 	private static final String NBT_TAG = "chromabilities";
-	private static final HashMap<String, Chromabilities> tagMap = new HashMap();
+	private static final HashMap<String, Ability> tagMap = new HashMap();
 
-	public static final Chromabilities[] abilities = values();
+	private static final Chromabilities[] abilities = values();
+
+	private static final HashMap<String, Ability> abilityMap = new HashMap();
+	private static final HashBiMap<Integer, Ability> intMap = HashBiMap.create();
+	private static int maxID = 0;
+	private static ArrayList<Ability> sortedList;
+	private static final MultiMap<Phase, Ability> tickAbilities = new MultiMap();
+
+	public static Ability getAbility(String id) {
+		return abilityMap.get(id);
+	}
+
+	public static List<Ability> getAbilities() {
+		return Collections.unmodifiableList(sortedList);
+	}
+
+	public static Collection<Ability> getAbilitiesAvailableToPlayer(EntityPlayer ep) {
+		Collection<Ability> li = new ArrayList();
+		for (Ability c : abilityMap.values()) {
+			if (c.isAvailableToPlayer(ep))
+				li.add(c);
+		}
+		return li;
+	}
+
+	public static Collection<Ability> getAbilitiesForTick(Phase p) {
+		return Collections.unmodifiableCollection(tickAbilities.get(p));
+	}
+
+	public boolean isAvailableToPlayer(EntityPlayer ep) {
+		return AbilityHelper.instance.playerCanGetAbility(this, ep);
+	}
 
 	public String getDisplayName() {
 		return StatCollector.translateToLocal("chromability."+this.name().toLowerCase());
 	}
 
+	public String getDescription() {
+		return ChromaDescriptions.getAbilityDescription(this);
+	}
+
+	public boolean isTickBased() {
+		return tickBased;
+	}
+
+	public Phase getTickPhase() {
+		return tickPhase;
+	}
+
+	public boolean actOnClient() {
+		return actOnClient;
+	}
+
 	public ElementTagCompound getTickCost() {
-		if (tickBased) {
-			return AbilityHelper.instance.getUsageElementsFor(this);
+		return getTickCost(this);
+	}
+
+	public static ElementTagCompound getTickCost(Ability c) {
+		if (c.isTickBased()) {
+			return AbilityHelper.instance.getUsageElementsFor(c);
 		}
-		switch(this) {
-		case HEALTH:
-		case PYLON:
-			return AbilityHelper.instance.getUsageElementsFor(this);
-		case REACH:
-			return AbilityHelper.instance.getUsageElementsFor(this).scale(0.5F);
-		default:
-			return null;
-		}
+
+		if (c == HEALTH || c == PYLON)
+			return AbilityHelper.instance.getUsageElementsFor(c);
+		else if (c == REACH)
+			return AbilityHelper.instance.getUsageElementsFor(c).scale(0.5F);
+
+		return null;
 	}
 
 	public void apply(EntityPlayer ep) {
@@ -126,25 +186,6 @@ public enum Chromabilities {
 	}
 
 	public void trigger(EntityPlayer ep, int data) {
-		if (ep.worldObj.isRemote) {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), ep.worldObj, 0, 0, 0, this.ordinal(), data);
-
-			if (!actOnClient)
-				return;
-		}
-
-		ProgressStage.ABILITY.stepPlayerTo(ep);
-		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
-		if (this == HEALTH)
-			use.scale(10);
-		if (this == SHIFT)
-			use.scale(25);
-		if (this == LIGHTNING)
-			use.scale(10);
-		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
-		boolean flag = this.enabledOn(ep) || this.isPureEventDriven();
-		this.setToPlayer(ep, !flag);
-
 		if (tickBased) {
 
 		}
@@ -184,7 +225,30 @@ public enum Chromabilities {
 		}
 	}
 
-	private boolean isPureEventDriven() {
+	public static void triggerAbility(EntityPlayer ep, Ability a, int data) {
+		if (ep.worldObj.isRemote) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ABILITY.ordinal(), ep.worldObj, 0, 0, 0, getAbilityInt(a), data);
+
+			if (!a.actOnClient())
+				return;
+		}
+
+		ProgressStage.ABILITY.stepPlayerTo(ep);
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a);
+		if (a == HEALTH)
+			use.scale(10);
+		if (a == SHIFT)
+			use.scale(25);
+		if (a == LIGHTNING)
+			use.scale(10);
+		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
+		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
+		setToPlayer(ep, !flag, a);
+
+		a.trigger(ep, data);
+	}
+
+	public boolean isPureEventDriven() {
 		switch(this) {
 		case SONIC:
 		case HEAL:
@@ -196,8 +260,8 @@ public enum Chromabilities {
 		}
 	}
 
-	public static ArrayList<Chromabilities> getFrom(EntityPlayer ep) {
-		ArrayList<Chromabilities> li = new ArrayList();
+	public static ArrayList<Ability> getFrom(EntityPlayer ep) {
+		ArrayList<Ability> li = new ArrayList();
 		NBTTagCompound nbt = ep.getEntityData();
 		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
 		if (abilities != null && !abilities.hasNoTags()) {
@@ -206,7 +270,7 @@ public enum Chromabilities {
 				String n = it.next();
 				//ReikaJavaLibrary.pConsole(n+":"+abilities.getBoolean(n), Side.SERVER);
 				if (abilities.getBoolean(n)) {
-					Chromabilities c = tagMap.get(n);
+					Ability c = tagMap.get(n);
 					li.add(c);
 				}
 			}
@@ -214,50 +278,64 @@ public enum Chromabilities {
 		return li;
 	}
 
+	public boolean enabledOn(EntityPlayer ep) {
+		return enabledOn(ep, this);
+	}
+
+	public boolean playerHasAbility(EntityPlayer ep) {
+		return playerHasAbility(ep, this);
+	}
+
 	public void setToPlayer(EntityPlayer ep, boolean set) {
+		this.setToPlayer(ep, set, this);
+	}
+
+	public void give(EntityPlayer ep) {
+		give(ep, this);
+	}
+
+	public static void give(EntityPlayer ep, Ability a) {
+		setToPlayer(ep, false, a);
+	}
+
+	public void removeFromPlayer(EntityPlayer ep) {
+		removeFromPlayer(ep, this);
+	}
+
+	public static boolean enabledOn(EntityPlayer ep, Ability a) {
+		NBTTagCompound nbt = ep.getEntityData();
+		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
+		return abilities != null && abilities.getBoolean(a.getID());
+	}
+
+	public static boolean playerHasAbility(EntityPlayer ep, Ability a) {
+		NBTTagCompound nbt = ep.getEntityData();
+		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
+		return abilities != null && abilities.hasKey(a.getID());
+	}
+
+	public static void setToPlayer(EntityPlayer ep, boolean set, Ability a) {
 		NBTTagCompound nbt = ep.getEntityData();
 		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
 		if (abilities == null) {
 			abilities = new NBTTagCompound();
 		}
-		abilities.setBoolean(this.getNBTName(), set);
+		abilities.setBoolean(a.getID(), set);
 		nbt.setTag(NBT_TAG, abilities);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
-	private String getNBTName() {
-		return this.name().toLowerCase();
+	public static void removeFromPlayer(EntityPlayer ep, Ability a) {
+		setToPlayer(ep, false, a);
+		a.onRemoveFromPlayer(ep);
 	}
 
-	public boolean enabledOn(EntityPlayer ep) {
-		NBTTagCompound nbt = ep.getEntityData();
-		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
-		return abilities != null && abilities.getBoolean(this.getNBTName());
-	}
-
-	public boolean playerHasAbility(EntityPlayer ep) {
-		NBTTagCompound nbt = ep.getEntityData();
-		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
-		return abilities != null && abilities.hasKey(this.getNBTName());
-	}
-
-	public void give(EntityPlayer ep) {
-		this.setToPlayer(ep, false);
-	}
-
-	public void removeFromPlayer(EntityPlayer ep) {
-		this.setToPlayer(ep, false);
-		switch(this) {
-		case REACH:
+	public void onRemoveFromPlayer(EntityPlayer ep) {
+		if (this == REACH)
 			this.setReachDistance(ep, -1);
-			break;
-		case HEALTH:
+		else if (this == HEALTH)
 			this.setPlayerMaxHealth(ep, 0);
-			break;
-		default:
-			break;
-		}
 	}
 
 	private static void spawnLightning(EntityPlayer ep, int power) {
@@ -499,29 +577,22 @@ public enum Chromabilities {
 		}
 	}
 
-	static {
-		for (int i = 0; i < abilities.length; i++) {
-			Chromabilities c = abilities[i];
-			tagMap.put(c.getNBTName(), c);
-		}
-	}
-
 	public boolean canPlayerExecuteAt(EntityPlayer player) {
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
 		return PlayerElementBuffer.instance.playerHas(player, use);
 	}
 
-	public int maxPower(EntityPlayer ep) {
-		int base = this.maxPower();
+	public static int maxPower(EntityPlayer ep, Ability a) {
+		int base = a.getMaxPower();
 		int lvl = base;
-		ElementTagCompound use = AbilityHelper.instance.getElementsFor(this).scale(0.01F);
+		ElementTagCompound use = AbilityHelper.instance.getElementsFor(a).scale(0.01F);
 		for (CrystalElement e : use.elementSet()) {
 			lvl = (int)Math.min(lvl, PlayerElementBuffer.instance.getPlayerContent(ep, e)/(float)use.getValue(e));
 		}
 		return Math.max(1, lvl);
 	}
 
-	public int maxPower() {
+	public int getMaxPower() {
 		switch(this) {
 		case SONIC:
 			return 12;
@@ -538,5 +609,70 @@ public enum Chromabilities {
 		default:
 			return 0;
 		}
+	}
+
+	@Override
+	public String getID() {
+		return this.name().toLowerCase();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getTexturePath(boolean gray) {
+		String base = this.getID();
+		String name = !gray ? base : base+"_g";
+		String path = "Textures/Ability/"+name+".png";
+		return path;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Class getTextureReferenceClass() {
+		return ChromatiCraft.class;
+	}
+
+	public int getInt() {
+		return getAbilityInt(this);
+	}
+
+	public static int getAbilityInt(Ability a) {
+		return intMap.inverse().get(a);
+	}
+
+	public static Ability getAbilityByInt(int id) {
+		return intMap.get(id);
+	}
+
+	static {
+		for (int i = 0; i < abilities.length; i++) {
+			Chromabilities c = abilities[i];
+			addAbility(c);
+		}
+	}
+
+	public static void addAbility(Ability c) {
+		tagMap.put(c.getID(), c);
+		abilityMap.put(c.getID(), c);
+		intMap.put(maxID, c);
+		if (c.isTickBased()) {
+			tickAbilities.addValue(c.getTickPhase(), c);
+		}
+
+		ChromatiCraft.logger.log("Added ability '"+c.getDisplayName()+"', assigned IDs "+c.getID()+" and "+maxID);
+
+		sortedList = new ArrayList(abilityMap.values());
+		Collections.sort(sortedList, sorter);
+		maxID++;
+	}
+
+	private static final Comparator sorter = new AbilitySorter();
+
+	private static class AbilitySorter implements Comparator<Ability> {
+
+		@Override
+		public int compare(Ability o1, Ability o2) {
+			return getAbilityInt(o1)-getAbilityInt(o2);
+		}
+
 	}
 }

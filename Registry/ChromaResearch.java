@@ -46,7 +46,7 @@ public enum ChromaResearch {
 	INTRO("Introduction", ""),
 	START("Getting Started",			ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
 	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT),
-	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOf(4), 					ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
+	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
@@ -187,7 +187,7 @@ public enum ChromaResearch {
 	}
 
 	private ChromaResearch(ChromaBlocks r, int meta, ResearchLevel rl, ProgressStage... p) {
-		this(r.getBasicName(), r.getStackOf(meta), rl, p);
+		this(r.getBasicName(), r.getStackOfMetadata(meta), rl, p);
 		block = r;
 	}
 
@@ -440,7 +440,7 @@ public enum ChromaResearch {
 			if (item instanceof ItemBlockDyeTypes || item instanceof ItemBlockDyeColors || item instanceof ItemBlockCrystal) {
 				ArrayList<ItemStack> li = new ArrayList();
 				for (int i = 0; i < 16; i++) {
-					li.add(block.getStackOf(i));
+					li.add(block.getStackOfMetadata(i));
 				}
 				return li;
 			}

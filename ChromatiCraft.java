@@ -97,6 +97,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
+import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
@@ -376,6 +377,9 @@ public class ChromatiCraft extends DragonAPIMod {
 				e.printStackTrace();
 			}
 		}
+
+		ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
+		ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);
 
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");

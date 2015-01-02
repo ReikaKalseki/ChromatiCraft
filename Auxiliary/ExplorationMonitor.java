@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -56,6 +57,9 @@ public class ExplorationMonitor implements TickHandler {
 							p.stepPlayerTo(ep);
 						}
 					}
+				}
+				else if (b == Blocks.bedrock) {
+					ProgressStage.BEDROCK.stepPlayerTo(ep);
 				}
 			}
 		}

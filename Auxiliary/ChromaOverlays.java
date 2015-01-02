@@ -29,6 +29,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
@@ -368,11 +369,10 @@ public class ChromaOverlays {
 	}
 
 	private void renderAbilityStatus(EntityPlayer ep, int gsc) {
-		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
+		ArrayList<Ability> li = Chromabilities.getFrom(ep);
 		int i = 0;
-		for (Chromabilities c : li) {
-			String tex = "Textures/Ability/"+c.name().toLowerCase()+".png";
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
+		for (Ability c : li) {
+			ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), c.getTexturePath(false));
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
 			int x = Minecraft.getMinecraft().displayWidth/gsc-20;
@@ -382,7 +382,7 @@ public class ChromaOverlays {
 			v5.addVertexWithUV(x+16, y+0, 0, 1, 0);
 			v5.addVertexWithUV(x+0, y+0, 0, 0, 0);
 			v5.draw();
-			ElementTagCompound tag = c.getTickCost();
+			ElementTagCompound tag = Chromabilities.getTickCost(c);
 			if (tag != null) {
 				ReikaTextureHelper.bindTerrainTexture();
 				int k = 0;

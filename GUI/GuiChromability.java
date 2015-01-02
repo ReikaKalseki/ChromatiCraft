@@ -18,24 +18,23 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class GuiChromability extends GuiScreen {
 
 	protected final EntityPlayer player;
-	protected int index = 0;
 	protected int xSize;
 	protected int ySize;
 
-	private final ArrayList<Chromabilities> abilities = new ArrayList();
+	private final ArrayList<Ability> abilities = new ArrayList();
+	private int index = 0;
 
 	private int dx = 0;
 
@@ -47,13 +46,11 @@ public class GuiChromability extends GuiScreen {
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			ChromaDescriptions.reload();
 
-		for (int i = 0; i < Chromabilities.abilities.length; i++) {
-			Chromabilities c = Chromabilities.abilities[i];
-			if (AbilityHelper.instance.playerCanGetAbility(c, ep))
-				abilities.add(c);
-		}
+		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
+	}
 
-		ReikaJavaLibrary.pConsole(abilities);
+	protected final Ability getActiveAbility() {
+		return abilities.get(index);
 	}
 
 	@Override
@@ -116,8 +113,8 @@ public class GuiChromability extends GuiScreen {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		Chromabilities c = abilities.get(index);
-		boolean has = c.playerHasAbility(player);
+		Ability c = abilities.get(index);
+		boolean has = Chromabilities.playerHasAbility(player, c);
 		double px = 2D*Math.abs(dx)/width;
 		int sp = Math.max(1, (int)(360D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px))));
 		if (dx > 0) {
@@ -141,8 +138,8 @@ public class GuiChromability extends GuiScreen {
 		int max = index < abilities.size()-1 ? m : 0;
 		for (int i = min; i <= max; i++) {
 			int a = j+i*width+dx;
-			Chromabilities ca = abilities.get(index+i);
-			String s = ca.playerHasAbility(player) ? "Textures/GUIs/ability.png" : "Textures/GUIs/ability2.png";
+			Ability ca = abilities.get(index+i);
+			String s = Chromabilities.playerHasAbility(player, ca) ? "Textures/GUIs/ability.png" : "Textures/GUIs/ability2.png";
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
 			//GL11.glEnable(GL11.GL_BLEND);
 			this.drawTexturedModalRect(a, k, 0, 0, xSize, ySize);
@@ -168,25 +165,25 @@ public class GuiChromability extends GuiScreen {
 		int fy = 65;
 		if (!has)
 			;//return;
-		String desc = ChromaDescriptions.getAbilityDescription(c);
+		String desc = c.getDescription();
 		fontRendererObj.drawSplitString(desc, j+dx+fx, k+fy, xSize-fx*2, 0xffffff);
 
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = abilities.get(index-1);
-				desc = ChromaDescriptions.getAbilityDescription(c);
+				desc = c.getDescription();
 				fontRendererObj.drawSplitString(desc, j+dx+fx-width, k+fy, xSize-fx*2, 0xffffff);
 			}
 
 			if (index < abilities.size()-1) {
 				c = abilities.get(index+1);
-				desc = ChromaDescriptions.getAbilityDescription(c);
+				desc = c.getDescription();
 				fontRendererObj.drawSplitString(desc, j+dx+fx+width, k+fy, xSize-fx*2, 0xffffff);
 			}
 		}
 	}
 
-	private void drawPreview(Chromabilities c, int j, int k) {
+	private void drawPreview(Ability c, int j, int k) {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getTextureName(c));
 		GL11.glPushMatrix();
 		double d = 0.1953125;
@@ -198,14 +195,14 @@ public class GuiChromability extends GuiScreen {
 		if (dx != 0) { //performance boost
 			if (index > 0) {
 				c = abilities.get(index-1);
-				ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getTextureName(c));
+				ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), this.getTextureName(c));
 				x = j+8+dx-width;
 				this.drawTexturedModalRect((int)(x/d), (int)(y/d), 0, 0, 256, 256);
 			}
 
 			if (index < abilities.size()-1) {
 				c = abilities.get(index+1);
-				ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getTextureName(c));
+				ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), this.getTextureName(c));
 				x = j+8+dx+width;
 				this.drawTexturedModalRect((int)(x/d), (int)(y/d), 0, 0, 256, 256);
 			}
@@ -213,11 +210,8 @@ public class GuiChromability extends GuiScreen {
 		GL11.glPopMatrix();
 	}
 
-	private String getTextureName(Chromabilities c) {
-		String base = c.name().toLowerCase();
-		String name = c.playerHasAbility(player) ? base : base+"_g";
-		String path = "Textures/Ability/"+name+".png";
-		return path;
+	private String getTextureName(Ability c) {
+		return c.getTexturePath(!Chromabilities.playerHasAbility(player, c));
 	}
 
 	@Override

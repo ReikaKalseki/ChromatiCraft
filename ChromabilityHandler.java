@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.entity.player.EntityPlayer;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -32,25 +33,25 @@ public class ChromabilityHandler implements TickHandler {
 	@Override
 	public void tick(TickType type, Object... tickData) {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
-		ArrayList<Chromabilities> li = Chromabilities.getFrom(ep);
-		for (Chromabilities c : li) {
-			if (c.tickBased && c.tickPhase == tickData[1] && c.playerHasAbility(ep) && c.canPlayerExecuteAt(ep)) {
+		Collection<Ability> li = Chromabilities.getAbilitiesForTick((Phase)tickData[1]);
+		for (Ability c : li) {
+			if (Chromabilities.playerHasAbility(ep, c) && c.canPlayerExecuteAt(ep)) {
 				c.apply(ep);
 			}
 			if (ReikaRandomHelper.doWithChance(0.0002)) {
-				ElementTagCompound tag = c.getTickCost();
+				ElementTagCompound tag = Chromabilities.getTickCost(c);
 				if (tag != null) {
 					if (PlayerElementBuffer.instance.playerHas(ep, tag))
 						PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
 					else {
-						c.removeFromPlayer(ep);
+						Chromabilities.removeFromPlayer(ep, c);
 					}
 				}
 			}
 		}
 		if (DragonAPICore.debugtest)
-			for (Chromabilities c : Chromabilities.values())
-				c.give(ep);
+			for (Ability c : Chromabilities.getAbilities())
+				Chromabilities.give(ep, c);
 	}
 
 	@Override

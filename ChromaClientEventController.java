@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -29,14 +30,17 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -60,6 +64,7 @@ import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -77,6 +82,61 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent
+	public void addAuraCleanerScribbles(DrawScreenEvent.Post evt) {
+		if (evt.gui != null && evt.gui.getClass().getSimpleName().equals("GuiResearchRecipe")) {
+			try {
+				Class c = evt.gui.getClass();
+				Field res = c.getDeclaredField("research");
+				res.setAccessible(true);
+				ResearchItem item = (ResearchItem)res.get(evt.gui);
+				if (item.key.equals("WARPPROOF")) {
+					int j = (evt.gui.width - 256) / 2;
+					int k = (evt.gui.height - 181) / 2;
+
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/eldritch_s.png");
+					//Tessellator v5 = Tessellator.instance;
+					//v5.startDrawingQuads();
+					int x = j-20;
+					int x2 = j+133;
+					int y = k-20;
+					int y2 = k+140;
+					int w = 146;
+					int h = 212;
+					int h2 = 65;
+					int u = 0;
+					int v = 0;
+					GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+					GL11.glEnable(GL11.GL_BLEND);
+					GL11.glDisable(GL11.GL_DEPTH_TEST);
+					GL11.glDisable(GL11.GL_CULL_FACE);
+					BlendMode.DEFAULT.apply();
+					GL11.glColor4f(1, 1, 1, 0.35F);
+					evt.gui.drawTexturedModalRect(x, y, u, v, w, h);
+					GL11.glColor4f(1, 1, 1, 0.4F);
+					evt.gui.drawTexturedModalRect(x2, y, u+64, v, w, h);
+					ResourceLocation loc = new ResourceLocation("thaumcraft:textures/misc/eldritchajor2.png");
+					Minecraft.getMinecraft().renderEngine.bindTexture(loc);
+					GL11.glColor4f(1, 1, 1, 0.95F);
+					evt.gui.drawTexturedModalRect(x2, y2, u, 146, w, h2);
+					GL11.glColor4f(1, 1, 1, 0.6F);
+					loc = new ResourceLocation("thaumcraft:textures/misc/eldritchajor1.png");
+					Minecraft.getMinecraft().renderEngine.bindTexture(loc);
+					evt.gui.drawTexturedModalRect(x, y+48, u, v, w, 148);
+					GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+					//v5.addVertexWithUV(x, y+w, 0, 0, 1);
+					//v5.addVertexWithUV(x+w, y+w, 0, 1, 1);
+					//v5.addVertexWithUV(x+w, y, 0, 1, 0);
+					//v5.addVertexWithUV(x, y, 0, 0, 0);
+					//v5.draw();
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@SubscribeEvent

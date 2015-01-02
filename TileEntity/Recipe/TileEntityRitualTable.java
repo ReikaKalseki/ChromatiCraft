@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
+import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -38,11 +40,11 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements GuiController {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements GuiController, BreakAction {
 
 	private boolean hasStructure = false;
 	private int abilityTick = 0;
-	private Chromabilities ability;
+	private Ability ability;
 	private int abilitySoundTick = 2000;
 	private int tickNoPlayer = 0;
 
@@ -71,6 +73,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
+		AbilityRituals.addTable(this);
 		this.validateMultiblock(null, world, x, y-2, z);
 	}
 
@@ -92,7 +95,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 		tickNoPlayer = 0;
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 2, 0).expand(0, 1, 0);
-		boolean inbox = energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
+		boolean canTick = energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
 		//ReikaJavaLibrary.pConsole(abilityTick+":"+inbox+" from "+ep.boundingBox+" & "+box, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(energy+"/"+tag, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(box.maxX > ep.boundingBox.minX && box.minX < ep.boundingBox.maxX ? (box.maxY > ep.boundingBox.minY && box.minY < ep.boundingBox.maxY ? box.maxZ > ep.boundingBox.minZ && box.minZ < ep.boundingBox.maxZ : false) : false);
@@ -104,10 +107,10 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 
 		if (world.isRemote) {
-			this.spawnParticles(world, x, y, z, inbox, tag);
+			this.spawnParticles(world, x, y, z, canTick, tag);
 		}
 
-		if (inbox && !world.isRemote) {
+		if (canTick && !world.isRemote) {
 			double dx = ep.posX-x-0.5;
 			double dy = ep.posY-y-2.25-0.75*Math.sin(Math.toRadians(2*this.getTicksExisted()));
 			double dz = ep.posZ-z-0.5;
@@ -128,7 +131,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 				((EntityPlayerMP)ep).playerNetServerHandler.floatingTickCount = 0;
 			}
 		}
-		if (inbox)
+		if (canTick)
 			abilityTick--;
 		if (abilityTick <= 0) {
 			this.giveAbility(ep);
@@ -137,7 +140,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void spawnParticles(World world, int x, int y, int z, boolean inbox, ElementTagCompound tag) {
+	private void spawnParticles(World world, int x, int y, int z, boolean canTick, ElementTagCompound tag) {
 		int a = (2*this.getTicksExisted())%360;
 		for (int i = 0; i < 360; i += 120) {
 			double ang = Math.toRadians(a+i);
@@ -172,18 +175,20 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			}
 		}
 
-		if (inbox) {
+		if (canTick) {
 			Minecraft mc = Minecraft.getMinecraft();
-			mc.gameSettings.thirdPersonView = 2;
-			mc.thePlayer.rotationYaw = this.getTicksExisted()%360;
-			mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw-35;
-			mc.thePlayer.rotationPitch = 0;
-			mc.gameSettings.hideGUI = true;
+			if (mc.thePlayer.getCommandSenderName().equals(this.getPlacerName())) {
+				mc.gameSettings.thirdPersonView = 2;
+				mc.thePlayer.rotationYaw = this.getTicksExisted()%360;
+				mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw-35;
+				mc.thePlayer.rotationPitch = 0;
+				mc.gameSettings.hideGUI = true;
+			}
 		}
 	}
 
 	private void giveAbility(EntityPlayer ep) {
-		ability.give(ep);
+		Chromabilities.give(ep, ability);
 		abilitySoundTick = 2000;
 		ability = null;
 		if (ep instanceof EntityPlayerMP)
@@ -230,7 +235,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		return false;
 	}
 
-	public void setChosenAbility(Chromabilities c) {
+	public void setChosenAbility(Ability c) {
 		this.killRitual();
 		ability = c;
 	}
@@ -241,7 +246,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 		NBT.setBoolean("struct", hasStructure);
 		NBT.setInteger("atick", abilityTick);
-		NBT.setInteger("ability", ability != null ? ability.ordinal() : -1);
+		NBT.setString("ability", ability != null ? ability.getID() : "null");
 	}
 
 	@Override
@@ -250,8 +255,8 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 		hasStructure = NBT.getBoolean("struct");
 		abilityTick = NBT.getInteger("atick");
-		int a = NBT.getInteger("ability");
-		ability = a >= 0 ? Chromabilities.abilities[a] : null;
+		String a = NBT.getString("ability");
+		ability = a != null && !a.isEmpty() && !a.equals("null") ? Chromabilities.getAbility(a) : null;
 	}
 
 	@Override
@@ -302,6 +307,21 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	public ElementTagCompound getRequestedTotal() {
 		return ability != null && abilityTick > 0 ? AbilityHelper.instance.getElementsFor(ability) : null;
+	}
+
+	public boolean isActive() {
+		return abilityTick > 0;
+	}
+
+	@Override
+	public void breakBlock() {
+		AbilityRituals.removeTable(this);
+	}
+
+	public boolean isPlayerUsing(EntityPlayer ep) {
+		ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).offset(0, 2, 0).expand(0, 1, 0);
+		return energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
 	}
 
 }

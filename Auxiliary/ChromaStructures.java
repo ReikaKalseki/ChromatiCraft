@@ -35,8 +35,9 @@ public class ChromaStructures {
 		TREE(),
 		REPEATER(),
 		COMPOUND(),
-		DUNGEON1(),
-		DUNGEON2();
+		CAVERN(),
+		BURROW(),
+		OCEAN();
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {
@@ -60,6 +61,12 @@ public class ChromaStructures {
 				return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			case COMPOUND:
 				return getCompoundRepeaterStructure(w, 0, 0, 0);
+			case CAVERN:
+				return getCavernStructure(w, 0, 0, 0);
+			case BURROW:
+				return getBurrowStructure(w, 0, 0, 0);
+			case OCEAN:
+				return getOceanStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -67,6 +74,21 @@ public class ChromaStructures {
 		public String getDisplayName() {
 			return StatCollector.translateToLocal("chromastruct."+this.name().toLowerCase());
 		}
+	}
+
+	public static FilledBlockArray getCavernStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		return array;
+	}
+
+	public static FilledBlockArray getBurrowStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		return array;
+	}
+
+	public static FilledBlockArray getOceanStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		return array;
 	}
 
 	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z) {

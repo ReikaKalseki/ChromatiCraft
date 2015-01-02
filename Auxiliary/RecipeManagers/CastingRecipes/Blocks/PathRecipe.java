@@ -20,7 +20,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 public class PathRecipe extends PylonRecipe {
 
 	public PathRecipe(ItemStack main, int meta, ItemStack outer) {
-		super(ChromaBlocks.PATH.getStackOf(meta), main);
+		super(ChromaBlocks.PATH.getStackOfMetadata(meta), main);
 
 		this.addAuxItem(new ItemStack(Blocks.stonebrick), -2, 0);
 		this.addAuxItem(new ItemStack(Blocks.stonebrick), 2, 0);

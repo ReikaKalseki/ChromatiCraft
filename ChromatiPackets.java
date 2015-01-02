@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
@@ -166,16 +167,16 @@ public class ChromatiPackets implements IPacketHandler {
 				te.updateLight();
 				break;
 			case ABILITY:
-				Chromabilities c = Chromabilities.abilities[data[0]];
-				if (c.playerHasAbility(ep))
-					c.trigger(ep, data[1]);
+				Ability c = Chromabilities.getAbilityByInt(data[0]);
+				if (Chromabilities.playerHasAbility(ep, c))
+					Chromabilities.triggerAbility(ep, c, data[1]);
 				break;
 			case PYLONATTACK:
 				if (tile instanceof TileEntityCrystalPylon)
 					((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
 				break;
 			case ABILITYCHOOSE:
-				((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.abilities[data[0]]);
+				((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.getAbilityByInt(data[0]));
 				break;
 			case BUFFERINC:
 				PlayerElementBuffer.instance.upgradePlayerOnClient(ep);

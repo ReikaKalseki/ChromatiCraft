@@ -55,6 +55,12 @@ public class ProgressionManager {
 		STONES(), //craft all elemental stones together
 		SHOCK(), //get hit by a pylon
 		NETHER(), //go to the nether
+		END(), //go to the end
+		TWILIGHT(), //Go to the twilight forest
+		BEDROCK(), //Find bedrock
+		CAVERN(), //Cavern structure
+		BURROW(), //Burrow structure
+		OCEAN(); //Ocean floor structure
 		;
 
 		public boolean stepPlayerTo(EntityPlayer ep) {

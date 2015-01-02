@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
+import java.util.ArrayList;
+
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +22,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -34,11 +37,14 @@ public class GuiAbilitySelect extends GuiScreen {
 
 	private int dx = 0;
 	private double offset = 0;
-	private Chromabilities ability;
+	private Ability ability;
 	private int data = 0;
+
+	private final ArrayList<Ability> abilities = new ArrayList();
 
 	public GuiAbilitySelect(EntityPlayer ep) {
 		player = ep;
+		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
 	}
 
 	@Override
@@ -54,8 +60,8 @@ public class GuiAbilitySelect extends GuiScreen {
 		GL11.glEnable(GL11.GL_BLEND);
 		this.drawTexturedModalRect(tx, ty, 0, 79, 256, 177);
 		GL11.glDisable(GL11.GL_BLEND);
-		if (ability != null && ability.maxPower() > 0) {
-			int sc = data*64/ability.maxPower();
+		if (ability != null && ability.getMaxPower() > 0) {
+			int sc = data*64/ability.getMaxPower();
 			this.drawTexturedModalRect(width/2-12, height/2+5-sc, 116, 76-sc, 24, sc);
 		}
 
@@ -66,7 +72,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (move > 0) {
 			if (ability != null && ctrl) {
-				if (data < ability.maxPower(player) && ability.playerHasAbility(player))
+				if (data < Chromabilities.maxPower(player, ability) && Chromabilities.playerHasAbility(player, ability))
 					data++;
 			}
 			else {
@@ -87,10 +93,10 @@ public class GuiAbilitySelect extends GuiScreen {
 
 		if (dx > 0)
 			dx = 0;
-		if (dx < -(Chromabilities.abilities.length-1)*step)
-			dx = -(Chromabilities.abilities.length-1)*step;
+		if (dx < -(abilities.size()-1)*step)
+			dx = -(abilities.size()-1)*step;
 
-		ability = Chromabilities.abilities[-dx/step];
+		ability = abilities.get(-dx/step);
 
 		double sp = 270D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, Math.abs(offset-dx)/4)/5D;
 		if (offset > dx) {
@@ -103,8 +109,8 @@ public class GuiAbilitySelect extends GuiScreen {
 			offset = dx;
 		}
 
-		for (int i = 0; i < Chromabilities.abilities.length; i++) {
-			Chromabilities c = Chromabilities.abilities[i];
+		for (int i = 0; i < abilities.size(); i++) {
+			Ability c = abilities.get(i);
 			int w2 = c == ability ? Math.max(50, 75-(int)Math.abs(dx-offset)) : w;
 			String s = this.getTextureName(c);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
@@ -129,11 +135,8 @@ public class GuiAbilitySelect extends GuiScreen {
 
 	}
 
-	private String getTextureName(Chromabilities c) {
-		String base = c.name().toLowerCase();
-		String name = c.playerHasAbility(player) ? base : base+"_g";
-		String path = "Textures/Ability/"+name+".png";
-		return path;
+	private String getTextureName(Ability c) {
+		return c.getTexturePath(!Chromabilities.playerHasAbility(player, c));
 	}
 
 	@Override
@@ -141,10 +144,10 @@ public class GuiAbilitySelect extends GuiScreen {
 	{
 		super.mouseClicked(x, y, button);
 		if (button == 0 && ReikaGuiAPI.instance.isMouseInBox(width/2-37, width/2+37, height/2-37, height/2+37)) {
-			if (ability != null && ability.playerHasAbility(player)) {
+			if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
 				if (ability.canPlayerExecuteAt(player)) {
 					mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
-					ability.trigger(player, data);
+					Chromabilities.triggerAbility(player, ability, data);
 					player.closeScreen();
 				}
 				else {

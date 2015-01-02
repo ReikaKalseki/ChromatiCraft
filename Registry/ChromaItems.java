@@ -85,7 +85,7 @@ public enum ChromaItems implements ItemEnum {
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
 	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
-	WARP(7, false,			"chroma.warp",			ItemWarpProofer.class, ModList.THAUMCRAFT),
+	WARP(7, true,			"chroma.warp",			ItemWarpProofer.class, ModList.THAUMCRAFT),
 	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
 	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
@@ -217,6 +217,9 @@ public enum ChromaItems implements ItemEnum {
 			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
 		case FRAGMENT:
 			return this.getBasicName();
+		case WARP:
+			String pre = meta == 1 ? "Charged " : "Inert ";
+			return pre+this.getBasicName();
 		default:
 			break;
 		}
@@ -287,6 +290,8 @@ public enum ChromaItems implements ItemEnum {
 			return ChromaNames.storageNames.length;
 		case FRAGMENT:
 			return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
+		case WARP:
+			return 2;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

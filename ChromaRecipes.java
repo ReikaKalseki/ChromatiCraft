@@ -12,9 +12,13 @@ package Reika.ChromatiCraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -26,6 +30,8 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.ShapelessNBTRecipe;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.ThermalRecipeHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.GrinderAPI;
@@ -79,6 +85,33 @@ public class ChromaRecipes {
 				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
 				GrinderAPI.addRecipe(shard, ChromaStacks.crystalPowder);
 			}
+		}
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
+			ItemStack in = ChromaItems.WARP.getStackOfMetadata(0);
+			ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
+			String desc = "Pitting one kind of magic against another";
+			AspectList al = new AspectList();
+			al.add(Aspect.ELDRITCH, 50);
+			al.add(Aspect.TAINT, 50);
+			al.add(Aspect.MAGIC, 50);
+			al.add(Aspect.EXCHANGE, 50);
+			al.add(Aspect.CRYSTAL, 20);
+			al.add(Aspect.HEAL, 100);
+			al.add(Aspect.SENSES, 20);
+			ItemStack[] recipe = {
+					ThaumItemHelper.ItemEntry.GOO.getItem(),
+					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+					ThaumItemHelper.ItemEntry.SALTS.getItem(),
+					new ItemStack(Items.string),
+					ThaumItemHelper.ItemEntry.PRIMALFOCUS.getItem(),
+					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+					ThaumItemHelper.ItemEntry.SALTS.getItem(),
+					new ItemStack(Items.string),
+					ThaumItemHelper.BlockEntry.CRYSTALCORE.getItem(),
+			};
+			ReikaThaumHelper.addInfusionRecipeWithBookEntry("WARPPROOF", "ELDRITCHMINOR", desc, "chromaticraft", ChromatiCraft.class, ChromaDescriptions.getParentPage()+"thaum.xml", in, out, al, 16, recipe);
 		}
 	}
 
