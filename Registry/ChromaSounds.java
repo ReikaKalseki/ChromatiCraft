@@ -38,7 +38,7 @@ public enum ChromaSounds implements SoundEnum {
 	INFUSE("infuse"),
 	INFUSION("infuse2"),
 	USE("use2"),
-	TRAP("slam");
+	TRAP("slam2");
 
 	public static final ChromaSounds[] soundList = values();
 
