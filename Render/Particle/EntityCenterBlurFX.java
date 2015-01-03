@@ -67,6 +67,11 @@ public class EntityCenterBlurFX extends EntityFX {
 		return this;
 	}
 
+	public final EntityCenterBlurFX setGravity(float g) {
+		particleGravity = g;
+		return this;
+	}
+
 	public final EntityCenterBlurFX setColor(int rgb) {
 		particleRed = ReikaColorAPI.HextoColorMultiplier(rgb, 0);
 		particleGreen = ReikaColorAPI.HextoColorMultiplier(rgb, 1);

@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -83,7 +84,7 @@ public class BlockSuperCrystal extends CrystalBlock {
 	}
 
 	@Override
-	public int getBrightness() {
+	public int getBrightness(IBlockAccess iba, int x, int y, int z) {
 		return 15;
 	}
 

@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
+import Reika.ChromatiCraft.Block.BlockStructureShield;
 import Reika.ChromatiCraft.Block.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import Reika.ChromatiCraft.Block.BlockTieredPlant;
@@ -67,6 +68,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
@@ -111,7 +113,8 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
 	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
 	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
-	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path");
+	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
+	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield");
 
 	private Class blockClass;
 	private String blockName;
@@ -259,6 +262,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
 		case PATH:
 			return PathType.list[meta].name+" "+this.getBasicName();
+		case STRUCTSHIELD:
+			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
 		default:
 			return "";
 		}

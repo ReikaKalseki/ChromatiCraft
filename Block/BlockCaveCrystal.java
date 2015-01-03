@@ -18,12 +18,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -105,8 +107,12 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	}
 
 	@Override
-	public int getBrightness() {
-		return 10;
+	public int getBrightness(IBlockAccess iba, int x, int y, int z) {
+		return this.isDarkStructure(iba, x, y, z) ? 0 : 10;
+	}
+
+	private boolean isDarkStructure(IBlockAccess iba, int x, int y, int z) {
+		return iba.getBlock(x, y-1, z) == ChromaBlocks.RUNE.getBlockInstance() && iba.getBlock(x, y+1, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 	}
 
 	@Override

@@ -51,13 +51,17 @@ public final class ChromaResearchManager {
 		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
 			if (!this.playerHasFragment(ep, r)) {
 				if (r.level == null || this.getPlayerResearchLevel(ep).ordinal() >= r.level.ordinal()) {
-					Collection<ChromaResearch> deps = data.getParents(r);
 					boolean missingdep = false;
-					if (deps != null && !deps.isEmpty()) {
-						for (ChromaResearch p : deps) {
-							if (!this.playerHasFragment(ep, p)) {
-								missingdep = true;
-								break;
+					if (!r.playerHasProgress(ep))
+						missingdep = true;
+					else {
+						Collection<ChromaResearch> deps = data.getParents(r);
+						if (deps != null && !deps.isEmpty()) {
+							for (ChromaResearch p : deps) {
+								if (!this.playerHasFragment(ep, p)) {
+									missingdep = true;
+									break;
+								}
 							}
 						}
 					}

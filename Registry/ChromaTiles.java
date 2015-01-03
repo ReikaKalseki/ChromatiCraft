@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
@@ -109,7 +110,8 @@ public enum ChromaTiles {
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, TileEntityChromaLamp.class, 15, "RenderRainbowLamp"),
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3, "PowerTreeRender"),
 	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 0, "RenderLampControl"),
-	CREATIVEPYLON("chroma.creativepylon",	ChromaBlocks.PYLON, TileEntityCreativeSource.class, 4, "RenderCreativePylon");
+	CREATIVEPYLON("chroma.creativepylon",ChromaBlocks.PYLON, 		TileEntityCreativeSource.class, 4, "RenderCreativePylon"),
+	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,	5);
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),

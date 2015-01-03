@@ -153,6 +153,9 @@ public enum ChromaResearch {
 	TREE(			ChromaStructures.Structures.TREE,		14,	ResearchLevel.PYLONCRAFT,		ProgressStage.LINK),
 	REPEATERSTRUCT(	ChromaStructures.Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
 	COMPOUNDSTRUCT(	ChromaStructures.Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	CAVERN(			ChromaStructures.Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
+	BURROW(			ChromaStructures.Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
+	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
 	;
 
 	private final ItemStack iconItem;
@@ -260,6 +263,17 @@ public enum ChromaResearch {
 
 	public boolean playerCanRead(EntityPlayer ep) {
 		return this.playerCanSee(ep) || ChromaResearchManager.instance.canPlayerStepTo(ep, this);
+	}
+
+	public boolean playerHasProgress(EntityPlayer ep) {
+		if (progress != null) {
+			for (int i = 0; i < progress.length; i++) {
+				ProgressStage p = progress[i];
+				if (!ProgressionManager.instance.isPlayerAtStage(ep, p))
+					return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean isMachine() {

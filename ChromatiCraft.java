@@ -285,7 +285,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
 		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
-		GameRegistry.registerWorldGenerator(DungeonGenerator.instance, Integer.MIN_VALUE);
+		GameRegistry.registerWorldGenerator(DungeonGenerator.instance, Integer.MAX_VALUE);
 		GameRegistry.registerWorldGenerator(new TieredWorldGenerator(), Integer.MIN_VALUE);
 
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);

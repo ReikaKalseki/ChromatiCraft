@@ -23,11 +23,11 @@ public class AuraCleanerRecipe extends PylonRecipe {
 
 		this.addAuxItem(new ItemStack(Blocks.glowstone), 0, -2);
 
-		this.addAuxItem(ChromaStacks.getShard(CrystalElement.WHITE), -2, 0);
-		this.addAuxItem(ChromaStacks.getShard(CrystalElement.WHITE), 2, 0);
-		this.addAuxItem(ChromaStacks.getShard(CrystalElement.WHITE), -2, 2);
-		this.addAuxItem(ChromaStacks.getShard(CrystalElement.WHITE), 0, 2);
-		this.addAuxItem(ChromaStacks.getShard(CrystalElement.WHITE), 2, 2);
+		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.WHITE), -2, 0);
+		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.WHITE), 2, 0);
+		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.WHITE), -2, 2);
+		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.WHITE), 0, 2);
+		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.WHITE), 2, 2);
 
 		this.addRune(CrystalElement.BLACK, -3, -1, 3);
 		this.addRune(CrystalElement.BLACK, 3, -1, -3);

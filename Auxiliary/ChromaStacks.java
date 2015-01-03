@@ -59,6 +59,9 @@ public class ChromaStacks {
 	public static final ItemStack placehold3Dust = ChromaItems.TIERED.getStackOfMetadata(10);
 	public static final ItemStack placehold4Dust = ChromaItems.TIERED.getStackOfMetadata(11);
 	public static final ItemStack placehold5Dust = ChromaItems.TIERED.getStackOfMetadata(12);
+	public static final ItemStack cavernLoot = ChromaItems.TIERED.getStackOfMetadata(13);
+	public static final ItemStack burrowLoot = ChromaItems.TIERED.getStackOfMetadata(14);
+	public static final ItemStack oceanLoot = ChromaItems.TIERED.getStackOfMetadata(15);
 
 	public static final ItemStack blackShard = ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard = ChromaItems.SHARD.getStackOfMetadata(1);
