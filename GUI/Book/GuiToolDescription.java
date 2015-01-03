@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
 public class GuiToolDescription extends GuiDescription {
@@ -21,7 +22,7 @@ public class GuiToolDescription extends GuiDescription {
 
 	@Override
 	protected int getMaxSubpage() {
-		return 0;
+		return page.getItem().getItemInstance() instanceof ItemWandBase ? 1 : 0;
 	}
 
 }

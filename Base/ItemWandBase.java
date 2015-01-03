@@ -13,6 +13,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ItemWandBase extends ItemChromaTool {
 
@@ -40,6 +42,16 @@ public abstract class ItemWandBase extends ItemChromaTool {
 
 	public ElementTagCompound getEnergy(float scale) {
 		return energy.copy().scale(scale);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public String generateUsageData() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Base usage cost: \n");
+		for (CrystalElement e : energy.elementSet()) {
+			sb.append(e.displayName+": "+energy.getValue(e)+"\n");
+		}
+		return sb.toString();
 	}
 
 }

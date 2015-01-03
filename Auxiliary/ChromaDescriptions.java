@@ -19,6 +19,7 @@ import net.minecraft.client.resources.Language;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
+import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -190,6 +191,9 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : tooltabs) {
 			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase());
+			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
+				notes.put(h, ((ItemWandBase)h.getItem().getItemInstance()).generateUsageData());
+			}
 			addEntry(h, desc);
 		}
 
