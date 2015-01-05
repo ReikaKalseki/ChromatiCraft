@@ -16,8 +16,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -35,7 +37,9 @@ import Reika.DragonAPI.ModInteract.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.ThermalRecipeHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.GrinderAPI;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class ChromaRecipes {
 
@@ -111,7 +115,9 @@ public class ChromaRecipes {
 					new ItemStack(Items.string),
 					ThaumItemHelper.BlockEntry.CRYSTALCORE.getItem(),
 			};
-			ReikaThaumHelper.addInfusionRecipeWithBookEntry("WARPPROOF", "ELDRITCHMINOR", desc, "chromaticraft", ChromatiCraft.class, ChromaDescriptions.getParentPage()+"thaum.xml", in, out, al, 16, recipe);
+			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, ChromatiCraft.class, ChromaDescriptions.getParentPage()+"thaum.xml");
 		}
 	}
 
