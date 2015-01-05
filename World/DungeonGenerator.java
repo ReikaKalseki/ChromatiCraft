@@ -17,18 +17,23 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -95,18 +100,28 @@ public class DungeonGenerator implements IWorldGenerator {
 				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
 				world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-				te.generate(Structures.CAVERN, CrystalElement.WHITE);
+				te.generate(s, CrystalElement.WHITE);
+				this.populateChests(s, struct, r);
 				return true;
 			}
 			return false;
 		}
 		case BURROW: {
 			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-			FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z);
+			CrystalElement e = CrystalElement.randomElement();
+			FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z, e);
 			if (this.isValidBurrowLocation(world, x, y, z, arr)) {
 				arr.place();
 				this.convertDirtToGrass(arr);
+				world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
 				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+				world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
+				te.generate(s, e);
+				this.populateChests(s, arr, r);
+				for (int i = y+1; i < 200; i++) {
+					world.setBlock(x, i, z, Blocks.glass);
+				}
 				return true;
 			}
 			return false;
@@ -129,6 +144,33 @@ public class DungeonGenerator implements IWorldGenerator {
 		}
 		default:
 			return false;
+		}
+	}
+
+	private void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
+		String s = null;
+		switch (struct) {
+		case CAVERN:
+			s = ChestGenHooks.DUNGEON_CHEST;
+		case BURROW:
+			s = ChestGenHooks.BONUS_CHEST;
+			break;
+		default:
+			break;
+		}
+		if (s == null)
+			return;
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b == Blocks.chest) {
+				IInventory te = (IInventory)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
+				WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
+				WeightedRandomChestContent.generateChestContents(r, loot, te, ChestGenHooks.getCount(s, r));
+				if (r.nextBoolean()) {
+					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
+				}
+			}
 		}
 	}
 

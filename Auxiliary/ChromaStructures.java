@@ -64,7 +64,7 @@ public class ChromaStructures {
 			case CAVERN:
 				return getCavernStructure(w, 0, 0, 0);
 			case BURROW:
-				return getBurrowStructure(w, 0, 0, 0);
+				return getBurrowStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			case OCEAN:
 				return getOceanStructure(w, 0, 0, 0);
 			}
@@ -497,7 +497,7 @@ public class ChromaStructures {
 		return array;
 	}
 
-	public static FilledBlockArray getBurrowStructure(World world, int x, int y, int z) {
+	public static FilledBlockArray getBurrowStructure(World world, int x, int y, int z, CrystalElement e) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
 		y -= 11;
@@ -505,6 +505,9 @@ public class ChromaStructures {
 		z -= 5;
 
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+
+		//Cracking block
+		array.setBlock(x+5, y+4, z+3, b, 9);
 
 		array.setBlock(x+0, y+2, z+3, b, 9);
 		array.setBlock(x+0, y+3, z+3, b, 9);
@@ -518,7 +521,6 @@ public class ChromaStructures {
 		array.setBlock(x+1, y+1, z+3, b, 12);
 		array.setBlock(x+1, y+1, z+4, b, 12);
 		array.setBlock(x+1, y+2, z+2, b, 9);
-		array.setBlock(x+1, y+2, z+3, Blocks.chest, 5);
 		array.setBlock(x+1, y+2, z+4, b, 12);
 		array.setBlock(x+1, y+3, z+2, b, 9);
 		array.setBlock(x+1, y+3, z+3, b, 11);
@@ -533,7 +535,6 @@ public class ChromaStructures {
 		array.setBlock(x+1, y+5, z+5, b, 9);
 		array.setBlock(x+1, y+6, z+1, b, 9);
 		array.setBlock(x+1, y+6, z+2, b, 9);
-		array.setBlock(x+1, y+6, z+3, Blocks.chest, 5);
 		array.setBlock(x+1, y+6, z+4, b, 9);
 		array.setBlock(x+1, y+6, z+5, b, 9);
 		array.setBlock(x+1, y+7, z+2, b, 9);
@@ -574,8 +575,6 @@ public class ChromaStructures {
 		array.setBlock(x+3, y+1, z+1, b, 12);
 		array.setBlock(x+3, y+1, z+5, b, 12);
 		array.setBlock(x+3, y+2, z+0, b, 9);
-		array.setBlock(x+3, y+2, z+1, Blocks.chest, 3);
-		array.setBlock(x+3, y+2, z+5, Blocks.chest, 2);
 		array.setBlock(x+3, y+2, z+6, b, 9);
 		array.setBlock(x+3, y+3, z+0, b, 9);
 		array.setBlock(x+3, y+3, z+1, b, 11);
@@ -589,8 +588,6 @@ public class ChromaStructures {
 		array.setBlock(x+3, y+5, z+1, b, 9);
 		array.setBlock(x+3, y+5, z+5, b, 9);
 		array.setBlock(x+3, y+6, z+0, b, 9);
-		array.setBlock(x+3, y+6, z+1, Blocks.chest, 3);
-		array.setBlock(x+3, y+6, z+5, Blocks.chest, 2);
 		array.setBlock(x+3, y+6, z+6, b, 9);
 		array.setBlock(x+3, y+7, z+0, b, 9);
 		array.setBlock(x+3, y+7, z+1, b, 11);
@@ -638,7 +635,6 @@ public class ChromaStructures {
 		array.setBlock(x+5, y+3, z+1, b, 9);
 		array.setBlock(x+5, y+3, z+5, b, 9);
 		array.setBlock(x+5, y+4, z+2, b, 9);
-		array.setBlock(x+5, y+4, z+3, b, 3);
 		array.setBlock(x+5, y+4, z+4, b, 9);
 		array.setBlock(x+5, y+5, z+1, b, 9);
 		array.setBlock(x+5, y+5, z+5, b, 9);
@@ -719,8 +715,16 @@ public class ChromaStructures {
 		array.setBlock(x+4, y+9, z+3, Blocks.dirt);
 		array.setBlock(x+4, y+9, z+4, Blocks.dirt);
 
-		array.setBlock(x+3, y+1, z+3, Blocks.torch, 5);
+		array.setBlock(x+3, y+1, z+3, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		array.setBlock(x+3, y+5, z+3, Blocks.torch, 5);
+
+		//Chests
+		array.setBlock(x+3, y+6, z+1, Blocks.chest, 3);
+		array.setBlock(x+1, y+6, z+3, Blocks.chest, 5);
+		array.setBlock(x+3, y+6, z+5, Blocks.chest, 2);
+		array.setBlock(x+3, y+2, z+1, Blocks.chest, 3);
+		array.setBlock(x+1, y+2, z+3, Blocks.chest, 5);
+		array.setBlock(x+3, y+2, z+5, Blocks.chest, 2);
 
 		//Air
 		array.setBlock(x+2, y+1, z+2, Blocks.air);

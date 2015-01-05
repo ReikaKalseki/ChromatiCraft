@@ -76,6 +76,11 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	}
 
 	@Override
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer ep) {
+		ding(world, x, y, z);
+	}
+
+	@Override
 	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		if (world.isBlockIndirectlyGettingPowered(x, y, z))
 			ding(world, x, y, z);
@@ -155,15 +160,14 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	@SideOnly(Side.CLIENT)
 	public boolean addHitEffects(World world, MovingObjectPosition target, EffectRenderer effectRenderer)
 	{
-		Random rand = new Random();
 		int x = target.blockX;
 		int y = target.blockY;
 		int z = target.blockZ;
 		int color = world.getBlockMetadata(x, y, z);
-		ReikaDyeHelper dye = ReikaDyeHelper.getColorFromDamage(color);
-		double[] v = dye.getRedstoneParticleVelocityForColor();
+		CrystalElement e = CrystalElement.elements[color];
+		double[] v = ReikaDyeHelper.dyes[color].getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
-		if (dye != ReikaDyeHelper.PURPLE) //prevent an XP exploit
+		if (e != CrystalElement.PURPLE) //prevent an XP exploit
 			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
 		return false;
 	}

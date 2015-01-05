@@ -64,7 +64,7 @@ public class BlockStructureShield extends Block {
 
 	@Override
 	public int damageDropped(int meta) {
-		return 0;
+		return meta;
 	}
 
 	@Override
