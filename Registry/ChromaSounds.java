@@ -38,7 +38,8 @@ public enum ChromaSounds implements SoundEnum {
 	INFUSE("infuse"),
 	INFUSION("infuse2"),
 	USE("use2"),
-	TRAP("slam2");
+	TRAP("slam2"),
+	DING("ding2");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -140,6 +141,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean canOverlap() {
-		return this == CAST || this == USE || this == ERROR || this == INFUSE;
+		return this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING;
 	}
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -77,7 +78,8 @@ public class GuiNavigation extends ChromaBookGui {
 			else {
 				if (ItemChromaBook.hasPage(player.getCurrentEquippedItem(), b)) {
 					//if (b.playerCanSee(ep)) {
-					z.addElement(new SectionElement(b));
+					if (!b.isDummiedOut())
+						z.addElement(new SectionElement(b));
 				}
 			}
 		}
@@ -388,6 +390,9 @@ public class GuiNavigation extends ChromaBookGui {
 				if (destination.isAbility()) {
 					ico = ChromaTiles.RITUAL.getBlock().getIcon(1, ChromaTiles.RITUAL.getBlockMetadata());
 				}
+				else if (destination.isVanillaRecipe()) {
+					ico = Blocks.crafting_table.getIcon(1, 0);
+				}
 				api.drawTexturedModelRectFromIcon(ex+8, ey+8, ico, 9, 9);
 				if (destination.isCrafting() && !destination.isCraftable()) {
 					ico = ChromaIcons.NOENTER.getIcon();
@@ -402,13 +407,13 @@ public class GuiNavigation extends ChromaBookGui {
 		public ChromaGuis getGuiType() {
 			switch(destination.getParent()) {
 			case MACHINEDESC:
-				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.MACHINEDESC;
+				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.MACHINEDESC;
 			case RESOURCEDESC:
-				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.BASICDESC;
+				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
 			case TOOLDESC:
-				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.TOOLDESC;
+				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.TOOLDESC;
 			case BLOCKS:
-				return craftMode() && destination.isCraftable() ? ChromaGuis.RECIPE : ChromaGuis.BASICDESC;
+				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
 			case ABILITYDESC:
 				return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
 			case INTRO:

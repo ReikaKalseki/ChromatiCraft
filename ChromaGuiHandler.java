@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
 import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
 import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiCraftableDesc;
+import Reika.ChromatiCraft.GUI.Book.GuiCraftingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
@@ -210,6 +211,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiToolDescription(player, ChromaResearch.researchList[x]);
 		case BASICDESC:
 			return new GuiCraftableDesc(player, ChromaResearch.researchList[x]);
+		case CRAFTING:
+			return new GuiCraftingRecipe(player, ChromaResearch.researchList[x].getVanillaRecipes(), y, z > 0);
 		case RECIPE:
 			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes(), y, z > 0);
 		case RITUAL:

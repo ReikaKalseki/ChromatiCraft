@@ -263,7 +263,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case PATH:
 			return PathType.list[meta].name+" "+this.getBasicName();
 		case STRUCTSHIELD:
-			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
+			return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
 		default:
 			return "";
 		}
@@ -300,6 +300,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return 16;
 		case PATH:
 			return BlockPath.PathType.list.length;
+		case STRUCTSHIELD:
+			return BlockStructureShield.BlockType.list.length;
 		default:
 			return 1;
 		}

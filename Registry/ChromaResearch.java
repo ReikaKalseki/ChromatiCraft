@@ -19,6 +19,8 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -37,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.MultiMap;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -325,8 +328,6 @@ public enum ChromaResearch {
 	public boolean isCrafting() {
 		if (isParent)
 			return false;
-		if (this == CASTTABLE || this == WAND)
-			return false;
 		if (this.isMachine() || this.isTool())
 			return true;
 		if (this == GROUPS)
@@ -482,8 +483,29 @@ public enum ChromaResearch {
 		return this.getCraftingRecipes().size();
 	}
 
+	public int getVanillaRecipeCount() {
+		return this.getVanillaRecipes().size();
+	}
+
 	public boolean isCraftable() {
-		return !this.isConfigDisabled() && this.isCrafting() ? this.getRecipeCount() > 0  : false;
+		if (!this.isConfigDisabled() && this.isCrafting()) {
+			return this.isVanillaRecipe() ? this.getVanillaRecipeCount() > 0 : this.getRecipeCount() > 0;
+		}
+		return false;
+	}
+
+	public boolean isVanillaRecipe() {
+		switch(this) {
+		case CASTTABLE:
+		case WAND:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	public ChromaGuis getCraftingType() {
+		return this.isVanillaRecipe() ? ChromaGuis.CRAFTING : ChromaGuis.RECIPE;
 	}
 
 	public ArrayList<CastingRecipe> getCraftingRecipes() {
@@ -513,6 +535,19 @@ public enum ChromaResearch {
 		if (li.isEmpty())
 			return null;
 		return li.get(recipe).type;
+	}
+
+	public ArrayList<IRecipe> getVanillaRecipes() {
+		if (!this.isCrafting())
+			return new ArrayList();
+		ArrayList<ItemStack> li = this.getItemStacks();
+		if (li == null || li.isEmpty())
+			return new ArrayList();
+		ArrayList<IRecipe> rec = new ArrayList();
+		for (ItemStack is : li) {
+			rec.addAll(ReikaRecipeHelper.getAllRecipesByOutput(CraftingManager.getInstance().getRecipeList(), is));
+		}
+		return rec;
 	}
 
 	public String getTitle() {

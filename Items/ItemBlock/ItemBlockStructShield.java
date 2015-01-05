@@ -16,6 +16,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Block.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
 public class ItemBlockStructShield extends ItemBlock {
@@ -28,13 +29,13 @@ public class ItemBlockStructShield extends ItemBlock {
 	@Override
 	public void getSubItems(Item id, CreativeTabs par2CreativeTabs, List par3List)
 	{
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < BlockStructureShield.BlockType.list.length; i++)
 			par3List.add(new ItemStack(id, 1, i));
 	}
 
 	@Override
 	public int getMetadata(int meta) {
-		return meta+8;
+		return meta;
 	}
 
 	@Override

@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
-import Reika.RotaryCraft.API.BlowableCrop;
+import Reika.RotaryCraft.API.Interfaces.BlowableCrop;
 
 public class BlockCrystalPlant extends Block implements BlowableCrop {
 

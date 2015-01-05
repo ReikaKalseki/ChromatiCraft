@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
@@ -67,8 +76,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		case CAVERN:
 			world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
 			world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
-			ChromaSounds.TRAP.playSound(ep, 2, 1);
-			ChromaSounds.TRAP.playSound(ep, 2, 0.5F);
+			ChromaSounds.TRAP.playSound(ep, 1, 1);
 			ProgressStage.CAVERN.stepPlayerTo(ep);
 			break;
 		case BURROW:
@@ -85,7 +93,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
-		this.calcCrystals(world, x, y, z);
+		if (struct != null)
+			this.calcCrystals(world, x, y, z);
 		this.syncAllData(true);
 	}
 

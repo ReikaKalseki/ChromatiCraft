@@ -28,7 +28,9 @@ public enum ChromaPackets {
 	LAMPCONTROL(2),
 	TNT(4),
 	BOOKINVSCROLL(1),
-	TICKER(1);
+	TICKER(1),
+	PYLONCLEAR(1),
+	SHARDBOOST(1);
 
 	public final int numInts;
 	public final PacketTypes type;

@@ -11,9 +11,12 @@ package Reika.ChromatiCraft;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -23,6 +26,7 @@ import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
+import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -38,6 +42,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -57,6 +62,7 @@ public class ChromatiPackets implements IPacketHandler {
 		int y = 0;
 		int z = 0;
 		String stringdata = null;
+		UUID id = null;
 		//System.out.print(packet.length);
 		try {
 			PacketTypes packetType = packet.getType();
@@ -126,6 +132,13 @@ public class ChromatiPackets implements IPacketHandler {
 				for (int i = 0; i < data.length; i++)
 					data[i] = inputStream.readInt();
 				break;
+			case UUID:
+				control = inputStream.readInt();
+				pack = ChromaPackets.getPacket(control);
+				long l1 = inputStream.readLong(); //most
+				long l2 = inputStream.readLong(); //least
+				id = new UUID(l1, l2);
+				break;
 			}
 			if (packetType.hasCoordinates()) {
 				x = inputStream.readInt();
@@ -140,7 +153,7 @@ public class ChromatiPackets implements IPacketHandler {
 		TileEntity tile = world.getTileEntity(x, y, z);
 		try {
 			switch (pack) {
-			case ENCHANTER:
+			case ENCHANTER: {
 				Enchantment e = Enchantment.enchantmentsList[data[0]];
 				boolean incr = data[1] > 0;
 				TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
@@ -151,6 +164,7 @@ public class ChromatiPackets implements IPacketHandler {
 					ench.decrementEnchantment(e);
 				}
 				break;
+			}
 			case SPAWNERPROGRAM:
 				TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
 				prog.setMobType(stringdata);
@@ -215,6 +229,16 @@ public class ChromatiPackets implements IPacketHandler {
 			case TICKER:
 				((TileEntityInventoryTicker)tile).ticks = data[0];
 				break;
+			case PYLONCLEAR:
+				PylonGenerator.instance.clearDimension(data[0]);
+				break;
+			case SHARDBOOST: {
+				Entity e = world.getEntityByID(data[0]);
+				if (e instanceof EntityItem) {
+					ItemCrystalShard.spawnEffects((EntityItem)e);
+				}
+				break;
+			}
 			}
 		}
 		catch (NullPointerException e) {

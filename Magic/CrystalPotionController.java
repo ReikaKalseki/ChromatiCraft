@@ -92,6 +92,11 @@ public class CrystalPotionController {
 		return !ReikaPotionHelper.isBadEffect(pot);
 	}
 
+	public static boolean isBadPotion(CrystalElement e) {
+		Potion pot = map.get(e);
+		return pot != null && ReikaPotionHelper.isBadEffect(pot);
+	}
+
 	public static PotionEffect getEffectFromColor(CrystalElement color, int dura, int level) {
 		Potion pot = map.get(color);
 		if (pot == null)

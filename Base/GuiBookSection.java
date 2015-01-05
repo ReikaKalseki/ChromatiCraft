@@ -110,6 +110,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected static enum PageType {
 		PLAIN(""),
+		CRAFTING("cast"), //reuse
 		MACHINE("machine"),
 		CAST("cast"),
 		RUNES("runes"),

@@ -151,7 +151,7 @@ public class ChromaClientEventController {
 			if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 				ChromaResearch r = ChromaResearch.getPageFor(is);
-				if (r != null && r.playerCanSee(ep) && r.isCrafting()) {
+				if (r != null && r.playerCanSee(ep) && r.isCrafting() && !r.isVanillaRecipe()) {
 					ep.openGui(ChromatiCraft.instance, ChromaGuis.RECIPE.ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
 					return true;
 				}

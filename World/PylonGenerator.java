@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -37,6 +38,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -44,6 +46,7 @@ import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -75,11 +78,29 @@ public final class PylonGenerator implements IWorldGenerator {
 
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
-		this.clear(evt.world);
+		if (evt.world.isRemote) {
+
+		}
+		else {
+			this.clear(evt.world);
+			ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCLEAR.ordinal(), evt.world.provider.dimensionId);
+		}
 	}
 
 	private void clear(World world) {
-		data.remove(world.provider.dimensionId);
+		this.clearDimension(world.provider.dimensionId);
+	}
+
+	public void clearDimension(int dim) {
+		data.remove(dim);
+		for (CrystalElement e : colorCache.keySet()) {
+			Iterator<WorldLocation> it = colorCache.get(e).iterator();
+			while (it.hasNext()) {
+				WorldLocation loc = it.next();
+				if (loc.dimensionID == dim)
+					it.remove();
+			}
+		}
 	}
 
 	private void fillArray(World world) {

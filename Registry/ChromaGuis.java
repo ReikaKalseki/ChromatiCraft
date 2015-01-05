@@ -18,6 +18,7 @@ public enum ChromaGuis {
 	BOOKPAGES(),
 	INFO(),
 	STRUCTURE(),
+	CRAFTING(),
 	RECIPE(),
 	RITUAL(),
 	ABILITYDESC(),

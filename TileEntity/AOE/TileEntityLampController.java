@@ -24,8 +24,8 @@ import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
-import Reika.RotaryCraft.API.PowerTransferHelper;
-import Reika.RotaryCraft.API.SimpleShaftPowerReceiver;
+import Reika.RotaryCraft.API.Power.PowerTransferHelper;
+import Reika.RotaryCraft.API.Power.SimpleShaftPowerReceiver;
 import cofh.api.energy.IEnergyHandler;
 
 public class TileEntityLampController extends TileEntityChromaticBase implements BreakAction, GuiController, SimpleShaftPowerReceiver {

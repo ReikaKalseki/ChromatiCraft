@@ -29,14 +29,17 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -45,7 +48,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CrystalBlock extends Block implements CrystalRenderedBlock {
 
-	protected final IIcon[] icons = new IIcon[ReikaDyeHelper.dyes.length];
+	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
 	private static final Random rand = new Random();
 
@@ -54,6 +57,40 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 		this.setHardness(1F);
 		this.setResistance(2F);
+		stepSound = new SoundType("stone", 0, 0);
+	}
+
+	@Override
+	public final void onBlockAdded(World world, int x, int y, int z) {
+		ding(world, x, y, z);
+	}
+
+	@Override
+	public final void breakBlock(World world, int x, int y, int z, Block b, int meta) {
+		ding(world, x, y, z, CrystalElement.elements[meta]);
+	}
+
+	@Override
+	public final void onEntityWalking(World world, int x, int y, int z, Entity ent) {
+		ding(world, x, y, z);
+	}
+
+	@Override
+	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		if (world.isBlockIndirectlyGettingPowered(x, y, z))
+			ding(world, x, y, z);
+	}
+
+	public static void ding(World world, int x, int y, int z) {
+		ding(world, x, y, z, CrystalElement.elements[world.getBlockMetadata(x, y, z)]);
+	}
+
+	public static void ding(World world, int x, int y, int z, CrystalElement e) {
+		ChromaSounds.DING.playSoundAtBlock(world, x, y, z, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.2), getRandomPitch(e));
+	}
+
+	private static float getRandomPitch(CrystalElement e) { //Generates a major or minor chord
+		return CrystalMusicManager.instance.getRandomScaledDing(e);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -133,12 +170,13 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 
 	public void updateEffects(World world, int x, int y, int z) {
 		if (!world.isRemote) {
+			CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
 			if (this.shouldMakeNoise()) {
 				float f1 = rand.nextFloat();
 				float f2 = rand.nextFloat();
-				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, 0.5F*((f1-f2)*0.7F+1.8F));
+				float f3 = 0.5F*((f1-f2)*0.7F+1.8F);
+				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, f3/*this.getRandomPitch(color)*/);
 			}
-			CrystalElement color = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
 			if (this.shouldGiveEffects(color)) {
 				int r = this.getRange();
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);

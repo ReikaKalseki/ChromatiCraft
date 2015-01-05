@@ -21,6 +21,7 @@ import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
@@ -28,11 +29,13 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Interfaces.AnimatedSpritesheet;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -76,11 +79,11 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 							else if (tick >= 6000) {
 								ItemStack is = ChromaItems.SHARD.getCraftedMetadataProduct(ei.getEntityItem().stackSize, 16+dmg);
 								EntityItem ei2 = new EntityItem(ei.worldObj, ei.posX, ei.posY, ei.posZ, is);
-								if (!ei.worldObj.isRemote)
+								if (!ei.worldObj.isRemote) {
 									ei.worldObj.spawnEntityInWorld(ei2);
-								else
-									this.spawnEffects(ei);
-								ChromaSounds.INFUSE.playSoundAtBlock(ei.worldObj, x, y, z);
+									ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SHARDBOOST.ordinal(), ei.worldObj, x, y, z, ei.getEntityId());
+									ChromaSounds.INFUSE.playSoundAtBlock(ei.worldObj, x, y, z);
+								}
 								ei.setDead();
 								tc.clear();
 							}
@@ -115,7 +118,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void spawnEffects(EntityItem ei) {
+	public static void spawnEffects(EntityItem ei) {
 		for (int i = 0; i < 16; i++) {
 			double rx = ei.posX;
 			double ry = ei.posY;

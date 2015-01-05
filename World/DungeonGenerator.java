@@ -14,19 +14,23 @@ import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
+import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.TwilightForestHandler;
 import cpw.mods.fml.common.IWorldGenerator;
@@ -88,7 +92,7 @@ public class DungeonGenerator implements IWorldGenerator {
 						//ReikaJavaLibrary.pConsole("Digging tunnel @ depth "+i);
 					}
 				}
-				ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
 				world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 				te.generate(Structures.CAVERN, CrystalElement.WHITE);
@@ -98,7 +102,13 @@ public class DungeonGenerator implements IWorldGenerator {
 		}
 		case BURROW: {
 			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-			//ChromaStructures.getBurrowStructure(world, x, y, z).place();
+			FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z);
+			if (this.isValidBurrowLocation(world, x, y, z, arr)) {
+				arr.place();
+				this.convertDirtToGrass(arr);
+				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+				return true;
+			}
 			return false;
 		}
 		case OCEAN: {
@@ -110,12 +120,27 @@ public class DungeonGenerator implements IWorldGenerator {
 					b = world.getBlock(x, y, z);
 				}
 				ChromaStructures.getOceanStructure(world, x, y, z).place();
+				for (int i = y+1; i < 200; i++) {
+					world.setBlock(x, i, z, Blocks.glass);
+				}
 				return true;
 			}
 			return false;
 		}
 		default:
 			return false;
+		}
+	}
+
+	private void convertDirtToGrass(FilledBlockArray arr) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b == Blocks.dirt) {
+				if (arr.world.getBlockLightValue(xyz[0], xyz[1]+1, xyz[2]) > 8) {
+					arr.world.setBlock(xyz[0], xyz[1], xyz[2], Blocks.grass);
+				}
+			}
 		}
 	}
 
@@ -142,6 +167,52 @@ public class DungeonGenerator implements IWorldGenerator {
 		return false;
 	}
 
+	private boolean isValidBurrowLocation(World world, int x, int y, int z, FilledBlockArray arr) {
+
+		if (world.getBlock(x, y, z) != Blocks.grass)
+			return false;
+
+		//Surface visibility
+		for (int i = 1; i <= 8; i++) {
+			for (int k = -3; k <= 1; k++) {
+				Block b = world.getBlock(x, y+i, z+k);
+				if (!ReikaWorldHelper.softBlocks(world, x, y+i, z+k)) {
+					return false;
+				}
+			}
+		}
+
+		//No lakes
+		int r = 1;
+		for (int i = -r; i <= r; i++) {
+			for (int j = -r; j <= r; j++) {
+				for (int k = -r; k <= r; k++) {
+					Block b = world.getBlock(x+i, y+j, z+k);
+					if (b instanceof BlockLiquid || b instanceof BlockFluidBase) {
+						return false;
+					}
+				}
+			}
+		}
+
+		//No air exposure
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			Block b = world.getBlock(dx, dy, dz);
+			if (world.getTopSolidOrLiquidBlock(dx, dz) < y-2)
+				return false;
+			if (arr.hasBlockAt(dx, dy, dz, Blocks.stone) || arr.hasBlockAt(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance())) {
+				if (b.isAir(world, dx, dy, dz) || ReikaWorldHelper.checkForAdjMaterial(world, dx, dy, dz, Material.air) != null) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {
 		switch(s) {
 		case OCEAN:
@@ -149,7 +220,7 @@ public class DungeonGenerator implements IWorldGenerator {
 		case CAVERN:
 			return r.nextInt(32) == 0;
 		case BURROW:
-			return true;
+			return r.nextInt(16) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 		default:
 			return false;
 		}

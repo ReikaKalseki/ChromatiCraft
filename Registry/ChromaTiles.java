@@ -382,6 +382,8 @@ public enum ChromaTiles {
 	}
 
 	public boolean isDummiedOut() {
+		if (this.hasPrerequisite() && !this.getPrerequisite().isLoaded())
+			return true;
 		return false;
 	}
 

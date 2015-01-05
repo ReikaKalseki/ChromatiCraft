@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2014
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
 import java.util.Random;
@@ -14,24 +23,43 @@ import Reika.ChromatiCraft.ChromatiCraft;
 
 public class BlockStructureShield extends Block {
 
-	private static final IIcon[] icons = new IIcon[8];
+	public static enum BlockType {
+		CLOAK("Cloak"),
+		STONE("Stone"),
+		COBBLE("Cobble"),
+		CRACK("Crack"),
+		MOSS("Moss");
+
+		public final String name;
+		public final int metadata;
+
+		public static final BlockType[] list = values();
+
+		private BlockType(String s) {
+			name = s;
+			metadata = this.ordinal()+8;
+		}
+	}
+
+	private static final IIcon[] icons = new IIcon[BlockType.list.length];
 
 	public BlockStructureShield(Material mat) {
 		super(mat);
 		this.setHardness(2);
-		this.setResistance(10);
+		this.setResistance(6000);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 		stepSound = soundTypeStone;
 	}
 
 	@Override
 	public float getBlockHardness(World world, int x, int y, int z) {
-		return world.getBlockMetadata(x, y, z) >= 8 ? -1 : super.getBlockHardness(world, x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		return meta >= 8 && meta != BlockType.CRACK.metadata ? -1 : super.getBlockHardness(world, x, y, z);
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta&7];
+		return icons[meta%8];
 	}
 
 	@Override
@@ -46,7 +74,7 @@ public class BlockStructureShield extends Block {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < BlockType.list.length; i++) {
 			icons[i] = ico.registerIcon("chromaticraft:basic/shield_"+i);
 		}
 	}
@@ -54,7 +82,8 @@ public class BlockStructureShield extends Block {
 	@Override
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side)
 	{
-		return world.getBlockMetadata(x, y, z) < 8;
+		int meta = world.getBlockMetadata(x, y, z);
+		return meta < 8 || (meta == BlockType.STONE.metadata && side == ForgeDirection.UP);
 	}
 
 }
