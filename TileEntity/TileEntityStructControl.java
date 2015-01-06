@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -147,27 +147,29 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 			break;
 		case BURROW:
-			double dx = x+0.5;
-			double dz = z+0.5;
-			double d = 0.4;
-			switch(rand.nextInt(5)) {
-			case 0:
-				break;
-			case 1:
-				dx += d;
-				break;
-			case 2:
-				dx -= d;
-				break;
-			case 3:
-				dz += d;
-				break;
-			case 4:
-				dz -= d;
-				break;
+			if (world.getBlock(x, y-2, z) == ChromaBlocks.LAMP.getBlockInstance()) {
+				double dx = x+0.5;
+				double dz = z+0.5;
+				double d = 0.4;
+				switch(rand.nextInt(5)) {
+				case 0:
+					break;
+				case 1:
+					dx += d;
+					break;
+				case 2:
+					dx -= d;
+					break;
+				case 3:
+					dz += d;
+					break;
+				case 4:
+					dz -= d;
+					break;
+				}
+				EntityCenterBlurFX fx = new EntityCenterBlurFX(color, world, dx, y-2+0.5, dz, 0, 0, 0).setGravity(-0.05F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
-			EntityCenterBlurFX fx = new EntityCenterBlurFX(color, world, dx, y-2+0.5, dz, 0, 0, 0).setGravity(-0.05F);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			break;
 		case OCEAN:
 			break;
@@ -184,10 +186,20 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		WeightedRandomChestContent[] loot = ChestGenHooks.getItems(ChestGenHooks.STRONGHOLD_LIBRARY, rand);
 		WeightedRandomChestContent.generateChestContents(rand, loot, this, ChestGenHooks.getCount(ChestGenHooks.STRONGHOLD_LIBRARY, rand));
 		int n = 1+rand.nextInt(4)*(1+rand.nextInt(2));
+		//ReikaJavaLibrary.pConsole("genning "+n+" fragments @ "+xCoord+", "+zCoord);
 		for (int i = 0; i < n; i++) {
 			ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
 		}
-		ReikaInventoryHelper.addToIInv(ChromaStacks.cavernLoot, this);
+		switch(struct) {
+		case CAVERN:
+			ReikaInventoryHelper.addToIInv(ChromaStacks.cavernLoot, this);
+			break;
+		case BURROW:
+			ReikaInventoryHelper.addToIInv(ChromaStacks.burrowLoot, this);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private void calcCrystals(World world, int x, int y, int z) {
@@ -219,33 +231,59 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public void breakBlock() {
-		switch(struct) {
-		case CAVERN:
-			if (blocks != null) {
-				for (int i = 0; i < blocks.getSize(); i++) {
-					int[] xyz = blocks.getNthBlock(i);
-					if (worldObj.getBlock(xyz[0], xyz[1], xyz[2]) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
-						worldObj.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], worldObj.getBlockMetadata(xyz[0], xyz[1], xyz[2])%8, 3);
+		if (struct != null) {
+			switch(struct) {
+			case CAVERN:
+				if (blocks != null) {
+					for (int i = 0; i < blocks.getSize(); i++) {
+						int[] xyz = blocks.getNthBlock(i);
+						int x = xyz[0];
+						int y = xyz[1];
+						int z = xyz[2];
+						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+						if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						}
+					}
 				}
+				worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
+				worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
+				break;
+			case BURROW:
+				if (blocks != null) {
+					for (int i = 0; i < blocks.getSize(); i++) {
+						int[] xyz = blocks.getNthBlock(i);
+						int x = xyz[0]+5;
+						int y = xyz[1]+8;
+						int z = xyz[2]+2;
+						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+						else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						}
+					}
+				}
+				break;
+			default:
+				break;
 			}
-			worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
-			worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
-			break;
-		default:
-			break;
 		}
 	}
 
 	public int getBrightness() {
-		return 0;
+		return struct == Structures.BURROW ? 15 : 0;
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		NBT.setString("struct", struct.name());
-		NBT.setInteger("color", color.ordinal());
+		if (struct != null)
+			NBT.setString("struct", struct.name());
+		NBT.setInteger("color", this.getColor().ordinal());
 		NBT.setBoolean("trigger", triggered);
 	}
 
@@ -277,6 +315,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		return false;
+	}
+
+	public CrystalElement getColor() {
+		return color != null ? color : CrystalElement.WHITE;
 	}
 
 }

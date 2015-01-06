@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
 
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
@@ -31,6 +32,27 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	@Override
 	protected Class getModClass() {
 		return ChromatiCraft.class;
+	}
+
+	protected final void renderModel(TileEntity tile, ChromaModelBase model, Object... args) {
+		if (MinecraftForgeClient.getRenderPass() != 0 && tile.hasWorldObj())
+			return;
+		GL11.glPushMatrix();
+		GL11.glScalef(1.0F, -1.0F, -1.0F);
+		GL11.glTranslatef(0.5F, -1.5F, -0.5F);
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		if (args.length > 0) {
+			ArrayList li = new ArrayList();
+			for (int i = 0; i < args.length; i++)
+				li.add(args[i]);
+			model.renderAll(tile, li);
+		}
+		else {
+			model.renderAll(tile, null);
+		}
+		if (tile.hasWorldObj())
+			GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glPopMatrix();
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, Object... args) {

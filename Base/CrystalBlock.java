@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -233,10 +233,10 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 				break;
 			case BROWN:
 				if (!e.isPotionActive(Potion.confusion.id))
-					e.addPotionEffect(new PotionEffect(Potion.confusion.id, (int)(dura*1.8), level));
+					e.addPotionEffect(new PotionEffect(Potion.confusion.id, (int)(dura*1.8), level, true));
 				break;
 			case LIME:
-				e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5));
+				e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
 				break;
 			default:
 				PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);

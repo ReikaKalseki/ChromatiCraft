@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -28,7 +28,10 @@ public class BlockStructureShield extends Block {
 		STONE("Stone"),
 		COBBLE("Cobble"),
 		CRACK("Crack"),
-		MOSS("Moss");
+		MOSS("Moss"),
+		GLASS("Glass"),
+		WINDOW("Window"),
+		CRACKS("Cracks");
 
 		public final String name;
 		public final int metadata;
@@ -38,6 +41,22 @@ public class BlockStructureShield extends Block {
 		private BlockType(String s) {
 			name = s;
 			metadata = this.ordinal()+8;
+		}
+
+		public boolean isOpaque(ForgeDirection side) {
+			return this == STONE && side == ForgeDirection.UP;
+		}
+
+		public boolean isTransparent(ForgeDirection side) {
+			return this == CLOAK || this == CRACK || this == GLASS || this == WINDOW || this == CRACKS;
+		}
+
+		public boolean isTransparentToLight() {
+			return this == GLASS || this == WINDOW;
+		}
+
+		public boolean isMineable() {
+			return this == CRACK || this == CRACKS;
 		}
 	}
 
@@ -52,9 +71,25 @@ public class BlockStructureShield extends Block {
 	}
 
 	@Override
+	public int getLightOpacity(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		return BlockType.list[meta%8].isTransparentToLight() ? 0 : 255;
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public boolean renderAsNormalBlock() {
+		return true;
+	}
+
+	@Override
 	public float getBlockHardness(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
-		return meta >= 8 && meta != BlockType.CRACK.metadata ? -1 : super.getBlockHardness(world, x, y, z);
+		return meta >= 8 && !BlockType.list[meta%8].isMineable() ? -1 : super.getBlockHardness(world, x, y, z);
 	}
 
 	@Override
@@ -83,7 +118,11 @@ public class BlockStructureShield extends Block {
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side)
 	{
 		int meta = world.getBlockMetadata(x, y, z);
-		return meta < 8 || (meta == BlockType.STONE.metadata && side == ForgeDirection.UP);
+		if (BlockType.list[meta%8].isOpaque(side))
+			return true;
+		if (BlockType.list[meta%8].isTransparent(side))
+			return false;
+		return meta < 8;
 	}
 
 }

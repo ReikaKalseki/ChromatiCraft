@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -67,7 +67,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		if (te instanceof CrystalSource)
 			return -1;
 		if (te instanceof TileEntityStructControl) {
-			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32;
 		}
 		return te.isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}

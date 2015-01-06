@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -16,8 +16,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -27,6 +30,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -34,6 +38,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -113,32 +118,46 @@ public class DungeonGenerator implements IWorldGenerator {
 			if (this.isValidBurrowLocation(world, x, y, z, arr)) {
 				arr.place();
 				this.convertDirtToGrass(arr);
-				world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
+				//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
 				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
 				world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
 				te.generate(s, e);
 				this.populateChests(s, arr, r);
-				for (int i = y+1; i < 200; i++) {
-					world.setBlock(x, i, z, Blocks.glass);
-				}
 				return true;
 			}
 			return false;
 		}
 		case OCEAN: {
-			int y = world.getTopSolidOrLiquidBlock(x, z)-8; //needs to be at least 8 blocks deep
+			int y = world.getTopSolidOrLiquidBlock(x, z);
 			Block b = world.getBlock(x, y, z);
+			int tries = 0;
+			while (b != Blocks.water && b != Blocks.flowing_water && tries < 10) {
+				x = cx + r.nextInt(16);
+				z = cz + r.nextInt(16);
+				tries++;
+			}
 			if (b == Blocks.water || b == Blocks.flowing_water) {
-				while (b == Blocks.water || b == Blocks.flowing_water) {
-					y--;
-					b = world.getBlock(x, y, z);
+				//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
+				//while (b == Blocks.water || b == Blocks.flowing_water && y > 0) {
+				//	y--;
+				//	b = world.getBlock(x, y, z);
+				//}
+				FilledBlockArray struct = ChromaStructures.getOceanStructure(world, x, y, z);
+				if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
+					struct.place();
+					world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+					te.generate(s, CrystalElement.WHITE);
+					this.populateChests(s, struct, r);
+					this.programSpawners(s, struct, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
+					this.mossify(s, struct, r);
+					this.generatePit(world, x, y, z);
+					for (int i = y+8; i < 200; i++) {
+						world.setBlock(x, i, z, Blocks.glass);
+					}
+					return true;
 				}
-				ChromaStructures.getOceanStructure(world, x, y, z).place();
-				for (int i = y+1; i < 200; i++) {
-					world.setBlock(x, i, z, Blocks.glass);
-				}
-				return true;
 			}
 			return false;
 		}
@@ -147,13 +166,142 @@ public class DungeonGenerator implements IWorldGenerator {
 		}
 	}
 
+	private static FilledBlockArray getPitSlice(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+
+		x -= 3;
+		z -= 3;
+
+		array.setBlock(x+1, y+0, z+1, b, 8);
+		array.setBlock(x+1, y+0, z+2, b, 8);
+		array.setBlock(x+1, y+0, z+3, b, 8);
+		array.setBlock(x+1, y+0, z+4, b, 8);
+		array.setBlock(x+1, y+0, z+5, b, 8);
+		array.setBlock(x+2, y+0, z+1, b, 8);
+		array.setBlock(x+2, y+0, z+5, b, 8);
+		array.setBlock(x+3, y+0, z+1, b, 8);
+		array.setBlock(x+3, y+0, z+5, b, 8);
+		array.setBlock(x+5, y+0, z+1, b, 8);
+		array.setBlock(x+5, y+0, z+2, b, 8);
+		array.setBlock(x+5, y+0, z+3, b, 8);
+		array.setBlock(x+5, y+0, z+4, b, 8);
+		array.setBlock(x+5, y+0, z+5, b, 8);
+		array.setBlock(x+4, y+0, z+1, b, 8);
+		array.setBlock(x+4, y+0, z+5, b, 8);
+
+		array.setBlock(x+2, y+0, z+2, Blocks.air);
+		array.setBlock(x+2, y+0, z+3, Blocks.air);
+		array.setBlock(x+2, y+0, z+4, Blocks.air);
+		array.setBlock(x+3, y+0, z+2, Blocks.air);
+		array.setBlock(x+3, y+0, z+3, Blocks.air);
+		array.setBlock(x+3, y+0, z+4, Blocks.air);
+		array.setBlock(x+4, y+0, z+2, Blocks.air);
+		array.setBlock(x+4, y+0, z+3, Blocks.air);
+		array.setBlock(x+4, y+0, z+4, Blocks.air);
+
+		return array;
+	}
+
+	private static FilledBlockArray getEndcap1(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+
+		x -= 3;
+		z -= 3;
+		array.setBlock(x+30, y+8, z+2, Blocks.air);
+		array.setBlock(x+30, y+8, z+3, Blocks.air);
+		array.setBlock(x+30, y+8, z+4, Blocks.air);
+		array.setBlock(x+30, y+9, z+2, Blocks.air);
+		array.setBlock(x+30, y+9, z+3, Blocks.air);
+		array.setBlock(x+30, y+9, z+4, Blocks.air);
+		array.setBlock(x+30, y+10, z+2, Blocks.air);
+		array.setBlock(x+30, y+10, z+3, Blocks.air);
+		array.setBlock(x+30, y+10, z+4, Blocks.air);
+
+		return array;
+	}
+
+	private static FilledBlockArray getEndcap2(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+
+		x -= 3;
+		z -= 3;
+
+		array.setBlock(x+2, y+8, z+30, Blocks.air);
+		array.setBlock(x+2, y+9, z+30, Blocks.air);
+		array.setBlock(x+2, y+10, z+30, Blocks.air);
+		array.setBlock(x+3, y+8, z+30, Blocks.air);
+		array.setBlock(x+3, y+9, z+30, Blocks.air);
+		array.setBlock(x+3, y+10, z+30, Blocks.air);
+		array.setBlock(x+4, y+8, z+30, Blocks.air);
+		array.setBlock(x+4, y+9, z+30, Blocks.air);
+		array.setBlock(x+4, y+10, z+30, Blocks.air);
+
+		return array;
+	}
+
+	private void generatePit(World world, int x, int y, int z) {
+		for (int i = 3; i < 32; i++) {
+			FilledBlockArray arr = this.getPitSlice(world, x, y-i, z);
+			boolean flag = true;
+			for (int k = 0; k < arr.getSize(); k++) {
+				int[] xyz = arr.getNthBlock(k);
+				Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+				if (b != Blocks.air) {
+					flag = false;
+				}
+			}
+			if (flag && i > 6) {
+				arr.place();
+				break;
+			}
+			else {
+				arr.place();
+			}
+		}
+	}
+
+	private void mossify(Structures s, FilledBlockArray arr, Random r) {
+		Block b2 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b == b2) {
+				int meta = arr.world.getBlockMetadata(xyz[0], xyz[1], xyz[2]);
+				if (meta == BlockType.STONE.metadata) {
+					int dy = xyz[1]-arr.getMinY();
+					if (r.nextInt(2+dy*2) == 0) {
+						arr.world.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], BlockType.MOSS.metadata, 3);
+					}
+				}
+			}
+		}
+	}
+
+	private void programSpawners(Structures s, FilledBlockArray arr, String mob) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b == Blocks.mob_spawner) {
+				TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
+				ReikaSpawnerHelper.setMobSpawnerMob(te, mob);
+			}
+		}
+	}
+
 	private void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
 		String s = null;
 		switch (struct) {
 		case CAVERN:
 			s = ChestGenHooks.DUNGEON_CHEST;
+			break;
 		case BURROW:
 			s = ChestGenHooks.BONUS_CHEST;
+			break;
+		case OCEAN:
+			s = ChestGenHooks.PYRAMID_JUNGLE_CHEST;
 			break;
 		default:
 			break;
@@ -163,12 +311,19 @@ public class DungeonGenerator implements IWorldGenerator {
 		for (int k = 0; k < arr.getSize(); k++) {
 			int[] xyz = arr.getNthBlock(k);
 			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
-			if (b == Blocks.chest) {
+			if (b == ChromaStructures.getChestGen()) {
 				IInventory te = (IInventory)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
 				WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
+				int bonus = struct == Structures.OCEAN && xyz[1]-arr.getMinY() == 4 ? 4 : 0;
 				WeightedRandomChestContent.generateChestContents(r, loot, te, ChestGenHooks.getCount(s, r));
-				if (r.nextBoolean()) {
+				if (bonus > 0)
+					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);
+				int n1 = struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+				int n2 = struct == Structures.OCEAN ? 8 : 3;
+				if (r.nextInt(n1) > 0) {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
+					if (r.nextInt(n2) == 0)
+						ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
 				}
 			}
 		}
@@ -253,6 +408,57 @@ public class DungeonGenerator implements IWorldGenerator {
 			}
 		}
 		return true;
+	}
+
+	private boolean isValidOceanLocation(World world, int x, int y, int z, FilledBlockArray struct) {
+		//needs to be at least 8 blocks deep
+		if (world.getBlock(x, y+8, z) != Blocks.water && world.getBlock(x, y+8, z) != Blocks.flowing_water)
+			return false;
+
+		//at least one end open
+		boolean flag1 = true;
+		boolean flag2 = true;
+		FilledBlockArray cap = (FilledBlockArray)this.getEndcap1(world, x, y, z).offset(1, 0, 0);
+		for (int k = 0; k < cap.getSize(); k++) {
+			int[] xyz = cap.getNthBlock(k);
+			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b != Blocks.water && b != Blocks.flowing_water) {
+				flag1 = false;
+			}
+		}
+		cap = (FilledBlockArray)this.getEndcap2(world, x, y, z).offset(0, 0, 1);
+		for (int k = 0; k < cap.getSize(); k++) {
+			int[] xyz = cap.getNthBlock(k);
+			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (b != Blocks.water && b != Blocks.flowing_water) {
+				flag2 = false;
+			}
+		}
+		if (!flag1 && !flag2)
+			return false;
+
+		//can generate pit to cave
+		int consec = 0;
+		for (int i = 3; i < y; i++) {
+			FilledBlockArray slice = this.getPitSlice(world, x, y-i, z);
+			boolean flag = true;
+			for (int k = 0; k < slice.getSize(); k++) {
+				int[] xyz = slice.getNthBlock(k);
+				Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+				if (b != Blocks.air) {
+					flag = false;
+				}
+			}
+			if (flag && i > 6) {
+				consec++;
+				if (consec >= 3)
+					return true;
+			}
+			else {
+				consec = 0;
+			}
+		}
+		return false;
 	}
 
 	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {

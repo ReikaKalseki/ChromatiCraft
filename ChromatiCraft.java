@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaResearchCommand;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
@@ -434,6 +435,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ProgressionStageCommand());
 		evt.registerServerCommand(new ChromaResearchCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
+		evt.registerServerCommand(new ChromabilityCommand());
 	}
 
 	@EventHandler
@@ -524,8 +526,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 		GameRegistry.registerTileEntity(TileEntityCrystalPlant.class, "CCCrystalPlant");
-		//GameRegistry.registerTileEntity(CrystalTankAuxTile.class, "CCTankAux");
-		//GameRegistry.registerTileEntity(CrystalFenceAuxTile.class, "CCFenceAux");
 	}
 
 	@Override

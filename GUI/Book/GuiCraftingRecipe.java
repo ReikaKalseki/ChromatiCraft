@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -19,18 +19,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.EnumChatFormatting;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import codechicken.nei.NEIClientConfig;
 
 public class GuiCraftingRecipe extends GuiBookSection {
 
@@ -39,8 +39,8 @@ public class GuiCraftingRecipe extends GuiBookSection {
 	private int recipeTextOffset = 0;
 	private boolean centeredMouse = false;
 
-	public GuiCraftingRecipe(EntityPlayer ep, ArrayList<IRecipe> out, int offset, boolean nei) {
-		super(ep, null, 256, 220, nei);
+	public GuiCraftingRecipe(EntityPlayer ep, ArrayList<IRecipe> out, int offset) {
+		super(ep, null, 256, 220, false);
 		recipes = new ArrayList(out);
 		index = offset;
 	}
@@ -66,23 +66,36 @@ public class GuiCraftingRecipe extends GuiBookSection {
 			buttonList.add(new ImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class));
 			buttonList.add(new ImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class));
 		}
+	}
 
-		if (NEItrigger && !centeredMouse) {
-			Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
-			centeredMouse = true;
+	@Override
+	public final void keyTyped(char c, int key) {
+		super.keyTyped(c, key);
+
+		if (ModList.NEI.isLoaded() && key == NEIClientConfig.getKeyBinding("gui.recipe")) {
+			int x = ReikaGuiAPI.instance.getMouseRealX();
+			int y = ReikaGuiAPI.instance.getMouseRealY();
+			int j = (width - xSize) / 2;
+			int k = (height - ySize) / 2;
+			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
+				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
+				if (is != null) {
+					codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
+				}
+			}
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		super.actionPerformed(button);
-
 		if (button.id == 0 && index > 0) {
 			index--;
+			recipeTextOffset = 0;
 			subpage = Math.min(subpage, this.getMaxSubpage());
 		}
 		else if (button.id == 1 && index < recipes.size()-1) {
 			index++;
+			recipeTextOffset = 0;
 			subpage = Math.min(subpage, this.getMaxSubpage());
 		}
 		if (button.id == 2 && recipeTextOffset > 0) {
@@ -92,6 +105,7 @@ public class GuiCraftingRecipe extends GuiBookSection {
 			recipeTextOffset++;
 		}
 		//renderq = 22.5F;
+		super.actionPerformed(button);
 		this.initGui();
 	}
 

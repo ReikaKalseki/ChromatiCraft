@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockFiberOptic;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
+import Reika.ChromatiCraft.Block.BlockLootChest;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
@@ -114,7 +115,8 @@ public enum ChromaBlocks implements BlockEnum {
 	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
 	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
 	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
-	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield");
+	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),
+	LOOTCHEST(BlockLootChest.class,												"chroma.loot");
 
 	private Class blockClass;
 	private String blockName;
@@ -276,6 +278,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this == TNT)
 			return false;
 		if (this == FENCE)
+			return false;
+		if (this == LOOTCHEST)
 			return false;
 		return true;
 	}

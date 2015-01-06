@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -101,14 +101,14 @@ public class CrystalPotionController {
 		Potion pot = map.get(color);
 		if (pot == null)
 			return null;
-		return new PotionEffect(pot.id, dura, level);
+		return new PotionEffect(pot.id, dura, level, true);
 	}
 
 	public static PotionEffect getNetherEffectFromColor(CrystalElement color, int dura, int level) {
 		Potion pot = nethermap.get(color);
 		if (pot == null)
 			return null;
-		return new PotionEffect(pot.id, dura, level);
+		return new PotionEffect(pot.id, dura, level, true);
 	}
 
 	public static String getPotionName(CrystalElement color) {

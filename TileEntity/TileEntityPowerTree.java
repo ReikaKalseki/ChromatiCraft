@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -309,7 +309,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 					}
 					else {
 						c.setBlock(worldObj, Blocks.air);
-						stage--;
+						if (stage > 0)
+							stage--;
 						growth.put(e, stage);
 						steps.put(e, 0);
 					}

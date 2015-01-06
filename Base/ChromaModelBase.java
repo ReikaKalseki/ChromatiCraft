@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -16,8 +16,10 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
+import Reika.DragonAPI.Interfaces.TileModel;
+import Reika.DragonAPI.Interfaces.TileModel;
 
-public abstract class ChromaModelBase extends ModelBase {
+public abstract class ChromaModelBase extends ModelBase implements TileModel {
 
 	protected final float f5 = 0.0625F;
 	protected int pass;

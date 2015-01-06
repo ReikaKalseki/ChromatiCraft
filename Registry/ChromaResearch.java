@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -445,6 +445,7 @@ public enum ChromaResearch {
 		}
 		if (this == CORES) {
 			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.crystalFocus);
 			li.add(ChromaStacks.energyCore);
 			li.add(ChromaStacks.transformCore);
 			li.add(ChromaStacks.voidCore);

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -21,6 +21,7 @@ public class AbilityAPI {
 	private static Class abilities;
 	private static Method add;
 
+	/** Call this to add abilities to the game. */
 	public static void addAbility(Ability a) {
 		try {
 			add.invoke(null, a);

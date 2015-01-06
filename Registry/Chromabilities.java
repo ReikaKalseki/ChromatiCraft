@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -320,7 +320,8 @@ public enum Chromabilities implements Ability {
 		if (abilities == null) {
 			abilities = new NBTTagCompound();
 		}
-		abilities.setBoolean(a.getID(), set);
+		if (set || abilities.hasKey(a.getID()))
+			abilities.setBoolean(a.getID(), set);
 		nbt.setTag(NBT_TAG, abilities);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -671,6 +672,15 @@ public enum Chromabilities implements Ability {
 
 		@Override
 		public int compare(Ability o1, Ability o2) {
+			if (o1 instanceof Chromabilities && o2 instanceof Chromabilities) {
+				return ((Chromabilities)o1).ordinal()-((Chromabilities)o2).ordinal();
+			}
+			else if (o1 instanceof Chromabilities) {
+				return Integer.MIN_VALUE;
+			}
+			else if (o2 instanceof Chromabilities) {
+				return Integer.MAX_VALUE;
+			}
 			return getAbilityInt(o1)-getAbilityInt(o2);
 		}
 

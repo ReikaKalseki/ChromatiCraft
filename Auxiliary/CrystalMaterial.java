@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -16,7 +16,7 @@ public class CrystalMaterial extends Material {
 
 	public CrystalMaterial() {
 		super(MapColor.quartzColor);
-		this.setRequiresTool();
+		//this.setRequiresTool();
 		this.setImmovableMobility();
 	}
 

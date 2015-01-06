@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
@@ -140,6 +141,7 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
+	@ModDependent(ModList.NEI)
 	public void interceptNEI(NEIRecipeCheckEvent evt) {
 		if (this.loadLexiconRecipe(evt.gui, evt.getItem()))
 			evt.setCanceled(true);

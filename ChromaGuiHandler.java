@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -212,7 +212,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case BASICDESC:
 			return new GuiCraftableDesc(player, ChromaResearch.researchList[x]);
 		case CRAFTING:
-			return new GuiCraftingRecipe(player, ChromaResearch.researchList[x].getVanillaRecipes(), y, z > 0);
+			return new GuiCraftingRecipe(player, ChromaResearch.researchList[x].getVanillaRecipes(), y);
 		case RECIPE:
 			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes(), y, z > 0);
 		case RITUAL:

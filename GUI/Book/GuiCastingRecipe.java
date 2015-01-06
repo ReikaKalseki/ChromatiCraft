@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -29,12 +29,14 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import codechicken.nei.NEIClientConfig;
 
 public class GuiCastingRecipe extends GuiBookSection {
 
@@ -78,24 +80,45 @@ public class GuiCastingRecipe extends GuiBookSection {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) {
-		super.actionPerformed(button);
+	public final void keyTyped(char c, int key) {
+		super.keyTyped(c, key);
 
-		if (button.id == 0 && index > 0) {
-			index--;
-			subpage = Math.min(subpage, this.getMaxSubpage());
+		if (ModList.NEI.isLoaded() && key == NEIClientConfig.getKeyBinding("gui.recipe")) {
+			int x = ReikaGuiAPI.instance.getMouseRealX();
+			int y = ReikaGuiAPI.instance.getMouseRealY();
+			int j = (width - xSize) / 2;
+			int k = (height - ySize) / 2;
+			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
+				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
+				if (is != null) {
+					codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
+				}
+			}
 		}
-		else if (button.id == 1 && index < recipes.size()-1) {
-			index++;
-			subpage = Math.min(subpage, this.getMaxSubpage());
-		}
-		if (button.id == 2 && recipeTextOffset > 0) {
-			recipeTextOffset--;
-		}
-		else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCounts().size()-11) {
-			recipeTextOffset++;
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if (buttoncooldown == 0) {
+			if (button.id == 0 && index > 0) {
+				index--;
+				recipeTextOffset = 0;
+				subpage = Math.min(subpage, this.getMaxSubpage());
+			}
+			else if (button.id == 1 && index < recipes.size()-1) {
+				index++;
+				recipeTextOffset = 0;
+				subpage = Math.min(subpage, this.getMaxSubpage());
+			}
+			if (button.id == 2 && recipeTextOffset > 0) {
+				recipeTextOffset--;
+			}
+			else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCounts().size()-11) {
+				recipeTextOffset++;
+			}
 		}
 		//renderq = 22.5F;
+		super.actionPerformed(button);
 		this.initGui();
 	}
 

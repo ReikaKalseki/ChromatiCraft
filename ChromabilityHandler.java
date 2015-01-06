@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -35,16 +35,17 @@ public class ChromabilityHandler implements TickHandler {
 		EntityPlayer ep = (EntityPlayer) tickData[0];
 		Collection<Ability> li = Chromabilities.getAbilitiesForTick((Phase)tickData[1]);
 		for (Ability c : li) {
-			if (Chromabilities.playerHasAbility(ep, c) && c.canPlayerExecuteAt(ep)) {
-				c.apply(ep);
-			}
-			if (ReikaRandomHelper.doWithChance(0.0002)) {
-				ElementTagCompound tag = Chromabilities.getTickCost(c);
-				if (tag != null) {
-					if (PlayerElementBuffer.instance.playerHas(ep, tag))
-						PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
-					else {
-						Chromabilities.removeFromPlayer(ep, c);
+			if (Chromabilities.playerHasAbility(ep, c) && Chromabilities.enabledOn(ep, c)) {
+				if (c.canPlayerExecuteAt(ep))
+					c.apply(ep);
+				if (ReikaRandomHelper.doWithChance(0.0002)) {
+					ElementTagCompound tag = Chromabilities.getTickCost(c);
+					if (tag != null) {
+						if (PlayerElementBuffer.instance.playerHas(ep, tag))
+							PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
+						else {
+							Chromabilities.removeFromPlayer(ep, c);
+						}
 					}
 				}
 			}

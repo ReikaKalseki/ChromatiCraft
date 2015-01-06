@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -55,6 +55,7 @@ public class CrystalMusicManager {
 		MusicKey key = baseKeys.get(e);
 		double base = this.getDingPitchScale(e);
 		int n = rand.nextInt(4);
+		//ReikaJavaLibrary.pConsole(key+":"+key.getMajorThird()+":"+key.getFifth());
 		switch(n) {
 		case 0:
 			;//base *= 1;

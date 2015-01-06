@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -111,7 +111,7 @@ public enum ChromaTiles {
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 3, "PowerTreeRender"),
 	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 0, "RenderLampControl"),
 	CREATIVEPYLON("chroma.creativepylon",ChromaBlocks.PYLON, 		TileEntityCreativeSource.class, 4, "RenderCreativePylon"),
-	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,	5);
+	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,	5, "RenderStructControl");
 	//WIRELESS("chroma.wireless",			ChromaBlocks.PYLON,	TileEntityWirelessRepeater.class, 3);
 	//CRYSTALFLOWER("chroma.crystalflower", ChromaBlocks.TILEPLANT, TileEntityCrystalFlower.class, 1),
 	;//MIXER(),
@@ -181,6 +181,7 @@ public enum ChromaTiles {
 		case LAMP:
 		case POWERTREE:
 		case LAMPCONTROL:
+		case STRUCTCONTROL:
 			//case TANK:
 			//case ITEMRIFT:
 			return true;
@@ -277,6 +278,8 @@ public enum ChromaTiles {
 	public ItemStack getCraftedProduct() {
 		if (this == RIFT)
 			return ChromaItems.RIFT.getStackOf();
+		if (this == CREATIVEPYLON || this == STRUCTCONTROL)
+			return null;
 		return ChromaItems.PLACER.getStackOfMetadata(this.ordinal());
 	}
 

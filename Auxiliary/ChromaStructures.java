@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -115,6 +115,9 @@ public class ChromaStructures {
 
 		array.setBlock(x+1, y+1, z+5, ChromaBlocks.RUNE.getBlockInstance(), CrystalElement.GREEN.ordinal());
 		array.setBlock(x+1, y+2, z+5, ChromaBlocks.CRYSTAL.getBlockInstance(), CrystalElement.GREEN.ordinal());
+
+		array.setBlock(x+10, y+1, z+3, getChestGen(), getChestMeta(ForgeDirection.WEST));
+		array.setBlock(x+10, y+1, z+7, getChestGen(), getChestMeta(ForgeDirection.WEST));
 
 		//Air
 		array.setBlock(x, y, z, Blocks.air);
@@ -253,11 +256,9 @@ public class ChromaStructures {
 		array.setBlock(x+9, y+4, z+4, Blocks.air);
 		array.setBlock(x+9, y+4, z+5, Blocks.air);
 		array.setBlock(x+9, y+4, z+6, Blocks.air);
-		array.setBlock(x+10, y+1, z+3, Blocks.air);
 		array.setBlock(x+10, y+1, z+4, Blocks.air);
 		array.setBlock(x+10, y+1, z+5, Blocks.air);
 		array.setBlock(x+10, y+1, z+6, Blocks.air);
-		array.setBlock(x+10, y+1, z+7, Blocks.air);
 		array.setBlock(x+10, y+2, z+3, Blocks.air);
 		array.setBlock(x+10, y+2, z+4, Blocks.air);
 		array.setBlock(x+10, y+2, z+5, Blocks.air);
@@ -719,12 +720,12 @@ public class ChromaStructures {
 		array.setBlock(x+3, y+5, z+3, Blocks.torch, 5);
 
 		//Chests
-		array.setBlock(x+3, y+6, z+1, Blocks.chest, 3);
-		array.setBlock(x+1, y+6, z+3, Blocks.chest, 5);
-		array.setBlock(x+3, y+6, z+5, Blocks.chest, 2);
-		array.setBlock(x+3, y+2, z+1, Blocks.chest, 3);
-		array.setBlock(x+1, y+2, z+3, Blocks.chest, 5);
-		array.setBlock(x+3, y+2, z+5, Blocks.chest, 2);
+		array.setBlock(x+3, y+6, z+1, getChestGen(), getChestMeta(ForgeDirection.SOUTH));
+		array.setBlock(x+1, y+6, z+3, getChestGen(), getChestMeta(ForgeDirection.EAST));
+		array.setBlock(x+3, y+6, z+5, getChestGen(), getChestMeta(ForgeDirection.NORTH));
+		array.setBlock(x+3, y+2, z+1, getChestGen(), getChestMeta(ForgeDirection.SOUTH));
+		array.setBlock(x+1, y+2, z+3, getChestGen(), getChestMeta(ForgeDirection.EAST));
+		array.setBlock(x+3, y+2, z+5, getChestGen(), getChestMeta(ForgeDirection.NORTH));
 
 		//Air
 		array.setBlock(x+2, y+1, z+2, Blocks.air);
@@ -839,8 +840,26 @@ public class ChromaStructures {
 	}
 
 	public static FilledBlockArray getOceanStructure(World world, int x, int y, int z) {
-		FilledBlockArray array = new FilledBlockArray(world);
-		return array;
+		return OceanStructure.getOceanStructure(world, x, y, z);
+	}
+
+	public static Block getChestGen() {
+		return ChromaBlocks.LOOTCHEST.getBlockInstance();//Blocks.chest;
+	}
+
+	public static int getChestMeta(ForgeDirection dir) {
+		switch(dir) {
+		case EAST:
+			return 1+8;
+		case WEST:
+			return 0+8;
+		case NORTH:
+			return 2+8;
+		case SOUTH:
+			return 3+8;
+		default:
+			return 0;
+		}
 	}
 
 	public static FilledBlockArray getTreeStructure(World world, int x, int y, int z) {

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2014
+ * Copyright 2015
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -48,6 +48,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 
 	static {
 		addEntry("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, BlacklistReason.BUGS); //by request
+		addEntry("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
 		addEntry("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
 
 		addEntry(TileEntityCastingTable.class);
@@ -140,12 +141,14 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 			return false;
 		if (!te.canUpdate() || te.isInvalid())
 			return false;
-		String s = te.getClass().getSimpleName();
+		String s = te.getClass().getSimpleName().toLowerCase();
 		if (s.contains("conduit") || s.contains("wire") || s.contains("cable")) //almost always part of a network object
 			return false;
 		if (s.contains("solar") || s.contains("windmill") || s.contains("watermill")) //power exploit
 			return false;
-		if (s.contains("windturbine") || s.contains("wind turbine") || s.contains("wind mill") || s.contains("water mill")) //power exploit
+		if (s.contains("windturbine") || s.contains("wind turbine") || s.contains("windmill") || s.contains("wind mill")) //power exploit
+			return false;
+		if (s.contains("watermill") || s.contains("water mill")) //power exploit
 			return false;
 		if (te.getClass().getCanonicalName().contains("appeng")) //AE will crash
 			return false;
