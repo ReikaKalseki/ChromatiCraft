@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -442,12 +441,14 @@ public class DungeonGenerator implements IWorldGenerator {
 		if (!flag1 && !flag2)
 			return false;
 
-		//bury lower half
+		//bury lower half, and ensure not near shore
 		for (int k = 0; k < struct.getSize(); k++) {
 			int[] xyz = struct.getNthBlock(k);
 			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
-			if (world.getTopSolidOrLiquidBlock(x, z) <= y) {
-				ReikaJavaLibrary.pConsole("fail @ "+Arrays.toString(xyz));
+			if (world.getTopSolidOrLiquidBlock(xyz[0], xyz[2]) <= y) {
+				return false;
+			}
+			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(xyz[0], xyz[2]))) {
 				return false;
 			}
 		}

@@ -3371,14 +3371,14 @@ public class OceanStructure {
 	}
 
 	private static void addChests(FilledBlockArray array, int x, int y, int z, Block chest) {
-		array.setBlock(x+1, y+4, z+3, chest, 1);
-		array.setBlock(x+1, y+8, z+3, chest, 1);
-		array.setBlock(x+3, y+4, z+1, chest, 3);
-		array.setBlock(x+3, y+8, z+1, chest, 3);
-		array.setBlock(x+10, y+3, z+14, chest, 3);
-		array.setBlock(x+5, y+8, z+15, chest);
-		array.setBlock(x+14, y+3, z+10, chest, 1);
-		array.setBlock(x+15, y+8, z+5, chest, 2);
+		array.setBlock(x+1, y+4, z+3, chest, 8+1);
+		array.setBlock(x+1, y+8, z+3, chest, 8+1);
+		array.setBlock(x+3, y+4, z+1, chest, 8+3);
+		array.setBlock(x+3, y+8, z+1, chest, 8+3);
+		array.setBlock(x+10, y+3, z+14, chest, 8+3);
+		array.setBlock(x+5, y+8, z+15, chest, 8);
+		array.setBlock(x+14, y+3, z+10, chest, 8+1);
+		array.setBlock(x+15, y+8, z+5, chest, 8+2);
 	}
 
 	private static void addCloakTunnel(FilledBlockArray array, int x, int y, int z, Block b) {
