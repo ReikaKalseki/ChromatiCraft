@@ -29,10 +29,9 @@ public class OceanStructure {
 		z -= 3;
 
 		addChests(array, x, y, z, chest);
-
 		addPit(array, x, y, z, b);
-
 		addCloakTunnel(array, x, y, z, b);
+		addCovers(array, x, y, z, b);
 
 		array.setBlock(x+0, y+7, z+1, b, 9);
 		array.setBlock(x+0, y+7, z+2, b, 9);
@@ -3274,36 +3273,39 @@ public class OceanStructure {
 	}
 
 	private static void addCovers(FilledBlockArray array, int x, int y, int z, Block b) {
-		array.setBlock(x+2, y+7, z+16, b, 15);
-		array.setBlock(x+2, y+7, z+17, b, 15);
-		array.setBlock(x+2, y+7, z+18, b, 15);
-		array.setBlock(x+2, y+7, z+19, b, 15);
-		array.setBlock(x+2, y+7, z+20, b, 15);
-		array.setBlock(x+3, y+7, z+16, b, 15);
-		array.setBlock(x+3, y+7, z+17, b, 15);
-		array.setBlock(x+3, y+7, z+18, b, 15);
-		array.setBlock(x+3, y+7, z+19, b, 15);
-		array.setBlock(x+3, y+7, z+20, b, 15);
-		array.setBlock(x+4, y+7, z+16, b, 15);
-		array.setBlock(x+4, y+7, z+17, b, 15);
-		array.setBlock(x+4, y+7, z+18, b, 15);
-		array.setBlock(x+4, y+7, z+19, b, 15);
-		array.setBlock(x+4, y+7, z+20, b, 15);
-		array.setBlock(x+16, y+7, z+2, b, 15);
-		array.setBlock(x+16, y+7, z+3, b, 15);
-		array.setBlock(x+16, y+7, z+4, b, 15);
-		array.setBlock(x+17, y+7, z+2, b, 15);
-		array.setBlock(x+17, y+7, z+3, b, 15);
-		array.setBlock(x+17, y+7, z+4, b, 15);
-		array.setBlock(x+18, y+7, z+2, b, 15);
-		array.setBlock(x+18, y+7, z+3, b, 15);
-		array.setBlock(x+18, y+7, z+4, b, 15);
-		array.setBlock(x+19, y+7, z+2, b, 15);
-		array.setBlock(x+19, y+7, z+3, b, 15);
-		array.setBlock(x+19, y+7, z+4, b, 15);
-		array.setBlock(x+20, y+7, z+2, b, 15);
-		array.setBlock(x+20, y+7, z+3, b, 15);
-		array.setBlock(x+20, y+7, z+4, b, 15);
+
+		int meta = 9; //15
+
+		array.setBlock(x+2, y+7, z+16, b, meta);
+		array.setBlock(x+2, y+7, z+17, b, meta);
+		array.setBlock(x+2, y+7, z+18, b, meta);
+		array.setBlock(x+2, y+7, z+19, b, meta);
+		array.setBlock(x+2, y+7, z+20, b, meta);
+		array.setBlock(x+3, y+7, z+16, b, meta);
+		array.setBlock(x+3, y+7, z+17, b, meta);
+		array.setBlock(x+3, y+7, z+18, b, meta);
+		array.setBlock(x+3, y+7, z+19, b, meta);
+		array.setBlock(x+3, y+7, z+20, b, meta);
+		array.setBlock(x+4, y+7, z+16, b, meta);
+		array.setBlock(x+4, y+7, z+17, b, meta);
+		array.setBlock(x+4, y+7, z+18, b, meta);
+		array.setBlock(x+4, y+7, z+19, b, meta);
+		array.setBlock(x+4, y+7, z+20, b, meta);
+		array.setBlock(x+16, y+7, z+2, b, meta);
+		array.setBlock(x+16, y+7, z+3, b, meta);
+		array.setBlock(x+16, y+7, z+4, b, meta);
+		array.setBlock(x+17, y+7, z+2, b, meta);
+		array.setBlock(x+17, y+7, z+3, b, meta);
+		array.setBlock(x+17, y+7, z+4, b, meta);
+		array.setBlock(x+18, y+7, z+2, b, meta);
+		array.setBlock(x+18, y+7, z+3, b, meta);
+		array.setBlock(x+18, y+7, z+4, b, meta);
+		array.setBlock(x+19, y+7, z+2, b, meta);
+		array.setBlock(x+19, y+7, z+3, b, meta);
+		array.setBlock(x+19, y+7, z+4, b, meta);
+		array.setBlock(x+20, y+7, z+2, b, meta);
+		array.setBlock(x+20, y+7, z+3, b, meta);
+		array.setBlock(x+20, y+7, z+4, b, meta);
 	}
 
 	public static BlockArray getCovers(int x, int y, int z) {

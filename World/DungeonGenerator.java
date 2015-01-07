@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -39,6 +40,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -129,12 +131,14 @@ public class DungeonGenerator implements IWorldGenerator {
 			return false;
 		}
 		case OCEAN: {
-			int y = world.getTopSolidOrLiquidBlock(x, z);
-			Block b = world.getBlock(x, y, z);
+			int d = 3;
+			int y = world.getTopSolidOrLiquidBlock(x, z)-d;
+			Block b = world.getBlock(x, y+d, z);
 			int tries = 0;
 			while (b != Blocks.water && b != Blocks.flowing_water && tries < 10) {
 				x = cx + r.nextInt(16);
 				z = cz + r.nextInt(16);
+				b = world.getBlock(x, y+d, z);
 				tries++;
 			}
 			if (b == Blocks.water || b == Blocks.flowing_water) {
@@ -156,6 +160,7 @@ public class DungeonGenerator implements IWorldGenerator {
 					for (int i = y+8; i < 200; i++) {
 						world.setBlock(x, i, z, Blocks.glass);
 					}
+					ReikaJavaLibrary.pConsole(te);
 					return true;
 				}
 			}
@@ -254,7 +259,6 @@ public class DungeonGenerator implements IWorldGenerator {
 				}
 			}
 			if (flag && i > 6) {
-				arr.place();
 				break;
 			}
 			else {
@@ -272,7 +276,8 @@ public class DungeonGenerator implements IWorldGenerator {
 				int meta = arr.world.getBlockMetadata(xyz[0], xyz[1], xyz[2]);
 				if (meta == BlockType.STONE.metadata) {
 					int dy = xyz[1]-arr.getMinY();
-					if (r.nextInt(2+dy*2) == 0) {
+					int c = Math.max(1, dy*2-2);
+					if (r.nextInt(c) == 0) {
 						arr.world.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], BlockType.MOSS.metadata, 3);
 					}
 				}
@@ -436,6 +441,16 @@ public class DungeonGenerator implements IWorldGenerator {
 		}
 		if (!flag1 && !flag2)
 			return false;
+
+		//bury lower half
+		for (int k = 0; k < struct.getSize(); k++) {
+			int[] xyz = struct.getNthBlock(k);
+			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			if (world.getTopSolidOrLiquidBlock(x, z) <= y) {
+				ReikaJavaLibrary.pConsole("fail @ "+Arrays.toString(xyz));
+				return false;
+			}
+		}
 
 		//can generate pit to cave
 		int consec = 0;

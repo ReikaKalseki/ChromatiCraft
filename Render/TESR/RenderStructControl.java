@@ -35,7 +35,7 @@ public class RenderStructControl extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityStructControl te = (TileEntityStructControl)tile;
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (te.isInWorld() && te.isVisible() && MinecraftForgeClient.getRenderPass() == 1) {
 			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();

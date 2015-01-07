@@ -25,15 +25,18 @@ import net.minecraftforge.common.ChestGenHooks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.BlockStructureShield;
+import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.BreakAction;
@@ -83,6 +86,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			return aabb.expand(3, 1, 3);
 		case BURROW:
 			return aabb.offset(2, 1, 0).expand(0.5, 0.5, 0.5);
+		case OCEAN:
+			return aabb.offset(0, 2, 0).expand(1, 1, 1);
 		default:
 			return aabb;
 		}
@@ -94,21 +99,37 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
 			world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
 			ChromaSounds.TRAP.playSound(ep, 1, 1);
-			ProgressStage.CAVERN.stepPlayerTo(ep);
 			break;
 		case BURROW:
 			world.setBlockMetadataWithNotify(x+2, y+1, z, BlockStructureShield.BlockType.CRACK.metadata, 3);
-			ProgressStage.BURROW.stepPlayerTo(ep);
 			ReikaSoundHelper.playBreakSound(world, x+2, y+1, z, Blocks.stone);
 			if (world.isRemote)
 				ReikaRenderHelper.spawnDropParticles(world, x+2, y+1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 9);
 			break;
 		case OCEAN:
-			ProgressStage.OCEAN.stepPlayerTo(ep);
+			BlockArray blocks = OceanStructure.getCovers(x, y, z);
+			for (int i = 0; i < blocks.getSize(); i++) {
+				int[] xyz = blocks.getNthBlock(i);
+				int dx = xyz[0];
+				int dy = xyz[1];
+				int dz = xyz[2];
+				world.setBlockMetadataWithNotify(dx, dy, dz, BlockType.CRACKS.metadata, 3);
+			}
+			int r = 1;
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					ReikaSoundHelper.playBreakSound(world, x+i, y+1, z+k, Blocks.stone);
+					if (world.isRemote) {
+						ReikaRenderHelper.spawnDropParticles(world, x+i, y+3, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 9);
+					}
+				}
+			}
+			ChromaSounds.TRAP.playSound(ep, 1, 1);
 			break;
 		default:
 			break;
 		}
+		this.getProgressStage().stepPlayerTo(ep);
 		triggered = true;
 	}
 
@@ -196,6 +217,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			break;
 		case BURROW:
 			ReikaInventoryHelper.addToIInv(ChromaStacks.burrowLoot, this);
+			break;
+		case OCEAN:
+			ReikaInventoryHelper.addToIInv(ChromaStacks.oceanLoot, this);
 			break;
 		default:
 			break;
@@ -319,6 +343,28 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	public CrystalElement getColor() {
 		return color != null ? color : CrystalElement.WHITE;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean isVisible() {
+		return true;//ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, this.getProgressStage());
+	}
+
+	public boolean isBreakable() {
+		return true;
+	}
+
+	private ProgressStage getProgressStage() {
+		switch(struct) {
+		case CAVERN:
+			return ProgressStage.CAVERN;
+		case BURROW:
+			return ProgressStage.BURROW;
+		case OCEAN:
+			return ProgressStage.OCEAN;
+		default:
+			return null;
+		}
 	}
 
 }
