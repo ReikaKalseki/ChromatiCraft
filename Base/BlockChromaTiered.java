@@ -13,7 +13,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.Base.BlockTieredResource;
 
@@ -32,7 +31,7 @@ public abstract class BlockChromaTiered extends BlockTieredResource {
 
 	@Override
 	public final boolean isPlayerSufficientTier(IBlockAccess world, int x, int y, int z, EntityPlayer ep) {
-		return ProgressionManager.instance.isPlayerAtStage(ep, this.getProgressStage(world, x, y, z));
+		return this.getProgressStage(world, x, y, z).isPlayerAtStage(ep);
 	}
 
 }

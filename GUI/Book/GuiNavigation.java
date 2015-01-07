@@ -117,6 +117,8 @@ public class GuiNavigation extends ChromaBookGui {
 			buttonList.add(new ImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class));
 			buttonList.add(new ImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class));
 		}
+
+		buttonList.add(new ImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class));
 	}
 
 	@Override
@@ -130,6 +132,9 @@ public class GuiNavigation extends ChromaBookGui {
 		else if (button.id == 1) {
 			craftMode = true;
 			buttonList.clear();
+		}
+		else if (button.id == 2) {
+			this.goTo(ChromaGuis.PROGRESS, null);
 		}
 		this.initGui();
 	}

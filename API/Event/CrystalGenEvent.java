@@ -7,11 +7,12 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.API;
+package Reika.ChromatiCraft.API.Event;
 
 import java.util.Random;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.DragonAPI.Instantiable.Event.WorldGenEvent;
 
 /** Fired when a crystal is generated. */

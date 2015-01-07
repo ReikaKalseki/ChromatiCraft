@@ -26,7 +26,6 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -257,7 +256,7 @@ public enum ChromaResearch {
 		if (progress != null) {
 			for (int i = 0; i < progress.length; i++) {
 				ProgressStage p = progress[i];
-				if (!ProgressionManager.instance.isPlayerAtStage(ep, p))
+				if (!p.isPlayerAtStage(ep))
 					return false;
 			}
 		}
@@ -272,7 +271,7 @@ public enum ChromaResearch {
 		if (progress != null) {
 			for (int i = 0; i < progress.length; i++) {
 				ProgressStage p = progress[i];
-				if (!ProgressionManager.instance.isPlayerAtStage(ep, p))
+				if (!p.isPlayerAtStage(ep))
 					return false;
 			}
 		}

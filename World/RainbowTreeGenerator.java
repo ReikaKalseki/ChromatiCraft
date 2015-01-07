@@ -17,7 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.RainbowTreeEvent;
+import Reika.ChromatiCraft.API.Event.RainbowTreeEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Interfaces.TreeType;

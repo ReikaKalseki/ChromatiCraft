@@ -19,7 +19,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
-import Reika.ChromatiCraft.API.CrystalGenEvent;
+import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;

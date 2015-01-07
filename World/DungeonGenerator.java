@@ -20,14 +20,17 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
@@ -328,6 +331,12 @@ public class DungeonGenerator implements IWorldGenerator {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
 					if (r.nextInt(n2) == 0)
 						ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
+				}
+
+				StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct.name(), s, r);
+				MinecraftForge.EVENT_BUS.post(evt);
+				for (ItemStack is : evt.getItems()) {
+					ReikaInventoryHelper.addToIInv(is, te);
 				}
 			}
 		}

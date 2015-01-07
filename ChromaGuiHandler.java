@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiCraftableDesc;
 import Reika.ChromatiCraft.GUI.Book.GuiCraftingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
+import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
@@ -89,6 +90,7 @@ import cpw.mods.fml.common.network.IGuiHandler;
 public class ChromaGuiHandler implements IGuiHandler {
 
 	public static final ChromaGuiHandler instance = new ChromaGuiHandler();
+
 	@Override
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 		ChromaGuis gui = ChromaGuis.guiList[id];
@@ -145,7 +147,6 @@ public class ChromaGuiHandler implements IGuiHandler {
 		return null;
 	}
 
-	//returns an instance of the Gui you made earlier
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 		ChromaGuis gui = ChromaGuis.guiList[id];
@@ -223,6 +224,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiBasicInfo(player, ChromaResearch.researchList[x]);
 		case STRUCTURE:
 			return new GuiStructure(player, ChromaResearch.researchList[x]);
+		case PROGRESS:
+			return new GuiProgressStages(player);
 		default:
 			break;
 		}

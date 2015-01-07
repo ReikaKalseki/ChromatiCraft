@@ -30,6 +30,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProgressionManager {
 
@@ -63,8 +64,36 @@ public class ProgressionManager {
 		OCEAN(); //Ocean floor structure
 		;
 
+		public static final ProgressStage[] list = values();
+
 		public boolean stepPlayerTo(EntityPlayer ep) {
 			return instance.stepPlayerTo(ep, this);
+		}
+
+		public boolean isPlayerAtStage(EntityPlayer ep) {
+			return instance.isPlayerAtStage(ep, this);
+		}
+
+		public boolean playerHasPrerequisites(EntityPlayer ep) {
+			return instance.playerHasPrerequisites(ep, this);
+		}
+
+		@SideOnly(Side.CLIENT)
+		public String getTitleString() {
+			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
+			return ChromaDescriptions.getProgressText(this).title;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public String getHintString() {
+			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
+			return ChromaDescriptions.getProgressText(this).hint;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public String getRevealedString() {
+			//StatCollector.translateToLocal("chromaprog.reveal."+this.name().toLowerCase());
+			return ChromaDescriptions.getProgressText(this).reveal;
 		}
 	}
 
@@ -78,6 +107,7 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
@@ -103,7 +133,7 @@ public class ProgressionManager {
 		return li;
 	}
 
-	public boolean isPlayerAtStage(EntityPlayer ep, ProgressStage s) {
+	private boolean isPlayerAtStage(EntityPlayer ep, ProgressStage s) {
 		return this.getPlayerData(ep).contains(s);
 	}
 
@@ -112,12 +142,18 @@ public class ProgressionManager {
 			return false;
 		if (this.isPlayerAtStage(ep, s))
 			return false;
+		if (!this.playerHasPrerequisites(ep, s))
+			return false;
+		this.setPlayerStage(ep, s, true);
+		return true;
+	}
+
+	private boolean playerHasPrerequisites(EntityPlayer ep, ProgressStage s) {
 		Collection<ProgressStage> c = progressMap.getParents(s);
 		for (ProgressStage s2 : c) {
 			if (!this.isPlayerAtStage(ep, s2))
 				return false;
 		}
-		this.setPlayerStage(ep, s, true);
 		return true;
 	}
 

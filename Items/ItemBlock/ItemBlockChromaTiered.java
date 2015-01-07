@@ -17,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
@@ -68,7 +67,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	@SideOnly(Side.CLIENT)
 	private String getDisguiseName(ItemStack is, String name) {
 		BlockChromaTiered bc = (BlockChromaTiered)field_150939_a;
-		boolean tier = ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, bc.getProgressStage(is.getItemDamage()));
+		boolean tier = bc.getProgressStage(is.getItemDamage()).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
 		if (field_150939_a instanceof BlockTieredOre) {
 			BlockTieredOre bt = (BlockTieredOre)field_150939_a;
 			return tier ? name : bt.getDisguise().getLocalizedName();

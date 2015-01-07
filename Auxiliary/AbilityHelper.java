@@ -201,7 +201,7 @@ public class AbilityHelper {
 		if (li == null)
 			return true;
 		for (ProgressStage p : li) {
-			if (!ProgressionManager.instance.isPlayerAtStage(ep, p))
+			if (!p.isPlayerAtStage(ep))
 				return false;
 		}
 		return true;

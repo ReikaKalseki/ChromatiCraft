@@ -19,7 +19,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.BlockFluidBase;
-import Reika.ChromatiCraft.API.CrystalGenEvent;
+import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.CrystalGenerator;

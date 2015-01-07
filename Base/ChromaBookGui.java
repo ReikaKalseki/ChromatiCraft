@@ -54,6 +54,8 @@ public abstract class ChromaBookGui extends GuiScreen {
 	private static int preMouseY;
 	private boolean cacheMouse;
 
+	private int guiTick = 0;
+
 	protected ChromaBookGui(EntityPlayer ep, int x, int y) {
 		player = ep;
 		xSize = x;
@@ -105,8 +107,12 @@ public abstract class ChromaBookGui extends GuiScreen {
 		int posY = (height - ySize) / 2 - 8;
 
 		this.drawTexturedModalRect(posX, posY, 0, 0, xSize, ySize);
-
+		guiTick++;
 		super.drawScreen(x, y, f);
+	}
+
+	protected final int getGuiTick() {
+		return guiTick;
 	}
 
 	protected final void bindTexture() {

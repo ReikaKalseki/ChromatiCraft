@@ -21,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -113,7 +112,7 @@ public class CastingRecipe {
 	}
 
 	public boolean canRunRecipe(EntityPlayer ep) {
-		return ProgressionManager.instance.isPlayerAtStage(ep, this.getRequiredProgress());
+		return this.getRequiredProgress().isPlayerAtStage(ep);
 	}
 
 	protected void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {

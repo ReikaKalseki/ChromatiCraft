@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,10 +30,12 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.DragonAPI.Interfaces.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -134,9 +137,10 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 
 	public static void programShardAndGiveData(ItemStack is, EntityPlayer ep) {
 		ChromaResearch r = ChromaResearchManager.instance.getRandomNextResearchFor(ep);
-		if (r != null) {
+		if (r != null && !ep.worldObj.isRemote) {
 			setResearch(is, r);
 			ChromaResearchManager.instance.givePlayerFragment(ep, getResearch(is));
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVERESEARCH.ordinal(), (EntityPlayerMP)ep, r.ordinal());
 		}
 	}
 

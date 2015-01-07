@@ -30,6 +30,8 @@ import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -237,6 +239,18 @@ public class ChromatiPackets implements IPacketHandler {
 				if (e instanceof EntityItem) {
 					ItemCrystalShard.spawnEffects((EntityItem)e);
 				}
+				break;
+			}/*
+			case FRAGPROGRAM: {
+				ChromaResearch r = ChromaResearch.researchList[data[0]];
+				int slot = data[1];
+				ItemStack is = ep.inventory.mainInventory[slot];
+				ItemInfoFragment.programShardAndGiveData(is, ep);
+				break;
+			}*/
+			case GIVERESEARCH: {
+				ChromaResearch r = ChromaResearch.researchList[data[0]];
+				ChromaResearchManager.instance.givePlayerFragment(ep, r);
 				break;
 			}
 			}

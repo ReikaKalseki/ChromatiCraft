@@ -32,7 +32,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.PylonGenerationEvent;
+import Reika.ChromatiCraft.API.Event.PylonGenerationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;

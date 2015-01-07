@@ -125,7 +125,7 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		TieredItem it = (TieredItem)this;
 		if (it.isTiered(is)) {
 			ProgressStage p = it.getDiscoveryTier(is);
-			if (!ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, p)) {
+			if (!p.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
 				name = EnumChatFormatting.OBFUSCATED.toString()+name;
 			}
 		}

@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -64,6 +65,7 @@ public final class ChromaDescriptions {
 	private static final HashMap<CrystalElement, Object[]> elementData = new HashMap<CrystalElement, Object[]>();
 
 	private static final HashMap<String, String> hoverText = new HashMap<String, String>();
+	private static final EnumMap<ProgressStage, ProgressNote> progressText = new EnumMap(ProgressStage.class);
 	private static final EnumMap<CrystalElement, String> elementText = new EnumMap(CrystalElement.class);
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
@@ -76,6 +78,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface resources = new XMLInterface(ChromatiCraft.class, PARENT+"resource.xml", mustLoad);
 	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
+	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
 
 	private static String getParent() {
 		Language language = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
@@ -138,6 +141,7 @@ public final class ChromaDescriptions {
 		infos.reread();
 		structures.reread();
 		hover.reread();
+		progress.reread();
 
 		loadData();
 	}
@@ -231,6 +235,14 @@ public final class ChromaDescriptions {
 			desc = String.format(desc, hoverData.get(s));
 			hoverText.put(s, desc);
 		}
+
+		for (int i = 0; i < ProgressStage.list.length; i++) {
+			ProgressStage p = ProgressStage.list[i];
+			String title = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":title");
+			String hint = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":hint");
+			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":desc");
+			progressText.put(p, new ProgressNote(title, hint, desc));
+		}
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
@@ -300,5 +312,23 @@ public final class ChromaDescriptions {
 
 	public static String getParentPage() {
 		return PARENT;
+	}
+
+	static ProgressNote getProgressText(ProgressStage p) {
+		return progressText.get(p);
+	}
+
+	static class ProgressNote {
+
+		public final String title;
+		public final String hint;
+		public final String reveal;
+
+		public ProgressNote(String t, String h, String desc) {
+			title = t;
+			hint = h;
+			reveal = desc;
+		}
+
 	}
 }

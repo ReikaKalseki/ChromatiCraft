@@ -37,7 +37,8 @@ public class ChromabilityCommand extends DragonCommandBase {
 		}
 		try {
 			Action action = Action.valueOf(act.toUpperCase());
-			action.perform(ep, a);
+			action.perform(target, a);
+			ReikaChatHelper.sendChatToPlayer(ep, "Action '"+act+"' with ability '"+id+"' performed on player '"+player+"'");
 		}
 		catch (IllegalArgumentException e) {
 			ReikaChatHelper.sendChatToPlayer(ep, EnumChatFormatting.RED+"No such action '"+act+"'");

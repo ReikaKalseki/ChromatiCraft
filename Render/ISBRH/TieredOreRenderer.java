@@ -20,7 +20,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -38,7 +37,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		rb.renderMinZ = 0;
 		rb.renderMaxY = 1;
 
-		boolean tier = ProgressionManager.instance.isPlayerAtStage(Minecraft.getMinecraft().thePlayer, bt.getProgressStage(metadata));
+		boolean tier = bt.getProgressStage(metadata).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
 		IIcon ico = tier ? bt.getBacking(metadata) : bt.getDisguise().getIcon(0, 0);
 
 		GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);

@@ -19,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -209,13 +208,13 @@ public final class ChromaResearchManager {
 			case ENTRY:
 				return true;
 			case CHARGESELF:
-				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.CHARGE);
+				return ProgressStage.CHARGE.isPlayerAtStage(ep);
 			case RAWEXPLORE:
-				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.CRYSTALS);
+				return ProgressStage.CRYSTALS.isPlayerAtStage(ep);
 			case ENERGYEXPLORE:
-				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.PYLON);
+				return ProgressStage.PYLON.isPlayerAtStage(ep);
 			case BASICCRAFT:
-				return ProgressionManager.instance.isPlayerAtStage(ep, ProgressStage.CRYSTALS); //for now
+				return ProgressStage.CRYSTALS.isPlayerAtStage(ep); //for now
 			case RUNECRAFT:
 				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
 			case MULTICRAFT:
