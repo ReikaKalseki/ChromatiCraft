@@ -91,6 +91,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.ImmutableList;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -98,7 +99,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 public class RecipesCastingTable {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
-	private final HashMap<RecipeType, ArrayList<CastingRecipe>> recipes = new HashMap();
+	private final HashMap<RecipeType, ImmutableList<CastingRecipe>> recipes = new HashMap();
 
 	private RecipesCastingTable() {
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, " R ", "B P", " M ", 'B', CrystalElement.BLUE, 'R', CrystalElement.RED, 'P', CrystalElement.PURPLE, 'M', CrystalElement.MAGENTA));
@@ -309,9 +310,9 @@ public class RecipesCastingTable {
 	}
 
 	private void addRecipe(CastingRecipe r) {
-		ArrayList<CastingRecipe> li = recipes.get(r.type);
+		ImmutableList<CastingRecipe> li = recipes.get(r.type);
 		if (li == null) {
-			li = new ArrayList();
+			li = new ImmutableList();
 			recipes.put(r.type, li);
 		}
 		li.add(r);

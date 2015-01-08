@@ -20,6 +20,10 @@ import net.minecraft.item.crafting.IRecipe;
 /** Use this class to add custom casting recipes. Note that each tier of recipes encompasses the last in terms of required actions/content,
  * and the various methods' arguments reflect that.
  * <br><br>
+ * Call this during postinit.
+ * <br><br>
+ * Note that the recipe list is semi-immutable, so once you add recipes, they cannot be removed or modified.
+ * <br><br>
  * Recipe Tiers:<br>
  * <b>Basic:</b> Basically a crafting table. Uses an IRecipe object, and is available very early in ChromatiCraft. Only produces basic items, and
  * nothing with strong magical energy in it.<br><br>
@@ -46,7 +50,7 @@ import net.minecraft.item.crafting.IRecipe;
  * <br><br>
  * <b>{@code Map<CrystalElementProxy, Integer>:}</b> Used by the highest tier of recipe. Declares the amount of crystal energy that is required
  * to perform this casting recipe. Most recipes have one to four input colors, and the amount of required energy is typically from 500 to 100000.
- * Note that excessively large values may yield the recipe impossible as they exceed the table's energy storage capacity.
+ * Note that excessively large values may render the recipe impossible as they exceed the table's energy storage capacity.
  * <br><br>
  *  Any recipes whose output is ChromatiCraft items will be rejected with an error log, as such recipes will damage the progression of the mod. */
 public class CastingAPI {
@@ -75,7 +79,7 @@ public class CastingAPI {
 	 * Args: Recipe object */
 	public static void addCastingRecipe(IRecipe ir) {
 		if (!loaded) {
-			System.out.println("Class did not initialize correctly, recipes cannot be added!");
+			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
 			return;
 		}
 		ItemStack out = ir.getRecipeOutput();
@@ -96,7 +100,7 @@ public class CastingAPI {
 	 * Args: Recipe object, rune map (may NOT be null) */
 	public static void addTempleCastingRecipe(IRecipe ir, Map<List<Integer>, CrystalElementProxy> runes) {
 		if (!loaded) {
-			System.out.println("Class did not initialize correctly, recipes cannot be added!");
+			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
 			return;
 		}
 		ItemStack out = ir.getRecipeOutput();
@@ -120,7 +124,7 @@ public class CastingAPI {
 	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null) */
 	public static void addMultiBlockCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items) {
 		if (!loaded) {
-			System.out.println("Class did not initialize correctly, recipes cannot be added!");
+			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
 			return;
 		}
 		if (!isValid(out)) {
@@ -148,7 +152,7 @@ public class CastingAPI {
 	 * Args: Output item, central item, rune map (may be null), itemstack map (may NOT be null), energy map (may NOT be null) */
 	public static void addPylonCastingRecipe(ItemStack out, ItemStack ctr, Map<List<Integer>, CrystalElementProxy> runes, Map<List<Integer>, ItemStack> items, Map<CrystalElementProxy, Integer> energy) {
 		if (!loaded) {
-			System.out.println("Class did not initialize correctly, recipes cannot be added!");
+			System.out.println("Class did not initialize correctly, casting recipes cannot be added!");
 			return;
 		}
 		if (!isValid(out)) {
@@ -188,17 +192,17 @@ public class CastingAPI {
 
 			temple = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$TempleCastingRecipe");
 			instTemple = temple.getConstructor(ItemStack.class, IRecipe.class);
-			rune = temple.getMethod("addRune", CrystalElementProxy.class, int.class, int.class, int.class);
+			rune = temple.getDeclaredMethod("addRune", CrystalElementProxy.class, int.class, int.class, int.class);
 			rune.setAccessible(true);
 
 			multi = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$MultiBlockCastingRecipe");
 			instMulti = multi.getConstructor(ItemStack.class, ItemStack.class);
-			aux = multi.getMethod("addAuxItem", ItemStack.class, int.class, int.class);
+			aux = multi.getDeclaredMethod("addAuxItem", ItemStack.class, int.class, int.class);
 			aux.setAccessible(true);
 
 			pylon = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$PylonRecipe");
 			instPylon = pylon.getConstructor(ItemStack.class, ItemStack.class);
-			aux = pylon.getMethod("addAuxItem", CrystalElementProxy.class, int.class);
+			aura = pylon.getDeclaredMethod("addAuraRequirement", CrystalElementProxy.class, int.class);
 			aura.setAccessible(true);
 
 			recipes = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable");
