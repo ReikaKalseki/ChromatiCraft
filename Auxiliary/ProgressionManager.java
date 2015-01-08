@@ -171,6 +171,8 @@ public class ProgressionManager {
 
 	private boolean playerHasPrerequisites(EntityPlayer ep, ProgressStage s) {
 		Collection<ProgressStage> c = progressMap.getParents(s);
+		if (c == null || c.isEmpty())
+			return true;
 		for (ProgressStage s2 : c) {
 			if (!this.isPlayerAtStage(ep, s2))
 				return false;
