@@ -437,10 +437,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					ReikaInventoryHelper.decrStack(i, inv);
 			}
 			count += activeRecipe.getOutput().stackSize;
+			EntityPlayer ep = this.getPlacer();
 			if (activeRecipe instanceof PylonRecipe) {
 				energy.subtract(((PylonRecipe)activeRecipe).getRequiredAura());
-				ProgressStage.LINK.stepPlayerTo(this.getPlacer());
+				ProgressStage.LINK.stepPlayerTo(ep);
 			}
+			ProgressStage.CASTING.stepPlayerTo(ep);
 			recipe = this.getValidRecipe();
 			if (recipe instanceof PylonRecipe && recipe == activeRecipe) {
 				craftingTick = recipe.getDuration();

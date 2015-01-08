@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap;
+import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -43,6 +44,7 @@ public class ProgressionManager {
 
 	public static enum ProgressStage {
 
+		CASTING(), //Do a recipe
 		CRYSTALS(), //Found a crystal
 		DYETREE(), //Harvest a dye tree
 		MULTIBLOCK(), //Assembled a multiblock
@@ -61,7 +63,7 @@ public class ProgressionManager {
 		BEDROCK(), //Find bedrock
 		CAVERN(), //Cavern structure
 		BURROW(), //Burrow structure
-		OCEAN(); //Ocean floor structure
+		OCEAN(), //Ocean floor structure
 		;
 
 		public static final ProgressStage[] list = values();
@@ -76,6 +78,10 @@ public class ProgressionManager {
 
 		public boolean playerHasPrerequisites(EntityPlayer ep) {
 			return instance.playerHasPrerequisites(ep, this);
+		}
+
+		public boolean isOneStepAway(EntityPlayer ep) {
+			return instance.isOneStepAway(ep, this);
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -98,7 +104,8 @@ public class ProgressionManager {
 	}
 
 	private ProgressionManager() {
-		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CRYSTALS);
+		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
+		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
 		progressMap.addParent(ProgressStage.LINK,		ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
@@ -108,6 +115,20 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
+		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
+
+		for (int i = 0; i < ProgressStage.list.length; i++) {
+			ProgressStage p = ProgressStage.list[i];
+			if (!progressMap.hasElement(p)) {
+				progressMap.addChildless(p);
+			}
+		}
+	}
+
+	public Topology getTopology() {
+		return progressMap.getTopology();
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
@@ -153,6 +174,24 @@ public class ProgressionManager {
 		for (ProgressStage s2 : c) {
 			if (!this.isPlayerAtStage(ep, s2))
 				return false;
+		}
+		return true;
+	}
+
+	private boolean isOneStepAway(EntityPlayer ep, ProgressStage s) {
+		if (this.isPlayerAtStage(ep, s))
+			return false;
+		Collection<ProgressStage> c = progressMap.getParents(s);
+		if (c == null || c.isEmpty())
+			return false;
+		for (ProgressStage par : c) {
+			if (this.isPlayerAtStage(ep, par))
+				return false;
+			Collection<ProgressStage> c2 = progressMap.getParents(par);
+			for (ProgressStage par2 : c2) {
+				if (!this.isPlayerAtStage(ep, par))
+					return false;
+			}
 		}
 		return true;
 	}

@@ -22,10 +22,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.BlockDyeTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Base.TileEntityBase;
@@ -37,7 +37,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigger {
+public class BlockCrystalRune extends BlockDyeTypes {
 
 	public BlockCrystalRune(Material par2Material) {
 		super(par2Material);
@@ -62,7 +62,10 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 				((BlockPylonStructure)b).triggerAddCheck(world, dx, dy, dz);
 			}
 		}
-
+		if (e instanceof EntityPlayer && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null) {
+			if (ReikaWorldHelper.findNearBlock(world, x, y, z, 6, ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata()))
+				ProgressStage.RUNEUSE.stepPlayerTo((EntityPlayer)e);
+		}
 		super.onBlockAdded(world, x, y, z);
 	}
 
@@ -133,12 +136,6 @@ public class BlockCrystalRune extends BlockDyeTypes implements ProgressionTrigge
 	@Override
 	public int getRenderType() {
 		return ChromatiCraft.proxy.runeRender;
-	}
-
-	@Override
-	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
-		boolean use = ReikaWorldHelper.checkForAdjBlock(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null;
-		return use ? new ProgressStage[]{ProgressStage.RUNEUSE} : null;
 	}
 
 }

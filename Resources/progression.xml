@@ -2,13 +2,354 @@
 <progression>
 	<crystals>
 		<title>
-		
+			Tangible Energy
 		</title>
 		<hint>
-			
-		</hint>
+			Crystal energy is mostly an ethereal, intagible force. However, when concentrated, it may have a physical manifestation.
+			</hint>
 		<reveal>
-			
+			Sure enough, you have found places where crystal energy has coalesced and formed regular, glassy formations, ones that radiate the effects of their element.
 		</reveal>
 	</crystals>
+	<casting>
+		<title>
+			Fabrication
+		</title>
+		<hint>
+			Surely the wooden crafting table is not sufficient to do all your crafting.
+		</hint>
+		<reveal>
+
+		</reveal>
+	</casting>
+	<dyetree>
+		<title>
+			Technicolor Trees
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</dyetree>
+	<multiblock>
+		<title>
+			More Complex Crafting
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</multiblock>
+	<runeuse>
+		<title>
+			Weak Magical Foci
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</runeuse>
+	<pylon>
+		<title>
+			Energy Beacons
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</pylon>
+	<link>
+		<title>
+			Top-tier Crafting
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</link>
+	<charge>
+		<title>
+			Energy Internalization
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</charge>
+	<ability>
+		<title>
+			Personal Enhancement
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</ability>
+	<rainbowleaf>
+		<title>
+			Magical Trees
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</rainbowleaf>
+	<chroma>
+		<title>
+			Magic Liquid
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</chroma>
+	<stones>
+		<title>
+			Unity of the Elements
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</stones>
+	<shock>
+		<title>
+			Damaging Discharge
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</shock>
+	<nether>
+		<title>
+			The Evil Realm
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</nether>
+	<end>
+		<title>
+			The Alien Realm
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</end>
+	<twilight>
+		<title>
+			The Forested Realm
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</twilight>
+	<bedrock>
+		<title>
+			World Floor
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</bedrock>
+	<cavern>
+		<title>
+			Buried Hollows
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</cavern>
+	<burrow>
+		<title>
+			Secret Burrows
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</burrow>
+	<ocean>
+		<title>
+			Ocean Temples
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</ocean>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
 </progression>

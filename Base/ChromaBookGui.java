@@ -91,7 +91,7 @@ public abstract class ChromaBookGui extends GuiScreen {
 	}
 
 	@Override
-	public void mouseClicked(int x, int y, int b) {
+	protected void mouseClicked(int x, int y, int b) {
 		if (buttoncooldown == 0)
 			super.mouseClicked(x, y, b);
 	}

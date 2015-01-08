@@ -1,30 +1,78 @@
 package Reika.ChromatiCraft.GUI.Book;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Base.GuiBookSection;
-import Reika.ChromatiCraft.Registry.ChromaGuis;
 
-public class GuiProgressStages extends GuiBookSection {
+import org.lwjgl.util.Point;
+import org.lwjgl.util.Rectangle;
+
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Base.GuiScrollingPage;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+
+public class GuiProgressStages extends GuiScrollingPage {
 
 	private int randomIndex;
 	private int clearLength;
 
-	private ArrayList<ProgressStage> stages = new ArrayList();
+	private ProgressStage active;
+
+	//private ArrayList<ProgressStage> stages = new ArrayList();
+	private final Topology<ProgressStage> map = ProgressionManager.instance.getTopology();
+	private final Map<ProgressStage, Integer> levels = map.getDepthMap();
+	private final EnumMap<ProgressStage, Point> renderPositions = new EnumMap(ProgressStage.class);
+	private final EnumMap<ProgressStage, Rectangle> locations = new EnumMap(ProgressStage.class);
+
+	private int elementWidth = 0;
+	private int elementHeight = 20;
+
+	private static final int spacingX = 80;
+	private static final int spacingY = 30;
 
 	public GuiProgressStages(EntityPlayer ep) {
-		super(ep, null, 256, 220, false);
+		super(ep, 256, 220, 242, 206);
 
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			ChromaDescriptions.reload();
+
+		/*
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
 			if (p.playerHasPrerequisites(ep)) {
 				stages.add(p);
 			}
 		}
+		 */
+
+		final HashMap<Integer, Integer> offsets = new HashMap();
+		for (ProgressStage p : levels.keySet()) {
+			int depth = levels.get(p);
+			int d = offsets.containsKey(depth) ? offsets.get(depth) : 0;
+			int dx = d*(elementWidth+spacingX);
+			int dy = depth*(elementHeight+spacingY);
+			offsets.put(depth, d+1);
+			renderPositions.put(p, new Point(dx, dy));
+			maxX = Math.max(maxX, dx+elementWidth);
+			maxY = Math.max(maxY, dy+elementHeight);
+			elementWidth = Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
+		}
+
+		maxX -= paneWidth-spacingX/2;
+		maxY -= paneHeight-spacingY-10;
 	}
 
 	@Override
@@ -36,7 +84,7 @@ public class GuiProgressStages extends GuiBookSection {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
-		//buttonList.add(new ImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class));
 	}
 
 	@Override
@@ -44,6 +92,7 @@ public class GuiProgressStages extends GuiBookSection {
 		super.actionPerformed(button);
 		if (button.id == 10) {
 			this.goTo(ChromaGuis.BOOKNAV, null);
+			this.resetOffset();
 		}
 		this.initGui();
 	}
@@ -57,14 +106,74 @@ public class GuiProgressStages extends GuiBookSection {
 
 		super.drawScreen(x, y, f);
 
+		this.renderTree(posX, posY);
+		this.renderText(posX, posY);
+	}
+
+	private void renderTree(int posX, int posY) {
+		locations.clear();
+		this.renderElements(posX, posY);
+		this.renderLines(posX, posY);
+	}
+
+	private void renderLines(int posX, int posY) {
+		for (ProgressStage p : levels.keySet()) {
+			this.renderLine(posX, posY, p);
+		}
+	}
+
+	private void renderLine(int posX, int posY, ProgressStage p) {
+		Collection<ProgressStage> c = map.getParents(p);
+		int dx = -offsetX+posX+12;
+		int dy = -offsetY+posY+36;
+		Point pt = renderPositions.get(p);
+		for (ProgressStage par : c) {
+			Point pt2 = renderPositions.get(par);
+			int x1 = dx+pt.getX()+elementWidth/2;
+			int y1 = dy+pt.getY();
+			int x2 = dx+pt2.getX()+elementWidth/2;
+			int y2 = dy+pt2.getY()+elementHeight;
+			api.drawLine(x1, y1, x2, y2, 0xffffff);
+		}
+	}
+
+	private void renderElements(int posX, int posY) {
+		for (ProgressStage p : levels.keySet()) {
+			Point pt = renderPositions.get(p);
+			int x = -offsetX+posX+12+pt.getX();
+			int y = -offsetY+posY+36+pt.getY();
+			this.renderElement(p, x, y);
+		}
+	}
+
+	private void renderElement(ProgressStage p, int x, int y) {
+		//draw
+		int color = 0xffffff;
+		boolean see = p.isPlayerAtStage(player) || p.playerHasPrerequisites(player);
+		if (see || p.isOneStepAway(player)) {
+			String s = see ? p.getTitleString() : EnumChatFormatting.OBFUSCATED.toString()+p.getTitleString();//p.name();
+			if (!see)
+				color = 0xb5b5b5;
+			int dx = (elementWidth-fontRendererObj.getStringWidth(s))/2;
+			int dy = (elementHeight-fontRendererObj.FONT_HEIGHT)/2;
+			fontRendererObj.drawString(s, x+dx, y+dy, color);
+		}
+		else {
+			color = 0x888888;
+		}
+		api.drawRectFrame(x, y, elementWidth, elementHeight, color); //temp
+		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));
+	}
+
+	private void renderText(int posX, int posY) {
 		int c = 0xffffff;
 		int px = posX+descX;
 
-		if (subpage == 0) {
+		if (active == null) {
 
 		}
 		else {
-			ProgressStage p = this.getStage();
+			ProgressStage p = active;//this.getStage();
 			fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY, 242, 0xffffff);
 
 			if (p.isPlayerAtStage(player)) {
@@ -74,6 +183,21 @@ public class GuiProgressStages extends GuiBookSection {
 				fontRendererObj.drawSplitString(this.getIncompleteText(), px, posY+descY+60, 242, 0xffffff);
 			}
 		}
+	}
+
+	@Override
+	protected void mouseClicked(int x, int y, int b) {
+		super.mouseClicked(x, y, b);
+
+		ProgressStage p = this.getUnderMouse(x, y);
+		if (p != null) {
+			Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
+			active = p;
+		}
+	}
+
+	private ProgressStage getUnderMouse(int x, int y) {
+		return null;
 	}
 
 	private String getIncompleteText() {
@@ -99,12 +223,12 @@ public class GuiProgressStages extends GuiBookSection {
 		clearLength = Math.min(Math.max(2, rand.nextInt(s.length())), Math.min(rand.nextInt(3) == 0 ? 12 : 6, s.length()-randomIndex));
 	}
 
-	/*
+
 	@Override
 	public String getBackgroundTexture() {
-		return "Textures/GUIs/Handbook/handbook.png";
+		return "Textures/GUIs/Handbook/navigation.png";
 	}
-	 */
+	/*
 	@Override
 	public String getPageTitle() {
 		return subpage > 0 ? this.getStage().getTitleString() : "Research Notes";
@@ -123,5 +247,10 @@ public class GuiProgressStages extends GuiBookSection {
 	protected PageType getGuiLayout() {
 		return PageType.PLAIN;
 	}
+	 */
 
+	@Override
+	protected String getScrollingTexture() {
+		return "";
+	}
 }

@@ -27,7 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.ChromaBookGui;
+import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -37,21 +37,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.RegionMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import com.google.common.collect.TreeMultimap;
 
-public class GuiNavigation extends ChromaBookGui {
-
-	private static int offsetX = 0;
-	private static int offsetY = 0;
-
-	private int maxX = 0;
-	private int maxY = 0;
-
-	private static final int paneWidth = 242;
-	private static final int paneHeight = 206;
+public class GuiNavigation extends GuiScrollingPage {
 
 	private static boolean craftMode = false;
 
@@ -60,13 +50,8 @@ public class GuiNavigation extends ChromaBookGui {
 	private static RegionMap<SectionElement> locations = new RegionMap();
 	private static PluralMap<String> tooltips = new PluralMap(2);
 
-	public static void resetOffset() {
-		offsetX = 0;
-		offsetY = 0;
-	}
-
 	public GuiNavigation(EntityPlayer ep) {
-		super(ep, 256, 220);
+		super(ep, 256, 220, 242, 206);
 
 		Section z = null;
 		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
@@ -135,6 +120,7 @@ public class GuiNavigation extends ChromaBookGui {
 		}
 		else if (button.id == 2) {
 			this.goTo(ChromaGuis.PROGRESS, null);
+			this.resetOffset();
 		}
 		this.initGui();
 	}
@@ -145,54 +131,22 @@ public class GuiNavigation extends ChromaBookGui {
 	}
 
 	@Override
+	protected String getScrollingTexture() {
+		return "Textures/GUIs/Handbook/navbcg.png";
+	}
+
+	@Override
 	public void drawScreen(int x, int y, float f) {
-		leftX = (width - xSize) / 2;
-		topY = (height - ySize) / 2;
-
-		int sp = Math.max(1, 180/Math.max(1, ReikaRenderHelper.getFPS()));
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			sp *= 2;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_W) || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-			offsetY -= sp;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_A) || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-			offsetX -= sp;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-			offsetY += sp;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-			offsetX += sp;
-		}
-
-		if (offsetX < 0) {
-			offsetX = 0;
-		}
-		if (offsetY < 0) {
-			offsetY = 0;
-		}
-		if (offsetX > maxX && maxX > 0) {
-			offsetX = maxX;
-		}
-		if (offsetY > maxY && maxY > 0) {
-			offsetY = maxY;
-		}
-
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/Handbook/navbcg.png");
-		int u = offsetX%256;
-		int v = offsetY%256;
-		this.drawTexturedModalRect(leftX+7, topY-1, u, v, paneWidth, paneHeight);
-
 		locations.clear();
 		tooltips.clear();
+
+		super.drawScreen(x, y, f);
 
 		this.drawSections(leftX+11-offsetX, topY+11-offsetY);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 0, 500);
-		super.drawScreen(x, y, f);
 		GL11.glPopMatrix();
 
 		for (List<Object> o : tooltips.pluralKeySet()) {
@@ -204,7 +158,7 @@ public class GuiNavigation extends ChromaBookGui {
 	}
 
 	@Override
-	public void mouseClicked(int x, int y, int b) {
+	protected void mouseClicked(int x, int y, int b) {
 		super.mouseClicked(x, y, b);
 
 		SectionElement e = this.getSectionElementAt(x, y);
@@ -252,7 +206,7 @@ public class GuiNavigation extends ChromaBookGui {
 		return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ^ craftMode;
 	}
 
-	private static class Section/* implements Comparable<Section>*/ {
+	private class Section/* implements Comparable<Section>*/ {
 
 		private final TreeMultimap<ResearchLevel, SectionElement> elements = TreeMultimap.create();
 		public final String title;
