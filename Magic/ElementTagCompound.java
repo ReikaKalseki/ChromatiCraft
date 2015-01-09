@@ -304,4 +304,17 @@ public final class ElementTagCompound {
 		return sb.toString();
 	}
 
+	public float getRatio(ElementTagCompound tag, CrystalElement e) {
+		int val = tag.getValue(e);
+		return val > 0 ? this.getValue(e)/val : Float.POSITIVE_INFINITY;
+	}
+
+	public float getSmallestRatio(ElementTagCompound tag) {
+		float min = Float.POSITIVE_INFINITY;
+		for (CrystalElement e : data.keySet()) {
+			min = Math.min(min, this.getRatio(tag, e));
+		}
+		return min;
+	}
+
 }

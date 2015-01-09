@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 
 public class AbilityRituals {
@@ -76,7 +77,7 @@ public class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.HEALTH);
-		rit.addAura(CrystalElement.MAGENTA, 25000);
+		rit.addAura(CrystalElement.MAGENTA, 50000);
 		rit.addAura(CrystalElement.PURPLE, 25000);
 		this.addRitual(rit);
 
@@ -91,6 +92,15 @@ public class AbilityRituals {
 		rit.addAura(CrystalElement.YELLOW, 40000);
 		rit.addAura(CrystalElement.PINK, 10000);
 		rit.addAura(CrystalElement.ORANGE, 2000);
+		this.addRitual(rit);
+
+		if (ModList.BLOODMAGIC.isLoaded()) {
+			rit = new AbilityRitual(Chromabilities.LIFEPOINT);
+			rit.addAura(CrystalElement.MAGENTA, 25000);
+			rit.addAura(CrystalElement.BLACK, 5000);
+			rit.addAura(CrystalElement.RED, 5000);
+			this.addRitual(rit);
+		}
 	}
 
 	private void addRitual(AbilityRitual ar) {

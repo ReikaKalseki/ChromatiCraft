@@ -40,7 +40,7 @@ public class GuiChromability extends GuiScreen {
 
 	public GuiChromability(EntityPlayer ep) {
 		player = ep;
-		xSize = 204;
+		xSize = 232;
 		ySize = 188;
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
@@ -65,8 +65,8 @@ public class GuiChromability extends GuiScreen {
 		int out = xSize/2;//+60;
 
 		String tex = "Textures/GUIs/ability.png";
-		buttonList.add(new ImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 216, 0, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, midx+out, midy-h/2, w, h, 204, 0, tex, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class));
 
 		/*
 		for (int i = 0; i < available.size(); i++) {
@@ -161,8 +161,8 @@ public class GuiChromability extends GuiScreen {
 			}
 		}
 
-		int fx = 10;
-		int fy = 65;
+		int fx = 9;
+		int fy = 64;
 		if (!has)
 			;//return;
 		String desc = c.getDescription();

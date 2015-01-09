@@ -60,12 +60,13 @@ public final class ChromaDescriptions {
 	private static final HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
 	private static final HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
 	private static final HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
-	private static final HashMap<ChromaResearch, Object[]> abilityData = new HashMap<ChromaResearch, Object[]>();
+	private static final EnumMap<Chromabilities, Object[]> abilityData = new EnumMap(Chromabilities.class);
 	private static final HashMap<String, Object[]> hoverData = new HashMap<String, Object[]>();
 	private static final HashMap<CrystalElement, Object[]> elementData = new HashMap<CrystalElement, Object[]>();
 
 	private static final HashMap<String, String> hoverText = new HashMap<String, String>();
 	private static final EnumMap<ProgressStage, ProgressNote> progressText = new EnumMap(ProgressStage.class);
+	private static final EnumMap<Chromabilities, String> abilityText = new EnumMap(Chromabilities.class);
 	private static final EnumMap<CrystalElement, String> elementText = new EnumMap(CrystalElement.class);
 
 	private static final boolean mustLoad = !ReikaObfuscationHelper.isDeObfEnvironment();
@@ -218,9 +219,10 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : abilitytabs) {
-			String desc = abilities.getValueAtNode("ability:"+h.getAbility().name().toLowerCase());
-			desc = String.format(desc, abilityData.get(h));
-			addEntry(h, desc);
+			Chromabilities a = h.getAbility();
+			String desc = abilities.getValueAtNode("ability:"+a.name().toLowerCase());
+			desc = String.format(desc, abilityData.get(a));
+			abilityText.put(a, desc);
 		}
 
 		for (CrystalElement e : CrystalElement.elements) {
@@ -246,7 +248,7 @@ public final class ChromaDescriptions {
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
-		return abilities.getValueAtNode("ability:"+c.name().toLowerCase());
+		return abilityText.get(c);
 	}
 
 	public static String getElementDescription(CrystalElement e) {
@@ -308,6 +310,9 @@ public final class ChromaDescriptions {
 			else
 				addData(e, e.displayName);
 		}
+
+		abilityData.put(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
+		abilityData.put(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});
 	}
 
 	public static String getParentPage() {

@@ -43,7 +43,10 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -53,9 +56,13 @@ import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
@@ -63,11 +70,16 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
+import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -85,6 +97,65 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.BLOODMAGIC)
+	public void interceptSoulNet(PlayerDrainNetworkEvent evt) {
+		EntityPlayer ep = evt.player;
+		if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+			float amt = evt.drainAmount;
+			ElementTagCompound tag1 = TileEntityLifeEmitter.getLumensPerHundredLP().scale(amt/100F);
+			ElementTagCompound tag2 = PlayerElementBuffer.instance.getPlayerBuffer(ep);
+			tag2.intersectWith(tag1);
+			float ratio = tag2.getSmallestRatio(tag1);
+			if (ratio >= 1) {
+				PlayerElementBuffer.instance.removeFromPlayer(ep, tag1);
+				evt.drainAmount = 0;
+				if (evt instanceof ItemDrainNetworkEvent) {
+					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
+					ev.damageAmount = 0;
+					ev.shouldDamage = false;
+				}
+				evt.setCanceled(true);
+			}
+			else if (ratio > 0) {
+				ElementTagCompound rem = tag1.copy();
+				rem.scale(ratio);
+				float rat = 1-ratio;
+				PlayerElementBuffer.instance.removeFromPlayer(ep, rem);
+				evt.drainAmount *= rat;
+				if (evt instanceof ItemDrainNetworkEvent) {
+					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
+					ev.damageAmount *= rat;
+					if (rat < 0.25)
+						ev.shouldDamage = false;
+				}
+			}
+			else {
+
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.BLOODMAGIC)
+	public void onUseSacrificeOrb(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_AIR) {
+			EntityPlayer ep = evt.entityPlayer;
+			ItemStack is = ep.getCurrentEquippedItem();
+			if (is != null) {
+				if (is.getItem() == BloodMagicHandler.getInstance().orbID || BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
+					if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+						ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT);
+						tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
+						if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
+							Chromabilities.LIFEPOINT.trigger(ep, 3);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent

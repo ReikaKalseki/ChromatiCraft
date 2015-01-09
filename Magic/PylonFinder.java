@@ -203,7 +203,7 @@ public class PylonFinder {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
-					if (te instanceof CrystalSource && te != target) {
+					if (te != target && te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target)) {
 						nodes.add(loc2);
 						return;
 					}

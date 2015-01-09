@@ -19,6 +19,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
 
@@ -49,11 +50,11 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private int elementWidth = 0;
 	private int elementHeight = 20;
 
-	private static final int spacingX = 80;
-	private static final int spacingY = 30;
+	private static final int spacingX = 30;//80;
+	private static final int spacingY = 15;//30;
 
 	public GuiProgressStages(EntityPlayer ep) {
-		super(ep, 256, 220, 242, 206);
+		super(ep, 256, 220, 242, 112);
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			ChromaDescriptions.reload();
@@ -77,7 +78,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 			renderPositions.put(p, new Point(dx, dy));
 			maxX = Math.max(maxX, dx+elementWidth);
 			maxY = Math.max(maxY, dy+elementHeight);
-			elementWidth = Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
+			elementWidth = 20;//Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
 		}
 
 		maxX -= paneWidth-spacingX/2;
@@ -140,9 +141,13 @@ public class GuiProgressStages extends GuiScrollingPage {
 			Point pt2 = renderPositions.get(par);
 			int x1 = dx+pt.getX()+elementWidth/2;
 			int y1 = dy+pt.getY();
-			int x2 = dx+pt2.getX()+elementWidth/2;
-			int y2 = dy+pt2.getY()+elementHeight;
-			api.drawLine(x1, y1, x2, y2, 0xffffff);
+			if (this.elementOnScreen(p, posX, posY, x1, y1)) {
+				int x2 = dx+pt2.getX()+elementWidth/2;
+				int y2 = dy+pt2.getY()+elementHeight;
+				if (this.elementOnScreen(par, posX, posY, x2, y2)) {
+					api.drawLine(x1, y1, x2, y2, 0xffffff);
+				}
+			}
 		}
 	}
 
@@ -151,27 +156,53 @@ public class GuiProgressStages extends GuiScrollingPage {
 			Point pt = renderPositions.get(p);
 			int x = -offsetX+posX+12+pt.getX();
 			int y = -offsetY+posY+36+pt.getY();
-			this.renderElement(p, x, y);
+			if (this.elementOnScreen(p, posX, posY, x, y))
+				this.renderElement(p, x, y);
 		}
+	}
+
+	private boolean elementOnScreen(ProgressStage p, int posX, int posY, int x, int y) {
+		return x >= posX+8 && x <= posX+xSize-elementWidth-8 && y >= posY+24 && y-posY+elementHeight < ySize/2;
 	}
 
 	private void renderElement(ProgressStage p, int x, int y) {
 		//draw
 		int color = 0xffffff;
-		boolean see = p.isPlayerAtStage(player) || p.playerHasPrerequisites(player);
+		boolean see = this.renderClearText(p);
+		drawRect(x, y, x+elementWidth, y+elementHeight, 0xff444444);
+		api.drawRectFrame(x, y, elementWidth, elementHeight, color); //temp
 		if (see || p.isOneStepAway(player)) {
 			String s = see ? p.getTitleString() : EnumChatFormatting.OBFUSCATED.toString()+p.getTitleString();//p.name();
 			if (!see)
 				color = 0xb5b5b5;
 			int dx = (elementWidth-fontRendererObj.getStringWidth(s))/2;
 			int dy = (elementHeight-fontRendererObj.FONT_HEIGHT)/2;
-			fontRendererObj.drawString(s, x+dx, y+dy, color);
+			//fontRendererObj.drawString(s, x+dx, y+dy, color);
 		}
 		else {
 			color = 0x888888;
 		}
-		api.drawRectFrame(x, y, elementWidth, elementHeight, color); //temp
+
+		if (see) {
+			if (p.isPlayerAtStage(player)) {
+				api.drawItemStack(itemRender, p.getIcon(), x+2, y+2);
+			}
+			else {
+				GL11.glColor4f(0, 0, 0, 1.0F);
+				itemRender.renderWithColor = false;
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), p.getIcon(), x+2, y+2);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glColor4f(1, 1, 1, 1);
+			}
+		}
 		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));
+	}
+
+	private boolean renderClearText(ProgressStage p) {
+		return p.isPlayerAtStage(player) || p.playerHasPrerequisites(player);
 	}
 
 	private void renderText(int posX, int posY) {
@@ -183,13 +214,15 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 		else {
 			ProgressStage p = active;//this.getStage();
-			fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY, 242, 0xffffff);
+			fontRendererObj.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
+
+			fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
 
 			if (p.isPlayerAtStage(player)) {
-				fontRendererObj.drawSplitString(p.getRevealedString(), px, posY+descY+60, 242, 0xffffff);
+				fontRendererObj.drawSplitString(p.getRevealedString(), px, posY+descY+90+15, 242, 0xffffff);
 			}
 			else {
-				fontRendererObj.drawSplitString(this.getIncompleteText(), px, posY+descY+60, 242, 0xffffff);
+				fontRendererObj.drawSplitString(this.getIncompleteText(), px, posY+descY+90+15, 242, 0xffffff);
 			}
 		}
 	}
@@ -201,11 +234,16 @@ public class GuiProgressStages extends GuiScrollingPage {
 		ProgressStage p = this.getUnderMouse(x, y);
 		if (p != null) {
 			Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
-			active = p;
 		}
+		active = p;
 	}
 
 	private ProgressStage getUnderMouse(int x, int y) {
+		for (ProgressStage p : locations.keySet()) {
+			Rectangle r = locations.get(p);
+			if (r.contains(x, y))
+				return p;
+		}
 		return null;
 	}
 
@@ -229,13 +267,13 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private void randomizeString() {
 		String s = this.getIncompleteString();
 		randomIndex = rand.nextInt(s.length());
-		clearLength = Math.min(Math.max(2, rand.nextInt(s.length())), Math.min(rand.nextInt(3) == 0 ? 12 : 6, s.length()-randomIndex));
+		clearLength = Math.min(Math.max(4, rand.nextInt(s.length())), Math.min(rand.nextInt(3) == 0 ? 12 : 6, s.length()-randomIndex));
 	}
 
 
 	@Override
 	public String getBackgroundTexture() {
-		return "Textures/GUIs/Handbook/navigation.png";
+		return "Textures/GUIs/Handbook/progress.png";
 	}
 	/*
 	@Override
@@ -260,6 +298,6 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 	@Override
 	protected String getScrollingTexture() {
-		return "";
+		return "Textures/GUIs/Handbook/navbcg.png";
 	}
 }

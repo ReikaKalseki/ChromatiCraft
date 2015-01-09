@@ -127,7 +127,7 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 						int dx = c.xCoord;
 						int dy = c.yCoord;
 						int dz = c.zCoord;
-						Block id = this.parseBlock(world.getBlock(x, y, z));
+						Block id = this.parseBlock(world.getBlock(dx, dy, dz));
 						int meta2 = world.getBlockMetadata(dx, dy, dz);
 						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
 						this.removeFound(world, dx, dy, dz, id, meta2);

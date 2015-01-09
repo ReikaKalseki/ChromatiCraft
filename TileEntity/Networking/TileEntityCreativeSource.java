@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -75,6 +76,11 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.CREATIVEPYLON;
+	}
+
+	@Override
+	public boolean canTransmitTo(CrystalReceiver te) {
+		return true;
 	}
 
 }

@@ -31,7 +31,8 @@ public enum ChromaPackets {
 	TICKER(1),
 	PYLONCLEAR(1),
 	SHARDBOOST(1),
-	GIVERESEARCH(1);
+	GIVERESEARCH(1),
+	LEAFBREAK(1);
 
 	public final int numInts;
 	public final PacketTypes type;

@@ -144,6 +144,8 @@ public enum ChromaResearch {
 	COMMUNICATE(	Chromabilities.COMMUNICATE),
 	HEALTH(			Chromabilities.HEALTH),
 	PYLONPROTECT(	Chromabilities.PYLON),
+	LIGHTNING(		Chromabilities.LIGHTNING),
+	LIFEPOINT(		Chromabilities.LIFEPOINT),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -588,6 +590,8 @@ public enum ChromaResearch {
 			return machine.isDummiedOut();
 		if (item != null)
 			return item.isDummiedOut();
+		if (ability != null)
+			return ability.isDummiedOut();
 		return false;
 	}
 

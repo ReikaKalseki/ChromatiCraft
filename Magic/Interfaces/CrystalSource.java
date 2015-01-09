@@ -22,4 +22,6 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public int getSourcePriority();
 
+	public boolean canTransmitTo(CrystalReceiver te);
+
 }

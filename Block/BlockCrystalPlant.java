@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.RotaryCraft.API.Interfaces.BlowableCrop;
 
@@ -39,6 +40,8 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 	private IIcon colorIcon;
 	private IIcon fastIcon;
 	private IIcon center;
+
+	private static final Random rand = new Random();
 
 	public BlockCrystalPlant(Material xMaterial) {
 		super(Material.plants);
@@ -209,7 +212,7 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 
 	@Override
 	public ArrayList<ItemStack> getHarvestProducts(World world, int x, int y, int z) {
-		if (ChromaOptions.CRYSTALFARM.getState()) {
+		if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(0.01)) {
 			ArrayList li = new ArrayList();
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(world.getBlockMetadata(x, y, z));
 			li.add(shard);

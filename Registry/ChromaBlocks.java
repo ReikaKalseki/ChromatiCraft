@@ -160,6 +160,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILECRYSTALNONCUBE:
 		case PYLON:
 		case FIBER:
+		case POWERTREE:
 			return ChromatiCraft.crystalMat;
 		case TNT:
 			return Material.tnt;

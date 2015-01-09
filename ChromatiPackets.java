@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
+import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
@@ -253,6 +254,9 @@ public class ChromatiPackets implements IPacketHandler {
 				ChromaResearchManager.instance.givePlayerFragment(ep, r);
 				break;
 			}
+			case LEAFBREAK:
+				BlockPowerTree.breakEffectsClient(world, x, y, z, CrystalElement.elements[data[0]]);
+				break;
 			}
 		}
 		catch (NullPointerException e) {

@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -515,6 +516,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public int getSourcePriority() {
 		return 500;
+	}
+
+	@Override
+	public boolean canTransmitTo(CrystalReceiver te) {
+		return !(te instanceof TileEntityPowerTree);
 	}
 
 }

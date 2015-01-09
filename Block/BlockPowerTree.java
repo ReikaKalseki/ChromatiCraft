@@ -18,7 +18,9 @@ import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,12 +34,23 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockPowerTree extends Block implements IWailaDataProvider {
@@ -46,7 +59,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	public BlockPowerTree(Material mat) {
 		super(mat);
-		this.setHardness(20);
+		this.setHardness(1);
 		this.setResistance(6000);
 		this.setLightLevel(1);
 		stepSound = soundTypeGlass;
@@ -98,13 +111,51 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	}
 
 	@Override
+	public boolean removedByPlayer(World world, EntityPlayer ep, int x, int y, int z, boolean harvest) {
+		ep.attackEntityFrom(ChromatiCraft.pylon, 5);
+		ChromaSounds.DISCHARGE.playSound(ep, 2, 1);
+		ChromaSounds.DISCHARGE.playSoundAtBlock(world, x, y, z, 2, 1F);
+		return super.removedByPlayer(world, ep, x, y, z, harvest);
+	}
+
+	@Override
 	public void breakBlock(World world, int x, int y, int z, Block old, int oldmeta) {
 		TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)world.getTileEntity(x, y, z);
 		TileEntityPowerTree tree = te.getCenter();
+		CrystalElement e = CrystalElement.elements[oldmeta];
 		if (tree != null) {
-			tree.onBreakLeaf(world, x, y, z, CrystalElement.elements[oldmeta]);
+			tree.onBreakLeaf(world, x, y, z, e);
 		}
+		this.breakEffects(world, x, y, z, e);
 		super.breakBlock(world, x, y, z, old, oldmeta);
+	}
+
+	private void breakEffects(World world, int x, int y, int z, CrystalElement e) {
+		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z);
+		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z, 1, 2);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LEAFBREAK.ordinal(), world, x, y, z, e.ordinal());
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void breakEffectsClient(World world, int x, int y, int z, CrystalElement e) {
+		for (int i = 0; i < 64; i++) {
+			double v = 0.125+rand.nextDouble()*0.25;
+			double rx = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			EntityBlurFX fx = new EntityBlurFX(e, world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		for (int i = 0; i < 8; i++) {
+			double v = 0.125+rand.nextDouble()*0.25;
+			double rx = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			EntityRuneFX fx = new EntityRuneFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz, e);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override
@@ -130,11 +181,13 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	@Override
 	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
 		ArrayList<ItemStack> li = new ArrayList();
-		int n = (1+fortune/2)*rand.nextInt(1+rand.nextInt(4)+2*fortune);
+		int n = ReikaMathLibrary.intpow2(5+rand.nextInt(10), 2);
 		CrystalElement e = CrystalElement.elements[meta];
-		for (int i = 0; i < n; i++) {
-			ItemStack is = rand.nextInt(3) == 0 ? ChromaStacks.getChargedShard(e) : ChromaStacks.getShard(e);
-			li.add(is);
+		while (n > 0) {
+			int rem = Math.min(n, ChromaItems.SHARD.getItemInstance().getItemStackLimit());
+			ItemStack is = rand.nextInt(3) > 0 ? ChromaStacks.getChargedShard(e) : ChromaStacks.getShard(e);
+			li.add(ReikaItemHelper.getSizedItemStack(is, rem));
+			n -= rem;
 		}
 		return li;
 	}
@@ -157,6 +210,11 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	@Override
 	public List<String> getWailaBody(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		int meta = acc.getMetadata();
+		CrystalElement e = CrystalElement.elements[meta];
+		TileEntityPowerTree te = this.getTile(acc.getWorld(), acc.getPosition().blockX, acc.getPosition().blockY, acc.getPosition().blockZ);
+		if (te != null)
+			tip.add(String.format("Stored Energy: %d lumens of %s", te.getEnergy(e), e.displayName));
 		return tip;
 	}
 

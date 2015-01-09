@@ -13,22 +13,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.FakePlayer;
+import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -44,29 +54,48 @@ public class ProgressionManager {
 
 	public static enum ProgressStage {
 
-		CASTING(), //Do a recipe
-		CRYSTALS(), //Found a crystal
-		DYETREE(), //Harvest a dye tree
-		MULTIBLOCK(), //Assembled a multiblock
-		RUNEUSE(), //Placed runes
-		PYLON(), //Found pylon
-		LINK(), //Made a network connection/high-tier crafting
-		CHARGE(), //charge from a pylon
-		ABILITY(), //use an ability
-		RAINBOWLEAF(), //harvest a rainbow leaf
-		CHROMA(), //step in liquid chroma
-		STONES(), //craft all elemental stones together
-		SHOCK(), //get hit by a pylon
-		NETHER(), //go to the nether
-		END(), //go to the end
-		TWILIGHT(), //Go to the twilight forest
-		BEDROCK(), //Find bedrock
-		CAVERN(), //Cavern structure
-		BURROW(), //Burrow structure
-		OCEAN(), //Ocean floor structure
+		CASTING(ChromaTiles.TABLE.getCraftedProduct()), //Do a recipe
+		CRYSTALS(ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
+		DYETREE(ChromaBlocks.DYELEAF.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //Harvest a dye tree
+		MULTIBLOCK(ChromaTiles.STAND.getCraftedProduct()), //Assembled a multiblock
+		RUNEUSE(ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
+		PYLON(ChromaTiles.PYLON.getCraftedProduct()), //Found pylon
+		LINK(ChromaTiles.REPEATER.getCraftedProduct()), //Made a network connection/high-tier crafting
+		CHARGE(ChromaItems.TOOL.getStackOf()), //charge from a pylon
+		ABILITY(ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
+		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOf()), //harvest a rainbow leaf
+		CHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()), //step in liquid chroma
+		STONES(ChromaStacks.elementUnit), //craft all elemental stones together
+		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
+		NETHER(Blocks.portal), //go to the nether
+		END(Blocks.end_portal_frame), //go to the end
+		TWILIGHT(ModWoodList.CANOPY.getLogID(), ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
+		BEDROCK(Blocks.bedrock), //Find bedrock
+		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
+		BURROW(Blocks.chest), //Burrow structure
+		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
 		;
 
+		private final ItemStack icon;
+		public final boolean active;
+
 		public static final ProgressStage[] list = values();
+
+		private ProgressStage(Block b, boolean... cond) {
+			this(new ItemStack(b), cond);
+		}
+
+		private ProgressStage(Item b, boolean... cond) {
+			this(new ItemStack(b), cond);
+		}
+
+		private ProgressStage(ItemStack is, boolean... cond) {
+			icon = is;
+			boolean flag = true;
+			for (int i = 0; i < cond.length; i++)
+				flag = flag && cond[i];
+			active = flag;
+		}
 
 		public boolean stepPlayerTo(EntityPlayer ep) {
 			return instance.stepPlayerTo(ep, this);
@@ -101,6 +130,11 @@ public class ProgressionManager {
 			//StatCollector.translateToLocal("chromaprog.reveal."+this.name().toLowerCase());
 			return ChromaDescriptions.getProgressText(this).reveal;
 		}
+
+		@SideOnly(Side.CLIENT)
+		public ItemStack getIcon() {
+			return icon.copy();
+		}
 	}
 
 	private ProgressionManager() {
@@ -121,7 +155,7 @@ public class ProgressionManager {
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
-			if (!progressMap.hasElement(p)) {
+			if (p.active && !progressMap.hasElement(p)) {
 				progressMap.addChildless(p);
 			}
 		}

@@ -50,6 +50,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
@@ -82,18 +84,26 @@ public enum Chromabilities implements Ability {
 	COMMUNICATE(Phase.START, false),
 	HEALTH(null, true),
 	PYLON(null, false),
-	LIGHTNING(null, false);
+	LIGHTNING(null, false),
+	LIFEPOINT(null, false, ModList.BLOODMAGIC);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
 	private final boolean actOnClient;
+	private ModList dependency;
 
 	private static final UUID uid_health = UUID.randomUUID();
+	public static final int MAX_REACH = 128;
 
 	private Chromabilities(Phase tick, boolean client) {
+		this(tick, client, null);
+	}
+
+	private Chromabilities(Phase tick, boolean client, ModList mod) {
 		tickBased = tick != null;
 		tickPhase = tick;
 		actOnClient = client;
+		dependency = mod;
 	}
 
 	private static final String NBT_TAG = "chromabilities";
@@ -117,7 +127,7 @@ public enum Chromabilities implements Ability {
 
 	public static Collection<Ability> getAbilitiesAvailableToPlayer(EntityPlayer ep) {
 		Collection<Ability> li = new ArrayList();
-		for (Ability c : abilityMap.values()) {
+		for (Ability c : sortedList) {
 			if (c.isAvailableToPlayer(ep))
 				li.add(c);
 		}
@@ -150,6 +160,14 @@ public enum Chromabilities implements Ability {
 
 	public boolean actOnClient() {
 		return actOnClient;
+	}
+
+	public ModList getModDependency() {
+		return dependency;
+	}
+
+	public boolean isDummiedOut() {
+		return dependency != null && !dependency.isLoaded();
 	}
 
 	public ElementTagCompound getTickCost() {
@@ -186,42 +204,40 @@ public enum Chromabilities implements Ability {
 	}
 
 	public void trigger(EntityPlayer ep, int data) {
-		if (tickBased) {
-
-		}
-		else {
-			switch(this) {
-			case REACH:
-				this.setReachDistance(ep, this.enabledOn(ep) ? 128 : -1); //use data?
-				break;
-			case SONIC:
-				this.destroyBlocksAround(ep, data);
-				break;
-			case SHIFT:
-				if (this.enabledOn(ep)) {
-					AbilityHelper.instance.startDrawingBoxes(ep);
-					AbilityHelper.instance.shifts.put(ep.getCommandSenderName(), new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
-				}
-				else {
-					AbilityHelper.instance.stopDrawingBoxes(ep);
-					AbilityHelper.instance.shifts.remove(ep.getCommandSenderName());
-				}
-				break;
-			case HEAL:
-				this.healPlayer(ep, data);
-				break;
-			case FIREBALL:
-				this.launchFireball(ep, data);
-				break;
-			case HEALTH:
-				this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
-				break;
-			case LIGHTNING:
-				this.spawnLightning(ep, data);
-				break;
-			default:
-				break;
+		switch(this) {
+		case REACH:
+			this.setReachDistance(ep, this.enabledOn(ep) ? MAX_REACH : -1); //use data?
+			break;
+		case SONIC:
+			this.destroyBlocksAround(ep, data);
+			break;
+		case SHIFT:
+			if (this.enabledOn(ep)) {
+				AbilityHelper.instance.startDrawingBoxes(ep);
+				AbilityHelper.instance.shifts.put(ep.getCommandSenderName(), new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
 			}
+			else {
+				AbilityHelper.instance.stopDrawingBoxes(ep);
+				AbilityHelper.instance.shifts.remove(ep.getCommandSenderName());
+			}
+			break;
+		case HEAL:
+			this.healPlayer(ep, data);
+			break;
+		case FIREBALL:
+			this.launchFireball(ep, data);
+			break;
+		case HEALTH:
+			this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
+			break;
+		case LIGHTNING:
+			this.spawnLightning(ep, data);
+			break;
+		case LIFEPOINT:
+			this.convertBufferToLP(ep, data);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -241,11 +257,18 @@ public enum Chromabilities implements Ability {
 			use.scale(25);
 		if (a == LIGHTNING)
 			use.scale(10);
+		if (a == LIFEPOINT)
+			use.scale(5);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
 
-		a.trigger(ep, data);
+		if (a.isTickBased()) {
+
+		}
+		else {
+			a.trigger(ep, data);
+		}
 	}
 
 	public boolean isPureEventDriven() {
@@ -271,7 +294,8 @@ public enum Chromabilities implements Ability {
 				//ReikaJavaLibrary.pConsole(n+":"+abilities.getBoolean(n), Side.SERVER);
 				if (abilities.getBoolean(n)) {
 					Ability c = tagMap.get(n);
-					li.add(c);
+					if (c != null)
+						li.add(c);
 				}
 			}
 		}
@@ -295,7 +319,7 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static void give(EntityPlayer ep, Ability a) {
-		setToPlayer(ep, false, a);
+		setToPlayer(ep, false, a, true);
 	}
 
 	public void removeFromPlayer(EntityPlayer ep) {
@@ -315,12 +339,16 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static void setToPlayer(EntityPlayer ep, boolean set, Ability a) {
+		setToPlayer(ep, set, a, false);
+	}
+
+	private static void setToPlayer(EntityPlayer ep, boolean set, Ability a, boolean force) {
 		NBTTagCompound nbt = ep.getEntityData();
 		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
 		if (abilities == null) {
 			abilities = new NBTTagCompound();
 		}
-		if (set || abilities.hasKey(a.getID()))
+		if (force || set || abilities.hasKey(a.getID()))
 			abilities.setBoolean(a.getID(), set);
 		nbt.setTag(NBT_TAG, abilities);
 		if (ep instanceof EntityPlayerMP)
@@ -578,6 +606,11 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
+	private static void convertBufferToLP(EntityPlayer ep, int data) {
+		ep.heal(data); //undo damage dealt
+		PlayerElementBuffer.instance.removeFromPlayer(ep, TileEntityLifeEmitter.getLumensPerHundredLP());
+	}
+
 	public boolean canPlayerExecuteAt(EntityPlayer player) {
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
 		return PlayerElementBuffer.instance.playerHas(player, use);
@@ -647,7 +680,8 @@ public enum Chromabilities implements Ability {
 	static {
 		for (int i = 0; i < abilities.length; i++) {
 			Chromabilities c = abilities[i];
-			addAbility(c);
+			if (!c.isDummiedOut())
+				addAbility(c);
 		}
 	}
 
@@ -659,7 +693,7 @@ public enum Chromabilities implements Ability {
 			tickAbilities.addValue(c.getTickPhase(), c);
 		}
 
-		ChromatiCraft.logger.log("Added ability '"+c.getDisplayName()+"', assigned IDs "+c.getID()+" and "+maxID);
+		ChromatiCraft.logger.log("Added ability '"+c.getDisplayName()+"', assigned IDs '"+c.getID()+"' and #"+maxID);
 
 		sortedList = new ArrayList(abilityMap.values());
 		Collections.sort(sortedList, sorter);
