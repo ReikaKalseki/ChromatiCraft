@@ -52,11 +52,11 @@ public class BlockTieredOre extends BlockChromaTiered {
 		STONES(ProgressStage.RUNEUSE),
 		BINDING(ProgressStage.CHARGE),
 		FOCAL(ProgressStage.MULTIBLOCK),
-		PLACEHOLDER4(ProgressStage.LINK),
-		PLACEHOLDER5(ProgressStage.LINK),
-		PLACEHOLDER6(ProgressStage.LINK),
-		PLACEHOLDER7(ProgressStage.LINK),
-		PLACEHOLDER8(ProgressStage.LINK);
+		TELEPORT(ProgressStage.END),
+		WATERY(ProgressStage.OCEAN),
+		PLACEHOLDER6(ProgressStage.NEVER),
+		PLACEHOLDER7(ProgressStage.NEVER),
+		PLACEHOLDER8(ProgressStage.NEVER);
 
 		public final ProgressStage level;
 
@@ -72,7 +72,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public int getGenerationCount() {
-			return this == PLACEHOLDER8 ? 1 : this.ordinal() < PLACEHOLDER4.ordinal() ? 4 : 2;
+			return this == PLACEHOLDER8 ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
 		}
 
 		public int getGenerationChance() {
@@ -114,12 +114,12 @@ public class BlockTieredOre extends BlockChromaTiered {
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.focusDust.copy());
 			break;
-		case PLACEHOLDER4:
+		case TELEPORT:
 			n = Math.min(64, 1+rand.nextInt(1+fortune)+fortune*fortune);
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.placehold1Dust.copy());
 			break;
-		case PLACEHOLDER5:
+		case WATERY:
 			n = Math.min(64, 1+rand.nextInt(6)+rand.nextInt(1+6*fortune));
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.placehold2Dust.copy());

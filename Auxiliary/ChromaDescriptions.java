@@ -256,6 +256,8 @@ public final class ChromaDescriptions {
 	}
 
 	public static String getData(ChromaResearch h) {
+		if (h.getAbility() != null)
+			return abilityText.get(h.getAbility());
 		if (!data.containsKey(h))
 			return "This item has no lexicon info yet.";
 		return data.get(h);

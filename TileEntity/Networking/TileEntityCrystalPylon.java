@@ -504,8 +504,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	@Override
-	public String getId() {
-		return "Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
+	public String getId() { //Normally based on world coords, but uses just color to make each node color scannable once
+		return "Pylon_"+color.toString();//"Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
 	}
 
 	@Override

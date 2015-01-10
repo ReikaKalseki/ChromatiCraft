@@ -19,4 +19,9 @@ public class GuiAbilityDesc extends GuiDescription {
 		super(ep, r, 256, 220);
 	}
 
+	@Override
+	protected int getMaxSubpage() {
+		return 0;
+	}
+
 }

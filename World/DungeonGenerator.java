@@ -486,7 +486,13 @@ public class DungeonGenerator implements IWorldGenerator {
 		return false;
 	}
 
+	private boolean isVoidWorld(World world, int x, int z) {
+		return world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z);
+	}
+
 	private boolean isGennableChunk(World world, int x, int z, Random r, Structures s) {
+		if (this.isVoidWorld(world, x, z))
+			return false;
 		switch(s) {
 		case OCEAN:
 			return ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));

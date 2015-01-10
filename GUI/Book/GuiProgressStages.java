@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class GuiProgressStages extends GuiScrollingPage {
@@ -68,6 +69,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 		 */
 
+		ReikaJavaLibrary.pConsole("------------------------------");
 		final HashMap<Integer, Integer> offsets = new HashMap();
 		for (ProgressStage p : levels.keySet()) {
 			int depth = levels.get(p);
@@ -76,13 +78,17 @@ public class GuiProgressStages extends GuiScrollingPage {
 			int dy = depth*(elementHeight+spacingY);
 			offsets.put(depth, d+1);
 			renderPositions.put(p, new Point(dx, dy));
+			elementWidth = 20;//Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
 			maxX = Math.max(maxX, dx+elementWidth);
 			maxY = Math.max(maxY, dy+elementHeight);
-			elementWidth = 20;//Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
+			ReikaJavaLibrary.pConsole(maxX+", "+maxY+" # "+p+" @ "+dx+"+"+elementWidth+", "+dy+"+"+elementHeight);
 		}
 
 		maxX -= paneWidth-spacingX/2;
-		maxY -= paneHeight-spacingY-10;
+		maxY -= paneHeight-spacingY-30;
+
+		if (maxX < 0)
+			maxX = 0;
 	}
 
 	@Override
@@ -118,6 +124,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 		this.renderTree(posX, posY);
 		this.renderText(posX, posY);
+
+		//ReikaJavaLibrary.pConsole(offsetX+"/"+maxX+","+offsetY+"/"+maxY);
 	}
 
 	private void renderTree(int posX, int posY) {
@@ -156,6 +164,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 			Point pt = renderPositions.get(p);
 			int x = -offsetX+posX+12+pt.getX();
 			int y = -offsetY+posY+36+pt.getY();
+
 			if (this.elementOnScreen(p, posX, posY, x, y))
 				this.renderElement(p, x, y);
 		}

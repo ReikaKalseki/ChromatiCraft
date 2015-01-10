@@ -9,10 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.Collection;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.Command.DragonCommandBase;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
 public class ProgressionStageCommand extends DragonCommandBase {
 
@@ -36,6 +40,10 @@ public class ProgressionStageCommand extends DragonCommandBase {
 			}
 			else if (stage == -2) {
 				ProgressionManager.instance.resetPlayerProgression(ep);
+			}
+			else if (stage == -3) {
+				Collection<ProgressStage> c = ProgressionManager.instance.getStagesFor(ep);
+				ReikaChatHelper.sendChatToPlayer(ep, "Progress for "+ep.getCommandSenderName()+":\n"+c.toString());
 			}
 			else {
 				if (ProgressionManager.instance.setPlayerStage(ep, stage, true)) {

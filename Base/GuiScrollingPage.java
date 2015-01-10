@@ -67,10 +67,10 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 		if (offsetY < 0) {
 			offsetY = 0;
 		}
-		if (offsetX > maxX && maxX > 0) {
+		if (offsetX > maxX && maxX >= 0) {
 			offsetX = maxX;
 		}
-		if (offsetY > maxY && maxY > 0) {
+		if (offsetY > maxY && maxY >= 0) {
 			offsetY = maxY;
 		}
 

@@ -302,6 +302,40 @@ public enum Chromabilities implements Ability {
 		return li;
 	}
 
+	public static ArrayList<Ability> getAvailableFrom(EntityPlayer ep) {
+		ArrayList<Ability> li = new ArrayList();
+		NBTTagCompound nbt = ep.getEntityData();
+		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
+		if (abilities != null && !abilities.hasNoTags()) {
+			Iterator<String> it = abilities.func_150296_c().iterator();
+			while (it.hasNext()) {
+				String n = it.next();
+				//ReikaJavaLibrary.pConsole(n+":"+abilities.getBoolean(n), Side.SERVER);
+				Ability c = tagMap.get(n);
+				if (c != null)
+					li.add(c);
+			}
+		}
+		return li;
+	}
+
+	public static HashMap<Ability, Boolean> getAbilitiesOn(EntityPlayer ep) {
+		HashMap<Ability, Boolean> li = new HashMap();
+		NBTTagCompound nbt = ep.getEntityData();
+		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
+		if (abilities != null && !abilities.hasNoTags()) {
+			Iterator<String> it = abilities.func_150296_c().iterator();
+			while (it.hasNext()) {
+				String n = it.next();
+				//ReikaJavaLibrary.pConsole(n+":"+abilities.getBoolean(n), Side.SERVER);
+				Ability c = tagMap.get(n);
+				if (c != null)
+					li.put(c, abilities.getBoolean(n));
+			}
+		}
+		return li;
+	}
+
 	public boolean enabledOn(EntityPlayer ep) {
 		return enabledOn(ep, this);
 	}

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.HashMap;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
@@ -37,7 +39,7 @@ public class ChromabilityCommand extends DragonCommandBase {
 		}
 		try {
 			Action action = Action.valueOf(act.toUpperCase());
-			action.perform(target, a);
+			action.perform(target, ep, a);
 			ReikaChatHelper.sendChatToPlayer(ep, "Action '"+act+"' with ability '"+id+"' performed on player '"+player+"'");
 		}
 		catch (IllegalArgumentException e) {
@@ -57,15 +59,20 @@ public class ChromabilityCommand extends DragonCommandBase {
 
 	private static enum Action {
 		GIVE(),
-		REMOVE();
+		REMOVE(),
+		GET();
 
-		private void perform(EntityPlayer ep, Ability a) {
+		private void perform(EntityPlayer ep, EntityPlayer sender, Ability a) {
 			switch(this) {
 			case GIVE:
 				Chromabilities.give(ep, a);
 				break;
 			case REMOVE:
 				Chromabilities.removeFromPlayer(ep, a);
+				break;
+			case GET:
+				HashMap<Ability, Boolean> c = Chromabilities.getAbilitiesOn(ep);
+				ReikaChatHelper.sendChatToPlayer(sender, "Abilities for "+ep+":\n"+c.toString());
 				break;
 			}
 		}

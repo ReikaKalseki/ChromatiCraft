@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -21,17 +22,20 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.FakePlayer;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -51,6 +55,8 @@ public class ProgressionManager {
 	private static final String NBT_TAG2 = "Chroma_Element_Discovery";
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
+
+	private final MultiMap<String, ProgressStage> playerMap = new MultiMap();
 
 	public static enum ProgressStage {
 
@@ -74,6 +80,7 @@ public class ProgressionManager {
 		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
 		BURROW(Blocks.chest), //Burrow structure
 		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
+		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
 		private final ItemStack icon;
@@ -138,6 +145,15 @@ public class ProgressionManager {
 	}
 
 	private ProgressionManager() {
+		this.load();
+	}
+
+	public void reload() {
+		progressMap.clear();
+		this.load();
+	}
+
+	private void load() {
 		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
@@ -156,7 +172,7 @@ public class ProgressionManager {
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
 			if (p.active && !progressMap.hasElement(p)) {
-				progressMap.addChildless(p);
+				//progressMap.addChildless(p);
 			}
 		}
 	}
@@ -166,30 +182,60 @@ public class ProgressionManager {
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
+		if (playerMap.isEmpty()) {
+			this.loadFromNBT(ep);
+		}
+		return playerMap.get(ep.getCommandSenderName());
+	}
+
+	private Collection<ProgressStage> loadFromNBT(EntityPlayer ep) {
 		NBTTagList li = this.getNBTList(ep);
 		Collection<ProgressStage> c = new ArrayList();
-		ProgressStage[] list = ProgressStage.values();
-		Iterator<NBTTagInt> it = li.tagList.iterator();
+		Iterator<NBTTagString> it = li.tagList.iterator();
 		while (it.hasNext()) {
-			int val = it.next().func_150287_d();
-			if (val < list.length)
-				c.add(list[val]);
-			else
-				it.remove();
+			String val = it.next().func_150285_a_();
+			try {
+				c.add(ProgressStage.valueOf(val));
+			}
+			catch (IllegalArgumentException e) {
+				ChromatiCraft.logger.logError("Could not load progress stage from NBT String "+val);
+			}
 		}
+		playerMap.put(ep.getCommandSenderName(), c);
+		this.verify(ep);
 		return c;
+	}
+
+	private void verify(EntityPlayer ep) {
+		boolean changed = false;
+		do {
+			Collection<ProgressStage> c = playerMap.get(ep.getCommandSenderName());
+			Iterator<ProgressStage> it = c.iterator();
+			while (it.hasNext()) {
+				ProgressStage p = it.next();
+				if (!this.playerHasPrerequisites(ep, p)) {
+					it.remove();
+					changed = true;
+				}
+			}
+		} while (changed);
 	}
 
 	private NBTTagList getNBTList(EntityPlayer ep) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		if (!nbt.hasKey(NBT_TAG))
 			nbt.setTag(NBT_TAG, new NBTTagList());
-		NBTTagList li = nbt.getTagList(NBT_TAG, NBTTypes.INT.ID);
+		NBTTagList li = nbt.getTagList(NBT_TAG, NBTTypes.STRING.ID);
 		return li;
 	}
 
 	private boolean isPlayerAtStage(EntityPlayer ep, ProgressStage s) {
 		return this.getPlayerData(ep).contains(s);
+	}
+
+	public Collection<ProgressStage> getStagesFor(EntityPlayer ep) {
+		Collection<ProgressStage> c = this.getPlayerData(ep);
+		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
 	}
 
 	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
@@ -244,8 +290,11 @@ public class ProgressionManager {
 	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set) {
 		if (ep instanceof FakePlayer)
 			return;
+		if (ep.worldObj.isRemote)
+			return;
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);
 		NBTTagList li = this.getNBTList(ep);
-		NBTBase tag = new NBTTagInt(s.ordinal());
+		NBTBase tag = new NBTTagString(s.name());
 		boolean flag = false;
 		if (set) {
 			if (!li.tagList.contains(tag)) {
@@ -259,7 +308,7 @@ public class ProgressionManager {
 				li.tagList.remove(tag);
 				Collection<ProgressStage> c = progressMap.getRecursiveChildren(s);
 				for (ProgressStage s2 : c) {
-					NBTBase tag2 = new NBTTagInt(s2.ordinal());
+					NBTBase tag2 = new NBTTagString(s2.name());
 					li.tagList.remove(tag2);
 				}
 			}
@@ -269,12 +318,19 @@ public class ProgressionManager {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			this.updateChunks(ep);
+			if (set) {
+				playerMap.addValue(ep.getCommandSenderName(), s);
+			}
+			else {
+				playerMap.remove(ep.getCommandSenderName(), s);
+			}
 		}
 	}
 
 	public void resetPlayerProgression(EntityPlayer ep) {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
+		playerMap.remove(ep.getCommandSenderName());
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false);
@@ -285,9 +341,8 @@ public class ProgressionManager {
 	}
 
 	public void maxPlayerProgression(EntityPlayer ep) {
-		ProgressStage[] list = ProgressStage.values();
-		for (int i = 0; i < list.length; i++) {
-			this.setPlayerStage(ep, list[i], true);
+		for (int i = 0; i < ProgressStage.list.length; i++) {
+			this.setPlayerStage(ep, ProgressStage.list[i], true);
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true);

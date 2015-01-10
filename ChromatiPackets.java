@@ -22,6 +22,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
@@ -257,6 +259,11 @@ public class ChromatiPackets implements IPacketHandler {
 			case LEAFBREAK:
 				BlockPowerTree.breakEffectsClient(world, x, y, z, CrystalElement.elements[data[0]]);
 				break;
+			case GIVEPROGRESS: {
+				ProgressStage p = ProgressStage.list[data[0]];
+				ProgressionManager.instance.setPlayerStage(ep, p, data[1] > 0);
+				break;
+			}
 			}
 		}
 		catch (NullPointerException e) {
