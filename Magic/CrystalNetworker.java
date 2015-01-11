@@ -255,7 +255,7 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		PylonFinder.removePathsWithTile(te);
-		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false);
+		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false); //true?
 	}
 
 	public void breakPaths(CrystalNetworkTile te) {

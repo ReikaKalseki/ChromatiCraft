@@ -36,6 +36,16 @@ public class ItemExcavator extends ItemWandBase implements BreakerCallback {
 	}
 
 	@Override
+	public float getDigSpeed(ItemStack is, Block b, int meta) {
+		return 5;
+	}
+
+	@Override
+	public boolean canHarvestBlock(Block b, ItemStack is) {
+		return true;
+	}
+
+	@Override
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
 		World world = ep.worldObj;
 		if (!world.isRemote) {

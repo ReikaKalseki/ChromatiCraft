@@ -129,8 +129,60 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		default:
 			break;
 		}
+		this.openUpperChests();
 		this.getProgressStage().stepPlayerTo(ep);
 		triggered = true;
+	}
+
+	private void openUpperChests() {
+		switch(struct) {
+		case CAVERN:
+			if (blocks != null) {
+				for (int i = 0; i < blocks.getSize(); i++) {
+					int[] xyz = blocks.getNthBlock(i);
+					int x = xyz[0];
+					int y = xyz[1];
+					int z = xyz[2];
+					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+					}
+				}
+			}
+			worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
+			worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
+			break;
+		case BURROW:
+			if (blocks != null) {
+				for (int i = 0; i < blocks.getSize(); i++) {
+					int[] xyz = blocks.getNthBlock(i);
+					int x = xyz[0]+5;
+					int y = xyz[1]+8;
+					int z = xyz[2]+2;
+					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+					}
+				}
+			}
+			break;
+		case OCEAN:
+			if (blocks != null) {
+				for (int i = 0; i < blocks.getSize(); i++) {
+					int[] xyz = blocks.getNthBlock(i);
+					int x = xyz[0];//-3;
+					int y = xyz[1];//-5;
+					int z = xyz[2];//-3;
+					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -266,7 +318,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 						int z = xyz[2];
 						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
-						if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+						else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
 						}

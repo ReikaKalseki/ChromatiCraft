@@ -37,7 +37,8 @@ public class ChromaStructures {
 		COMPOUND(),
 		CAVERN(),
 		BURROW(),
-		OCEAN();
+		OCEAN(),
+		PORTAL();
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {
@@ -67,6 +68,8 @@ public class ChromaStructures {
 				return getBurrowStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			case OCEAN:
 				return getOceanStructure(w, 0, 0, 0);
+			case PORTAL:
+				return getPortalStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -1374,6 +1377,12 @@ public class ChromaStructures {
 		array.setBlock(x, y-3, z, b, 13);
 		array.setBlock(x, y-4, z, b, 2);
 		array.setBlock(x, y-5, z, b, 12);
+		return array;
+	}
+
+	public static FilledBlockArray getPortalStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+
 		return array;
 	}
 

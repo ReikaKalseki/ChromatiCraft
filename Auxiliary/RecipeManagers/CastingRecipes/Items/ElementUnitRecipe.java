@@ -40,7 +40,8 @@ public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
-	protected void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+		super.onCrafted(te, ep);
 		ProgressStage.STONES.stepPlayerTo(ep);
 	}
 

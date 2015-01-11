@@ -443,6 +443,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				ProgressStage.LINK.stepPlayerTo(ep);
 			}
 			ProgressStage.CASTING.stepPlayerTo(ep);
+			recipe.onCrafted(this, ep);
 			recipe = this.getValidRecipe();
 			if (recipe instanceof PylonRecipe && recipe == activeRecipe) {
 				craftingTick = recipe.getDuration();

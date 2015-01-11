@@ -35,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -62,6 +63,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
@@ -75,7 +77,9 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
@@ -97,6 +101,36 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.VOIDMONSTER)
+	public void voidMonsterBonus(LivingDropsEvent evt) {
+		if (evt.source instanceof PylonDamage && evt.entityLiving.getClass().getSimpleName().equals("EntityVoidMonster")) {
+			for (int i = 0; i < 4+rand.nextInt(4); i++) {
+				ReikaItemHelper.dropItem(evt.entityLiving, ChromaItems.FRAGMENT.getStackOf());
+			}
+			try {
+				for (int i = 0; i < 2; i++)
+					ReikaObfuscationHelper.getMethod("dropFewItems").invoke(evt.entityLiving, false, 0);
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not perform pylon-void monster bonus drops interaction!");
+				e.printStackTrace();
+			}
+			ChromaSounds.POWERDOWN.playSound(evt.entityLiving, 2, 1);
+			ChromaSounds.POWERDOWN.playSound(evt.entityLiving, 2, 0.5F);
+			ReikaParticleHelper.EXPLODE.spawnAt(evt.entityLiving);
+		}
+	}
+
+	@SubscribeEvent
+	public void deathProgress(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
+			if (PlayerElementBuffer.instance.getPlayerTotalEnergy(ep) >= 10000)
+				ProgressStage.DIE.stepPlayerTo(ep);
+		}
 	}
 
 	@SubscribeEvent
@@ -456,7 +490,7 @@ public class ChromaticEventManager {
 			if (n > 0) {
 				World world = e.worldObj;
 				for (int i = 0; i < n; i++) {
-					ReikaItemHelper.dropItem(world, e.posX, e.posY, e.posZ, ChromaItems.FRAGMENT.getStackOf());
+					ReikaItemHelper.dropItem(e, ChromaItems.FRAGMENT.getStackOf());
 				}
 			}
 		}

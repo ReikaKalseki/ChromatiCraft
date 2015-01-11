@@ -33,14 +33,13 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.StructuredBlockArray;
 import Reika.DragonAPI.Interfaces.BreakAction;
-import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements GuiController, BreakAction {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction {
 
 	private boolean hasStructure = false;
 	private int abilityTick = 0;

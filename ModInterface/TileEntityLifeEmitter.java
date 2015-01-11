@@ -20,8 +20,8 @@ public class TileEntityLifeEmitter extends CrystalReceiverBase {
 	private static final ElementTagCompound use = new ElementTagCompound();
 
 	static {
-		use.addTag(CrystalElement.MAGENTA, 150);
-		use.addTag(CrystalElement.BLACK, 50);
+		use.addTag(CrystalElement.MAGENTA, 60);
+		use.addTag(CrystalElement.BLACK, 15);
 	}
 
 	public static ElementTagCompound getLumensPerHundredLP() {

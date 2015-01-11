@@ -38,7 +38,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
 import ttftcuts.atg.api.ATGBiomes.BiomeType;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
-import Reika.ChromatiCraft.Auxiliary.AbilityHelper.ReachApplier;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper.LoginApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
@@ -60,6 +60,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
@@ -90,6 +91,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
+import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -191,6 +193,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void preload(FMLPreInitializationEvent evt) {
+		this.startTiming(LoadPhase.PRELOAD);
 		this.verifyVersions();
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
@@ -260,11 +263,13 @@ public class ChromatiCraft extends DragonAPIMod {
 		CompatibilityTracker.instance.registerIncompatibility(ModList.CHROMATICRAFT, ModList.OPTIFINE, CompatibilityTracker.Severity.GLITCH, "Optifine is known to break some rendering and cause framerate drops.");
 
 		this.basicSetup(evt);
+		this.finishTiming();
 	}
 
 	@Override
 	@EventHandler
 	public void load(FMLInitializationEvent event) {
+		this.startTiming(LoadPhase.LOAD);
 		ChromaRecipes.loadDictionary();
 		if (this.isLocked())
 			PlayerHandler.instance.registerTracker(ChromaLock.instance);
@@ -314,7 +319,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
-			PlayerHandler.instance.registerTracker(ReachApplier.instance);
+			PlayerHandler.instance.registerTracker(LoginApplier.instance);
 		}
 
 		if (ChromaOptions.HANDBOOK.getState())
@@ -385,6 +390,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values");
+
+		this.finishTiming();
 	}
 
 	private void addDyeCompat() {
@@ -411,6 +418,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	@EventHandler
 	public void postload(FMLPostInitializationEvent evt) {
+		this.startTiming(LoadPhase.POSTLOAD);
 
 		if (!this.isLocked()) {
 			ChromaRecipes.addPostLoadRecipes();
@@ -423,6 +431,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.FORESTRY.isLoaded()) {
 			CrystalBees.register();
 		}
+
+		this.finishTiming();
 	}
 
 	public static boolean isRainbowForest(BiomeGenBase b) {
@@ -436,6 +446,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ChromaResearchCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
 		evt.registerServerCommand(new ChromabilityCommand());
+		evt.registerServerCommand(new PlayerEnergyCommand());
 	}
 
 	@EventHandler

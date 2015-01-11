@@ -85,7 +85,9 @@ public enum Chromabilities implements Ability {
 	HEALTH(null, true),
 	PYLON(null, false),
 	LIGHTNING(null, false),
-	LIFEPOINT(null, false, ModList.BLOODMAGIC);
+	LIFEPOINT(null, false, ModList.BLOODMAGIC),
+	DEATHPROOF(null, false),
+	HOTBAR(null, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -236,6 +238,9 @@ public enum Chromabilities implements Ability {
 		case LIFEPOINT:
 			this.convertBufferToLP(ep, data);
 			break;
+		case HOTBAR:
+			addInvPage(ep);
+			break;
 		default:
 			break;
 		}
@@ -277,6 +282,7 @@ public enum Chromabilities implements Ability {
 		case HEAL:
 		case FIREBALL:
 		case LIGHTNING:
+		case HOTBAR:
 			return true;
 		default:
 			return false;
@@ -437,6 +443,18 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
+	private static void addInvPage(EntityPlayer ep) {
+		if (ep.worldObj.isRemote)
+			return;
+		AbilityHelper.instance.addInventoryPage(ep);
+		PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getElementsFor(Chromabilities.HOTBAR));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void setHealthClient(EntityPlayer ep, int value) {
+		setPlayerMaxHealth(ep, value);
+	}
+
 	private static void setPlayerMaxHealth(EntityPlayer ep, int value) {
 		float added = value+20-ep.getMaxHealth();
 		//ReikaJavaLibrary.pConsole(added+":"+add+":"+ep.getMaxHealth());
@@ -449,6 +467,7 @@ public enum Chromabilities implements Ability {
 				ep.heal(added);
 		}
 		ep.setHealth(Math.min(ep.getHealth(), ep.getMaxHealth()));
+		AbilityHelper.instance.boostHealth(ep, value);
 	}
 
 	private static void attractItemsAndXP(EntityPlayer ep, int range) {
@@ -573,6 +592,8 @@ public enum Chromabilities implements Ability {
 			moved.place();
 		}
 		Chromabilities.SHIFT.setToPlayer(ep, false);
+		int factor = box.getVolume()*box.getVolume()*dist/4;
+		PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getUsageElementsFor(SHIFT).scale(factor));
 	}
 
 	private static void healPlayer(EntityPlayer ep, int health) {
@@ -645,9 +666,13 @@ public enum Chromabilities implements Ability {
 		PlayerElementBuffer.instance.removeFromPlayer(ep, TileEntityLifeEmitter.getLumensPerHundredLP());
 	}
 
+	public static boolean canPlayerExecuteAt(EntityPlayer ep, Ability a) {
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a);
+		return PlayerElementBuffer.instance.playerHas(ep, use) && a.canPlayerExecuteAt(ep);
+	}
+
 	public boolean canPlayerExecuteAt(EntityPlayer player) {
-		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(this);
-		return PlayerElementBuffer.instance.playerHas(player, use);
+		return true;
 	}
 
 	public static int maxPower(EntityPlayer ep, Ability a) {
@@ -720,18 +745,31 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static void addAbility(Ability c) {
-		tagMap.put(c.getID(), c);
-		abilityMap.put(c.getID(), c);
+		String id = c.getID();
+		checkIDValidity(id);
+		tagMap.put(id, c);
+		abilityMap.put(id, c);
 		intMap.put(maxID, c);
 		if (c.isTickBased()) {
 			tickAbilities.addValue(c.getTickPhase(), c);
 		}
 
-		ChromatiCraft.logger.log("Added ability '"+c.getDisplayName()+"', assigned IDs '"+c.getID()+"' and #"+maxID);
+		ChromatiCraft.logger.log("Added ability '"+c.getDisplayName()+"', assigned IDs '"+id+"' and #"+maxID);
 
 		sortedList = new ArrayList(abilityMap.values());
 		Collections.sort(sortedList, sorter);
 		maxID++;
+	}
+
+	private static void checkIDValidity(String id) {
+		if (id == null || id.isEmpty())
+			throw new IllegalArgumentException("ID cannot be null or empty!");
+		if (id.equals("null") || id.equals(" "))
+			throw new IllegalArgumentException("Invalid ID string "+id+"!");
+		if (id.equals("all") || id.equals("none"))
+			throw new IllegalArgumentException("Reserved ID string "+id+"!");
+		if (abilityMap.containsKey(id))
+			throw new IllegalArgumentException("ID string "+id+" already taken!");
 	}
 
 	private static final Comparator sorter = new AbilitySorter();

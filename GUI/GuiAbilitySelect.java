@@ -145,7 +145,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		super.mouseClicked(x, y, button);
 		if (button == 0 && ReikaGuiAPI.instance.isMouseInBox(width/2-37, width/2+37, height/2-37, height/2+37)) {
 			if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
-				if (ability.canPlayerExecuteAt(player)) {
+				if (Chromabilities.canPlayerExecuteAt(player, ability)) {
 					mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
 					Chromabilities.triggerAbility(player, ability, data);
 					player.closeScreen();

@@ -115,7 +115,7 @@ public class CastingRecipe {
 		return this.getRequiredProgress().isPlayerAtStage(ep);
 	}
 
-	protected void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
 
 	}
 

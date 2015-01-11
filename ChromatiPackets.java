@@ -261,9 +261,12 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case GIVEPROGRESS: {
 				ProgressStage p = ProgressStage.list[data[0]];
-				ProgressionManager.instance.setPlayerStage(ep, p, data[1] > 0);
+				ProgressionManager.instance.setPlayerStageClient(ep, p, data[1] > 0);
 				break;
 			}
+			case HEALTHSYNC:
+				Chromabilities.setHealthClient(ep, data[0]);
+				break;
 			}
 		}
 		catch (NullPointerException e) {

@@ -94,7 +94,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
-		return c == ChromaTiles.PYLON ? new ProgressStage[]{ProgressStage.PYLON} : null;
+		boolean pylon = c == ChromaTiles.PYLON && ((TileEntityCrystalPylon)world.getTileEntity(x, y, z)).canConduct();
+		return pylon ? new ProgressStage[]{ProgressStage.PYLON} : null;
 	}
 
 }

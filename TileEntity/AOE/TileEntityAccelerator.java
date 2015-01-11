@@ -83,6 +83,10 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		return ReikaMathLibrary.intpow2(2, tier+1)-1;
 	}
 
+	public int getAccel() {
+		return getAccelFromTier(this.getTier());
+	}
+
 	public int getTier() {
 		return tier;
 	}
@@ -98,7 +102,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 			ForgeDirection dir = dirs[i];
 			TileEntity te = this.getAdjacentTileEntity(dir);
 			if (this.canAccelerate(te)) {
-				int max = this.getAccelFromTier(tier);
+				int max = this.getAccel();
 				for (int k = 0; k < max && !te.isInvalid(); k++) {
 					te.updateEntity();
 					if (System.nanoTime()-time >= MAX_LAG)

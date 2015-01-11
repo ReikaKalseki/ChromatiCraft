@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -80,6 +81,7 @@ public class ProgressionManager {
 		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
 		BURROW(Blocks.chest), //Burrow structure
 		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
+		DIE(Items.skull), //die and lose energy
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -171,8 +173,8 @@ public class ProgressionManager {
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
-			if (p.active && !progressMap.hasElement(p)) {
-				//progressMap.addChildless(p);
+			if (p.active && !progressMap.hasElement(p) && !progressMap.hasElementAsChild(p)) {
+				progressMap.addChildless(p);
 			}
 		}
 	}
@@ -182,10 +184,10 @@ public class ProgressionManager {
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
-		if (playerMap.isEmpty()) {
-			this.loadFromNBT(ep);
-		}
-		return playerMap.get(ep.getCommandSenderName());
+		//if (playerMap.isEmpty()) {
+		//	this.loadFromNBT(ep);
+		//}
+		return this.loadFromNBT(ep);//playerMap.get(ep.getCommandSenderName());
 	}
 
 	private Collection<ProgressStage> loadFromNBT(EntityPlayer ep) {
@@ -202,20 +204,22 @@ public class ProgressionManager {
 			}
 		}
 		playerMap.put(ep.getCommandSenderName(), c);
-		this.verify(ep);
+		//this.verify(ep);
 		return c;
 	}
 
 	private void verify(EntityPlayer ep) {
 		boolean changed = false;
+		String s = ep.getCommandSenderName();
 		do {
-			Collection<ProgressStage> c = playerMap.get(ep.getCommandSenderName());
+			Collection<ProgressStage> c = playerMap.get(s);
 			Iterator<ProgressStage> it = c.iterator();
 			while (it.hasNext()) {
 				ProgressStage p = it.next();
 				if (!this.playerHasPrerequisites(ep, p)) {
 					it.remove();
 					changed = true;
+					ChromatiCraft.logger.logError("Player "+s+" had progress element "+p+" without its prereqs! Removing!");
 				}
 			}
 		} while (changed);
@@ -234,6 +238,11 @@ public class ProgressionManager {
 	}
 
 	public Collection<ProgressStage> getStagesFor(EntityPlayer ep) {
+		Collection<ProgressStage> c = this.getPlayerData(ep);
+		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
+	}
+
+	public Collection<ProgressStage> getStagesForFromNBT(EntityPlayer ep) {
 		Collection<ProgressStage> c = this.getPlayerData(ep);
 		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
 	}
@@ -287,12 +296,22 @@ public class ProgressionManager {
 		return true;
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void setPlayerStageClient(EntityPlayer ep, ProgressStage s, boolean set) {
+		this.setPlayerStage(ep, s, set, true);
+	}
+
 	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set) {
+		this.setPlayerStage(ep, s, set, false);
+	}
+
+	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient) {
 		if (ep instanceof FakePlayer)
 			return;
-		if (ep.worldObj.isRemote)
+		if (ep.worldObj.isRemote && !allowClient)
 			return;
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);
+		if (ep instanceof EntityPlayerMP)
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagString(s.name());
 		boolean flag = false;
@@ -317,20 +336,26 @@ public class ProgressionManager {
 			ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			this.updateChunks(ep);
 			if (set) {
 				playerMap.addValue(ep.getCommandSenderName(), s);
 			}
 			else {
 				playerMap.remove(ep.getCommandSenderName(), s);
 			}
+			this.updateChunks(ep);
 		}
 	}
 
 	public void resetPlayerProgression(EntityPlayer ep) {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
-		playerMap.remove(ep.getCommandSenderName());
+		Collection<ProgressStage> c = playerMap.remove(ep.getCommandSenderName());
+		if (ep instanceof EntityPlayerMP) {
+			EntityPlayerMP emp = (EntityPlayerMP)ep;
+			for (ProgressStage p : c) {
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), emp, p.ordinal(), 0);
+			}
+		}
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false);

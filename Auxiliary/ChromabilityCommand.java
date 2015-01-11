@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +19,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class ChromabilityCommand extends DragonCommandBase {
 
@@ -32,14 +34,16 @@ public class ChromabilityCommand extends DragonCommandBase {
 			ReikaChatHelper.sendChatToPlayer(ep, EnumChatFormatting.RED+"No such player '"+player+"'");
 			return;
 		}
-		Ability a = Chromabilities.getAbility(id);
-		if (a == null) {
+		boolean all = id.equals("all");
+		List<Ability> ac = all ? Chromabilities.getAbilities() : ReikaJavaLibrary.makeListFrom(Chromabilities.getAbility(id));
+		if (!all && ac.get(0) == null) {
 			ReikaChatHelper.sendChatToPlayer(ep, EnumChatFormatting.RED+"No such ability id '"+id+"'");
 			return;
 		}
 		try {
 			Action action = Action.valueOf(act.toUpperCase());
-			action.perform(target, ep, a);
+			for (Ability a : ac)
+				action.perform(target, ep, a);
 			ReikaChatHelper.sendChatToPlayer(ep, "Action '"+act+"' with ability '"+id+"' performed on player '"+player+"'");
 		}
 		catch (IllegalArgumentException e) {

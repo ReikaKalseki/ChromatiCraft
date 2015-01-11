@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
@@ -365,6 +366,9 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 				currenttip.add("Unlinked");
 			}
 			return currenttip;
+		}
+		if (te instanceof TileEntityAccelerator) {
+			currenttip.add(String.format("Time Acceleration Factor: %dx", 1+((TileEntityAccelerator)te).getAccel()));
 		}
 		if (te instanceof TileEntityCrystalTank) {
 			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;

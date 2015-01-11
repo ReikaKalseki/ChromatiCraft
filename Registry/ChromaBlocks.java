@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
+import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
@@ -116,7 +117,8 @@ public enum ChromaBlocks implements BlockEnum {
 	TNT(BlockEnderTNT.class,													"chroma.endertnt"),
 	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
 	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),
-	LOOTCHEST(BlockLootChest.class,												"chroma.loot");
+	LOOTCHEST(BlockLootChest.class,												"chroma.loot"),
+	PORTAL(BlockChromaPortal.class,												"chroma.portal");
 
 	private Class blockClass;
 	private String blockName;

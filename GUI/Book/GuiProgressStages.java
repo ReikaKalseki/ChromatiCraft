@@ -32,7 +32,6 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class GuiProgressStages extends GuiScrollingPage {
@@ -69,7 +68,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 		 */
 
-		ReikaJavaLibrary.pConsole("------------------------------");
+		//ReikaJavaLibrary.pConsole("------------------------------");
 		final HashMap<Integer, Integer> offsets = new HashMap();
 		for (ProgressStage p : levels.keySet()) {
 			int depth = levels.get(p);
@@ -81,7 +80,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 			elementWidth = 20;//Math.max(elementWidth, Minecraft.getMinecraft().fontRenderer.getStringWidth(p.getTitleString())+20);
 			maxX = Math.max(maxX, dx+elementWidth);
 			maxY = Math.max(maxY, dy+elementHeight);
-			ReikaJavaLibrary.pConsole(maxX+", "+maxY+" # "+p+" @ "+dx+"+"+elementWidth+", "+dy+"+"+elementHeight);
+			//ReikaJavaLibrary.pConsole(maxX+", "+maxY+" # "+p+" @ "+dx+"+"+elementWidth+", "+dy+"+"+elementHeight);
 		}
 
 		maxX -= paneWidth-spacingX/2;

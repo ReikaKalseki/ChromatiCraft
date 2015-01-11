@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.HashMap;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +19,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Command.DragonCommandBase;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 
@@ -85,6 +88,11 @@ public class PlayerElementBuffer {
 		int val = Math.min(has+amt, this.getElementCap(ep));
 		tag.setInteger(e.name(), val);
 		return val > has;
+	}
+
+	private void setToPlayer(EntityPlayer ep, CrystalElement e, int amt) {
+		NBTTagCompound tag = this.getTag(ep);
+		tag.setInteger(e.name(), amt);
 	}
 
 	public boolean addToPlayer(EntityPlayer ep, ElementTagCompound tag) {
@@ -170,6 +178,42 @@ public class PlayerElementBuffer {
 
 	public boolean hasElement(EntityPlayer ep, CrystalElement e) {
 		return this.getPlayerContent(ep, e) > 0;
+	}
+
+	public int getPlayerTotalEnergy(EntityPlayer ep) {
+		int sum = 0;
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			sum += this.getPlayerContent(ep, e);
+		}
+		return sum;
+	}
+
+	public static class PlayerEnergyCommand extends DragonCommandBase {
+
+		@Override
+		public void processCommand(ICommandSender ics, String[] args) {
+			EntityPlayer sender = this.getCommandSenderAsPlayer(ics);
+			EntityPlayer tg = args.length == 2 ? sender : sender.worldObj.getPlayerEntityByName(args[0]);
+			String es = args[args.length-2].toUpperCase();
+			CrystalElement[] en = es.equals("ALL") ? CrystalElement.elements : new CrystalElement[]{CrystalElement.valueOf(es)};
+			int amt = Integer.parseInt(args[args.length-1]);
+			for (CrystalElement e : en)
+				instance.setToPlayer(tg, e, amt);
+			if (tg instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)tg);
+		}
+
+		@Override
+		public String getCommandString() {
+			return "chromabuffer";
+		}
+
+		@Override
+		protected boolean isAdminOnly() {
+			return true;
+		}
+
 	}
 
 }

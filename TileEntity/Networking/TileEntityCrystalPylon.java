@@ -65,6 +65,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -316,14 +317,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 		ChromaSounds.DISCHARGE.playSound(worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
-		e.attackEntityFrom(ChromatiCraft.pylon, 5);
+		int amt = 5;
+
+		if (e instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)e;
+			ProgressStage.SHOCK.stepPlayerTo(ep);
+			if (ModList.BLOODMAGIC.isLoaded() && BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep))
+				amt *= 10; //counter the 90% reduction
+		}
+
+		e.attackEntityFrom(ChromatiCraft.pylon, amt);
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
 		if (eff != null) {
 			e.addPotionEffect(eff);
 		}
-
-		if (e instanceof EntityPlayer)
-			ProgressStage.SHOCK.stepPlayerTo((EntityPlayer)e);
 	}
 
 	private void sendClientAttack(CrystalTransmitter te, EntityLivingBase e) {

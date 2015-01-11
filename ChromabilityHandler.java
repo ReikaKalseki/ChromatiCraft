@@ -36,7 +36,7 @@ public class ChromabilityHandler implements TickHandler {
 		Collection<Ability> li = Chromabilities.getAbilitiesForTick((Phase)tickData[1]);
 		for (Ability c : li) {
 			if (Chromabilities.playerHasAbility(ep, c) && Chromabilities.enabledOn(ep, c)) {
-				if (c.canPlayerExecuteAt(ep))
+				if (Chromabilities.canPlayerExecuteAt(ep, c))
 					c.apply(ep);
 				if (ReikaRandomHelper.doWithChance(0.0002)) {
 					ElementTagCompound tag = Chromabilities.getTickCost(c);

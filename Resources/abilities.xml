@@ -36,4 +36,10 @@
 	<lifepoint>
 		You have dabbled in the dark arts, using your own life force to accomplish significant, if rather macabre, feats. However, having tied those powers to your very life has come with a rather unpleasant side-effect; every action you perform directly saps your energy, and any amount of overexertion can push you to the brink of death. Recalling the healing and life power of the %s crystal element, you wonder if you can redirect these drains onto your buffer of crystal energy instead.
 	</lifepoint>
+	<deathproof>
+		Dying is painful. Not just literally, which is obvious, but more figuratively as well. As you learned the hard way, though your mind has the ability to infinitely respawn, your body - and the energy stored within - is lost, as are some of your other powers. As you wish to avoid this in the future - though you are not confident of your ability to avoid death - you may wish to try to hold on to what you can at the moment of death.
+	</deathproof>
+	<hotbar>
+		Too often have you been in the middle of a building project and found your hands full of tools, blocks, and other things and were forced to carefully shuffle around your items when you want a different block than is immediately accessible, and then of course switch it right back when you need the original blocks. If only there was a way to bind a template of sorts to your held items, to alleviate this stupidity.
+	</hotbar>
 </ability>

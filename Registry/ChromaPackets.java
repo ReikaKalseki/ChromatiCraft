@@ -33,7 +33,8 @@ public enum ChromaPackets {
 	SHARDBOOST(1),
 	GIVERESEARCH(1),
 	LEAFBREAK(1),
-	GIVEPROGRESS(2);
+	GIVEPROGRESS(2),
+	HEALTHSYNC(1);
 
 	public final int numInts;
 	public final PacketTypes type;
