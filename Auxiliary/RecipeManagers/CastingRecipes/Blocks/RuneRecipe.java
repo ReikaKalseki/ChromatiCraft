@@ -9,8 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
+import java.util.Collection;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -33,6 +36,12 @@ public class RuneRecipe extends CastingRecipe {
 	@Override
 	public int getExperience() {
 		return isBoosted ? 4*super.getExperience() : 2*super.getExperience();
+	}
+
+	@Override
+	protected void getRequiredProgress(Collection<ProgressStage> c) {
+		super.getRequiredProgress(c);
+		c.add(ProgressStage.ALLCOLORS);
 	}
 
 }

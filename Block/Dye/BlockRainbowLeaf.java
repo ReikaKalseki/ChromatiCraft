@@ -218,8 +218,9 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	@Override
-	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face)
-	{
+	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		if (world instanceof World)
+			this.addInstability((World)world, x, y, z); //make burning the tree add the instability back
 		return 180;
 	}
 
@@ -284,19 +285,11 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	}
 
 	private void fightInstability(World world, int x, int y, int z) {
-		if (ReikaMystcraftHelper.getBonusInstabilityForAge(world) > 0) {
-			ReikaMystcraftHelper.addBonusInstabilityForAge(world, -1);
-			//ReikaJavaLibrary.pConsole("bon: "+ReikaMystcraftHelper.getBonusInstabilityForAge(world));
-		}
-		else if (ReikaMystcraftHelper.getBaseInstabilityForAge(world) > 0) {
-			ReikaMystcraftHelper.addBaseInstabilityForAge(world, (short)-1);
-			//ReikaJavaLibrary.pConsole("base: "+ReikaMystcraftHelper.getBaseInstabilityForAge(world));
-		}
-		else {
-			//REMOVED//ReikaMystcraftHelper.addStabilityForAge(world, 1);
+		ReikaMystcraftHelper.decrInstabilityForAge(world, 1);
+	}
 
-			//ReikaJavaLibrary.pConsole("sta: "+ReikaMystcraftHelper.getStabilityForAge(world));
-		}
+	private void addInstability(World world, int x, int y, int z) {
+		ReikaMystcraftHelper.addInstabilityForAge(world, (short)1);
 	}
 
 	private void convertPureNodeMagic(World world, int x, int y, int z) {

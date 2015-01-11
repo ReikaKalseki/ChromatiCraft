@@ -169,6 +169,8 @@ public enum Chromabilities implements Ability {
 	}
 
 	public boolean isDummiedOut() {
+		if (this == HOTBAR)
+			return true;
 		return dependency != null && !dependency.isLoaded();
 	}
 

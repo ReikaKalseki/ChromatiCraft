@@ -67,7 +67,7 @@ public class ProgressionManager {
 		MULTIBLOCK(ChromaTiles.STAND.getCraftedProduct()), //Assembled a multiblock
 		RUNEUSE(ChromaBlocks.RUNE.getStackOfMetadata(CrystalElement.ORANGE.ordinal())), //Placed runes
 		PYLON(ChromaTiles.PYLON.getCraftedProduct()), //Found pylon
-		LINK(ChromaTiles.REPEATER.getCraftedProduct()), //Made a network connection/high-tier crafting
+		LINK(ChromaTiles.COMPOUND.getCraftedProduct()), //Made a network connection/high-tier crafting
 		CHARGE(ChromaItems.TOOL.getStackOf()), //charge from a pylon
 		ABILITY(ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
 		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOf()), //harvest a rainbow leaf
@@ -82,6 +82,8 @@ public class ProgressionManager {
 		BURROW(Blocks.chest), //Burrow structure
 		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
 		DIE(Items.skull), //die and lose energy
+		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
+		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -159,8 +161,8 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
-		progressMap.addParent(ProgressStage.LINK,		ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.REPEATER);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
@@ -170,6 +172,7 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
+		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
@@ -380,9 +383,19 @@ public class ProgressionManager {
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
 		tag.setBoolean(e.name(), disc);
 		nbt.setTag(NBT_TAG2, tag);
+		if (disc)
+			this.checkPlayerColors(ep);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		this.updateChunks(ep);
+	}
+
+	private void checkPlayerColors(EntityPlayer ep) {
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			if (!this.hasPlayerDiscoveredColor(ep, CrystalElement.elements[i]))
+				return;
+		}
+		ProgressStage.ALLCOLORS.stepPlayerTo(ep);
 	}
 
 	private void updateChunks(EntityPlayer ep) {

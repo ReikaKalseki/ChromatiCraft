@@ -47,7 +47,7 @@ public enum ChromaResearch {
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
 	START("Getting Started",			ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
-	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT),
+	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,12 +108,18 @@ public class CastingRecipe {
 		return recipe.matches(ic, null);
 	}
 
-	protected ProgressStage getRequiredProgress() {
-		return ProgressStage.CRYSTALS;
+	protected void getRequiredProgress(Collection<ProgressStage> c) {
+		c.add(ProgressStage.CRYSTALS);
 	}
 
 	public boolean canRunRecipe(EntityPlayer ep) {
-		return this.getRequiredProgress().isPlayerAtStage(ep);
+		Collection<ProgressStage> c = new ArrayList();
+		this.getRequiredProgress(c);
+		for (ProgressStage p : c) {
+			if (!p.isPlayerAtStage(ep))
+				return false;
+		}
+		return true;
 	}
 
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
@@ -205,8 +212,9 @@ public class CastingRecipe {
 		}
 
 		@Override
-		protected ProgressStage getRequiredProgress() {
-			return ProgressStage.RUNEUSE;
+		protected void getRequiredProgress(Collection<ProgressStage> c) {
+			super.getRequiredProgress(c);
+			c.add(ProgressStage.RUNEUSE);
 		}
 
 	}
@@ -307,8 +315,9 @@ public class CastingRecipe {
 		}
 
 		@Override
-		protected ProgressStage getRequiredProgress() {
-			return ProgressStage.MULTIBLOCK;
+		protected void getRequiredProgress(Collection<ProgressStage> c) {
+			super.getRequiredProgress(c);
+			c.add(ProgressStage.MULTIBLOCK);
 		}
 
 		@Override
@@ -367,8 +376,10 @@ public class CastingRecipe {
 		}
 
 		@Override
-		protected ProgressStage getRequiredProgress() {
-			return ProgressStage.PYLON;
+		protected void getRequiredProgress(Collection<ProgressStage> c) {
+			super.getRequiredProgress(c);
+			c.add(ProgressStage.PYLON);
+			c.add(ProgressStage.REPEATER);
 		}
 	}
 

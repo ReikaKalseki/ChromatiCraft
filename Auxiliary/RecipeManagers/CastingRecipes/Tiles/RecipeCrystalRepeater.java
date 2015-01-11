@@ -9,11 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 
@@ -81,6 +84,13 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe {
 	@Override
 	public int getExperience() {
 		return 2*super.getExperience();
+	}
+
+	@Override
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+		super.onCrafted(te, ep);
+
+		ProgressStage.REPEATER.stepPlayerTo(ep);
 	}
 
 }
