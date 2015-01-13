@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -18,16 +19,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Block.BlockLootChest;
+import Reika.ChromatiCraft.Block.BlockLootChest.LootChestAccessEvent;
 import Reika.ChromatiCraft.Block.BlockStructureShield;
 import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -39,7 +44,9 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.HitAction;
 import Reika.DragonAPI.Interfaces.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -47,16 +54,18 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, InertIInv {
+public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv {
 
 	private Structures struct;
 	private FilledBlockArray blocks;
 	private CrystalElement color;
 	private final EnumMap<CrystalElement, Coordinate> crystals = new EnumMap(CrystalElement.class);
 	private boolean triggered = false;
+	private int trapTick = 0;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -77,6 +86,61 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			}
 		}
 		//triggered = false;
+		if (struct == Structures.OCEAN) {
+			if (trapTick > 0) {
+				trapTick--;
+			}
+			else {
+				this.resetOceanTrap();
+			}
+		}
+	}
+
+	@Override
+	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {
+		this.trigger(x, y, z, ep);
+	}
+
+	private void trigger(int x, int y, int z, EntityPlayer ep) {
+		if (struct != null) {
+			switch(struct) {
+			case CAVERN:
+				break;
+			case BURROW:
+				break;
+			case OCEAN:
+				if ((y == yCoord || y == yCoord-1) && Math.abs(x-xCoord) <= 3 && Math.abs(z-zCoord) <= 3)
+					this.triggerOceanTrap(ep);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	private void triggerOceanTrap(EntityPlayer ep) {
+		BlockArray arr = OceanStructure.getPitCover(xCoord, yCoord, zCoord);
+		for (int i = 0; i < arr.getSize(); i++) {
+			int[] xyz = arr.getNthBlock(i);
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			worldObj.setBlock(dx, dy, dz, Blocks.air);
+		}
+		ChromaSounds.TRAP.playSound(ep, 1, 1);
+		trapTick = 40;
+		//ep.addPotionEffect(new PotionEffect(Potion.poison.id, 600, 2));
+	}
+
+	private void resetOceanTrap() {
+		BlockArray arr = OceanStructure.getPitCover(xCoord, yCoord, zCoord);
+		for (int i = 0; i < arr.getSize(); i++) {
+			int[] xyz = arr.getNthBlock(i);
+			int dx = xyz[0];
+			int dy = xyz[1];
+			int dz = xyz[2];
+			worldObj.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+		}
 	}
 
 	private AxisAlignedBB getBox(int x, int y, int z) {
@@ -187,9 +251,26 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
-		if (struct != null)
+		if (struct != null) {
 			this.calcCrystals(world, x, y, z);
+			this.regenerate();
+		}
+		LootChestWatcher.instance.cache(this);
 		this.syncAllData(true);
+	}
+
+	private void regenerate() {
+		if (struct != null) {
+			FilledBlockArray copy = (FilledBlockArray)blocks.copy();
+			if (struct == Structures.BURROW) {
+				copy.offset(5, 8, 2);
+			}
+			copy.placeExcept(new Coordinate(this));
+			if (struct == Structures.OCEAN) {
+				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2);
+				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2);
+			}
+		}
 	}
 
 	@Override
@@ -363,6 +444,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			}
 		}
+		LootChestWatcher.instance.cache.remove(new WorldLocation(this));
 	}
 
 	public int getBrightness() {
@@ -377,6 +459,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			NBT.setString("struct", struct.name());
 		NBT.setInteger("color", this.getColor().ordinal());
 		NBT.setBoolean("trigger", triggered);
+
+		NBT.setInteger("ttick", trapTick);
 	}
 
 	@Override
@@ -387,6 +471,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			struct = Structures.valueOf(NBT.getString("struct"));
 		triggered = NBT.getBoolean("trigger");
 		color = CrystalElement.elements[NBT.getInteger("color")];
+
+		trapTick = NBT.getInteger("ttick");
 	}
 
 	@Override
@@ -433,6 +519,39 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		default:
 			return null;
 		}
+	}
+
+	public static class LootChestWatcher {
+
+		public static final LootChestWatcher instance = new LootChestWatcher();
+
+		private final Collection<WorldLocation> cache = new ArrayList();
+
+		private LootChestWatcher() {
+
+		}
+
+		public void cache(TileEntityStructControl te) {
+			WorldLocation loc = new WorldLocation(te);
+			if (!cache.contains(loc))
+				cache.add(loc);
+		}
+
+		@SubscribeEvent
+		public void onAccess(LootChestAccessEvent evt) {
+			for (WorldLocation loc : cache) {
+				TileEntity tile = evt.world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+				if (tile instanceof TileEntityStructControl) {
+					TileEntityStructControl te = (TileEntityStructControl)tile;
+					te.trigger(evt.x, evt.y, evt.z, evt.player);
+				}
+			}
+		}
+
+	}
+
+	static {
+		MinecraftForge.EVENT_BUS.register(LootChestWatcher.instance);
 	}
 
 }

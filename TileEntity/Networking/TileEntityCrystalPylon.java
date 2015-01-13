@@ -67,6 +67,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
@@ -322,8 +323,14 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.SHOCK.stepPlayerTo(ep);
-			if (ModList.BLOODMAGIC.isLoaded() && BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep))
-				amt *= 10; //counter the 90% reduction
+			if (ModList.BLOODMAGIC.isLoaded()) {
+				int drain = 5000;
+				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {
+					amt *= 10; //counter the 90% reduction
+					drain = 150000;
+				}
+				SoulNetworkHandler.syphonAndDamageFromNetwork(ep.getCommandSenderName(), ep, drain);
+			}
 		}
 
 		e.attackEntityFrom(ChromatiCraft.pylon, amt);

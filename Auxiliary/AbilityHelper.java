@@ -52,6 +52,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.PlayerMap;
 import Reika.DragonAPI.Instantiable.Data.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
@@ -72,15 +73,15 @@ public class AbilityHelper {
 	//Client Side
 	public int playerReach = -1;
 
-	private final HashMap<String, WorldLocation> playerClicks = new HashMap();
-	private final HashMap<String, Boolean> isDrawingBox = new HashMap();
-	public final HashMap<String, ScaledDirection> shifts = new HashMap();
+	private final PlayerMap<WorldLocation> playerClicks = new PlayerMap();
+	private final PlayerMap<Boolean> isDrawingBox = new PlayerMap();
+	public final PlayerMap<ScaledDirection> shifts = new PlayerMap();
 
-	private final HashMap<String, LossCache> lossCache = new HashMap();
+	private final PlayerMap<LossCache> lossCache = new PlayerMap();
 
-	private final HashMap<String, Integer> healthCache = new HashMap();
+	private final PlayerMap<Integer> healthCache = new PlayerMap();
 
-	private final HashMap<String, InventoryArray> inventories = new HashMap();
+	private final PlayerMap<InventoryArray> inventories = new PlayerMap();
 
 	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap();
 
@@ -103,42 +104,41 @@ public class AbilityHelper {
 	}
 
 	public void boostHealth(EntityPlayer ep, int attr) {
-		healthCache.put(ep.getCommandSenderName(), attr);
+		healthCache.put(ep, attr);
 	}
 
 	public void startDrawingBoxes(EntityPlayer ep) {
-		isDrawingBox.put(ep.getCommandSenderName(), true);
+		isDrawingBox.put(ep, true);
 	}
 
 	public void stopDrawingBoxes(EntityPlayer ep) {
-		isDrawingBox.put(ep.getCommandSenderName(), false);
+		isDrawingBox.put(ep, false);
 		this.removePlayerClick(ep);
 	}
 
 	public void addPlayerClick(EntityPlayer ep, World world, int x, int y, int z) {
 		if (!world.isRemote) {
-			String s = ep.getCommandSenderName();
-			if (isDrawingBox.containsKey(s) && isDrawingBox.get(s)) {
+			if (isDrawingBox.containsKey(ep) && isDrawingBox.get(ep)) {
 				WorldLocation loc = new WorldLocation(world, x, y, z);
-				if (playerClicks.containsKey(s)) {
-					WorldLocation loc2 = playerClicks.get(s);
+				if (playerClicks.containsKey(ep)) {
+					WorldLocation loc2 = playerClicks.get(ep);
 					BlockBox b = new BlockBox(loc, loc2);
 					this.playerMakeBox(ep, b);
 					this.removePlayerClick(ep);
 				}
 				else
-					playerClicks.put(s, loc);
+					playerClicks.put(ep, loc);
 			}
 		}
 	}
 
 	public void removePlayerClick(EntityPlayer ep) {
-		playerClicks.remove(ep.getCommandSenderName());
+		playerClicks.remove(ep);
 	}
 
 	private void playerMakeBox(EntityPlayer ep, BlockBox box) {
 		if (!ep.worldObj.isRemote && Chromabilities.SHIFT.enabledOn(ep)) {
-			ScaledDirection dir = shifts.get(ep.getCommandSenderName());
+			ScaledDirection dir = shifts.get(ep);
 			Chromabilities.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, ep);
 		}
 	}
@@ -169,14 +169,14 @@ public class AbilityHelper {
 		if (evt.entityLiving instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
 			if (Chromabilities.DEATHPROOF.enabledOn(ep)) {
-				lossCache.put(ep.getCommandSenderName(), new LossCache(ep));
+				lossCache.put(ep, new LossCache(ep));
 			}
 		}
 	}
 
 	@SubscribeEvent
 	public void useCache(PlayerEvent.PlayerRespawnEvent evt) {
-		LossCache c = lossCache.remove(evt.player.getCommandSenderName());
+		LossCache c = lossCache.remove(evt.player);
 		if (c != null) {
 			c.applyToPlayer(evt.player);
 		}
@@ -256,7 +256,7 @@ public class AbilityHelper {
 		@Override
 		public void onPlayerChangedDimension(EntityPlayer player, int dimFrom, int dimTo) {
 			if (!player.worldObj.isRemote && Chromabilities.HEALTH.enabledOn(player)) {
-				Integer get = AbilityHelper.instance.healthCache.get(player.getCommandSenderName());
+				Integer get = AbilityHelper.instance.healthCache.get(player);
 				int health = get != null ? get.intValue() : 0;
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.HEALTHSYNC.ordinal(), (EntityPlayerMP)player, health);
 			}
@@ -301,13 +301,20 @@ public class AbilityHelper {
 	@SubscribeEvent
 	public void scrollInventories(RawKeyPressEvent evt) {
 		if (evt.key == Key.PGDN || evt.key == Key.PGUP) {
-			this.cycleInventory(evt.player, evt.key == Key.PGUP);
-			ReikaJavaLibrary.pConsole(inventories.get(evt.player.getCommandSenderName()));
+			boolean up = evt.key == Key.PGUP;
+			this.cycleInventory(evt.player, up);
+			ReikaJavaLibrary.pConsole(inventories.get(evt.player));
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INVCYCLE.ordinal(), (EntityPlayerMP)evt.player, up ? 1 : 0);
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void cycleInventoryClient(EntityPlayer ep, boolean up) {
+		this.cycleInventory(ep, up);
+	}
+
 	private void cycleInventory(EntityPlayer ep, boolean up) {
-		InventoryArray inv = inventories.get(ep.getCommandSenderName());
+		InventoryArray inv = inventories.get(ep);
 		if (inv != null) {
 			inv.shift(ep, up);
 			InventoryArrayData.initArrayData(ep.worldObj).setDirty(true);
@@ -315,10 +322,10 @@ public class AbilityHelper {
 	}
 
 	public void addInventoryPage(EntityPlayer ep) {
-		InventoryArray inv = inventories.get(ep.getCommandSenderName());
+		InventoryArray inv = inventories.get(ep);
 		if (inv == null) {
 			inv = new InventoryArray();
-			inventories.put(ep.getCommandSenderName(), inv);
+			inventories.put(ep, inv);
 		}
 		inv.addPage();
 		InventoryArrayData.initArrayData(ep.worldObj).setDirty(true);

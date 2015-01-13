@@ -76,7 +76,7 @@ public class ProgressionManager {
 		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
 		NETHER(Blocks.portal), //go to the nether
 		END(Blocks.end_portal_frame), //go to the end
-		TWILIGHT(ModWoodList.CANOPY.getLogID(), ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
+		TWILIGHT(ModWoodList.CANOPY.getItem(), ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
 		BEDROCK(Blocks.bedrock), //Find bedrock
 		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
 		BURROW(Blocks.chest), //Burrow structure

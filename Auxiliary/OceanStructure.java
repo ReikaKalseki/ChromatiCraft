@@ -3519,6 +3519,26 @@ public class OceanStructure {
 		array.setBlock(x+8, y+2, z+7, b, 8);
 	}
 
+	public static BlockArray getPitCover(int x, int y, int z) {
+		x -= 3;
+		y -= 3;
+		z -= 3;
+
+		BlockArray array = new BlockArray();
+
+		array.addBlockCoordinate(x+2, y+0, z+2);
+		array.addBlockCoordinate(x+2, y+0, z+3);
+		array.addBlockCoordinate(x+2, y+0, z+4);
+		array.addBlockCoordinate(x+3, y+0, z+2);
+		array.addBlockCoordinate(x+3, y+0, z+3);
+		array.addBlockCoordinate(x+3, y+0, z+4);
+		array.addBlockCoordinate(x+4, y+0, z+2);
+		array.addBlockCoordinate(x+4, y+0, z+3);
+		array.addBlockCoordinate(x+4, y+0, z+4);
+
+		return array;
+	}
+
 	private static void addPit(FilledBlockArray array, int x, int y, int z, Block b) {
 		array.setBlock(x+1, y+0, z+1, b, 8);
 		array.setBlock(x+1, y+0, z+2, b, 8);

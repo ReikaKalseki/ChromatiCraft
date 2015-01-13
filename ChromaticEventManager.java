@@ -20,6 +20,7 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -487,6 +488,8 @@ public class ChromaticEventManager {
 			}
 			else if (e instanceof EntityVillager || e instanceof EntityWitch)
 				n = rand.nextInt(4) == 0 ? 1 : 0;
+			else if (e instanceof EntityEnderman)
+				;//n = rand.nextInt(32) == 0 ? 1 : 0;
 			if (n > 0) {
 				World world = e.worldObj;
 				for (int i = 0; i < n; i++) {

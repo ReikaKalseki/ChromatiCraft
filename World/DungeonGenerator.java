@@ -33,16 +33,17 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
+import Reika.DragonAPI.Instantiable.Data.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.FilledBlockArray;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
@@ -159,10 +160,6 @@ public class DungeonGenerator implements IWorldGenerator {
 					this.programSpawners(s, struct, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
 					this.mossify(s, struct, r);
 					this.generatePit(world, x, y, z);
-					for (int i = y+8; i < 200; i++) {
-						world.setBlock(x, i, z, Blocks.glass);
-					}
-					ReikaJavaLibrary.pConsole(te);
 					return true;
 				}
 			}
@@ -255,7 +252,7 @@ public class DungeonGenerator implements IWorldGenerator {
 			boolean flag = true;
 			for (int k = 0; k < arr.getSize(); k++) {
 				int[] xyz = arr.getNthBlock(k);
-				Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+				Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
 				if (b != Blocks.air) {
 					flag = false;
 				}
@@ -266,6 +263,13 @@ public class DungeonGenerator implements IWorldGenerator {
 			else {
 				arr.place();
 			}
+		}
+
+		BlockArray arr = OceanStructure.getPitCover(x, y, z);
+		for (int k = 0; k < arr.getSize(); k++) {
+			int[] xyz = arr.getNthBlock(k);
+			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			world.setBlock(xyz[0], xyz[1], xyz[2], ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
 		}
 	}
 
@@ -450,16 +454,16 @@ public class DungeonGenerator implements IWorldGenerator {
 		if (!flag1 && !flag2)
 			return false;
 
-		//bury lower half, and ensure not near shore
+		//bury lower half, and ensure not near shore or intersecting another
 		for (int k = 0; k < struct.getSize(); k++) {
 			int[] xyz = struct.getNthBlock(k);
 			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
-			if (world.getTopSolidOrLiquidBlock(xyz[0], xyz[2]) <= y) {
+			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 				return false;
-			}
-			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(xyz[0], xyz[2]))) {
+			if (world.getTopSolidOrLiquidBlock(xyz[0], xyz[2]) <= y)
 				return false;
-			}
+			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(xyz[0], xyz[2])))
+				return false;
 		}
 
 		//can generate pit to cave
@@ -495,7 +499,7 @@ public class DungeonGenerator implements IWorldGenerator {
 			return false;
 		switch(s) {
 		case OCEAN:
-			return ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+			return r.nextInt(32/32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
 		case CAVERN:
 			return r.nextInt(32) == 0;
 		case BURROW:

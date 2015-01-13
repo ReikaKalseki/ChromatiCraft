@@ -34,7 +34,8 @@ public enum ChromaPackets {
 	GIVERESEARCH(1),
 	LEAFBREAK(1),
 	GIVEPROGRESS(2),
-	HEALTHSYNC(1);
+	HEALTHSYNC(1),
+	INVCYCLE(1);
 
 	public final int numInts;
 	public final PacketTypes type;

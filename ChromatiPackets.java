@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -266,6 +267,9 @@ public class ChromatiPackets implements IPacketHandler {
 			}
 			case HEALTHSYNC:
 				Chromabilities.setHealthClient(ep, data[0]);
+				break;
+			case INVCYCLE:
+				AbilityHelper.instance.cycleInventoryClient(ep, data[0] > 0);
 				break;
 			}
 		}

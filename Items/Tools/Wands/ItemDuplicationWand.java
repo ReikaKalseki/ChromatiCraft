@@ -51,6 +51,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class ItemDuplicationWand extends ItemWandBase {
 
+	//Do not switch to playermap; not compatible, and not persistent across loads anyways
 	private static HashMap<String, StructuredBlockArray> structures = new HashMap();
 	private HashMap<String, Boolean> region = new HashMap();
 	private HashMap<String, Coordinate> centers = new HashMap();

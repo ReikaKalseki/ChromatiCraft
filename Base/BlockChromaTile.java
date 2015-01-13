@@ -71,6 +71,7 @@ import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.HitAction;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -105,6 +106,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		return icons[meta][s];
+	}
+
+	@Override
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer ep) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof HitAction) {
+			((HitAction)te).onHit(world, x, y, z, ep);
+		}
 	}
 
 	@Override

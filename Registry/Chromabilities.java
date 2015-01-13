@@ -218,11 +218,11 @@ public enum Chromabilities implements Ability {
 		case SHIFT:
 			if (this.enabledOn(ep)) {
 				AbilityHelper.instance.startDrawingBoxes(ep);
-				AbilityHelper.instance.shifts.put(ep.getCommandSenderName(), new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
+				AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
 			}
 			else {
 				AbilityHelper.instance.stopDrawingBoxes(ep);
-				AbilityHelper.instance.shifts.remove(ep.getCommandSenderName());
+				AbilityHelper.instance.shifts.remove(ep);
 			}
 			break;
 		case HEAL:

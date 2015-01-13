@@ -32,15 +32,17 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -87,22 +89,37 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	@Override
+	public boolean removedByPlayer(World world, EntityPlayer ep, int x, int y, int z, boolean harvest) {
+		fireEvent(world, x, y, z, ep, true);
+		return super.removedByPlayer(world, ep, x, y, z, harvest);
+	}
+
+	private static void fireEvent(World world, int x, int y, int z, EntityPlayer ep, boolean b) {
+		MinecraftForge.EVENT_BUS.post(new LootChestAccessEvent(world, x, y, z, ep, b));
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c)
 	{
 		if (world.isRemote)
 			return true;
 		else {
-			if (this.canOpen(world, x, y, z))
+			boolean open = this.canOpen(world, x, y, z, ep);
+			fireEvent(world, x, y, z, ep, open);
+			if (open) {
 				ep.displayGUIChest((IInventory)world.getTileEntity(x, y, z));
+			}
 			else
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.stone);
 			return true;
 		}
 	}
 
-	public boolean canOpen(World world, int x, int y, int z)
-	{
-		return world.getBlockMetadata(x, y, z) < 8 && !world.isSideSolid(x, y+1, z, DOWN) && world.getTileEntity(x, y, z) instanceof TileEntityLootChest;
+	public boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
+		if (world.getBlockMetadata(x, y, z) >= 8 || world.isSideSolid(x, y+1, z, DOWN))
+			return false;
+		TileEntity te = world.getTileEntity(x, y, z);
+		return te instanceof TileEntityLootChest && ((TileEntityLootChest)te).isUseableByPlayer(ep);
 	}
 
 	public TileEntity createNewTileEntity(World world, int meta)
@@ -152,6 +169,33 @@ public class BlockLootChest extends BlockContainer {
 		world.setBlockMetadataWithNotify(x, y, z, ChromaAux.get4SidedMetadataFromPlayerLook(e), 3);
 	}
 
+	public static void setMaxReach(World world, int x, int y, int z, int max) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileEntityLootChest) {
+			((TileEntityLootChest)te).maxReachAccess = max;
+		}
+	}
+
+	public static final class LootChestAccessEvent extends Event {
+
+		public final World world;
+		public final int x;
+		public final int y;
+		public final int z;
+		public final EntityPlayer player;
+		public final boolean success;
+
+		private LootChestAccessEvent(World world, int x, int y, int z, EntityPlayer ep, boolean b) {
+			this.world = world;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			player = ep;
+			success = b;
+		}
+
+	}
+
 	public static final class TileEntityLootChest extends TileEntity implements IInventory {
 
 		protected ItemStack[] inv = new ItemStack[this.getSizeInventory()];
@@ -162,6 +206,8 @@ public class BlockLootChest extends BlockContainer {
 		public float lidAngle;
 
 		private int ticksSinceSync;
+
+		private int maxReachAccess = 8;
 
 		@Override
 		public void updateEntity() {
@@ -265,8 +311,8 @@ public class BlockLootChest extends BlockContainer {
 			}
 		}
 
-		public boolean isUseableByPlayer(EntityPlayer var1) {
-			return true;
+		public boolean isUseableByPlayer(EntityPlayer ep) {
+			return ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= maxReachAccess;
 		}
 
 		public final ItemStack decrStackSize(int par1, int par2)
@@ -313,6 +359,8 @@ public class BlockLootChest extends BlockContainer {
 			NBT.setTag("Items", nbttaglist);
 
 			//NBT.setInteger("using", numPlayersUsing);
+
+			NBT.setInteger("maxreach", maxReachAccess);
 		}
 
 		@Override
@@ -334,6 +382,8 @@ public class BlockLootChest extends BlockContainer {
 			}
 
 			//numPlayersUsing = NBT.getInteger("using");
+
+			maxReachAccess = NBT.getInteger("maxreach");
 		}
 
 		@Override

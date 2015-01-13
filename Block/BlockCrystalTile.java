@@ -56,7 +56,7 @@ public class BlockCrystalTile extends BlockChromaTile {
 		switch (c) {
 		case ACCELERATOR:
 			for (int i = 0; i < 4; i++)
-				li.add(ChromaStacks.crystalCore);
+				li.add(ChromaStacks.blueShard);
 		case GUARDIAN:
 			li.add(ChromaStacks.crystalStar);
 			break;
