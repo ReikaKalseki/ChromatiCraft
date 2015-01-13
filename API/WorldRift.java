@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.API;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 /** The world rift implements this; this is a hook for you to make your systems interact with the rift accordingly. For a sample implementation,
  * look to RotaryCraft shaft power distribution or ElectriCraft wire network pathfinding logic. For all directional functions, the return value

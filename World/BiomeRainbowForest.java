@@ -26,7 +26,7 @@ import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Instantiable.ModSpawnEntry;
+import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -189,7 +189,6 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		classes.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFSquirrel", 5, 1, 2));
 		classes.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFTinyBird", 10, 1, 4));
 
-		//caveClasses.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFTinyFirefly", 4, 1, 1));
 		caveClasses.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFMobileFirefly", 20, 1, 1));
 	}
 

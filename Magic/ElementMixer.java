@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Magic;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.MixMap;
-import Reika.DragonAPI.Instantiable.Data.PairMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MixMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.PairMap;
 
 public class ElementMixer {
 

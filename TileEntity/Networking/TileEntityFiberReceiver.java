@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.Magic.FiberNetwork;
 import Reika.ChromatiCraft.Magic.FiberPath;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.Data.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
 public class TileEntityFiberReceiver extends CrystalReceiverBase implements FiberSource {

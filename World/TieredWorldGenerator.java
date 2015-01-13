@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Instantiable.Data.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import cpw.mods.fml.common.IWorldGenerator;
 
 public class TieredWorldGenerator implements IWorldGenerator {

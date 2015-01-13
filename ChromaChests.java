@@ -13,8 +13,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.LootController;
-import Reika.DragonAPI.Instantiable.LootController.Location;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 
 public class ChromaChests {
 
