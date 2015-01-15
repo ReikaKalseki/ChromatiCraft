@@ -20,8 +20,8 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 public class ChunkProviderChroma implements IChunkProvider {
 
-	public ChunkProviderChroma() {
-		// TODO Auto-generated constructor stub
+	public ChunkProviderChroma(World world) {
+		long seed = world.getSeed();
 	}
 
 	@Override

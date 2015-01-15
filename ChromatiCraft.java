@@ -80,6 +80,7 @@ import Reika.ChromatiCraft.World.CrystalGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
@@ -236,8 +237,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionBetterSaturation.class);
 		betterSat = new PotionBetterSaturation(id);
 
-		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.RAINBOWFORESTID.getValue(), BiomeRainbowForest.class);
-		BiomeCollisionTracker.instance.addBiomeID(instance, ChromaOptions.ENDERFORESTID.getValue(), BiomeEnderForest.class);
+		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
+		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
 
 		this.setupClassFiles();
 		ChromaTiles.loadMappings();
@@ -279,15 +280,17 @@ public class ChromatiCraft extends DragonAPIMod {
 			proxy.registerRenderers();
 		}
 
-		rainbowforest = new BiomeRainbowForest(ChromaOptions.RAINBOWFORESTID.getValue());
+		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());
 		BiomeManager.warmBiomes.add(new BiomeEntry(rainbowforest, 2));
 		BiomeManager.addSpawnBiome(rainbowforest);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
 
-		enderforest = new BiomeEnderForest(ChromaOptions.ENDERFORESTID.getValue());
+		enderforest = new BiomeEnderForest(ExtraChromaIDs.ENDERFOREST.getValue());
 		BiomeManager.coolBiomes.add(new BiomeEntry(enderforest, 6));
 		BiomeManager.addSpawnBiome(enderforest);
 		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
+
+		ChromaDimensionManager.initialize();
 
 		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
 		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);

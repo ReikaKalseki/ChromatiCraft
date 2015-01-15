@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Instantiable.BasicInventory;
 
 public class ContainerBookPages extends Container {
 
@@ -154,60 +154,17 @@ public class ContainerBookPages extends Container {
 
 	public int getPageCount() {
 		int c = 0;
-		for (int i = 0; i < inventory.slots.length; i++) {
-			if (inventory.slots[i] != null)
+		for (int i = 0; i < inventory.inventorySize; i++) {
+			if (inventory.getStackInSlot(i) != null)
 				c++;
 		}
 		return c;
 	}
 
-	private static class BookInventory implements IInventory {
+	private static class BookInventory extends BasicInventory {
 
-		private final ItemStack[] slots = new ItemStack[ChromaResearch.getAllNonParents().size()];
-
-		@Override
-		public int getSizeInventory() {
-			return slots.length;
-		}
-
-		@Override
-		public ItemStack getStackInSlot(int slot) {
-			return slots[slot];
-		}
-
-		@Override
-		public ItemStack decrStackSize(int slot, int amt) {
-			return ReikaInventoryHelper.decrStackSize(this, slot, amt);
-		}
-
-		@Override
-		public ItemStack getStackInSlotOnClosing(int slot) {
-			return ReikaInventoryHelper.getStackInSlotOnClosing(this, slot);
-		}
-
-		@Override
-		public void setInventorySlotContents(int slot, ItemStack is) {
-			slots[slot] = is;
-		}
-
-		@Override
-		public String getInventoryName() {
-			return "Book";
-		}
-
-		@Override
-		public boolean hasCustomInventoryName() {
-			return false;
-		}
-
-		@Override
-		public int getInventoryStackLimit() {
-			return 1;
-		}
-
-		@Override
-		public void markDirty() {
-
+		private BookInventory() {
+			super("Chroma Lexicon", ChromaResearch.getAllNonParents().size());
 		}
 
 		@Override
@@ -216,18 +173,21 @@ public class ContainerBookPages extends Container {
 		}
 
 		@Override
-		public void openInventory() {
-
-		}
-
-		@Override
-		public void closeInventory() {
-
-		}
-
-		@Override
 		public boolean isItemValidForSlot(int slot, ItemStack is) {
-			return ChromaItems.FRAGMENT.matchWith(is);
+			if (ChromaItems.FRAGMENT.matchWith(is)) {
+				ChromaResearch r = ItemInfoFragment.getResearch(is);
+				return r != null && !this.containsFragment(r);
+			}
+			return false;
+		}
+
+		private boolean containsFragment(ChromaResearch r) {
+			for (int i = 0; i < inv.length; i++) {
+				ItemStack is = inv[i];
+				if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.getResearch(is) == r)
+					return true;
+			}
+			return false;
 		}
 	}
 
@@ -240,7 +200,7 @@ public class ContainerBookPages extends Container {
 		@Override
 		public boolean isItemValid(ItemStack is)
 		{
-			return ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.getResearch(is) != null;
+			return inventory.isItemValidForSlot(this.getSlotIndex(), is);
 		}
 
 	}

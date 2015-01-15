@@ -9,9 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
-import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 
-public class BiomeGenIslands extends BiomeGenBase {
+
+public class BiomeGenIslands extends ChromaDimensionBiome {
 
 	public BiomeGenIslands(int id) {
 		super(id);
