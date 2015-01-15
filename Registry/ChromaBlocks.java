@@ -166,6 +166,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return ChromatiCraft.crystalMat;
 		case TNT:
 			return Material.tnt;
+		case PORTAL:
+			return Material.portal;
 		default:
 			return Material.rock;
 		}
