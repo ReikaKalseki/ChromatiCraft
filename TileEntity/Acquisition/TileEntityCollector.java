@@ -15,10 +15,10 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -28,12 +28,13 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.ModInteract.ReikaXPFluidHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCollector extends FluidIOInventoryBase {
 
-	public static final int XP_PER_CHROMA = 5;
+	public static final int XP_PER_CHROMA = 5; //5 xp per mB of liquid
 	private static final int XP_PER_BOTTLE = 300;
 
 	@Override
@@ -48,9 +49,17 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 		if (output.canTakeIn(XP_PER_BOTTLE))
 			this.internalizeXP();
 
-		if (input.getLevel() >= XP_PER_CHROMA*speed && output.canTakeIn(speed)) {
-			input.removeLiquid(XP_PER_CHROMA*speed);
-			output.addLiquid(speed, FluidRegistry.getFluid("chroma"));
+		if (!input.isEmpty()) {
+			FluidStack fs = ReikaXPFluidHelper.getFluid();
+			if (fs != null) {
+				int produce = Math.min(speed, input.getLevel()/fs.amount/XP_PER_CHROMA);
+				if (produce > 0) {
+					if (output.canTakeIn(produce)) {
+						input.removeLiquid(XP_PER_CHROMA*speed*fs.amount);
+						output.addLiquid(produce, FluidRegistry.getFluid("chroma"));
+					}
+				}
+			}
 		}
 
 		if (output.canTakeIn(speed))
@@ -89,11 +98,11 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 
 	private void intakeXPFromPlayer(World world, int x, int y, int z) {
 		EntityPlayer ep = this.getPlacer();
-		if (ep != null && !(ep instanceof FakePlayer)) {
-			if (ep.experienceTotal >= XP_PER_CHROMA) {
+		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+			int mult = this.getConversionSpeed();
+			if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 1, 0);
 				if (ep.boundingBox.intersectsWith(box)) {
-					int mult = this.getConversionSpeed();
 					output.addLiquid(mult, FluidRegistry.getFluid("chroma"));
 					ReikaPlayerAPI.removeExperience(ep, XP_PER_CHROMA*mult);
 				}

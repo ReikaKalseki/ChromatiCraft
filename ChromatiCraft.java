@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ChromaResearchDebugCommand;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -447,6 +448,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new NetworkLoggerCommand());
 		evt.registerServerCommand(new ChromabilityCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
+		evt.registerServerCommand(new ChromaResearchDebugCommand());
 	}
 
 	@EventHandler

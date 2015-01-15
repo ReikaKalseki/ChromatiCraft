@@ -167,13 +167,13 @@ public class PlayerElementBuffer {
 		return this.getPlayerContent(player, e) >= this.getElementCap(player)*(1-frac);
 	}
 
-	public boolean checkUpgrade(EntityPlayer player, boolean upgrade) {
+	public boolean checkUpgrade(EntityPlayer player, boolean doUpgrade) {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			if (!this.isMaxedWithin(player, e, 0.1F))
 				return false;
 		}
-		return upgrade ? this.upgradeCap(player) : true;
+		return doUpgrade ? this.upgradeCap(player) : true;
 	}
 
 	public boolean hasElement(EntityPlayer ep, CrystalElement e) {

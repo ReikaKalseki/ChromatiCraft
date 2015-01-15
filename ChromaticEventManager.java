@@ -48,6 +48,8 @@ import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.entities.monster.EntityWisp;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
@@ -60,6 +62,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -102,6 +105,25 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.THAUMCRAFT)
+	public void wispEnergy(LivingDropsEvent evt) {
+		if (evt.entityLiving instanceof EntityWisp) {
+			EntityWisp e = (EntityWisp)evt.entityLiving;
+			if (evt.source.getEntity() instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)evt.source.getEntity();
+				String type = e.getType();
+				Aspect a = Aspect.getAspect(type);
+				if (a != null) {
+					int s = 4+rand.nextInt(8);
+					ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
+					PlayerElementBuffer.instance.addToPlayer(ep, tag);
+					PlayerElementBuffer.instance.checkUpgrade(ep, true);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent

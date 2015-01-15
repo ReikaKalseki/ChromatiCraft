@@ -82,20 +82,41 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 
 	@Override
 	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
-		if (world.isBlockIndirectlyGettingPowered(x, y, z))
-			ding(world, x, y, z);
+		if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
+			CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
+			ding(world, x, y, z, e, (float)getDingPitchFromRedstone(e, world.getBlockPowerInput(x, y, z)));
+		}
 	}
 
 	public static void ding(World world, int x, int y, int z) {
 		ding(world, x, y, z, CrystalElement.elements[world.getBlockMetadata(x, y, z)]);
 	}
 
+	private static void ding(World world, int x, int y, int z, CrystalElement e, float pitch) {
+		ChromaSounds.DING.playSoundAtBlock(world, x, y, z, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.2), pitch);
+	}
+
 	public static void ding(World world, int x, int y, int z, CrystalElement e) {
-		ChromaSounds.DING.playSoundAtBlock(world, x, y, z, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.2), getRandomPitch(e));
+		ding(world, x, y, z, e, getRandomPitch(e));
 	}
 
 	private static float getRandomPitch(CrystalElement e) { //Generates a major or minor chord
 		return CrystalMusicManager.instance.getRandomScaledDing(e);
+	}
+
+	private static double getDingPitchFromRedstone(CrystalElement e, int power) {
+		if (power >= 12) {
+			return CrystalMusicManager.instance.getOctave(e);
+		}
+		else if (power >= 8) {
+			return CrystalMusicManager.instance.getFifth(e);
+		}
+		else if (power >= 4) {
+			return CrystalMusicManager.instance.getThird(e);
+		}
+		else {
+			return CrystalMusicManager.instance.getDingPitchScale(e);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

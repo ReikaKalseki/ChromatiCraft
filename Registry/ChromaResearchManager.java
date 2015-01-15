@@ -10,18 +10,22 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -45,20 +49,34 @@ public final class ChromaResearchManager {
 	}
 
 	public ArrayList<ChromaResearch> getNextResearchesFor(EntityPlayer ep) {
+		return this.getNextResearchesFor(ep, false);
+	}
+
+	private ArrayList<ChromaResearch> getNextResearchesFor(EntityPlayer ep, boolean debug) {
+		if (!this.playerHasFragment(ep, ChromaResearch.FRAGMENT)) { //get fragment first, always
+			ArrayList li = new ArrayList();
+			li.add(ChromaResearch.FRAGMENT);
+			return li;
+		}
 		this.checkForUpgrade(ep);
 		ArrayList<ChromaResearch> li = new ArrayList();
 		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
 			if (!this.playerHasFragment(ep, r)) {
 				if (r.level == null || this.getPlayerResearchLevel(ep).ordinal() >= r.level.ordinal()) {
 					boolean missingdep = false;
-					if (!r.playerHasProgress(ep))
+					if (!r.playerHasProgress(ep)) {
 						missingdep = true;
+						if (debug)
+							ChromatiCraft.logger.log("Fragment "+r+" rejected; insufficient progress "+Arrays.toString(r.getRequiredProgress())+".");
+					}
 					else {
 						Collection<ChromaResearch> deps = data.getParents(r);
 						if (deps != null && !deps.isEmpty()) {
 							for (ChromaResearch p : deps) {
 								if (!this.playerHasFragment(ep, p)) {
 									missingdep = true;
+									if (debug)
+										ChromatiCraft.logger.log("Fragment "+r+" rejected; missing dependency "+p+".");
 									break;
 								}
 							}
@@ -66,6 +84,9 @@ public final class ChromaResearchManager {
 					}
 					if (!missingdep)
 						li.add(r);
+				}
+				else if (debug) {
+					ChromatiCraft.logger.log("Fragment "+r+" rejected; insufficient research level.");
 				}
 			}
 		}
@@ -98,12 +119,22 @@ public final class ChromaResearchManager {
 	}
 
 	private void checkForUpgrade(EntityPlayer ep) {
+		this.checkForUpgrade(ep, false);
+	}
+
+	private void checkForUpgrade(EntityPlayer ep, boolean debug) {
 		ResearchLevel rl = this.getPlayerResearchLevel(ep);
 		Collection<ChromaResearch> li = this.getResearchForLevel(rl);
-		if (this.playerHasAllFragments(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
-			ResearchLevel next = ResearchLevel.levelList[rl.ordinal()+1];
-			if (rl.canProgressTo(ep)) {
-				this.stepPlayerResearchLevel(ep, next);
+		if (debug) {
+			ChromatiCraft.logger.log("Fragments for level "+rl+": "+li);
+			ChromatiCraft.logger.log(ep.getCommandSenderName()+" has: "+this.playerHasAllFragments(ep, li));
+		}
+		else {
+			if (this.playerHasAllFragments(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
+				ResearchLevel next = ResearchLevel.levelList[rl.ordinal()+1];
+				if (next.canProgressTo(ep)) {
+					this.stepPlayerResearchLevel(ep, next);
+				}
 			}
 		}
 	}
@@ -220,7 +251,7 @@ public final class ChromaResearchManager {
 			case MULTICRAFT:
 				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
 			case PYLONCRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
+				return ProgressStage.REPEATER.isPlayerAtStage(ep);
 			case NETWORKING:
 				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
 			case ENDGAME:
@@ -241,6 +272,29 @@ public final class ChromaResearchManager {
 		public ResearchLevel post() {
 			return this.ordinal() < levelList.length-1 ? levelList[this.ordinal()+1] : this;
 		}
+	}
+
+	public static class ChromaResearchDebugCommand extends DragonCommandBase {
+
+		@Override
+		public void processCommand(ICommandSender ics, String[] args) {
+			EntityPlayer ep = this.getCommandSenderAsPlayer(ics);
+			if (args[0].toLowerCase().equals("fragments"))
+				ChromatiCraft.logger.log("Next fragments for "+ep.getCommandSenderName()+": "+instance.getNextResearchesFor(ep, true));
+			if (args[0].toLowerCase().equals("level"))
+				instance.checkForUpgrade(ep, true);
+		}
+
+		@Override
+		public String getCommandString() {
+			return "chromaresearchdebug";
+		}
+
+		@Override
+		protected boolean isAdminOnly() {
+			return true;
+		}
+
 	}
 
 }

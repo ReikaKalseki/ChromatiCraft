@@ -32,19 +32,57 @@ public class CrystalMusicManager {
 		baseKeys.put(CrystalElement.RED, MusicKey.G4);
 		baseKeys.put(CrystalElement.PURPLE, MusicKey.A4);
 		baseKeys.put(CrystalElement.MAGENTA, MusicKey.B4);
-		baseKeys.put(CrystalElement.CYAN, MusicKey.C4);
+		baseKeys.put(CrystalElement.CYAN, MusicKey.A4/*C4*/);
 		baseKeys.put(CrystalElement.LIGHTGRAY, MusicKey.D5);
 		baseKeys.put(CrystalElement.GRAY, MusicKey.C5);
 		baseKeys.put(CrystalElement.LIME, MusicKey.E5);
 		baseKeys.put(CrystalElement.PINK, MusicKey.F5);
 		baseKeys.put(CrystalElement.YELLOW, MusicKey.G5);
 		baseKeys.put(CrystalElement.LIGHTBLUE, MusicKey.A5);
-		baseKeys.put(CrystalElement.ORANGE, MusicKey.B5);
+		baseKeys.put(CrystalElement.ORANGE, MusicKey.E4/*B5*/);
 		baseKeys.put(CrystalElement.WHITE, MusicKey.C6);
+
+		/*
+		baseKeys.put(CrystalElement.BLACK, MusicKey.C4);
+		baseKeys.put(CrystalElement.RED, MusicKey.G4);
+		baseKeys.put(CrystalElement.GREEN, MusicKey.F4);*
+		baseKeys.put(CrystalElement.BROWN, MusicKey.D4);
+		baseKeys.put(CrystalElement.BLUE, MusicKey.E4);
+		baseKeys.put(CrystalElement.PURPLE, MusicKey.A4);
+		baseKeys.put(CrystalElement.CYAN, MusicKey.A4);
+		baseKeys.put(CrystalElement.LIGHTGRAY, MusicKey.D5);*
+		baseKeys.put(CrystalElement.GRAY, MusicKey.C5);*
+		baseKeys.put(CrystalElement.PINK, MusicKey.F5);
+		baseKeys.put(CrystalElement.LIME, MusicKey.E5);
+		baseKeys.put(CrystalElement.YELLOW, MusicKey.G5);
+		baseKeys.put(CrystalElement.LIGHTBLUE, MusicKey.A5);
+		baseKeys.put(CrystalElement.MAGENTA, MusicKey.B4);
+		baseKeys.put(CrystalElement.ORANGE, MusicKey.E4);
+		baseKeys.put(CrystalElement.WHITE, MusicKey.C6);
+
+		 */
 	}
 
 	public int getBasePitch(CrystalElement e) {
 		return baseKeys.get(e).pitch;
+	}
+
+	public double getThird(CrystalElement e) {
+		MusicKey key = baseKeys.get(e);
+		double base = this.getDingPitchScale(e);
+		return this.isMinorKey(e) ? base*key.getMinorThird().getRatio(key) : base*key.getMajorThird().getRatio(key);
+	}
+
+	public double getFifth(CrystalElement e) {
+		MusicKey key = baseKeys.get(e);
+		double base = this.getDingPitchScale(e);
+		return base*key.getFifth().getRatio(key);
+	}
+
+	public double getOctave(CrystalElement e) {
+		MusicKey key = baseKeys.get(e);
+		double base = this.getDingPitchScale(e);
+		return base*key.getOctave().getRatio(key);
 	}
 
 	public double getDingPitchScale(CrystalElement e) {
@@ -74,6 +112,8 @@ public class CrystalMusicManager {
 	}
 
 	public boolean isMinorKey(CrystalElement e) {
+		if (e == CrystalElement.CYAN || e == CrystalElement.ORANGE)
+			return true;
 		return CrystalPotionController.isBadPotion(e);
 	}
 

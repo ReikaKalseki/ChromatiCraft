@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
@@ -58,6 +60,11 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe {
 	@Override
 	public int getExperience() {
 		return 3*super.getExperience();
+	}
+
+	@Override
+	public boolean canRunRecipe(EntityPlayer ep) {
+		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal();
 	}
 
 	@Override

@@ -166,13 +166,14 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
-		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];

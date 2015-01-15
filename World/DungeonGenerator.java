@@ -499,11 +499,11 @@ public class DungeonGenerator implements IWorldGenerator {
 			return false;
 		switch(s) {
 		case OCEAN:
-			return r.nextInt(32/32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+			return r.nextInt(32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
 		case CAVERN:
-			return r.nextInt(32) == 0;
+			return r.nextInt(64) == 0;
 		case BURROW:
-			return r.nextInt(16) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
+			return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 		default:
 			return false;
 		}

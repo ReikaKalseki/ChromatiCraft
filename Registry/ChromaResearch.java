@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,7 +97,7 @@ public enum ChromaResearch {
 	TANKAUX(		ChromaBlocks.TANK,												ResearchLevel.MULTICRAFT),
 	FENCEAUX(		ChromaBlocks.FENCE,												ResearchLevel.MULTICRAFT),
 	LUMENLEAVES(	ChromaBlocks.POWERTREE,		CrystalElement.LIME.ordinal(),		ResearchLevel.PYLONCRAFT),
-	DYELEAVES(		ChromaBlocks.DYELEAF,											ResearchLevel.ENTRY),
+	DYELEAVES(		ChromaBlocks.DYELEAF,		CrystalElement.BROWN.ordinal(),		ResearchLevel.ENTRY),
 	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,										ResearchLevel.RAWEXPLORE,	ProgressStage.RAINBOWLEAF),
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),
 	CRYSTALLAMP(	ChromaBlocks.LAMP,			CrystalElement.YELLOW.ordinal(),	ResearchLevel.RAWEXPLORE),
@@ -114,7 +115,7 @@ public enum ChromaResearch {
 	LENS(			ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
 	STORAGE(		ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
 	LINKTOOL(		ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
-	WARP(			ChromaItems.WARP, 			ResearchLevel.ENERGYEXPLORE),
+	WARP(			ChromaItems.WARP, 			ResearchLevel.PYLONCRAFT),
 	TELEPORT(		ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
 	DUPLICATOR(		ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
 	BUILDER(		ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
@@ -146,6 +147,7 @@ public enum ChromaResearch {
 	PYLONPROTECT(	Chromabilities.PYLON),
 	LIGHTNING(		Chromabilities.LIGHTNING),
 	LIFEPOINT(		Chromabilities.LIFEPOINT),
+	DEATHPROOF(		Chromabilities.DEATHPROOF),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -278,6 +280,10 @@ public enum ChromaResearch {
 			}
 		}
 		return true;
+	}
+
+	ProgressStage[] getRequiredProgress() {
+		return Arrays.copyOf(progress, progress.length);
 	}
 
 	public boolean isMachine() {
