@@ -242,7 +242,7 @@ public final class ChromaDescriptions {
 			ProgressStage p = ProgressStage.list[i];
 			String title = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":title");
 			String hint = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":hint");
-			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":desc");
+			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":reveal");
 			progressText.put(p, new ProgressNote(title.replaceAll("\\n", ""), hint.replaceAll("\\n", ""), desc.replaceAll("\\n", "")));
 		}
 	}

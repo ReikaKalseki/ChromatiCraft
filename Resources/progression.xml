@@ -19,7 +19,7 @@
 			Surely the wooden crafting table is not sufficient to do all your crafting.
 		</hint>
 		<reveal>
-
+			As expected, to perform feats more complex than making a wooden box to store your items, you needed to create a special more magically-sound table.
 		</reveal>
 	</casting>
 	<dyetree>
@@ -27,10 +27,10 @@
 			Technicolor Trees
 		</title>
 		<hint>
-
+			These trees seem to come in all sorts of colors; you wonder if there is something special about them.
 		</hint>
 		<reveal>
-
+			Well, they seem to drop berries and dyes of their color, so that has to count for something...
 		</reveal>
 	</dyetree>
 	<multiblock>
@@ -38,10 +38,10 @@
 			More Complex Crafting
 		</title>
 		<hint>
-
+			The more complex ideas you have could not possibly be pulled off with only nine constituent items...
 		</hint>
 		<reveal>
-
+			Sure enough, the 5x5 afforded by the item stands is what you need.
 		</reveal>
 	</multiblock>
 	<runeuse>
@@ -49,10 +49,10 @@
 			Weak Magical Foci
 		</title>
 		<hint>
-
+			You may not be able to harness the power of the pylons yet, but these may make a milder alternative.
 		</hint>
 		<reveal>
-
+			That they do, allowing you to make items more infused with energy than simple stone.
 		</reveal>
 	</runeuse>
 	<pylon>
@@ -60,10 +60,10 @@
 			Energy Beacons
 		</title>
 		<hint>
-
+			Glowing and radiant, what are these?
 		</hint>
 		<reveal>
-
+			Some sort of an energy beacon...probably a good idea to remember that.
 		</reveal>
 	</pylon>
 	<link>
@@ -71,10 +71,10 @@
 			Top-tier Crafting
 		</title>
 		<hint>
-
+			Finally you can harness the pylons, but how to put it to use?
 		</hint>
 		<reveal>
-
+			Channeling all that energy directly into the table has allowed you to construct devices from your wildest imagination.
 		</reveal>
 	</link>
 	<charge>
@@ -82,10 +82,10 @@
 			Energy Internalization
 		</title>
 		<hint>
-
+			If the pylons and trees can store energy, maybe you can too...
 		</hint>
 		<reveal>
-
+			Turns out you can, though the acquisition process is more dangerous than is enjoyable.
 		</reveal>
 	</charge>
 	<ability>
@@ -93,10 +93,10 @@
 			Personal Enhancement
 		</title>
 		<hint>
-
+			Machines you can accelerate. Tools you can enchant. Yourself?
 		</hint>
 		<reveal>
-
+			A new set of rituals has given you abilities of great utility.
 		</reveal>
 	</ability>
 	<rainbowleaf>
@@ -104,10 +104,10 @@
 			Magical Trees
 		</title>
 		<hint>
-
+			Trees in various colors were one thing. But this?
 		</hint>
 		<reveal>
-
+			The raw magic energy in this tree is palpable, not to mention behind the impressive visual display.
 		</reveal>
 	</rainbowleaf>
 	<chroma>
@@ -115,10 +115,10 @@
 			Magic Liquid
 		</title>
 		<hint>
-
+			The liquid is pulsing and throbbing with raw magical energy. You wonder what its effects are...
 		</hint>
 		<reveal>
-
+			Stepping in it yourself seemed to do little - though you do feel a bit rejuvenated - but its power to enrich materials is not insignificant.
 		</reveal>
 	</chroma>
 	<stones>
@@ -126,7 +126,7 @@
 			Unity of the Elements
 		</title>
 		<hint>
-
+			
 		</hint>
 		<reveal>
 
@@ -137,10 +137,10 @@
 			Damaging Discharge
 		</title>
 		<hint>
-
+			Pylons seem friendly...are they?
 		</hint>
 		<reveal>
-
+			If your idea of "friendly" is a discharge to the face...
 		</reveal>
 	</shock>
 	<nether>
@@ -148,10 +148,10 @@
 			The Evil Realm
 		</title>
 		<hint>
-
+			You need some other way below that unyielding rock...
 		</hint>
 		<reveal>
-
+			So those stories of obsidian portals leading to a fiery nightmare are true...
 		</reveal>
 	</nether>
 	<end>
@@ -159,10 +159,10 @@
 			The Alien Realm
 		</title>
 		<hint>
-
+			Surely nothing could be more alien than that land of lava, glowing stalactites, and flying jellyfish...
 		</hint>
 		<reveal>
-
+			Apparently it can.
 		</reveal>
 	</end>
 	<twilight>
@@ -181,10 +181,10 @@
 			World Floor
 		</title>
 		<hint>
-
+			Is it possible to dig too deep?
 		</hint>
 		<reveal>
-
+			Maybe, but that layer of rock below seems impenetrable.
 		</reveal>
 	</bedrock>
 	<cavern>
@@ -203,7 +203,7 @@
 			Secret Burrows
 		</title>
 		<hint>
-
+			
 		</hint>
 		<reveal>
 
@@ -214,45 +214,45 @@
 			Ocean Temples
 		</title>
 		<hint>
-
+			Stories abound of strange structures left in the deepest parts of the ocean.
 		</hint>
 		<reveal>
-
+			True stories, it seems. If only they warned of the danger...
 		</reveal>
 	</ocean>
-	<name>
+	<die>
 		<title>
-
+			Painful Loss
 		</title>
 		<hint>
-
+			You lose your items when you die; what happens to your knowledge?
 		</hint>
 		<reveal>
-
+			Lost too. Ouch.
 		</reveal>
-	</name>
-	<name>
+	</die>
+	<allcolors>
 		<title>
-
+			Elemental Awareness
 		</title>
 		<hint>
-
+			Red, Green, Blue, Orange, how many are there?
 		</hint>
 		<reveal>
-
+			You have identified sixteen, each with a unique color and symbolic icon.
 		</reveal>
-	</name>
-	<name>
+	</allcolors>
+	<repeater>
 		<title>
-
+			Broadcasting
 		</title>
 		<hint>
-
+			Unless you set up dangerously close to a pylon, there does not seem to be a way to use them, as their range is too limited.
 		</hint>
 		<reveal>
-
+			These refractors of a sort seem to be able to reconcentrate and repeat the signal.
 		</reveal>
-	</name>
+	</repeater>
 	<name>
 		<title>
 
