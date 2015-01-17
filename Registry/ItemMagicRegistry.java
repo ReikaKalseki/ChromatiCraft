@@ -213,11 +213,11 @@ public class ItemMagicRegistry {
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack dye = ChromaItems.DYE.getStackOfMetadata(i);
 			ItemStack vdye = ChromaItems.DYE.getStackOfMetadata(i);
-			this.addElement(seed, e, 5);
-			this.addElement(crystal, e, 1000);
-			this.addElement(berry, e, 10);
-			this.addElement(shard, e, 100);
-			this.addElement(shard2, e, 1000);
+			this.addElement(seed, e, 1);
+			this.addElement(crystal, e, 10);
+			this.addElement(berry, e, 1);
+			this.addElement(shard, e, 4);
+			this.addElement(shard2, e, 20);
 			this.addElement(vdye, e, 1);
 			this.addElement(dye, e, 1);
 		}

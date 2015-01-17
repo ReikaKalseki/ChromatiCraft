@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World.Dimension;
+package Reika.ChromatiCraft.World.Dimension.MapGen;
 
 import net.minecraft.world.gen.structure.StructureStart;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;

@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class FabricationRecipes {
 
@@ -29,6 +30,8 @@ public class FabricationRecipes {
 	public static final int FACTOR = 100;
 	public static final int POWER2 = 2;
 
+	private int max;
+
 	public static FabricationRecipes recipes() {
 		return instance;
 	}
@@ -36,9 +39,11 @@ public class FabricationRecipes {
 	private FabricationRecipes() {
 		data = ItemMagicRegistry.instance.getMap();
 		for (ElementTagCompound tag : data.values()) {
+			tag = tag.copy();
 			for (int i = 0; i < POWER2; i++)
 				tag.square();
 			tag.scale(FACTOR);
+			max = Math.max(max, tag.getMaximumValue());
 		}
 	}
 
@@ -63,7 +68,12 @@ public class FabricationRecipes {
 
 	private ElementTagCompound getItemCost(KeyedItemStack is) {
 		ElementTagCompound tag = data.get(is);
+		ReikaJavaLibrary.pConsole(tag);
 		return tag != null ? tag.copy().scale(1/SCALE) : null;
+	}
+
+	public int getMaximumCost() {
+		return max;
 	}
 
 }

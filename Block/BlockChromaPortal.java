@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -26,6 +27,9 @@ public class BlockChromaPortal extends Block {
 
 	public BlockChromaPortal(Material mat) {
 		super(mat);
+		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setResistance(50000);
+		this.setBlockUnbreakable();
 	}
 
 	@Override
@@ -61,7 +65,7 @@ public class BlockChromaPortal extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof TileEntityPortal && ((TileEntityPortal)te).complete) {
+		if (true || te instanceof TileEntityPortal && ((TileEntityPortal)te).complete) {
 			ReikaEntityHelper.transferEntityToDimension(e, ExtraChromaIDs.DIMID.getValue(), new ChromaTeleporter());
 		}
 	}

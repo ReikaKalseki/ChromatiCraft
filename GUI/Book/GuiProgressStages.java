@@ -221,17 +221,22 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 		}
 		else {
+			GL11.glDisable(GL11.GL_LIGHTING);
 			ProgressStage p = active;//this.getStage();
 			fontRendererObj.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
 
 			fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
 
+			int dy = posY+descY+100+15;
 			if (p.isPlayerAtStage(player)) {
-				fontRendererObj.drawSplitString(p.getRevealedString(), px, posY+descY+90+15, 242, 0xffffff);
+				String s = p.getRevealedString();
+				dy -= fontRendererObj.FONT_HEIGHT*fontRendererObj.getStringWidth(s)/242;
+				fontRendererObj.drawSplitString(s, px, dy, 242, 0xffffff);
 			}
 			else {
-				fontRendererObj.drawSplitString(this.getIncompleteText(), px, posY+descY+90+15, 242, 0xffffff);
+				fontRendererObj.drawSplitString(this.getIncompleteText(), px, dy, 242, 0xffffff);
 			}
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
 
