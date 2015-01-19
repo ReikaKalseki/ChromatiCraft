@@ -16,9 +16,10 @@ public class ChromaCommon {
 	public static int crystalRender;
 	public static int runeRender;
 	public static int tankRender;
-	public static int fiberRender;
+	//public static int fiberRender;
 	public static int treeRender;
 	public static int lampRender;
+	public static int relayRender;
 
 	public static int oreRender;
 	public static int plantRender;

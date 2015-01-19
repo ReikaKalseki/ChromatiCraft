@@ -11,8 +11,8 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.command.ICommandSender;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Magic.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;

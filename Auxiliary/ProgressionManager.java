@@ -382,13 +382,15 @@ public class ProgressionManager {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
-		tag.setBoolean(e.name(), disc);
-		nbt.setTag(NBT_TAG2, tag);
-		if (disc)
-			this.checkPlayerColors(ep);
-		if (ep instanceof EntityPlayerMP)
-			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-		this.updateChunks(ep);
+		if (!tag.getBoolean(e.name())) {
+			tag.setBoolean(e.name(), disc);
+			nbt.setTag(NBT_TAG2, tag);
+			if (disc)
+				this.checkPlayerColors(ep);
+			if (ep instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			this.updateChunks(ep);
+		}
 	}
 
 	private void checkPlayerColors(EntityPlayer ep) {

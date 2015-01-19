@@ -329,8 +329,8 @@ public class DungeonGenerator implements IWorldGenerator {
 				WeightedRandomChestContent.generateChestContents(r, loot, te, ChestGenHooks.getCount(s, r));
 				if (bonus > 0)
 					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);
-				int n1 = struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
-				int n2 = struct == Structures.OCEAN ? 8 : 3;
+				int n1 = 1;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+				int n2 = 1;//struct == Structures.OCEAN ? 8 : 3;
 				if (r.nextInt(n1) > 0) {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
 					if (r.nextInt(n2) == 0)

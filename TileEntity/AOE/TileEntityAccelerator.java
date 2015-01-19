@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
@@ -55,6 +56,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		addEntry(TileEntityRitualTable.class);
 		addEntry(TileEntityAuraInfuser.class);
 		addEntry(TileEntityCrystalPylon.class);
+		addEntry(TileEntityPowerTree.class);
 	}
 
 	public static void addEntry(Class<? extends TileEntity> cl) {

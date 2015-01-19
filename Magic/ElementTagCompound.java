@@ -117,7 +117,7 @@ public final class ElementTagCompound {
 
 	public void clearEmptyKeys() {
 		for (CrystalElement e : data.keySet()) {
-			if (data.containsKey(e) && data.get(e) == 0)
+			if (data.containsKey(e) && data.get(e) <= 0)
 				data.remove(e);
 		}
 	}

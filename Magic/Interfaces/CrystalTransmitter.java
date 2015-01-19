@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
-
 public interface CrystalTransmitter extends CrystalNetworkTile, EnergyBeamRenderer {
 
 	public int getSendRange();

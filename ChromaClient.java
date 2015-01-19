@@ -29,9 +29,9 @@ import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.FiberRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
@@ -67,7 +67,8 @@ public class ChromaClient extends ChromaCommon {
 	private static final TankBlockRenderer tank = new TankBlockRenderer();
 	private static final PowerTreeRenderer tree = new PowerTreeRenderer();
 	private static final LampRenderer lamp = new LampRenderer();
-	private static FiberRenderer fiber;
+	private static final RelayRenderer relay = new RelayRenderer();
+	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
@@ -174,9 +175,12 @@ public class ChromaClient extends ChromaCommon {
 		lampRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(lampRender, lamp);
 
-		fiberRender = RenderingRegistry.getNextAvailableRenderId();
-		fiber = new FiberRenderer(fiberRender);
-		RenderingRegistry.registerBlockHandler(fiberRender, fiber);
+		relayRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(relayRender, relay);
+
+		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
+		//fiber = new FiberRenderer(fiberRender);
+		//RenderingRegistry.registerBlockHandler(fiberRender, fiber);
 
 		oreRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(oreRender, ore);

@@ -11,15 +11,19 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberPowered;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
 import Reika.DragonAPI.DragonAPICore;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements FiberPowered, LumenTile {
+public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements LumenTile {
 
-	protected ElementTagCompound energy = new ElementTagCompound();
+	protected final ElementTagCompound energy = new ElementTagCompound();
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -29,7 +33,41 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 		}
 	}
 
-	public final int addEnergy(CrystalElement e, int amt) {
+	protected final boolean requestEnergy(CrystalElement e, int amt, ForgeDirection dir) {
+		TileEntityFiberReceiver te = RelayNetworker.instance.findRelaySource(worldObj, xCoord, yCoord, zCoord, dir, e, amt, 128);
+		if (te != null) {
+			int has = te.getEnergy(e);
+			te.drainEnergy(e, Math.min(amt, has));
+			return has >= amt;
+		}
+		return false;
+	}
+
+	protected final boolean requestEnergy(CrystalElement e, int amt) {
+		for (int i = 0; i < 6; i++) {
+			if (this.requestEnergy(e, amt, dirs[i]))
+				return true;
+		}
+		return false;
+	}
+
+	protected final boolean requestEnergy(ElementTagCompound tag) {
+		for (int i = 0; i < 6; i++) {
+			if (this.requestEnergy(tag, dirs[i]))
+				return true;
+		}
+		return false;
+	}
+
+	protected final boolean requestEnergy(ElementTagCompound tag, ForgeDirection dir) {
+		boolean flag = true;
+		for (CrystalElement e : tag.elementSet()) {
+			flag = this.requestEnergy(e, tag.getValue(e), dir) && flag;
+		}
+		return flag;
+	}
+
+	private final int addEnergy(CrystalElement e, int amt) {
 		if (e == null || !this.isAcceptingColor(e))
 			return 0;
 		int diff = Math.min(amt, this.getRemainingSpace(e));
@@ -75,7 +113,8 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 		energy.subtract(tag);
 	}
 
-	public final void setEnergy(CrystalElement e, int lvl) {
+	@SideOnly(Side.CLIENT)
+	public final void setEnergyClient(CrystalElement e, int lvl) {
 		energy.setTag(e, lvl);
 	}
 

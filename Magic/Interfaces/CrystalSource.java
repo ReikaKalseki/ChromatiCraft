@@ -11,9 +11,6 @@ package Reika.ChromatiCraft.Magic.Interfaces;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-
-
-
 public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public int getTransmissionStrength();

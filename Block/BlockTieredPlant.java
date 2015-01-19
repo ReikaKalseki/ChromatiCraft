@@ -61,7 +61,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 		FLOWER(ProgressStage.CRYSTALS),
 		CAVE(ProgressStage.RUNEUSE),
-		LILY(ProgressStage.PYLON),
+		LILY(ProgressStage.CHARGE),
 		BULB(ProgressStage.MULTIBLOCK),
 		DESERT(ProgressStage.PYLON);
 

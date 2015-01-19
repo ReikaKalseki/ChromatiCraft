@@ -22,7 +22,6 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaModelBase;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
 public class ModelFiberReceiver extends ChromaModelBase
@@ -150,9 +149,6 @@ public class ModelFiberReceiver extends ChromaModelBase
 		Shape1c.render(te, f5);
 		Shape1e1.render(te, f5);
 
-		CrystalElement e = (CrystalElement)li.get(0);
-		if (e != null)
-			GL11.glColor4f(e.getRed()/255F, e.getGreen()/255F, e.getBlue()/255F, 1);
 		Shape1e.render(te, f5);
 		Shape1e2.render(te, f5);
 		Shape1e3.render(te, f5);

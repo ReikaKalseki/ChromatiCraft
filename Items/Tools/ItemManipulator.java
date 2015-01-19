@@ -34,7 +34,6 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberTransmitter;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
@@ -87,11 +86,11 @@ public class ItemManipulator extends ItemChromaTool {
 			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
-		if (t == ChromaTiles.FIBERSINK) {
-			TileEntityFiberTransmitter ft = (TileEntityFiberTransmitter)tile;
-			ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
-			return true;
-		}
+		//if (t == ChromaTiles.FIBERSINK) {
+		//	TileEntityFiberTransmitter ft = (TileEntityFiberTransmitter)tile;
+		//	ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
+		//	return true;
+		//}
 
 		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;

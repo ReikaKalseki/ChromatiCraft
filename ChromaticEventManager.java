@@ -151,7 +151,7 @@ public class ChromaticEventManager {
 	public void deathProgress(LivingDeathEvent evt) {
 		if (evt.entityLiving instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
-			if (PlayerElementBuffer.instance.getPlayerTotalEnergy(ep) >= 10000)
+			if (PlayerElementBuffer.instance.getPlayerTotalEnergy(ep) >= 90000)
 				ProgressStage.DIE.stepPlayerTo(ep);
 		}
 	}
@@ -426,6 +426,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void colorSheep(LivingSpawnEvent ev) {
+		if (ev.getClass() != LivingSpawnEvent.class) //do not allow subclasses
+			return;
 		World world = ev.world;
 		if (world.isRemote)
 			return;
@@ -538,7 +540,6 @@ public class ChromaticEventManager {
 		int z = (int)Math.floor(e.posZ);
 		World world = e.worldObj;
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
-
 		if (ChromatiCraft.isRainbowForest(b)) {
 			if (e instanceof EntitySlime) {
 				int dmg = e.getEntityId()%16;

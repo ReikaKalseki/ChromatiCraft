@@ -9,17 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
 
+@Deprecated
 public class BlockFiberOptic extends BlockCrystalTile {
 
 	private static IIcon inner;
@@ -34,7 +31,7 @@ public class BlockFiberOptic extends BlockCrystalTile {
 
 	@Override
 	public int getRenderType() {
-		return ChromatiCraft.proxy.fiberRender;
+		return -1;//ChromatiCraft.proxy.fiberRender;
 	}
 
 	@Override
@@ -52,7 +49,7 @@ public class BlockFiberOptic extends BlockCrystalTile {
 		inner = ico.registerIcon("chromaticraft:fiber");
 		outer = ico.registerIcon("chromaticraft:fiber_end");
 	}
-
+	/*
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block id) {
 		TileEntityFiberOptic te = (TileEntityFiberOptic)world.getTileEntity(x, y, z);
@@ -81,7 +78,7 @@ public class BlockFiberOptic extends BlockCrystalTile {
 		this.setBounds(box, x, y, z);
 		return box;
 	}
-
+	 */
 	@Override
 	public final AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z)
 	{

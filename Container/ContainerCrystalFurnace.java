@@ -52,7 +52,7 @@ public class ContainerCrystalFurnace extends CoreContainer {
 		}
 		else {
 			CrystalElement e = CrystalElement.elements[par1];
-			tile.setEnergy(e, par2);
+			tile.setEnergyClient(e, par2);
 		}
 	}
 

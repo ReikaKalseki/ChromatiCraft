@@ -83,7 +83,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		maxX -= paneWidth+Section.sectionSpacing+Section.margin*2;
 		maxY -= paneHeight+SectionSpacing/2;
 
-		craftMode = false;
+		//craftMode = false;
 	}
 
 	@Override

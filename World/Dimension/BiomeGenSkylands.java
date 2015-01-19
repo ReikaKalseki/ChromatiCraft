@@ -15,6 +15,7 @@ public class BiomeGenSkylands extends ChromaDimensionBiome {
 
 	public BiomeGenSkylands(int id) {
 		super(id);
+		this.setBiomeName("Skylands");
 	}
 
 }

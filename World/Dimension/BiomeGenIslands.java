@@ -16,6 +16,7 @@ public class BiomeGenIslands extends ChromaDimensionBiome {
 
 	public BiomeGenIslands(int id) {
 		super(id);
+		this.setBiomeName("Islands");
 	}
 
 }

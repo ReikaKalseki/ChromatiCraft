@@ -38,9 +38,9 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
-import Reika.ChromatiCraft.Block.BlockFiberOptic;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockLootChest;
+import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLumenRelay;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
@@ -109,8 +110,6 @@ public enum ChromaBlocks implements BlockEnum {
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
 	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),
-	//GUI(BlockInWorldGui.class,													"GUI"),
-	FIBER(BlockFiberOptic.class,												"Fiber"),
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
 	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
@@ -118,7 +117,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PATH(BlockPath.class,						ItemBlockPath.class,			"chroma.path"),
 	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),
 	LOOTCHEST(BlockLootChest.class,												"chroma.loot"),
-	PORTAL(BlockChromaPortal.class,												"chroma.portal");
+	PORTAL(BlockChromaPortal.class,												"chroma.portal"),
+	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay");
 
 	private Class blockClass;
 	private String blockName;
@@ -161,8 +161,9 @@ public enum ChromaBlocks implements BlockEnum {
 		case TILECRYSTAL:
 		case TILECRYSTALNONCUBE:
 		case PYLON:
-		case FIBER:
+			//case FIBER:
 		case POWERTREE:
+		case RELAY:
 			return ChromatiCraft.crystalMat;
 		case TNT:
 			return Material.tnt;

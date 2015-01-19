@@ -42,16 +42,15 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.FiberIO;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -62,7 +61,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberOptic;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -179,7 +178,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			return true;
 		}
 
-		if (ChromaItems.BUCKET.matchWith(is) && is.getItemDamage() == 0 && te instanceof ChromaPowered) {
+		if (ChromaItems.BUCKET.matchWith(is) && is.getItemDamage() == 0 && is.stackSize == 1 && te instanceof ChromaPowered) {
 			if (((ChromaPowered)te).addChroma(1000)) {
 				if (!ep.capabilities.isCreativeMode)
 					ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket));
@@ -187,11 +186,20 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			}
 		}
 
-		if (ChromaItems.SHARD.matchWith(is) && te instanceof FiberIO) {
-			((FiberIO)te).setColor(CrystalElement.elements[is.getItemDamage()%16]);
-			if (!ep.capabilities.isCreativeMode)
-				is.stackSize--;
+		if (is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof TileEntityCollector) {
+			if (((TileEntityCollector)te).getOutputLevel() >= 1000) {
+				((TileEntityCollector)te).removeLiquid(1000);
+				if (!ep.capabilities.isCreativeMode)
+					ep.setCurrentItemOrArmor(0, ChromaItems.BUCKET.getStackOfMetadata(0));
+				return true;
+			}
 		}
+
+		//if (ChromaItems.SHARD.matchWith(is) && te instanceof FiberIO) {
+		//	((FiberIO)te).setColor(CrystalElement.elements[is.getItemDamage()%16]);
+		//	if (!ep.capabilities.isCreativeMode)
+		//		is.stackSize--;
+		//}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {
 			if (((TileEntityChromaLamp)te).addColor(CrystalElement.elements[is.getItemDamage()%16])) {
@@ -326,12 +334,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		if (te instanceof TileEntityGuardianStone) {
 			GuardianStoneManager.instance.removeAreasForStone((TileEntityGuardianStone)te);
 		}
-		if (te instanceof FiberIO) {
-			((FiberIO)te).onBroken();
-		}
-		if (te instanceof TileEntityFiberOptic) {
-			((TileEntityFiberOptic)te).removeFromNetwork();
-		}
+		//if (te instanceof FiberIO) {
+		//	((FiberIO)te).onBroken();
+		//}
+		//if (te instanceof TileEntityFiberOptic) {
+		//	((TileEntityFiberOptic)te).removeFromNetwork();
+		//}
 		if (te instanceof BreakAction) {
 			((BreakAction)te).breakBlock();
 		}
