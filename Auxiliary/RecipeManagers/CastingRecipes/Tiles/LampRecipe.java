@@ -23,18 +23,18 @@ public class LampRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ReikaItemHelper.inksac, -2, 0);
 		this.addAuxItem(ReikaItemHelper.inksac, 2, 0);
 
-		this.addAuxItem(new ItemStack(Items.gold_ingot), -4, 0);
-		this.addAuxItem(new ItemStack(Items.gold_ingot), 4, 0);
+		this.addAuxItem(Items.gold_ingot, -4, 0);
+		this.addAuxItem(Items.gold_ingot, 4, 0);
 
 		this.addAuxItem(ReikaItemHelper.stoneSlab, -2, 2);
 		this.addAuxItem(ReikaItemHelper.stoneSlab, 0, 2);
 		this.addAuxItem(ReikaItemHelper.stoneSlab, 2, 2);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, -2);
+		this.addAuxItem(Items.iron_ingot, -2, -2);
+		this.addAuxItem(Items.iron_ingot, 0, -2);
+		this.addAuxItem(Items.iron_ingot, 2, -2);
 
-		this.addAuxItem(new ItemStack(Blocks.redstone_block), 0, -4);
+		this.addAuxItem(Blocks.redstone_block, 0, -4);
 	}
 
 }

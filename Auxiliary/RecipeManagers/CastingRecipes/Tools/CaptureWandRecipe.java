@@ -20,15 +20,15 @@ public class CaptureWandRecipe extends MultiBlockCastingRecipe {
 		super(out, main);
 
 		//for now
-		this.addAuxItem(new ItemStack(Items.stick), -2, -2);
-		this.addAuxItem(new ItemStack(Items.stick), 2, 2);
-		this.addAuxItem(new ItemStack(Items.stick), -2, 2);
-		this.addAuxItem(new ItemStack(Items.stick), 2, -2);
+		this.addAuxItem(Items.stick, -2, -2);
+		this.addAuxItem(Items.stick, 2, 2);
+		this.addAuxItem(Items.stick, -2, 2);
+		this.addAuxItem(Items.stick, 2, -2);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, -2);
+		this.addAuxItem(Items.iron_ingot, -2, 0);
+		this.addAuxItem(Items.iron_ingot, 2, 0);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
+		this.addAuxItem(Items.iron_ingot, 0, -2);
 
 		this.addAuxItem(ChromaStacks.bindingCrystal, -4, 0);
 		this.addAuxItem(ChromaStacks.bindingCrystal, 4, 0);

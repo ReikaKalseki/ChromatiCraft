@@ -34,7 +34,8 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 		required.addTag(CrystalElement.GREEN, 10);
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -111,6 +112,11 @@ public class TileEntityInventoryTicker extends InventoriedFiberPowered {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("ticks", ticks);
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return true;
 	}
 
 }

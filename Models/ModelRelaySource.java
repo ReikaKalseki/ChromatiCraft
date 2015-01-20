@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
 
-public class ModelFiberReceiver extends ChromaModelBase
+public class ModelRelaySource extends ChromaModelBase
 {
 	//fields
 	LODModelPart Shape1;
@@ -42,7 +42,7 @@ public class ModelFiberReceiver extends ChromaModelBase
 	LODModelPart Shape1e2;
 	LODModelPart Shape1e3;
 
-	public ModelFiberReceiver()
+	public ModelRelaySource()
 	{
 		textureWidth = 128;
 		textureHeight = 128;
@@ -148,7 +148,9 @@ public class ModelFiberReceiver extends ChromaModelBase
 		Shape1f.render(te, f5);
 		Shape1c.render(te, f5);
 		Shape1e1.render(te, f5);
+	}
 
+	public void renderEdges(TileEntity te) {
 		Shape1e.render(te, f5);
 		Shape1e2.render(te, f5);
 		Shape1e3.render(te, f5);

@@ -19,6 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -44,7 +45,8 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 		required.addTag(CrystalElement.BLACK, 20);
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -233,6 +235,11 @@ public class TileEntityItemCollector extends InventoriedFiberPowered implements 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 6000;
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return true;
 	}
 
 }

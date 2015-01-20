@@ -15,7 +15,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -71,9 +73,68 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 			return false;
 		}
 		this.renderDir(v5, dir, 0, 0, 0, w, h);
+		v5.setColorRGBA_I(0xffffff, 255);
+		v5.setBrightness(240);
+		this.renderConnectivity(v5, ((TileEntityLumenRelay)world.getTileEntity(x, y, z)).getInput(), dir);
 
 		v5.addTranslation(-x, -y, -z);
 		return true;
+	}
+
+	private void renderConnectivity(Tessellator v5, ForgeDirection in, ForgeDirection face) {
+		double w = 0.1875;
+		double h = 0.25;
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			IIcon ico = ChromaIcons.GLOWFRAME_TRANS.getIcon();
+			if (dir == in) {
+				ico = ChromaIcons.GLOWFRAMEDOT_TRANS.getIcon();
+			}
+			float u = ico.getMinU();
+			float v = ico.getMinV();
+			float du = ico.getMaxU();
+			float dv = ico.getMaxV();
+			switch(dir) {
+			case EAST:
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+				break;
+			case WEST:
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+				break;
+			case NORTH:
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, dv);
+				break;
+			case SOUTH:
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, v);
+				break;
+			case DOWN:
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+				break;
+			case UP:
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, u, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, u, v);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	private void renderDir(Tessellator t, ForgeDirection dir, double minx, double miny, double minz, double w, double h) {

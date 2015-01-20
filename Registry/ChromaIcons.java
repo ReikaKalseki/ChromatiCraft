@@ -39,7 +39,11 @@ public enum ChromaIcons {
 	NOENTER("noentry"),
 	BLUEFIRE("bluefire"),
 	BATTERY("battery_outer"),
-	BLANK("blank");
+	BLANK("blank"),
+	GLOWFRAME("glowframe"),
+	GLOWFRAMEDOT("glowframe_dot"),
+	GLOWFRAME_TRANS("glowframe2"),
+	GLOWFRAMEDOT_TRANS("glowframe_dot2");
 
 	private IIcon icon;
 	private final String iconName;

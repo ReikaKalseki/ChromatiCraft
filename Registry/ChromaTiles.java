@@ -46,7 +46,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
@@ -101,7 +101,7 @@ public enum ChromaTiles {
 	AISHUTDOWN("chroma.aishutdown",		ChromaBlocks.TILEMODELLED, 	TileEntityAIShutdown.class, 		10),
 	TELEPUMP("chroma.telepump",			ChromaBlocks.TILEENTITY, 	TileEntityTeleportationPump.class, 	12),
 	COMPOUND("chroma.compound",			ChromaBlocks.PYLON,			TileEntityCompoundRepeater.class, 	2, "RenderMultiRepeater"),
-	FIBERSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, 	TileEntityFiberReceiver.class, 		12, "RenderFiberReceiver"),
+	RELAYSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, 	TileEntityRelaySource.class, 		12, "RenderRelaySource"),
 	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, 	TileEntityAspectFormer.class,		14, "RenderAspectFormer", ModList.THAUMCRAFT),
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, 	TileEntityChromaLamp.class, 		15, "RenderRainbowLamp"),
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 			3, "PowerTreeRender"),
@@ -169,7 +169,7 @@ public enum ChromaTiles {
 		case BEACON:
 		case FENCE:
 		case STAND:
-		case FIBERSOURCE:
+		case RELAYSOURCE:
 		case ASPECT:
 		case LAMP:
 		case POWERTREE:
@@ -336,7 +336,7 @@ public enum ChromaTiles {
 
 	public double getMaxY(TileEntityChromaticBase te) {
 		switch(this) {
-		case FIBERSOURCE:
+		case RELAYSOURCE:
 			return 0.625;
 		case INFUSER:
 			return 0.5;

@@ -20,24 +20,24 @@ public class BeaconRecipe extends PylonRecipe {
 	public BeaconRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.diamond), 0, -2);
-		this.addAuxItem(new ItemStack(Items.diamond), 0, -4);
+		this.addAuxItem(Items.diamond, 0, -2);
+		this.addAuxItem(Items.diamond, 0, -4);
 
 		this.addAuraRequirement(CrystalElement.RED, 120000);
 		this.addAuraRequirement(CrystalElement.BLACK, 2000);
 
-		this.addAuxItem(new ItemStack(Blocks.lapis_block), -4, 4);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, 4);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 0, 4);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, 4);
-		this.addAuxItem(new ItemStack(Blocks.lapis_block), 4, 4);
+		this.addAuxItem(Blocks.lapis_block, -4, 4);
+		this.addAuxItem(Blocks.obsidian, -2, 4);
+		this.addAuxItem(Blocks.obsidian, 0, 4);
+		this.addAuxItem(Blocks.obsidian, 2, 4);
+		this.addAuxItem(Blocks.lapis_block, 4, 4);
 
-		this.addAuxItem(new ItemStack(Items.quartz), -4, 0);
-		this.addAuxItem(new ItemStack(Items.quartz), 4, 0);
+		this.addAuxItem(Items.quartz, -4, 0);
+		this.addAuxItem(Items.quartz, 4, 0);
 
-		this.addAuxItem(new ItemStack(Items.gold_ingot), -2, 2);
-		this.addAuxItem(new ItemStack(Items.gold_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.gold_ingot), 2, 2);
+		this.addAuxItem(Items.gold_ingot, -2, 2);
+		this.addAuxItem(Items.gold_ingot, 0, 2);
+		this.addAuxItem(Items.gold_ingot, 2, 2);
 	}
 
 }

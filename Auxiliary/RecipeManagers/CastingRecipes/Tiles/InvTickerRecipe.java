@@ -26,15 +26,15 @@ public class InvTickerRecipe extends MultiBlockCastingRecipe {
 		this.addRune(CrystalElement.LIGHTBLUE, 2, -1, 3);
 		this.addRune(CrystalElement.BLACK, 3, -1, 2);
 
-		this.addAuxItem(new ItemStack(Items.clock), -2, 0);
-		this.addAuxItem(new ItemStack(Items.clock), 2, 0);
+		this.addAuxItem(Items.clock, -2, 0);
+		this.addAuxItem(Items.clock, 2, 0);
 		this.addAuxItem(ChromaStacks.auraDust, 0, 2);
 		this.addAuxItem(ChromaStacks.auraDust, 0, -2);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 2);
+		this.addAuxItem(Items.iron_ingot, -2, -2);
+		this.addAuxItem(Items.iron_ingot, -2, 2);
+		this.addAuxItem(Items.iron_ingot, 2, -2);
+		this.addAuxItem(Items.iron_ingot, 2, 2);
 
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), -2, -2);
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), -2, 2);

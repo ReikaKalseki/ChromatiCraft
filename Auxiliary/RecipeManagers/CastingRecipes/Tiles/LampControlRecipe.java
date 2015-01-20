@@ -20,21 +20,21 @@ public class LampControlRecipe extends MultiBlockCastingRecipe {
 	public LampControlRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.redstone), -2, 0);
-		this.addAuxItem(new ItemStack(Items.redstone), 2, 0);
+		this.addAuxItem(Items.redstone, -2, 0);
+		this.addAuxItem(Items.redstone, 2, 0);
 
-		this.addAuxItem(new ItemStack(Items.redstone), 0, -2);
+		this.addAuxItem(Items.redstone, 0, -2);
 
 		this.addAuxItem(ChromaStacks.auraDust, 2, -2);
 		this.addAuxItem(ChromaStacks.auraDust, -2, -2);
 		this.addAuxItem(ChromaStacks.auraDust, 2, 2);
 		this.addAuxItem(ChromaStacks.auraDust, -2, 2);
 
-		this.addAuxItem(new ItemStack(Items.ender_pearl), -4, 0);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 4, 0);
+		this.addAuxItem(Items.ender_pearl, -4, 0);
+		this.addAuxItem(Items.ender_pearl, 4, 0);
 
-		this.addAuxItem(new ItemStack(Items.glowstone_dust), -4, -2);
-		this.addAuxItem(new ItemStack(Items.glowstone_dust), 4, -2);
+		this.addAuxItem(Items.glowstone_dust, -4, -2);
+		this.addAuxItem(Items.glowstone_dust, 4, -2);
 
 		this.addAuxItem(ChromaStacks.chromaDust, -4, 2);
 		this.addAuxItem(ChromaStacks.chromaDust, 4, 2);
@@ -48,15 +48,15 @@ public class LampControlRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.beaconDust, 4, -4);
 		this.addAuxItem(ChromaStacks.beaconDust, 0, -4);
 
-		this.addAuxItem(new ItemStack(Blocks.stone), -4, 4);
-		this.addAuxItem(new ItemStack(Blocks.stone), 4, 4);
+		this.addAuxItem(Blocks.stone, -4, 4);
+		this.addAuxItem(Blocks.stone, 4, 4);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 4);
+		this.addAuxItem(Items.iron_ingot, 0, 4);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
 
-		this.addAuxItem(new ItemStack(Items.gold_ingot), -2, 4);
-		this.addAuxItem(new ItemStack(Items.gold_ingot), 2, 4);
+		this.addAuxItem(Items.gold_ingot, -2, 4);
+		this.addAuxItem(Items.gold_ingot, 2, 4);
 	}
 
 }

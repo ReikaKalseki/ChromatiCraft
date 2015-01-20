@@ -17,9 +17,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -27,6 +31,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
@@ -206,6 +211,23 @@ public class BlockLumenRelay extends Block {
 		TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
 		te.isMulti = is.getItemDamage() == 16;
 		te.color = te.isMulti ? CrystalElement.WHITE : CrystalElement.elements[is.getItemDamage()];
+		te.in = ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z)].getOpposite();
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (ChromaItems.TOOL.matchWith(is)) {
+			TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+			if (dir.getOpposite().ordinal() != world.getBlockMetadata(x, y, z)) {
+				te.in = dir;
+				ReikaSoundHelper.playBreakSound(world, x, y, z, this);
+				world.markBlockForUpdate(x, y, z);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -234,6 +256,7 @@ public class BlockLumenRelay extends Block {
 		private CrystalElement color = CrystalElement.WHITE;
 		private boolean isMulti = false;
 		private int energy = 0;
+		private ForgeDirection in = ForgeDirection.UNKNOWN;
 
 		@Override
 		public boolean canUpdate() {
@@ -254,6 +277,7 @@ public class BlockLumenRelay extends Block {
 
 			NBT.setBoolean("multi", isMulti);
 			NBT.setInteger("color", color.ordinal());
+			NBT.setInteger("dir", in.ordinal());
 			//NBT.setInteger("energy", energy);
 		}
 
@@ -263,12 +287,31 @@ public class BlockLumenRelay extends Block {
 
 			isMulti = NBT.getBoolean("multi");
 			color = CrystalElement.elements[NBT.getInteger("color")];
+			in = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("dir")];
 			//energy = NBT.getInteger("energy");
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		@Override
 		public AxisAlignedBB getRenderBoundingBox() {
 			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord);
+		}
+
+		public ForgeDirection getInput() {
+			return in;
 		}
 
 	}

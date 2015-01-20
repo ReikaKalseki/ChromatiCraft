@@ -24,17 +24,17 @@ public class CrystalLaserRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.BLUE, 25000);
 		this.addAuraRequirement(CrystalElement.YELLOW, 5000);
 
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, 0);
+		this.addAuxItem(Blocks.glass, -4, 0);
 		this.addAuxItem(ChromaStacks.crystalFocus, -2, 0);
 		this.addAuxItem(ChromaStacks.crystalMirror, 2, 0);
-		this.addAuxItem(new ItemStack(Blocks.quartz_block), 2, 0);
-		this.addAuxItem(new ItemStack(Items.diamond), 4, 0);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, -2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, 2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, -2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, 2);
-		this.addAuxItem(new ItemStack(Blocks.redstone_block), 0, -2);
-		this.addAuxItem(new ItemStack(Blocks.redstone_block), 0, 2);
+		this.addAuxItem(Blocks.quartz_block, 2, 0);
+		this.addAuxItem(Items.diamond, 4, 0);
+		this.addAuxItem(Blocks.obsidian, 2, -2);
+		this.addAuxItem(Blocks.obsidian, 2, 2);
+		this.addAuxItem(Blocks.obsidian, -2, -2);
+		this.addAuxItem(Blocks.obsidian, -2, 2);
+		this.addAuxItem(Blocks.redstone_block, 0, -2);
+		this.addAuxItem(Blocks.redstone_block, 0, 2);
 	}
 
 }

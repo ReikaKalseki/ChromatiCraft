@@ -31,21 +31,21 @@ public class CrystalTankRecipe extends PylonRecipe {
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), 2, -2);
 		this.addAuxItem(this.getChargedShard(CrystalElement.CYAN), -2, -2);
 
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, -4);
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, -4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 0, -4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, -4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 4, -4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 4, -2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 4, 0);
-		this.addAuxItem(new ItemStack(Blocks.glass), 4, 2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 4, 4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, 4);
-		this.addAuxItem(new ItemStack(Blocks.glass), 0, 4);
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, 4);
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, 4);
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, 2);
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, 0);
-		this.addAuxItem(new ItemStack(Blocks.glass), -4, -2);
+		this.addAuxItem(Blocks.glass, -4, -4);
+		this.addAuxItem(Blocks.glass, -2, -4);
+		this.addAuxItem(Blocks.glass, 0, -4);
+		this.addAuxItem(Blocks.glass, 2, -4);
+		this.addAuxItem(Blocks.glass, 4, -4);
+		this.addAuxItem(Blocks.glass, 4, -2);
+		this.addAuxItem(Blocks.glass, 4, 0);
+		this.addAuxItem(Blocks.glass, 4, 2);
+		this.addAuxItem(Blocks.glass, 4, 4);
+		this.addAuxItem(Blocks.glass, 2, 4);
+		this.addAuxItem(Blocks.glass, 0, 4);
+		this.addAuxItem(Blocks.glass, -2, 4);
+		this.addAuxItem(Blocks.glass, -4, 4);
+		this.addAuxItem(Blocks.glass, -4, 2);
+		this.addAuxItem(Blocks.glass, -4, 0);
+		this.addAuxItem(Blocks.glass, -4, -2);
 	}
 }

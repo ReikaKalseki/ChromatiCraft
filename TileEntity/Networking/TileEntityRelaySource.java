@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class TileEntityFiberReceiver extends CrystalReceiverBase {
+public class TileEntityRelaySource extends CrystalReceiverBase {
 
 	@Override
 	protected int getCooldownLength() {
@@ -63,12 +63,12 @@ public class TileEntityFiberReceiver extends CrystalReceiverBase {
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 60000;
+		return 300000;
 	}
 
 	@Override
 	public ChromaTiles getTile() {
-		return ChromaTiles.FIBERSOURCE;
+		return ChromaTiles.RELAYSOURCE;
 	}
 
 	@Override

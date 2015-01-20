@@ -19,14 +19,15 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityFiberPowered;
+import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalFence extends TileEntityFiberPowered {
+public class TileEntityCrystalFence extends TileEntityRelayPowered {
 
 	private Perimeter fence = new Perimeter().disallowVertical();
 	private HashMap<Integer, Integer> active = new HashMap();
@@ -151,6 +152,16 @@ public class TileEntityCrystalFence extends TileEntityFiberPowered {
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 2000;
+	}
+
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
+		return required.copy();
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return true;
 	}
 
 }

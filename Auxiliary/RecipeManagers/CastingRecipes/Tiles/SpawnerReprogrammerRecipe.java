@@ -19,11 +19,11 @@ public class SpawnerReprogrammerRecipe extends PylonRecipe {
 	public SpawnerReprogrammerRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -4, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 4, 0);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
+		this.addAuxItem(Items.iron_ingot, -2, 0);
+		this.addAuxItem(Items.iron_ingot, 2, 0);
+		this.addAuxItem(Items.iron_ingot, -4, 0);
+		this.addAuxItem(Items.iron_ingot, 4, 0);
 
 		this.addAuraRequirement(CrystalElement.BLACK, 4000);
 		this.addAuraRequirement(CrystalElement.PINK, 16000);

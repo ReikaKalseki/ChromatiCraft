@@ -20,10 +20,10 @@ public class InventoryLinkRecipe extends PylonRecipe {
 	public InventoryLinkRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.ender_pearl), -2, 0);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 2, 0);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 0, 2);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 0, -2);
+		this.addAuxItem(Items.ender_pearl, -2, 0);
+		this.addAuxItem(Items.ender_pearl, 2, 0);
+		this.addAuxItem(Items.ender_pearl, 0, 2);
+		this.addAuxItem(Items.ender_pearl, 0, -2);
 
 		this.addAuxItem(ReikaItemHelper.lapisDye, -4, 0);
 		this.addAuxItem(ReikaItemHelper.lapisDye, 4, 0);

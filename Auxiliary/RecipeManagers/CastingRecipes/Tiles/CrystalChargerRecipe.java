@@ -21,10 +21,10 @@ public class CrystalChargerRecipe extends MultiBlockCastingRecipe {
 		super(out, main);
 
 		this.addAuxItem(ReikaItemHelper.stoneSlab, 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, -2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, 2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, -2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, 2);
+		this.addAuxItem(Blocks.obsidian, 2, -2);
+		this.addAuxItem(Blocks.obsidian, 2, 2);
+		this.addAuxItem(Blocks.obsidian, -2, -2);
+		this.addAuxItem(Blocks.obsidian, -2, 2);
 
 		this.addAuxItem(this.getShard(CrystalElement.WHITE), 2, 0);
 		this.addAuxItem(this.getShard(CrystalElement.WHITE), -2, 0);

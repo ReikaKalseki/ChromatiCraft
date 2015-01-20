@@ -16,14 +16,16 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.DragonAPICore;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityFiberPowered extends TileEntityChromaticBase implements LumenTile {
+public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile {
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
+
+	private int requestTimer = 0;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -31,42 +33,49 @@ public abstract class TileEntityFiberPowered extends TileEntityChromaticBase imp
 			CrystalElement e = CrystalElement.randomElement();
 			energy.addValueToColor(e, 500);
 		}
+
+		if (!world.isRemote) {
+			if (requestTimer == 0) {
+				ElementTagCompound tag = this.getRequiredEnergy();
+				for (CrystalElement e : tag.elementSet()) {
+					for (int i = 0; i < 6; i++) {
+						if (this.canReceiveFrom(e, dirs[i])) {
+							if (this.requestEnergy(e, this.getRemainingSpace(e), dirs[i]))
+								break;
+						}
+					}
+				}
+				requestTimer = 200;
+			}
+			else
+				requestTimer--;
+		}
 	}
 
-	protected final boolean requestEnergy(CrystalElement e, int amt, ForgeDirection dir) {
-		TileEntityFiberReceiver te = RelayNetworker.instance.findRelaySource(worldObj, xCoord, yCoord, zCoord, dir, e, amt, 128);
+	protected abstract boolean canReceiveFrom(CrystalElement e, ForgeDirection dir);
+
+	protected abstract ElementTagCompound getRequiredEnergy();
+
+	private final boolean requestEnergy(CrystalElement e, int amt, ForgeDirection dir) {
+		TileEntityRelaySource te = RelayNetworker.instance.findRelaySource(worldObj, xCoord, yCoord, zCoord, dir, e, amt, 128);
 		if (te != null) {
 			int has = te.getEnergy(e);
-			te.drainEnergy(e, Math.min(amt, has));
+			int trans = Math.min(Math.min(amt, has), this.getMaxStorage(e)-energy.getValue(e));
+			te.drainEnergy(e, trans);
+			energy.addValueToColor(e, trans);
 			return has >= amt;
 		}
 		return false;
 	}
-
-	protected final boolean requestEnergy(CrystalElement e, int amt) {
-		for (int i = 0; i < 6; i++) {
-			if (this.requestEnergy(e, amt, dirs[i]))
-				return true;
-		}
-		return false;
-	}
-
-	protected final boolean requestEnergy(ElementTagCompound tag) {
-		for (int i = 0; i < 6; i++) {
-			if (this.requestEnergy(tag, dirs[i]))
-				return true;
-		}
-		return false;
-	}
-
-	protected final boolean requestEnergy(ElementTagCompound tag, ForgeDirection dir) {
+	/*
+	private final boolean requestEnergy(ElementTagCompound tag, ForgeDirection dir) {
 		boolean flag = true;
 		for (CrystalElement e : tag.elementSet()) {
 			flag = this.requestEnergy(e, tag.getValue(e), dir) && flag;
 		}
 		return flag;
 	}
-
+	 */
 	private final int addEnergy(CrystalElement e, int amt) {
 		if (e == null || !this.isAcceptingColor(e))
 			return 0;

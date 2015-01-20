@@ -23,10 +23,10 @@ public class CrystalFurnaceRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.WHITE, 3000);
 		this.addAuraRequirement(CrystalElement.PURPLE, 2000);
 
-		this.addAuxItem(new ItemStack(Blocks.furnace), 2, 0);
-		this.addAuxItem(new ItemStack(Blocks.furnace), -2, 0);
-		this.addAuxItem(new ItemStack(Blocks.furnace), 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.furnace), 0, -2);
+		this.addAuxItem(Blocks.furnace, 2, 0);
+		this.addAuxItem(Blocks.furnace, -2, 0);
+		this.addAuxItem(Blocks.furnace, 0, 2);
+		this.addAuxItem(Blocks.furnace, 0, -2);
 	}
 
 }

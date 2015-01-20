@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityFiberReceiver;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public final class RelayNetworker {
@@ -31,7 +31,7 @@ public final class RelayNetworker {
 		maxRange = r;
 	}
 
-	public TileEntityFiberReceiver findRelaySource(World world, int x, int y, int z, ForgeDirection dir, CrystalElement e, int amt, int dist) {
+	public TileEntityRelaySource findRelaySource(World world, int x, int y, int z, ForgeDirection dir, CrystalElement e, int amt, int dist) {
 		RelayFinder rf = new RelayFinder(world, new Coordinate(x, y, z), Math.min(dist, maxRange), e, amt);
 		rf.look = dir;
 		RelayPath path = rf.find();
@@ -44,12 +44,12 @@ public final class RelayNetworker {
 
 	private static class RelayPath {
 
-		public final TileEntityFiberReceiver source;
+		public final TileEntityRelaySource source;
 		public final Coordinate target;
 
 		private final LinkedList<Coordinate> path;
 
-		private RelayPath(TileEntityFiberReceiver src, Coordinate c, LinkedList<Coordinate> li) {
+		private RelayPath(TileEntityRelaySource src, Coordinate c, LinkedList<Coordinate> li) {
 			source = src;
 			target = c;
 			path = li;
@@ -92,15 +92,15 @@ public final class RelayNetworker {
 				Coordinate c = start.offset(look, i);
 				Block b = c.getBlock(world);
 				int meta = c.getBlockMetadata(world);
-				if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.FIBERSOURCE) {
+				if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.RELAYSOURCE) {
 					path.addLast(c);
-					return new RelayPath((TileEntityFiberReceiver)c.getTileEntity(world), target, path);
+					return new RelayPath((TileEntityRelaySource)c.getTileEntity(world), target, path);
 				}
 				else if (b == ChromaBlocks.RELAY.getBlockInstance()) {
 					path.addLast(c);
 					TileEntityLumenRelay te = (TileEntityLumenRelay)c.getTileEntity(world);
 					if (te.canTransmit(color)) {
-						look = ForgeDirection.VALID_DIRECTIONS[meta];
+						look = te.getInput();
 						return this.findFrom(c);
 					}
 				}

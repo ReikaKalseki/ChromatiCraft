@@ -19,28 +19,28 @@ public class TeleportWandRecipe extends MultiBlockCastingRecipe {
 	public TeleportWandRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.ender_pearl), -4, -2);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 4, -2);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 0, 4);
+		this.addAuxItem(Items.ender_pearl, -4, -2);
+		this.addAuxItem(Items.ender_pearl, 4, -2);
+		this.addAuxItem(Items.ender_pearl, 0, 4);
 
-		this.addAuxItem(new ItemStack(Items.diamond), -4, 2);
-		this.addAuxItem(new ItemStack(Items.diamond), 4, 2);
-		this.addAuxItem(new ItemStack(Items.diamond), 0, -4);
+		this.addAuxItem(Items.diamond, -4, 2);
+		this.addAuxItem(Items.diamond, 4, 2);
+		this.addAuxItem(Items.diamond, 0, -4);
 
-		this.addAuxItem(new ItemStack(Items.stick), -4, -4);
-		this.addAuxItem(new ItemStack(Items.stick), 4, -4);
-		this.addAuxItem(new ItemStack(Items.stick), -4, 4);
-		this.addAuxItem(new ItemStack(Items.stick), 4, 4);
+		this.addAuxItem(Items.stick, -4, -4);
+		this.addAuxItem(Items.stick, 4, -4);
+		this.addAuxItem(Items.stick, -4, 4);
+		this.addAuxItem(Items.stick, 4, 4);
 
 		this.addAuxItem(ChromaStacks.chromaDust, -2, 0);
 		this.addAuxItem(ChromaStacks.chromaDust, 2, 0);
 		this.addAuxItem(ChromaStacks.chromaDust, 0, 2);
 		this.addAuxItem(ChromaStacks.chromaDust, 0, -2);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, -2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 2);
+		this.addAuxItem(Items.iron_ingot, -2, -2);
+		this.addAuxItem(Items.iron_ingot, 2, -2);
+		this.addAuxItem(Items.iron_ingot, -2, 2);
+		this.addAuxItem(Items.iron_ingot, 2, 2);
 
 		this.addAuxItem(ChromaStacks.auraDust, -2, -4);
 		this.addAuxItem(ChromaStacks.auraDust, 2, -4);

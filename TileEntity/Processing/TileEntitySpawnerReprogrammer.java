@@ -21,6 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.ProgrammableSpawner;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -96,7 +97,8 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 		addDisallowedMob("Robit");
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
 
@@ -234,6 +236,11 @@ public class TileEntitySpawnerReprogrammer extends InventoriedFiberPowered {
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 10000;
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return dir != ForgeDirection.DOWN;
 	}
 
 }

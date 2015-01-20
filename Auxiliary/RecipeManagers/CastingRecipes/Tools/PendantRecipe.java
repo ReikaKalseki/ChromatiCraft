@@ -19,17 +19,17 @@ public class PendantRecipe extends MultiBlockCastingRecipe {
 	public PendantRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Blocks.glowstone), -2, -2);
-		this.addAuxItem(new ItemStack(Items.string), 0, -2);
-		this.addAuxItem(new ItemStack(Blocks.glowstone), 2, -2);
+		this.addAuxItem(Blocks.glowstone, -2, -2);
+		this.addAuxItem(Items.string, 0, -2);
+		this.addAuxItem(Blocks.glowstone, 2, -2);
 
-		this.addAuxItem(new ItemStack(Items.quartz), -2, 0);
-		this.addAuxItem(new ItemStack(Items.quartz), 2, 0);
+		this.addAuxItem(Items.quartz, -2, 0);
+		this.addAuxItem(Items.quartz, 2, 0);
 
-		this.addAuxItem(new ItemStack(Items.ender_pearl), -2, 2);
-		this.addAuxItem(new ItemStack(Items.ender_pearl), 2, 2);
+		this.addAuxItem(Items.ender_pearl, -2, 2);
+		this.addAuxItem(Items.ender_pearl, 2, 2);
 
-		this.addAuxItem(new ItemStack(Items.diamond), 0, 2);
+		this.addAuxItem(Items.diamond, 0, 2);
 
 		//this.addRune(CrystalElement.elements[out.getItemDamage()], 0, -1, -4);
 

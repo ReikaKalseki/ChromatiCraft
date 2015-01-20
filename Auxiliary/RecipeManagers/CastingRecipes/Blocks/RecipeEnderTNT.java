@@ -20,10 +20,10 @@ public class RecipeEnderTNT extends PylonRecipe {
 	public RecipeEnderTNT(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Blocks.tnt), 2, 0);
-		this.addAuxItem(new ItemStack(Blocks.tnt), -2, 0);
-		this.addAuxItem(new ItemStack(Blocks.tnt), 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.tnt), 0, -2);
+		this.addAuxItem(Blocks.tnt, 2, 0);
+		this.addAuxItem(Blocks.tnt, -2, 0);
+		this.addAuxItem(Blocks.tnt, 0, 2);
+		this.addAuxItem(Blocks.tnt, 0, -2);
 
 		this.addAuxItem(ReikaItemHelper.stoneBricks, 2, 2);
 		this.addAuxItem(ReikaItemHelper.stoneBricks, -2, 2);

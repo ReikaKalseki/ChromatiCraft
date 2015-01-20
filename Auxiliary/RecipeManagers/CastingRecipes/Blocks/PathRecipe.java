@@ -22,10 +22,10 @@ public class PathRecipe extends PylonRecipe {
 	public PathRecipe(ItemStack main, int meta, ItemStack outer) {
 		super(ChromaBlocks.PATH.getStackOfMetadata(meta), main);
 
-		this.addAuxItem(new ItemStack(Blocks.stonebrick), -2, 0);
-		this.addAuxItem(new ItemStack(Blocks.stonebrick), 2, 0);
-		this.addAuxItem(new ItemStack(Blocks.stonebrick), 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.stonebrick), 0, -2);
+		this.addAuxItem(Blocks.stonebrick, -2, 0);
+		this.addAuxItem(Blocks.stonebrick, 2, 0);
+		this.addAuxItem(Blocks.stonebrick, 0, 2);
+		this.addAuxItem(Blocks.stonebrick, 0, -2);
 
 		this.addAuxItem(outer, -2, -2);
 		this.addAuxItem(outer, 2, -2);

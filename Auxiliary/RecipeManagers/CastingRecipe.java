@@ -17,7 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
@@ -235,6 +237,14 @@ public class CastingRecipe {
 
 		public ItemStack getMainInput() {
 			return main.copy();
+		}
+
+		protected MultiBlockCastingRecipe addAuxItem(Block b, int dx, int dz) {
+			return this.addAuxItem(new ItemStack(b), dx, dz);
+		}
+
+		protected MultiBlockCastingRecipe addAuxItem(Item i, int dx, int dz) {
+			return this.addAuxItem(new ItemStack(i), dx, dz);
 		}
 
 		protected MultiBlockCastingRecipe addAuxItem(ItemStack is, int dx, int dz) {

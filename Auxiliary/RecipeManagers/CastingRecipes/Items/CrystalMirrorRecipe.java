@@ -20,16 +20,16 @@ public class CrystalMirrorRecipe extends MultiBlockCastingRecipe {
 	public CrystalMirrorRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, -2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 0, -2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, -2);
+		this.addAuxItem(Blocks.glass, -2, -2);
+		this.addAuxItem(Blocks.glass, 0, -2);
+		this.addAuxItem(Blocks.glass, 2, -2);
 
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), -2, 0);
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), 2, 0);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 2);
+		this.addAuxItem(Items.iron_ingot, -2, 2);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
+		this.addAuxItem(Items.iron_ingot, 2, 2);
 	}
 
 }

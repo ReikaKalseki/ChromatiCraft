@@ -18,14 +18,14 @@ public class RecipeTankBlock extends MultiBlockCastingRecipe {
 	public RecipeTankBlock(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Blocks.glass), 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 0, -2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, 0);
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, 0);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, 2);
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, 2);
-		this.addAuxItem(new ItemStack(Blocks.glass), 2, -2);
-		this.addAuxItem(new ItemStack(Blocks.glass), -2, -2);
+		this.addAuxItem(Blocks.glass, 0, 2);
+		this.addAuxItem(Blocks.glass, 0, -2);
+		this.addAuxItem(Blocks.glass, 2, 0);
+		this.addAuxItem(Blocks.glass, -2, 0);
+		this.addAuxItem(Blocks.glass, 2, 2);
+		this.addAuxItem(Blocks.glass, -2, 2);
+		this.addAuxItem(Blocks.glass, 2, -2);
+		this.addAuxItem(Blocks.glass, -2, -2);
 	}
 
 }

@@ -27,15 +27,15 @@ public class VoidStorageRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.WHITE, 5000);
 
 		this.addAuxItem(new ItemStack(AppEngHandler.getInstance().quartzGlass), -2, -2);
-		this.addAuxItem(new ItemStack(Items.redstone), 0, -2);
+		this.addAuxItem(Items.redstone, 0, -2);
 		this.addAuxItem(new ItemStack(AppEngHandler.getInstance().quartzGlass), 2, -2);
 
-		this.addAuxItem(new ItemStack(Items.redstone), -2, 0);
-		this.addAuxItem(new ItemStack(Items.redstone), 2, 0);
+		this.addAuxItem(Items.redstone, -2, 0);
+		this.addAuxItem(Items.redstone, 2, 0);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 2);
+		this.addAuxItem(Items.iron_ingot, -2, 2);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
+		this.addAuxItem(Items.iron_ingot, 2, 2);
 
 
 		this.addAuxItem(AppEngHandler.getInstance().getDiamondProcessor(), 0, -4);

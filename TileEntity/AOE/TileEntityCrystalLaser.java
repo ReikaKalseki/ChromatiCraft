@@ -18,6 +18,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -66,7 +67,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 		if (!this.isActive())
 			return 0;
 		int energy = this.getEnergy(this.getColor());
-		int max = (int)Math.min(Math.sqrt(energy), MAX_RANGE);
+		int max = (int)Math.min(Math.sqrt(energy/4), MAX_RANGE);
 		for (int i = 1; i <= max; i++) {
 			int dx = xCoord+dir.offsetX*i;
 			int dy = yCoord+dir.offsetY*i;
@@ -126,7 +127,7 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 				break;
 			}
 		}
-		this.drainEnergy(this.getColor(), 1);
+		this.drainEnergy(this.getColor(), this.getRange());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -230,12 +231,25 @@ public class TileEntityCrystalLaser extends InventoriedFiberPowered {
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 12000;
+		return 65536;
 	}
 
 	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
 		return e == this.getColor();
+	}
+
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
+		ElementTagCompound tag = new ElementTagCompound();
+		if (this.getColor() != null)
+			tag.addValueToColor(this.getColor(), 1);
+		return tag;
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return dir == this.getFacing().getOpposite();
 	}
 
 }

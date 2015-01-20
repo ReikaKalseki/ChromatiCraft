@@ -19,12 +19,12 @@ public class PotionCrystalRecipe extends PylonRecipe {
 	public PotionCrystalRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Blocks.obsidian), -2, 2);
-		this.addAuxItem(new ItemStack(Blocks.gold_block), 0, 2);
-		this.addAuxItem(new ItemStack(Blocks.obsidian), 2, 2);
+		this.addAuxItem(Blocks.obsidian, -2, 2);
+		this.addAuxItem(Blocks.gold_block, 0, 2);
+		this.addAuxItem(Blocks.obsidian, 2, 2);
 
-		this.addAuxItem(new ItemStack(Blocks.glowstone), 2, -2);
-		this.addAuxItem(new ItemStack(Blocks.redstone_block), -2, -2);
+		this.addAuxItem(Blocks.glowstone, 2, -2);
+		this.addAuxItem(Blocks.redstone_block, -2, -2);
 
 		this.addAuraRequirement(CrystalElement.WHITE, 10000);
 		this.addAuraRequirement(CrystalElement.BLUE, 1000);

@@ -19,15 +19,15 @@ public class BuilderWandRecipe extends MultiBlockCastingRecipe {
 	public BuilderWandRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(new ItemStack(Items.stick), -2, -2);
-		this.addAuxItem(new ItemStack(Items.stick), 2, 2);
-		this.addAuxItem(new ItemStack(Items.stick), -2, 2);
-		this.addAuxItem(new ItemStack(Items.stick), 2, -2);
+		this.addAuxItem(Items.stick, -2, -2);
+		this.addAuxItem(Items.stick, 2, 2);
+		this.addAuxItem(Items.stick, -2, 2);
+		this.addAuxItem(Items.stick, 2, -2);
 
-		this.addAuxItem(new ItemStack(Items.iron_ingot), -2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 2, 0);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, 2);
-		this.addAuxItem(new ItemStack(Items.iron_ingot), 0, -2);
+		this.addAuxItem(Items.iron_ingot, -2, 0);
+		this.addAuxItem(Items.iron_ingot, 2, 0);
+		this.addAuxItem(Items.iron_ingot, 0, 2);
+		this.addAuxItem(Items.iron_ingot, 0, -2);
 
 		this.addAuxItem(ChromaStacks.elementDust, -4, 0);
 		this.addAuxItem(ChromaStacks.elementDust, 4, 0);

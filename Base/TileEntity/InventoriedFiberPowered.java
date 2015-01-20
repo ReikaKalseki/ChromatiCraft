@@ -20,7 +20,7 @@ import Reika.DragonAPI.Interfaces.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
-public abstract class InventoriedFiberPowered extends TileEntityFiberPowered implements ISidedInventory {
+public abstract class InventoriedFiberPowered extends TileEntityRelayPowered implements ISidedInventory {
 
 	protected ItemStack[] inv = new ItemStack[this.getSizeInventory()];
 

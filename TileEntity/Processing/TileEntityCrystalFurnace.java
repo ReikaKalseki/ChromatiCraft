@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -164,7 +165,8 @@ public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements
 		smelt.addTag(CrystalElement.PURPLE, 500);
 	}
 
-	public static ElementTagCompound getRequiredEnergy() {
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
 		return smelt.copy();
 	}
 
@@ -184,6 +186,11 @@ public class TileEntityCrystalFurnace extends InventoriedFiberPowered implements
 	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
 		return smelt.contains(e);
+	}
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return true;
 	}
 
 }
