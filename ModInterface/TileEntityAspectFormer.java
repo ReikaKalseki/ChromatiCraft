@@ -97,7 +97,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	private void addAspect(Aspect a, IAspectContainer iac, ElementTagCompound tag) {
-		int amt = selected.isPrimal() ? 4 : 1;
+		int amt = iac instanceof TileEntityAspectJar ? 100 : selected.isPrimal() ? 4 : 1;
 		int left = iac.addToContainer(a, amt);
 		int added = amt-left;
 		if (added > 0) {

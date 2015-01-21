@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,9 @@ import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -151,6 +154,29 @@ public class ChromaFX {
 			GL11.glDisable(GL11.GL_BLEND);
 		 */
 		GL11.glPopMatrix();
+	}
+
+	public static void spawnRelayParticle(CrystalElement e, ArrayList<Coordinate> li) {
+		// Full path
+		//EntityRelayPathFX fx = new EntityRelayPathFX(e, li);
+		//Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+		/*//Old 1-step
+		while (li.size() > 1) {
+			ArrayList li2 = new ArrayList();
+			li2.add(li.get(0));
+			li2.add(li.get(1));
+			EntityRelayPathFX fx = new EntityRelayPathFX(e, li2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			li.remove(0);
+		}*/
+
+		//1-step
+		while (li.size() > 1) {
+			EntityRelayPathFX fx = new EntityRelayPathFX(e, li.get(0), li.get(1));
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			li.remove(0);
+		}
 	}
 
 }

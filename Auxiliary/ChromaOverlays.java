@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -97,11 +98,13 @@ public class ChromaOverlays {
 
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aura-bar-half.png");
+		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
 		Tessellator v5 = Tessellator.instance;
 		double w = Minecraft.getMinecraft().displayWidth/gsc;
 		double h = Minecraft.getMinecraft().displayHeight/gsc;
+		double z = -1000;
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			Coordinate c = PylonGenerator.instance.getNearestPylonSpawn(ep.worldObj, ep.posX, ep.posY, ep.posZ, e);
@@ -125,10 +128,10 @@ public class ChromaOverlays {
 				if (res > 0) {
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
 					v5.setColorRGBA_I(color, alpha);
-					v5.addVertexWithUV(0, h, 0, u, dv);
-					v5.addVertexWithUV(w, h, 0, du, dv);
-					v5.addVertexWithUV(w, 0, 0, du, v);
-					v5.addVertexWithUV(0, 0, 0, u, v);
+					v5.addVertexWithUV(0, h, z, u, dv);
+					v5.addVertexWithUV(w, h, z, du, dv);
+					v5.addVertexWithUV(w, 0, z, du, v);
+					v5.addVertexWithUV(0, 0, z, u, v);
 					v5.draw();
 				}
 			}
@@ -427,6 +430,14 @@ public class ChromaOverlays {
 		}
 	}
 
+	private int getPieX(int r, int space, int gsc) {
+		return ChromaOptions.PIELOC.getValue() < 2 ? r+space : Minecraft.getMinecraft().displayWidth/gsc-r-space;
+	}
+
+	private int getPieY(int r, int space, int gsc) {
+		return ChromaOptions.PIELOC.getValue()%2 == 0 ? r+space : Minecraft.getMinecraft().displayHeight/gsc-r-space-16;
+	}
+
 	private void renderElementPie(EntityPlayer ep, int gsc) {
 		GL11.glEnable(GL11.GL_BLEND);
 
@@ -434,13 +445,14 @@ public class ChromaOverlays {
 		int w = 4;
 		int r = 32;
 		int rb = r;
-		int ox = 36;
-		int oy = 36;
+		int sp = 4;
+		int ox = this.getPieX(r, sp, gsc);
+		int oy = this.getPieY(r, sp, gsc);
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/wheelback.png");
 		v5.startDrawingQuads();
 		v5.setColorOpaque_I(0xffffff);
-		v5.addVertexWithUV(oy-r*2, oy+r*2, 0, 0, 1);
+		v5.addVertexWithUV(ox-r*2, oy+r*2, 0, 0, 1);
 		v5.addVertexWithUV(ox+r*2, oy+r*2, 0, 1, 1);
 		v5.addVertexWithUV(ox+r*2, oy-r*2, 0, 1, 0);
 		v5.addVertexWithUV(ox-r*2, oy-r*2, 0, 0, 0);
@@ -540,7 +552,7 @@ public class ChromaOverlays {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/wheelfront2.png");
 		v5.startDrawingQuads();
 		v5.setColorOpaque_I(0xffffff);
-		v5.addVertexWithUV(oy-r*2, oy+r*2, 0, 0, 1);
+		v5.addVertexWithUV(ox-r*2, oy+r*2, 0, 0, 1);
 		v5.addVertexWithUV(ox+r*2, oy+r*2, 0, 1, 1);
 		v5.addVertexWithUV(ox+r*2, oy-r*2, 0, 1, 0);
 		v5.addVertexWithUV(ox-r*2, oy-r*2, 0, 0, 0);

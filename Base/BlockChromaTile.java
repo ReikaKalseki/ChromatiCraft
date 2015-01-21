@@ -186,7 +186,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			}
 		}
 
-		if (is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof TileEntityCollector) {
+		if (is != null && is.getItem() == Items.bucket && is.stackSize == 1 && te instanceof TileEntityCollector) {
 			if (((TileEntityCollector)te).getOutputLevel() >= 1000) {
 				((TileEntityCollector)te).removeLiquid(1000);
 				if (!ep.capabilities.isCreativeMode)

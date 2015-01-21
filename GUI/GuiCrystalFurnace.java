@@ -65,8 +65,8 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 		for (CrystalElement e : tile.smeltTags().elementSet()) {
 			int px = tile.getEnergyScaled(e, 52);
 			int dy = 68;
-			int dx = 11;
-			int x1 = i*13+dx;
+			int dx = 7;
+			int x1 = i*15+dx;
 			//api.fillBar(j+x1, k+dy-33, 18, dy, e.color.color, px, 34, false);
 			api.drawRect(j+x1, k+dy-px+1, 10, px, e.getColor(), true);
 			i++;

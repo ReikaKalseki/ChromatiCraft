@@ -44,7 +44,7 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 	protected static final ReikaGuiAPI api = ReikaGuiAPI.instance;
 
-	protected int buttoncooldown = 0;
+	protected long buttoncooldown = 0;
 	public static final long SECOND = 2000000000;
 
 	protected static int leftX;
@@ -82,7 +82,7 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		buttoncooldown = 20;
+		buttoncooldown = System.currentTimeMillis();
 		if (button.id == 12) {
 			mc.thePlayer.closeScreen();
 			return;
@@ -92,13 +92,13 @@ public abstract class ChromaBookGui extends GuiScreen {
 
 	@Override
 	protected void mouseClicked(int x, int y, int b) {
-		if (buttoncooldown == 0)
+		if (System.currentTimeMillis()-buttoncooldown >= 50)
 			super.mouseClicked(x, y, b);
 	}
 
 	@Override
 	public void drawScreen(int x, int y, float f) {
-		if (buttoncooldown > 0)
+		if (System.currentTimeMillis()-buttoncooldown >= 50)
 			buttoncooldown--;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.bindTexture();

@@ -1,8 +1,16 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -11,7 +19,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 public class RelayRecipe extends MultiBlockCastingRecipe {
 
 	public RelayRecipe(CrystalElement e) {
-		super(new ItemStack(ChromaBlocks.PYLONSTRUCT.getItem(), 1, e.ordinal()), ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));
+		super(ChromaBlocks.RELAY.getStackOfMetadata(e.ordinal()), ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));
 
 		this.addAuxItem(Items.glowstone_dust, 0, -4);
 		this.addAuxItem(Items.glowstone_dust, -2, -2);

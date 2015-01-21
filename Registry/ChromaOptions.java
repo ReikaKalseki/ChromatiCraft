@@ -39,7 +39,8 @@ public enum ChromaOptions implements ConfigList {
 	ENDERTNT("Enable Ender TNT", true),
 	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false),
 	COPYTILE("Allow duplication wand to copy TileEntities", false),
-	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false);
+	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false),
+	PIELOC("Energy Buffer Overlay Location", 0);
 
 	private String label;
 	private boolean defaultState;

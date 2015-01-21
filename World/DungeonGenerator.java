@@ -326,11 +326,15 @@ public class DungeonGenerator implements IWorldGenerator {
 				IInventory te = (IInventory)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
 				WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
 				int bonus = struct == Structures.OCEAN && xyz[1]-arr.getMinY() == 4 ? 4 : 0;
-				WeightedRandomChestContent.generateChestContents(r, loot, te, ChestGenHooks.getCount(s, r));
+				int count = ChestGenHooks.getCount(s, r);
+				if (struct == Structures.BURROW)
+					count /= 4;
+				WeightedRandomChestContent.generateChestContents(r, loot, te, count);
 				if (bonus > 0)
 					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);
 				int n1 = 1;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
 				int n2 = 1;//struct == Structures.OCEAN ? 8 : 3;
+
 				if (r.nextInt(n1) > 0) {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
 					if (r.nextInt(n2) == 0)

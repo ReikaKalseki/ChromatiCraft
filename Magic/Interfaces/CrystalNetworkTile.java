@@ -34,4 +34,6 @@ public interface CrystalNetworkTile {
 
 	public boolean canConduct();
 
+	public String getUniqueID();
+
 }

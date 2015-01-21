@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -22,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -48,6 +50,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
@@ -126,6 +129,14 @@ public class ChromatiPackets implements IPacketHandler {
 				for (int i = 0; i < len; i++)
 					data[i] = inputStream.readInt();
 				break;
+			case PREFIXED:
+				control = inputStream.readInt();
+				pack = ChromaPackets.getPacket(control);
+				len = inputStream.readInt();
+				data = new int[len];
+				for (int i = 0; i < len; i++)
+					data[i] = inputStream.readInt();
+				break;
 			case NBT:
 				break;
 			case STRINGINT:
@@ -184,11 +195,12 @@ public class ChromatiPackets implements IPacketHandler {
 				TileEntityCrystalPlant te = (TileEntityCrystalPlant)tile;
 				te.updateLight();
 				break;
-			case ABILITY:
+			case ABILITY: {
 				Ability c = Chromabilities.getAbilityByInt(data[0]);
 				if (Chromabilities.playerHasAbility(ep, c))
 					Chromabilities.triggerAbility(ep, c, data[1]);
 				break;
+			}
 			case PYLONATTACK:
 				if (tile instanceof TileEntityCrystalPylon)
 					((TileEntityCrystalPylon)tile).particleAttack(data[0], data[1], data[2], data[3], data[4], data[5]);
@@ -269,6 +281,17 @@ public class ChromatiPackets implements IPacketHandler {
 			case INVCYCLE:
 				AbilityHelper.instance.cycleInventoryClient(ep, data[0] > 0);
 				break;
+			case RELAYCONNECT: {
+				int num = (data.length-1);
+				ArrayList<Coordinate> li = new ArrayList();
+				for (int i = 0; i < num; i += 3) {
+					Coordinate c = new Coordinate(data[i+0], data[i+1], data[i+2]);
+					li.add(c);
+				}
+				CrystalElement e = CrystalElement.elements[data[data.length-1]];
+				ChromaFX.spawnRelayParticle(e, li);
+				break;
+			}
 			}
 		}
 		catch (NullPointerException e) {

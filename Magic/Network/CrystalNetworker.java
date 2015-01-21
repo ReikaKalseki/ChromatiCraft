@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -27,6 +29,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -48,6 +51,7 @@ public class CrystalNetworker implements TickHandler {
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
+	private final HashMap<String, WorldLocation> verifier = new HashMap();
 
 	private int losTimer = 0;
 
@@ -205,9 +209,28 @@ public class CrystalNetworker implements TickHandler {
 			if (te instanceof TileEntityCrystalPylon) {
 				this.addPylon((TileEntityCrystalPylon)te);
 			}
+			this.verifyTileAt(te, loc);
 
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
+	}
+
+	private void verifyTileAt(CrystalNetworkTile te, WorldLocation loc) {
+		String key = te.getUniqueID();
+		WorldLocation prev = verifier.get(key);
+		if (prev != null && !prev.equals(loc)) {
+			te.getWorld().setBlockToAir(te.getX(), te.getY(), te.getZ());
+			throw new InvalidLocationException(te, loc, prev);
+		}
+		else
+			verifier.put(key, loc);
+	}
+
+	public String getNewUniqueID() {
+		String sg = UUID.randomUUID().toString();
+		while (verifier.containsKey(sg))
+			sg = UUID.randomUUID().toString();
+		return sg;
 	}
 
 	private void addPylon(TileEntityCrystalPylon te) {

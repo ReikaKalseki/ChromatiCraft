@@ -329,7 +329,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 					amt *= 10; //counter the 90% reduction
 					drain = 150000;
 				}
-				SoulNetworkHandler.syphonAndDamageFromNetwork(ep.getCommandSenderName(), ep, drain);
+				SoulNetworkHandler.syphonFromNetwork(ep.getCommandSenderName(), drain);
 			}
 		}
 

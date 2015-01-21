@@ -25,7 +25,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
 
-	private int requestTimer = 0;
+	private int requestTimer = rand.nextInt(200);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -45,7 +45,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 						}
 					}
 				}
-				requestTimer = 200;
+				requestTimer = 200/5;
 			}
 			else
 				requestTimer--;

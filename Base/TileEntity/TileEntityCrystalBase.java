@@ -9,11 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
+
+	private String uniqueID = CrystalNetworker.instance.getNewUniqueID();
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
@@ -59,6 +62,27 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 	@Override
 	public int getUpdatePacketRadius() {
 		return 512;
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBT.setString("netuid", uniqueID);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		if (NBT.hasKey("netuid"))
+			uniqueID = NBT.getString("netuid");
+		else
+			uniqueID = CrystalNetworker.instance.getNewUniqueID();
+	}
+
+	public String getUniqueID() {
+		return uniqueID;
 	}
 
 }

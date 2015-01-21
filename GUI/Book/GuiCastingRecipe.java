@@ -99,7 +99,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		if (buttoncooldown == 0) {
+		if (System.currentTimeMillis()-buttoncooldown >= 50) {
 			if (button.id == 0 && index > 0) {
 				index--;
 				recipeTextOffset = 0;
