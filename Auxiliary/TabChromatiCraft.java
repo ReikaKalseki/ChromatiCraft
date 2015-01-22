@@ -9,38 +9,26 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import Reika.DragonAPI.Instantiable.GUI.EnumCreativeTab;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TabChromatiCraft extends CreativeTabs {
+public class TabChromatiCraft extends EnumCreativeTab {
 
 	private ItemStack icon;
 
-	public TabChromatiCraft(int position, String tabID) {
-		super(position, tabID); //The constructor for your tab
+	public TabChromatiCraft(String tabID) {
+		super(tabID);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ItemStack getIconItemStack() {
-		return icon;//new ItemStack(RotaryCraft.engineitems.itemID, 1, EngineType.JET.ordinal());
+		return icon;
 	}
 
 	public void setIcon(ItemStack is) {
 		icon = is;
-	}
-
-	@Override
-	public String getTranslatedTabLabel() {
-		return this.getTabLabel(); //The name of the tab ingame
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public Item getTabIconItem() {
-		return null;
 	}
 }

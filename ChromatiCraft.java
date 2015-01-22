@@ -17,7 +17,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -50,6 +49,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
+import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
@@ -59,8 +59,8 @@ import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
-import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
@@ -129,10 +129,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ChromatiCraft extends DragonAPIMod {
 	public static final String packetChannel = "ChromaData";
 
-	public static final TabChromatiCraft tabChroma = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft");
-	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Tools");
-	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Items");
-	public static final TabChromatiCraft tabChromaFragments = new TabChromatiCraft(CreativeTabs.getNextID(), "ChromatiCraft Fragments");
+	public static final TabChromatiCraft tabChroma = new TabChromatiCraft("ChromatiCraft");
+	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft("ChromatiCraft Tools");
+	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft("ChromatiCraft Items");
+	public static final FragmentTab tabChromaFragments = new FragmentTab("ChromatiCraft Fragments");
 
 	static final Random rand = new Random();
 
@@ -196,7 +196,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void preload(FMLPreInitializationEvent evt) {
 		this.startTiming(LoadPhase.PRELOAD);
-		this.verifyVersions();
+		this.verifyInstallation();
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
 		FMLCommonHandler.instance().bus().register(ChromaticEventManager.instance);
@@ -253,7 +253,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
-		tabChromaFragments.setIcon(ChromaItems.FRAGMENT.getStackOf());
 
 		if (!this.isLocked()) {
 			//if (ConfigRegistry.ACHIEVEMENTS.getState()) {
