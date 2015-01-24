@@ -83,6 +83,7 @@ import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.CompatibilityTracker;
@@ -253,6 +254,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaItems, tabChroma);
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaTools, tabChromaItems);
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaFragments, tabChromaTools);
 
 		if (!this.isLocked()) {
 			//if (ConfigRegistry.ACHIEVEMENTS.getState()) {

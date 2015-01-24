@@ -179,6 +179,7 @@ public enum ChromaTiles {
 		case POWERTREE:
 		case LAMPCONTROL:
 		case STRUCTCONTROL:
+		case CHROMAFLOWER:
 			//case TANK:
 			//case ITEMRIFT:
 			return true;

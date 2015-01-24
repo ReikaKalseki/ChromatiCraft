@@ -215,6 +215,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			for (int i = 0; i < blocks.getSize(); i++) {
 				energy += a;
 				a *= 2;
+				if (i == 7) { //8 crystals
+					energy += a*2;
+				}
 				if (energy >= MAX_ENERGY) {
 					return;
 				}

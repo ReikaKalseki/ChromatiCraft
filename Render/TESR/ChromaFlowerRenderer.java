@@ -14,6 +14,7 @@ import java.awt.Color;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -25,6 +26,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class ChromaFlowerRenderer extends ChromaRenderBase {
 
@@ -32,7 +34,6 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityChromaFlower te = (TileEntityChromaFlower)tile;
 		GL11.glPushMatrix();
-		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_CULL_FACE);
@@ -54,8 +55,9 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 		float du2 = ico2.getMaxU();
 		float v2 = ico2.getMinV();
 		float dv2 = ico2.getMaxV();
-		for (int k = 0; k < 3; k++) {
-			IIcon ico = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockInstance()).getPlantTexture(0, k+1);
+		int pass = MinecraftForgeClient.getRenderPass();
+		if (pass == 0 || !te.isInWorld()) {
+			IIcon ico = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockInstance()).getPlantTexture(0, 1);
 			float u = ico.getMinU();
 			float du = ico.getMaxU();
 			float v = ico.getMinV();
@@ -70,15 +72,36 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 				v5.addVertexWithUV(0.5, 1, 1, du2, v2);
 				v5.addVertexWithUV(0.5, 1, 0, u2, v2);
 				v5.addVertexWithUV(0.5, 0, 0, u2, dv2);
-				v5.setColorRGBA(colors[k][0], colors[k][1], colors[k][2], 255);
-				v5.addVertexWithUV(0.5, 0, 1, du, dv);
-				v5.addVertexWithUV(0.5, 1, 1, du, v);
-				v5.addVertexWithUV(0.5, 1, 0, u, v);
-				v5.addVertexWithUV(0.5, 0, 0, u, dv);
 				v5.draw();
 				GL11.glTranslated(0.5, 0, 0.5);
 				GL11.glRotated(-60*i, 0, 1, 0);
 				GL11.glTranslated(-0.5, 0, -0.5);
+			}
+		}
+		if (pass != 0 || !te.isInWorld()) {
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ALPHA.apply();
+			for (int k = 0; k < 3; k++) {
+				IIcon ico = ((BlockChromaPlantTile)ChromaBlocks.TILEPLANT.getBlockInstance()).getPlantTexture(0, k+1);
+				float u = ico.getMinU();
+				float du = ico.getMaxU();
+				float v = ico.getMinV();
+				float dv = ico.getMaxV();
+				for (int i = 0; i < 3; i++) {
+					GL11.glTranslated(0.5, 0, 0.5);
+					GL11.glRotated(60*i, 0, 1, 0);
+					GL11.glTranslated(-0.5, 0, -0.5);
+					v5.startDrawingQuads();
+					v5.setColorRGBA(colors[k][0], colors[k][1], colors[k][2], 255);
+					v5.addVertexWithUV(0.5, 0, 1, du, dv);
+					v5.addVertexWithUV(0.5, 1, 1, du, v);
+					v5.addVertexWithUV(0.5, 1, 0, u, v);
+					v5.addVertexWithUV(0.5, 0, 0, u, dv);
+					v5.draw();
+					GL11.glTranslated(0.5, 0, 0.5);
+					GL11.glRotated(-60*i, 0, 1, 0);
+					GL11.glTranslated(-0.5, 0, -0.5);
+				}
 			}
 		}
 		GL11.glDisable(GL11.GL_BLEND);

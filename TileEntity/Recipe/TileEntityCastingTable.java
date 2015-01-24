@@ -71,7 +71,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private int tableXP;
 	private RecipeType tier = RecipeType.CRAFTING;
 
-	private RecipeType getTier() {
+	public RecipeType getTier() {
 		return tier;
 	}
 

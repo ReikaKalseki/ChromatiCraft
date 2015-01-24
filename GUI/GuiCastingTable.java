@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiCastingTable extends GuiChromaBase {
@@ -76,6 +77,23 @@ public class GuiCastingTable extends GuiChromaBase {
 				}
 			}
 		}
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glColor4f(1, 1, 1, 1);
+		ReikaTextureHelper.bindTerrainTexture();
+		RecipeType tier = tile.getTier();
+		int d = 10;
+		int[] color = new int[]{0xffffff, 0xffff99, 0xffff55, 0xffdd00};
+		for (int i = 0; i < 1+tier.ordinal(); i++) {
+			int x = (i/*%2*/)*d;
+			int y = 0;//(i/2)*d;
+			float red = ReikaColorAPI.getRedFromInteger(color[i])/255F;
+			float green = ReikaColorAPI.getGreenFromInteger(color[i])/255F;
+			float blue = ReikaColorAPI.getBlueFromInteger(color[i])/255F;
+			GL11.glColor4f(red, green, blue, 1);
+			this.drawTexturedModelRectFromIcon(x, y, ChromaIcons.DIAMOND.getIcon(), 16, 16);
+		}
+		GL11.glDisable(GL11.GL_BLEND);
 
 		CastingRecipe r = tile.getActiveRecipe();
 		if (r != null) {

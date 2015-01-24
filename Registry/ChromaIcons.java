@@ -43,7 +43,8 @@ public enum ChromaIcons {
 	GLOWFRAME("glowframe"),
 	GLOWFRAMEDOT("glowframe_dot"),
 	GLOWFRAME_TRANS("glowframe2"),
-	GLOWFRAMEDOT_TRANS("glowframe_dot2");
+	GLOWFRAMEDOT_TRANS("glowframe_dot2"),
+	DIAMOND("diamond");
 
 	private IIcon icon;
 	private final String iconName;

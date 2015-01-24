@@ -24,6 +24,7 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -86,8 +87,23 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				switch(this) {
 				case ENDPROVIDER: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
-					ReikaASMHelper.removeCodeLine(m, 330);
-					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+					boolean primed = false;
+					for (int i = 0; i < m.instructions.size(); i++) {
+						AbstractInsnNode ain = m.instructions.get(i);
+						if (ain.getOpcode() == Opcodes.INVOKESTATIC) {
+							MethodInsnNode min = (MethodInsnNode)ain;
+							String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_76129_c" : "sqrt_float";
+							if (min.name.equals(func)) {
+								primed = true;
+							}
+						}
+						else if (primed && ain.getOpcode() == Opcodes.FSTORE) { //add after "f2 += 100-sqrt(dx, dz)*8"
+							m.instructions.insert(ain, new VarInsnNode(Opcodes.FSTORE, 8));
+							m.instructions.insert(ain, new InsnNode(Opcodes.FCONST_0));
+							ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+							break;
+						}
+					}
 				}
 				break;
 				case REACHDIST: {
@@ -103,8 +119,10 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 							break;
 						}
 					}
-					m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
-					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+					if (index != null) {
+						m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F"));
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+					}
 				}
 				break;
 
