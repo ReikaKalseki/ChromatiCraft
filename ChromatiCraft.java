@@ -255,8 +255,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
 		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaItems, tabChroma);
-		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaTools, tabChromaItems);
-		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaFragments, tabChromaTools);
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaTools, tabChroma);
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaFragments, tabChroma);
 
 		if (!this.isLocked()) {
 			//if (ConfigRegistry.ACHIEVEMENTS.getState()) {
