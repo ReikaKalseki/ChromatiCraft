@@ -103,8 +103,9 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 					GL11.glTranslated(-0.5, 0, -0.5);
 				}
 			}
+			BlendMode.DEFAULT.apply();
+			GL11.glDisable(GL11.GL_BLEND);
 		}
-		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();

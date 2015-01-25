@@ -54,9 +54,9 @@ public class ChromaStacks {
 	public static final ItemStack beaconDust = ChromaItems.TIERED.getStackOfMetadata(5);
 	public static final ItemStack bindingCrystal = ChromaItems.TIERED.getStackOfMetadata(6);
 	public static final ItemStack resonanceDust = ChromaItems.TIERED.getStackOfMetadata(7);
-	public static final ItemStack placehold1Dust = ChromaItems.TIERED.getStackOfMetadata(8);
-	public static final ItemStack placehold2Dust = ChromaItems.TIERED.getStackOfMetadata(9);
-	public static final ItemStack placehold3Dust = ChromaItems.TIERED.getStackOfMetadata(10);
+	public static final ItemStack enderDust = ChromaItems.TIERED.getStackOfMetadata(8);
+	public static final ItemStack waterDust = ChromaItems.TIERED.getStackOfMetadata(9);
+	public static final ItemStack firaxite = ChromaItems.TIERED.getStackOfMetadata(10);
 	public static final ItemStack placehold4Dust = ChromaItems.TIERED.getStackOfMetadata(11);
 	public static final ItemStack placehold5Dust = ChromaItems.TIERED.getStackOfMetadata(12);
 	public static final ItemStack cavernLoot = ChromaItems.TIERED.getStackOfMetadata(13);

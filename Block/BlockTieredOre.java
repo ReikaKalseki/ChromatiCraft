@@ -54,7 +54,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		FOCAL(ProgressStage.MULTIBLOCK),
 		TELEPORT(ProgressStage.END),
 		WATERY(ProgressStage.OCEAN),
-		PLACEHOLDER6(ProgressStage.NEVER),
+		FIRAXITE(ProgressStage.NETHER),
 		PLACEHOLDER7(ProgressStage.NEVER),
 		PLACEHOLDER8(ProgressStage.NEVER);
 
@@ -77,6 +77,10 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 		public int getGenerationChance() {
 			return this == PLACEHOLDER8 ? 2 : 1;
+		}
+
+		public boolean renderAsGeode() {
+			return this == BINDING || this == FIRAXITE;
 		}
 	}
 
@@ -117,17 +121,17 @@ public class BlockTieredOre extends BlockChromaTiered {
 		case TELEPORT:
 			n = Math.min(64, 1+rand.nextInt(1+fortune)+fortune*fortune);
 			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold1Dust.copy());
+				li.add(ChromaStacks.enderDust.copy());
 			break;
 		case WATERY:
 			n = Math.min(64, 1+rand.nextInt(6)+rand.nextInt(1+6*fortune));
 			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold2Dust.copy());
+				li.add(ChromaStacks.waterDust.copy());
 			break;
-		case PLACEHOLDER6:
+		case FIRAXITE:
 			n = Math.min(64, 1+rand.nextInt(12)+fortune*8);
 			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold3Dust.copy());
+				li.add(ChromaStacks.firaxite.copy());
 			break;
 		case PLACEHOLDER7:
 			n = Math.min(64, (1+fortune)*(1+4*rand.nextInt(5)));

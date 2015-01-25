@@ -9,17 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
@@ -111,6 +114,13 @@ public class BlockChromaPlantTile extends BlockChromaTile {
 				icons[i][k] = ico.registerIcon("chromaticraft:plant/"+i+"_"+k);
 			}
 		}
+	}
+
+	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
+		ArrayList<ItemStack> li = new ArrayList();
+		li.add(ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct());
+		return li;
 	}
 
 }
