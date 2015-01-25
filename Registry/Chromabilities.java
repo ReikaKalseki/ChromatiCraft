@@ -417,7 +417,7 @@ public enum Chromabilities implements Ability {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
-				if (world.canBlockSeeTheSky(x, y+1, z) && ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, ep)) {
+				if (world.canBlockSeeTheSky(x, y+1, z) && ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, (EntityPlayerMP)ep)) {
 					world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
 					int r = 2+power*4;
 					if (power == 2) {
@@ -567,7 +567,7 @@ public enum Chromabilities implements Ability {
 
 	}
 
-	public static void shiftArea(WorldServer world, BlockBox box, ForgeDirection dir, int dist, EntityPlayer ep) {
+	public static void shiftArea(WorldServer world, BlockBox box, ForgeDirection dir, int dist, EntityPlayerMP ep) {
 		FilledBlockArray moved = new FilledBlockArray(world);
 		BlockArray toDel = new BlockArray();
 		toDel.setWorld(world);

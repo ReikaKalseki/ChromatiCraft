@@ -75,9 +75,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode, IWandable {
 
 	private boolean hasMultiblock = false;
+	private boolean enhanced = false;
 	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
 	public static final int MAX_ENERGY = 180000;
+	public static final int MAX_ENERGY_ENHANCED = 900000;
 	private int energy = MAX_ENERGY;
 	private int energyStep = 1;
 
@@ -124,7 +126,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 	}
 
 	public int getRenderColor() {
-		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/MAX_ENERGY);
+		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/this.getMaxStorage(color));
 	}
 
 	@Override
@@ -161,8 +163,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (hasMultiblock) {
 			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);
 
-			this.charge(world, x, y, z);
-			energy = Math.min(energy, MAX_ENERGY);
+			int max = this.getMaxStorage(color);
+			this.charge(world, x, y, z, max);
+			energy = Math.min(energy, max);
 
 			if (world.isRemote) {
 				this.spawnParticle(world, x, y, z);
@@ -202,23 +205,24 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		Minecraft.getMinecraft().effectRenderer.addEffect(e);
 	}
 
-	private void charge(World world, int x, int y, int z) {
-		if (energy < MAX_ENERGY) {
+	private void charge(World world, int x, int y, int z, int max) {
+		if (energy < max) {
 			energy += energyStep;
 		}
 		if (energyStep > 1)
 			energyStep--;
 
 		int a = 1;
-		if (energy <= MAX_ENERGY-a) {
+		if (energy <= max-a) {
 			BlockArray blocks = this.getBoosterCrystals(world, x, y, z);
+			int c = this.isEnhanced() ? 3 : 2;
 			for (int i = 0; i < blocks.getSize(); i++) {
 				energy += a;
-				a *= 2;
+				a *= c;
 				if (i == 7) { //8 crystals
 					energy += a*2;
 				}
-				if (energy >= MAX_ENERGY) {
+				if (energy >= max) {
 					return;
 				}
 			}
@@ -406,6 +410,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		color = CrystalElement.elements[NBT.getInteger("color")];
 		hasMultiblock = NBT.getBoolean("multi");
 		energy = NBT.getInteger("energy");
+		enhanced = NBT.getBoolean("enhance");
 	}
 
 	@Override
@@ -415,6 +420,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		NBT.setInteger("color", color.ordinal());
 		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("energy", energy);
+		NBT.setBoolean("enhance", enhanced);
 	}
 
 	@Override
@@ -429,12 +435,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public int maxThroughput() {
-		return 5000;
+		return this.isEnhanced() ? 15000 : 5000;
 	}
 
 	@Override
 	public int getTransmissionStrength() {
-		return 10000;
+		return this.isEnhanced() ? 50000 : 10000;
 	}
 
 	public void generateColor(CrystalElement e) {
@@ -621,7 +627,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return MAX_ENERGY;
+		return this.isEnhanced() ? MAX_ENERGY_ENHANCED : MAX_ENERGY;
+	}
+
+	public boolean isEnhanced() {
+		return enhanced && this.canConduct();
 	}
 
 	@Override

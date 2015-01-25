@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
@@ -37,7 +38,7 @@ public class GuardianStoneManager {
 
 	}
 
-	public boolean canPlayerOverrideProtections(EntityPlayer ep) {
+	public boolean canPlayerOverrideProtections(EntityPlayerMP ep) {
 		if ("Reika_Kalseki".equals(ep.getCommandSenderName()))
 			return true;
 		return ReikaPlayerAPI.isAdmin(ep);
@@ -90,7 +91,7 @@ public class GuardianStoneManager {
 		}
 	}
 
-	public boolean doesPlayerHavePermissions(World world, int x, int y, int z, EntityPlayer ep) {
+	public boolean doesPlayerHavePermissions(World world, int x, int y, int z, EntityPlayerMP ep) {
 		if (this.canPlayerOverrideProtections(ep))
 			return true;
 		for (int i = 0; i < zones.size(); i++) {
@@ -123,7 +124,7 @@ public class GuardianStoneManager {
 		int y = event.y;
 		int z = event.z;
 		if (!world.isRemote) {
-			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
+			if (!this.doesPlayerHavePermissions(world, x, y, z, (EntityPlayerMP)ep))
 				event.setCanceled(true);
 		}
 	}
@@ -141,7 +142,7 @@ public class GuardianStoneManager {
 		int y = event.y;
 		int z = event.z;
 		if (!world.isRemote) {
-			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
+			if (!this.doesPlayerHavePermissions(world, x, y, z, (EntityPlayerMP)ep))
 				event.setCanceled(true);
 		}
 	}

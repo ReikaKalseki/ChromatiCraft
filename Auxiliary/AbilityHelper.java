@@ -139,7 +139,7 @@ public class AbilityHelper {
 	private void playerMakeBox(EntityPlayer ep, BlockBox box) {
 		if (!ep.worldObj.isRemote && Chromabilities.SHIFT.enabledOn(ep)) {
 			ScaledDirection dir = shifts.get(ep);
-			Chromabilities.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, ep);
+			Chromabilities.shiftArea((WorldServer)ep.worldObj, box, dir.direction, dir.distance, (EntityPlayerMP)ep);
 		}
 	}
 

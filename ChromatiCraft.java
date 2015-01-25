@@ -267,6 +267,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		CompatibilityTracker.instance.registerIncompatibility(ModList.CHROMATICRAFT, ModList.OPTIFINE, CompatibilityTracker.Severity.GLITCH, "Optifine is known to break some rendering and cause framerate drops.");
 
+		FMLInterModComms.sendMessage("CustomConfigs", "blacklist-mod-as-output", this.getModContainer().getModId());
+
 		this.basicSetup(evt);
 		this.finishTiming();
 	}

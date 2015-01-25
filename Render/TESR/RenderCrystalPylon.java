@@ -51,31 +51,37 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 			Tessellator v5 = Tessellator.instance;
 			GL11.glTranslated(0.5, 0.5, 0.5);
-			double t = (te.randomOffset+System.currentTimeMillis()/2000D)%360;
-			double s = 2.5+0.5*Math.sin(t);
-			if (!te.getTargets().isEmpty()) {
-				s += 1;
+
+			int count = te.isEnhanced() ? 2 : 1;
+			for (int i = 0; i < count; i++) {
+				GL11.glPushMatrix();
+				double t = (i*60+te.randomOffset+System.currentTimeMillis()/2000D*(1+3*i))%360;
+				double s = i*0.5+2.5+0.5*Math.sin(t);
+				if (!te.getTargets().isEmpty()) {
+					s += 1;
+				}
+				if (!te.canConduct()) {
+					s = 0.75;
+				}
+				GL11.glScaled(s, s, s);
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+
+				int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
+				//ReikaJavaLibrary.pConsole(te.getEnergy());
+
+				int color = te.getRenderColor();
+
+				v5.startDrawingQuads();
+				v5.setColorRGBA_I(color, alpha);
+				v5.addVertexWithUV(-1, -1, 0, u, v);
+				v5.addVertexWithUV(1, -1, 0, du, v);
+				v5.addVertexWithUV(1, 1, 0, du, dv);
+				v5.addVertexWithUV(-1, 1, 0, u, dv);
+				v5.draw();
+				GL11.glPopMatrix();
 			}
-			if (!te.canConduct()) {
-				s = 0.75;
-			}
-			GL11.glScaled(s, s, s);
-			RenderManager rm = RenderManager.instance;
-			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
-
-			int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
-			//ReikaJavaLibrary.pConsole(te.getEnergy());
-
-			int color = te.getRenderColor();
-
-			v5.startDrawingQuads();
-			v5.setColorRGBA_I(color, alpha);
-			v5.addVertexWithUV(-1, -1, 0, u, v);
-			v5.addVertexWithUV(1, -1, 0, du, v);
-			v5.addVertexWithUV(1, 1, 0, du, dv);
-			v5.addVertexWithUV(-1, 1, 0, u, dv);
-			v5.draw();
 
 			GL11.glPopMatrix();
 			BlendMode.DEFAULT.apply();
