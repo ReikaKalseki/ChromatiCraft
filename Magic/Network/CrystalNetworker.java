@@ -40,6 +40,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -59,6 +60,7 @@ public class CrystalNetworker implements TickHandler {
 	private final HashMap<String, WorldLocation> verifier = new HashMap();
 	//private final HashSet</*Link*/WorldChunk> losCache = new HashSet();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
+	private final PluralMap<CrystalLink> links = new PluralMap(2);
 
 	private int losTimer = 0;
 
@@ -91,15 +93,24 @@ public class CrystalNetworker implements TickHandler {
 		 */
 	}
 
-	void addLink(WorldLocation l1, WorldLocation l2, boolean connect) {
-		CrystalLink l = new CrystalLink(l1, l2);
+	void addLink(CrystalLink l, boolean connect) {
 		l.hasLOS = connect;
 		for (WorldChunk wc : l.chunks)
 			losCache.addValue(wc, l);
+		links.put(l, l.loc1, l.loc2);
 	}
 
-	void addLinkConnection(WorldLocation l1, WorldLocation l2) {
-		this.addLink(l1, l2, true);
+	void addLink(WorldLocation l1, WorldLocation l2, boolean connect) {
+		this.addLink(new CrystalLink(l1, l2), connect);
+	}
+
+	CrystalLink getLink(WorldLocation l1, WorldLocation l2) {
+		CrystalLink l = links.get(l1, l2);
+		if (l == null) {
+			l = new CrystalLink(l1, l2);
+			this.addLink(l, false);
+		}
+		return l;
 	}
 	/*
 	boolean isLinkDirty(WorldLocation l1, WorldLocation l2) {

@@ -203,25 +203,23 @@ public class PylonFinder {
 		for (CrystalTransmitter te : li) {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
-				if (te.needsLineOfSight()) {
-					CrystalLink l = new CrystalLink(loc, loc2);
-					if (!l.hasLineOfSight()) {
-						l.recalculateLOS();
-						if (!l.hasLineOfSight())
-							continue;
-					}
+				CrystalLink l = net.getLink(loc, loc2);
+				if (te.needsLineOfSight() && !l.hasLineOfSight()) {
+					l.recalculateLOS();
+					if (!l.hasLineOfSight())
+						continue;
 				}
-				if (this.lineOfSight(r, te)) {
-					if (te != target && te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target)) {
-						nodes.add(loc2);
-						return;
-					}
-					else if (te instanceof CrystalRepeater) {
-						Collection<WorldLocation> others = new ArrayList(li);
-						others.remove(te);
-						duplicates.put(loc2, others);
-						this.findFrom((CrystalRepeater)te);
-					}
+				if (te != target && te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target)) {
+					net.addLink(l, true);
+					nodes.add(loc2);
+					return;
+				}
+				else if (te instanceof CrystalRepeater) {
+					net.addLink(l, true);
+					Collection<WorldLocation> others = new ArrayList(li);
+					others.remove(te);
+					duplicates.put(loc2, others);
+					this.findFrom((CrystalRepeater)te);
 				}
 			}
 		}
