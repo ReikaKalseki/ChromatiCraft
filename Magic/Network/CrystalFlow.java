@@ -26,19 +26,19 @@ public class CrystalFlow extends CrystalPath {
 	private final int maxFlow;
 	public final CrystalReceiver receiver;
 
-	protected CrystalFlow(CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li, int maxthru) {
-		super(e, li);
+	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li, int maxthru) {
+		super(net, e, li);
 		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
 		maxFlow = Math.min(Math.max(1, this.getMaxFlow()-this.getSignalLoss()), maxthru);
 	}
 
-	CrystalFlow(CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
-		this(r, p.element, amt, p.nodes, maxthru);
+	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
+		this(net, r, p.element, amt, p.nodes, maxthru);
 	}
 
 	CrystalPath asPath() {
-		return new CrystalPath(element, nodes);
+		return new CrystalPath(network, element, nodes);
 	}
 
 	@Override

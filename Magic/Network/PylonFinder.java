@@ -68,7 +68,7 @@ public class PylonFinder {
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
-			CrystalPath path = new CrystalPath(element, nodes);
+			CrystalPath path = new CrystalPath(net, element, nodes);
 			this.addValidPath(path);
 			return path;
 		}
@@ -79,14 +79,14 @@ public class PylonFinder {
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths();
 		if (p != null)
-			return new CrystalFlow(p, target, amount, maxthru);
+			return new CrystalFlow(net, p, target, amount, maxthru);
 		if (!this.anyConnectedSources())
 			return null;
 
 		this.findFrom(target);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
-			CrystalFlow flow = new CrystalFlow(target, element, amount, nodes, maxthru);
+			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
 			this.addValidPath(flow.asPath());
 			return flow;
 		}

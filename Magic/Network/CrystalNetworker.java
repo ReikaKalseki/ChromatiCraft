@@ -61,6 +61,7 @@ public class CrystalNetworker implements TickHandler {
 	//private final HashSet</*Link*/WorldChunk> losCache = new HashSet();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
+	private final Collection<CrystalFlow> toBreak = new ArrayList();
 
 	private int losTimer = 0;
 
@@ -83,7 +84,15 @@ public class CrystalNetworker implements TickHandler {
 		Collection<CrystalLink> c = losCache.get(wc);
 		if (c != null) {
 			for (CrystalLink l : c) {
-				l.recalculateLOS();
+				l.hasLOS = false;
+
+				//Kill active flows if blocked
+				for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
+					if (p.containsLink(l) && !p.checkLineOfSight()) {
+						CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
+						this.schedulePathBreak(p);
+					}
+				}
 			}
 		}
 		/*
@@ -91,6 +100,10 @@ public class CrystalNetworker implements TickHandler {
 			losCache.add(wc);
 		}
 		 */
+	}
+
+	private void schedulePathBreak(CrystalFlow p) {
+		toBreak.add(p);
 	}
 
 	void addLink(CrystalLink l, boolean connect) {
@@ -207,14 +220,17 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public void tick(TickType type, Object... data) {
+		/*
 		losTimer++;
 		boolean doCheckLOS = false;
 		if (losTimer >= 40) {
 			losTimer = 0;
 			doCheckLOS = true;
 		}
+		 */
 		for (int dim : flows.keySet()) {
-			Iterator<CrystalFlow> it = flows.get(dim).iterator();
+			Collection<CrystalFlow> c = flows.get(dim);
+			Iterator<CrystalFlow> it = c.iterator();
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
 				if (p.transmitter.canConduct() && p.canTransmit()) {
@@ -237,6 +253,13 @@ public class CrystalNetworker implements TickHandler {
 				}
 			}
 
+			for (CrystalFlow p : toBreak) {
+				p.receiver.onPathBroken(p.element);
+				p.resetTiles();
+				c.remove(p);
+			}
+
+			/*
 			if (doCheckLOS) {
 				it = flows.get(dim).iterator();
 				while (it.hasNext()) {
@@ -249,6 +272,7 @@ public class CrystalNetworker implements TickHandler {
 					}
 				}
 			}
+			 */
 		}
 	}
 
