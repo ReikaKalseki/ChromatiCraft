@@ -14,12 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedFiberPowered;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class TileEntityInventoryTicker extends InventoriedFiberPowered {
+public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 
 	public int ticks = 1;
 

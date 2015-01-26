@@ -14,10 +14,13 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,9 +37,11 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
+import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -52,6 +57,8 @@ public class CrystalNetworker implements TickHandler {
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
 	private final HashMap<String, WorldLocation> verifier = new HashMap();
+	//private final HashSet</*Link*/WorldChunk> losCache = new HashSet();
+	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
 
 	private int losTimer = 0;
 
@@ -59,6 +66,51 @@ public class CrystalNetworker implements TickHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+	@SubscribeEvent
+	public void markChunkCache(SetBlockEvent evt) {
+		/*
+		Iterator<Link> it = losCache.iterator();
+		while (it.hasNext()) {
+			Link l = it.next();
+			if (l.isChunkInPath(evt.chunkLocation))
+				it.remove();
+		}
+		 */
+
+		WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
+		Collection<CrystalLink> c = losCache.get(wc);
+		if (c != null) {
+			for (CrystalLink l : c) {
+				l.recalculateLOS();
+			}
+		}
+		/*
+		if (!losCache.contains(wc)) {
+			losCache.add(wc);
+		}
+		 */
+	}
+
+	void addLink(WorldLocation l1, WorldLocation l2, boolean connect) {
+		CrystalLink l = new CrystalLink(l1, l2);
+		l.hasLOS = connect;
+		for (WorldChunk wc : l.chunks)
+			losCache.addValue(wc, l);
+	}
+
+	void addLinkConnection(WorldLocation l1, WorldLocation l2) {
+		this.addLink(l1, l2, true);
+	}
+	/*
+	boolean isLinkDirty(WorldLocation l1, WorldLocation l2) {
+		Link l = new Link(l1, l2);
+		for (WorldChunk wc : l.chunks) {
+			if (losCache.contains(wc))
+				return true;
+		}
+		return false;
+	}
+	 */
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		PylonFinder.stopAllSearches();
@@ -404,6 +456,55 @@ public class CrystalNetworker implements TickHandler {
 			}
 			return data;
 		}
+	}
+
+	static class CrystalLink {
+
+		public final WorldLocation loc1;
+		public final WorldLocation loc2;
+		private final HashSet<WorldChunk> chunks = new HashSet();
+		private boolean hasLOS = false;
+
+		CrystalLink(WorldLocation l1, WorldLocation l2) {
+			loc1 = l1;
+			loc2 = l2;
+			double dd = l1.getDistanceTo(l2);
+			World world = l1.getWorld();
+			for (int i = 0; i < dd; i++) {
+				int x = MathHelper.floor_double(l1.xCoord+i*(l2.xCoord-l1.xCoord)/dd);
+				int z = MathHelper.floor_double(l1.zCoord+i*(l2.zCoord-l1.zCoord)/dd);
+				WorldChunk ch = new WorldChunk(world, new ChunkCoordIntPair(x >> 4, z >> 4));
+				if (!chunks.contains(ch))
+					chunks.add(ch);
+			}
+		}
+
+		void recalculateLOS() {
+			hasLOS = PylonFinder.lineOfSight(loc1, loc2);
+		}
+
+		public boolean isChunkInPath(WorldChunk wc) {
+			return chunks.contains(wc);
+		}
+
+		@Override
+		public final int hashCode() {
+			return loc1.hashCode()^loc2.hashCode();
+		}
+
+		@Override
+		public final boolean equals(Object o) {
+			if (o instanceof CrystalLink) {
+				CrystalLink l = (CrystalLink)o;
+				return l.loc1.equals(loc1) && l.loc2.equals(loc2);
+			}
+			return false;
+		}
+
+		final boolean hasLineOfSight() {
+			return hasLOS;
+		}
+
 	}
 
 }

@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -88,6 +89,7 @@ import Reika.DragonAPI.ModInteract.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
+import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -154,6 +156,13 @@ public class ChromaticEventManager {
 			if (PlayerElementBuffer.instance.getPlayerTotalEnergy(ep) >= 90000)
 				ProgressStage.DIE.stepPlayerTo(ep);
 		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.BLOODMAGIC)
+	public void noTelepose(TeleposeEvent evt) {
+		if (evt.getInitialTile() instanceof TileEntityCrystalBase || evt.getFinalTile() instanceof TileEntityCrystalBase)
+			evt.setCanceled(true);
 	}
 
 	@SubscribeEvent

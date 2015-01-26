@@ -11,24 +11,24 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
+import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class FabricationRecipes {
 
 	private static final FabricationRecipes instance = new FabricationRecipes();
 
 	private ArrayList<ItemStack> products = new ArrayList();
-	private final Map<KeyedItemStack, ElementTagCompound> data;
+	private final HashMap<KeyedItemStack, ElementTagCompound> data = new HashMap();
 	private static final float SCALE = 0.8F;
 
-	public static final int FACTOR = 100;
-	public static final int POWER2 = 2;
+	public static final float INITFACTOR = 0.5F;
+	public static final int FACTOR = 400;
+	public static final int POWER = 5;
 
 	private int max;
 
@@ -37,12 +37,13 @@ public class FabricationRecipes {
 	}
 
 	private FabricationRecipes() {
-		data = ItemMagicRegistry.instance.getMap();
-		for (ElementTagCompound tag : data.values()) {
-			tag = tag.copy();
-			for (int i = 0; i < POWER2; i++)
-				tag.square();
+		Collection<KeyedItemStack> c = ItemMagicRegistry.instance.keySet();
+		for (KeyedItemStack k : c) {
+			ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(k);
+			tag.scale(INITFACTOR);
+			tag.power(POWER);
 			tag.scale(FACTOR);
+			data.put(k, tag);
 			max = Math.max(max, tag.getMaximumValue());
 		}
 	}
@@ -68,7 +69,6 @@ public class FabricationRecipes {
 
 	private ElementTagCompound getItemCost(KeyedItemStack is) {
 		ElementTagCompound tag = data.get(is);
-		ReikaJavaLibrary.pConsole(tag);
 		return tag != null ? tag.copy().scale(1/SCALE) : null;
 	}
 

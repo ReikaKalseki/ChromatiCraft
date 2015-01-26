@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Registry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -217,7 +216,7 @@ public class ItemMagicRegistry {
 			this.addElement(crystal, e, 10);
 			this.addElement(berry, e, 1);
 			this.addElement(shard, e, 4);
-			this.addElement(shard2, e, 20);
+			this.addElement(shard2, e, 6);
 			this.addElement(vdye, e, 1);
 			this.addElement(dye, e, 1);
 		}
@@ -249,8 +248,11 @@ public class ItemMagicRegistry {
 	}
 
 	public ElementTagCompound getItemValue(ItemStack is) {
-		KeyedItemStack ks = new KeyedItemStack(is);
-		ElementTagCompound tag = data.get(ks);
+		return this.getItemValue(new KeyedItemStack(is));
+	}
+
+	public ElementTagCompound getItemValue(KeyedItemStack is) {
+		ElementTagCompound tag = data.get(is);
 		return tag != null ? tag.copy() : null;
 	}
 
@@ -262,8 +264,8 @@ public class ItemMagicRegistry {
 		return li;
 	}
 
-	public Map<KeyedItemStack, ElementTagCompound> getMap() {
-		return Collections.unmodifiableMap(data);
+	public Collection<KeyedItemStack> keySet() {
+		return Collections.unmodifiableCollection(data.keySet());
 	}
 
 }

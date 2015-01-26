@@ -17,6 +17,7 @@ import java.util.EnumMap;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public final class ElementTagCompound {
 
@@ -148,6 +149,15 @@ public final class ElementTagCompound {
 		for (CrystalElement e : data.keySet()) {
 			int amt = data.get(e);
 			amt *= amt;
+			this.setTag(e, amt);
+		}
+		return this;
+	}
+
+	public ElementTagCompound power(int power) {
+		for (CrystalElement e : data.keySet()) {
+			int amt = data.get(e);
+			amt = ReikaMathLibrary.intpow2(amt, power);
 			this.setTag(e, amt);
 		}
 		return this;

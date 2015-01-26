@@ -84,6 +84,7 @@ public class ProgressionManager {
 		DIE(Items.skull), //die and lose energy
 		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
+		RAINBOWFOREST(ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 

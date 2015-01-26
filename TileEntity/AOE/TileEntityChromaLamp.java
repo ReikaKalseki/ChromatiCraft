@@ -18,9 +18,9 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.LocationCached;
 
-public class TileEntityChromaLamp extends TileEntityChromaticBase implements BreakAction {
+public class TileEntityChromaLamp extends TileEntityChromaticBase implements LocationCached {
 
 	private static final HashMap<WorldLocation, Integer> cache = new HashMap();
 

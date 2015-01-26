@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -202,7 +203,15 @@ public class PylonFinder {
 		for (CrystalTransmitter te : li) {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
-				if (/*!te.needsLineOfSight() || */this.lineOfSight(r, te)) {
+				if (te.needsLineOfSight()) {
+					CrystalLink l = new CrystalLink(loc, loc2);
+					if (!l.hasLineOfSight()) {
+						l.recalculateLOS();
+						if (!l.hasLineOfSight())
+							continue;
+					}
+				}
+				if (this.lineOfSight(r, te)) {
 					if (te != target && te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target)) {
 						nodes.add(loc2);
 						return;
@@ -221,6 +230,10 @@ public class PylonFinder {
 			blacklist.add(loc);
 			duplicates.remove(loc);
 		}
+	}
+
+	static boolean lineOfSight(WorldLocation l1, WorldLocation l2) {
+		return lineOfSight(l1.getWorld(), l1.xCoord, l1.yCoord, l1.zCoord, l2.xCoord, l2.yCoord, l2.zCoord);
 	}
 
 	private boolean lineOfSight(CrystalNetworkTile te1, CrystalNetworkTile te) {

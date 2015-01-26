@@ -172,7 +172,7 @@
 			You have already seen how many items contain trace amounts of various crystal elements, leading you to wonder if the reverse is also true. After much experimentation, you devise an odd contraption that collects crystal energy on large paddles, and funnels it to the center, where it can be formed into an item. You do of course require one item first, as a sort of blueprint, and you note that only some more simplistic items can be fabricated.
 		</desc>
 		<note>
-			Requires %dn^%d lumens per unit naturally present on the item
+			Requires %d*(%.1f*n^%d) lumens per unit naturally present on the item
 		</note>
 	</fabricator>
 	<beacon>

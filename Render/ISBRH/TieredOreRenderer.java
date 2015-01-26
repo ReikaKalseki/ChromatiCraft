@@ -22,9 +22,12 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Models.GeodeModel;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
+
+	private final GeodeModel geode = new GeodeModel();
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -164,7 +167,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 			v5.addVertexWithUV(1-in, 		1, 		0, 		us, 	vs);
 		}
 		 */
-		//ISBRHModel
+		geode.render();
 		v5.addTranslation(-x, -y, -z);
 	}
 

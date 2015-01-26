@@ -295,7 +295,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		//addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.FURNACE, TileEntityCrystalFurnace.MULTIPLY);
-		addNotes(ChromaTiles.FABRICATOR, FabricationRecipes.FACTOR, FabricationRecipes.POWER2*2);
+		addNotes(ChromaTiles.FABRICATOR, FabricationRecipes.FACTOR, FabricationRecipes.INITFACTOR, FabricationRecipes.POWER);
 		addNotes(ChromaTiles.BEACON, TileEntityCrystalBeacon.RATIO, TileEntityCrystalBeacon.POWER, TileEntityCrystalBeacon.MAXRANGE);
 		addNotes(ChromaTiles.COLLECTOR, TileEntityCollector.XP_PER_CHROMA);
 		addNotes(ChromaTiles.ITEMCOLLECTOR, TileEntityItemCollector.MAXRANGE, TileEntityItemCollector.MAXYRANGE);

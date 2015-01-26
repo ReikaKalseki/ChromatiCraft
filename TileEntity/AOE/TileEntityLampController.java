@@ -21,14 +21,14 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.GuiController;
+import Reika.DragonAPI.Interfaces.LocationCached;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import Reika.RotaryCraft.API.Power.PowerTransferHelper;
 import Reika.RotaryCraft.API.Power.SimpleShaftPowerReceiver;
 import cofh.api.energy.IEnergyHandler;
 
-public class TileEntityLampController extends TileEntityChromaticBase implements BreakAction, GuiController, SimpleShaftPowerReceiver {
+public class TileEntityLampController extends TileEntityChromaticBase implements LocationCached, GuiController, SimpleShaftPowerReceiver {
 
 	private static final MultiMap<Integer, LightSource> map = new MultiMap();
 	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap();

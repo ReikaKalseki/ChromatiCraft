@@ -139,7 +139,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			if (!classes.isEmpty()) {
 				ClassPatch p = classes.get(className);
 				if (p != null) {
-					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Patching class "+className);
+					ReikaJavaLibrary.pConsole("CHROMATICRAFT: Patching class "+p.deobfName);
 					opcodes = p.apply(opcodes);
 					classes.remove(className); //for maximizing performance
 				}
