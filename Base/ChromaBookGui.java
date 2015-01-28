@@ -22,6 +22,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -62,6 +63,12 @@ public abstract class ChromaBookGui extends GuiScreen {
 		ySize = y;
 
 		cacheMouse = true;
+	}
+
+	@Override
+	public final void setWorldAndResolution(Minecraft mc, int x, int y) {
+		super.setWorldAndResolution(mc, x, y);
+		fontRendererObj = ChromaFontRenderer.FontType.LEXICON.renderer;
 	}
 
 	@Override

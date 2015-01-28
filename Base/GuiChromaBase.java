@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -20,6 +21,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -57,6 +59,12 @@ public abstract class GuiChromaBase extends GuiContainer {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
+	}
+
+	@Override
+	public final void setWorldAndResolution(Minecraft mc, int x, int y) {
+		super.setWorldAndResolution(mc, x, y);
+		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
 	}
 
 	@Override

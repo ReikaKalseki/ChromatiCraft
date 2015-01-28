@@ -383,8 +383,9 @@ public class ProgressionManager {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
-		if (!tag.getBoolean(e.name())) {
-			tag.setBoolean(e.name(), disc);
+		boolean had = tag.getBoolean(e.name());
+		tag.setBoolean(e.name(), disc);
+		if (!had) {
 			nbt.setTag(NBT_TAG2, tag);
 			if (disc)
 				this.checkPlayerColors(ep);
@@ -412,6 +413,17 @@ public class ProgressionManager {
 	public boolean hasPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG2);
 		return nbt.getBoolean(e.name());
+	}
+
+	public Collection<CrystalElement> getColorsFor(EntityPlayer ep) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG2);
+		Collection<CrystalElement> c = new ArrayList();
+		for (Object o : nbt.func_150296_c()) {
+			String tag = (String)o;
+			if (nbt.getBoolean(tag))
+				c.add(CrystalElement.valueOf(tag));
+		}
+		return c;
 	}
 
 }

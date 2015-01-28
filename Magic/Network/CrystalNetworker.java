@@ -58,12 +58,9 @@ public class CrystalNetworker implements TickHandler {
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
 	private final HashMap<String, WorldLocation> verifier = new HashMap();
-	//private final HashSet</*Link*/WorldChunk> losCache = new HashSet();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
-	private final Collection<CrystalFlow> toBreak = new ArrayList();
-
-	private int losTimer = 0;
+	private final HashSet<CrystalFlow> toBreak = new HashSet();
 
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -71,35 +68,23 @@ public class CrystalNetworker implements TickHandler {
 
 	@SubscribeEvent
 	public void markChunkCache(SetBlockEvent evt) {
-		/*
-		Iterator<Link> it = losCache.iterator();
-		while (it.hasNext()) {
-			Link l = it.next();
-			if (l.isChunkInPath(evt.chunkLocation))
-				it.remove();
-		}
-		 */
+		if (!evt.world.isRemote) {
+			WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
+			Collection<CrystalLink> c = losCache.get(wc);
+			if (c != null) {
+				for (CrystalLink l : c) {
+					l.hasLOS = false;
 
-		WorldChunk wc = new WorldChunk(evt.world, evt.chunkLocation);
-		Collection<CrystalLink> c = losCache.get(wc);
-		if (c != null) {
-			for (CrystalLink l : c) {
-				l.hasLOS = false;
-
-				//Kill active flows if blocked
-				for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
-					if (p.containsLink(l) && !p.checkLineOfSight()) {
-						CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
-						this.schedulePathBreak(p);
+					//Kill active flows if blocked
+					for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
+						if (!toBreak.contains(p) && p.containsLink(l) && !p.checkLineOfSight()) {
+							CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
+							this.schedulePathBreak(p);
+						}
 					}
 				}
 			}
 		}
-		/*
-		if (!losCache.contains(wc)) {
-			losCache.add(wc);
-		}
-		 */
 	}
 
 	private void schedulePathBreak(CrystalFlow p) {
@@ -125,16 +110,7 @@ public class CrystalNetworker implements TickHandler {
 		}
 		return l;
 	}
-	/*
-	boolean isLinkDirty(WorldLocation l1, WorldLocation l2) {
-		Link l = new Link(l1, l2);
-		for (WorldChunk wc : l.chunks) {
-			if (losCache.contains(wc))
-				return true;
-		}
-		return false;
-	}
-	 */
+
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		PylonFinder.stopAllSearches();
@@ -220,60 +196,40 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public void tick(TickType type, Object... data) {
-		/*
-		losTimer++;
-		boolean doCheckLOS = false;
-		if (losTimer >= 40) {
-			losTimer = 0;
-			doCheckLOS = true;
-		}
-		 */
 		for (int dim : flows.keySet()) {
 			Collection<CrystalFlow> c = flows.get(dim);
 			Iterator<CrystalFlow> it = c.iterator();
 			while (it.hasNext()) {
 				CrystalFlow p = it.next();
-				if (p.transmitter.canConduct() && p.canTransmit()) {
-					int amt = p.drain();
-					if (amt > 0) {
-						p.receiver.receiveElement(p.element, amt);
-						p.transmitter.drain(p.element, amt);
-						if (p.isComplete()) {
-							p.resetTiles();
-							it.remove();
-							CrystalNetworkLogger.logFlowSatisfy(p);
-						}
-					}
-				}
-				else {
-					CrystalNetworkLogger.logFlowBreak(p, FlowFail.ENERGY);
+
+				if (toBreak.contains(p)) {
 					p.receiver.onPathBroken(p.element);
 					p.resetTiles();
 					it.remove();
 				}
-			}
-
-			for (CrystalFlow p : toBreak) {
-				p.receiver.onPathBroken(p.element);
-				p.resetTiles();
-				c.remove(p);
-			}
-
-			/*
-			if (doCheckLOS) {
-				it = flows.get(dim).iterator();
-				while (it.hasNext()) {
-					CrystalFlow p = it.next();
-					if (!p.checkLineOfSight()) {
-						CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
+				else {
+					if (p.transmitter.canConduct() && p.canTransmit()) {
+						int amt = p.drain();
+						if (amt > 0) {
+							p.receiver.receiveElement(p.element, amt);
+							p.transmitter.drain(p.element, amt);
+							if (p.isComplete()) {
+								p.resetTiles();
+								it.remove();
+								CrystalNetworkLogger.logFlowSatisfy(p);
+							}
+						}
+					}
+					else {
+						CrystalNetworkLogger.logFlowBreak(p, FlowFail.ENERGY);
 						p.receiver.onPathBroken(p.element);
 						p.resetTiles();
 						it.remove();
 					}
 				}
 			}
-			 */
 		}
+		toBreak.clear();
 	}
 
 	public void clear(int dim) {
@@ -534,6 +490,11 @@ public class CrystalNetworker implements TickHandler {
 				return l.loc1.equals(loc1) && l.loc2.equals(loc2);
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return "["+loc1+" > "+loc2+"]";
 		}
 
 		final boolean hasLineOfSight() {

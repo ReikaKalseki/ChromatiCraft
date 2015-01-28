@@ -30,6 +30,8 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -48,6 +50,7 @@ public class CastingRecipe {
 	private final ItemStack out;
 	public final RecipeType type;
 	private IRecipe recipe;
+	private ChromaResearch fragment;
 
 	public CastingRecipe(ItemStack out, IRecipe recipe) {
 		this(out, RecipeType.CRAFTING, recipe);
@@ -57,6 +60,13 @@ public class CastingRecipe {
 		this.out = out;
 		this.type = type;
 		this.recipe = recipe;
+	}
+
+	public final void setFragment(ChromaResearch r) {
+		if (fragment == null)
+			fragment = r;
+		else
+			throw new IllegalStateException("Cannot change the research type of a recipe once initialized!");
 	}
 
 	public final ItemStack getOutput() {
@@ -115,6 +125,8 @@ public class CastingRecipe {
 	}
 
 	public boolean canRunRecipe(EntityPlayer ep) {
+		if (fragment != null && !ChromaResearchManager.instance.playerHasFragment(ep, fragment))
+			return false;
 		Collection<ProgressStage> c = new ArrayList();
 		this.getRequiredProgress(c);
 		for (ProgressStage p : c) {

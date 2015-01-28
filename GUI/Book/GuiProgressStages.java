@@ -25,6 +25,7 @@ import org.lwjgl.util.Rectangle;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
@@ -234,7 +235,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 				fontRendererObj.drawSplitString(s, px, dy, 242, 0xffffff);
 			}
 			else {
-				fontRendererObj.drawSplitString(this.getIncompleteText(), px, dy, 242, 0xffffff);
+				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(this.getIncompleteText(), px, dy, 242, 0xffffff);
 			}
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
@@ -261,6 +262,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	}
 
 	private String getIncompleteText() {
+		/*
 		if (this.getGuiTick()%250 == 0)
 			this.randomizeString();
 		String obf = EnumChatFormatting.OBFUSCATED.toString();
@@ -270,7 +272,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 		String pre = root.substring(0, randomIndex);
 		String mid = root.substring(randomIndex, n);
 		String post = root.substring(n);
-		return pre+clear+mid+obf+post;
+		return pre+clear+mid+obf+post;*/
+		return this.getIncompleteString();
 	}
 
 	private String getIncompleteString() {

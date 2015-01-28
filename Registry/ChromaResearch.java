@@ -616,6 +616,10 @@ public enum ChromaResearch {
 						itemMap.put(is, r);
 					}
 				}
+				Collection<CastingRecipe> crc = r.getCraftingRecipes();
+				for (CastingRecipe cr : crc) {
+					cr.setFragment(r);
+				}
 			}
 		}
 	}

@@ -11,12 +11,13 @@ package Reika.ChromatiCraft.Items.ItemBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
@@ -56,10 +57,16 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	}
 
 	@Override
+	public FontRenderer getFontRenderer(ItemStack is) {
+		return this.obfuscate(is) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : null;
+	}
+
+	@Override
 	public String getItemStackDisplayName(ItemStack is) {
 		String name = ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			name = this.getDisguiseName(is, name);
+			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
 		}
 		return name;
 	}
@@ -73,7 +80,18 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 			return tier ? name : bt.getDisguise().getLocalizedName();
 		}
 		else {
-			return tier ? name : EnumChatFormatting.OBFUSCATED.toString()+name;
+			return tier ? name : ChromaFontRenderer.FontType.OBFUSCATED.id+name;
+		}
+	}
+
+	private boolean obfuscate(ItemStack is) {
+		BlockChromaTiered bc = (BlockChromaTiered)field_150939_a;
+		boolean tier = bc.getProgressStage(is.getItemDamage()).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
+		if (field_150939_a instanceof BlockTieredOre) {
+			return false;
+		}
+		else {
+			return !tier;
 		}
 	}
 

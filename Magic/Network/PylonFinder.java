@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class PylonFinder {
 
@@ -87,6 +88,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
+			ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			this.addValidPath(flow.asPath());
 			return flow;
 		}
@@ -203,7 +205,8 @@ public class PylonFinder {
 		for (CrystalTransmitter te : li) {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
-				CrystalLink l = net.getLink(loc, loc2);
+				CrystalLink l = net.getLink(loc2, loc);
+				ReikaJavaLibrary.pConsole(l.hasLineOfSight()+":"+l, loc.yCoord == 80);
 				if (te.needsLineOfSight() && !l.hasLineOfSight()) {
 					l.recalculateLOS();
 					if (!l.hasLineOfSight())

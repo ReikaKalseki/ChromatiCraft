@@ -66,8 +66,8 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	@Override
-	public String toString() {
-		return element+": to "+origin+" from "+transmitter+": "+nodes.toString();
+	public final String toString() {
+		return element+": to "+origin+" from "+transmitter+": "+nodes.size()+"x "+nodes.toString();
 	}
 
 	public boolean contains(CrystalNetworkTile te) {
@@ -75,10 +75,10 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	public final boolean checkLineOfSight() {
-		for (int i = 0; i < nodes.size()-1; i++) {
+		for (int i = 0; i < nodes.size()-2; i++) {
 			WorldLocation tgt = nodes.get(i);
 			WorldLocation src = nodes.get(i+1);
-			if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
+			if (!PylonFinder.lineOfSight(src, tgt)) {
 				CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
 				if (sr.needsLineOfSight()) {
 					return false;
@@ -89,18 +89,21 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	boolean stillValid() {
-		for (int i = 0; i < nodes.size()-1; i++) {
-			WorldLocation src = nodes.get(i);
-			WorldLocation tgt = nodes.get(i+1);
-			if (src.getTileEntity() instanceof CrystalTransmitter) {
-				CrystalTransmitter tr = (CrystalTransmitter)src.getTileEntity();
-				CrystalTransmitter tg = (CrystalTransmitter)tgt.getTileEntity();
-				if (!PylonFinder.lineOfSight(src.getWorld(), src.xCoord, src.yCoord, src.zCoord, tgt.xCoord, tgt.yCoord, tgt.zCoord)) {
-					if (tr.needsLineOfSight() || tg.needsLineOfSight()) {
-						return false;
-					}
-				}
-				if (!tr.canConduct() || !tr.isConductingElement(element)) {
+		if (!transmitter.canConduct() || !transmitter.isConductingElement(element)) {
+			return false;
+		}
+		if (!((CrystalNetworkTile)origin.getTileEntity()).canConduct() || !((CrystalNetworkTile)origin.getTileEntity()).isConductingElement(element)) {
+			return false;
+		}
+		for (int i = 0; i < nodes.size()-2; i++) {
+			WorldLocation tgt = nodes.get(i);
+			WorldLocation src = nodes.get(i+1);
+			CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
+			if (sr == null || !sr.canConduct() || !sr.isConductingElement(element)) {
+				return false;
+			}
+			if (!PylonFinder.lineOfSight(tgt, src)) {
+				if (sr.needsLineOfSight()) {
 					return false;
 				}
 			}
@@ -111,6 +114,20 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	@Override
 	public int compareTo(CrystalPath o) {
 		return o.transmitter.getSourcePriority()-transmitter.getSourcePriority();
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		if (o instanceof CrystalPath) {
+			CrystalPath p = (CrystalPath)o;
+			return p.element == element && p.nodes.equals(nodes);
+		}
+		return false;
+	}
+
+	@Override
+	public final int hashCode() {
+		return nodes.hashCode()^element.ordinal();
 	}
 
 }

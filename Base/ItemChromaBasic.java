@@ -12,14 +12,15 @@ package Reika.ChromatiCraft.Base;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
@@ -97,39 +98,47 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 	}
 
 	@Override
+	public FontRenderer getFontRenderer(ItemStack is) {
+		return this.obfuscate(is) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : null;
+	}
+
+	@Override
 	public final String getItemStackDisplayName(ItemStack is) {
 		ChromaItems ir = ChromaItems.getEntry(is);
 		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			name = this.obfuscate(name, is);
+			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
+			if (this.obfuscate(is))
+				//name = EnumChatFormatting.OBFUSCATED.toString()+name;
+				name = ChromaFontRenderer.FontType.OBFUSCATED.id+name;
 		}
 		return name;
 	}
 
 	@SideOnly(Side.CLIENT)
-	private String obfuscate(String name, ItemStack is) {
+	private boolean obfuscate(ItemStack is) {
 		if (this instanceof TieredItem) {
-			name = this.obfuscateIf(name, is);
+			return this.obfuscateIf(is);
 		}
 		else if (this instanceof ItemCrystalBasic) {
 			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 			if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
-				name = EnumChatFormatting.OBFUSCATED.toString()+name+EnumChatFormatting.RESET.toString();
+				return true;
 			}
 		}
-		return name;
+		return false;
 	}
 
 	@SideOnly(Side.CLIENT)
-	private String obfuscateIf(String name, ItemStack is) {
+	private boolean obfuscateIf(ItemStack is) {
 		TieredItem it = (TieredItem)this;
 		if (it.isTiered(is)) {
 			ProgressStage p = it.getDiscoveryTier(is);
 			if (!p.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
-				name = EnumChatFormatting.OBFUSCATED.toString()+name;
+				return true;
 			}
 		}
-		return name;
+		return false;
 	}
 
 }

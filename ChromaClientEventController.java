@@ -41,6 +41,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.research.ResearchItem;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -585,52 +586,53 @@ public class ChromaClientEventController {
 	public void renderItemTags(RenderItemInSlotEvent evt) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 			if (evt.hasItem() && evt.isHovered()) {
-				ItemStack is = evt.getItem();
-				ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
-				if (tag != null) {
-					Tessellator v5 = Tessellator.instance;
-					int i = tag.tagCount();
-					GL11.glDisable(GL11.GL_CULL_FACE);
-					GL11.glDisable(GL11.GL_DEPTH_TEST);
-					GL11.glDisable(GL11.GL_LIGHTING);
-					GL11.glEnable(GL11.GL_BLEND);
-					double z = 0;
-					int w = 8;
-					int h = 8;
-					int mx = 0;//evt.getRelativeMouseX();
-					int my = 0;//evt.getRelativeMouseY();
-					int x2 = evt.slotX-i*w+mx;
-					int y2 = evt.slotY-w+my;
-					//if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-					//	w = 16;
-					//	x2 -= 8;
-					//}
-					int r = 1;
-					GL11.glDisable(GL11.GL_TEXTURE_2D);
-					v5.startDrawingQuads();
-					v5.setColorRGBA(127, 0, 255, 255);
-					v5.addVertex(x2-r, y2-r, z);
-					v5.addVertex(x2+w*i+r, y2-r, z);
-					v5.addVertex(x2+w*i+r, y2+h+r, z);
-					v5.addVertex(x2-r, y2+h+r, z);
-					v5.draw();
-					v5.startDrawingQuads();
-					v5.setColorRGBA(0, 0, 0, 255);
-					v5.addVertex(x2, y2, z);
-					v5.addVertex(x2+w*i, y2, z);
-					v5.addVertex(x2+w*i, y2+h, z);
-					v5.addVertex(x2, y2+h, z);
-					v5.draw();
-					GL11.glEnable(GL11.GL_TEXTURE_2D);
-					for (CrystalElement e : tag.elementSet()) {
-						IIcon ico = e.getFaceRune();
-						float u = ico.getMinU();
-						float v = ico.getMinV();
-						float du = ico.getMaxU();
-						float dv = ico.getMaxV();
-						int x = evt.slotX-i*w+mx;
-						int y = evt.slotY-w+my;
-						i--;/*
+				if (ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
+					ItemStack is = evt.getItem();
+					ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
+					if (tag != null) {
+						Tessellator v5 = Tessellator.instance;
+						int i = tag.tagCount();
+						GL11.glDisable(GL11.GL_CULL_FACE);
+						GL11.glDisable(GL11.GL_DEPTH_TEST);
+						GL11.glDisable(GL11.GL_LIGHTING);
+						GL11.glEnable(GL11.GL_BLEND);
+						double z = 0;
+						int w = 8;
+						int h = 8;
+						int mx = 0;//evt.getRelativeMouseX();
+						int my = 0;//evt.getRelativeMouseY();
+						int x2 = evt.slotX-i*w+mx;
+						int y2 = evt.slotY-w+my;
+						//if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+						//	w = 16;
+						//	x2 -= 8;
+						//}
+						int r = 1;
+						GL11.glDisable(GL11.GL_TEXTURE_2D);
+						v5.startDrawingQuads();
+						v5.setColorRGBA(127, 0, 255, 255);
+						v5.addVertex(x2-r, y2-r, z);
+						v5.addVertex(x2+w*i+r, y2-r, z);
+						v5.addVertex(x2+w*i+r, y2+h+r, z);
+						v5.addVertex(x2-r, y2+h+r, z);
+						v5.draw();
+						v5.startDrawingQuads();
+						v5.setColorRGBA(0, 0, 0, 255);
+						v5.addVertex(x2, y2, z);
+						v5.addVertex(x2+w*i, y2, z);
+						v5.addVertex(x2+w*i, y2+h, z);
+						v5.addVertex(x2, y2+h, z);
+						v5.draw();
+						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						for (CrystalElement e : tag.elementSet()) {
+							IIcon ico = e.getFaceRune();
+							float u = ico.getMinU();
+							float v = ico.getMinV();
+							float du = ico.getMaxU();
+							float dv = ico.getMaxV();
+							int x = evt.slotX-i*w+mx;
+							int y = evt.slotY-w+my;
+							i--;/*
 						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 							GL11.glPushMatrix();
 							double sc = 0.5;
@@ -644,20 +646,21 @@ public class ChromaClientEventController {
 							GL11.glPopMatrix();
 						}
 						else {*/
-						ReikaTextureHelper.bindTerrainTexture();
-						v5.startDrawingQuads();
-						v5.setColorOpaque_I(0xffffff);
-						v5.addVertexWithUV(x, y, z, u, v);
-						v5.addVertexWithUV(x+w, y, z, du, v);
-						v5.addVertexWithUV(x+w, y+w, z, du, dv);
-						v5.addVertexWithUV(x, y+w, z, u, dv);
-						v5.draw();
-						//}
+							ReikaTextureHelper.bindTerrainTexture();
+							v5.startDrawingQuads();
+							v5.setColorOpaque_I(0xffffff);
+							v5.addVertexWithUV(x, y, z, u, v);
+							v5.addVertexWithUV(x+w, y, z, du, v);
+							v5.addVertexWithUV(x+w, y+w, z, du, dv);
+							v5.addVertexWithUV(x, y+w, z, u, dv);
+							v5.draw();
+							//}
+						}
+						GL11.glEnable(GL11.GL_CULL_FACE);
+						GL11.glEnable(GL11.GL_DEPTH_TEST);
+						GL11.glEnable(GL11.GL_LIGHTING);
+						GL11.glDisable(GL11.GL_BLEND);
 					}
-					GL11.glEnable(GL11.GL_CULL_FACE);
-					GL11.glEnable(GL11.GL_DEPTH_TEST);
-					GL11.glEnable(GL11.GL_LIGHTING);
-					GL11.glDisable(GL11.GL_BLEND);
 				}
 			}
 		}

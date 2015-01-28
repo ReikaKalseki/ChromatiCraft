@@ -137,10 +137,10 @@ public class GuiCraftingRecipe extends GuiBookSection {
 			if (is != null) {
 				int x = posX+54+(i%3)*18;
 				int y = posY+10+(i/3)*18;
-				api.drawItemStackWithTooltip(itemRender, is, x, y);
+				api.drawItemStackWithTooltip(itemRender, fontRendererObj, is, x, y);
 			}
 		}
-		api.drawItemStackWithTooltip(itemRender, ir.getRecipeOutput(), posX+7, posY+5);
+		api.drawItemStackWithTooltip(itemRender, fontRendererObj, ir.getRecipeOutput(), posX+7, posY+5);
 	}
 
 	private final void drawGraphics() {

@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -128,10 +127,7 @@ public class ChromaHelpHUD {
 	}
 
 	private void renderText(String s, int gsc, boolean know) {
-		if (!know) {
-			s = EnumChatFormatting.OBFUSCATED.toString()+s;
-		}
-		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
+		FontRenderer f = know ? ChromaFontRenderer.FontType.HUD.renderer : ChromaFontRenderer.FontType.OBFUSCATED.renderer;
 		GL11.glPushMatrix();
 		boolean big = gsc > 2;
 		double ft = big ? 2 : 1;
