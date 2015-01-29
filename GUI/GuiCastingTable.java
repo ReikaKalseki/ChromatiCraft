@@ -25,6 +25,8 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -97,6 +99,12 @@ public class GuiCastingTable extends GuiChromaBase {
 
 		CastingRecipe r = tile.getActiveRecipe();
 		if (r != null) {
+			ChromaResearch res = r.getFragment();
+			if (res != null && !ChromaResearchManager.instance.playerHasFragment(player, res)) {
+				--draw question mark, also do not draw item--
+				return;
+			}
+
 			ItemStack out = r.getOutput();
 			api.drawItemStack(itemRender, out, 189, 12);
 			if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {
@@ -106,6 +114,7 @@ public class GuiCastingTable extends GuiChromaBase {
 			}
 
 			zLevel = 100;
+
 			if (!r.canRunRecipe(player)) {
 				ReikaTextureHelper.bindTerrainTexture();
 				GL11.glEnable(GL11.GL_BLEND);

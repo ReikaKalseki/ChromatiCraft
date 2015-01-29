@@ -69,6 +69,10 @@ public class CastingRecipe {
 			throw new IllegalStateException("Cannot change the research type of a recipe once initialized!");
 	}
 
+	public final ChromaResearch getFragment() {
+		return fragment;
+	}
+
 	public final ItemStack getOutput() {
 		return ReikaItemHelper.getSizedItemStack(out, Math.max(out.stackSize, this.getNumberProduced()));
 	}
