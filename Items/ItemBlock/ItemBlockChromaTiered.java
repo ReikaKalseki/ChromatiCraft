@@ -57,6 +57,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public FontRenderer getFontRenderer(ItemStack is) {
 		return this.obfuscate(is) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : null;
 	}
@@ -84,6 +85,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private boolean obfuscate(ItemStack is) {
 		BlockChromaTiered bc = (BlockChromaTiered)field_150939_a;
 		boolean tier = bc.getProgressStage(is.getItemDamage()).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);

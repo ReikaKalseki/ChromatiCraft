@@ -38,6 +38,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLumenRelay extends Block {
 
@@ -194,6 +196,7 @@ public class BlockLumenRelay extends Block {
 	}
 	 */
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		int meta = world.getBlockMetadata(x, y, z);
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta];
