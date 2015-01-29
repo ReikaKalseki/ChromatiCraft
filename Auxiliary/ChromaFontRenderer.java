@@ -49,7 +49,7 @@ public class ChromaFontRenderer extends FontRenderer {
 	@Override
 	protected float renderDefaultChar(int charIndex, boolean italic) {
 		if (type == FontType.OBFUSCATED) {
-			charIndex = (charWidth.length+charIndex+(int)posX/4%4-(int)posY/4%4+offsets[charIndex])%charWidth.length;
+			charIndex = (charWidth.length+charIndex+/*(int)posX/4%4-(int)posY/4%4+*/offsets[charIndex])%charWidth.length;
 		}
 
 		float f = charIndex%16*8;
@@ -179,17 +179,17 @@ public class ChromaFontRenderer extends FontRenderer {
 	}
 
 	public static enum FontType {
-		GUI("Textures/gui_font.png"),
-		LEXICON("Textures/lexicon_font.png"),
-		HUD("Textures/hud_font.png"),
-		OBFUSCATED("Textures/obf_font.png"); //replaces the scramble char
+		GUI("gui_font.png"),
+		LEXICON("lexicon_font.png"),
+		HUD("hud_font.png"),
+		OBFUSCATED("obf_font.png"); //replaces the scramble char
 
 		private final String texture;
 		public final String id;
 		public final ChromaFontRenderer renderer;
 
 		private FontType(String s) {
-			texture = s;
+			texture = "Textures/Font/"+s;
 			renderer = new ChromaFontRenderer(this);
 			id = DelegateFontRenderer.getRegisteredInstance().addRenderer(renderer);
 		}

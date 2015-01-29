@@ -101,16 +101,20 @@ public class GuiCastingTable extends GuiChromaBase {
 		if (r != null) {
 			ChromaResearch res = r.getFragment();
 			if (res != null && !ChromaResearchManager.instance.playerHasFragment(player, res)) {
-				--draw question mark, also do not draw item--
-				return;
+				ReikaTextureHelper.bindTerrainTexture();
+				GL11.glEnable(GL11.GL_BLEND);
+				IIcon ico = ChromaIcons.QUESTION.getIcon();
+				this.drawTexturedModelRectFromIcon(189, 12, ico, 16, 16);
+				GL11.glDisable(GL11.GL_BLEND);
 			}
-
-			ItemStack out = r.getOutput();
-			api.drawItemStack(itemRender, out, 189, 12);
-			if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {
-				int mx = api.getMouseRealX();
-				int my = api.getMouseRealY();
-				api.drawTooltipAt(fontRendererObj, out.getDisplayName(), mx-30, my);
+			else {
+				ItemStack out = r.getOutput();
+				api.drawItemStack(itemRender, out, 189, 12);
+				if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {
+					int mx = api.getMouseRealX();
+					int my = api.getMouseRealY();
+					api.drawTooltipAt(fontRendererObj, out.getDisplayName(), mx-30, my);
+				}
 			}
 
 			zLevel = 100;
