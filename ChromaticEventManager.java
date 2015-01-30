@@ -78,6 +78,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -160,6 +161,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	@ModDependent(ModList.BLOODMAGIC)
+	@ClassDependent("WayofTime.alchemicalWizardry.api.event.TeleposeEvent")
 	public void noTelepose(TeleposeEvent evt) {
 		if (evt.getInitialTile() instanceof TileEntityCrystalBase || evt.getFinalTile() instanceof TileEntityCrystalBase)
 			evt.setCanceled(true);
