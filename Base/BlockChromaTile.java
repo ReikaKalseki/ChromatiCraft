@@ -352,11 +352,13 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super.breakBlock(world, x, y, z, par5, par6);
 	}
 
+	@Override
 	@ModDependent(ModList.WAILA)
 	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) {
 		return ChromaTiles.getTileFromIDandMetadata(this, accessor.getMetadata()).getCraftedProduct();
 	}
 
+	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		World world = acc.getWorld();
@@ -370,6 +372,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		return currenttip;
 	}
 
+	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
@@ -466,6 +469,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		return currenttip;
 	}
 
+	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
 		String s1 = EnumChatFormatting.ITALIC.toString();

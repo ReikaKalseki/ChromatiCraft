@@ -33,7 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
-import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeColors;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
@@ -460,7 +460,7 @@ public enum ChromaResearch {
 		}
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
-			if (item instanceof ItemBlockDyeTypes || item instanceof ItemBlockDyeColors || item instanceof ItemBlockCrystal) {
+			if (item instanceof ItemBlockDyeTypes || item instanceof ItemBlockCrystalColors || item instanceof ItemBlockCrystal) {
 				ArrayList<ItemStack> li = new ArrayList();
 				for (int i = 0; i < 16; i++) {
 					li.add(block.getStackOfMetadata(i));

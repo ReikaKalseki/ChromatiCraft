@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Auxiliary.Potions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.StatCollector;
 
 public class PotionBetterSaturation extends Potion {
 
@@ -30,7 +29,7 @@ public class PotionBetterSaturation extends Potion {
 	@Override
 	public String getName()
 	{
-		return StatCollector.translateToLocal("chromapotion.sat");
+		return Potion.field_76443_y.getName();//StatCollector.translateToLocal("chromapotion.sat");
 	}
 
 	@Override

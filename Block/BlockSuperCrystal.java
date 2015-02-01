@@ -88,4 +88,9 @@ public class BlockSuperCrystal extends CrystalBlock {
 		return 15;
 	}
 
+	@Override
+	public boolean performEffect(CrystalElement e) {
+		return true;
+	}
+
 }

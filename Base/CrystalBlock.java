@@ -50,7 +50,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 
 	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
-	private static final Random rand = new Random();
+	protected static final Random rand = new Random();
 
 	public CrystalBlock(Material mat) {
 		super(mat);
@@ -202,7 +202,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 				float f3 = 0.5F*((f1-f2)*0.7F+1.8F);
 				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, f3/*this.getRandomPitch(color)*/);
 			}
-			if (this.shouldGiveEffects(color)) {
+			if (this.shouldGiveEffects(color) && this.performEffect(color)) {
 				int r = this.getRange();
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);
 				List<EntityLivingBase> inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
@@ -218,6 +218,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	public abstract boolean shouldMakeNoise();
 
 	public abstract boolean shouldGiveEffects(CrystalElement e);
+	public abstract boolean performEffect(CrystalElement e);
 
 	public abstract int getRange();
 

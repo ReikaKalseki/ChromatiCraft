@@ -530,6 +530,25 @@ public class ChromaOverlays {
 			}
 			v5.draw();
 			 */
+
+			IIcon ico = e.getOutlineRune();
+			float u = ico.getMinU();
+			float v = ico.getMinV();
+			float du = ico.getMaxU();
+			float dv = ico.getMaxV();
+			int s = 8;
+			double rr = 26;
+			double dx = ox-s/2+rr*Math.cos(Math.toRadians(11.125+i*22.5));
+			double dy = oy-s/2+rr*Math.sin(Math.toRadians(11.125+i*22.5));
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			ReikaTextureHelper.bindTerrainTexture();
+			v5.startDrawingQuads();
+			v5.addVertexWithUV(dx+0, dy+s, 0, u, dv);
+			v5.addVertexWithUV(dx+s, dy+s, 0, du, dv);
+			v5.addVertexWithUV(dx+s, dy+0, 0, du, v);
+			v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+			v5.draw();
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 
 		float wide = GL11.glGetFloat(GL11.GL_LINE_WIDTH);

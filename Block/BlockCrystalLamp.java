@@ -89,4 +89,9 @@ public class BlockCrystalLamp extends CrystalBlock {
 	public int getBrightness(IBlockAccess iba, int x, int y, int z) {
 		return 15;
 	}
+
+	@Override
+	public boolean performEffect(CrystalElement e) {
+		return false;
+	}
 }

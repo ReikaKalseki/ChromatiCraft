@@ -272,7 +272,7 @@ public final class ChromaDescriptions {
 		MinecraftForge.EVENT_BUS.register(new ReloadListener());
 	}
 
-	private static class ReloadListener {
+	public static final class ReloadListener {
 
 		@SubscribeEvent
 		public void reload(ResourceReloadEvent evt) {

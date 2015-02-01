@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
@@ -25,7 +26,6 @@ import Reika.DragonAPI.Instantiable.Event.TextureReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -36,6 +36,7 @@ public class ChromaFontRenderer extends FontRenderer {
 
 	private final FontType type;
 	private Kerning kerning = Kerning.NORMAL;
+	//private String currentString;
 	private final int[] offsets;
 
 	private ChromaFontRenderer(FontType f) {
@@ -49,14 +50,14 @@ public class ChromaFontRenderer extends FontRenderer {
 	@Override
 	protected float renderDefaultChar(int charIndex, boolean italic) {
 		if (type == FontType.OBFUSCATED) {
-			charIndex = (charWidth.length+charIndex+/*(int)posX/4%4-(int)posY/4%4+*/offsets[charIndex])%charWidth.length;
+			charIndex = (charWidth.length+charIndex/*+(int)posX/16%16-(int)posY/16%16*/+offsets[charIndex])%charWidth.length;
 		}
 
 		float f = charIndex%16*8;
 		float f1 = charIndex/16*8;
 		float f2 = italic ? 1.0F : 0.0F;
-		GL11.glEnable(GL11.GL_BLEND);
-		BlendMode.ADDITIVE.apply();
+		//GL11.glEnable(GL11.GL_BLEND);
+		//BlendMode.ADDITIVE.apply();
 		//renderEngine.bindTexture(locationFontTexture);
 		//ReikaTextureHelper.bindFontTexture();
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, type.texture);
@@ -71,8 +72,8 @@ public class ChromaFontRenderer extends FontRenderer {
 		GL11.glTexCoord2f((f+f3-1.0F)/128.0F, (f1+7.99F)/128.0F);
 		GL11.glVertex3f(posX+f3-1.0F-f2, posY+7.99F, 0.0F);
 		GL11.glEnd();
-		BlendMode.DEFAULT.apply();
-		GL11.glDisable(GL11.GL_BLEND);
+		//BlendMode.DEFAULT.apply();
+		//GL11.glDisable(GL11.GL_BLEND);
 		return charWidth[charIndex]+kerning.spaceMod;
 	}
 	/*
@@ -125,11 +126,40 @@ public class ChromaFontRenderer extends FontRenderer {
 
 	private void onReload() {
 		this.readFontTexture();
+		this.rerandomize();
+	}
+
+	private void rerandomize() {
 		for (int i = 0; i < offsets.length; i++) {
 			offsets[i] = ReikaRandomHelper.getRandomPlusMinus(0, 4);
 		}
 	}
 
+	@SubscribeEvent
+	public void onOpenGui(GuiOpenEvent evt) {
+		this.rerandomize();
+	}
+
+	/*
+	@Override
+	public int drawString(String s, int x, int y, int color, boolean shadow) {
+		this.checkAndFlagString(s);
+		return super.drawString(s, x, y, color, shadow);
+	}
+
+	@Override
+	public void drawSplitString(String s, int x, int y, int split, int color) {
+		this.checkAndFlagString(s);
+		super.drawSplitString(s, x, y, split, color);
+	}
+
+	private void checkAndFlagString(String s) {
+		if (!s.equals(currentString)) {
+			offset = ReikaRandomHelper.getRandomPlusMinus(0, 3);
+		}
+		currentString = s;
+	}
+	 */
 	private void readFontTexture() {
 		BufferedImage buf = ReikaImageLoader.readImage(ChromatiCraft.class, type.texture);
 		int w = buf.getWidth();

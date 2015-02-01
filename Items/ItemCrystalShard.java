@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -22,6 +23,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
@@ -228,6 +231,16 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 			li.add(EnumChatFormatting.LIGHT_PURPLE.toString()+"Gives level II enhanced potions");
 		else
 			li.add(EnumChatFormatting.GOLD.toString()+"Gives ordinary potions");
+
+		if (!ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color)) {
+			ArrayList<String> li2 = new ArrayList();
+			for (Object o : li) {
+				if (o instanceof String)
+					li2.add(ChromaFontRenderer.FontType.OBFUSCATED.id+o);
+			}
+			li.clear();
+			li.addAll(li2);
+		}
 	}
 
 	@Override

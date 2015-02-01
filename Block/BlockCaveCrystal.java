@@ -31,8 +31,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger, MinerBlock {
 
-	private static final Random rand = new Random();
-
 	public BlockCaveCrystal(Material mat) {
 		super(mat);
 	}
@@ -78,6 +76,11 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 
 	@Override
 	public boolean shouldGiveEffects(CrystalElement e) {
+		return true;
+	}
+
+	@Override
+	public boolean performEffect(CrystalElement e) {
 		return e == CrystalElement.BROWN || e == CrystalElement.BLUE ? rand.nextInt(4) == 0 : true;
 	}
 

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.ItemBlock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -80,40 +81,44 @@ public class ItemBlockCrystal extends ItemBlock {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean par4) {
 		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
-		if (ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color)) {
-			CrystalBlock block = (CrystalBlock)Block.getBlockFromItem(is.getItem());
-			PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
-			PotionEffect neff = CrystalPotionController.getNetherEffectFromColor(color, 200, 0);
-			boolean negative = eff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[eff.getPotionID()]) : false;
-			boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) : false;
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-				if (block.shouldGiveEffects(color)) {
-					li.add("Effects: "+CrystalPotionController.getEffectName(color));
-					if (negative)
-						li.add("(Mobs only)");
-					String sg = nnegative || neff == null ? "(Players only)" : "(Mobs only)";
-					li.add("Nether Effects: "+CrystalPotionController.getNetherEffectName(color));
-					li.add(sg);
-					if (CrystalPotionController.getEffectFromColor(color, 200, 0) != null) {
-						li.add("");
-						li.add("Effect Range: "+block.getRange());
-						li.add("Effect Level: "+(block.getPotionLevel(color)+1));
+		CrystalBlock block = (CrystalBlock)Block.getBlockFromItem(is.getItem());
+		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
+		PotionEffect neff = CrystalPotionController.getNetherEffectFromColor(color, 200, 0);
+		boolean negative = eff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[eff.getPotionID()]) : false;
+		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) : false;
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			if (block.shouldGiveEffects(color)) {
+				li.add("Effects: "+CrystalPotionController.getEffectName(color));
+				if (negative)
+					li.add("(Mobs only)");
+				String sg = nnegative || neff == null ? "(Players only)" : "(Mobs only)";
+				li.add("Nether Effects: "+CrystalPotionController.getNetherEffectName(color));
+				li.add(sg);
+				if (CrystalPotionController.getEffectFromColor(color, 200, 0) != null) {
+					li.add("");
+					li.add("Effect Range: "+block.getRange());
+					li.add("Effect Level: "+(block.getPotionLevel(color)+1));
 
-					}
 				}
 			}
-			else if (field_150939_a != ChromaBlocks.LAMP.getBlockInstance()) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Hold ");
-				sb.append(EnumChatFormatting.GREEN.toString());
-				sb.append("Shift");
-				sb.append(EnumChatFormatting.GRAY.toString());
-				sb.append(" for effect data");
-				li.add(sb.toString());
-			}
 		}
-		else {
-			li.add(EnumChatFormatting.OBFUSCATED.toString()+"------------------");
+		else if (field_150939_a != ChromaBlocks.LAMP.getBlockInstance()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Hold ");
+			sb.append(EnumChatFormatting.GREEN.toString());
+			sb.append("Shift");
+			sb.append(EnumChatFormatting.GRAY.toString());
+			sb.append(" for effect data");
+			li.add(sb.toString());
+		}
+		if (!ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color)) {
+			ArrayList<String> li2 = new ArrayList();
+			for (Object o : li) {
+				if (o instanceof String)
+					li2.add(ChromaFontRenderer.FontType.OBFUSCATED.id+o);
+			}
+			li.clear();
+			li.addAll(li2);
 		}
 	}
 

@@ -21,14 +21,13 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBlockDyeTypes extends ItemBlock {
+public class ItemBlockCrystalColors extends ItemBlock {
 
-	public ItemBlockDyeTypes(Block b) {
+	public ItemBlockCrystalColors(Block b) {
 		super(b);
 		hasSubtypes = true;
 	}
@@ -36,24 +35,8 @@ public class ItemBlockDyeTypes extends ItemBlock {
 	@Override
 	public void getSubItems(Item id, CreativeTabs par2CreativeTabs, List par3List)
 	{
-		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++)
+		for (int i = 0; i < 16; i++)
 			par3List.add(new ItemStack(id, 1, i));
-	}
-
-	@Override
-	public int getMetadata(int dmg)
-	{
-		return dmg;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getColorFromItemStack(ItemStack is, int par2)
-	{
-		if (ChromaBlocks.DYE.match(is) || ChromaBlocks.DYELEAF.match(is) || ChromaBlocks.DECAY.match(is))
-			return super.getColorFromItemStack(is, par2);
-
-		return ReikaDyeHelper.getColorFromDamage(is.getItemDamage()).getJavaColor().brighter().getRGB();
 	}
 
 	@Override
@@ -73,5 +56,11 @@ public class ItemBlockDyeTypes extends ItemBlock {
 		CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 		return !ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e);
 	}
+
+	@Override
+	public int getMetadata(int meta) {
+		return meta;
+	}
+
 
 }

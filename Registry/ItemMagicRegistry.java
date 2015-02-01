@@ -238,7 +238,7 @@ public class ItemMagicRegistry {
 	}
 
 	private void addElement(ItemStack is, CrystalElement e, int amt) {
-		KeyedItemStack ks = new KeyedItemStack(is).setSized();
+		KeyedItemStack ks = new KeyedItemStack(is).setSized(true);
 		ElementTagCompound tag = data.get(ks);
 		if (tag == null) {
 			tag = new ElementTagCompound();
