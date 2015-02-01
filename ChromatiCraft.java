@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.LoginApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
@@ -103,6 +104,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
+import Reika.DragonAPI.ModInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ThermalHandler;
@@ -400,6 +402,20 @@ public class ChromatiCraft extends DragonAPIMod {
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values");
+
+		for (int i = 0; i < ChromaItems.itemList.length; i++) {
+			ChromaItems ir = ChromaItems.itemList[i];
+			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL)
+				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getItemInstance());
+		}
+
+		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
+			ChromaBlocks ir = ChromaBlocks.blockList[i];
+			MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
+		}
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class);
 
 		this.finishTiming();
 	}
