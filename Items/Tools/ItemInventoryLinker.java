@@ -133,7 +133,7 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 	}
 
 	public boolean linksItem(ItemStack tool, ItemStack is) {
-		return this.canLinkItems() && (tool.getItemDamage() == 1 || ReikaItemHelper.listContainsItemStack(this.getItemList(tool), is));
+		return this.canLinkItems() && (tool.getItemDamage() == 1 || ReikaItemHelper.collectionContainsItemStack(this.getItemList(tool), is));
 	}
 
 	public ArrayList<ItemStack> getItemList(ItemStack is) {
