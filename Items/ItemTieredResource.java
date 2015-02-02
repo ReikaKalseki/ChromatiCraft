@@ -45,6 +45,10 @@ public class ItemTieredResource extends ItemChromaMulti implements TieredItem {
 			return ProgressStage.CHARGE;
 		case 7:
 			return ProgressStage.MULTIBLOCK;
+		case 8:
+			return ProgressStage.END;
+		case 9:
+			return ProgressStage.OCEAN;
 		default:
 			return null;
 		}
@@ -52,7 +56,7 @@ public class ItemTieredResource extends ItemChromaMulti implements TieredItem {
 
 	@Override
 	public boolean isTiered(ItemStack is) {
-		if (is.getItemDamage() <= 7)
+		if (is.getItemDamage() <= 9)
 			return true;
 		switch(is.getItemDamage()) {
 
