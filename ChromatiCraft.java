@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ChromaResearchDebugCom
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomeChanger;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -449,6 +450,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!this.isLocked()) {
 			ChromaRecipes.addPostLoadRecipes();
 		}
+
+		TileEntityBiomeChanger.buildBiomeList();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();

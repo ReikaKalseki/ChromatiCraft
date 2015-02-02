@@ -51,7 +51,7 @@ public class GuiRangedLamp extends GuiContainer {
 	}
 
 	@Override
-	public void keyTyped(char c, int i){
+	protected void keyTyped(char c, int i){
 		super.keyTyped(c, i);
 		input.textboxKeyTyped(c, i);
 	}
