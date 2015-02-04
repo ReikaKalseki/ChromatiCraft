@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityCrystalFence extends TileEntityRelayPowered {
@@ -100,7 +101,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered {
 					EntityPlayer ep = (EntityPlayer)e;
 					if (ep == this.getPlacer())
 						att = false;
-					else if ("Reika_Kalseki".equals(ep.getCommandSenderName()))
+					else if (ReikaPlayerAPI.isReika(ep))
 						att = false;
 				}
 				if (att) {

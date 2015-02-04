@@ -39,9 +39,7 @@ public class GuardianStoneManager {
 	}
 
 	public boolean canPlayerOverrideProtections(EntityPlayerMP ep) {
-		if ("Reika_Kalseki".equals(ep.getCommandSenderName()))
-			return true;
-		return ReikaPlayerAPI.isAdmin(ep);
+		return ReikaPlayerAPI.isReika(ep) || ReikaPlayerAPI.isAdmin(ep);
 	}
 
 	public ProtectionZone addZone(World world, int x, int y, int z, EntityPlayer ep, int r) {
