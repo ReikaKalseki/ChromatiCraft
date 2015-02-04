@@ -415,9 +415,11 @@ public class ChromatiCraft extends DragonAPIMod {
 				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getItemInstance());
 		}
 
-		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
-			ChromaBlocks ir = ChromaBlocks.blockList[i];
-			MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
+		if (MTInteractionManager.isMTLoaded()) {
+			for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
+				ChromaBlocks ir = ChromaBlocks.blockList[i];
+				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
+			}
 		}
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
