@@ -45,7 +45,22 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 		private static final Control[] list = values();
 
 		public Control next() {
-			return list[(this.ordinal()+1)%list.length];
+			Control c = list[(this.ordinal()+1)%list.length];
+			while (!c.isValid()) {
+				c = list[(c.ordinal()+1)%list.length];
+			}
+			return c;
+		}
+
+		private boolean isValid() {
+			switch(this) {
+			case RFSTORAGE:
+				return PowerTypes.RF.exists();
+			case SHAFTPOWER:
+				return PowerTypes.ROTARYCRAFT.exists();
+			default:
+				return true;
+			}
 		}
 	}
 

@@ -18,9 +18,15 @@ import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import cpw.mods.fml.common.IWorldGenerator;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 
-public class TieredWorldGenerator implements IWorldGenerator {
+public class TieredWorldGenerator implements RetroactiveGenerator {
+
+	public static final TieredWorldGenerator instance = new TieredWorldGenerator();
+
+	private TieredWorldGenerator() {
+
+	}
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
@@ -59,6 +65,16 @@ public class TieredWorldGenerator implements IWorldGenerator {
 			}
 		}
 
+	}
+
+	@Override
+	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+		return true;
+	}
+
+	@Override
+	public String getIDString() {
+		return "ChromatiCraft Tiered Materials";
 	}
 
 }

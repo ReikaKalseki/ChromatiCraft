@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModInteract.AppEngHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 
 public class VoidStorageRecipe extends PylonRecipe {
 

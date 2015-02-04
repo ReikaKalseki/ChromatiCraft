@@ -30,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
@@ -86,8 +87,9 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.ModInteract.BloodMagicHandler;
+import Reika.DragonAPI.ModInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
@@ -108,6 +110,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void cancelFramez(FrameUsageEvent evt) {
+		if (!this.isMovable(evt.tile)) {
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent
@@ -163,8 +172,12 @@ public class ChromaticEventManager {
 	@ModDependent(ModList.BLOODMAGIC)
 	@ClassDependent("WayofTime.alchemicalWizardry.api.event.TeleposeEvent")
 	public void noTelepose(TeleposeEvent evt) {
-		if (evt.getInitialTile() instanceof TileEntityCrystalBase || evt.getFinalTile() instanceof TileEntityCrystalBase)
+		if (!this.isMovable(evt.getInitialTile()) || !this.isMovable(evt.getFinalTile()))
 			evt.setCanceled(true);
+	}
+
+	private boolean isMovable(TileEntity te) {
+		return !(te instanceof TileEntityCrystalBase);
 	}
 
 	@SubscribeEvent

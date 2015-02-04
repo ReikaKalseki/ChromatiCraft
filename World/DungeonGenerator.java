@@ -42,15 +42,15 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
-import Reika.DragonAPI.ModInteract.TwilightForestHandler;
-import cpw.mods.fml.common.IWorldGenerator;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 
-public class DungeonGenerator implements IWorldGenerator {
+public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
 
@@ -525,6 +525,16 @@ public class DungeonGenerator implements IWorldGenerator {
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return false;//ChromaOptions.FLATGEN.getState();
 		return true;
+	}
+
+	@Override
+	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+		return true;
+	}
+
+	@Override
+	public String getIDString() {
+		return "ChromatiCraft Prefab Structures";
 	}
 
 }

@@ -19,14 +19,20 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-import cpw.mods.fml.common.IWorldGenerator;
 
-public class ColorTreeGenerator implements IWorldGenerator {
+public class ColorTreeGenerator implements RetroactiveGenerator {
 
-	public static final int CHANCE = 128;
+	public static final ColorTreeGenerator instance = new ColorTreeGenerator();
+
+	private static final int CHANCE = 128;
+
+	private ColorTreeGenerator() {
+
+	}
 
 	@Override
 	public void generate(Random r, int chunkX, int chunkZ, World world, IChunkProvider cg, IChunkProvider cp) {
@@ -128,6 +134,16 @@ public class ColorTreeGenerator implements IWorldGenerator {
 		int y = world.getTopSolidOrLiquidBlock(x, z);
 		//ReikaJavaLibrary.pConsole(world.getBlock(x, y, z)+","+world.getBlock(x, y-1, z)+","+world.getBlock(x, y-2, z)+":"+BlockDyeSapling.canGrowAt(world, x, y, z));
 		return BlockDyeSapling.canGrowAt(world, x, y, z, true);
+	}
+
+	@Override
+	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+		return true;
+	}
+
+	@Override
+	public String getIDString() {
+		return "ChromatiCraft Trees";
 	}
 
 }

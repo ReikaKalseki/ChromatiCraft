@@ -40,7 +40,8 @@ public enum ChromaOptions implements ConfigList {
 	KEYBINDABILITY("Use vanilla keybind system for ability selection GUI", false),
 	COPYTILE("Allow duplication wand to copy TileEntities", false),
 	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false),
-	PIELOC("Energy Buffer Overlay Location", 0);
+	PIELOC("Energy Buffer Overlay Location", 0),
+	RETROGEN("Retrogeneration", false);
 
 	private String label;
 	private boolean defaultState;

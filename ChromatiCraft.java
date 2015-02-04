@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
+import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
@@ -89,10 +90,14 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.CompatibilityTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
+import Reika.DragonAPI.Auxiliary.Trackers.DonatorController.Donator;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
+import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
@@ -107,8 +112,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
-import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.ThermalHandler;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -300,11 +305,11 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ChromaDimensionManager.initialize();
 
-		GameRegistry.registerWorldGenerator(new CrystalGenerator(), 0);
-		GameRegistry.registerWorldGenerator(new ColorTreeGenerator(), -10);
-		GameRegistry.registerWorldGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
-		GameRegistry.registerWorldGenerator(DungeonGenerator.instance, Integer.MAX_VALUE);
-		GameRegistry.registerWorldGenerator(new TieredWorldGenerator(), Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(CrystalGenerator.instance, 0, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(ColorTreeGenerator.instance, -10, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(TieredWorldGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 
 		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
@@ -402,7 +407,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
-		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values");
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and mod interaction");
 
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];
@@ -449,6 +454,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (!this.isLocked()) {
 			ChromaRecipes.addPostLoadRecipes();
+		}
+
+		for (Donator s : DonatorController.instance.getReikasDonators()) {
+			PlayerSpecificRenderer.instance.registerRenderer(s.ingameName, DonatorPylonRender.instance);
 		}
 
 		TileEntityBiomeChanger.buildBiomeList();

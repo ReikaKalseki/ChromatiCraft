@@ -46,16 +46,16 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
-import Reika.DragonAPI.ModInteract.TwilightForestHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-import cpw.mods.fml.common.IWorldGenerator;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public final class PylonGenerator implements IWorldGenerator {
+public final class PylonGenerator implements RetroactiveGenerator {
 
 	public static final PylonGenerator instance = new PylonGenerator();
 
@@ -201,6 +201,8 @@ public final class PylonGenerator implements IWorldGenerator {
 	}
 
 	private boolean canGenerateIn(World world) {
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+			return ChromaOptions.FLATGEN.getState();
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
@@ -211,8 +213,6 @@ public final class PylonGenerator implements IWorldGenerator {
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
-			return ChromaOptions.FLATGEN.getState();
 		return ChromaOptions.MYSTGEN.getState();
 	}
 
@@ -418,6 +418,16 @@ public final class PylonGenerator implements IWorldGenerator {
 				array.setBlock(x, y, z, Blocks.air);
 			}
 		}
+	}
+
+	@Override
+	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+		return true;
+	}
+
+	@Override
+	public String getIDString() {
+		return "ChromatiCraft Pylons";
 	}
 
 }

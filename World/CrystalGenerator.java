@@ -22,14 +22,20 @@ import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
-import cpw.mods.fml.common.IWorldGenerator;
 
-public class CrystalGenerator implements IWorldGenerator {
+public class CrystalGenerator implements RetroactiveGenerator {
 
-	public static final int PER_CHUNK = 60; //calls per chunk; vast majority fail
+	public static final CrystalGenerator instance = new CrystalGenerator();
+
+	private static final int PER_CHUNK = 60; //calls per chunk; vast majority fail
+
+	private CrystalGenerator() {
+
+	}
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
@@ -122,6 +128,16 @@ public class CrystalGenerator implements IWorldGenerator {
 		if (biome == BiomeGenBase.extremeHills || biome == BiomeGenBase.extremeHillsEdge)
 			return 1.125F;
 		return 1F;
+	}
+
+	@Override
+	public boolean canGenerateAt(Random rand, World world, int chunkX, int chunkZ) {
+		return true;
+	}
+
+	@Override
+	public String getIDString() {
+		return "ChromatiCraft Crystals";
 	}
 
 }

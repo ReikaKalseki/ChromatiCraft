@@ -110,9 +110,14 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
 			if (this.obfuscate(is))
 				//name = EnumChatFormatting.OBFUSCATED.toString()+name;
-				name = ChromaFontRenderer.FontType.OBFUSCATED.id+name;
+				name = this.getObfuscatedName(name);
 		}
 		return name;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private String getObfuscatedName(String name) {
+		return ChromaFontRenderer.FontType.OBFUSCATED.id+name;
 	}
 
 	@SideOnly(Side.CLIENT)

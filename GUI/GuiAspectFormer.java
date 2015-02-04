@@ -30,7 +30,7 @@ import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 public class GuiAspectFormer extends GuiChromaBase {
 

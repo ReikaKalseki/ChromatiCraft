@@ -18,7 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 public class ItemWarpProofer extends ItemChromaTool {
 

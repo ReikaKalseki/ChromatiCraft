@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -99,7 +98,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			GL11.glDisable(GL11.GL_LIGHTING);
-			ReikaRenderHelper.disableEntityLighting();
+			//ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			BlendMode.ADDITIVEDARK.apply();
@@ -120,7 +119,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			BlendMode.DEFAULT.apply();
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			RenderHelper.enableStandardItemLighting();
+			//RenderHelper.enableStandardItemLighting();
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}

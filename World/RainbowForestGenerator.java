@@ -20,7 +20,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
 
 public class RainbowForestGenerator extends WorldGenerator {
 

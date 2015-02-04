@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 public class ChromaAspectManager {
 

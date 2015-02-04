@@ -28,7 +28,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
 
 public class AspectJarRenderer extends ChromaRenderBase {
 

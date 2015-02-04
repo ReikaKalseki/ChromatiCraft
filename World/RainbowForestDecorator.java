@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
 
 public class RainbowForestDecorator extends BiomeDecorator {
 

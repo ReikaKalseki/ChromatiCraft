@@ -37,9 +37,9 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.MystCraftHandler;
-import Reika.DragonAPI.ModInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

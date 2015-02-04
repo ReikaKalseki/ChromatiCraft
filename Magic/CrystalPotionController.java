@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
-import Reika.DragonAPI.ModInteract.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 
 public class CrystalPotionController {
 
