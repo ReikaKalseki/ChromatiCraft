@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.IEntitySelector;
@@ -358,18 +359,18 @@ public class AbilityHelper {
 
 		@Override
 		public void readFromNBT(NBTTagCompound nbt) {
-			for (String s : instance.inventories.keySet()) {
-				NBTTagList tag = nbt.getTagList(s, NBTTypes.COMPOUND.ID);
-				instance.inventories.get(s).readFromNBT(tag);
+			for (UUID s : instance.inventories.keySet()) {
+				NBTTagList tag = nbt.getTagList(s.toString(), NBTTypes.COMPOUND.ID);
+				instance.inventories.get(s.toString()).readFromNBT(tag);
 			}
 		}
 
 		@Override
 		public void writeToNBT(NBTTagCompound nbt) {
-			for (String s : instance.inventories.keySet()) {
+			for (UUID s : instance.inventories.keySet()) {
 				NBTTagList tag = new NBTTagList();
-				instance.inventories.get(s).writeToNBT(tag);
-				nbt.setTag(s, tag);
+				instance.inventories.get(s.toString()).writeToNBT(tag);
+				nbt.setTag(s.toString(), tag);
 			}
 		}
 
