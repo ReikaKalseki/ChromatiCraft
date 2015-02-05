@@ -27,6 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -104,6 +105,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 
 		buttonList.add(new ImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class));
+		buttonList.add(new ImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class));
 	}
 
 	@Override
@@ -120,6 +122,10 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 		else if (button.id == 2) {
 			this.goTo(ChromaGuis.PROGRESS, null);
+			this.resetOffset();
+		}
+		else if (button.id == 3) {
+			this.goTo(ChromaGuis.REFRAGMENT, null);
 			this.resetOffset();
 		}
 		this.initGui();
@@ -279,7 +285,7 @@ public class GuiNavigation extends GuiScrollingPage {
 				api.drawLine(dx2_, dy2_, dx2_, ddy2_, c);
 				api.drawLine(ddx2_, dy2_, ddx2_, ddy2_, c);
 				api.drawLine(dx2_, ddy2_, ddx2_, ddy2_, c);
-				FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+				FontRenderer fr = ChromaFontRenderer.FontType.LEXICON.renderer;
 				String title = rl.getDisplayName();
 				if (dx2 >= leftX && dx2 <= leftX+paneWidth-fr.getStringWidth(title)) {
 					if (dy2 >= topY && dy2 <= topY+paneHeight-fr.FONT_HEIGHT/2) {

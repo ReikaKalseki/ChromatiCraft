@@ -25,7 +25,8 @@ public enum ChromaGuis {
 	MACHINEDESC(),
 	TOOLDESC(),
 	BASICDESC(),
-	PROGRESS();
+	PROGRESS(),
+	REFRAGMENT();
 
 	public static final ChromaGuis[] guiList = values();
 

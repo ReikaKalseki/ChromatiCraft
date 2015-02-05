@@ -178,6 +178,7 @@ public enum ChromaResearch {
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
+	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
 	private static final HashMap<String, ChromaResearch> byName = new HashMap();
 
@@ -608,7 +609,9 @@ public enum ChromaResearch {
 				if (r.level != null)
 					levelMap.addValue(r.level, r);
 				byName.put(r.name(), r);
-				if (!r.isParent)
+				if (r.isParent)
+					parents.add(r);
+				else
 					nonParents.add(r);
 				Collection<ItemStack> c = r.getItemStacks();
 				if (c != null) {
@@ -666,6 +669,10 @@ public enum ChromaResearch {
 
 	public static ChromaResearch getPageFor(ItemStack is) {
 		return itemMap.get(is);
+	}
+
+	public static List<ChromaResearch> getAllParents() {
+		return Collections.unmodifiableList(parents);
 	}
 
 	public static List<ChromaResearch> getAllNonParents() {

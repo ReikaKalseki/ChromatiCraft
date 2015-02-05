@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import net.minecraft.command.ICommandSender;
@@ -39,6 +41,8 @@ public final class ChromaResearchManager {
 	private static final String NBT_TAG = "Chroma_Research";
 
 	public static final ChromaResearchManager instance = new ChromaResearchManager();
+
+	public final Comparator researchComparator = new ChromaResearchComparator();
 
 	private ChromaResearchManager() {
 
@@ -98,6 +102,11 @@ public final class ChromaResearchManager {
 		return li.isEmpty() ? null : li.get(rand.nextInt(li.size()));
 	}
 
+	public Collection<ChromaResearch> getPreReqsFor(ChromaResearch r) {
+		Collection<ChromaResearch> c = data.getParents(r);
+		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
+	}
+
 	/** Is this research one of the next ones available to the player, but without the player already having it */
 	public boolean canPlayerStepTo(EntityPlayer ep, ChromaResearch r) {
 		return this.getNextResearchesFor(ep).contains(r);
@@ -139,8 +148,20 @@ public final class ChromaResearchManager {
 		}
 	}
 
-	private Collection<ChromaResearch> getResearchForLevel(ResearchLevel rl) {
-		return ChromaResearch.levelMap.get(rl);
+	public Collection<ChromaResearch> getResearchForLevelAndBelow(ResearchLevel rl) {
+		Collection<ChromaResearch> c = new ArrayList();
+		while (true) {
+			c.addAll(ChromaResearch.levelMap.get(rl));
+			if (rl == rl.pre())
+				break;
+			else
+				rl = rl.pre();
+		}
+		return c;
+	}
+
+	public Collection<ChromaResearch> getResearchForLevel(ResearchLevel rl) {
+		return Collections.unmodifiableCollection(ChromaResearch.levelMap.get(rl));
 	}
 
 	private boolean playerHasAllFragments(EntityPlayer ep, Collection<ChromaResearch> li) {
@@ -182,7 +203,7 @@ public final class ChromaResearchManager {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
-	private Collection<ChromaResearch> getFragments(EntityPlayer ep) {
+	public Collection<ChromaResearch> getFragments(EntityPlayer ep) {
 		Collection<ChromaResearch> c = new ArrayList();
 		NBTTagList li = this.getNBTFragments(ep);
 		for (Object o : li.tagList) {
@@ -293,6 +314,15 @@ public final class ChromaResearchManager {
 		@Override
 		protected boolean isAdminOnly() {
 			return true;
+		}
+
+	}
+
+	private static final class ChromaResearchComparator implements Comparator<ChromaResearch> {
+
+		@Override
+		public int compare(ChromaResearch o1, ChromaResearch o2) {
+			return 1000*(o1.level.ordinal()-o2.level.ordinal())+o1.ordinal()-o2.ordinal();
 		}
 
 	}

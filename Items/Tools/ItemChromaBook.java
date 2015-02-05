@@ -70,6 +70,8 @@ public class ItemChromaBook extends ItemChromaTool {
 	}
 
 	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
+		if (is == null || is.getItem() != this)
+			return;
 		NBTTagList list = new NBTTagList();
 		for (ItemStack in : li) {
 			ChromaResearch r = ItemInfoFragment.getResearch(in);
@@ -85,6 +87,8 @@ public class ItemChromaBook extends ItemChromaTool {
 
 	public ArrayList<ItemStack> getItemList(ItemStack tool) {
 		ArrayList<ItemStack> li = new ArrayList();
+		if (tool == null || tool.getItem() != this)
+			return li;
 		if (tool.stackTagCompound != null) {
 			NBTTagList list = tool.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID);
 			for (Object o : list.tagList) {

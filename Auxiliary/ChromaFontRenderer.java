@@ -24,7 +24,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.IO.ReikaImageLoader;
 import Reika.DragonAPI.Instantiable.Event.TextureReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.DelegateFontRenderer;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -38,6 +37,7 @@ public class ChromaFontRenderer extends FontRenderer {
 	private Kerning kerning = Kerning.NORMAL;
 	//private String currentString;
 	private final int[] offsets;
+	private long lastReload = 0;
 
 	private ChromaFontRenderer(FontType f) {
 		super(Minecraft.getMinecraft().gameSettings, ReikaTextureHelper.font, Minecraft.getMinecraft().renderEngine, false);
@@ -58,8 +58,6 @@ public class ChromaFontRenderer extends FontRenderer {
 		float f2 = italic ? 1.0F : 0.0F;
 		//GL11.glEnable(GL11.GL_BLEND);
 		//BlendMode.ADDITIVE.apply();
-		//renderEngine.bindTexture(locationFontTexture);
-		//ReikaTextureHelper.bindFontTexture();
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, type.texture);
 		float f3 = charWidth[charIndex]-0.01F;
 		GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
@@ -161,7 +159,9 @@ public class ChromaFontRenderer extends FontRenderer {
 	}
 	 */
 	private void readFontTexture() {
-		BufferedImage buf = ReikaImageLoader.readImage(ChromatiCraft.class, type.texture);
+		if (System.currentTimeMillis()-lastReload < 250)
+			return;
+		BufferedImage buf = ReikaImageLoader.readImage(ChromatiCraft.class, type.texture, null);
 		int w = buf.getWidth();
 		int h = buf.getHeight();
 		int[] rgb = new int[w*h];
@@ -189,8 +189,8 @@ public class ChromaFontRenderer extends FontRenderer {
 					for (int yOffset = 0; yOffset < slotHeight && flag; yOffset++) {
 						int yPosByCol = (row*slotWidth+yOffset)*w;
 						int color = rgb[xPos+yPosByCol];
-						//if ((color >> 24 & 255) != 0) //alpha > 0
-						if (ReikaColorAPI.isRGBNonZero(color))
+						if ((color >> 24 & 255) != 0) //alpha > 0
+							//if (ReikaColorAPI.isRGBNonZero(color))
 							flag = false;
 					}
 
@@ -206,6 +206,7 @@ public class ChromaFontRenderer extends FontRenderer {
 				break;
 			}
 		}
+		lastReload = System.currentTimeMillis();
 	}
 
 	public static enum FontType {

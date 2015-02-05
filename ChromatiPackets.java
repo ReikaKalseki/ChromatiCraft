@@ -19,6 +19,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
@@ -32,6 +34,8 @@ import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -52,9 +56,11 @@ import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ChromatiPackets implements IPacketHandler {
 
@@ -290,6 +296,17 @@ public class ChromatiPackets implements IPacketHandler {
 				}
 				CrystalElement e = CrystalElement.elements[data[data.length-1]];
 				ChromaFX.spawnRelayParticle(e, li);
+				break;
+			}
+			case RERESEARCH: {
+				ChromaResearch r = ChromaResearch.researchList[data[0]];
+				ReikaInventoryHelper.findAndDecrStack(Items.paper, -1, ep.inventory.mainInventory);
+				ReikaInventoryHelper.findAndDecrStack(ReikaItemHelper.inksac, ep.inventory.mainInventory);
+				ItemStack is = ItemInfoFragment.getItem(r);
+				ItemChromaBook book = (ItemChromaBook)ep.getCurrentEquippedItem().getItem();
+				ArrayList<ItemStack> li = book.getItemList(ep.getCurrentEquippedItem());
+				li.add(is);
+				book.setItems(ep.getCurrentEquippedItem(), li);
 				break;
 			}
 			}
