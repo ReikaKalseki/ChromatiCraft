@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -32,6 +33,8 @@ public class AcceleratorRenderer extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityAccelerator te = (TileEntityAccelerator)tile;
 
+		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() != 1)
+			return;
 		GL11.glPushMatrix();
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_LIGHTING);

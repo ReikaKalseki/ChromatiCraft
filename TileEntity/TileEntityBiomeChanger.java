@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -21,7 +20,6 @@ import Reika.ChromatiCraft.API.BiomeBlacklist.BiomeConnection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.GuiController;
 
@@ -29,11 +27,6 @@ public class TileEntityBiomeChanger extends TileEntityChromaticBase implements G
 
 	private static final Collection<BiomeConnection> blacklist = new ArrayList();
 	private static final MultiMap<BiomeGenBase, BiomeGenBase> availableBiomes = new MultiMap();
-
-	private BlockSpiral spiral;
-	private int step;
-
-	private final HashMap<BiomeGenBase, BiomeGenBase> biomeMap = new HashMap();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -51,8 +44,7 @@ public class TileEntityBiomeChanger extends TileEntityChromaticBase implements G
 	}
 
 	private BiomeGenBase getChangedBiome(World world, int x, int z) {
-		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
-		return biomeMap.containsKey(b) ? biomeMap.get(b) : b;
+		return null;
 	}
 
 	static {

@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
+import Reika.ChromatiCraft.GUI.GuiBiomeChanger;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
@@ -66,6 +67,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomeChanger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
@@ -193,6 +195,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiEnderTNT(player, (TileEntityEnderTNT) te);
 			if (te instanceof TileEntityInventoryTicker)
 				return new GuiInventoryTicker(player, (TileEntityInventoryTicker) te);
+			if (te instanceof TileEntityBiomeChanger)
+				return new GuiBiomeChanger(player, (TileEntityBiomeChanger) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

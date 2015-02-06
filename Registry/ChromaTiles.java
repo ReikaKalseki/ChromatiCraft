@@ -165,6 +165,7 @@ public enum ChromaTiles {
 
 	public boolean renderInPass1() {
 		switch(this) {
+		case ACCELERATOR:
 		case RIFT:
 		case PYLON:
 		case REPEATER:
