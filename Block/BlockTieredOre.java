@@ -91,7 +91,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public boolean renderAsGeode() {
-			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE;
+			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == NETHER2;
 		}
 	}
 
@@ -200,7 +200,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return this.getDisguise().getIcon(s, meta);//this.getBacking(meta);
+		return this.getDisguise(meta).getIcon(s, meta);//this.getBacking(meta);
 	}
 
 	@Override
@@ -208,8 +208,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 		return ChromatiCraft.proxy.oreRender;
 	}
 
-	public Block getDisguise() {
-		return Blocks.stone;
+	public Block getDisguise(int meta) {
+		return TieredOres.list[meta].genBlock;
 	}
 
 	@Override

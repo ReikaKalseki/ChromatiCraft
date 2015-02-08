@@ -78,7 +78,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 		boolean tier = bc.getProgressStage(is.getItemDamage()).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
 		if (field_150939_a instanceof BlockTieredOre) {
 			BlockTieredOre bt = (BlockTieredOre)field_150939_a;
-			return tier ? name : bt.getDisguise().getLocalizedName();
+			return tier ? name : bt.getDisguise(is.getItemDamage()).getLocalizedName();
 		}
 		else {
 			return tier ? name : ChromaFontRenderer.FontType.OBFUSCATED.id+name;

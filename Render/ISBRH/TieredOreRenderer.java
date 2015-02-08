@@ -89,7 +89,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		rb.renderMaxY = 1;
 
 		boolean tier = bt.getProgressStage(metadata).isPlayerAtStage(Minecraft.getMinecraft().thePlayer);
-		IIcon ico = tier ? bt.getBacking(metadata) : bt.getDisguise().getIcon(0, 0);
+		IIcon ico = tier ? bt.getBacking(metadata) : bt.getDisguise(metadata).getIcon(0, 0);
 
 		if (!tier || !TieredOres.list[metadata].renderAsGeode()) {
 			GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
@@ -196,7 +196,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 			}
 		}
 		else {
-			rb.renderBlockAllFaces(t.getDisguise(), x, y, z);
+			rb.renderBlockAllFaces(t.getDisguise(meta), x, y, z);
 			//rb.renderStandardBlockWithAmbientOcclusion(t.getDisguise(), x, y, z, 1, 1, 1);
 		}
 		return true;
@@ -206,7 +206,7 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		TessellatorVertexList v5 = new TessellatorVertexList();
 		Tessellator.instance.setColorOpaque_I(0xffffff);
 		Tessellator.instance.addTranslation(x, y, z);
-		IIcon stone = Blocks.stone.getIcon(0, 0);
+		IIcon stone = ((BlockTieredOre)b).getDisguise(meta).getIcon(0, 0);
 		float us = stone.getMinU();
 		float vs = stone.getMinV();
 		float dus = stone.getMaxU();

@@ -134,10 +134,12 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		ArrayList<ChromaTiles> tiles = ChromaTiles.getTilesForBlock(this);
 		for (int i = 0; i < tiles.size(); i++) {
 			ChromaTiles c = tiles.get(i);
-			for (int k = 0; k < 6; k++) {
-				String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
-				String path = c.name().toLowerCase()+"_"+s;
-				icons[c.getBlockMetadata()][k] = ico.registerIcon("chromaticraft:tile/"+path);
+			if (c.hasBlockRender()) {
+				for (int k = 0; k < 6; k++) {
+					String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
+					String path = c.name().toLowerCase()+"_"+s;
+					icons[c.getBlockMetadata()][k] = ico.registerIcon("chromaticraft:tile/"+path);
+				}
 			}
 		}
 	}
