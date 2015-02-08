@@ -22,7 +22,9 @@ public class PotionBetterSaturation extends Potion {
 	@Override
 	public void performEffect(EntityLivingBase e, int level) {
 		if (!e.worldObj.isRemote && e instanceof EntityPlayer) {
-			((EntityPlayer)e).getFoodStats().addStats(level + 1, 1.0F);
+			EntityPlayer ep = (EntityPlayer)e;
+			if (level > 0 || ep.getFoodStats().getFoodLevel() < 17)
+				ep.getFoodStats().addStats(level + 1, 1.0F);
 		}
 	}
 

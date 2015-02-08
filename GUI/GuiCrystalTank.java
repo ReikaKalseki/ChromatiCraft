@@ -36,7 +36,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 	}
 
 	@Override
-	public void drawGuiContainerForegroundLayer(int par1, int par2) {
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
@@ -74,7 +74,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 	}
 
 	@Override
-	public void drawGuiContainerBackgroundLayer(float p, int a, int b) {
+	protected void drawGuiContainerBackgroundLayer(float p, int a, int b) {
 		super.drawGuiContainerBackgroundLayer(p, a, b);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;

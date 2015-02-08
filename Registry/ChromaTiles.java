@@ -25,7 +25,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
-import Reika.ChromatiCraft.TileEntity.TileEntityBiomeChanger;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
@@ -106,7 +106,7 @@ public enum ChromaTiles {
 	RELAYSOURCE("chroma.fibersource", 	ChromaBlocks.TILEMODELLED, 	TileEntityRelaySource.class, 		12, "RenderRelaySource"),
 	ASPECTJAR("chroma.aspectjar",		ChromaBlocks.TILEMODELLED2, TileEntityAspectJar.class,			2, "AspectJarRenderer", ModList.THAUMCRAFT),
 	ASPECT("chroma.aspect", 			ChromaBlocks.TILEMODELLED, 	TileEntityAspectFormer.class,		14, "RenderAspectFormer", ModList.THAUMCRAFT),
-	BIOMECHANGER("chroma.biome",		ChromaBlocks.TILEMODELLED2, TileEntityBiomeChanger.class,		3),
+	BIOMEPAINTER("chroma.biomechg",		ChromaBlocks.TILEMODELLED2, TileEntityBiomePainter.class,		3, "RenderBiomePainter"),
 	LAMP("chroma.lamp",					ChromaBlocks.TILEMODELLED, 	TileEntityChromaLamp.class, 		15, "RenderRainbowLamp"),
 	POWERTREE("chroma.powertree",		ChromaBlocks.PYLON, 		TileEntityPowerTree.class, 			3, "PowerTreeRender"),
 	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 	0, "RenderLampControl"),

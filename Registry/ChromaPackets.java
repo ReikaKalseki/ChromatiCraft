@@ -37,7 +37,8 @@ public enum ChromaPackets {
 	HEALTHSYNC(1),
 	INVCYCLE(1),
 	RELAYCONNECT(),
-	RERESEARCH(1);
+	RERESEARCH(1),
+	BIOMEPAINT(3);
 
 	public final int numInts;
 	public final PacketTypes type;

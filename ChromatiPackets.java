@@ -23,6 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
@@ -44,6 +45,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -198,8 +200,7 @@ public class ChromatiPackets implements IPacketHandler {
 				}
 				break;
 			case PLANTUPDATE:
-				TileEntityCrystalPlant te = (TileEntityCrystalPlant)tile;
-				te.updateLight();
+				((TileEntityCrystalPlant)tile).updateLight();
 				break;
 			case ABILITY: {
 				Ability c = Chromabilities.getAbilityByInt(data[0]);
@@ -309,6 +310,9 @@ public class ChromatiPackets implements IPacketHandler {
 				book.setItems(ep.getCurrentEquippedItem(), li);
 				break;
 			}
+			case BIOMEPAINT:
+				((TileEntityBiomePainter)tile).changeBiomeAt(data[0], data[1], BiomeGenBase.biomeList[data[2]]);
+				break;
 			}
 		}
 		catch (NullPointerException e) {

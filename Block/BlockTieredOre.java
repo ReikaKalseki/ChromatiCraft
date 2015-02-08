@@ -39,6 +39,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	private final IIcon[] overlay = new IIcon[16];
 	private final IIcon[] back = new IIcon[16];
+	private final IIcon[] geode = new IIcon[16];
 
 	public BlockTieredOre(Material mat) {
 		super(mat);
@@ -48,30 +49,40 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	public static enum TieredOres {
 
-		INFUSED(ProgressStage.CRYSTALS),
-		STONES(ProgressStage.RUNEUSE),
-		BINDING(ProgressStage.CHARGE),
-		FOCAL(ProgressStage.MULTIBLOCK),
-		TELEPORT(ProgressStage.END),
-		WATERY(ProgressStage.OCEAN),
-		FIRAXITE(ProgressStage.NETHER),
-		PLACEHOLDER7(ProgressStage.NEVER),
-		PLACEHOLDER8(ProgressStage.NEVER);
+		INFUSED(Blocks.stone, ProgressStage.CRYSTALS),
+		STONES(Blocks.stone, ProgressStage.RUNEUSE),
+		BINDING(Blocks.stone, ProgressStage.CHARGE),
+		FOCAL(Blocks.stone, ProgressStage.MULTIBLOCK),
+		TELEPORT(Blocks.stone, ProgressStage.END),
+		WATERY(Blocks.stone, ProgressStage.OCEAN),
+		FIRAXITE(Blocks.stone, ProgressStage.NETHER),
+		PLACEHOLDER7(Blocks.stone, ProgressStage.NEVER),
+		PLACEHOLDER8(Blocks.stone, ProgressStage.NEVER),
+		NETHER1(Blocks.netherrack, ProgressStage.LINK),
+		NETHER2(Blocks.netherrack, ProgressStage.END),
+		END(Blocks.end_stone, ProgressStage.ABILITY);
 
 		public final ProgressStage level;
+		private final Block genBlock;
 
 		public static final TieredOres[] list = values();
 
-		private TieredOres(ProgressStage lvl) {
+		private TieredOres(Block b, ProgressStage lvl) {
 			level = lvl;
+			genBlock = b;
 		}
 
 		public boolean generate(World world, int x, int z, Random r) {
-			int y = r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
-			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), 8, Blocks.stone).generate(world, r, x, y, z);
+			int y = this.ordinal() >= NETHER1.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
+			int n = genBlock == Blocks.netherrack ? 16 : 8;
+			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), n, genBlock).generate(world, r, x, y, z);
 		}
 
 		public int getGenerationCount() {
+			if (genBlock == Blocks.netherrack)
+				return 4;
+			if (this == END)
+				return 8;
 			return this == PLACEHOLDER8 ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
 		}
 
@@ -80,7 +91,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public boolean renderAsGeode() {
-			return this == BINDING || this == FIRAXITE;
+			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE;
 		}
 	}
 
@@ -143,6 +154,12 @@ public class BlockTieredOre extends BlockChromaTiered {
 			for (int i = 0; i < n; i++)
 				li.add(ChromaStacks.placehold5Dust.copy());
 			break;
+		case NETHER1:
+			break;
+		case NETHER2:
+			break;
+		case END:
+			break;
 		}
 		return li;
 	}
@@ -165,6 +182,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 			String s = "chromaticraft:ore/tier_"+i;
 			back[i] = ico.registerIcon(s+"_underlay");
 			overlay[i] = ico.registerIcon(s+"_overlay");
+			geode[i] = ico.registerIcon(s+"_geode");
 		}
 	}
 
@@ -176,9 +194,13 @@ public class BlockTieredOre extends BlockChromaTiered {
 		return back[meta];
 	}
 
+	public IIcon getGeodeIcon(int meta) {
+		return geode[meta];
+	}
+
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return this.getBacking(meta);
+		return this.getDisguise().getIcon(s, meta);//this.getBacking(meta);
 	}
 
 	@Override

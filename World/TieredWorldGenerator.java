@@ -50,7 +50,9 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 					}
 				}
 			}
+		}
 
+		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState()) {
 			for (int i = 0; i < TieredOres.list.length; i++) {
 				TieredOres p = TieredOres.list[i];
 				boolean flag = false;

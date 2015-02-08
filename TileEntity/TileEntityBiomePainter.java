@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -19,18 +20,21 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.BiomeBlacklist.BiomeConnection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.GuiController;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityBiomeChanger extends TileEntityChromaticBase implements GuiController {
+public class TileEntityBiomePainter extends TileEntityChromaticBase implements GuiController {
 
 	private static final Collection<BiomeConnection> blacklist = new ArrayList();
 	private static final MultiMap<BiomeGenBase, BiomeGenBase> availableBiomes = new MultiMap();
 
 	@Override
 	public ChromaTiles getTile() {
-		return ChromaTiles.BIOMECHANGER;
+		return ChromaTiles.BIOMEPAINTER;
 	}
 
 	@Override
@@ -43,8 +47,14 @@ public class TileEntityBiomeChanger extends TileEntityChromaticBase implements G
 
 	}
 
-	private BiomeGenBase getChangedBiome(World world, int x, int z) {
-		return null;
+	public void changeBiomeAt(int dx, int dz, BiomeGenBase biome) {
+		if (!worldObj.isRemote) {
+			//ReikaJavaLibrary.pConsole(xCoord+dx);
+			ReikaWorldHelper.setBiomeForXZ(worldObj, dx, dz, biome);
+		}
+		else {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, biome.biomeID);
+		}
 	}
 
 	static {
@@ -79,8 +89,12 @@ public class TileEntityBiomeChanger extends TileEntityChromaticBase implements G
 		blacklist.add(bc);
 	}
 
-	public static Collection<BiomeGenBase> getValidBiomes(BiomeGenBase in) {
-		return Collections.unmodifiableCollection(availableBiomes.get(in));
+	public static HashSet<BiomeGenBase> getValidBiomesFor(BiomeGenBase in) {
+		return new HashSet(availableBiomes.get(in));
+	}
+
+	public static Collection<BiomeGenBase> getValidBiomes() {
+		return Collections.unmodifiableCollection(availableBiomes.allValues(false));
 	}
 
 	private static class ChromaBiomeBlacklist implements BiomeConnection {

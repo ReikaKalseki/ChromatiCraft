@@ -41,7 +41,8 @@ public enum ChromaOptions implements ConfigList {
 	COPYTILE("Allow duplication wand to copy TileEntities", false),
 	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false),
 	PIELOC("Energy Buffer Overlay Location", 0),
-	RETROGEN("Retrogeneration", false);
+	RETROGEN("Retrogeneration", false),
+	BIOMEPAINTER("Enable Biome Painter", true);
 
 	private String label;
 	private boolean defaultState;

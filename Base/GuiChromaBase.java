@@ -62,7 +62,7 @@ public abstract class GuiChromaBase extends GuiContainer {
 	}
 
 	@Override
-	public final void setWorldAndResolution(Minecraft mc, int x, int y) {
+	public void setWorldAndResolution(Minecraft mc, int x, int y) {
 		super.setWorldAndResolution(mc, x, y);
 		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
 	}

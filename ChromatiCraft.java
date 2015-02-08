@@ -76,7 +76,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ChromaResearchDebugCom
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.TileEntity.TileEntityBiomeChanger;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -472,7 +472,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				logger.logError("Donator "+s.displayName+" UUID could not be found! Cannot give special render!");
 		}
 
-		TileEntityBiomeChanger.buildBiomeList();
+		TileEntityBiomePainter.buildBiomeList();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();

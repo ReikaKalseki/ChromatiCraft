@@ -89,6 +89,7 @@ public enum ChromaResearch {
 	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
 	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME),
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.MULTICRAFT),
+	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

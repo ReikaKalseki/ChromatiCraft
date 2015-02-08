@@ -188,7 +188,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 		CrystalElement e = CrystalElement.elements[color];
 		double[] v = ReikaDyeHelper.dyes[color].getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
-		if (e != CrystalElement.PURPLE) //prevent an XP exploit
+		if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
 			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
 		return false;
 	}
