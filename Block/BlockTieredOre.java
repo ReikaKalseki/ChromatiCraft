@@ -155,10 +155,19 @@ public class BlockTieredOre extends BlockChromaTiered {
 				li.add(ChromaStacks.placehold5Dust.copy());
 			break;
 		case NETHER1:
+			n = 1+rand.nextInt(6)*(1+fortune/2);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold6Dust.copy());
 			break;
 		case NETHER2:
+			n = 1+rand.nextInt(1+fortune*fortune);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold7Dust.copy());
 			break;
 		case END:
+			n = 1+fortune*4;
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.placehold8Dust.copy());
 			break;
 		}
 		return li;
