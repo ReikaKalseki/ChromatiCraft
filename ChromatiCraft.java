@@ -30,6 +30,7 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.BiomeManager.BiomeEntry;
+import net.minecraftforge.common.BiomeManager.BiomeType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -37,7 +38,6 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
-import ttftcuts.atg.api.ATGBiomes.BiomeType;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.LoginApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -298,12 +298,14 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());
-		BiomeManager.warmBiomes.add(new BiomeEntry(rainbowforest, 2));
+		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(rainbowforest, 10));
+		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(rainbowforest, 10));
 		BiomeManager.addSpawnBiome(rainbowforest);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
 
 		enderforest = new BiomeEnderForest(ExtraChromaIDs.ENDERFOREST.getValue());
-		BiomeManager.coolBiomes.add(new BiomeEntry(enderforest, 6));
+		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(enderforest, 10));
+		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(enderforest, 10));
 		BiomeManager.addSpawnBiome(enderforest);
 		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
 
@@ -385,8 +387,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.addDyeCompat();
 
 		if (ModList.ATG.isLoaded()) {
-			ATGBiomes.addBiome(BiomeType.LAND, "Forest", rainbowforest, 1.0);
-			ATGBiomes.addBiome(BiomeType.LAND, "Forest", enderforest, 1.0);
+			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", rainbowforest, 1.0);
+			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", enderforest, 1.0);
 		}
 
 		if (ModList.BLUEPOWER.isLoaded()) { //prevent what is nearly an exploit by uncrafting gold apples

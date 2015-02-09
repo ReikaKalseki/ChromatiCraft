@@ -81,7 +81,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 			return tier ? name : bt.getDisguise(is.getItemDamage()).getLocalizedName();
 		}
 		else {
-			return tier ? name : ChromaFontRenderer.FontType.OBFUSCATED.id+name;
+			return tier ? name : name+ChromaFontRenderer.FontType.OBFUSCATED.id;
 		}
 	}
 

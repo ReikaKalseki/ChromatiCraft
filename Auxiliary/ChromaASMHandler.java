@@ -68,12 +68,18 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 		private static enum ClassPatch {
 			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "ara"),
-			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje");
+			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje"),
+			CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
+			;
 
 			private final String obfName;
 			private final String deobfName;
 
 			private static final ClassPatch[] list = values();
+
+			private ClassPatch(String name) {
+				this(name, name);
+			}
 
 			private ClassPatch(String deobf, String obf) {
 				obfName = obf;
@@ -125,6 +131,51 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 				}
 				break;
+				case CHARWIDTH: { //[I to [F
+					try {
+						Class optifine = Class.forName("optifine.OptiFineClassTransformer");
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Optifine loaded. Editing FontRenderer class.");
+					}
+					catch (Exception e) {
+						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Optifine loaded. Not editing FontRenderer class.");
+						break;
+					}
+					/*
+					//FieldNode fn = ReikaASMHelper.getFieldByName(cn, "charWidth");
+					//cn.fields.remove(fn);
+					String field = FMLForgePlugin.RUNTIME_DEOBF ? "field_78286_d" : "charWidth";
+					int count = 0;
+					boolean primed = false;
+					for (MethodNode m : cn.methods) {
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain instanceof FieldInsnNode) {
+								FieldInsnNode fin = (FieldInsnNode)ain;
+
+								if (fin.name.equals(field) && fin.desc.equals("[I")) {
+									fin.desc = "[F";
+									count++;
+									ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler x"+count+"!");
+									primed = true;
+								}
+								/*
+								if (FMLForgePlugin.RUNTIME_DEOBF && fin.name.equals("charWidth")) {
+									fin.name = "field_78286_d";
+									fin.owner = "net/minecraft/client/gui/FontRenderer";
+								}*//*
+							}
+							else if (primed && (ain.getOpcode() == Opcodes.IALOAD || ain.getOpcode() == Opcodes.IASTORE)) {
+								if (ain.getOpcode() == Opcodes.IALOAD)
+									ReikaASMHelper.changeOpcode(ain, Opcodes.FALOAD);
+								if (ain.getOpcode() == Opcodes.IASTORE)
+									ReikaASMHelper.changeOpcode(ain, Opcodes.FASTORE);
+								ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler x"+count+"b!");
+								primed = false;
+							}
+						}
+					}*/
+					break;
+				}
 
 				}
 
