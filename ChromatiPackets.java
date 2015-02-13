@@ -63,6 +63,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class ChromatiPackets implements IPacketHandler {
 
@@ -192,13 +193,14 @@ public class ChromatiPackets implements IPacketHandler {
 				TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
 				prog.setMobType(stringdata);
 				break;
-			case CRYSTALEFFECT:
+			case CRYSTALEFFECT: {
 				Block b = world.getBlock(x, y, z);
 				if (b instanceof CrystalBlock) {
 					CrystalBlock cb = (CrystalBlock)b;
 					cb.updateEffects(world, x, y, z);
 				}
 				break;
+			}
 			case PLANTUPDATE:
 				((TileEntityCrystalPlant)tile).updateLight();
 				break;
@@ -310,9 +312,11 @@ public class ChromatiPackets implements IPacketHandler {
 				book.setItems(ep.getCurrentEquippedItem(), li);
 				break;
 			}
-			case BIOMEPAINT:
-				((TileEntityBiomePainter)tile).changeBiomeAt(data[0], data[1], BiomeGenBase.biomeList[data[2]]);
+			case BIOMEPAINT: {
+				BiomeGenBase b = data[2] >= 0 ? BiomeGenBase.biomeList[data[2]] : ReikaWorldHelper.getNaturalGennedBiomeAt(world, data[0], data[1]);
+				((TileEntityBiomePainter)tile).changeBiomeAt(data[0], data[1], b);
 				break;
+			}
 			}
 		}
 		catch (NullPointerException e) {

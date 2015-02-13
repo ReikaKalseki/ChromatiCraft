@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -18,6 +20,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
+import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
@@ -39,8 +42,13 @@ import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
+import Reika.DragonAPI.Auxiliary.Trackers.DonatorController.Donator;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
+import Reika.DragonAPI.Auxiliary.Trackers.PatreonController;
+import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
@@ -219,6 +227,19 @@ public class ChromaClient extends ChromaCommon {
 	public World getClientWorld()
 	{
 		return FMLClientHandler.instance().getClient().theWorld;
+	}
+
+	@Override
+	public void addDonatorRender() {
+		Collection<Donator> donators = new ArrayList();
+		donators.addAll(DonatorController.instance.getReikasDonators());
+		donators.addAll(PatreonController.instance.getModPatrons(DragonAPIInit.instance));
+		for (Donator s : donators) {
+			if (s.ingameName != null)
+				PlayerSpecificRenderer.instance.registerRenderer(s.ingameName, DonatorPylonRender.instance);
+			else
+				ChromatiCraft.logger.logError("Donator "+s.displayName+" UUID could not be found! Cannot give special render!");
+		}
 	}
 
 }

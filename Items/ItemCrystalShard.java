@@ -235,8 +235,12 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		if (!ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color)) {
 			ArrayList<String> li2 = new ArrayList();
 			for (Object o : li) {
-				if (o instanceof String && !((String)o).contains(ChromaFontRenderer.FontType.OBFUSCATED.id))
-					li2.add(ChromaFontRenderer.FontType.OBFUSCATED.id+o);
+				if (o instanceof String) {
+					String s = (String)o;
+					if (!((String)o).contains(ChromaFontRenderer.FontType.OBFUSCATED.id))
+						s = ChromaFontRenderer.FontType.OBFUSCATED.id+o;
+					li2.add(s);
+				}
 			}
 			li.clear();
 			li.addAll(li2);

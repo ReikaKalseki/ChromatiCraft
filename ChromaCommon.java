@@ -48,4 +48,8 @@ public class ChromaCommon {
 
 	}
 
+	public void addDonatorRender() {
+
+	}
+
 }

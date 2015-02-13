@@ -32,14 +32,14 @@ public class CrystalMusicManager {
 		baseKeys.put(CrystalElement.RED, MusicKey.G4);
 		baseKeys.put(CrystalElement.PURPLE, MusicKey.A4);
 		baseKeys.put(CrystalElement.MAGENTA, MusicKey.B4);
-		baseKeys.put(CrystalElement.CYAN, MusicKey.A4/*C4*/);
+		baseKeys.put(CrystalElement.CYAN, MusicKey.A4);
 		baseKeys.put(CrystalElement.LIGHTGRAY, MusicKey.D5);
 		baseKeys.put(CrystalElement.GRAY, MusicKey.C5);
 		baseKeys.put(CrystalElement.LIME, MusicKey.E5);
 		baseKeys.put(CrystalElement.PINK, MusicKey.F5);
 		baseKeys.put(CrystalElement.YELLOW, MusicKey.G5);
 		baseKeys.put(CrystalElement.LIGHTBLUE, MusicKey.A5);
-		baseKeys.put(CrystalElement.ORANGE, MusicKey.E4/*B5*/);
+		baseKeys.put(CrystalElement.ORANGE, MusicKey.E4);
 		baseKeys.put(CrystalElement.WHITE, MusicKey.C6);
 
 		/*

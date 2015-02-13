@@ -59,7 +59,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public FontRenderer getFontRenderer(ItemStack is) {
-		return this.obfuscate(is) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : null;
+		return null;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 			return tier ? name : bt.getDisguise(is.getItemDamage()).getLocalizedName();
 		}
 		else {
-			return tier ? name : name+ChromaFontRenderer.FontType.OBFUSCATED.id;
+			return tier ? name : ChromaFontRenderer.FontType.OBFUSCATED.id+name;
 		}
 	}
 

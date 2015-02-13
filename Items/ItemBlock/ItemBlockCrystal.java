@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -66,15 +67,28 @@ public class ItemBlockCrystal extends ItemBlock {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
-		return ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
+		String name = ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			name = this.obfuscateIf(is, name);
+		return name;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private String obfuscateIf(ItemStack is, String sg) {
+		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		return ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color) ? sg : ChromaFontRenderer.FontType.OBFUSCATED.id+sg;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public FontRenderer getFontRenderer(ItemStack is) {
+		/*
 		CrystalElement color = CrystalElement.elements[is.getItemDamage()];
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		return ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color) ? null : ChromaFontRenderer.FontType.OBFUSCATED.renderer;
+		 */
+		return null;
 	}
 
 	@Override
@@ -114,8 +128,12 @@ public class ItemBlockCrystal extends ItemBlock {
 		if (!ProgressionManager.instance.hasPlayerDiscoveredColor(ep, color)) {
 			ArrayList<String> li2 = new ArrayList();
 			for (Object o : li) {
-				if (o instanceof String)
-					li2.add(ChromaFontRenderer.FontType.OBFUSCATED.id+o);
+				if (o instanceof String) {
+					String s = (String)o;
+					if (!((String)o).contains(ChromaFontRenderer.FontType.OBFUSCATED.id))
+						s = ChromaFontRenderer.FontType.OBFUSCATED.id+o;
+					li2.add(s);
+				}
 			}
 			li.clear();
 			li.addAll(li2);

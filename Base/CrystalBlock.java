@@ -28,6 +28,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import thaumcraft.api.crafting.IInfusionStabiliser;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
@@ -37,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -46,7 +48,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class CrystalBlock extends Block implements CrystalRenderedBlock {
+@Strippable(value={"thaumcraft.api.crafting.IInfusionStabiliser"})
+public abstract class CrystalBlock extends Block implements CrystalRenderedBlock, IInfusionStabiliser {
 
 	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
@@ -307,5 +310,9 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 		int c1 = ReikaDyeHelper.dyes[meta].color;
 		//int c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(c0, 0.85F);
 		return ReikaColorAPI.mixColors(c0, c1, 0.65F);
+	}
+
+	public final boolean canStabaliseInfusion(World world, int x, int y, int z) {
+		return true;
 	}
 }

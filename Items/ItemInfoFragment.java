@@ -28,6 +28,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -92,7 +93,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 				format = EnumChatFormatting.RESET;
 			String pre = ""+format.toString();
 			String title = r.getParent().getTitle()+": "+r.getTitle();
-			String s = read || has ? pre+" "+title : pre+" "+EnumChatFormatting.OBFUSCATED.toString()+title;
+			String s = read || has ? pre+" "+title : pre+" "+ChromaFontRenderer.FontType.OBFUSCATED.id+title;
 			li.add(s);
 		}
 	}

@@ -98,8 +98,9 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public FontRenderer getFontRenderer(ItemStack is) {
-		return this.obfuscate(is) ? ChromaFontRenderer.FontType.OBFUSCATED.renderer : null;
+		return null;
 	}
 
 	@Override

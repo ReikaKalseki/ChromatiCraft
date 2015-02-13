@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -32,6 +33,12 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 	private static final Collection<BiomeConnection> blacklist = new ArrayList();
 	private static final MultiMap<BiomeGenBase, BiomeGenBase> availableBiomes = new MultiMap();
 
+	public static final int RANGE = 64;
+
+	public BiomeGenBase getNaturalBiomeAt(int dx, int dz) {
+		return ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, xCoord+dx-RANGE, zCoord+dz-RANGE);
+	}
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.BIOMEPAINTER;
@@ -39,7 +46,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		//ReikaJavaLibrary.pConsole(world.getBiomeGenForCoords(x, z)+"/"+ReikaWorldHelper.getNaturalGennedBiomeAt(world, x, z), Side.SERVER);
 	}
 
 	@Override
@@ -55,6 +62,16 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 		else {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, biome.biomeID);
 		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
 	}
 
 	static {
