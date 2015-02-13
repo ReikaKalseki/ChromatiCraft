@@ -12,9 +12,6 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.awt.image.BufferedImage;
 
 import net.minecraftforge.client.event.GuiOpenEvent;
-
-import org.lwjgl.input.Mouse;
-
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.IO.ReikaImageLoader;
@@ -55,8 +52,6 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 				charIndex += getCharGridIndex(postChar);
 			charIndex += currentString.hashCode();
 			charIndex = min+(charWidth.length+charIndex%charWidth.length)%(max-min+1);
-			if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1))
-				this.rerandomize();
 		}
 		return super.renderDefaultChar(charIndex, italic);
 	}
