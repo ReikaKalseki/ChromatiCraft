@@ -57,7 +57,7 @@ public class CrystalNetworker implements TickHandler {
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
 	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
-	private final HashMap<String, WorldLocation> verifier = new HashMap();
+	private final HashMap<UUID, WorldLocation> verifier = new HashMap();
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
@@ -259,7 +259,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	private void verifyTileAt(CrystalNetworkTile te, WorldLocation loc) {
-		String key = te.getUniqueID();
+		UUID key = te.getUniqueID();
 		WorldLocation prev = verifier.get(key);
 		if (prev != null && !prev.equals(loc)) {
 			te.getWorld().setBlockToAir(te.getX(), te.getY(), te.getZ());
@@ -269,11 +269,11 @@ public class CrystalNetworker implements TickHandler {
 			verifier.put(key, loc);
 	}
 
-	public String getNewUniqueID() {
-		String sg = UUID.randomUUID().toString();
-		while (verifier.containsKey(sg))
-			sg = UUID.randomUUID().toString();
-		return sg;
+	public UUID getNewUniqueID() {
+		UUID id = UUID.randomUUID();
+		while (verifier.containsKey(id))
+			id = UUID.randomUUID();
+		return id;
 	}
 
 	private void addPylon(TileEntityCrystalPylon te) {

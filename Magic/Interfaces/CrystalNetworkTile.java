@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
+import java.util.UUID;
+
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -34,6 +36,6 @@ public interface CrystalNetworkTile {
 
 	public boolean canConduct();
 
-	public String getUniqueID();
+	public UUID getUniqueID();
 
 }
