@@ -9,9 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.Command.DragonCommandBase;
@@ -38,6 +42,23 @@ public class ChromaResearchCommand extends DragonCommandBase {
 			}
 			else if (stage == -2) {
 				ChromaResearchManager.instance.resetPlayerResearch(ep);
+			}
+			else if (stage == -3) {
+				for (int i = 0; i < ResearchLevel.levelList.length; i++) {
+					ResearchLevel rl = ResearchLevel.levelList[i];
+					Collection<ChromaResearch> c = ChromaResearchManager.instance.getResearchForLevel(rl);
+				}
+				ResearchLevel pl = ChromaResearchManager.instance.getPlayerResearchLevel(ep);
+				Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
+				sendChatToSender(ics, "Player research: ");
+				sendChatToSender(ics, "Level "+pl);
+				sendChatToSender(ics, "Fragments: "+cp);
+				Collection<ChromaResearch> missing = new ArrayList(ChromaResearchManager.instance.getResearchForLevel(pl));
+				//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
+				missing.removeAll(cp);
+				//ReikaJavaLibrary.pConsole(missing);
+				sendChatToSender(ics, "Can step to "+pl.post()+": "+pl.post().canProgressTo(ep)+" && "+missing.isEmpty());
+				sendChatToSender(ics, "Missing research for "+pl+": "+missing);
 			}
 			else {
 				if (ChromaResearchManager.instance.setPlayerResearchLevel(ep, ResearchLevel.levelList[stage])) {

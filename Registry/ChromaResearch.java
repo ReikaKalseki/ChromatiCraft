@@ -328,6 +328,10 @@ public enum ChromaResearch {
 		return false;
 	}
 
+	public boolean isGating() {
+		return struct == null || !struct.isNatural();
+	}
+
 	public boolean isAbility() {
 		if (isParent)
 			return false;

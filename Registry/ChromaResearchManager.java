@@ -139,7 +139,7 @@ public final class ChromaResearchManager {
 			ChromatiCraft.logger.log(ep.getCommandSenderName()+" has: "+this.playerHasAllFragments(ep, li));
 		}
 		else {
-			if (this.playerHasAllFragments(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
+			if (this.playerHasAllFragmentsThatMatter(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
 				ResearchLevel next = ResearchLevel.levelList[rl.ordinal()+1];
 				if (next.canProgressTo(ep)) {
 					this.stepPlayerResearchLevel(ep, next);
@@ -162,6 +162,13 @@ public final class ChromaResearchManager {
 
 	public Collection<ChromaResearch> getResearchForLevel(ResearchLevel rl) {
 		return Collections.unmodifiableCollection(ChromaResearch.levelMap.get(rl));
+	}
+
+	private boolean playerHasAllFragmentsThatMatter(EntityPlayer ep, Collection<ChromaResearch> li) {
+		for (ChromaResearch r : li)
+			if (r.isGating() && !this.playerHasFragment(ep, r))
+				return false;
+		return true;
 	}
 
 	private boolean playerHasAllFragments(EntityPlayer ep, Collection<ChromaResearch> li) {
@@ -255,7 +262,7 @@ public final class ChromaResearchManager {
 			return false;
 		}
 
-		private boolean canProgressTo(EntityPlayer ep) {
+		public boolean canProgressTo(EntityPlayer ep) {
 			switch(this) {
 			case ENTRY:
 				return true;
