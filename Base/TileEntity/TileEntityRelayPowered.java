@@ -45,7 +45,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 						}
 					}
 				}
-				requestTimer = 200/5;
+				requestTimer = 200;
 			}
 			else
 				requestTimer--;
