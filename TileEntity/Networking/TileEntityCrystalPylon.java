@@ -150,7 +150,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
 				CrystalElement e = CrystalElement.randomElement();
-				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y, z, e);
+				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y-9, z, e);
 				b.place();
 				world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
 				TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);

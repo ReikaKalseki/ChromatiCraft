@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,12 +19,14 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -98,7 +101,10 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		fontRendererObj.drawString(this.getPageTitle(), posX+this.getTitleOffset(), posY+6, this.getTitleColor());
+		String s = this.getPageTitle();
+		FontRenderer fr = s.contains(FontType.OBFUSCATED.id) ? FontType.OBFUSCATED.renderer : fontRendererObj;
+		s = DelegateFontRenderer.stripFlags(s);
+		fr.drawString(s, posX+this.getTitleOffset(), posY+6, this.getTitleColor());
 	}
 
 	@Override

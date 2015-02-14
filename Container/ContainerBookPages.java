@@ -17,10 +17,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Exception.WTFException;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 
 public class ContainerBookPages extends Container {
@@ -49,7 +51,14 @@ public class ContainerBookPages extends Container {
 		ItemChromaBook iil = (ItemChromaBook)tool.getItem();
 		ArrayList<ItemStack> li = iil.getItemList(tool);
 		for (ItemStack is : li) {
-			int idx = ChromaResearch.getAllNonParents().indexOf(ItemInfoFragment.getResearch(is));
+			ChromaResearch r = ItemInfoFragment.getResearch(is);
+			if (r == null) {
+				ChromatiCraft.logger.logError("Null research item {"+is.stackTagCompound+"} in the book?!");
+				continue;
+			}
+			int idx = ChromaResearch.getAllNonParents().indexOf(r);
+			if (idx < 0)
+				throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment in the book!?!", true);
 			inventory.setInventorySlotContents(idx, is);
 		}
 

@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.GUI.Book;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -24,12 +24,14 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -178,8 +180,12 @@ public class GuiCastingRecipe extends GuiBookSection {
 			for (int i = recipeTextOffset; i < li.size(); i++) {
 				ItemStack is = li.get(i);
 				int num = items.get(is);
-				String s = String.format("%s%s: x%d", is.getDisplayName(), EnumChatFormatting.RESET.toString(), num);
-				fontRendererObj.drawString(s, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*(i-recipeTextOffset), 0xffffff);
+				String s0 = is.getDisplayName();
+				String s = String.format(": x%d", num);
+				FontRenderer fr = s0.contains(FontType.OBFUSCATED.id) ? FontType.OBFUSCATED.renderer : fontRendererObj;
+				s0 = DelegateFontRenderer.stripFlags(s0);
+				fr.drawString(s0, posX+descX+3, posY+descY+(fr.FONT_HEIGHT+2)*(i-recipeTextOffset), 0xffffff);
+				fontRendererObj.drawString(s, posX+descX+3+fr.getStringWidth(s0), posY+descY+(fr.FONT_HEIGHT+2)*(i-recipeTextOffset), 0xffffff);
 				if (i-recipeTextOffset > 9)
 					break;
 			}

@@ -86,7 +86,8 @@ public class GuiCastingTable extends GuiChromaBase {
 		RecipeType tier = tile.getTier();
 		int d = 10;
 		int[] color = new int[]{0xffffff, 0xffff99, 0xffff55, 0xffdd00};
-		for (int i = 0; i < 1+tier.ordinal(); i++) {
+		boolean[] struct = new boolean[]{true, tile.hasStructure, tile.hasStructure2, tile.hasPylonConnections};
+		for (int i = 0; i <= tier.ordinal(); i++) {
 			int x = (i/*%2*/)*d;
 			int y = 0;//(i/2)*d;
 			float red = ReikaColorAPI.getRedFromInteger(color[i])/255F;
@@ -94,6 +95,10 @@ public class GuiCastingTable extends GuiChromaBase {
 			float blue = ReikaColorAPI.getBlueFromInteger(color[i])/255F;
 			GL11.glColor4f(red, green, blue, 1);
 			this.drawTexturedModelRectFromIcon(x, y, ChromaIcons.DIAMOND.getIcon(), 16, 16);
+			if (!struct[i]) {
+				GL11.glColor4f(1, 1, 1, 1);
+				this.drawTexturedModelRectFromIcon(x+2, y+2, ChromaIcons.NOENTER.getIcon(), 12, 12);
+			}
 		}
 		GL11.glDisable(GL11.GL_BLEND);
 

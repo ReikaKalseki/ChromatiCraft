@@ -56,6 +56,7 @@ public class ChromaBookData {
 					int y = subpage == 0 ? 10 : 76;
 					int dx = x+posX+i%3*18;
 					int dy = y+posY+i/3*18;
+					//FontRenderer fr2 = in.getDisplayName().contains(FontType.OBFUSCATED.id) ? FontType.OBFUSCATED.renderer : fr;
 					gui.drawItemStackWithTooltip(ri, fr, in, dx, dy);
 				}
 			}

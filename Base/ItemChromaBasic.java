@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.IndexedItemSprites;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -109,9 +110,10 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		String name = ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
-			if (this.obfuscate(is))
+			if (this.obfuscate(is)) {
 				//name = EnumChatFormatting.OBFUSCATED.toString()+name;
 				name = this.getObfuscatedName(name);
+			}
 		}
 		return name;
 	}
@@ -123,10 +125,13 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 
 	@SideOnly(Side.CLIENT)
 	private boolean obfuscate(ItemStack is) {
+		if (!DragonAPICore.hasGameLoaded())
+			return false;
 		if (this instanceof TieredItem) {
-			return this.obfuscateIf(is);
+			if (this.obfuscateIf(is))
+				return true;
 		}
-		else if (this instanceof ItemCrystalBasic) {
+		if (this instanceof ItemCrystalBasic) {
 			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 			if (!ProgressionManager.instance.hasPlayerDiscoveredColor(Minecraft.getMinecraft().thePlayer, e)) {
 				return true;
