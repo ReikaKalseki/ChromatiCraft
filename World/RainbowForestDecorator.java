@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 public class RainbowForestDecorator extends BiomeDecorator {
 
@@ -102,8 +102,8 @@ public class RainbowForestDecorator extends BiomeDecorator {
 		int z = chunk_Z + randomGenerator.nextInt(16)+8;
 		int y = currentWorld.getTopSolidOrLiquidBlock(x, z);
 		if (ReikaWorldHelper.softBlocks(currentWorld, x, y, z)) {
-			Block id = ThaumBlockHandler.getInstance().plantID;
-			int meta = ThaumBlockHandler.getInstance().etherealMeta;
+			Block id = ThaumItemHelper.BlockEntry.ETHEREAL.getBlock();
+			int meta = ThaumItemHelper.BlockEntry.ETHEREAL.metadata;
 			currentWorld.setBlock(x, y, z, id, meta, 3);
 			currentWorld.func_147451_t(x, y, z);
 			currentWorld.func_147479_m(x, y, z);

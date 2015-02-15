@@ -289,14 +289,14 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());
-		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(rainbowforest, 10));
-		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(rainbowforest, 10));
+		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(rainbowforest, ChromaOptions.getRainbowForestWeight()));
+		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(rainbowforest, ChromaOptions.getRainbowForestWeight()));
 		BiomeManager.addSpawnBiome(rainbowforest);
 		BiomeDictionary.registerBiomeType(rainbowforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.HILLS);
 
 		enderforest = new BiomeEnderForest(ExtraChromaIDs.ENDERFOREST.getValue());
-		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(enderforest, 10));
-		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(enderforest, 10));
+		BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(enderforest, ChromaOptions.getEnderForestWeight()));
+		BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(enderforest, ChromaOptions.getEnderForestWeight()));
 		BiomeManager.addSpawnBiome(enderforest);
 		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
 
@@ -399,25 +399,32 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 
-		ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
-		ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);
+		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
+		//ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);
 
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and mod interaction");
 
-		for (int i = 0; i < ChromaItems.itemList.length; i++) {
-			ChromaItems ir = ChromaItems.itemList[i];
-			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL)
-				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getItemInstance());
-		}
-
 		if (MTInteractionManager.isMTLoaded()) {
+			for (int i = 0; i < ChromaItems.itemList.length; i++) {
+				ChromaItems ir = ChromaItems.itemList[i];
+				if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
+					MTInteractionManager.instance.blacklistNewRecipesFor(ir.getItemInstance());
+				}
+			}
+
 			for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 				ChromaBlocks ir = ChromaBlocks.blockList[i];
 				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
 			}
 		}
+
+		ReikaEEHelper.blacklistEntry(ChromaItems.TIERED);
+		ReikaEEHelper.blacklistEntry(ChromaItems.SHARD);
+		ReikaEEHelper.blacklistEntry(ChromaBlocks.TIEREDORE);
+		ReikaEEHelper.blacklistEntry(ChromaBlocks.TIEREDPLANT);
+		ReikaEEHelper.blacklistEntry(ChromaBlocks.CRYSTAL);
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class);

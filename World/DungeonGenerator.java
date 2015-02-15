@@ -332,8 +332,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				WeightedRandomChestContent.generateChestContents(r, loot, te, count);
 				if (bonus > 0)
 					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);
-				int n1 = 1;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
-				int n2 = 1;//struct == Structures.OCEAN ? 8 : 3;
+				int n1 = 3;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+				int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
 
 				if (r.nextInt(n1) > 0) {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);

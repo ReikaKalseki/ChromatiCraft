@@ -39,7 +39,7 @@ import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBiomeHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -304,7 +304,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 					int dz = rz+k;
 					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
 					int id = biome.biomeID;
-					if (id == ThaumBlockHandler.getInstance().magicBiomeID) {
+					if (id == ThaumBiomeHandler.getInstance().magicBiomeID) {
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null && ChromatiCraft.isRainbowForest(natural)) {
 							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
@@ -327,7 +327,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 					int dz = rz+k;
 					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
 					int id = biome.biomeID;
-					if (id == ThaumBlockHandler.getInstance().eerieBiomeID) {
+					if (id == ThaumBiomeHandler.getInstance().eerieBiomeID) {
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null) {
 							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
@@ -350,7 +350,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 					int dz = rz+k;
 					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
 					int id = biome.biomeID;
-					if (id == ThaumBlockHandler.getInstance().taintBiomeID) {
+					if (id == ThaumBiomeHandler.getInstance().taintBiomeID) {
 						//ReikaJavaLibrary.pConsole(dx+", "+dz, Side.CLIENT);
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null) {

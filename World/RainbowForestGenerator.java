@@ -20,7 +20,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 public class RainbowForestGenerator extends WorldGenerator {
 
@@ -43,8 +43,8 @@ public class RainbowForestGenerator extends WorldGenerator {
 							}
 							int dy = world.getTopSolidOrLiquidBlock(dx, dz);
 							if (ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
-								Block id = ThaumBlockHandler.getInstance().plantID;
-								int meta = ThaumBlockHandler.getInstance().etherealMeta;
+								Block id = ThaumItemHelper.BlockEntry.ETHEREAL.getBlock();
+								int meta = ThaumItemHelper.BlockEntry.ETHEREAL.metadata;
 								world.setBlock(dx, dy, dz, id, meta, 3);
 								world.func_147451_t(dx, dy, dz);
 								world.func_147479_m(dx, dy, dz);

@@ -28,7 +28,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBlockHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 public class AspectJarRenderer extends ChromaRenderBase {
 
@@ -115,7 +115,7 @@ public class AspectJarRenderer extends ChromaRenderBase {
 			v5.setColorOpaque_I(te.getAspect().getColor());
 		}
 		int bright = 200;
-		Block jar = ThaumBlockHandler.getInstance().jarID;
+		Block jar = ThaumItemHelper.BlockEntry.JAR.getBlock();
 		if (te.worldObj != null) {
 			bright = Math.max(200, jar.getMixedBrightnessForBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord));
 		}

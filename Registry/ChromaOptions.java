@@ -42,7 +42,9 @@ public enum ChromaOptions implements ConfigList {
 	HARDTHAUM("Make ThaumCraft integration require ThaumCraft progression", false),
 	PIELOC("Energy Buffer Overlay Location", 0),
 	RETROGEN("Retrogeneration", false),
-	BIOMEPAINTER("Enable Biome Painter", true);
+	BIOMEPAINTER("Enable Biome Painter", true),
+	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
+	ENDERWEIGHT("Ender Forest Biome Weight", 10);
 
 	private String label;
 	private boolean defaultState;
@@ -152,6 +154,16 @@ public enum ChromaOptions implements ConfigList {
 	public static float getRainbowLeafGoldAppleDropChance() {
 		float base = GOLDAPPLES.getFloat()/100F;
 		return Math.min(1, Math.max(0.0001F, base));
+	}
+
+	public static int getRainbowForestWeight() {
+		int base = RAINBOWWEIGHT.getValue();
+		return Math.max(2, base);
+	}
+
+	public static int getEnderForestWeight() {
+		int base = ENDERWEIGHT.getValue();
+		return Math.max(2, base);
 	}
 
 }

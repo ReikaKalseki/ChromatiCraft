@@ -113,7 +113,7 @@ public class ChromaRecipes {
 					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
 					ThaumItemHelper.ItemEntry.SALTS.getItem(),
 					new ItemStack(Items.string),
-					ThaumItemHelper.BlockEntry.CRYSTALCORE.getItem(),
+					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 			};
 			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
 			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)

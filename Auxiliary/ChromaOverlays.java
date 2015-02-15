@@ -122,9 +122,9 @@ public class ChromaOverlays {
 				v5.startDrawingQuads();
 				v5.setBrightness(240);
 				float cache = factors.containsKey(e) ? factors.get(e) : 0;
-				float bright = (float)(1.5-dd/24);
+				float bright = Math.min(1, (float)(1.5-dd/24));
 				float res = Math.max(cache, bright);
-				factors.put(e, res*0.9975F);
+				factors.put(e, cache*0.9975F);
 				if (res > 0) {
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
 					v5.setColorRGBA_I(color, alpha);
