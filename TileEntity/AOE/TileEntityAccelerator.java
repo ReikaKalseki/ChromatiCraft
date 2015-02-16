@@ -50,7 +50,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 	static {
 		addEntry("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, BlacklistReason.BUGS); //by request
 		addEntry("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
-		addEntry("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
+		addEntry("com.sci.torcherino.tile.TileTorcherino", null, BlacklistReason.CRASH); //StackOverflow
 
 		addEntry(TileEntityCastingTable.class);
 		addEntry(TileEntityRitualTable.class);
@@ -69,7 +69,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 
 	private static void addEntry(String name, ModList mod, BlacklistReason r) {
 		Class cl;
-		if (!mod.isLoaded())
+		if (mod != null && !mod.isLoaded())
 			return;
 		try {
 			cl = Class.forName(name);

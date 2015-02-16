@@ -71,9 +71,9 @@ public class LampRenderer implements ISimpleBlockRenderingHandler {
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int modelId, RenderBlocks rb) {
 		if (renderPass == 0) {
 			int color = b.colorMultiplier(world, x, y, z);
-			float red = ReikaColorAPI.getRedFromInteger(color)/255F;
-			float green = ReikaColorAPI.getGreenFromInteger(color)/255F;
-			float blue = ReikaColorAPI.getBlueFromInteger(color)/255F;
+			float red = ReikaColorAPI.getRed(color)/255F;
+			float green = ReikaColorAPI.getGreen(color)/255F;
+			float blue = ReikaColorAPI.getBlue(color)/255F;
 			rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, red, green, blue);
 			return true;
 		}

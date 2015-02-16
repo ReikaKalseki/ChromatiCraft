@@ -125,9 +125,9 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		int r = c.getRed();
 		int g = c.getGreen();
 		int b = c.getBlue();
-		int r2 = ReikaColorAPI.getRedFromInteger(original);
-		int g2 = ReikaColorAPI.getGreenFromInteger(original);
-		int b2 = ReikaColorAPI.getBlueFromInteger(original);
+		int r2 = ReikaColorAPI.getRed(original);
+		int g2 = ReikaColorAPI.getGreen(original);
+		int b2 = ReikaColorAPI.getBlue(original);
 		return new Color((int)(r2*d+bias*r), (int)(g2*d+bias*g), (int)(b2*d+bias*b)).getRGB();
 	}
 
@@ -141,9 +141,9 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		int r = c.getRed();
 		int g = c.getGreen();
 		int b = c.getBlue();
-		int r2 = ReikaColorAPI.getRedFromInteger(original);
-		int g2 = ReikaColorAPI.getGreenFromInteger(original);
-		int b2 = ReikaColorAPI.getBlueFromInteger(original);
+		int r2 = ReikaColorAPI.getRed(original);
+		int g2 = ReikaColorAPI.getGreen(original);
+		int b2 = ReikaColorAPI.getBlue(original);
 		return new Color((int)(r2*d+bias*r), (int)(g2*d+bias*g), (int)(b2*d+bias*b)).getRGB();
 	}
 

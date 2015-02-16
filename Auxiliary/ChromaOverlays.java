@@ -499,9 +499,9 @@ public class ChromaOverlays {
 			v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
 			int color = e.getColor();
 			if (flag > 0) {
-				int red = ReikaColorAPI.getRedFromInteger(color);
-				int green = ReikaColorAPI.getGreenFromInteger(color);
-				int blue = ReikaColorAPI.getBlueFromInteger(color);
+				int red = ReikaColorAPI.getRed(color);
+				int green = ReikaColorAPI.getGreen(color);
+				int blue = ReikaColorAPI.getBlue(color);
 				float[] hsb = Color.RGBtoHSB(red, green, blue, null);
 				int deg = (int)((System.currentTimeMillis()/2)%360);
 				hsb[2] *= 0.75+0.25*Math.sin(Math.toRadians(deg));

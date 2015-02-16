@@ -146,6 +146,10 @@ public class ContainerBookPages extends Container {
 		}
 
 		ItemStack is = ep.getCurrentEquippedItem();
+		if (is == null || !(is.getItem() instanceof ItemChromaBook)) {
+			ChromatiCraft.logger.logError("Tried to save lexicon pages without a lexicon!");
+			return;
+		}
 		ItemChromaBook iil = (ItemChromaBook)is.getItem();
 		iil.setItems(is, li);
 	}

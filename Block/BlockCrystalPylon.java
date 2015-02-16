@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger {
 
@@ -44,7 +45,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		TileEntity te = iba.getTileEntity(x, y, z);
 		int color = te instanceof TileEntityCrystalPylon ? ((TileEntityCrystalPylon)te).getColor().getColor() : 0xffffff;
 		int b = te instanceof TileEntityStructControl ? ((TileEntityStructControl)te).getBrightness() : 15;
-		return ModList.COLORLIGHT.isLoaded() ? color&0xff << b | color&0xff00 << b | color&0xff0000 << 5 | b : b;
+		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, b) : b;
 	}
 
 	@Override

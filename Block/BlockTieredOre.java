@@ -41,6 +41,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 	private final IIcon[] back = new IIcon[16];
 	private final IIcon[] geode = new IIcon[16];
 
+	private final IIcon[] geodestone = new IIcon[16];
+
 	public BlockTieredOre(Material mat) {
 		super(mat);
 		this.setHardness(4);
@@ -193,6 +195,10 @@ public class BlockTieredOre extends BlockChromaTiered {
 			overlay[i] = ico.registerIcon(s+"_overlay");
 			geode[i] = ico.registerIcon(s+"_geode");
 		}
+
+		for (int i = 0; i < geodestone.length; i++) {
+			geodestone[i] = ico.registerIcon("chromaticraft:ore/geodestone/"+i);
+		}
 	}
 
 	public IIcon getOverlay(int meta) {
@@ -207,9 +213,13 @@ public class BlockTieredOre extends BlockChromaTiered {
 		return geode[meta];
 	}
 
+	public IIcon getGeodeStoneIcon(int i) {
+		return geodestone[i];
+	}
+
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return this.getDisguise(meta).getIcon(s, meta);//this.getBacking(meta);
+		return this.getBacking(meta);
 	}
 
 	@Override

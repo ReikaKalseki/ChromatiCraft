@@ -19,10 +19,12 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBiomeHandler;
 
 public class ColorTreeGenerator implements RetroactiveGenerator {
 
@@ -40,23 +42,25 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 		chunkZ *= 16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(chunkX, chunkZ);
 		int trees = this.getTreeCount(biome);
-		int x = chunkX+r.nextInt(16);
-		int z = chunkZ+r.nextInt(16);
-		if (this.canGenerateTree(world, x, z)) {
-			for (int i = 0; i < trees; i++) {
-				if (r.nextInt(CHANCE) == 0) {
-					int y = world.getTopSolidOrLiquidBlock(x, z);
-					Block b = world.getBlock(x, y, z);
-					if (r.nextInt(this.getRainbowChance(world)) == 0) {
-						if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
-							RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
+		if (trees > 0) {
+			int x = chunkX+r.nextInt(16);
+			int z = chunkZ+r.nextInt(16);
+			if (this.canGenerateTree(world, x, z)) {
+				for (int i = 0; i < trees; i++) {
+					if (r.nextInt(CHANCE) == 0) {
+						int y = world.getTopSolidOrLiquidBlock(x, z);
+						Block b = world.getBlock(x, y, z);
+						if (r.nextInt(this.getRainbowChance(world)) == 0) {
+							if (RainbowTreeGenerator.getInstance().checkRainbowTreeSpace(world, x, y, z)) {
+								RainbowTreeGenerator.getInstance().generateRainbowTree(world, x, y, z, r);
+							}
+							else {
+								TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);
+							}
 						}
 						else {
 							TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);
 						}
-					}
-					else {
-						TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, ReikaDyeHelper.dyes[r.nextInt(16)], false);
 					}
 				}
 			}
@@ -68,6 +72,9 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 	}
 
 	public static int getTreeCount(BiomeGenBase biome) {
+		if (ModList.THAUMCRAFT.isLoaded() && biome.biomeID == ThaumBiomeHandler.getInstance().taintBiomeID)
+			return 0;
+
 		BiomeDecorator dec = biome.theBiomeDecorator;
 		int trees = Math.max(0, dec.treesPerChunk);
 

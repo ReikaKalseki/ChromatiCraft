@@ -52,7 +52,7 @@ public class BlockRangeLamp extends Block {
 		if (lit) {
 			if (ModList.COLORLIGHT.isLoaded()) {
 				int color = this.colorMultiplier(iba, x, y, z);
-				return color&0xff << 15 | color&0xff00 << 10 | color&0xff0000 << 5 | 15;
+				return ReikaColorAPI.getPackedIntForColoredLight(color, 15) | 15;
 			}
 			else {
 				return 15;

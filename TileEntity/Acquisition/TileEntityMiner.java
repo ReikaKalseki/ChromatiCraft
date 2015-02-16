@@ -283,9 +283,9 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		double pz = z;
 
 		int color = CrystalElement.getBlendedColor(this.getTicksExisted(), 40);
-		int red = ReikaColorAPI.getRedFromInteger(color);
-		int green = ReikaColorAPI.getGreenFromInteger(color);
-		int blue = ReikaColorAPI.getBlueFromInteger(color);
+		int red = ReikaColorAPI.getRed(color);
+		int green = ReikaColorAPI.getGreen(color);
+		int blue = ReikaColorAPI.getBlue(color);
 
 		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);

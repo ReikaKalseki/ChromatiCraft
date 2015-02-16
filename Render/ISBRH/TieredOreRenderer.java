@@ -36,6 +36,8 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 	private final double[][] oreOffsets = new double[16][(numSections+1)*(numSections+1)];
 	private final int[][][] offsetArray = new int[16][16][16];
 
+	//private final HashMap<Coordinate, Long> renderMap = new HashMap();
+
 	public TieredOreRenderer() {
 		for (int a = 0; a < 16; a++) {
 			for (int i = 0; i < numSections+1; i++) {
@@ -174,13 +176,14 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		if (t.isPlayerSufficientTier(world, x, y, z, Minecraft.getMinecraft().thePlayer)) {
 			if (TieredOres.list[meta].renderAsGeode()) {
 				this.renderGeode(world, x, y, z, b, meta, rb);
+				//this.renderSimpleGeode(world, x, y, z, b, meta, rb);
 			}
 			else {
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
 
 				IIcon ico = t.getOverlay(meta);
 				v5.setBrightness(240);
-				v5.setColorOpaque_F(255, 255, 255);
+				v5.setColorOpaque(255, 255, 255);
 				if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
 					rb.renderFaceYNeg(b, x, y, z, ico);
 				if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
@@ -202,7 +205,51 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		return true;
 	}
 
+	private void renderSimpleGeode(IBlockAccess world, int x, int y, int z, Block b, int meta, RenderBlocks rb) {
+		IIcon icos = ((BlockTieredOre)b).getGeodeStoneIcon(Math.abs(x+y*x*z+z)%16);
+		IIcon ico = ((BlockTieredOre)b).getGeodeIcon(meta);
+
+		if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+			rb.renderFaceYNeg(b, x, y, z, icos);
+		if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+			rb.renderFaceYPos(b, x, y, z, icos);
+		if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+			rb.renderFaceZNeg(b, x, y, z, icos);
+		if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+			rb.renderFaceZPos(b, x, y, z, icos);
+		if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+			rb.renderFaceXNeg(b, x, y, z, icos);
+		if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+			rb.renderFaceXPos(b, x, y, z, icos);
+
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorOpaque(255, 255, 255);
+		double d = 0.0025;
+
+		if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+			rb.renderFaceYNeg(b, x, y+d, z, ico);
+		if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+			rb.renderFaceYPos(b, x, y-d, z, ico);
+		if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+			rb.renderFaceZNeg(b, x, y, z+d, ico);
+		if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+			rb.renderFaceZPos(b, x, y, z-d, ico);
+		if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+			rb.renderFaceXNeg(b, x+d, y, z, ico);
+		if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+			rb.renderFaceXPos(b, x-d, y, z, ico);
+	}
+
 	private void renderGeode(IBlockAccess world, int x, int y, int z, Block b, int meta, RenderBlocks rb) {
+		/*
+		Coordinate c = new Coordinate(x, y, z);
+		Long val = renderMap.get(c);
+		if (val != null)
+			ReikaJavaLibrary.pConsole("Rerendering "+TieredOres.list[meta]+" geode at "+x+", "+y+", "+z+"; "+(System.currentTimeMillis()-val.longValue())+" ms since last render here.");
+		else
+			ReikaJavaLibrary.pConsole("Rerendering "+TieredOres.list[meta]+" geode at "+x+", "+y+", "+z+"; Has not rendered before.");
+		renderMap.put(c, System.currentTimeMillis());
+		 */
 		TessellatorVertexList v5 = new TessellatorVertexList();
 		Tessellator.instance.setColorOpaque_I(0xffffff);
 		Tessellator.instance.addTranslation(x, y, z);
@@ -223,24 +270,6 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		float vo = ico.getMinV();
 		float duo = ico.getMaxU();
 		float dvo = ico.getMaxV();
-
-		/*
-		double in = 0.125;
-		for (int i = 0; i < 6; i++) {
-			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-
-			v5.addVertexWithUV(0, 		1, 		1, 		us, 	dvs);
-			v5.addVertexWithUV(0+in, 	1, 		1, 		dus, 	dvs);
-			v5.addVertexWithUV(0+in, 	1, 		0, 		dus, 	vs);
-			v5.addVertexWithUV(0, 		1, 		0, 		us, 	vs);
-
-			v5.addVertexWithUV(1-in, 		1, 		1, 		us, 	dvs);
-			v5.addVertexWithUV(1, 			1, 		1, 		dus, 	dvs);
-			v5.addVertexWithUV(1, 			1, 		0, 		dus, 	vs);
-			v5.addVertexWithUV(1-in, 		1, 		0, 		us, 	vs);
-		}
-		 */
-		//geode.render();
 
 		double s = 1D/numSections;
 		int da = offsetArray[(x%16+16)%16][(y%16+16)%16][(z%16+16)%16];
@@ -263,40 +292,62 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 			}
 		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y+1, z));
-		Tessellator.instance.setNormal(0, 1, 0);
-		v5.render();
+		/*
+		if (world != null) {
+			ReikaJavaLibrary.pConsole("*************************************");
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				ReikaJavaLibrary.pConsole(dir+" > "+b.shouldSideBeRendered(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, dir.ordinal()));
+			}
+			ReikaJavaLibrary.pConsole("---------------------------------------");
+		}
+		 */
+		if (world == null || b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y+1, z));
+			Tessellator.instance.setNormal(0, 1, 0);
+			v5.render();
+		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y-1, z)*0.5));
-		Tessellator.instance.setNormal(0, -1, 0);
 		v5.invertY();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y-1, z)*0.5));
+			Tessellator.instance.setNormal(0, -1, 0);
+			v5.render();
+		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x-1, y, z)*0.8));
-		Tessellator.instance.setNormal(-1, 0, 0);
 		v5.rotateYtoX();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x-1, y, z)*0.8));
+			Tessellator.instance.setNormal(-1, 0, 0);
+			v5.render();
+		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x+1, y, z)*0.8));
-		Tessellator.instance.setNormal(1, 0, 0);
 		v5.invertX();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x+1, y, z)*0.8));
+			Tessellator.instance.setNormal(1, 0, 0);
+			v5.render();
+		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z+1)*0.7));
-		Tessellator.instance.setNormal(0, 0, -1);
 		v5.rotateXtoZ();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z+1)*0.7));
+			Tessellator.instance.setNormal(0, 0, -1);
+			v5.render();
+		}
 
-		if (world != null)
-			Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z-1)*0.7));
-		Tessellator.instance.setNormal(0, 0, 1);
 		v5.invertZ();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
+			if (world != null)
+				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z-1)*0.7));
+			Tessellator.instance.setNormal(0, 0, 1);
+			v5.render();
+		}
 
 		v5.clear();
 		if (world != null)
@@ -332,28 +383,40 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 				v5.addVertexWithUV(d, oreOffsets[da][(i)*numSections+(k)], d2, uo1, vo2);
 			}
 		}
-		Tessellator.instance.setNormal(0, 1, 0);
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
+			Tessellator.instance.setNormal(0, 1, 0);
+			v5.render();
+		}
 
-		Tessellator.instance.setNormal(0, -1, 0);
 		v5.invertY();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
+			Tessellator.instance.setNormal(0, -1, 0);
+			v5.render();
+		}
 
-		Tessellator.instance.setNormal(-1, 0, 0);
 		v5.rotateYtoX();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
+			Tessellator.instance.setNormal(-1, 0, 0);
+			v5.render();
+		}
 
-		Tessellator.instance.setNormal(1, 0, 0);
 		v5.invertX();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
+			Tessellator.instance.setNormal(1, 0, 0);
+			v5.render();
+		}
 
-		Tessellator.instance.setNormal(0, 0, -1);
 		v5.rotateXtoZ();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
+			Tessellator.instance.setNormal(0, 0, -1);
+			v5.render();
+		}
 
-		Tessellator.instance.setNormal(0, 0, 1);
 		v5.invertZ();
-		v5.render();
+		if (world == null || b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
+			Tessellator.instance.setNormal(0, 0, 1);
+			v5.render();
+		}
 
 		Tessellator.instance.addTranslation(-x, -y, -z);
 	}

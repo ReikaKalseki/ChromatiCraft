@@ -90,9 +90,9 @@ public class GuiCastingTable extends GuiChromaBase {
 		for (int i = 0; i <= tier.ordinal(); i++) {
 			int x = (i/*%2*/)*d;
 			int y = 0;//(i/2)*d;
-			float red = ReikaColorAPI.getRedFromInteger(color[i])/255F;
-			float green = ReikaColorAPI.getGreenFromInteger(color[i])/255F;
-			float blue = ReikaColorAPI.getBlueFromInteger(color[i])/255F;
+			float red = ReikaColorAPI.getRed(color[i])/255F;
+			float green = ReikaColorAPI.getGreen(color[i])/255F;
+			float blue = ReikaColorAPI.getBlue(color[i])/255F;
 			GL11.glColor4f(red, green, blue, 1);
 			this.drawTexturedModelRectFromIcon(x, y, ChromaIcons.DIAMOND.getIcon(), 16, 16);
 			if (!struct[i]) {

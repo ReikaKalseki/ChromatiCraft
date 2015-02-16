@@ -140,7 +140,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
 		int color = CrystalElement.elements[iba.getBlockMetadata(x, y, z)].getColor();
 		int l = this.getBrightness(iba, x, y, z);
-		return ModList.COLORLIGHT.isLoaded() ? color&0xff << 15 | color&0xff00 << 10 | color&0xff0000 << 5 | l : l;
+		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, l) : l;
 	}
 
 	@Override

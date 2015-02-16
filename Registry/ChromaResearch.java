@@ -129,7 +129,7 @@ public enum ChromaResearch {
 	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.BASICCRAFT),
 	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
-	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
+	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.CHROMA),
 	ORES("Buried Secrets",			ChromaStacks.bindingCrystal,							ResearchLevel.RUNECRAFT),
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 			ResearchLevel.BASICCRAFT),
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),

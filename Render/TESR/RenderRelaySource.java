@@ -49,7 +49,7 @@ public class RenderRelaySource extends ChromaRenderBase {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		ReikaRenderHelper.prepareGeoDraw(false);
 		int color = CrystalElement.getBlendedColor(te.getTicksExisted(), 50);
-		GL11.glColor4f(ReikaColorAPI.getRedFromInteger(color)/255F, ReikaColorAPI.getGreenFromInteger(color)/255F, ReikaColorAPI.getBlueFromInteger(color)/255F, 1);
+		GL11.glColor4f(ReikaColorAPI.getRed(color)/255F, ReikaColorAPI.getGreen(color)/255F, ReikaColorAPI.getBlue(color)/255F, 1);
 		model.renderEdges(te);
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();

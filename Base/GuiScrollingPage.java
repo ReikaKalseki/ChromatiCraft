@@ -49,16 +49,16 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			sp *= 2;
 		}
-		if (Minecraft.getMinecraft().gameSettings.keyBindForward.getIsKeyPressed() || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindForward.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 			offsetY -= sp;
 		}
-		if (Minecraft.getMinecraft().gameSettings.keyBindLeft.getIsKeyPressed() || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
 			offsetX -= sp;
 		}
-		if (Minecraft.getMinecraft().gameSettings.keyBindBack.getIsKeyPressed() || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindBack.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 			offsetY += sp;
 		}
-		if (Minecraft.getMinecraft().gameSettings.keyBindRight.getIsKeyPressed() || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
 			offsetX += sp;
 		}
 

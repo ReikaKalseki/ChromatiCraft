@@ -1104,10 +1104,15 @@ public class ChromaStructures {
 			for (int k = 0; k <= 1; k++) {
 				if (k == 0 || Math.abs(i)%2 == 1) {
 					int dy = y+k;
-					array.setBlock(x-3, dy, z+i, b, 0);
-					array.setBlock(x+3, dy, z+i, b, 0);
-					array.setBlock(x+i, dy, z-3, b, 0);
-					array.setBlock(x+i, dy, z+3, b, 0);
+					array.addBlock(x-3, dy, z+i, b, 0);
+					array.addBlock(x+3, dy, z+i, b, 0);
+					array.addBlock(x+i, dy, z-3, b, 0);
+					array.addBlock(x+i, dy, z+3, b, 0);
+
+					array.addBlock(x-3, dy, z+i, ChromaBlocks.RUNE.getBlockInstance());
+					array.addBlock(x+3, dy, z+i, ChromaBlocks.RUNE.getBlockInstance());
+					array.addBlock(x+i, dy, z-3, ChromaBlocks.RUNE.getBlockInstance());
+					array.addBlock(x+i, dy, z+3, ChromaBlocks.RUNE.getBlockInstance());
 				}
 			}
 		}
