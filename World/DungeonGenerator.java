@@ -326,9 +326,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				IInventory te = (IInventory)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
 				WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
 				int bonus = struct == Structures.OCEAN && xyz[1]-arr.getMinY() == 4 ? 4 : 0;
-				int count = ChestGenHooks.getCount(s, r);
+				int count = 1+ChestGenHooks.getCount(s, r);
 				if (struct == Structures.BURROW)
-					count /= 4;
+					count /= 2;
 				WeightedRandomChestContent.generateChestContents(r, loot, te, count);
 				if (bonus > 0)
 					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);

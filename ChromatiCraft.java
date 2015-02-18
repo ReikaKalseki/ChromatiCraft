@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
@@ -156,6 +157,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static PotionGrowthHormone growth;
 	public static PotionBetterSaturation betterSat;
+	public static PotionCustomRegen betterRegen;
 
 	public static final PylonDamage pylon = new PylonDamage("got too close to a Crystal Pylon");
 
@@ -240,6 +242,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		id = ExtraChromaIDs.SATID.getValue();
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionBetterSaturation.class);
 		betterSat = new PotionBetterSaturation(id);
+
+		id = ExtraChromaIDs.REGENID.getValue();
+		PotionCollisionTracker.instance.addPotionID(instance, id, PotionCustomRegen.class);
+		betterRegen = new PotionCustomRegen(id);
 
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);

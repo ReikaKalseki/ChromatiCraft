@@ -329,6 +329,8 @@ public enum ChromaResearch {
 	}
 
 	public boolean isGating() {
+		if (this == DEATHPROOF)
+			return false;
 		return struct == null || !struct.isNatural();
 	}
 
@@ -462,6 +464,7 @@ public enum ChromaResearch {
 			li.add(ChromaStacks.energyCore);
 			li.add(ChromaStacks.transformCore);
 			li.add(ChromaStacks.voidCore);
+			li.add(ChromaStacks.elementUnit);
 			return li;
 		}
 		if (block != null) {

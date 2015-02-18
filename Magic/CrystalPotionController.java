@@ -35,7 +35,7 @@ public class CrystalPotionController {
 		addColorPotion(CrystalElement.LIGHTBLUE, Potion.moveSpeed);
 		addColorPotion(CrystalElement.LIGHTGRAY, Potion.weakness);
 		addColorPotion(CrystalElement.LIME, Potion.jump);
-		addColorPotion(CrystalElement.MAGENTA, Potion.regeneration);
+		addColorPotion(CrystalElement.MAGENTA, ChromatiCraft.betterRegen);
 		addColorPotion(CrystalElement.RED, Potion.resistance);
 		addColorPotion(CrystalElement.ORANGE, Potion.fireResistance);
 		addColorPotion(CrystalElement.PINK, Potion.damageBoost);
@@ -54,7 +54,7 @@ public class CrystalPotionController {
 		addNetherPotion(CrystalElement.BROWN, Potion.confusion);
 		addNetherPotion(CrystalElement.BLUE, Potion.nightVision);
 		addNetherPotion(CrystalElement.PINK, Potion.damageBoost);
-		addNetherPotion(CrystalElement.MAGENTA, Potion.regeneration);
+		addNetherPotion(CrystalElement.MAGENTA, ChromatiCraft.betterRegen);
 	}
 
 	private static void addColorPotion(CrystalElement color, Potion pot) {

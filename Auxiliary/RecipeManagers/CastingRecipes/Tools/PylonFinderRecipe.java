@@ -20,7 +20,7 @@ public class PylonFinderRecipe extends TempleCastingRecipe {
 		super(out, recipe);
 
 		this.addRune(CrystalElement.BLACK, -2, -1, -2);
-		this.addRune(CrystalElement.BLACK, 2, -1, 2);
+		this.addRune(CrystalElement.BLACK, 3, -1, 3);
 	}
 
 }
