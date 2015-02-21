@@ -22,15 +22,15 @@ public class RiftRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.LIME, 5000);
 		this.addAuraRequirement(CrystalElement.YELLOW, 2000);
 
-		this.addAuxItem(this.getShard(CrystalElement.RED), -2, -2);
-		this.addAuxItem(this.getShard(CrystalElement.LIME), 2, -2);
-		this.addAuxItem(this.getShard(CrystalElement.BLUE), -2, 2);
-		this.addAuxItem(this.getShard(CrystalElement.YELLOW), 2, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.RED), -2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.LIME), 2, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), -2, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 2, 2);
 
-		this.addAuxItem(this.getShard(CrystalElement.WHITE), 0, 2);
-		this.addAuxItem(this.getShard(CrystalElement.WHITE), 0, -2);
-		this.addAuxItem(this.getShard(CrystalElement.WHITE), 2, 0);
-		this.addAuxItem(this.getShard(CrystalElement.WHITE), -2, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, 2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, -2);
+		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 2, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), -2, 0);
 	}
 
 	@Override

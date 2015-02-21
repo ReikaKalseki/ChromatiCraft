@@ -9,11 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
@@ -82,6 +86,16 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 	@Override
 	public int getDuration() {
 		return 8*super.getDuration();
+	}
+
+	@Override
+	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+		ProgressStage.STORAGE.stepPlayerTo(ep);
+	}
+
+	@Override
+	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+		return input;
 	}
 
 }

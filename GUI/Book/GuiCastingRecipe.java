@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
+import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -177,6 +179,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 		if (subpage == 0) {
 			ItemHashMap<Integer> items = this.getActiveRecipe().getItemCounts();
 			ArrayList<ItemStack> li = new ArrayList(items.keySet());
+			Collections.sort(li, new AlphabeticItemComparator());
 			for (int i = recipeTextOffset; i < li.size(); i++) {
 				ItemStack is = li.get(i);
 				int num = items.get(is);

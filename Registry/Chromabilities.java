@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -51,6 +53,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -87,7 +90,10 @@ public enum Chromabilities implements Ability {
 	LIGHTNING(null, false),
 	LIFEPOINT(null, false, ModList.BLOODMAGIC),
 	DEATHPROOF(null, false),
-	HOTBAR(null, true);
+	HOTBAR(null, true),
+	SHOCKWAVE(null, true),
+	TELEPORT(null, false),
+	LEECH(null, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -243,6 +249,11 @@ public enum Chromabilities implements Ability {
 		case HOTBAR:
 			addInvPage(ep);
 			break;
+		case SHOCKWAVE:
+			causeShockwave(ep);
+			break;
+		case TELEPORT:
+			teleportPlayerMenu(ep);
 		default:
 			break;
 		}
@@ -285,6 +296,8 @@ public enum Chromabilities implements Ability {
 		case FIREBALL:
 		case LIGHTNING:
 		case HOTBAR:
+		case SHOCKWAVE:
+		case TELEPORT:
 			return true;
 		default:
 			return false;
@@ -440,6 +453,52 @@ public enum Chromabilities implements Ability {
 				}
 				else {
 					ChromaSounds.ERROR.playSound(ep);
+				}
+			}
+		}
+	}
+
+	private static void teleportPlayerMenu(EntityPlayer ep) {
+		//TODO
+	}
+
+	private static void causeShockwave(EntityPlayer ep) {
+		if (ep.worldObj.isRemote) {
+			spawnShockwaveParticles(ep);
+		}
+		else {
+			ChromaSounds.SHOCKWAVE.playSound(ep);
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(ep.posX, ep.posY, ep.posZ, ep.posX, ep.posY, ep.posZ).expand(16, 4, 16);
+			List<EntityLivingBase> li = ep.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
+			for (EntityLivingBase e : li) {
+				if (e != ep && ReikaMathLibrary.py3d(e.posX-ep.posX, 0, e.posZ-ep.posZ) <= 16) {
+					ReikaEntityHelper.knockbackEntity(ep, e, 4);
+				}
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void spawnShockwaveParticles(EntityPlayer ep) {
+		for (int i = 0; i < 360; i++) {
+			double dx = Math.cos(Math.toRadians(i));
+			double dz = Math.sin(Math.toRadians(i));
+			double vx = dx*0.5;
+			double vz = dz*0.5;
+			EntityCenterBlurFX fx = new EntityCenterBlurFX(ep.worldObj, ep.posX, ep.posY-1.62+0.1, ep.posZ, vx, 0, vz).setColor(0x0080ff).setScale(2);
+			fx.noClip = false;
+			if (i%4 == 0) {
+				fx.setColor(0xffffff);
+			}
+			else if (i%2 == 0) {
+				fx.setColor(0x0000ff);
+			}
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+			if (i%30 == 0) {
+				for (double d = 0.25; d <= 16; d += 0.5) {
+					EntityCenterBlurFX fx2 = new EntityCenterBlurFX(ep.worldObj, ep.posX+dx*d, ep.posY-1.62+0.1, ep.posZ+dz*d, 0, 0, 0).setScale(4);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 				}
 			}
 		}

@@ -85,6 +85,9 @@ public class ProgressionManager {
 		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
 		RAINBOWFOREST(ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
+		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance(), false),
+		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal()), false), //icon is a placeholder
+		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -175,6 +178,9 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.CTM,		ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
+		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];

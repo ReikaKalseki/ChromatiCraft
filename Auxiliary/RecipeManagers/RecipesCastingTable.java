@@ -120,7 +120,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalLensRecipe(ChromaStacks.crystalLens, new ItemStack(Blocks.glass)));
 
 		this.addRecipe(new StorageCrystalRecipe(ChromaItems.STORAGE.getStackOf(), ChromaStacks.elementUnit));
-		for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas()-2; i++)
+		for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas()-1; i++)
 			this.addRecipe(new StorageCrystalRecipe(ChromaItems.STORAGE.getStackOfMetadata(i+1), ChromaItems.STORAGE.getStackOfMetadata(i)));
 
 		for (int i = 0; i < 16; i++) {

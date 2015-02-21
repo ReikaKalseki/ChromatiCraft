@@ -74,7 +74,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote && struct != null)
+		if (world.isRemote && struct != null && world.getClosestPlayer(x+0.5, y+0.5, z+0.5, 12) != null)
 			this.spawnParticles(world, x, y, z);
 
 		if (!triggered && struct != null) {

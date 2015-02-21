@@ -99,29 +99,29 @@ public enum ChromaResearch {
 	FENCEAUX(		ChromaBlocks.FENCE,												ResearchLevel.MULTICRAFT),
 	LUMENLEAVES(	ChromaBlocks.POWERTREE,		CrystalElement.LIME.ordinal(),		ResearchLevel.PYLONCRAFT),
 	DYELEAVES(		ChromaBlocks.DYELEAF,		CrystalElement.BROWN.ordinal(),		ResearchLevel.ENTRY,		ProgressStage.DYETREE),
-	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,										ResearchLevel.RAWEXPLORE,	ProgressStage.RAINBOWLEAF),
+	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,	3,									ResearchLevel.RAWEXPLORE,	ProgressStage.RAINBOWLEAF),
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),
 	CRYSTALLAMP(	ChromaBlocks.LAMP,			CrystalElement.YELLOW.ordinal(),	ResearchLevel.RAWEXPLORE),
 	SUPERLAMP(		ChromaBlocks.SUPER,			CrystalElement.MAGENTA.ordinal(),	ResearchLevel.PYLONCRAFT),
 	PATH(			ChromaBlocks.PATH,												ResearchLevel.PYLONCRAFT),
 
 	TOOLDESC("Tools", ""),
-	WAND(			ChromaItems.TOOL,			ResearchLevel.ENTRY),
-	FINDER(			ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
-	EXCAVATOR(		ChromaItems.EXCAVATOR, 		ResearchLevel.CHARGESELF),
-	TRANSITION(		ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
-	INVLINK(		ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
-	PENDANT(		ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
-	VACUUMGUN(		ChromaItems.VACUUMGUN, 		ResearchLevel.MULTICRAFT),
-	LENS(			ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
-	STORAGE(		ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
-	LINKTOOL(		ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
-	WARP(			ChromaItems.WARP, 			ResearchLevel.PYLONCRAFT),
-	TELEPORT(		ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
-	DUPLICATOR(		ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
-	BUILDER(		ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
-	CAPTURE(		ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT),
-	VOIDCELL(		ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
+	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
+	FINDER(				ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
+	EXCAVATOR(			ChromaItems.EXCAVATOR, 		ResearchLevel.CHARGESELF),
+	TRANSITION(			ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
+	INVLINK(			ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
+	PENDANT(			ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
+	VACUUMGUN(			ChromaItems.VACUUMGUN, 		ResearchLevel.MULTICRAFT),
+	LENS(				ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
+	STORAGE(			ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
+	LINKTOOL(			ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
+	WARP(				ChromaItems.WARP, 			ResearchLevel.PYLONCRAFT),
+	TELEPORT(			ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
+	DUPLICATOR(			ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
+	BUILDER(			ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
+	CAPTURE(			ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT),
+	VOIDCELL(			ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -134,6 +134,7 @@ public enum ChromaResearch {
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 			ResearchLevel.BASICCRAFT),
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
+	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.MULTICRAFT,	ProgressStage.STORAGE),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -145,10 +146,13 @@ public enum ChromaResearch {
 	FIREBALL(		Chromabilities.FIREBALL),
 	COMMUNICATE(	Chromabilities.COMMUNICATE),
 	HEALTH(			Chromabilities.HEALTH),
-	PYLONPROTECT(	Chromabilities.PYLON),
+	PYLONPROTECT(	Chromabilities.PYLON, 						ResearchLevel.ENERGYEXPLORE),
 	LIGHTNING(		Chromabilities.LIGHTNING),
 	LIFEPOINT(		Chromabilities.LIFEPOINT),
 	DEATHPROOF(		Chromabilities.DEATHPROOF),
+	SHOCKWAVE(		Chromabilities.SHOCKWAVE),
+	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
+	LEECH(			Chromabilities.LEECH),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -240,11 +244,15 @@ public enum ChromaResearch {
 	}
 
 	private ChromaResearch(Chromabilities c) {
+		this(c, ResearchLevel.PYLONCRAFT);
+	}
+
+	private ChromaResearch(Chromabilities c, ResearchLevel rl) {
 		iconItem = ChromaTiles.RITUAL.getCraftedProduct();
 		pageTitle = c.getDisplayName();
 		Collection<ProgressStage> p = AbilityHelper.instance.getProgressFor(c);
 		progress = p.toArray(new ProgressStage[p.size()]);
-		level = ResearchLevel.PYLONCRAFT;
+		level = rl;
 		ability = c;
 	}
 
@@ -353,6 +361,8 @@ public enum ChromaResearch {
 			return true;
 		if (this == SEED)
 			return true;
+		if (this == AUGMENT)
+			return true;
 		if (this == RUNES)
 			return true;
 		if (this == TANKAUX)
@@ -392,6 +402,13 @@ public enum ChromaResearch {
 				li.add(ChromaItems.PENDANT.getStackOfMetadata(i));
 				li.add(ChromaItems.PENDANT3.getStackOfMetadata(i));
 			}
+			return li;
+		}
+		if (this == AUGMENT) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.speedUpgrade);
+			li.add(ChromaStacks.efficiencyUpgrade);
+			li.add(ChromaStacks.silkUpgrade);
 			return li;
 		}
 		if (item != null) {

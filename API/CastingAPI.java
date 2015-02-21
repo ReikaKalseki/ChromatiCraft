@@ -132,7 +132,7 @@ public class CastingAPI {
 			return;
 		}
 		try {
-			Object r = instTemple.newInstance(out, ctr);
+			Object r = instMulti.newInstance(out, ctr);
 			if (runes != null) {
 				for (List<Integer> key : runes.keySet()) {
 					rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());
@@ -160,7 +160,7 @@ public class CastingAPI {
 			return;
 		}
 		try {
-			Object r = instTemple.newInstance(out, ctr);
+			Object r = instPylon.newInstance(out, ctr);
 			if (runes != null) {
 				for (List<Integer> key : runes.keySet()) {
 					rune.invoke(r, runes.get(key), key.get(0).intValue(), key.get(1).intValue(), key.get(2).intValue());

@@ -37,7 +37,7 @@ public class ChromaNames {
 	public static final String[] tieredNames = {
 		"chromacraft.chromadust", "chromacraft.auradust", "chromacraft.puredust", "chromacraft.focusdust", "chromacraft.elementdust",
 		"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust", "chromacraft.enderdust", "chromacraft.waterdust",
-		"chromacraft.placeholder3", "chromacraft.placeholder4", "chromacraft.placeholder5", "chromacraft.cavern", "chromacraft.burrow",
+		"chromacraft.firaxite", "chromacraft.placeholder4", "chromacraft.placeholder5", "chromacraft.cavern", "chromacraft.burrow",
 		"chromacraft.ocean", "chromacraft.placeholder6", "chromacraft.placeholder7", "chromacraft.placeholder8"
 	};
 
@@ -47,6 +47,10 @@ public class ChromaNames {
 
 	public static final String[] miscNames = {
 		"chromamisc.silktouch", "chromamisc.speed", "chromamisc.efficiency"
+	};
+
+	public static final String[] modInteractNames = {
+		"chromamod.crystalwand", "chromamod.firaxcap", "chromamod.watercap", "chromamod.endercap"
 	};
 
 	private static String getName(String[] names, int i) {

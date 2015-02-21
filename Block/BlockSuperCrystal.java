@@ -26,6 +26,7 @@ public class BlockSuperCrystal extends CrystalBlock {
 	public BlockSuperCrystal(Material mat) {
 		super(mat);
 		this.setLightLevel(1F);
+		this.setResistance(6000);
 	}
 
 	@Override

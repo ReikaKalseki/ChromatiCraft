@@ -53,6 +53,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -417,10 +418,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		//ReikaJavaLibrary.pConsole(recipe, Side.SERVER);
 		int count = 0;
 		boolean repeat = false;
+		NBTTagCompound NBTin = null;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
 			this.addXP(activeRecipe.getExperience());
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
-				MultiBlockCastingRecipe mult = ((MultiBlockCastingRecipe)activeRecipe);
+				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 				HashMap<WorldLocation, ItemStack> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
 				for (WorldLocation loc : map.keySet()) {
 					TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
@@ -431,6 +433,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 						te.syncAllData(true);
 					}
 				}
+
+				NBTin = mult.getOutputTag(inv[4].stackTagCompound);
 			}
 			for (int i = 0; i < 9; i++) {
 				if (inv[i] != null)
@@ -455,6 +459,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
 		if (inv[9] != null) {
+			if (NBTin != null) {
+				ReikaNBTHelper.combineNBT(NBTin, inv[9].stackTagCompound);
+				inv[9].stackTagCompound = (NBTTagCompound)NBTin.copy();
+			}
 			for (int i = 0; i < 6; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
 				if (te instanceof IInventory) {

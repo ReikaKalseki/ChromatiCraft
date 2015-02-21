@@ -88,7 +88,7 @@ public class PylonFinder {
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
-			ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
+			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
 			this.addValidPath(flow.asPath());
 			return flow;
 		}

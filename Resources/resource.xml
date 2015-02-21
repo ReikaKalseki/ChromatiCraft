@@ -30,9 +30,9 @@
 	<irid>
 		You have already figured out that you can purify and then infuse shards with the essence of chroma. Now you can assemble them into larger parts which will ultimately be used to make the Power Crystals.
 	</irid>
-	<name>
-		
-	</name>
+	<augment>
+		The constructs running on the energy stored in crystals are useful to be sure, but you wonder if they are running at peak performance. In particular, you may be able to reduce their energy consumption, increase their speed, and for the mining device, get a product usable in that ore processing contraption that seems to quintuple the yield.
+	</augment>
 	<name>
 		
 	</name>

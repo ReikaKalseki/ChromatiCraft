@@ -87,8 +87,8 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
@@ -110,6 +110,17 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void stealHealth(LivingAttackEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();;
+			if (Chromabilities.LEECH.enabledOn(ep)) {
+				ep.heal(evt.ammount*0.1F);
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -497,12 +508,15 @@ public class ChromaticEventManager {
 		EntityLivingBase e = ev.entityLiving;
 		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
 		if (ChromatiCraft.isRainbowForest(b)) {
-			ev.setResult(BiomeRainbowForest.isMobAllowed(e) ? Result.DEFAULT : Result.DENY);
+			if (!BiomeRainbowForest.isMobAllowed(e)) {
+				ev.setResult(Result.DENY);
+				e.setDead();
+			}
 		}
 		//ReikaJavaLibrary.pConsole(b.biomeName+":"+e.getCommandSenderName()+":"+ReikaEntityHelper.isHostile(e)+":"+ev.getResult());
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void killSpawns(LivingSpawnEvent ev) {
 		World world = ev.world;
 		if (world.isRemote)
@@ -519,6 +533,26 @@ public class ChromaticEventManager {
 		}
 	}
 
+	@ModDependent(ModList.LYCANITE)
+	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
+	public void specialEnforce(LivingUpdateEvent ev) {
+		if (ev.entityLiving.ticksExisted < 5) {
+			World world = ev.entityLiving.worldObj;
+			if (world.isRemote)
+				return;
+			int x = (int)Math.floor(ev.entityLiving.posX);
+			int y = (int)Math.floor(ev.entityLiving.posY);
+			int z = (int)Math.floor(ev.entityLiving.posZ);
+			EntityLivingBase e = ev.entityLiving;
+			BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+			if (ChromatiCraft.isRainbowForest(b)) {
+				if (!BiomeRainbowForest.isMobAllowed(e)) {
+					e.setDead();
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void pylonDrops(LivingDropsEvent ev) {
 		if (ev.source instanceof PylonDamage) {
@@ -529,13 +563,15 @@ public class ChromaticEventManager {
 				String tag = "pylondeath";
 				long time = nbt.getLong(tag);
 				long cur = e.worldObj.getTotalWorldTime();
-				if (cur-time > 6000) {
-					n = 1+rand.nextInt(2);
+				if (cur-time > 24000) {
+					n = 1;
+					if (rand.nextInt(8) == 0)
+						n = 2;
 				}
 				nbt.setLong(tag, cur);
 			}
 			else if (e instanceof EntityVillager || e instanceof EntityWitch)
-				n = rand.nextInt(4) == 0 ? 1 : 0;
+				n = rand.nextInt(8) == 0 ? 1 : 0;
 			else if (e instanceof EntityEnderman)
 				;//n = rand.nextInt(32) == 0 ? 1 : 0;
 			if (n > 0) {

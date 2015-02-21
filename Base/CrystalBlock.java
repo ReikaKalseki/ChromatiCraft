@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -280,7 +281,7 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 				break;
 			case WHITE:
 				//ReikaPotionHelper.clearPotionsExceptPerma(e);
-				e.clearActivePotions();
+				ReikaPotionHelper.clearBadPotions(e);
 				break;
 			case PURPLE:
 				if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {

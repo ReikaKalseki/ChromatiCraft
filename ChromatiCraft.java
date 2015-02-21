@@ -64,6 +64,8 @@ import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -474,6 +476,9 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();
+
+			new CrystalWand().setGlowing(true);
+			TieredOreCap.registerAll();
 		}
 
 		if (ModList.FORESTRY.isLoaded()) {

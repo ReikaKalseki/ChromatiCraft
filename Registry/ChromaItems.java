@@ -92,7 +92,8 @@ public enum ChromaItems implements ItemEnum {
 	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
 	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class),
 	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class),
-	VOIDCELL(10, false,		"chroma.aecell",		ItemVoidStorage.class, ModList.APPENG);
+	VOIDCELL(10, false,		"chroma.aecell",		ItemVoidStorage.class, ModList.APPENG),
+	MODINTERACT(432, true,	"chroma.modinteract",	ItemChromaMisc.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -209,6 +210,8 @@ public enum ChromaItems implements ItemEnum {
 			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		case MISC:
 			return StatCollector.translateToLocal(ChromaNames.miscNames[meta]);
+		case MODINTERACT:
+			return StatCollector.translateToLocal(ChromaNames.modInteractNames[meta]);
 		case ENDERCRYSTAL:
 			return this.getBasicName();
 		case CRAFTING:
@@ -280,6 +283,8 @@ public enum ChromaItems implements ItemEnum {
 			return ChromaNames.tieredNames.length;
 		case MISC:
 			return ChromaNames.miscNames.length;
+		case MODINTERACT:
+			return ChromaNames.modInteractNames.length;
 		case SEED:
 			return 16; //was 32
 		case ENDERCRYSTAL:

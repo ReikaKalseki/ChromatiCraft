@@ -39,6 +39,8 @@ public class GuardianStoneManager {
 	}
 
 	public boolean canPlayerOverrideProtections(EntityPlayerMP ep) {
+		if (ReikaPlayerAPI.isFake(ep))
+			return false;
 		return ReikaPlayerAPI.isReika(ep) || ReikaPlayerAPI.isAdmin(ep);
 	}
 

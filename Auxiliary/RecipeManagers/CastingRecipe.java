@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -358,6 +359,10 @@ public class CastingRecipe {
 				map.put(is, n+1);
 			}
 			return map;
+		}
+
+		public NBTTagCompound getOutputTag(NBTTagCompound input) {
+			return null;
 		}
 	}
 

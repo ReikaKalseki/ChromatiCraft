@@ -15,6 +15,7 @@ import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -75,6 +76,9 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@SideOnly(Side.CLIENT)
 	public final int getRenderColor(int dmg)
 	{
+		if (dmg == 3) {
+			return Color.HSBtoRGB((System.currentTimeMillis()%7200)/7200F, 0.7F, 1F);
+		}
 		//return Color.HSBtoRGB(((System.currentTimeMillis()/60)%360)/360F, 0.8F, 1);
 		World world = Minecraft.getMinecraft().theWorld;
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
@@ -88,7 +92,8 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z)
 	{
 		int sc = 32;
-		float hue = (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
+		int meta = iba.getBlockMetadata(x, y, z);
+		float hue = meta == 3 ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
 		return Color.HSBtoRGB(hue, 0.7F, 1F);
 	}
 
@@ -162,6 +167,12 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		return li;
 	}
 
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is) {
+		if (e instanceof EntityPlayer)
+			world.setBlockMetadataWithNotify(x, y, z, 1, 3);
+	}
+
 	private int getDyeDropCount(int fortune) {
 		return 1+rand.nextInt(3*(1+fortune))+fortune+rand.nextInt(1+fortune*fortune);
 	}
@@ -170,14 +181,14 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	public final ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune)
 	{
 		ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
-		ret.add(new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 1, 1));
+		ret.add(new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance()));
 		return ret;
 	}
 
 	@Override
 	protected final ItemStack createStackedBlock(int par1)
 	{
-		return new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 1, 1);
+		return new ItemStack(ChromaBlocks.RAINBOWLEAF.getBlockInstance());
 	}
 
 	@Override

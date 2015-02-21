@@ -23,6 +23,7 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -92,32 +93,59 @@ public class ChromaRecipes {
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
+			Class root = ChromatiCraft.class;
+			String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
+
 			ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
-			ItemStack in = ChromaItems.WARP.getStackOfMetadata(0);
-			ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
-			String desc = "Pitting one kind of magic against another";
-			AspectList al = new AspectList();
-			al.add(Aspect.ELDRITCH, 50);
-			al.add(Aspect.TAINT, 50);
-			al.add(Aspect.MAGIC, 50);
-			al.add(Aspect.EXCHANGE, 50);
-			al.add(Aspect.CRYSTAL, 20);
-			al.add(Aspect.HEAL, 100);
-			al.add(Aspect.SENSES, 20);
-			ItemStack[] recipe = {
-					ThaumItemHelper.ItemEntry.GOO.getItem(),
-					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
-					ThaumItemHelper.ItemEntry.SALTS.getItem(),
-					new ItemStack(Items.string),
-					ThaumItemHelper.ItemEntry.PRIMALFOCUS.getItem(),
-					ThaumItemHelper.ItemEntry.FABRIC.getItem(),
-					ThaumItemHelper.ItemEntry.SALTS.getItem(),
-					new ItemStack(Items.string),
-					new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
-			};
-			InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
-			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, ChromatiCraft.class, ChromaDescriptions.getParentPage()+"thaum.xml");
+
+			{
+				ItemStack in = ChromaItems.WARP.getStackOfMetadata(0);
+				ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
+				String desc = "Pitting one kind of magic against another";
+				AspectList al = new AspectList();
+				al.add(Aspect.ELDRITCH, 50);
+				al.add(Aspect.TAINT, 50);
+				al.add(Aspect.MAGIC, 50);
+				al.add(Aspect.EXCHANGE, 50);
+				al.add(Aspect.CRYSTAL, 20);
+				al.add(Aspect.HEAL, 100);
+				al.add(Aspect.SENSES, 20);
+				ItemStack[] recipe = {
+						ThaumItemHelper.ItemEntry.GOO.getItem(),
+						ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+						ThaumItemHelper.ItemEntry.SALTS.getItem(),
+						new ItemStack(Items.string),
+						ThaumItemHelper.ItemEntry.PRIMALFOCUS.getItem(),
+						ThaumItemHelper.ItemEntry.FABRIC.getItem(),
+						ThaumItemHelper.ItemEntry.SALTS.getItem(),
+						new ItemStack(Items.string),
+						new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
+				};
+				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
+				if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+					ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, -3, -2, root, ref);
+			}
+
+			{
+				AspectList al = new AspectList();
+				al.add(Aspect.MAGIC, 10);
+				al.add(Aspect.ORDER, 20);
+				al.add(Aspect.AURA, 20);
+				al.add(Aspect.CRYSTAL, 40);
+				ItemStack[] recipe = {
+						ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+						ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
+						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
+						ThaumItemHelper.ItemEntry.BALANCED.getItem(),
+						ThaumItemHelper.ItemEntry.THAUMIUM.getItem(),
+						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
+				};
+				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 6, al, ChromaStacks.iridChunk, recipe);
+				if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+					ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
+			}
+
+			TieredOreCap.addRecipes();
 		}
 	}
 
