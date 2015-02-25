@@ -23,6 +23,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -30,6 +32,8 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
+import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
+import Reika.ChromatiCraft.Render.Entity.RenderGluon;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
@@ -101,7 +105,8 @@ public class ChromaClient extends ChromaCommon {
 			this.loadModels();
 		}
 
-		//RenderingRegistry.registerEntityRenderingHandler(EntityRailGunShot.class, new RenderRailGunShot());
+		RenderingRegistry.registerEntityRenderingHandler(EntityBallLightning.class, new RenderBallLightning());
+		RenderingRegistry.registerEntityRenderingHandler(EntityGluon.class, new RenderGluon());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();

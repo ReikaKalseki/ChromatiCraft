@@ -44,7 +44,8 @@ public enum ChromaOptions implements ConfigList {
 	RETROGEN("Retrogeneration", false),
 	BIOMEPAINTER("Enable Biome Painter", true),
 	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
-	ENDERWEIGHT("Ender Forest Biome Weight", 10);
+	ENDERWEIGHT("Ender Forest Biome Weight", 10),
+	HOSTILEFOREST("Allow Danger in Rainbow Forests", false);
 
 	private String label;
 	private boolean defaultState;

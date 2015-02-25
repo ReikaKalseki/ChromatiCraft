@@ -22,7 +22,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
-public class EntityBallLightning extends EntityFX {
+public class EntityBallLightningFX extends EntityFX {
 
 	public double jitterX;
 	public double jitterY;
@@ -32,7 +32,7 @@ public class EntityBallLightning extends EntityFX {
 	private double jitterVY;
 	private double jitterVZ;
 
-	public EntityBallLightning(World world, double x, double y, double z, CrystalElement e) {
+	public EntityBallLightningFX(World world, double x, double y, double z, CrystalElement e) {
 		super(world, x, y, z);
 		this.setPosition(x, y, z);
 		noClip = true;

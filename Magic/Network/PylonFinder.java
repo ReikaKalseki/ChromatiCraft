@@ -29,7 +29,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class PylonFinder {
 
@@ -206,7 +205,7 @@ public class PylonFinder {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				CrystalLink l = net.getLink(loc2, loc);
-				ReikaJavaLibrary.pConsole(l.hasLineOfSight()+":"+l, loc.yCoord == 80);
+				//ReikaJavaLibrary.pConsole(l.hasLineOfSight()+":"+l, loc.yCoord == 80);
 				if (te.needsLineOfSight() && !l.hasLineOfSight()) {
 					l.recalculateLOS();
 					if (!l.hasLineOfSight())

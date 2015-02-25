@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -49,7 +50,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBallLightning;
+import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
@@ -181,6 +182,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 						EntityPlayer ep = (EntityPlayer)e;
 						attack = attack && !ep.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(ep);
 					}
+					else if (e instanceof EntityBallLightning) {
+						attack = ((EntityBallLightning)e).getElement() != color;
+					}
 					if (attack) {
 						this.attackEntity(e);
 						this.sendClientAttack(this, e);
@@ -200,7 +204,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@SideOnly(Side.CLIENT)
 	private void spawnLightning(World world, int x, int y, int z) {
-		EntityBallLightning e = new EntityBallLightning(world, x+0.5, y+0.5, z+0.5, color);
+		EntityBallLightningFX e = new EntityBallLightningFX(world, x+0.5, y+0.5, z+0.5, color);
 		e.setVelocity(0.125, rand.nextInt(360), 0);
 		Minecraft.getMinecraft().effectRenderer.addEffect(e);
 	}

@@ -24,6 +24,7 @@ import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
@@ -42,6 +43,7 @@ public class BiomeRainbowForest extends BiomeGenBase {
 
 	private static final ArrayList<ModSpawnEntry> classes = new ArrayList();
 	private static final ArrayList<ModSpawnEntry> caveClasses = new ArrayList();
+	private static final ArrayList<ModSpawnEntry> monsterClasses = new ArrayList();
 
 	public BiomeRainbowForest(int id) {
 		super(id);
@@ -70,6 +72,8 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		spawnableCreatureList.add(new SpawnListEntry(EntityCow.class, 6, 4, 4));
 		spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 2, 1, 3));
 
+		spawnableMonsterList.add(new SpawnListEntry(EntityBallLightning.class, 5, 1, 1));
+
 		spawnableWaterCreatureList.add(new SpawnListEntry(EntitySquid.class, 10, 4, 4));
 
 		//spawnableCaveCreatureList.add(new SpawnListEntry(EntityBat.class, 10, 8, 8));
@@ -88,6 +92,12 @@ public class BiomeRainbowForest extends BiomeGenBase {
 			ModSpawnEntry mc = caveClasses.get(i);
 			if (mc.isLoadable()) {
 				spawnableCaveCreatureList.add(mc.getEntry());
+			}
+		}
+		for (int i = 0; i < monsterClasses.size(); i++) {
+			ModSpawnEntry mc = monsterClasses.get(i);
+			if (mc.isLoadable()) {
+				spawnableMonsterList.add(mc.getEntry());
 			}
 		}
 	}
@@ -169,9 +179,15 @@ public class BiomeRainbowForest extends BiomeGenBase {
 	}
 
 	public static boolean isMobAllowed(EntityLivingBase e) {
-		if (e instanceof EntitySlime) {
+		if (e instanceof EntityBallLightning) {
+			return true;
+		}
+		else if (e instanceof EntitySlime) {
 			EntitySlime es = (EntitySlime)e;
 			return es.getSlimeSize() <= 1;
+		}
+		else if (ModList.THAUMCRAFT.isLoaded() && e.getClass().getSimpleName().equalsIgnoreCase("EntityWisp")) {
+			return true;
 		}
 		else if (ReikaEntityHelper.isHostile(e)) {
 			return false;
@@ -190,6 +206,8 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		classes.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFTinyBird", 10, 1, 4));
 
 		caveClasses.add(new ModSpawnEntry(ModList.TWILIGHT, "twilightforest.entity.passive.EntityTFMobileFirefly", 20, 1, 1));
+
+		monsterClasses.add(new ModSpawnEntry(ModList.THAUMCRAFT, "thaumcraft.common.entities.monster.EntityWisp", 5, 1, 1));
 	}
 
 }

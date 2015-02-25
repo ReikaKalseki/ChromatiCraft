@@ -457,6 +457,9 @@ public enum ChromaResearch {
 				li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(i));
 			li.add(ChromaStacks.focusDust);
 			li.add(ChromaStacks.bindingCrystal);
+			li.add(ChromaStacks.enderDust);
+			li.add(ChromaStacks.waterDust);
+			li.add(ChromaStacks.firaxite);
 			return li;
 		}
 		if (this == DUSTS) {

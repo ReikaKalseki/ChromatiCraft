@@ -89,6 +89,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
@@ -533,6 +534,24 @@ public class ChromaticEventManager {
 		}
 	}
 
+	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
+	public void killSpawns(EntityJoinWorldEvent ev) {
+		World world = ev.world;
+		if (ev.entity instanceof EntityLiving) {
+			int x = (int)Math.floor(ev.entity.posX);
+			int y = (int)Math.floor(ev.entity.posY);
+			int z = (int)Math.floor(ev.entity.posZ);
+			EntityLiving e = (EntityLiving)ev.entity;
+			BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+			if (ChromatiCraft.isRainbowForest(b)) {
+				if (!BiomeRainbowForest.isMobAllowed(e)) {
+					//e.setDead();
+					ev.setCanceled(true);
+				}
+			}
+		}
+	}
+
 	@ModDependent(ModList.LYCANITE)
 	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void specialEnforce(LivingUpdateEvent ev) {
@@ -548,6 +567,26 @@ public class ChromaticEventManager {
 			if (ChromatiCraft.isRainbowForest(b)) {
 				if (!BiomeRainbowForest.isMobAllowed(e)) {
 					e.setDead();
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.THAUMCRAFT)
+	public void friendlyWisps(LivingUpdateEvent ev) {
+		if (!ChromaOptions.HOSTILEFOREST.getState()) {
+			if (ev.entityLiving instanceof EntityWisp) {
+				World world = ev.entityLiving.worldObj;
+				if (world.isRemote)
+					return;
+				int x = (int)Math.floor(ev.entityLiving.posX);
+				int y = (int)Math.floor(ev.entityLiving.posY);
+				int z = (int)Math.floor(ev.entityLiving.posZ);
+				EntityLivingBase e = ev.entityLiving;
+				BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+				if (ChromatiCraft.isRainbowForest(b)) {
+					ReikaThaumHelper.setWispHostility((EntityWisp)ev.entityLiving, null);
 				}
 			}
 		}

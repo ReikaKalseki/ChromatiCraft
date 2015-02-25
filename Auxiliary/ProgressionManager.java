@@ -181,6 +181,7 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.CTM,		ProgressStage.DIMENSION);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];

@@ -17,6 +17,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityList;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -60,7 +61,9 @@ import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -126,6 +129,7 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -324,7 +328,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			;//RotaryNames.addNames();
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ChromaGuiHandler());
 		this.addTileEntities();
-		;//RotaryRegistration.addEntities();
+		this.addEntities();
 
 		if (!this.isLocked()) {
 			ChromaRecipes.addRecipes();
@@ -438,6 +442,17 @@ public class ChromatiCraft extends DragonAPIMod {
 			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class);
 
 		this.finishTiming();
+	}
+
+	private void addEntities() {
+		int id = EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerModEntity(EntityBallLightning.class, "Ball Lightning", id, ChromatiCraft.instance, 64, 20, true);
+		EntityRegistry.registerGlobalEntityID(EntityBallLightning.class, "Ball Lightning", id);
+		EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, 0xbbbbbb, 0xffffff));
+
+		id = EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
+		EntityRegistry.registerGlobalEntityID(EntityGluon.class, "Gluon", id);
 	}
 
 	private void addDyeCompat() {

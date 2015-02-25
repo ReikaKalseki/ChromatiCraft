@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -155,6 +156,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super.onBlockActivated(world, x, y, z, ep, side, par7, par8, par9);
 		if (ChromatiCraft.instance.isLocked())
 			return false;
+		if (!world.isRemote)
+			world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x, y+1, z, false));
 		world.markBlockForUpdate(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);

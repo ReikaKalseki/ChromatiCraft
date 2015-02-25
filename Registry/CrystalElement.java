@@ -181,7 +181,7 @@ public enum CrystalElement {
 		CrystalElement e = CrystalElement.elements[(tick/mod)%16];
 		CrystalElement e2 = CrystalElement.elements[(tick/mod+1)%16];
 		float mix = tick%mod/(float)mod;
-		return ReikaColorAPI.mixColors(e.getColor(), e2.getColor(), 1-mix);
+		return ReikaColorAPI.mixColors(e2.getColor(), e.getColor(), mix);
 	}
 
 	static {

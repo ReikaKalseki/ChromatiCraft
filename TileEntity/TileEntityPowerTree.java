@@ -348,7 +348,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && this.isOnTop();
+		return hasMultiblock && this.isOnTop() && worldObj.canBlockSeeTheSky(xCoord, yCoord+1, zCoord);
 	}
 
 	private boolean isOnTop() {

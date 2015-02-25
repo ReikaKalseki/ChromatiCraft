@@ -34,7 +34,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCollector extends FluidIOInventoryBase {
 
-	public static final int XP_PER_CHROMA = 5; //5 xp per mB of liquid
+	public static final int XP_PER_CHROMA = 1; //1 xp per mB of liquid
 	private static final int XP_PER_BOTTLE = 300;
 
 	@Override
