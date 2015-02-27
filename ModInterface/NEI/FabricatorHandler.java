@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
@@ -21,6 +23,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import codechicken.nei.PositionedStack;
@@ -40,7 +44,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 		@Override
 		public PositionedStack getResult() {
-			return new PositionedStack(item, 131, 24);
+			return new PositionedStack(item, 22, 5);
 		}
 
 		@Override
@@ -64,7 +68,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	@Override
 	public String getGuiTexture() {
-		return "/Reika/ChromatiCraft/Textures/GUIs/fabricator.png";
+		return "/Reika/ChromatiCraft/Textures/GUIs/itemvalue.png";
 	}
 
 	@Override
@@ -73,7 +77,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 		GL11.glColor4f(1, 1, 1, 1);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture());
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		ReikaGuiAPI.instance.drawTexturedModalRectWithDepth(0, 0, 5, 11, 166, 70, ReikaGuiAPI.NEI_DEPTH);
+		ReikaGuiAPI.instance.drawTexturedModalRectWithDepth(0, 0, 5, 11, 166, 172, ReikaGuiAPI.NEI_DEPTH);
 	}
 
 	@Override
@@ -110,8 +114,20 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 	}
 
 	@Override
-	public void drawExtras(int recipe)
-	{
+	public void drawExtras(int recipe) {
+		FabricationRecipe fr = (FabricationRecipe)arecipes.get(recipe);
+		Minecraft.getMinecraft().fontRenderer.drawString(fr.item.getDisplayName(), 46, 9, 0xffffff);
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int dx = 3+(i/8)*84;
+			int dy = 28+(i%8)*18;
+			IIcon ico = e.getGlowRune();
+			GL11.glColor4f(1, 1, 1, 1);
+			ReikaTextureHelper.bindTerrainTexture();
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, ico, 16, 16);
+			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F);
+			Minecraft.getMinecraft().fontRenderer.drawString(String.valueOf(fr.cost.getValue(e)), dx+24, dy+4, c);
+		}
 
 	}
 

@@ -292,6 +292,10 @@ public class GuiBiomeChanger extends GuiChromaBase {
 
 		@Override
 		public void onPaintedTo(int x, int y) {
+			if (gui == null) {
+				ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui: "+gui+"/"+gui != null ? gui.tile : "/?");
+				return;
+			}
 			int dx = gui.tile.xCoord+x-TileEntityBiomePainter.RANGE;
 			int dz = gui.tile.zCoord+y-TileEntityBiomePainter.RANGE;
 			if (gui.erase) {

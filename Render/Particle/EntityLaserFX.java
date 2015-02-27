@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
@@ -49,6 +50,18 @@ public class EntityLaserFX extends EntityFX {
 
 	public EntityLaserFX setScale(float f) {
 		particleScale = f;
+		return this;
+	}
+
+	public EntityLaserFX setColor(int color) {
+		particleRed = ReikaColorAPI.getRed(color)/255F;
+		particleGreen = ReikaColorAPI.getGreen(color)/255F;
+		particleBlue = ReikaColorAPI.getBlue(color)/255F;
+		return this;
+	}
+
+	public EntityLaserFX setGravity(float f) {
+		particleGravity = f;
 		return this;
 	}
 

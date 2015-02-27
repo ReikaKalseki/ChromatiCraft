@@ -79,7 +79,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	}
 
 	public void setDirection(ForgeDirection dir) {
-		if (this.isLinked()) {
+		if (this.isLinked() && this.getOther() != null) {
 			singleDirection = dir;
 			this.getOther().singleDirection = dir.getOpposite();
 		}

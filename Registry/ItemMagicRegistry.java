@@ -168,6 +168,7 @@ public class ItemMagicRegistry {
 		this.addElement(Items.beef, CrystalElement.GREEN, 1);
 		this.addElement(Items.blaze_rod, CrystalElement.ORANGE, 4);
 		this.addElement(Items.blaze_rod, CrystalElement.GREEN, 1);
+		this.addElement(Items.blaze_rod, CrystalElement.PINK, 2);
 		this.addElement(Items.saddle, CrystalElement.PURPLE, 1);
 		this.addElement(Items.ender_pearl, CrystalElement.LIME, 4);
 		this.addElement(Items.ender_pearl, CrystalElement.GREEN, 1);
@@ -238,7 +239,7 @@ public class ItemMagicRegistry {
 	}
 
 	private void addElement(ItemStack is, CrystalElement e, int amt) {
-		KeyedItemStack ks = new KeyedItemStack(is).setSized(true);
+		KeyedItemStack ks = new KeyedItemStack(is).setSimpleHash(true).lock();//.setSized(true);
 		ElementTagCompound tag = data.get(ks);
 		if (tag == null) {
 			tag = new ElementTagCompound();
@@ -248,7 +249,7 @@ public class ItemMagicRegistry {
 	}
 
 	public ElementTagCompound getItemValue(ItemStack is) {
-		return this.getItemValue(new KeyedItemStack(is));
+		return this.getItemValue(new KeyedItemStack(is).setSimpleHash(true));
 	}
 
 	public ElementTagCompound getItemValue(KeyedItemStack is) {

@@ -4,27 +4,38 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget.DimensionTarget;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -101,6 +112,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		}
 
 		velocityChanged = true;
+		velocity.magnitude = 0;
 		//ReikaJavaLibrary.pConsole(velocity.inclination+"/"+targetTheta+"; "+velocity.rotation+"/"+targetPhi, Side.SERVER);
 
 		motionX = velocity.getXProjection();
@@ -119,8 +131,28 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		if (posY > 128)
 			this.die();
+
+		if (worldObj.isRemote) {
+			this.lifeParticles();
+		}
 	}
-	/*
+
+	@SideOnly(Side.CLIENT)
+	private void lifeParticles() {
+		double d = 0.25;
+		double px = ReikaRandomHelper.getRandomPlusMinus(posX, d);
+		double py = ReikaRandomHelper.getRandomPlusMinus(posY, d);
+		double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
+		float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.05, 0.025);
+		if (rand.nextInt(4) == 0)
+			g = -g;
+		EntityLaserFX fx = new EntityLaserFX(color, worldObj, px, py, pz).setColor(this.getRenderColor()).setGravity(g);
+		EntityLaserFX fx2 = new EntityLaserFX(color, worldObj, px, py, pz).setColor(0xffffff).setScale(0.42F).setGravity(g);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+	}
+
+
 	@Override
 	public void readEntityFromNBT(NBTTagCompound nbt) {
 		super.readEntityFromNBT(nbt);
@@ -136,24 +168,13 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		if (color != null)
 			nbt.setInteger("color", color.ordinal());
 	}
-	 */
+
 	private void die() {
 		//particle effect
 		if (worldObj.isRemote) {
-			this.deathParticles();
+			this.doDeathParticles(worldObj, posX, posY, posZ, this.getRenderColor());
 		}
 		this.setDead();
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void deathParticles() {
-		for (int i = 0; i < 16; i++) {
-			EntityCenterBlurFX fx = new EntityCenterBlurFX(worldObj, posX, posY, posZ).setColor(this.getRenderColor());
-			fx.motionX = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
-			fx.motionY = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
-			fx.motionZ = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
 	}
 
 	private void doBolt(EntityBallLightning other) {
@@ -194,8 +215,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public AxisAlignedBB getCollisionBox(Entity entity) {
-		if (entity instanceof EntityLivingBase && !worldObj.isRemote) {
-			this.attackEntityAsMob(entity);
+		if (entity instanceof EntityLivingBase && !worldObj.isRemote && false) {
+			if (ChromaOptions.HOSTILEFOREST.getState())
+				this.attackEntityAsMob(entity);
 			this.die();
 		}
 		return null;//AxisAlignedBB.getBoundingBox(posX, posY, posZ, posX, posY, posZ).expand(3, 3, 3);
@@ -212,6 +234,10 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 				e.onReceiveBolt(this);
 			}
 		}
+
+		if (ticksExisted%36 == 0) {
+			ChromaSounds.POWER.playSound(this, 0.1F, 2F);
+		}
 	}
 
 	@Override
@@ -226,6 +252,18 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public void playLivingSound() {
+		;//ChromaSounds.POWER.playSound(this, 1F, 2F);
+	}
+
+	@Override
+	public final int getTalkInterval()
+	{
+		return 999999999;
+	}
+
+	@Override
+	protected final void func_145780_a(int par1, int par2, int par3, Block par4) //play step sound
+	{
 
 	}
 
@@ -237,6 +275,51 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	@Override
 	protected String getDeathSound() {
 		return "";
+	}
+
+	@Override
+	public void onDeath(DamageSource src) {
+		ChromaSounds.DISCHARGE.playSound(this, 1F, 2F);
+		if (!worldObj.isRemote) {
+			if (src.getEntity() instanceof EntityPlayer && !ReikaPlayerAPI.isFake((EntityPlayer)src.getEntity())) {
+				int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
+				ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
+				if (looting > 1) {
+					if (color.isPrimary())
+						ReikaItemHelper.dropItem(this, ChromaStacks.purityDust);
+					else
+						ReikaItemHelper.dropItem(this, ChromaStacks.auraDust);
+				}
+			}
+
+			this.sendDeathParticles();
+		}
+	}
+
+	private void sendDeathParticles() {
+		ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.LIGHTNINGDIE.ordinal(), this, this.calcRenderColor(), new DimensionTarget(worldObj));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void receiveDeathParticles(World world, double dx, double dy, double dz, int color) {
+		doDeathParticles(world, dx, dy, dz, color);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void doDeathParticles(World world, double dx, double dy, double dz, int color) {
+		int n = 32;
+		for (int i = 0; i < n; i++) {
+			EntityCenterBlurFX fx = new EntityCenterBlurFX(world, dx, dy, dz).setColor(color).setScale(1.5F);
+			fx.motionX = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
+			fx.motionY = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
+			fx.motionZ = ReikaRandomHelper.getRandomPlusMinus(0, 0.2);
+			EntityCenterBlurFX fx2 = new EntityCenterBlurFX(world, dx, dy, dz).setColor(0xffffff).setScale(0.5F);
+			fx2.motionX = fx.motionX;
+			fx2.motionY = fx.motionY;
+			fx2.motionZ = fx.motionZ;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		}
 	}
 
 	@Override
@@ -280,7 +363,11 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		Entity e = src.getEntity();
 		if (e instanceof EntityPlayer) {
 			if (!ReikaPlayerAPI.isFake((EntityPlayer)e)) {
-				return super.attackEntityFrom(src, dmg);
+				boolean flag = super.attackEntityFrom(src, dmg);
+				if (flag && this.getHealth() <= 0) {
+					this.die();
+				}
+				return flag;
 			}
 		}
 		return false;
@@ -294,6 +381,13 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	public boolean shouldRenderInPass(int pass)
 	{
 		return pass == 1;
+	}
+
+	@Override
+	protected void dropFewItems(boolean recentHit, int looting) {
+		if (recentHit) {
+
+		}
 	}
 
 }

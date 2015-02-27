@@ -157,7 +157,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		if (ChromatiCraft.instance.isLocked())
 			return false;
 		if (!world.isRemote)
-			world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x, y+1, z, false));
+			world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x, y+2, z, false));
 		world.markBlockForUpdate(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);

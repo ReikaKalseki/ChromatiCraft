@@ -61,6 +61,7 @@ public class TieredOreCap extends WandCap {
 
 	public static void addRecipes() {
 		int i = -2;
+		String ref = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ChromaDescriptions.getParentPage()+"thaum.xml" : "";
 		for (TieredOres t : items.keySet()) {
 			WandType wt = items.get(t);
 			AspectList al = new AspectList();
@@ -73,8 +74,7 @@ public class TieredOreCap extends WandCap {
 			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", wt.item, al, recipe);
 			String id = "TIEREDCAP_"+t.name();
 			String desc = "Novel caps";
-			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-				ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, 2, i, ChromatiCraft.class, ChromaDescriptions.getParentPage()+"thaum.xml");
+			ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, 2, i, ChromatiCraft.class, ref);
 			i++;
 		}
 	}

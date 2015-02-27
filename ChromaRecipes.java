@@ -122,8 +122,7 @@ public class ChromaRecipes {
 						new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 				};
 				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
-				if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-					ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, -3, -2, root, ref);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, -3, -2, root, ref);
 			}
 
 			{
@@ -141,8 +140,7 @@ public class ChromaRecipes {
 						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 				};
 				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 6, al, ChromaStacks.iridChunk, recipe);
-				if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-					ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
 			}
 
 			TieredOreCap.addRecipes();

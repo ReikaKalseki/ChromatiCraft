@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,9 +29,11 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -165,6 +168,16 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 			}
 		}
 		return li;
+	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
+		super.breakBlock(world, x, y, z, b, meta);
+
+		if (rand.nextInt(10) == 0) {
+			if (!world.isRemote)
+				world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x+0.5, y+0.5, z+0.5, false));
+		}
 	}
 
 	@Override

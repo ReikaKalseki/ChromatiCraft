@@ -20,7 +20,7 @@ import codechicken.nei.api.IConfigureNEI;
 public class NEIChromaConfig implements IConfigureNEI {
 
 	private static final CrystalBrewerHandler crystal = new CrystalBrewerHandler();
-	private static final CastingTableHandler casting = new CastingTableHandler();
+	private static final FabricatorHandler fabrication = new FabricatorHandler();
 
 	private static final ChromaNEITabOccluder occlusion = new ChromaNEITabOccluder();
 
@@ -33,8 +33,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 		API.registerRecipeHandler(crystal);
 		API.registerUsageHandler(crystal);
 
-		//API.registerRecipeHandler(casting);
-		//API.registerUsageHandler(casting);
+		API.registerRecipeHandler(fabrication);
 
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {

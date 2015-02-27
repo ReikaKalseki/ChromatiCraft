@@ -43,6 +43,7 @@ public class FabricationRecipes {
 			tag.scale(INITFACTOR);
 			tag.power(POWER);
 			tag.scale(FACTOR);
+			k.setSimpleHash(true);
 			data.put(k, tag);
 			max = Math.max(max, tag.getMaximumValue());
 		}
@@ -64,7 +65,7 @@ public class FabricationRecipes {
 	}
 
 	public ElementTagCompound getItemCost(ItemStack is) {
-		return this.getItemCost(new KeyedItemStack(is));
+		return this.getItemCost(new KeyedItemStack(is).setSimpleHash(true));
 	}
 
 	private ElementTagCompound getItemCost(KeyedItemStack is) {

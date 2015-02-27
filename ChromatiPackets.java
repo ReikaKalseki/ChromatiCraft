@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -77,6 +78,9 @@ public class ChromatiPackets implements IPacketHandler {
 		int x = 0;
 		int y = 0;
 		int z = 0;
+		double dx = 0;
+		double dy = 0;
+		double dz = 0;
 		String stringdata = null;
 		UUID id = null;
 		//System.out.print(packet.length);
@@ -101,6 +105,19 @@ public class ChromatiPackets implements IPacketHandler {
 			case DATA:
 				control = inputStream.readInt();
 				pack = ChromaPackets.getPacket(control);
+				len = pack.numInts;
+				if (pack.hasData()) {
+					data = new int[len];
+					for (int i = 0; i < len; i++)
+						data[i] = inputStream.readInt();
+				}
+				break;
+			case POS:
+				control = inputStream.readInt();
+				pack = ChromaPackets.getPacket(control);
+				dx = inputStream.readDouble();
+				dy = inputStream.readDouble();
+				dz = inputStream.readDouble();
 				len = pack.numInts;
 				if (pack.hasData()) {
 					data = new int[len];
@@ -315,6 +332,10 @@ public class ChromatiPackets implements IPacketHandler {
 			case BIOMEPAINT: {
 				BiomeGenBase b = data[2] >= 0 ? BiomeGenBase.biomeList[data[2]] : ReikaWorldHelper.getNaturalGennedBiomeAt(world, data[0], data[1]);
 				((TileEntityBiomePainter)tile).changeBiomeAt(data[0], data[1], b);
+				break;
+			}
+			case LIGHTNINGDIE: {
+				EntityBallLightning.receiveDeathParticles(world, dx, dy, dz, data[0]);
 				break;
 			}
 			}

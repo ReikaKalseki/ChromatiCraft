@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -19,6 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityCrystalCharger extends InventoriedCrystalReceiver implements OneSlotMachine {
 
@@ -56,7 +58,12 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	}
 
 	private int getMaxTransfer(CrystalElement e) {
-		return 10+(int)Math.sqrt(this.getEnergy(e));
+		int max = 10+(int)Math.sqrt(this.getEnergy(e));
+		return this.hasSpeedUpgrade() ? 8*max : max;
+	}
+
+	public boolean hasSpeedUpgrade() {
+		return ReikaItemHelper.matchStacks(inv[1], ChromaStacks.speedUpgrade);
 	}
 
 	private void checkAndRequest() {
@@ -97,17 +104,24 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return ChromaItems.STORAGE.matchWith(is);
+		switch(slot) {
+		case 0:
+			return ChromaItems.STORAGE.matchWith(is);
+		case 1:
+			return ReikaItemHelper.matchStacks(is, ChromaStacks.speedUpgrade);
+		default:
+			return false;
+		}
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return ChromaItems.STORAGE.matchWith(is) && this.item().isFull(is);
+		return slot == 0 && ChromaItems.STORAGE.matchWith(is) && this.item().isFull(is);
 	}
 
 	@Override
 	public int getSizeInventory() {
-		return 1;
+		return 2;
 	}
 
 	@Override
