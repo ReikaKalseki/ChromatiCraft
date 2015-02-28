@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
@@ -46,6 +48,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
@@ -60,9 +63,11 @@ import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.IPacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -337,6 +342,25 @@ public class ChromatiPackets implements IPacketHandler {
 			case LIGHTNINGDIE: {
 				EntityBallLightning.receiveDeathParticles(world, dx, dy, dz, data[0]);
 				break;
+			}
+			case GLUON: {
+				EntityBallLightning src = (EntityBallLightning)world.getEntityByID(data[0]);
+				EntityBallLightning tgt = (EntityBallLightning)world.getEntityByID(data[1]);
+				Vec3 vec = ReikaVectorHelper.getVec2Pt(src.posX, src.posY, src.posZ, tgt.posX, tgt.posY, tgt.posZ);
+				double lenv = vec.lengthVector();
+				for (float i = 0; i <= lenv; i += 0.125) {
+					double f = i/lenv;
+					double ddx = src.posX-vec.xCoord*f;
+					double ddy = src.posY-vec.yCoord*f;
+					double ddz = src.posZ-vec.zCoord*f;
+					int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
+					int r = ReikaColorAPI.getRed(c);
+					int g = ReikaColorAPI.getGreen(c);
+					int b = ReikaColorAPI.getBlue(c);
+					Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(r, g, b).setLife(8));
+				}
+				src.doBoltClient(tgt);
+				tgt.doBoltClient(src);
 			}
 			}
 		}

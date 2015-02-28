@@ -176,7 +176,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 
 		if (rand.nextInt(10) == 0) {
 			if (!world.isRemote)
-				world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x+0.5, y+0.5, z+0.5, false));
+				world.spawnEntityInWorld(new EntityBallLightning(world, CrystalElement.randomElement(), x+0.5, y+0.5, z+0.5).setNoDrops());
 		}
 	}
 

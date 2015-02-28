@@ -199,6 +199,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 			if (world.isRemote && rand.nextInt(36) == 0) {
 				this.spawnLightning(world, x, y, z);
 			}
+
+			if (!world.isRemote && rand.nextInt(120) == 0) {
+				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
+			}
 		}
 	}
 

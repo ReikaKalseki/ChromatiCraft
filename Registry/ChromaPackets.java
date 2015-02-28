@@ -39,7 +39,8 @@ public enum ChromaPackets {
 	RELAYCONNECT(),
 	RERESEARCH(1),
 	BIOMEPAINT(3),
-	LIGHTNINGDIE(1);
+	LIGHTNINGDIE(1),
+	GLUON(2);
 
 	public final int numInts;
 	public final PacketTypes type;

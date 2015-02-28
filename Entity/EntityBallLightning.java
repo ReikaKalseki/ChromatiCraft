@@ -52,19 +52,29 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	private CrystalElement targetColor = null;
 	private float colorTransitionFraction = 0;
 
-	private boolean isPylonSpawn;
+	private boolean isPylonSpawn = false;
+	private boolean doDrops = true;
 
-	public EntityBallLightning(World world, CrystalElement color, double x, double y, double z, boolean isPylon) {
+	public EntityBallLightning(World world, CrystalElement color, double x, double y, double z) {
 		super(world);
 		this.color = color;
 		this.setPosition(x, y, z);
-		isPylonSpawn = isPylon;
 		height = 0.25F;
 		width = 0.25F;
 	}
 
 	public EntityBallLightning(World world) {
 		super(world);
+	}
+
+	public EntityBallLightning setNoDrops() {
+		doDrops = false;
+		return this;
+	}
+
+	public EntityBallLightning setPylon() {
+		isPylonSpawn = true;
+		return this;
 	}
 
 	@Override
@@ -112,7 +122,6 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		}
 
 		velocityChanged = true;
-		velocity.magnitude = 0;
 		//ReikaJavaLibrary.pConsole(velocity.inclination+"/"+targetTheta+"; "+velocity.rotation+"/"+targetPhi, Side.SERVER);
 
 		motionX = velocity.getXProjection();
@@ -159,6 +168,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		int c = nbt.getInteger("color");
 		color = c >= 0 ? CrystalElement.elements[c] : CrystalElement.randomElement();
+
+		isPylonSpawn = nbt.getBoolean("pylon");
+		doDrops = nbt.getBoolean("dodrops");
 	}
 
 	@Override
@@ -167,6 +179,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		if (color != null)
 			nbt.setInteger("color", color.ordinal());
+
+		nbt.setBoolean("dodrops", doDrops);
+		nbt.setBoolean("pylon", isPylonSpawn);
 	}
 
 	private void die() {
@@ -183,6 +198,8 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		//worldObj.spawnEntityInWorld(g);
 		targetColor = other.color;
 
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GLUON.ordinal(), new DimensionTarget(worldObj), this.getEntityId(), other.getEntityId());
+
 		double len = vec.lengthVector();
 		for (double i = 0; i < len; i += 0.0625) {
 			double dx = posX-i*vec.xCoord/len;
@@ -195,10 +212,15 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(dx, dy, dz, dx, dy, dz).expand(0.5, 0.5, 0.5);
 				List<EntityLivingBase> elb = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
 				for (EntityLivingBase e : elb) {
-					e.attackEntityFrom(DamageSource.generic, 2);
+					e.attackEntityFrom(DamageSource.generic, isPylonSpawn ? 4 : 1);
 				}
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doBoltClient(EntityBallLightning other) {
+		targetColor = other.color;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -215,7 +237,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public AxisAlignedBB getCollisionBox(Entity entity) {
-		if (entity instanceof EntityLivingBase && !worldObj.isRemote && false) {
+		if (entity instanceof EntityLivingBase && !worldObj.isRemote) {
 			if (ChromaOptions.HOSTILEFOREST.getState())
 				this.attackEntityAsMob(entity);
 			this.die();
@@ -227,7 +249,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	public void onLivingUpdate() {
 		super.onLivingUpdate();
 
-		if (!worldObj.isRemote && colorTransitionFraction == 0 && rand.nextInt(600/60) == 0) {
+		if (!worldObj.isRemote && colorTransitionFraction == 0 && rand.nextInt(400) == 0) {
 			EntityBallLightning e = ReikaEntityHelper.getNearestEntityOfSameType(this, 24);
 			if (e != null && e.colorTransitionFraction == 0) {
 				this.doBolt(e);
@@ -281,7 +303,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	public void onDeath(DamageSource src) {
 		ChromaSounds.DISCHARGE.playSound(this, 1F, 2F);
 		if (!worldObj.isRemote) {
-			if (src.getEntity() instanceof EntityPlayer && !ReikaPlayerAPI.isFake((EntityPlayer)src.getEntity())) {
+			if (doDrops && src.getEntity() instanceof EntityPlayer && !ReikaPlayerAPI.isFake((EntityPlayer)src.getEntity())) {
 				int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
 				ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
 				if (looting > 1) {

@@ -17,8 +17,11 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromaGuiHandler;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -124,5 +127,14 @@ public class ChromaAux {
 
 	public static void writeMessage(String tag) {
 		ReikaChatHelper.writeString(getMessage(tag));
+	}
+
+	public static void spawnInteractionBallLightning(World world, int x, int y, int z, CrystalElement e) {
+		if (!world.isRemote) {
+			double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 2);
+			double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1);
+			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 2);
+			world.spawnEntityInWorld(new EntityBallLightning(world, e, dx, dy, dz).setNoDrops());
+		}
 	}
 }

@@ -63,7 +63,6 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
-import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -450,9 +449,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		EntityRegistry.registerGlobalEntityID(EntityBallLightning.class, "Ball Lightning", id);
 		EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, 0xbbbbbb, 0xffffff));
 
-		id = EntityRegistry.findGlobalUniqueEntityId();
-		EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
-		EntityRegistry.registerGlobalEntityID(EntityGluon.class, "Gluon", id);
+		//id = EntityRegistry.findGlobalUniqueEntityId();
+		//EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
+		//EntityRegistry.registerGlobalEntityID(EntityGluon.class, "Gluon", id);
 	}
 
 	private void addDyeCompat() {
