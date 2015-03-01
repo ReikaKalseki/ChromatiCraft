@@ -40,7 +40,8 @@ public enum ChromaSounds implements SoundEnum {
 	USE("use2"),
 	TRAP("slam2"),
 	DING("ding2"),
-	SHOCKWAVE("shockwave");
+	SHOCKWAVE("shockwave"),
+	BALLLIGHTNING("balllightning");
 
 	public static final ChromaSounds[] soundList = values();
 

@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -164,6 +165,12 @@ public class CastingRecipe {
 		return map;
 	}
 
+	public ElementTagCompound getInputElements() {
+		ElementTagCompound tag = new ElementTagCompound();
+		tag.addButMinimizeWith(ItemElementCalculator.instance.getIRecipeTotal(recipe));
+		return tag;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		protected static final BlockArray runeRing = new BlockArray();
@@ -234,6 +241,15 @@ public class CastingRecipe {
 		protected void getRequiredProgress(Collection<ProgressStage> c) {
 			super.getRequiredProgress(c);
 			c.add(ProgressStage.RUNEUSE);
+		}
+
+		@Override
+		public ElementTagCompound getInputElements() {
+			ElementTagCompound tag = super.getInputElements();
+			for (CrystalElement e : runes.getView().getRunes().values()) {
+				tag.addValueToColor(e, 1);
+			}
+			return tag;
 		}
 
 	}
@@ -364,6 +380,15 @@ public class CastingRecipe {
 		public NBTTagCompound getOutputTag(NBTTagCompound input) {
 			return null;
 		}
+
+		@Override
+		public ElementTagCompound getInputElements() {
+			ElementTagCompound tag = super.getInputElements();
+			for (ItemStack is : inputs.values()) {
+				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is));
+			}
+			return tag;
+		}
 	}
 
 	public static class PylonRecipe extends MultiBlockCastingRecipe {
@@ -411,6 +436,15 @@ public class CastingRecipe {
 			super.getRequiredProgress(c);
 			c.add(ProgressStage.PYLON);
 			c.add(ProgressStage.REPEATER);
+		}
+
+		@Override
+		public ElementTagCompound getInputElements() {
+			ElementTagCompound tag = super.getInputElements();
+			for (CrystalElement e : elements.elementSet()) {
+				tag.addValueToColor(e, Math.max(2, elements.getValue(e)/10000));
+			}
+			return tag;
 		}
 	}
 

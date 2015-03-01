@@ -531,7 +531,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		}
 
-		public void cache(TileEntityStructControl te) {
+		private void cache(TileEntityStructControl te) {
 			WorldLocation loc = new WorldLocation(te);
 			if (!cache.contains(loc))
 				cache.add(loc);

@@ -25,12 +25,12 @@ public class TieredOreCap extends WandCap {
 	public static void registerAll() {
 		for (TieredOres t : items.keySet()) {
 			WandCap cap = new TieredOreCap(t);
-			cap.setTexture(new ResourceLocation("chromaticraft", "wandcap_"+t.name().toLowerCase()));
+			cap.setTexture(new ResourceLocation("custom_path", "Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
 		}
 	}
 
 	private TieredOreCap(TieredOres t) {
-		super("chromawcap_"+t.name().toLowerCase(), 0.8F, items.get(t).aspects, 0.5F, items.get(t).item, 120);
+		super("TIEREDCAP_"+t.name(), 0.8F, items.get(t).aspects, 0.5F, items.get(t).item, 10);
 	}
 
 	private static class WandType {
@@ -72,7 +72,7 @@ public class TieredOreCap extends WandCap {
 					"AAA", "A A", 'A', wt.raw
 			};
 			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", wt.item, al, recipe);
-			String id = "TIEREDCAP_"+t.name();
+			String id = "CAP_TIEREDCAP_"+t.name();
 			String desc = "Novel caps";
 			ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, 2, i, ChromatiCraft.class, ref);
 			i++;

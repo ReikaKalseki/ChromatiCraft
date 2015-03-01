@@ -140,7 +140,7 @@ public class ChromaRecipes {
 						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 				};
 				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 6, al, ChromaStacks.iridChunk, recipe);
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
 			}
 
 			TieredOreCap.addRecipes();

@@ -28,6 +28,8 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.DragonAPI.Command.DragonCommandBase;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -37,6 +39,8 @@ public final class ChromaResearchManager {
 	/** For hard links */
 	private final SequenceMap<ChromaResearch> data = new SequenceMap();
 
+	private final MultiMap<ResearchLevel, ChromaResearchTarget> priority = new MultiMap();
+
 	private static final Random rand = new Random();
 	private static final String NBT_TAG = "Chroma_Research";
 
@@ -45,11 +49,37 @@ public final class ChromaResearchManager {
 	public final Comparator researchComparator = new ChromaResearchComparator();
 
 	private ChromaResearchManager() {
+		priority.addValue(ResearchLevel.ENTRY, new ChromaResearchTarget(ChromaResearch.FRAGMENT, -1)); //get fragment first, always
 
+		priority.addValue(ResearchLevel.RUNECRAFT, new ChromaResearchTarget(ChromaResearch.CRAFTING, 10));
+		priority.addValue(ResearchLevel.RUNECRAFT, new ChromaResearchTarget(ChromaResearch.CASTING1, 5));
+		priority.addValue(ResearchLevel.MULTICRAFT, new ChromaResearchTarget(ChromaResearch.CASTING2, 10));
+		priority.addValue(ResearchLevel.PYLONCRAFT, new ChromaResearchTarget(ChromaResearch.CASTING3, 10));
+
+		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.REPEATER, 100));
+		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.COMPOUND, 10));
+		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.REPEATERSTRUCT, 25));
+		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.COMPOUNDSTRUCT, 2));
+
+		priority.shuffleValues();
 	}
 
 	private void addLink(ChromaResearch obj, ChromaResearch parent) {
 
+	}
+
+	private ChromaResearch getPriorityResearchFor(EntityPlayer ep) {
+		Collection<ChromaResearchTarget> c = priority.get(this.getPlayerResearchLevel(ep));
+		WeightedRandom<ChromaResearch> wr = new WeightedRandom();
+		for (ChromaResearchTarget t : c) {
+			if (!this.playerHasFragment(ep, t.fragment)) {
+				if (t.weight < 0)
+					return t.fragment; //-1 is max priority
+				else
+					wr.addEntry(t.fragment, t.weight);
+			}
+		}
+		return !wr.isEmpty() ? wr.getRandomEntry() : null;
 	}
 
 	public ArrayList<ChromaResearch> getNextResearchesFor(EntityPlayer ep) {
@@ -57,9 +87,10 @@ public final class ChromaResearchManager {
 	}
 
 	private ArrayList<ChromaResearch> getNextResearchesFor(EntityPlayer ep, boolean debug) {
-		if (!this.playerHasFragment(ep, ChromaResearch.FRAGMENT)) { //get fragment first, always
+		ChromaResearch pri = this.getPriorityResearchFor(ep);
+		if (pri != null) {
 			ArrayList li = new ArrayList();
-			li.add(ChromaResearch.FRAGMENT);
+			li.add(pri);
 			return li;
 		}
 		this.checkForUpgrade(ep);
@@ -330,6 +361,18 @@ public final class ChromaResearchManager {
 		@Override
 		public int compare(ChromaResearch o1, ChromaResearch o2) {
 			return 1000*(o1.level.ordinal()-o2.level.ordinal())+o1.ordinal()-o2.ordinal();
+		}
+
+	}
+
+	private static class ChromaResearchTarget {
+
+		private final ChromaResearch fragment;
+		private final int weight;
+
+		private ChromaResearchTarget(ChromaResearch r, int w) {
+			fragment = r;
+			weight = w;
 		}
 
 	}

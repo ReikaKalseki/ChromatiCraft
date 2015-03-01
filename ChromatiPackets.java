@@ -70,6 +70,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromatiPackets implements IPacketHandler {
 
@@ -344,23 +346,8 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			}
 			case GLUON: {
-				EntityBallLightning src = (EntityBallLightning)world.getEntityByID(data[0]);
-				EntityBallLightning tgt = (EntityBallLightning)world.getEntityByID(data[1]);
-				Vec3 vec = ReikaVectorHelper.getVec2Pt(src.posX, src.posY, src.posZ, tgt.posX, tgt.posY, tgt.posZ);
-				double lenv = vec.lengthVector();
-				for (float i = 0; i <= lenv; i += 0.125) {
-					double f = i/lenv;
-					double ddx = src.posX-vec.xCoord*f;
-					double ddy = src.posY-vec.yCoord*f;
-					double ddz = src.posZ-vec.zCoord*f;
-					int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
-					int r = ReikaColorAPI.getRed(c);
-					int g = ReikaColorAPI.getGreen(c);
-					int b = ReikaColorAPI.getBlue(c);
-					Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(r, g, b).setLife(8));
-				}
-				src.doBoltClient(tgt);
-				tgt.doBoltClient(src);
+				this.doGluonClientside(world, data);
+				break;
 			}
 			}
 		}
@@ -370,6 +357,31 @@ public class ChromatiPackets implements IPacketHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doGluonClientside(World world, int[] data) {
+		EntityBallLightning src = (EntityBallLightning)world.getEntityByID(data[0]);
+		EntityBallLightning tgt = (EntityBallLightning)world.getEntityByID(data[1]);
+		if (src == null || tgt == null) {
+			//ChromatiCraft.logger.debug("Null ball lightning to receive effect???");
+			return;
+		}
+		Vec3 vec = ReikaVectorHelper.getVec2Pt(src.posX, src.posY, src.posZ, tgt.posX, tgt.posY, tgt.posZ);
+		double lenv = vec.lengthVector();
+		for (float i = 0; i <= lenv; i += 0.125) {
+			double f = i/lenv;
+			double ddx = src.posX-vec.xCoord*f;
+			double ddy = src.posY-vec.yCoord*f;
+			double ddz = src.posZ-vec.zCoord*f;
+			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
+			int r = ReikaColorAPI.getRed(c);
+			int g = ReikaColorAPI.getGreen(c);
+			int b = ReikaColorAPI.getBlue(c);
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(r, g, b).setLife(8));
+		}
+		src.doBoltClient(tgt);
+		tgt.doBoltClient(src);
 	}
 
 }

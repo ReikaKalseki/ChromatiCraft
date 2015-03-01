@@ -88,6 +88,7 @@ public class ProgressionManager {
 		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance(), false),
 		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal()), false), //icon is a placeholder
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
+		BALLLIGHTNING(ChromaStacks.auraDust),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -260,7 +261,7 @@ public class ProgressionManager {
 	}
 
 	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
-		if (ep instanceof FakePlayer)
+		if (ReikaPlayerAPI.isFake(ep))
 			return false;
 		if (this.isPlayerAtStage(ep, s))
 			return false;

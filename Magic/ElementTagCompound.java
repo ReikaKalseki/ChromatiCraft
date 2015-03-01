@@ -107,6 +107,18 @@ public final class ElementTagCompound {
 		this.clearEmptyKeys();
 	}
 
+	public void addButMinimizeWith(ElementTagCompound tag) {
+		if (tag == null || tag.data.isEmpty())
+			return;
+		for (CrystalElement e : tag.data.keySet()) {
+			int amt = tag.getValue(e);
+			int value = this.getValue(e);
+			int val = amt > 0 && value > 0 ? Math.min(amt, value) : (amt > 0 ? amt : value);
+			this.setTag(e, val);
+		}
+		this.clearEmptyKeys();
+	}
+
 	public void maximizeWith(ElementTag tag) {
 		this.setTag(tag.element, Math.max(this.getValue(tag.element), tag.value));
 	}
@@ -259,6 +271,18 @@ public final class ElementTagCompound {
 		}
 	}
 
+	public void intersectWithMinimum(ElementTagCompound tag) {
+		ElementTagCompound temp = new ElementTagCompound();
+		for (CrystalElement e : tag.data.keySet()) {
+			if (data.containsKey(e) && tag.getValue(e) >= data.get(e))
+				temp.addTag(e, this.getValue(e));
+		}
+		data.clear();
+		for (CrystalElement e : temp.data.keySet()) {
+			this.setTag(e, temp.getValue(e));
+		}
+	}
+
 	public WeightedRandom<CrystalElement> asWeightedRandom() {
 		WeightedRandom<CrystalElement> rand = new WeightedRandom();
 		for (CrystalElement e : data.keySet()) {
@@ -325,6 +349,12 @@ public final class ElementTagCompound {
 			min = Math.min(min, this.getRatio(tag, e));
 		}
 		return min;
+	}
+
+	public void setAllValuesTo(int amt) {
+		for (CrystalElement e : data.keySet()) {
+			data.put(e, amt);
+		}
 	}
 
 }

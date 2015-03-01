@@ -17,9 +17,14 @@ package Reika.ChromatiCraft.Models;
 
 import java.util.ArrayList;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntity;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Base.ChromaModelBase;
 import Reika.DragonAPI.Instantiable.Rendering.LODModelPart;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class ModelItemStand extends ChromaModelBase
 {
@@ -161,20 +166,33 @@ public class ModelItemStand extends ChromaModelBase
 	@Override
 	public void renderAll(TileEntity te, ArrayList li)
 	{
+		GL11.glColor4f(1, 1, 1, 1);
+		EntityItem item = (EntityItem)li.get(0);
+		if (item != null) {
+			ReikaRenderHelper.disableEntityLighting();
+			GL11.glDisable(GL11.GL_LIGHTING);
+		}
 		Shape1.render(te, f5);
 		Shape1a.render(te, f5);
 		Shapbe1d.render(te, f5);
 		Shape1c.render(te, f5);
 		Shape1e.render(te, f5);
-		Shape2.render(te, f5);
-		Shape3.render(te, f5);
-		Shape3a.render(te, f5);
-		Shape3b.render(te, f5);
-		Shape3c.render(te, f5);
+
 		Shape4.render(te, f5);
 		Shape4a.render(te, f5);
 		Shape4b.render(te, f5);
 		Shape4c.render(te, f5);
+		if (item != null) {
+			ReikaRenderHelper.enableEntityLighting();
+			GL11.glEnable(GL11.GL_LIGHTING);
+		}
+
+		Shape2.render(te, f5);
+
+		Shape3.render(te, f5);
+		Shape3a.render(te, f5);
+		Shape3b.render(te, f5);
+		Shape3c.render(te, f5);
 		Shape3d.render(te, f5);
 		Shape3e.render(te, f5);
 		Shape3f.render(te, f5);

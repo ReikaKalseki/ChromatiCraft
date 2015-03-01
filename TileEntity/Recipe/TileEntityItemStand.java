@@ -19,10 +19,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemElementCalculator;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -46,14 +51,37 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote && tile != null) {
-			TileEntityCastingTable te = (TileEntityCastingTable)tile.getTileEntity(world);
-			if (te != null && te.getCraftingTick() > 0) {
-				this.spawnCraftParticles(world, x, y, z);
+		if (world.isRemote) {
+			if (tile != null) {
+				TileEntityCastingTable te = (TileEntityCastingTable)tile.getTileEntity(world);
+				if (te != null && te.getCraftingTick() > 0) {
+					this.spawnCraftParticles(world, x, y, z);
+				}
+			}
+			if (item != null) {
+				this.spawnItemParticles(world, x, y, z);
 			}
 		}
 		if (clickTick > 0)
 			clickTick--;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnItemParticles(World world, int x, int y, int z) {
+		if (rand.nextInt(2) == 0) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.375);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.125);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.375);
+			float gv = -(float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.025);
+			int l = ReikaRandomHelper.getRandomPlusMinus(60, 15);
+			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(inv[0]);
+			CrystalElement e = tag != null ? ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()) : null;
+			int r = e != null ? e.getRed() : 0;
+			int g = e != null ? e.getGreen() : 96;
+			int b = e != null ? e.getBlue() : 255;
+			EntityFX fx = new EntityBlurFX(world, rx, ry, rz, 0, 0, 0).setColor(r, g, b).setGravity(gv).setLife(l);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	private boolean recentClicked() {

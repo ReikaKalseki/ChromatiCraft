@@ -286,6 +286,10 @@ public class CrystalNetworker implements TickHandler {
 		c.put(te);
 	}
 
+	public Collection<TileEntityCrystalPylon> getNearbyPylons(World world, double x, double y, double z, CrystalElement e, int range, boolean LOS) {
+		return this.getNearbyPylons(world, MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z), e, range, LOS);
+	}
+
 	public Collection<TileEntityCrystalPylon> getNearbyPylons(World world, int x, int y, int z, CrystalElement e, int range, boolean LOS) {
 		TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 		Collection<TileEntityCrystalPylon> li = new ArrayList();

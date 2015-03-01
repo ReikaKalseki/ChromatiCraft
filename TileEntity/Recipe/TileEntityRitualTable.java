@@ -154,7 +154,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
-		tag.intersectWith(energy);
+		tag.intersectWithMinimum(energy);
 		int n = tag.tagCount();
 		if (n > 0) {
 			a = (8*this.getTicksExisted())%360;

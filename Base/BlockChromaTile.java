@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -73,6 +74,7 @@ import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.HitAction;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
@@ -126,6 +128,10 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			TileEntityCrystalTank te = (TileEntityCrystalTank)world.getTileEntity(x, y, z);
 			return te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
 		}
+		if (c == ChromaTiles.STAND) {
+			TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(x, y, z);
+			return te.getItem() != null ? 6 : 0;
+		}
 		return 0;
 	}
 
@@ -155,7 +161,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super.onBlockActivated(world, x, y, z, ep, side, par7, par8, par9);
 		if (ChromatiCraft.instance.isLocked())
 			return false;
-		ChromaAux.spawnInteractionBallLightning(world, x, y, z, CrystalElement.randomElement());
+		if (ReikaRandomHelper.doWithChance(20))
+			ChromaAux.spawnInteractionBallLightning(world, x, y, z, CrystalElement.randomElement());
 		world.markBlockForUpdate(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);

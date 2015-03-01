@@ -46,7 +46,7 @@ public class RenderItemStand extends ChromaRenderBase {
 		}
 		GL11.glTranslated(par2, par4, par6);
 		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld())
-			this.renderModel(te, model);
+			this.renderModel(te, model, te.getItem());
 
 		GL11.glPopMatrix();
 	}

@@ -166,7 +166,8 @@ public class ChromaAspectManager {
 		}
 		else {
 			cost = cost.copy();
-			cost.scale((1+depth)*depthcost);
+			if (depthcost > 0)
+				cost.scale((1+depth)*depthcost);
 			tag.addTag(cost);
 		}
 	}

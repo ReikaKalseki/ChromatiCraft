@@ -53,7 +53,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
@@ -588,21 +588,27 @@ public class ChromaClientEventController {
 			if (evt.hasItem() && evt.isHovered()) {
 				if (ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
 					ItemStack is = evt.getItem();
-					ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
-					if (tag != null) {
+					ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is);
+					if (tag != null && !tag.isEmpty()) {
 						Tessellator v5 = Tessellator.instance;
 						int i = tag.tagCount();
+						int n = 8;
+						int iw = i >= n ? n : i;
+						int ih = Math.round(0.49F+(float)i/n);
 						GL11.glDisable(GL11.GL_CULL_FACE);
 						GL11.glDisable(GL11.GL_DEPTH_TEST);
 						GL11.glDisable(GL11.GL_LIGHTING);
 						GL11.glEnable(GL11.GL_BLEND);
+						BlendMode.DEFAULT.apply();
+						GL11.glColor4f(1, 1, 1, 1);
 						double z = 0;
-						int w = 8;
-						int h = 8;
+						int s = 8;
+						int w = s*iw;
+						int h = s*ih;
 						int mx = 0;//evt.getRelativeMouseX();
 						int my = 0;//evt.getRelativeMouseY();
-						int x2 = evt.slotX-i*w+mx;
-						int y2 = evt.slotY-w+my;
+						int x = evt.slotX-w+mx;
+						int y = evt.slotY-h+my;
 						//if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 						//	w = 16;
 						//	x2 -= 8;
@@ -611,28 +617,29 @@ public class ChromaClientEventController {
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
 						v5.startDrawingQuads();
 						v5.setColorRGBA(127, 0, 255, 255);
-						v5.addVertex(x2-r, y2-r, z);
-						v5.addVertex(x2+w*i+r, y2-r, z);
-						v5.addVertex(x2+w*i+r, y2+h+r, z);
-						v5.addVertex(x2-r, y2+h+r, z);
+						v5.addVertex(x-r, y-r, z);
+						v5.addVertex(x+w+r, y-r, z);
+						v5.addVertex(x+w+r, y+h+r, z);
+						v5.addVertex(x-r, y+h+r, z);
 						v5.draw();
 						v5.startDrawingQuads();
 						v5.setColorRGBA(0, 0, 0, 255);
-						v5.addVertex(x2, y2, z);
-						v5.addVertex(x2+w*i, y2, z);
-						v5.addVertex(x2+w*i, y2+h, z);
-						v5.addVertex(x2, y2+h, z);
+						v5.addVertex(x, y, z);
+						v5.addVertex(x+w, y, z);
+						v5.addVertex(x+w, y+h, z);
+						v5.addVertex(x, y+h, z);
 						v5.draw();
 						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						int in = 0;
 						for (CrystalElement e : tag.elementSet()) {
 							IIcon ico = e.getFaceRune();
 							float u = ico.getMinU();
 							float v = ico.getMinV();
 							float du = ico.getMaxU();
 							float dv = ico.getMaxV();
-							int x = evt.slotX-i*w+mx;
-							int y = evt.slotY-w+my;
-							i--;/*
+							int ex = x+(in%n)*s;
+							int ey = y+(in/n)*s;
+							in++;/*
 						if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 							GL11.glPushMatrix();
 							double sc = 0.5;
@@ -649,10 +656,10 @@ public class ChromaClientEventController {
 							ReikaTextureHelper.bindTerrainTexture();
 							v5.startDrawingQuads();
 							v5.setColorOpaque_I(0xffffff);
-							v5.addVertexWithUV(x, y, z, u, v);
-							v5.addVertexWithUV(x+w, y, z, du, v);
-							v5.addVertexWithUV(x+w, y+w, z, du, dv);
-							v5.addVertexWithUV(x, y+w, z, u, dv);
+							v5.addVertexWithUV(ex, ey, z, u, v);
+							v5.addVertexWithUV(ex+s, ey, z, du, v);
+							v5.addVertexWithUV(ex+s, ey+s, z, du, dv);
+							v5.addVertexWithUV(ex, ey+s, z, u, dv);
 							v5.draw();
 							//}
 						}

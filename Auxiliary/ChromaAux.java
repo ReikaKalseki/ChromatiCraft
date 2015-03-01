@@ -131,9 +131,9 @@ public class ChromaAux {
 
 	public static void spawnInteractionBallLightning(World world, int x, int y, int z, CrystalElement e) {
 		if (!world.isRemote) {
-			double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 2);
-			double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1);
-			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 2);
+			double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 4);
+			double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 2);
+			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 4);
 			world.spawnEntityInWorld(new EntityBallLightning(world, e, dx, dy, dz).setNoDrops());
 		}
 	}

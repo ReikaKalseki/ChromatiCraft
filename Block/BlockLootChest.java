@@ -76,6 +76,12 @@ public class BlockLootChest extends BlockContainer {
 	}
 
 	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		float ret = super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+		return this.canOpen(world, x, y, z, ep) ? ret : -1;
+	}
+
+	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z)
 	{
 		this.setBlockBounds(0.0625F, 0, 0.0625F, 0.9375F, 0.875F, 0.9375F);

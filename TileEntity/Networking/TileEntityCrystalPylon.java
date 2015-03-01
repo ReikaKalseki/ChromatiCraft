@@ -613,8 +613,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 					amt = Math.min(amt, al.getAmount(a));
 					amt = Math.min(amt, ReikaThaumHelper.getWandSpaceFor(wandstack, a));
 					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
-					if (ret > 0) {
-						energy = Math.max(0, energy-ret*8);
+					int added = amt-ret;
+					if (added > 0) {
+						energy = Math.max(0, energy-added*48);
 					}
 				}
 			}

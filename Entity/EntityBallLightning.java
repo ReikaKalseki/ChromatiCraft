@@ -19,6 +19,9 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -75,6 +78,30 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	public EntityBallLightning setPylon() {
 		isPylonSpawn = true;
 		return this;
+	}
+
+	@Override
+	protected boolean canTriggerWalking()
+	{
+		return false;
+	}
+
+	@Override
+	protected String func_146067_o(int p_146067_1_)
+	{
+		return "";
+	}
+
+	@Override
+	protected void fall(float p_70069_1_)
+	{
+
+	}
+
+	@Override
+	public boolean handleWaterMovement()
+	{
+		return false;
 	}
 
 	@Override
@@ -144,6 +171,8 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		if (worldObj.isRemote) {
 			this.lifeParticles();
 		}
+
+		fallDistance = 0;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -237,10 +266,16 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public AxisAlignedBB getCollisionBox(Entity entity) {
-		if (entity instanceof EntityLivingBase && !worldObj.isRemote) {
-			if (ChromaOptions.HOSTILEFOREST.getState())
-				this.attackEntityAsMob(entity);
-			this.die();
+		if (entity instanceof EntityLivingBase && !(entity instanceof EntityBallLightning) && !worldObj.isRemote) {
+			boolean flag = (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isCreativeMode);
+			if (!flag) {
+				if (ChromaOptions.HOSTILEFOREST.getState()) {
+					entity.attackEntityFrom(DamageSource.generic, 5);
+				}
+				if (entity instanceof EntityPlayer)
+					ProgressStage.BALLLIGHTNING.stepPlayerTo((EntityPlayer)entity);
+				this.die();
+			}
 		}
 		return null;//AxisAlignedBB.getBoundingBox(posX, posY, posZ, posX, posY, posZ).expand(3, 3, 3);
 	}
@@ -257,8 +292,18 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			}
 		}
 
-		if (ticksExisted%36 == 0) {
-			ChromaSounds.POWER.playSound(this, 0.1F, 2F);
+		//if (ticksExisted%36 == 0) {
+		//	ChromaSounds.POWER.playSound(this, 0.1F, 2F);
+		//}
+
+		if (!worldObj.isRemote && rand.nextInt(20) == 0) {
+			if (!CrystalNetworker.instance.getNearbyPylons(worldObj, posX, posY, posZ, color, 24, false).isEmpty()) {
+				this.heal(this.getMaxHealth());
+			}
+		}
+
+		if (!worldObj.isRemote && worldObj.isRaining() && rand.nextInt(80) == 0) {
+			this.die();
 		}
 	}
 
@@ -275,12 +320,15 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	@Override
 	public void playLivingSound() {
 		;//ChromaSounds.POWER.playSound(this, 1F, 2F);
+
+		float p = CrystalMusicManager.instance.getRandomScaledDing(color);
+		ChromaSounds.BALLLIGHTNING.playSound(this, 1, p);
 	}
 
 	@Override
 	public final int getTalkInterval()
 	{
-		return 999999999;
+		return 20;
 	}
 
 	@Override
@@ -303,15 +351,20 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	public void onDeath(DamageSource src) {
 		ChromaSounds.DISCHARGE.playSound(this, 1F, 2F);
 		if (!worldObj.isRemote) {
-			if (doDrops && src.getEntity() instanceof EntityPlayer && !ReikaPlayerAPI.isFake((EntityPlayer)src.getEntity())) {
-				int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
-				ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
-				if (looting > 1) {
-					if (color.isPrimary())
-						ReikaItemHelper.dropItem(this, ChromaStacks.purityDust);
-					else
-						ReikaItemHelper.dropItem(this, ChromaStacks.auraDust);
+			Entity e = src.getEntity();
+			if (e instanceof EntityPlayer) {
+				EntityPlayer ep = (EntityPlayer)e;
+				if (doDrops && !ReikaPlayerAPI.isFake(ep)) {
+					int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
+					ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
+					if (looting > 1) {
+						if (color.isPrimary())
+							ReikaItemHelper.dropItem(this, ChromaStacks.purityDust);
+						else
+							ReikaItemHelper.dropItem(this, ChromaStacks.auraDust);
+					}
 				}
+				ProgressStage.BALLLIGHTNING.stepPlayerTo(ep);
 			}
 
 			this.sendDeathParticles();
