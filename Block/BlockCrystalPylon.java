@@ -19,7 +19,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
@@ -65,7 +65,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
-		if (te instanceof CrystalSource)
+		if (te instanceof NaturalCrystalSource)
 			return -1;
 		if (te instanceof TileEntityStructControl) {
 			return ((TileEntityStructControl)te).isBreakable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32 : -1;

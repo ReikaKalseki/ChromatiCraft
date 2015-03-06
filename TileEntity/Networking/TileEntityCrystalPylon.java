@@ -40,8 +40,8 @@ import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -73,7 +73,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
-public class TileEntityCrystalPylon extends CrystalTransmitterBase implements CrystalSource, INode, IWandable {
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, INode, IWandable {
 
 	private boolean hasMultiblock = false;
 	private boolean enhanced = false;
@@ -650,6 +650,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Cr
 
 	@Override
 	public boolean canTransmitTo(CrystalReceiver te) {
+		return true;
+	}
+
+	@Override
+	public boolean regeneratesEnergy() {
 		return true;
 	}
 
