@@ -364,6 +364,9 @@ public class ChromatiPackets implements IPacketHandler {
 				((TileEntityFarmer)tile).doParticles(data[0], data[1], data[2]);
 				break;
 			}
+			case PYLONCACHE: {
+				PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
+			}
 			}
 		}
 		catch (NullPointerException e) {

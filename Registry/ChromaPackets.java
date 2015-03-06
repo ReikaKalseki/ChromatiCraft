@@ -42,7 +42,8 @@ public enum ChromaPackets {
 	LIGHTNINGDIE(1),
 	GLUON(2),
 	AURAPOUCH(2),
-	FARMERHARVEST(3);
+	FARMERHARVEST(3),
+	PYLONCACHE();
 
 	public final int numInts;
 	public final PacketTypes type;

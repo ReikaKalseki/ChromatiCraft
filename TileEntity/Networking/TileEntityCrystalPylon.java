@@ -83,6 +83,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public static final int MAX_ENERGY_ENHANCED = 900000;
 	private int energy = MAX_ENERGY;
 	private int energyStep = 1;
+	private long lastWorldTick;
 
 	public static final int RANGE = 48;
 
@@ -165,7 +166,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);
 
 			int max = this.getMaxStorage(color);
-			this.charge(world, x, y, z, max);
+			if (world.getTotalWorldTime() != lastWorldTick) {
+				this.charge(world, x, y, z, max);
+				lastWorldTick = world.getTotalWorldTime();
+			}
 			energy = Math.min(energy, max);
 
 			if (world.isRemote) {

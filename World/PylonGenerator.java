@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -54,6 +56,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public final class PylonGenerator implements RetroactiveGenerator {
 
@@ -394,7 +398,17 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	}
 
 	private void addToCache(TileEntityCrystalPylon te, CrystalElement e) {
-		WorldLocation loc = new WorldLocation(te);
+		this.addLocation(new WorldLocation(te), e);
+		List<Integer> li = Arrays.asList(te.xCoord, te.yCoord, te.zCoord, e.ordinal());
+		ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), li);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e) {
+		this.addLocation(new WorldLocation(world, x, y, z), e);
+	}
+
+	private void addLocation(WorldLocation loc, CrystalElement e) {
 		Collection<WorldLocation> c = colorCache.get(e);
 		if (c == null) {
 			c = new ArrayList();
