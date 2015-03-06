@@ -70,6 +70,7 @@ import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -110,8 +111,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
-import Reika.DragonAPI.ModInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
@@ -409,6 +410,10 @@ public class ChromatiCraft extends DragonAPIMod {
 				e.printStackTrace();
 			}
 		}
+
+		ReikaJavaLibrary.initClass(ChromaLuaMethods.class);
+
+		//ModCropList.addCustomCropType(new CrystalPlantHandler());
 
 		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
 		//ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);

@@ -154,13 +154,27 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
-		CrystalPath p = new PylonFinder(e, r).findPylon();
-		return p != null && p.canTransmit();
+		try {
+			CrystalPath p = new PylonFinder(e, r).findPylon();
+			return p != null && p.canTransmit();
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
+			ChromatiCraft.logger.logError("CME during pathfinding!");
+			return false;
+		}
 	}
 
 	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
-		CrystalPath p = new PylonFinder(e, r).findPylon();
-		return p != null && p.canTransmit() ? p.transmitter : null;
+		try {
+			CrystalPath p = new PylonFinder(e, r).findPylon();
+			return p != null && p.canTransmit() ? p.transmitter : null;
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
+			ChromatiCraft.logger.logError("CME during pathfinding!");
+			return null;
+		}
 	}
 
 	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {

@@ -68,6 +68,11 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe {
 	}
 
 	@Override
+	public int getNumberProduced() {
+		return 2;
+	}
+
+	@Override
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
 		super.onCrafted(te, ep);
 

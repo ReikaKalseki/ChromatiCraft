@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
@@ -112,7 +113,8 @@ public enum ChromaTiles {
 	LAMPCONTROL("chroma.lampcontrol",	ChromaBlocks.TILEMODELLED2, TileEntityLampController.class, 	0, "RenderLampControl"),
 	CREATIVEPYLON("chroma.creativepylon",ChromaBlocks.PYLON, 		TileEntityCreativeSource.class, 	4, "RenderCreativePylon"),
 	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,		5, "RenderStructControl"),
-	LIFEEMITTER("chroma.lifeemitter",	ChromaBlocks.TILEMODELLED2, TileEntityLifeEmitter.class,		1/*, "RenderLifeEmitter"*/);
+	LIFEEMITTER("chroma.lifeemitter",	ChromaBlocks.TILEMODELLED2, TileEntityLifeEmitter.class,		1/*, "RenderLifeEmitter"*/),
+	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				2);
 
 	private final Class tile;
 	private final String name;

@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -74,16 +76,21 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Spawner
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraCleanerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraPouchRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BuilderWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CaptureWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnhancedPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.InventoryLinkRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.MultiToolRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OrePickRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OreSilkerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleportWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TransitionRecipe;
+import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -103,6 +110,7 @@ public class RecipesCastingTable {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
 	private final HashMap<RecipeType, OneWayList<CastingRecipe>> recipes = new HashMap();
+	private final OneWayList<CastingRecipe> APIrecipes = new OneWayList();
 
 	private RecipesCastingTable() {
 		this.addRecipe(new CrystalGroupRecipe(ChromaStacks.redGroup, " R ", "B P", " M ", 'B', CrystalElement.BLUE, 'R', CrystalElement.RED, 'P', CrystalElement.PURPLE, 'M', CrystalElement.MAGENTA));
@@ -143,6 +151,13 @@ public class RecipesCastingTable {
 			this.addRecipe(new CastingRecipe(lamp, sr));
 
 			this.addRecipe(new RelayRecipe(CrystalElement.elements[i]));
+
+			for (int k = 0; k < Bases.baseList.length; k++) {
+				Bases b = Bases.baseList[k];
+				ItemStack glow = ReikaItemHelper.getSizedItemStack(ChromaBlocks.GLOW.getStackOfMetadata(i+k*16), 16);
+				sr = ReikaRecipeHelper.getShapedRecipeFor(glow, "S", "s", 'S', shard, 's', b.ingredient);
+				this.addRecipe(new CastingRecipe(glow, sr));
+			}
 		}
 		this.addRecipe(new CompoundRelayRecipe(ChromaBlocks.RELAY.getStackOfMetadata(16), new ItemStack(Items.diamond)));
 
@@ -173,6 +188,15 @@ public class RecipesCastingTable {
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 6, 15), "SSS", "ccc", "SSS", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard);
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 6, 15), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.OREPICK.getStackOf(), "EPE", "cSc", "cSc", 'c', ChromaStacks.chromaDust, 'S', Items.stick, 'E', Items.ender_eye, 'P', Items.iron_pickaxe);
+		this.addRecipe(new OrePickRecipe(ChromaItems.OREPICK.getStackOf(), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.ORESILK.getStackOf(), "EPE", "cdc", "cSc", 'c', ChromaStacks.chromaDust, 'S', Items.stick, 'E', Items.emerald, 'P', Items.diamond_pickaxe, 'd', Items.diamond);
+		this.addRecipe(new OreSilkerRecipe(ChromaItems.ORESILK.getStackOf(), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaItems.MULTITOOL.getStackOf(), "APS", "csc", "csc", 'c', ChromaStacks.chromaDust, 's', Items.stick, 'A', Items.iron_axe, 'S', Items.iron_shovel, 'P', Items.iron_pickaxe);
+		this.addRecipe(new MultiToolRecipe(ChromaItems.MULTITOOL.getStackOf(), sr));
 
 		this.addRecipe(new GuardianStoneRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), ChromaStacks.crystalStar));
 
@@ -290,7 +314,9 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new FabricatorRecipe(ChromaTiles.FABRICATOR.getCraftedProduct(), ChromaStacks.transformCore));
 
-		this.addRecipe(new LampControlRecipe(ChromaTiles.LAMPCONTROL.getCraftedProduct(), new ItemStack(Items.quartz)));
+		is = ChromaTiles.LAMPCONTROL.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "DED", "RQR", "ScS", 'c', ChromaStacks.chromaDust, 'D', ChromaStacks.auraDust, 'E', Items.ender_pearl, 'R', Items.redstone, 'Q', Items.quartz, 'S', ReikaItemHelper.stoneSlab);
+		this.addRecipe(new LampControlRecipe(is, sr));
 
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.silkUpgrade, new ItemStack(Items.diamond)));
 		this.addRecipe(new UpgradeRecipe(ChromaStacks.speedUpgrade, new ItemStack(Items.redstone)));
@@ -318,6 +344,8 @@ public class RecipesCastingTable {
 
 		if (ChromaOptions.BIOMEPAINTER.getState())
 			this.addRecipe(new BiomePainterRecipe(ChromaTiles.BIOMEPAINTER.getCraftedProduct(), ChromaStacks.transformCore));
+
+		this.addRecipe(new AuraPouchRecipe(ChromaItems.AURAPOUCH.getStackOf(), ChromaStacks.voidCore));
 	}
 
 	private void addRecipe(CastingRecipe r) {
@@ -327,6 +355,15 @@ public class RecipesCastingTable {
 			recipes.put(r.type, li);
 		}
 		li.add(r);
+	}
+
+	public void addModdedRecipe(CastingRecipe r) {
+		this.addRecipe(r);
+		APIrecipes.add(r);
+	}
+
+	public List<CastingRecipe> getAllAPIRecipes() {
+		return Collections.unmodifiableList(APIrecipes);
 	}
 
 	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {
@@ -349,8 +386,7 @@ public class RecipesCastingTable {
 		for (RecipeType type : recipes.keySet()) {
 			ArrayList<CastingRecipe> ir = recipes.get(type);
 			if (ir != null) {
-				for (int i = 0; i < ir.size(); i++) {
-					CastingRecipe r = ir.get(i);
+				for (CastingRecipe r : ir) {
 					if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
 						li.add(r);
 				}
@@ -364,8 +400,7 @@ public class RecipesCastingTable {
 		for (RecipeType type : recipes.keySet()) {
 			ArrayList<CastingRecipe> ir = recipes.get(type);
 			if (ir != null) {
-				for (int i = 0; i < ir.size(); i++) {
-					CastingRecipe r = ir.get(i);
+				for (CastingRecipe r : ir) {
 					if (r.usesItem(ingredient))
 						li.add(r);
 				}

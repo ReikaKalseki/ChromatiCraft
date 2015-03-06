@@ -13,8 +13,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -30,6 +32,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
@@ -40,6 +43,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -81,6 +85,9 @@ public class ChromaOverlays {
 			else {
 				holding = false;
 			}
+			if (ChromaItems.OREPICK.matchWith(is)) {
+				this.renderOreHUD(ep, evt.resolution, is);
+			}
 			this.renderAbilityStatus(ep, gsc);
 			this.renderPylonAura(ep, gsc);
 		}
@@ -92,12 +99,36 @@ public class ChromaOverlays {
 		}
 	}
 
+	private void renderOreHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {
+		OreType otype = ItemOrePick.getOreTypeByMetadata(is);
+		if (otype == null)
+			return;
+		ItemStack ore = otype.getFirstOreBlock();
+		IIcon ico = Block.getBlockFromItem(ore.getItem()).getIcon(0, ore.getItemDamage());
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+		Tessellator v5 = Tessellator.instance;
+		int s = 16;
+		int x = sr.getScaledWidth()/2-s*5/4;
+		int y = sr.getScaledHeight()/2-s*5/4;
+		ReikaTextureHelper.bindTerrainTexture();
+		v5.startDrawingQuads();
+		v5.addVertexWithUV(x, y+s, 0, u, dv);
+		v5.addVertexWithUV(x+s, y+s, 0, du, dv);
+		v5.addVertexWithUV(x+s, y, 0, du, v);
+		v5.addVertexWithUV(x, y, 0, u, v);
+		v5.draw();
+	}
+
 	public void triggerPylonEffect(CrystalElement e) {
 		factors.put(e, 2F);
 	}
 
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aura-bar-half.png");
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
@@ -119,14 +150,14 @@ public class ChromaOverlays {
 				double v = frame/imgw/(double)imgh;
 				double dv = v+1D/imgh;
 				int alpha = 255;
-				v5.startDrawingQuads();
-				v5.setBrightness(240);
 				float cache = factors.containsKey(e) ? factors.get(e) : 0;
 				float bright = Math.min(1, (float)(1.5-dd/24));
 				float res = Math.max(cache, bright);
 				factors.put(e, cache*0.9975F);
 				if (res > 0) {
 					int color = ReikaColorAPI.getColorWithBrightnessMultiplier(e.getColor(), Math.min(1, res));
+					v5.startDrawingQuads();
+					v5.setBrightness(240);
 					v5.setColorRGBA_I(color, alpha);
 					v5.addVertexWithUV(0, h, z, u, dv);
 					v5.addVertexWithUV(w, h, z, du, dv);

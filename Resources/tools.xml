@@ -48,4 +48,16 @@
 	<voidcell>
 		Your mining efforts have yielded you untold riches in the form of metals, gems, and other materials, but it has also left you with mountains of stone - you literally could build a mountain if you felt like it. Being something of a pack rat, you cannot bring yourself to throw it away, and your crystal-based item storage system is rapidly approaching capacity. After some time spent reverse-engineering it, you hit upon a solution. Like the crystal tanks, you could probably use a void link to store basically infinite quantities of an item, though only one item per storage unit.
 	</voidcell>
+	<aurapouch>
+		There are a great many tools available to you to grant you exceptional abilities, including those crystalline pendants you designed earlier. However, each of these needs to remain in your inventory to function. The end result is that your inventory quickly fills while mining, something not helped by the twenty kinds of stone you find underground. Putting these items in a backpack negates their effects, so that is not a solution, either. If only there was some way to put all these items in a bag and still have it pass on the items' effects...
+	</aurapouch>
+	<multitool>
+		Different kinds of blocks need different kinds of tools to harvest them efficiently and effectively. Given the wide variety of blocks you come across, this quickly necessitates several tools - picks, axes, shovels, shears, your SWORD - and switching between them becomes increasingly clumsy. Combining all the tools into one - somehow - is the obvious solution.
+	</multitool>
+	<orepick>
+		Branch mining is a waste of time. You make a narrow tunnel out of kilometers of rock and find barely anything - and most of what you find is worthless - except that which you blindly dug right into. No doubt large amounts of ore remain hidden to you just underneath the walls of your tunnel, but short of expending the herculean effort to clear all of the overlying stone, you will never know what you are missing...
+	</orepick>
+	<oresilk>
+		You have mechanisms to process ore and increase your rate of return, from half a dozen ways of doubling it to ways of increasing that output even further, but this is rather unhelpful if the ore blocks themselves are unobtainable to you and the ore taunts you by dropping its contents instead. You could of course put Silk Touch on your tool, but enchanting is a random and often frustrating endeavor; a better idea would be to make the tool itself carve ore cleanly from the ground.
+	</oresilk>
 </tools>

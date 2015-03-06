@@ -32,8 +32,8 @@ public class AuraCleanerRecipe extends PylonRecipe {
 		this.addRune(CrystalElement.BLACK, -3, -1, 3);
 		this.addRune(CrystalElement.BLACK, 3, -1, -3);
 
-		this.addRune(CrystalElement.WHITE, 0, -1, -2);
-		this.addRune(CrystalElement.WHITE, 0, -1, 2);
+		this.addRune(CrystalElement.WHITE, 0, -1, -4);
+		this.addRune(CrystalElement.WHITE, 0, -1, 4);
 
 		this.addAuxItem(Items.diamond, -2, 4);
 		this.addAuxItem(Items.diamond, 2, 4);

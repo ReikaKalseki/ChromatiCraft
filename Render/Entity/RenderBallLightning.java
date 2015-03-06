@@ -33,13 +33,15 @@ public class RenderBallLightning extends Render {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glTranslated(par2, par4, par6);
-		RenderManager rm = RenderManager.instance;
-		double dx = e.posX-RenderManager.renderPosX;
-		double dy = e.posY-RenderManager.renderPosY;
-		double dz = e.posZ-RenderManager.renderPosZ;
-		double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
-		GL11.glRotated(angs[2], 0, 1, 0);
-		GL11.glRotated(90-angs[1], 1, 0, 0);
+		if (!e.isDead) {
+			RenderManager rm = RenderManager.instance;
+			double dx = e.posX-RenderManager.renderPosX;
+			double dy = e.posY-RenderManager.renderPosY;
+			double dz = e.posZ-RenderManager.renderPosZ;
+			double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
+			GL11.glRotated(angs[2], 0, 1, 0);
+			GL11.glRotated(90-angs[1], 1, 0, 0);
+		}
 		//GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		v5.startDrawingQuads();
 		v5.setBrightness(240);

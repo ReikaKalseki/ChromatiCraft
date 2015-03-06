@@ -60,26 +60,33 @@ public class TileEntityCrystalPlant extends TileEntity {
 		}
 	}
 
+	public void makeRipe() {
+		this.grow();
+		this.grow();
+	}
+
 	public void updateLight() {
 		worldObj.func_147479_m(xCoord, yCoord, zCoord);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
-	public void harvest() {
+	public void harvest(boolean drops) {
 		growthTick = 2;
-		int rand = random.nextInt(20);
-		int num = 0;
-		if (rand == 0) {
-			num = 2;
+		if (drops) {
+			int rand = random.nextInt(20);
+			int num = 0;
+			if (rand == 0) {
+				num = 2;
+			}
+			else if (rand < 5) {
+				num = 1;
+			}
+			int meta = this.getColor().ordinal();
+			for (int i = 0; i < num; i++)
+				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(meta+16));
+			if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(2))
+				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
 		}
-		else if (rand < 5) {
-			num = 1;
-		}
-		int meta = this.getColor().ordinal();
-		for (int i = 0; i < num; i++)
-			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(meta+16));
-		if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(2))
-			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
 		this.updateLight();
 	}
 

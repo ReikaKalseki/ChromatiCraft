@@ -9,14 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -28,14 +26,11 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
-import Reika.RotaryCraft.API.Interfaces.BlowableCrop;
 
-public class BlockCrystalPlant extends Block implements BlowableCrop {
+public class BlockCrystalPlant extends Block {
 
 	private IIcon colorIcon;
 	private IIcon fastIcon;
@@ -180,7 +175,7 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
 		if (te.canHarvest()) {
-			te.harvest();
+			te.harvest(true);
 		}
 		return true;
 	}
@@ -195,7 +190,7 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 	public IIcon getBulbIcon(CrystalElement color) {
 		return center;//bulb[color.ordinal()];
 	}
-
+	/*
 	@Override
 	public boolean isReadyToHarvest(World world, int x, int y, int z) {
 		if (world.getBlock(x, y-1, z) == Blocks.grass)
@@ -222,15 +217,15 @@ public class BlockCrystalPlant extends Block implements BlowableCrop {
 	}
 
 	@Override
+	public float getHarvestingSpeed() {
+		return 0.33F;
+	}*/
+
+	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
 	{
 		int meta = world.getBlockMetadata(x, y, z);
 		return new ItemStack(ChromaBlocks.PLANT.getBlockInstance(), 1, meta);
-	}
-
-	@Override
-	public float getHarvestingSpeed() {
-		return 0.33F;
 	}
 
 }

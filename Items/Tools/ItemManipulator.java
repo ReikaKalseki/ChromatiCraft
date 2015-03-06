@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Items.Tools;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -21,6 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -150,6 +152,10 @@ public class ItemManipulator extends ItemChromaTool {
 			}
 			return true;
 		}
+		if (tile instanceof TileEntityCrystalGlow) {
+			((TileEntityCrystalGlow)tile).rotate();
+			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
+		}
 		return false;
 	}
 
@@ -160,8 +166,7 @@ public class ItemManipulator extends ItemChromaTool {
 	}
 
 	@Override
-	public int getMaxItemUseDuration(ItemStack is)
-	{
+	public int getMaxItemUseDuration(ItemStack is) {
 		return 72000;
 	}
 

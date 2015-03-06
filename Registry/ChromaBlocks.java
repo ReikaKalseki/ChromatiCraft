@@ -22,12 +22,14 @@ import net.minecraftforge.fluids.Fluid;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
-import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
+import Reika.ChromatiCraft.Block.BlockCrystalGlow;
+import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
@@ -62,9 +64,10 @@ import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
-import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLumenRelay;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
@@ -75,16 +78,14 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public enum ChromaBlocks implements BlockEnum {
 
 	TILEPLANT(BlockChromaPlantTile.class, 		ItemBlockChromaFlower.class, 	"Chromatic Plant"),
 	TILEENTITY(BlockChromaTile.class, 											"Chromatic Tile"),
 	TILEMODELLED(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile"),
-	RUNE(BlockCrystalRune.class, 				ItemBlockCrystalColors.class, 		"block.crystalrune"),
+	RUNE(BlockCrystalRune.class, 				ItemBlockCrystalColors.class, 	"block.crystalrune"),
 	CHROMA(BlockActiveChroma.class, 			ChromatiCraft.chroma, 			"fluid.chroma"),
-	//ACTIVECHROMA(BlockActiveChroma.class, 		ChromatiCraft.activechroma, 	"Active Liquid Chroma"),
 	RIFT(BlockRift.class, 														"Rift"),
 	CRYSTAL(BlockCaveCrystal.class, 			ItemBlockCrystal.class, 		"crystal.cave"), //Cave Crystal
 	RAINBOWCRYSTAL(BlockRainbowCrystal.class, 									"crystal.rainbow"),
@@ -118,7 +119,8 @@ public enum ChromaBlocks implements BlockEnum {
 	STRUCTSHIELD(BlockStructureShield.class,	ItemBlockStructShield.class,	"chroma.shield"),
 	LOOTCHEST(BlockLootChest.class,												"chroma.loot"),
 	PORTAL(BlockChromaPortal.class,												"chroma.portal"),
-	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay");
+	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay"),
+	GLOW(BlockCrystalGlow.class,				ItemBlockCrystalGlow.class,		"chroma.glow");
 
 	private Class blockClass;
 	private String blockName;
@@ -251,6 +253,9 @@ public enum ChromaBlocks implements BlockEnum {
 
 	@Override
 	public String getMultiValuedName(int meta) {
+		if (this == GLOW) {
+			return Bases.baseList[meta/16].displayName+"-Based "+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
+		}
 		if (this.isCrystal() || this.isDye())
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		switch(this) {
@@ -291,13 +296,13 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public boolean isCrystal() {
-		return CrystalBlock.class.isAssignableFrom(blockClass);
+		return CrystalTypeBlock.class.isAssignableFrom(blockClass);
 	}
 
 	@Override
 	public int getNumberMetadatas() {
 		if (this.isCrystal() || this.isDye())
-			return ReikaDyeHelper.dyes.length;
+			return CrystalElement.elements.length;
 		switch(this) {
 		case RUNE:
 		case PLANT:

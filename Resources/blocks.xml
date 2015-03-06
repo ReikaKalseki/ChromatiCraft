@@ -33,4 +33,13 @@
 	<superlamp>
 		Crystal-based lamps are nice, but you long for the stat boosts given by the original crystals. Recalling their creation, you hit upon an idea: if you use a complete crystal, rather than shards as the base, and dump in a healthy amount of crystal energy, you should get a lamp that not only glows brightly, but emits a powerful effect over a significant radius.
 	</superlamp>
+	<glow>
+		Mounting a crystal shard on a base of some other material creates a stylish light whose variability allows it to be put in any home.
+	</glow>
+	<relay>
+		Not all your constructs draw directly from the repeater network. Others, notably those that tend to be used in groups, seem to draw via relays that transmit from a central source - which does draw from the pylons - and bounce from relay to relay - as long as there is a clear line of sight - to the target block. Conveniently, this also allows you to use some of these constructs underground, where getting lumen energy beams in is rather difficult.
+	</relay>
+	<path>
+		Imbued with the energy of motion, travel path accelerates your ability to traverse the ground, often to surpising velocities. Just don't try crouching while you do so, as you might tumble uncontrollably.
+	</path>
 </blocks>

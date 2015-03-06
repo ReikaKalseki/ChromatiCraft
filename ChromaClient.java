@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
@@ -80,6 +81,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final PowerTreeRenderer tree = new PowerTreeRenderer();
 	private static final LampRenderer lamp = new LampRenderer();
 	private static final RelayRenderer relay = new RelayRenderer();
+	private static final CrystalGlowRenderer glow = new CrystalGlowRenderer();
 	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -190,6 +192,9 @@ public class ChromaClient extends ChromaCommon {
 
 		relayRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(relayRender, relay);
+
+		glowRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(glowRender, glow);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

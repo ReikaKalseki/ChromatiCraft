@@ -19,7 +19,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 
@@ -343,7 +342,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 
 		public void draw(int ex, int ey) {
-			api.drawItemStack(itemRender, this.getIcon(), ex, ey);
+			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glColor4f(1, 1, 1, 1);
 			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
@@ -394,9 +393,9 @@ public class GuiNavigation extends GuiScrollingPage {
 			return destination.ordinal();
 		}
 
-		private ItemStack getIcon() {
-			return destination.getTabIcon();
-		}
+		//private ItemStack getIcon() {
+		//	return destination.getTabIcon();
+		//}
 
 		public String getName() {
 			return destination.getTitle();

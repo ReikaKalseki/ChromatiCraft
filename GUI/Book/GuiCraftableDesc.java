@@ -45,13 +45,14 @@ public class GuiCraftableDesc extends GuiDescription {
 			double s = 4;
 			GL11.glScaled(s, s, 1);
 			GL11.glTranslated(33, 3, 0);
-			ItemStack is = page.getTabIcon();
+			ItemStack is = null;//page.getTabIcon();
 			ArrayList<ItemStack> li = page.getItemStacks();
 			if (li != null && !li.isEmpty()) {
 				int tick = (int)((System.currentTimeMillis()/1000)%li.size());
 				is = li.get(tick);
 			}
-			api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));
+			if (is != null)
+				api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));
 			GL11.glPopMatrix();
 		}
 	}

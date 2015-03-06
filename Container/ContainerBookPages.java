@@ -34,7 +34,7 @@ public class ContainerBookPages extends Container {
 
 	public static final int MAX_SCROLL = 1+ChromaResearch.getAllNonParents().size()/width-height;
 
-	public final BookInventory inventory = new BookInventory();
+	private final BookInventory inventory = new BookInventory();
 
 	private final EntityPlayer player;
 
@@ -155,8 +155,8 @@ public class ContainerBookPages extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer par1EntityPlayer) {
-		return true;
+	public boolean canInteractWith(EntityPlayer ep) {
+		return ChromaItems.HELP.matchWith(ep.getCurrentEquippedItem());
 	}
 
 	@Override

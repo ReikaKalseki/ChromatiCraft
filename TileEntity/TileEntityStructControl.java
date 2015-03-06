@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -44,7 +43,9 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.HitAction;
 import Reika.DragonAPI.Interfaces.InertIInv;
@@ -444,7 +445,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			}
 		}
-		LootChestWatcher.instance.cache.remove(new WorldLocation(this));
+		LootChestWatcher.instance.remove(this);
 	}
 
 	public int getBrightness() {
@@ -525,7 +526,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		public static final LootChestWatcher instance = new LootChestWatcher();
 
-		private final Collection<WorldLocation> cache = new ArrayList();
+		private final MultiMap<WorldChunk, WorldLocation> cache = new MultiMap();
 
 		private LootChestWatcher() {
 
@@ -533,17 +534,33 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		private void cache(TileEntityStructControl te) {
 			WorldLocation loc = new WorldLocation(te);
-			if (!cache.contains(loc))
-				cache.add(loc);
+			WorldChunk wc = new WorldChunk(te.worldObj, te.worldObj.getChunkFromBlockCoords(te.xCoord, te.zCoord));
+			cache.addValue(wc, loc);
+		}
+
+		private void remove(TileEntityStructControl te) {
+			WorldLocation loc = new WorldLocation(te);
+			WorldChunk wc = new WorldChunk(te.worldObj, te.worldObj.getChunkFromBlockCoords(te.xCoord, te.zCoord));
+			cache.remove(wc, loc);
 		}
 
 		@SubscribeEvent
 		public void onAccess(LootChestAccessEvent evt) {
-			for (WorldLocation loc : cache) {
-				TileEntity tile = evt.world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
-				if (tile instanceof TileEntityStructControl) {
-					TileEntityStructControl te = (TileEntityStructControl)tile;
-					te.trigger(evt.x, evt.y, evt.z, evt.player);
+			int x = evt.x;
+			int z = evt.z;
+			int r = 2;
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					int dx = x+i*16;
+					int dz = z+i*16;
+					WorldChunk wc = new WorldChunk(evt.world, evt.world.getChunkFromBlockCoords(dx, dz));
+					for (WorldLocation loc : cache.get(wc)) {
+						TileEntity tile = evt.world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+						if (tile instanceof TileEntityStructControl) {
+							TileEntityStructControl te = (TileEntityStructControl)tile;
+							te.trigger(evt.x, evt.y, evt.z, evt.player);
+						}
+					}
 				}
 			}
 		}

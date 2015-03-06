@@ -17,11 +17,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -32,6 +38,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
@@ -39,7 +46,9 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -54,6 +63,7 @@ public enum ChromaResearch {
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
+	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -89,7 +99,7 @@ public enum ChromaResearch {
 	ASPECT(			ChromaTiles.ASPECT, 		ResearchLevel.ENERGYEXPLORE),
 	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
 	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME),
-	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.MULTICRAFT),
+	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.RUNECRAFT),
 	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
 
 	BLOCKS("Other Blocks", ""),
@@ -104,7 +114,9 @@ public enum ChromaResearch {
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),
 	CRYSTALLAMP(	ChromaBlocks.LAMP,			CrystalElement.YELLOW.ordinal(),	ResearchLevel.RAWEXPLORE),
 	SUPERLAMP(		ChromaBlocks.SUPER,			CrystalElement.MAGENTA.ordinal(),	ResearchLevel.PYLONCRAFT),
-	PATH(			ChromaBlocks.PATH,												ResearchLevel.PYLONCRAFT),
+	PATH(			ChromaBlocks.PATH,												ResearchLevel.RUNECRAFT),
+	GLOW(			ChromaBlocks.GLOW,			CrystalElement.RED.ordinal(),		ResearchLevel.BASICCRAFT),
+	RELAY(			ChromaBlocks.RELAY,												ResearchLevel.NETWORKING),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -123,6 +135,10 @@ public enum ChromaResearch {
 	BUILDER(			ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
 	CAPTURE(			ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT),
 	VOIDCELL(			ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
+	AURAPOUCH(			ChromaItems.AURAPOUCH,		ResearchLevel.MULTICRAFT),
+	MULTITOOL(			ChromaItems.MULTITOOL,		ResearchLevel.RUNECRAFT),
+	OREPICK(			ChromaItems.OREPICK,		ResearchLevel.RUNECRAFT),
+	ORESILK(			ChromaItems.ORESILK,		ResearchLevel.RUNECRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -266,7 +282,7 @@ public enum ChromaResearch {
 	}
 
 	public boolean playerCanSee(EntityPlayer ep) {
-		if (this.getMachine() != null && this.getMachine().isDummiedOut())
+		if (this.isDummiedOut())
 			return DragonAPICore.isReikasComputer();
 		if (progress != null) {
 			for (int i = 0; i < progress.length; i++) {
@@ -321,8 +337,76 @@ public enum ChromaResearch {
 		return item;
 	}
 
-	public ItemStack getTabIcon() {
+	private ItemStack getTabIcon() {
 		return iconItem;
+	}
+
+	public void drawTabIcon(RenderItem ri, int x, int y) {
+		if (this == BALLLIGHTNING) {
+			EntityBallLightning eb = new EntityBallLightning(Minecraft.getMinecraft().theWorld);
+			eb.isDead = true;
+			GL11.glPushMatrix();
+			double d = 8;
+			GL11.glTranslated(x+d, y+d, 0);
+			double s = 18;
+			GL11.glScaled(-s, s, 1);
+			ReikaEntityHelper.getEntityRenderer(EntityBallLightning.class).doRender(eb, 0, 0, 0, 0, 0);
+			GL11.glPopMatrix();
+			return;
+		}
+		if (this == APIRECIPES) {
+			ArrayList<ItemStack> ico = new ArrayList();
+			/*
+			if (ModList.THAUMCRAFT.isLoaded()) {
+				ico.add(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem());
+				ico.add(new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6));
+				ico.add(ThaumItemHelper.BlockEntry.ETHEREAL.getItem());
+				ico.add(ThaumItemHelper.ItemEntry.NITOR.getItem());
+				ico.add(ThaumItemHelper.ItemEntry.THAUMIUM.getItem());
+				ico.add(ThaumItemHelper.ItemEntry.FABRIC.getItem());
+			}
+			if (ModList.ROTARYCRAFT.isLoaded()) {
+				ico.add(MachineRegistry.BLASTFURNACE.getCraftedProduct());
+				ico.add(EngineType.AC.getCraftedProduct());
+				ico.add(ItemRegistry.GRAVELGUN.getStackOf());
+			}
+			if (ModList.REACTORCRAFT.isLoaded()) {
+				ico.add(ReactorTiles.INJECTOR.getCraftedProduct());
+			}
+			if (ModList.APPENG.isLoaded()) {
+				ico.add(AEApi.instance().blocks().blockController.stack(1));
+				ico.add(AEApi.instance().blocks().blockQuantumLink.stack(1));
+				ico.add(AEApi.instance().blocks().blockQuartzGrowthAccelerator.stack(1));
+			}
+			if (ModList.FORESTRY.isLoaded()) {
+				ico.add(new ItemStack(ForestryHandler.BlockEntry.HIVE.getBlock()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.COMB.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.HONEYDEW.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.QUEEN.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.POLLEN.getItem()));
+			}
+			if (ModList.FORESTRY.isLoaded()) {
+				ico.add(new ItemStack(ForestryHandler.BlockEntry.HIVE.getBlock()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.COMB.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.HONEYDEW.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.QUEEN.getItem()));
+				ico.add(new ItemStack(ForestryHandler.ItemEntry.POLLEN.getItem()));
+			}
+			 */
+			for (CastingRecipe cr : RecipesCastingTable.instance.getAllAPIRecipes()) {
+				if (!ReikaItemHelper.collectionContainsItemStack(ico, cr.getOutput()))
+					ico.add(cr.getOutput());
+			}
+			if (!ico.isEmpty()) {
+				int idx = (int)((System.currentTimeMillis()/400)%ico.size());
+				ReikaGuiAPI.instance.drawItemStack(ri, ico.get(idx), x, y);
+			}
+			else {
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.NOENTER.getIcon(), 16, 16);
+			}
+			return;
+		}
+		ReikaGuiAPI.instance.drawItemStack(ri, this.getTabIcon(), x, y);
 	}
 
 	public String getData() {
@@ -354,6 +438,8 @@ public enum ChromaResearch {
 	public boolean isCrafting() {
 		if (isParent)
 			return false;
+		if (this == APIRECIPES)
+			return true;
 		if (this.isMachine() || this.isTool())
 			return true;
 		if (this == GROUPS)
@@ -365,6 +451,8 @@ public enum ChromaResearch {
 		if (this == SEED)
 			return true;
 		if (this == AUGMENT)
+			return true;
+		if (this == RELAY)
 			return true;
 		if (this == RUNES)
 			return true;
@@ -382,6 +470,8 @@ public enum ChromaResearch {
 			return true;
 		if (this == PATH)
 			return true;
+		if (this == GLOW)
+			return true;
 		return false;
 	}
 
@@ -396,6 +486,20 @@ public enum ChromaResearch {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
 				li.add(ChromaItems.STORAGE.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == GLOW) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 48; i++) {
+				li.add(ChromaBlocks.GLOW.getStackOfMetadata(i));
+			}
+			return li;
+		}
+		if (this == RELAY) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				li.add(ChromaBlocks.RELAY.getStackOfMetadata(i));
 			}
 			return li;
 		}
@@ -424,28 +528,6 @@ public enum ChromaResearch {
 			}
 			return li;
 		}
-		/*
-		if (this == BERRIES) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < 16; i++) {
-				li.add(ChromaItems.BERRY.getStackOfMetadata(i));
-			}
-			return li;
-		}
-		if (this == SEED) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < 16; i++) {
-				li.add(ChromaItems.SEED.getStackOfMetadata(i));
-			}
-			return li;
-		}
-		if (this == SHARDS) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < 16; i++) {
-				li.add(ChromaItems.SHARD.getStackOfMetadata(i));
-			}
-			return li;
-		}*/
 		if (this == GROUPS) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < 13; i++) {
@@ -549,6 +631,9 @@ public enum ChromaResearch {
 	}
 
 	public ArrayList<CastingRecipe> getCraftingRecipes() {
+		if (this == APIRECIPES) {
+			return new ArrayList(RecipesCastingTable.instance.getAllAPIRecipes());
+		}
 		if (!this.isCrafting())
 			return new ArrayList();
 		ArrayList<ItemStack> li = this.getItemStacks();
@@ -630,6 +715,8 @@ public enum ChromaResearch {
 			return item.isDummiedOut();
 		if (ability != null)
 			return ability.isDummiedOut();
+		if (this == APIRECIPES && RecipesCastingTable.instance.getAllAPIRecipes().isEmpty())
+			return true;
 		return false;
 	}
 

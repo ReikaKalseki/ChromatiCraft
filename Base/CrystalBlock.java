@@ -34,15 +34,12 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -50,7 +47,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"thaumcraft.api.crafting.IInfusionStabiliser"})
-public abstract class CrystalBlock extends Block implements CrystalRenderedBlock, IInfusionStabiliser {
+public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRenderedBlock, IInfusionStabiliser {
 
 	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
@@ -58,30 +55,8 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 
 	public CrystalBlock(Material mat) {
 		super(mat);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
 		this.setHardness(1F);
 		this.setResistance(2F);
-		stepSound = new SoundType("stone", 0, 0);
-	}
-
-	@Override
-	public final void onBlockAdded(World world, int x, int y, int z) {
-		ding(world, x, y, z);
-	}
-
-	@Override
-	public final void breakBlock(World world, int x, int y, int z, Block b, int meta) {
-		ding(world, x, y, z, CrystalElement.elements[meta]);
-	}
-
-	@Override
-	public final void onEntityWalking(World world, int x, int y, int z, Entity ent) {
-		ding(world, x, y, z);
-	}
-
-	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer ep) {
-		ding(world, x, y, z);
 	}
 
 	@Override
@@ -90,22 +65,6 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 			CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
 			ding(world, x, y, z, e, (float)getDingPitchFromRedstone(e, world.getBlockPowerInput(x, y, z)));
 		}
-	}
-
-	public static void ding(World world, int x, int y, int z) {
-		ding(world, x, y, z, CrystalElement.elements[world.getBlockMetadata(x, y, z)]);
-	}
-
-	private static void ding(World world, int x, int y, int z, CrystalElement e, float pitch) {
-		ChromaSounds.DING.playSoundAtBlock(world, x, y, z, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.2), pitch);
-	}
-
-	public static void ding(World world, int x, int y, int z, CrystalElement e) {
-		ding(world, x, y, z, e, getRandomPitch(e));
-	}
-
-	private static float getRandomPitch(CrystalElement e) { //Generates a major or minor chord
-		return CrystalMusicManager.instance.getRandomScaledDing(e);
 	}
 
 	private static double getDingPitchFromRedstone(CrystalElement e, int power) {
@@ -138,13 +97,6 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	}
 
 	@Override
-	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
-		int color = CrystalElement.elements[iba.getBlockMetadata(x, y, z)].getColor();
-		int l = this.getBrightness(iba, x, y, z);
-		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, l) : l;
-	}
-
-	@Override
 	public final int getRenderType() {
 		return ChromatiCraft.proxy.crystalRender;
 	}
@@ -171,8 +123,8 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 		return pass <= 1;
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		int color = world.getBlockMetadata(x, y, z);
 		double[] v = ReikaDyeHelper.getColorFromDamage(color).getRedstoneParticleVelocityForColor();
@@ -187,10 +139,9 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	{
 		int x = target.blockX;
 		int y = target.blockY;
-		int z = target.blockZ;
-		int color = world.getBlockMetadata(x, y, z);
-		CrystalElement e = CrystalElement.elements[color];
-		double[] v = ReikaDyeHelper.dyes[color].getRedstoneParticleVelocityForColor();
+		int z = target.blockZ;;
+		CrystalElement e = this.getCrystalElement(world, x, y, z);
+		double[] v = ReikaDyeHelper.dyes[e.ordinal()].getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
 		if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
 			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
@@ -227,8 +178,6 @@ public abstract class CrystalBlock extends Block implements CrystalRenderedBlock
 	public abstract int getRange();
 
 	public abstract int getDuration(CrystalElement e);
-
-	public abstract int getBrightness(IBlockAccess iba, int x, int y, int z);
 
 	public boolean renderAllArms() {
 		return this.renderBase();

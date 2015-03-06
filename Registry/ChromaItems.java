@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
+import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
@@ -39,6 +40,9 @@ import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
+import Reika.ChromatiCraft.Items.Tools.ItemMultiTool;
+import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
+import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
@@ -47,6 +51,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
@@ -93,7 +98,12 @@ public enum ChromaItems implements ItemEnum {
 	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class),
 	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class),
 	VOIDCELL(10, false,		"chroma.aecell",		ItemVoidStorage.class, ModList.APPENG),
-	MODINTERACT(432, true,	"chroma.modinteract",	ItemChromaMisc.class);
+	MODINTERACT(432, true,	"chroma.modinteract",	ItemChromaMisc.class),
+	MULTITOOL(25, false,	"chroma.multitool",		ItemMultiTool.class),
+	SHOO(39, false,			"chroma.shoo",			ItemShooWand.class),
+	OREPICK(27, false,		"chroma.orepick",		ItemOrePick.class),
+	ORESILK(26, false,		"chroma.oresilk",		ItemOreSilker.class),
+	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class);
 
 	private final int index;
 	private final boolean hasSubtypes;
@@ -220,6 +230,10 @@ public enum ChromaItems implements ItemEnum {
 			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
 		case FRAGMENT:
 			return this.getBasicName();
+		case OREPICK:
+		case ORESILK:
+		case MULTITOOL:
+			return this.getBasicName();
 		case WARP:
 			String pre = meta == 1 ? "Charged " : "Inert ";
 			return pre+this.getBasicName();
@@ -297,6 +311,12 @@ public enum ChromaItems implements ItemEnum {
 			return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
 		case WARP:
 			return 2;
+		case OREPICK:
+			return 720;
+		case MULTITOOL:
+			return 400;
+		case ORESILK:
+			return 180;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

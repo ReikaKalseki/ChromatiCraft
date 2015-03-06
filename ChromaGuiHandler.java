@@ -16,6 +16,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
 import Reika.ChromatiCraft.GUI.GuiAspectFormer;
+import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiBiomeChanger;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
@@ -144,6 +146,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			//if (te instanceof IInventory && !(te instanceof InertIInv))
 			//	return new ContainerBasicStorage(player, te);
 			break;
+		case AURAPOUCH:
+			return new ContainerAuraPouch(player);
 		default:
 			break;
 		}
@@ -233,6 +237,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiProgressStages(player);
 		case REFRAGMENT:
 			return new GuiFragmentRecovery(player);
+		case AURAPOUCH:
+			return new GuiAuraPouch(player);
 		default:
 			break;
 		}

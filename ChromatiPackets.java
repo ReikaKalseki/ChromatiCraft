@@ -39,9 +39,11 @@ import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -50,6 +52,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -347,6 +350,18 @@ public class ChromatiPackets implements IPacketHandler {
 			}
 			case GLUON: {
 				this.doGluonClientside(world, data);
+				break;
+			}
+			case AURAPOUCH: {
+				ItemStack is = ep.getCurrentEquippedItem();
+				if (ChromaItems.AURAPOUCH.matchWith(is)) {
+					ItemAuraPouch iap = (ItemAuraPouch)is.getItem();
+					iap.setSlotActive(is, data[0], data[1] > 0);
+				}
+				break;
+			}
+			case FARMERHARVEST: {
+				((TileEntityFarmer)tile).doParticles(data[0], data[1], data[2]);
 				break;
 			}
 			}

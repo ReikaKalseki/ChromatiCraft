@@ -207,7 +207,7 @@ public class CastingAPI {
 
 			recipes = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable");
 			instance = recipes.getField("instance").get(null);
-			add = recipes.getDeclaredMethod("addRecipe", cast);
+			add = recipes.getDeclaredMethod("addModdedRecipe", cast);
 			add.setAccessible(true);
 
 			loaded = true;

@@ -165,9 +165,6 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		}
 		dataWatcher.updateObject(30, this.calcRenderColor());
 
-		if (posY > 128)
-			this.die();
-
 		if (worldObj.isRemote) {
 			this.lifeParticles();
 		}
@@ -302,8 +299,17 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			}
 		}
 
-		if (!worldObj.isRemote && worldObj.isRaining() && rand.nextInt(80) == 0) {
-			this.die();
+		if (!worldObj.isRemote) {
+
+			if (posY >= 128) {
+				this.die();
+			}
+			else if (ticksExisted >= 12000 || rand.nextInt(12000-ticksExisted) == 0) {
+				this.die();
+			}
+			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
+				this.die();
+			}
 		}
 	}
 

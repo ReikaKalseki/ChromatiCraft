@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.DragonAPI.Interfaces.SpriteRenderCallback;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -150,15 +149,12 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		if (type == ItemRenderType.INVENTORY) {
 			ChromaResearch r = this.getResearch(is);
 			if (r != null) {
-				ItemStack out = r.getTabIcon();
-				if (out != null) {
-					boolean key = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-					double s = key ? 0.063 : 0.0315;
-					GL11.glScaled(s, -s, s);
-					int dx = key ? 0 : 16;
-					ReikaGuiAPI.instance.drawItemStack(ri, out, dx, -16);
-					return key && out.getItem() != this;
-				}
+				boolean key = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+				double s = key ? 0.063 : 0.0315;
+				GL11.glScaled(s, -s, s);
+				int dx = key ? 0 : 16;
+				r.drawTabIcon(ri, dx, -16);//ReikaGuiAPI.instance.drawItemStack(ri, out, dx, -16);
+				return key && r != ChromaResearch.FRAGMENT;
 			}
 		}
 		return false;

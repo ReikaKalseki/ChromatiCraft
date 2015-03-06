@@ -140,7 +140,7 @@ public final class ChromaResearchManager {
 
 	/** Is this research one of the next ones available to the player, but without the player already having it */
 	public boolean canPlayerStepTo(EntityPlayer ep, ChromaResearch r) {
-		return this.getNextResearchesFor(ep).contains(r);
+		return !r.isDummiedOut() && this.getNextResearchesFor(ep).contains(r);
 	}
 
 	public boolean playerHasFragment(EntityPlayer ep, ChromaResearch r) {

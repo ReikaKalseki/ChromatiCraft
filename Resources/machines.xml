@@ -145,7 +145,7 @@
 	</laser>
 	<itemrift>
 		<desc>
-			A classic transport problem involves two inventories within a clear line of each other but separated by several blocks. You once saw a device you can attach to each block and rapidly transport the contents, but it was limited to a single block of space; this, however, is a longer-ranged variant.
+			A classic transport problem involves two inventories within a clear line of sight to each other but separated by several blocks. You once saw a device you can attach to each block and rapidly transport the contents, but it was limited to a single block of space; this, however, is a longer-ranged variant.
 		</desc>
 		<note>
 			

@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL12;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -154,12 +155,12 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	protected final void drawBlockRender(int posX, int posY, Block b, int meta) {
 		GL11.glTranslated(0, 0, 32);
 		GL11.glColor4f(1, 1, 1, 1);
-		double x = posX+167;
-		double y = posY+44;
+		int x = posX+167;
+		int y = posY+44;
 		//float q = 12.5F + fscale*(float)Math.sin(System.nanoTime()/1000000000D); //wobble
 		//ReikaJavaLibrary.pConsole(y-ReikaGuiAPI.instance.getMouseScreenY(height));
 		int range = 64;
-		boolean rotate = ReikaGuiAPI.instance.isMouseInBox((int)x-range/2, (int)x+range/2, (int)y-range, (int)y+range);
+		boolean rotate = ReikaGuiAPI.instance.isMouseInBox(x-range/2, x+range/2, y-range, y+range);
 
 		y -= 8*Math.sin(Math.abs(Math.toRadians(22.5F)));
 
@@ -177,6 +178,12 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		GL11.glTranslated(dx, dy, dz);
 		GL11.glScaled(sc, -sc, sc);
 		GL11.glRotatef(22.5F, 1, 0, 0);
+		if (b == ChromaBlocks.GLOW.getBlockInstance() || b == ChromaBlocks.RELAY.getBlockInstance()) {
+			r = -45;
+			if (b == ChromaBlocks.RELAY.getBlockInstance()) {
+				api.drawTexturedModelRectFromIcon(x, y, b.blockIcon, 64, 64);
+			}
+		}
 		GL11.glRotatef(r, 0, 1, 0);
 		ReikaTextureHelper.bindTerrainTexture();
 		if (b instanceof CrystalRenderedBlock) {

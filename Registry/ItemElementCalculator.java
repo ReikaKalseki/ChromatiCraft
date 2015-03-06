@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -39,15 +40,17 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes.WorktableRecipe;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemElementCalculator {
 
 	public static final ItemElementCalculator instance = new ItemElementCalculator();
 	private final ItemHashMap<ElementTagCompound> cache = new ItemHashMap();
+
+	private final ElementTagCompound empty = new ElementTagCompound();
 
 	private List<KeyedItemStack> currentCalculation = new ArrayList();
 
@@ -55,9 +58,20 @@ public class ItemElementCalculator {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ElementTagCompound tag = new ElementTagCompound();
+			ElementTagCompound tag1 = new ElementTagCompound();
+			tag1.addValueToColor(e, 1);
 			tag.addValueToColor(e, 2);
 			cache.put(ChromaItems.ELEMENTAL.getStackOf(e), tag);
 			cache.put(ChromaBlocks.RUNE.getStackOfMetadata(i), tag);
+			cache.put(ChromaBlocks.DYELEAF.getStackOfMetadata(i), tag1);
+
+			ElementTagCompound tag2 = tag1.copy();
+			tag2.addValueToColor(CrystalElement.GREEN, 1);
+			cache.put(new ItemStack(Blocks.wool, 1, i), tag2);
+			Block rockwool = GameRegistry.findBlock(ModList.THERMALEXPANSION.modLabel, "Rockwool");
+			if (rockwool != null) {
+				cache.put(new ItemStack(rockwool, 1, i), tag2);
+			}
 		}
 
 		ElementTagCompound tag = new ElementTagCompound();
@@ -70,10 +84,10 @@ public class ItemElementCalculator {
 
 	public ElementTagCompound getValueForItem(ItemStack is) {
 		if (is == null)
-			return null;
+			return empty.copy();
 		if (!currentCalculation.isEmpty() && currentCalculation.contains(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true))) {
 			ChromatiCraft.logger.debug("Recipe contains its own output, possibly recursively.");
-			return null;
+			return empty.copy();
 		}
 		//ChromatiCraft.logger.debug("Fetching element calculation data for "+is);
 		ElementTagCompound tag = cache.get(is);
@@ -107,7 +121,6 @@ public class ItemElementCalculator {
 				ElementTagCompound tag2 = this.getValueForItem(in);
 				tag2.addValueToColor(CrystalElement.ORANGE, 1);
 				tag.addButMinimizeWith(tag2);
-				ReikaJavaLibrary.pConsole("Checking smelting of "+in+", got "+tag+" by "+tag2);
 			}
 		}
 		return tag;

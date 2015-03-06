@@ -40,7 +40,9 @@ public enum ChromaPackets {
 	RERESEARCH(1),
 	BIOMEPAINT(3),
 	LIGHTNINGDIE(1),
-	GLUON(2);
+	GLUON(2),
+	AURAPOUCH(2),
+	FARMERHARVEST(3);
 
 	public final int numInts;
 	public final PacketTypes type;

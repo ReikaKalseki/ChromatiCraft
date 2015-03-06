@@ -13,27 +13,23 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import net.minecraft.item.crafting.IRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
-public class PathRecipe extends PylonRecipe {
+public class PathRecipe extends TempleCastingRecipe {
 
 	public PathRecipe(ItemStack main, int meta, ItemStack outer) {
-		super(ChromaBlocks.PATH.getStackOfMetadata(meta), main);
+		super(ChromaBlocks.PATH.getStackOfMetadata(meta), getRecipe(ChromaBlocks.PATH.getStackOfMetadata(meta), main, outer));
 
-		this.addAuxItem(Blocks.stonebrick, -2, 0);
-		this.addAuxItem(Blocks.stonebrick, 2, 0);
-		this.addAuxItem(Blocks.stonebrick, 0, 2);
-		this.addAuxItem(Blocks.stonebrick, 0, -2);
+		this.addRune(CrystalElement.LIME, 1, -1, -3);
+		this.addRune(CrystalElement.BROWN, -1, -1, 3);
+	}
 
-		this.addAuxItem(outer, -2, -2);
-		this.addAuxItem(outer, 2, -2);
-		this.addAuxItem(outer, 2, 2);
-		this.addAuxItem(outer, -2, 2);
-
-		this.addAuraRequirement(CrystalElement.LIME, 5000);
-		this.addAuraRequirement(CrystalElement.BROWN, 500);
+	private static IRecipe getRecipe(ItemStack out, ItemStack main, ItemStack outer) {
+		return ReikaRecipeHelper.getShapedRecipeFor(out, "OSO", "SMS", "OSO", 'O', outer, 'M', main, 'S', Blocks.stonebrick);
 	}
 
 	public PathRecipe(ItemStack main, int meta, Item outer) {
@@ -46,7 +42,7 @@ public class PathRecipe extends PylonRecipe {
 
 	@Override
 	public int getNumberProduced() {
-		return 64;
+		return 16;
 	}
 
 }

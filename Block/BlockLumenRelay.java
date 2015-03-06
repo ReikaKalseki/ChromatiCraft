@@ -31,6 +31,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
@@ -252,6 +253,32 @@ public class BlockLumenRelay extends Block {
 	@Override
 	public boolean hasTileEntity(int meta) {
 		return true;
+	}
+
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harvest)
+	{
+		if (this.canHarvest(world, player, x, y, z))
+			this.harvestBlock(world, player, x, y, z, 0);
+		return world.setBlockToAir(x, y, z);
+	}
+
+	private boolean canHarvest(World world, EntityPlayer ep, int x, int y, int z) {
+		if (ep.capabilities.isCreativeMode)
+			return false;
+		return true;
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta)
+	{
+		if (!this.canHarvest(world, ep, x, y, z))
+			return;
+		TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
+		if (te != null) {
+			ItemStack is = ChromaBlocks.RELAY.getStackOfMetadata(te.color.ordinal());
+			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
+		}
 	}
 
 	public static class TileEntityLumenRelay extends TileEntity {

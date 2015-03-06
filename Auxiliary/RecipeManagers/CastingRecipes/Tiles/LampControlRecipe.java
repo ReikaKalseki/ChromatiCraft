@@ -9,17 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import net.minecraft.item.crafting.IRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class LampControlRecipe extends MultiBlockCastingRecipe {
+public class LampControlRecipe extends TempleCastingRecipe {
 
-	public LampControlRecipe(ItemStack out, ItemStack main) {
-		super(out, main);
-
+	public LampControlRecipe(ItemStack out, IRecipe ir) {
+		super(out, ir);
+		/*
 		this.addAuxItem(Items.redstone, -2, 0);
 		this.addAuxItem(Items.redstone, 2, 0);
 
@@ -57,6 +56,10 @@ public class LampControlRecipe extends MultiBlockCastingRecipe {
 
 		this.addAuxItem(Items.gold_ingot, -2, 4);
 		this.addAuxItem(Items.gold_ingot, 2, 4);
+		 */
+
+		this.addRune(CrystalElement.BLUE, -4, -1, 0);
+		this.addRune(CrystalElement.BLUE, 4, -1, 0);
 	}
 
 }
