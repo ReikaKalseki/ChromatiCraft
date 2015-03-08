@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.GUI.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
+import Reika.ChromatiCraft.GUI.GuiTransitionWand;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
 import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
 import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
@@ -239,6 +240,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiFragmentRecovery(player);
 		case AURAPOUCH:
 			return new GuiAuraPouch(player);
+		case TRANSITION:
+			return new GuiTransitionWand(player);
 		default:
 			break;
 		}

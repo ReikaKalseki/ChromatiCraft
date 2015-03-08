@@ -43,7 +43,8 @@ public enum ChromaPackets {
 	GLUON(2),
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
-	PYLONCACHE();
+	PYLONCACHE(),
+	TRANSITIONWAND(1);
 
 	public final int numInts;
 	public final PacketTypes type;

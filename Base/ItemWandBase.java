@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -52,6 +53,11 @@ public abstract class ItemWandBase extends ItemChromaTool {
 			sb.append(e.displayName+": "+energy.getValue(e)+"\n");
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public final int getItemEnchantability() {
+		return Items.golden_pickaxe.getItemEnchantability();
 	}
 
 }

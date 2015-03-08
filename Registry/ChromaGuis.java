@@ -27,7 +27,8 @@ public enum ChromaGuis {
 	BASICDESC(),
 	PROGRESS(),
 	REFRAGMENT(),
-	AURAPOUCH();
+	AURAPOUCH(),
+	TRANSITION();
 
 	public static final ChromaGuis[] guiList = values();
 

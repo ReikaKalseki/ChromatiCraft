@@ -41,6 +41,8 @@ import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -366,6 +368,9 @@ public class ChromatiPackets implements IPacketHandler {
 			}
 			case PYLONCACHE: {
 				PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
+			}
+			case TRANSITIONWAND: {
+				((ItemTransitionWand)ep.getCurrentEquippedItem().getItem()).setMode(ep.getCurrentEquippedItem(), TransitionMode.list[data[0]]);
 			}
 			}
 		}
