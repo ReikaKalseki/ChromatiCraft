@@ -274,7 +274,7 @@ public enum Chromabilities implements Ability {
 		if (a == SHIFT)
 			use.scale(25);
 		if (a == LIGHTNING)
-			use.scale(10);
+			use.scale(10*(1+data*data));
 		if (a == LIFEPOINT)
 			use.scale(5);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);

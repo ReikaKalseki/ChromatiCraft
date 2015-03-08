@@ -8,7 +8,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -16,17 +16,17 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.CropType;
 import Reika.DragonAPI.Interfaces.CropType.CropMethods;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityFarmer extends InventoriedCrystalReceiver {
+public class TileEntityFarmer extends CrystalReceiverBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -43,25 +43,19 @@ public class TileEntityFarmer extends InventoriedCrystalReceiver {
 					if (fortune < 3) {
 						CropMethods.removeOneSeed(crop, li);
 					}
-					if (ReikaInventoryHelper.countEmptySlots(inv) >= li.size()) {
-						ReikaInventoryHelper.addItems(this, li);
-						crop.setHarvested(world, c.xCoord, c.yCoord, c.zCoord);
-						ReikaSoundHelper.playBreakSound(world, x, y, z, c.getBlock(world));
-						this.drainEnergy(CrystalElement.GREEN, 200);
-						this.drainEnergy(CrystalElement.PURPLE, 50);
-						this.sendParticles(c);
-					}
+					ReikaItemHelper.dropItems(world, c.xCoord+0.5, c.yCoord+0.5, c.zCoord+0.5, li);
+					crop.setHarvested(world, c.xCoord, c.yCoord, c.zCoord);
+					ReikaSoundHelper.playBreakSound(world, x, y, z, c.getBlock(world));
+					this.drainEnergy(CrystalElement.GREEN, 200);
+					this.drainEnergy(CrystalElement.PURPLE, 50);
+					this.sendParticles(c);
 				}
 			}
 		}
 	}
 
 	private int getNumberAttempts() {
-		return this.hasSpeedUpgrade() ? 4 : 1;
-	}
-
-	private boolean hasSpeedUpgrade() {
-		return false;
+		return Math.max(1, this.getEnergy(CrystalElement.GREEN)/2500);
 	}
 
 	private void sendParticles(Coordinate c) {
@@ -128,7 +122,7 @@ public class TileEntityFarmer extends InventoriedCrystalReceiver {
 	public int getMaxStorage(CrystalElement e) {
 		switch(e) {
 		case GREEN:
-			return 40000;
+			return 10000;
 		case PURPLE:
 			return 5000;
 		default:
@@ -145,7 +139,7 @@ public class TileEntityFarmer extends InventoriedCrystalReceiver {
 	protected void animateWithTick(World world, int x, int y, int z) {
 
 	}
-
+	/*
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
 		return true;
@@ -153,17 +147,17 @@ public class TileEntityFarmer extends InventoriedCrystalReceiver {
 
 	@Override
 	public int getSizeInventory() {
-		return 54;
+		return 2;
 	}
 
 	@Override
 	public int getInventoryStackLimit() {
-		return 64;
+		return 1;
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		return true;
-	}
+	}*/
 
 }

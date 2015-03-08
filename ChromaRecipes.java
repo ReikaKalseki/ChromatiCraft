@@ -22,6 +22,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -79,6 +80,9 @@ public class ChromaRecipes {
 	}
 
 	public static void addPostLoadRecipes() {
+
+		RecipesCastingTable.instance.addPostLoadRecipes();
+
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {
 				CrystalElement color = CrystalElement.elements[i];

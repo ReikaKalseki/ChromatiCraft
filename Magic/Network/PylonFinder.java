@@ -254,6 +254,7 @@ public class PylonFinder {
 		tracer.setInternalOffsets(0.5, 0.5, 0.5);
 		tracer.softBlocksOnly = true;
 		tracer.addTransparentBlock(Blocks.glass);
+		tracer.addTransparentBlock(Blocks.snow_layer, 0);
 		/*
 		tracer.addOpaqueBlock(Blocks.standing_sign);
 		tracer.addOpaqueBlock(Blocks.reeds);

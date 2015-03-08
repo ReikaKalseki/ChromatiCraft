@@ -38,6 +38,9 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IEssentiaContainerItem;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
@@ -51,6 +54,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -73,6 +77,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.HitAction;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -128,6 +133,10 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			TileEntityCrystalTank te = (TileEntityCrystalTank)world.getTileEntity(x, y, z);
 			return te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
 		}
+		if (c == ChromaTiles.ASPECTJAR) {
+			TileEntityAspectJar te = (TileEntityAspectJar)world.getTileEntity(x, y, z);
+			return te.hasAspects() ? 8 : 0;
+		}
 		if (c == ChromaTiles.STAND) {
 			TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(x, y, z);
 			return te.getItem() != null ? 6 : 0;
@@ -161,7 +170,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super.onBlockActivated(world, x, y, z, ep, side, par7, par8, par9);
 		if (ChromatiCraft.instance.isLocked())
 			return false;
-		if (ReikaRandomHelper.doWithChance(20))
+		if (ReikaRandomHelper.doWithChance(5))
 			ChromaAux.spawnInteractionBallLightning(world, x, y, z, CrystalElement.randomElement());
 		world.markBlockForUpdate(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
@@ -205,11 +214,34 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			}
 		}
 
-		//if (ChromaItems.SHARD.matchWith(is) && te instanceof FiberIO) {
-		//	((FiberIO)te).setColor(CrystalElement.elements[is.getItemDamage()%16]);
-		//	if (!ep.capabilities.isCreativeMode)
-		//		is.stackSize--;
-		//}
+		if (ModList.THAUMCRAFT.isLoaded() && te instanceof TileEntityAspectJar && is != null && is.getItem() instanceof IEssentiaContainerItem) {
+			IEssentiaContainerItem ieci = (IEssentiaContainerItem)is.getItem();
+			TileEntityAspectJar jar = (TileEntityAspectJar)te;
+			AspectList al = ieci.getAspects(is);
+			if (al != null && al.size() > 0) {
+				Aspect a = al.getAspects()[0];
+				int left = jar.addToContainer(a, al.getAmount(a));
+				int added = al.getAmount(a)-left;
+				ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
+				if (!ep.capabilities.isCreativeMode) {
+					al.remove(a, added);
+					if (al.aspects.isEmpty()) {
+						is.stackSize--;
+					}
+				}
+				return true;
+			}
+			else {
+				Aspect a = jar.getFirstAspect();
+				if (a != null && jar.takeFromContainer(a, 8)) {
+					al = new AspectList();
+					al.add(a, 8);
+					ieci.setAspects(is, al);
+					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
+					return true;
+				}
+			}
+		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {
 			if (((TileEntityChromaLamp)te).addColor(CrystalElement.elements[is.getItemDamage()%16])) {

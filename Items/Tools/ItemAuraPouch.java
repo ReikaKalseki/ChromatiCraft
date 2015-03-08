@@ -58,14 +58,15 @@ public class ItemAuraPouch extends ItemChromaTool {
 	}
 
 	public void setSlotActive(ItemStack is, int slot, boolean active) {
-		if (is.stackTagCompound == null) {
+		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("inventory") || !is.stackTagCompound.hasKey("active")) {
 			this.initNBT(is);
 		}
 		is.stackTagCompound.getCompoundTag("active").setBoolean("slot_"+slot, active);
 	}
 
 	private void initNBT(ItemStack is) {
-		is.stackTagCompound = new NBTTagCompound();
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setTag("inventory", new NBTTagCompound());
 		NBTTagCompound act = new NBTTagCompound();
 		is.stackTagCompound.setTag("active", act);

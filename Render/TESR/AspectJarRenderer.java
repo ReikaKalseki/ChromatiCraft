@@ -21,9 +21,11 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
+import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar.JarTilt;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
@@ -83,6 +85,13 @@ public class AspectJarRenderer extends ChromaRenderBase {
 		GL11.glTranslated(0.5, 0.01, 0.5);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 		try {
+			JarTilt jt = te.getAngle();
+			if (jt != null) {
+				int a = jt.direction.offsetX == 0 ? 1 : 0;
+				int b = 1-a;
+				int dir = jt.direction.offsetX+jt.direction.offsetZ;
+				GL11.glRotated(dir*jt.getAngle(), a, 0, b);
+			}
 			this.renderAspects(te);
 			this.renderJar(te);
 		}
@@ -98,22 +107,41 @@ public class AspectJarRenderer extends ChromaRenderBase {
 	}
 
 	private void renderAspects(TileEntityAspectJar te) throws Exception {
-		if (te.getAmount() <= 0)
+		int i = 0;
+		for (Aspect a : te.getAllAspects()) {
+			this.renderAspect(te, a, te.getAmount(a), i);
+			i++;
+		}
+	}
+
+	private void renderAspect(TileEntityAspectJar te, Aspect a, int amt, int i) throws Exception {
+		if (amt <= 0)
 			return;
 		GL11.glPushMatrix();
 		GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
 		RenderBlocks rb = RenderBlocks.getInstance();
 
-		GL11.glDisable(2896);
+		GL11.glDisable(GL11.GL_LIGHTING);
 
-		double level = 0.625*Math.sqrt((double)te.getAmount()/te.CAPACITY);//ReikaMathLibrary.logbase2(te.getAmount())/ReikaMathLibrary.logbase2(te.CAPACITY);
+		double level = 0.625*Math.sqrt((double)amt/te.CAPACITY);//ReikaMathLibrary.logbase2(te.getAmount())/ReikaMathLibrary.logbase2(te.CAPACITY);
 
 		Tessellator v5 = Tessellator.instance;
-		rb.setRenderBounds(0.25, 0.0625, 0.25, 0.75, 0.0625 + level, 0.75);
+
+		double w = 0.125;
+
+		double dx = 0+w*(i/4);
+		double dz = 0+w*(i%4);
+
+		double minx = 0.25+dx;
+		double minz = 0.25+dz;
+
+		double maxx = minx+w;//0.75;
+		double maxz = minz+w;//0.75;
+
+		rb.setRenderBounds(minx, 0.0625, minz, maxx, 0.0625 + level, maxz);
+
 		v5.startDrawingQuads();
-		if (te.getAspect() != null) {
-			v5.setColorOpaque_I(te.getAspect().getColor());
-		}
+		v5.setColorOpaque_I(a.getColor());
 		int bright = 200;
 		Block jar = ThaumItemHelper.BlockEntry.JAR.getBlock();
 		if (te.worldObj != null) {
@@ -124,6 +152,7 @@ public class AspectJarRenderer extends ChromaRenderBase {
 		IIcon icon = (IIcon)liquidIcon.get(jar);
 
 		ReikaTextureHelper.bindTerrainTexture();
+
 		rb.renderFaceYNeg(jar, -0.5D, 0.0D, -0.5D, icon);
 		rb.renderFaceYPos(jar, -0.5D, 0.0D, -0.5D, icon);
 		rb.renderFaceZNeg(jar, -0.5D, 0.0D, -0.5D, icon);
@@ -133,7 +162,7 @@ public class AspectJarRenderer extends ChromaRenderBase {
 
 		v5.draw();
 
-		GL11.glEnable(2896);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 
 		GL11.glColor3f(1.0F, 1.0F, 1.0F);

@@ -87,6 +87,11 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	}
 
 	@Override
+	public boolean canRenderOnFire() {
+		return false;
+	}
+
+	@Override
 	protected String func_146067_o(int p_146067_1_)
 	{
 		return "";

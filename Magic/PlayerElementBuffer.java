@@ -16,10 +16,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
@@ -106,6 +108,12 @@ public class PlayerElementBuffer {
 	public void removeFromPlayer(EntityPlayer ep, CrystalElement e, int amt) {
 		if (ep.capabilities.isCreativeMode)
 			return;
+
+		if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOf(CrystalElement.BLACK), ep.inventory, false))
+			amt = Math.max(1, (int)(amt*0.5F));
+		else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOf(CrystalElement.BLACK), ep.inventory, false))
+			amt = Math.max(1, (int)(amt*0.8F));
+
 		NBTTagCompound tag = this.getTag(ep);
 		int has = tag.getInteger(e.name());
 		has -= amt;

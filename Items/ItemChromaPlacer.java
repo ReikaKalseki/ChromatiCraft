@@ -29,11 +29,13 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -206,6 +208,9 @@ public class ItemChromaPlacer extends Item {
 			li.add("for TileEntities adjacent to it.");
 			long max = TileEntityAccelerator.MAX_LAG/1000000;
 			li.add(EnumChatFormatting.GOLD+"Admin Note:"+EnumChatFormatting.WHITE+" Will not cause more than "+max+"ms lag.");
+		}
+		if (r == ChromaTiles.ASPECTJAR && is.stackTagCompound != null && ModList.THAUMCRAFT.isLoaded()) {
+			li.addAll(TileEntityAspectJar.parseNBT(is.stackTagCompound));
 		}
 	}
 

@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -23,14 +27,77 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.ModInteract.CompoundAspectTank;
+import Reika.DragonAPI.Interfaces.HitAction;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 @Strippable(value={"thaumcraft.api.aspects.IAspectContainer", "thaumcraft.api.aspects.IEssentiaTransport"})
-public class TileEntityAspectJar extends TileEntityChromaticBase implements IAspectContainer, IEssentiaTransport, NBTTile {
+public class TileEntityAspectJar extends TileEntityChromaticBase implements IAspectContainer, IEssentiaTransport, NBTTile, HitAction {
 
-	public static final int CAPACITY = 240000;
+	public static final int CAPACITY = 500;
+	public static final int CAPACITY_PRIMAL = 6000;
 
-	private AspectTank tank = new AspectTank(CAPACITY);
+	private PrimalBiasAspectTank tank = new PrimalBiasAspectTank(CAPACITY, CAPACITY_PRIMAL, 16);
+	private JarTilt angle = null;
+
+	public static class PrimalBiasAspectTank extends CompoundAspectTank {
+
+		public final int primalCapacity;
+
+		public PrimalBiasAspectTank(int c, int pc, int max) {
+			super(c, max);
+			primalCapacity = pc;
+		}
+
+		@Override
+		public int getMaxCapacity(Aspect a) {
+			return a.isPrimal() ? primalCapacity : capacity;
+		}
+	}
+
+	public static class JarTilt {
+
+		public final ForgeDirection direction;
+		private float angle = 0;
+		private boolean increasing = true;
+		private final float maxAngle;
+
+		private JarTilt(ForgeDirection dir, float max) {
+			direction = dir;
+			maxAngle = max;
+		}
+
+		public float getAngle() {
+			return angle;
+		}
+
+		private boolean update() {
+			float speed = 1+(maxAngle-angle)/4F;
+			if (increasing) {
+				angle += speed;
+				if (angle >= maxAngle) {
+					angle = maxAngle;
+					increasing = false;
+				}
+			}
+			else {
+				angle -= speed;
+				if (angle <= 0) {
+					angle = 0;
+					return true;
+				}
+			}
+			return false;
+		}
+
+	}
+
+	public JarTilt getAngle() {
+		return angle;
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -38,8 +105,20 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	}
 
 	@Override
-	public void updateEntity(World world, int x, int y, int z, int meta) {
+	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {
+		ReikaSoundHelper.playBreakSound(world, x, y, z, ThaumItemHelper.BlockEntry.JAR.getBlock());
+		if (angle == null) {
+			ForgeDirection dir = ReikaPlayerAPI.getDirectionFromPlayerLook(ep, false);
+			angle = new JarTilt(dir, 30);
+		}
+	}
 
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (angle != null) {
+			if (angle.update())
+				angle = null;
+		}
 	}
 
 	@Override
@@ -50,55 +129,47 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
-		return new AspectList().add(tank.aspect, tank.level);
-	}
-
-	public int getRemainingSpace() {
-		return CAPACITY-tank.level;
-	}
-
-	public int getAmount() {
-		return tank.level;
-	}
-
-	@ModDependent(ModList.THAUMCRAFT)
-	public Aspect getAspect() {
-		return tank.aspect;
-	}
-
-	private void removeAspect(int amt) {
-		tank.level -= amt;
-		if (tank.level <= 0) {
-			tank.level = 0;
-			tank.aspect = null;
+		AspectList al = new AspectList();
+		for (Aspect a : tank.getAspects()) {
+			al.add(a, tank.getLevel(a));
 		}
+		return al;
 	}
 
 	@ModDependent(ModList.THAUMCRAFT)
-	private void addAspect(Aspect tag, int add) {
-		tank.level += add;
-		tank.aspect = tag;
+	public int getAmount(Aspect a) {
+		return tank.getLevel(a);
+	}
+
+	@ModDependent(ModList.THAUMCRAFT)
+	public Collection<Aspect> getAllAspects() {
+		return tank.getAspects();
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public void setAspects(AspectList aspects) {
-		tank.aspect = aspects.getAspects()[0];
-		tank.level = aspects.getAmount(tank.aspect);
+		if (aspects.size() == 0) {
+			tank.empty();
+		}
+		else {
+			Aspect a = aspects.getAspects()[0];
+			tank.setAspect(a, aspects.getAmount(a));
+		}
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerAccept(Aspect tag) {
-		return tank.aspect == null || (tag == tank.aspect && tank.level < CAPACITY);
+		return tank.canAccept(tag);
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int addToContainer(Aspect tag, int amount) {
 		if (this.doesContainerAccept(tag)) {
-			int add = Math.min(amount, this.getRemainingSpace());
-			this.addAspect(tag, add);
+			int add = Math.min(amount, tank.getRemainingSpace(tag));
+			tank.addAspect(tag, add);
 			return amount-add;
 		}
 		return 0;
@@ -107,8 +178,8 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
-		if (tag == tank.aspect && tank.level >= amount) {
-			this.removeAspect(amount);
+		if (tag == tank.getAspects() && tank.getLevel(tag) >= amount) {
+			tank.drainAspect(tag, amount);
 			return true;
 		}
 		return false;
@@ -124,7 +195,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
-		return tank.aspect == tag && amount >= amount;
+		return tank.getAspects() == tag && amount >= amount;
 	}
 
 	@Override
@@ -137,7 +208,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int containerContains(Aspect tag) {
-		return tank.aspect == tag ? tank.level : 0;
+		return tank.getAspects() == tag ? tank.getLevel(tag) : 0;
 	}
 
 	@Override
@@ -164,39 +235,35 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getSuctionType(ForgeDirection face) {
-		return tank.aspect;
+		return tank.getFirstAspect();
 	}
 
 	@Override
 	public int getSuctionAmount(ForgeDirection face) {
-		return tank.aspect != null ? 64 : 32;
+		return tank.getAspects() != null ? 64 : 32;
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		int rem = tank.aspect == aspect ? Math.min(tank.level, amount) : 0;
-		this.removeAspect(rem);
-		return rem;
+		return tank.getAspects() == aspect ? tank.drainAspect(aspect, amount) : 0;
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		int add = this.doesContainerAccept(aspect) ? Math.min(amount, this.getRemainingSpace()) : 0;
-		this.addAspect(aspect, add);
-		return add;
+		return tank.canAccept(aspect) ? tank.addAspect(aspect, amount) : 0;
 	}
 
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getEssentiaType(ForgeDirection face) {
-		return tank.aspect;
+		return tank.getFirstAspect();
 	}
 
 	@Override
 	public int getEssentiaAmount(ForgeDirection face) {
-		return tank.level;
+		return tank.getLevel(tank.getFirstAspect());
 	}
 
 	@Override
@@ -234,32 +301,24 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 			tank.readFromNBT(is.stackTagCompound);
 	}
 
-	private static class AspectTank {
+	public boolean hasAspects() {
+		return !tank.isEmpty();
+	}
 
-		public final int capacity;
-		private int level;
-		@ModDependent(ModList.THAUMCRAFT)
-		private Aspect aspect;
+	public Aspect getFirstAspect() {
+		return tank.getFirstAspect();
+	}
 
-		private AspectTank(int c) {
-			capacity = c;
+	public static ArrayList<String> parseNBT(NBTTagCompound tag) {
+		ArrayList<String> li = new ArrayList();
+		CompoundAspectTank cat = new CompoundAspectTank(Integer.MAX_VALUE);
+		cat.readFromNBT(tag);
+		li.add("Aspects: ");
+		for (Aspect a : cat.getAspects()) {
+			int amt = cat.getLevel(a);
+			li.add("  "+a.getName()+": "+amt);
 		}
-
-		public void writeToNBT(NBTTagCompound NBT) {
-			if (!ModList.THAUMCRAFT.isLoaded())
-				return;
-			NBT.setString("aspect", aspect != null ? aspect.getTag() : "null");
-			NBT.setInteger("amount", level);
-		}
-
-		public void readFromNBT(NBTTagCompound NBT) {
-			if (!ModList.THAUMCRAFT.isLoaded())
-				return;
-			String s = NBT.getString("aspect");
-			aspect = s.equals("null") || s.isEmpty() ? null : Aspect.getAspect(s);
-			level = NBT.getInteger("amount");
-		}
-
+		return li;
 	}
 
 }

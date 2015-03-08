@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemElementCalculator;
@@ -130,6 +131,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 				item.stackSize--;
 		}
 		clickTick = 10;
+		ChromaSounds.ITEMSTAND.playSoundAtBlock(this);
 		return item;
 	}
 

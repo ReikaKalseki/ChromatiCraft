@@ -434,6 +434,8 @@ public class ChromatiCraft extends DragonAPIMod {
 				ChromaBlocks ir = ChromaBlocks.blockList[i];
 				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
 			}
+
+			MTInteractionManager.instance.blacklistRecipeRemovalFor(ChromaTiles.TABLE.getCraftedProduct());
 		}
 
 		ReikaEEHelper.blacklistEntry(ChromaItems.TIERED);

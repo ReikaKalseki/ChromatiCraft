@@ -377,11 +377,11 @@ public class GuiNavigation extends GuiScrollingPage {
 			case TOOLDESC:
 				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.TOOLDESC;
 			case BLOCKS:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
+				return ChromaGuis.BASICDESC;
 			case ABILITYDESC:
 				return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
 			case INTRO:
-				return ChromaGuis.INFO;
+				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.INFO;
 			case STRUCTUREDESC:
 				return ChromaGuis.STRUCTURE;
 			default:

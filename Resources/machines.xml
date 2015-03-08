@@ -283,6 +283,39 @@
 			Can be controlled manually, with redstone, by the charge state of an RF battery, or with shaft power
 		</note>
 	</lampcontrol>
+	<aspectjar>
+		<desc>
+			This fabrication process gives you nightmares. Not only is it incredibly unstable - more than once the thing has exploded, sent items flying, or done other nasty things - and to top it off it draws liquid essence out of jars that must be placed around the construct. This would be fine, were it not for the small capacity of these jars, meaning filling them - another tedious process - is a constant necessity. Being able to store more essentia in a jar - perhaps even multiple types! - would be of enormous convenience.
+		</desc>
+		<note>
+			Primal Aspect Capacity: %d
+			Other Aspect Capacity: %d
+		</note>
+	</aspectjar>
+	<farmer>
+		<desc>
+			Harvesting crops is somewhat of a hassle. Doing it manually is extremely slow and ineffective, and those fans you used, while they work, are loud and tend to send items flying. Channelling nature and energy elements is likely to provide a superior solution.
+		</desc>
+		<note>
+			
+		</note>
+	</farmer>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
+	<name>
+		<desc>
+			
+		</desc>
+		<note>
+			
+		</note>
+	</name>
 	<name>
 		<desc>
 			

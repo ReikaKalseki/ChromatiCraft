@@ -51,6 +51,8 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public enum ChromaResearch {
 
@@ -101,6 +103,8 @@ public enum ChromaResearch {
 	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME),
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.RUNECRAFT),
 	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
+	ASPECTJAR(		ChromaTiles.ASPECTJAR,		ResearchLevel.PYLONCRAFT),
+	FARMER(			ChromaTiles.FARMER,			ResearchLevel.PYLONCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -341,6 +345,7 @@ public enum ChromaResearch {
 		return iconItem;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public void drawTabIcon(RenderItem ri, int x, int y) {
 		if (this == BALLLIGHTNING) {
 			EntityBallLightning eb = new EntityBallLightning(Minecraft.getMinecraft().theWorld);
@@ -501,6 +506,7 @@ public enum ChromaResearch {
 			for (int i = 0; i < 16; i++) {
 				li.add(ChromaBlocks.RELAY.getStackOfMetadata(i));
 			}
+			li.add(ChromaTiles.RELAYSOURCE.getCraftedProduct());
 			return li;
 		}
 		if (this == PENDANT) {
@@ -715,7 +721,7 @@ public enum ChromaResearch {
 			return item.isDummiedOut();
 		if (ability != null)
 			return ability.isDummiedOut();
-		if (this == APIRECIPES && RecipesCastingTable.instance.getAllAPIRecipes().isEmpty())
+		if (this == APIRECIPES && RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && DragonAPICore.hasGameLoaded()) //only hide display
 			return true;
 		return false;
 	}

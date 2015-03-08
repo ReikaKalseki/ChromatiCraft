@@ -114,7 +114,7 @@ public enum ChromaTiles {
 	CREATIVEPYLON("chroma.creativepylon",ChromaBlocks.PYLON, 		TileEntityCreativeSource.class, 	4, "RenderCreativePylon"),
 	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,		5, "RenderStructControl"),
 	LIFEEMITTER("chroma.lifeemitter",	ChromaBlocks.TILEMODELLED2, TileEntityLifeEmitter.class,		1/*, "RenderLifeEmitter"*/),
-	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				2);
+	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				4);
 
 	private final Class tile;
 	private final String name;
@@ -315,6 +315,8 @@ public enum ChromaTiles {
 		switch(this) {
 		case CHARGER:
 			return 0.125;
+		case ASPECTJAR:
+			return 0.1875;
 		default:
 			return 0;
 		}
@@ -328,6 +330,8 @@ public enum ChromaTiles {
 		switch(this) {
 		case CHARGER:
 			return 0.125;
+		case ASPECTJAR:
+			return 0.1875;
 		default:
 			return 0;
 		}
@@ -337,6 +341,8 @@ public enum ChromaTiles {
 		switch(this) {
 		case CHARGER:
 			return 0.875;
+		case ASPECTJAR:
+			return 0.8125;
 		default:
 			return 1;
 		}
@@ -348,6 +354,8 @@ public enum ChromaTiles {
 			return 0.625;
 		case INFUSER:
 			return 0.5;
+		case ASPECTJAR:
+			return 0.875;
 		default:
 			return 1;
 		}
@@ -357,6 +365,8 @@ public enum ChromaTiles {
 		switch(this) {
 		case CHARGER:
 			return 0.875;
+		case ASPECTJAR:
+			return 0.8125;
 		default:
 			return 1;
 		}
