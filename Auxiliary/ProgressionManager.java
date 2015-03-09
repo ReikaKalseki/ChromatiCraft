@@ -89,6 +89,7 @@ public class ProgressionManager {
 		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal()), false), //icon is a placeholder
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
+		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -183,6 +184,9 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
+		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
+		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
+		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];

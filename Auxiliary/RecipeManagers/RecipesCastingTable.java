@@ -92,6 +92,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Pendant
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.StorageCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TeleportWandRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TintedLensRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.TransitionRecipe;
 import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.BlockPath;
@@ -154,6 +155,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], true));
 
 			this.addRecipe(new LumenLampRecipe(new ItemStack(ChromaBlocks.LAMPBLOCK.getBlockInstance(), 16, i), CrystalElement.elements[i]));
+
+			this.addRecipe(new TintedLensRecipe(CrystalElement.elements[i], ChromaStacks.crystalLens));
 
 			sr = ReikaRecipeHelper.getShapedRecipeFor(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
 			this.addRecipe(new CastingRecipe(lamp, sr));

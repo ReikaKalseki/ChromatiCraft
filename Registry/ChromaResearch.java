@@ -101,7 +101,7 @@ public enum ChromaResearch {
 	AISHUTDOWN(		ChromaTiles.AISHUTDOWN, 	ResearchLevel.MULTICRAFT),
 	ASPECT(			ChromaTiles.ASPECT, 		ResearchLevel.ENERGYEXPLORE),
 	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
-	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME),
+	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.RUNECRAFT),
 	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
 	ASPECTJAR(		ChromaTiles.ASPECTJAR,		ResearchLevel.PYLONCRAFT),
@@ -584,6 +584,7 @@ public enum ChromaResearch {
 			li.add(ChromaStacks.transformCore);
 			li.add(ChromaStacks.voidCore);
 			li.add(ChromaStacks.elementUnit);
+			li.add(ChromaStacks.crystalLens);
 			return li;
 		}
 		if (block != null) {

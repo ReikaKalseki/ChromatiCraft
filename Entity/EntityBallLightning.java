@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Entity;
 
 import io.netty.buffer.ByteBuf;
@@ -314,6 +323,12 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			}
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
 				this.die();
+			}
+			else if (rand.nextInt(20) == 0) {
+				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(posX, 0, posZ, posX, 1024, posZ).expand(24, 0, 24);
+				List<EntityBallLightning> li = worldObj.getEntitiesWithinAABB(this.getClass(), box);
+				if (rand.nextInt(1+li.size()/16) > 0)
+					this.die();
 			}
 		}
 	}
