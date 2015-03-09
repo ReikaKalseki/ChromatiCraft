@@ -28,6 +28,17 @@ public class MinerRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.beaconDust, 4, 0);
 		this.addAuxItem(ChromaStacks.beaconDust, 0, -4);
 
+
+		this.addAuxItem(ChromaStacks.magicIngot, -4, -4);
+		this.addAuxItem(ChromaStacks.magicIngot, -4, 4);
+		this.addAuxItem(ChromaStacks.magicIngot, 4, -4);
+		this.addAuxItem(ChromaStacks.magicIngot, 4, 4);
+
+		this.addAuxItem(ChromaStacks.magicIngot3, -2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot3, -2, 2);
+		this.addAuxItem(ChromaStacks.magicIngot3, 2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot3, 2, 2);
+
 		this.addAuraRequirement(CrystalElement.BROWN, 5000);
 		this.addAuraRequirement(CrystalElement.PURPLE, 5000);
 		this.addAuraRequirement(CrystalElement.YELLOW, 15000);

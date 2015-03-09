@@ -19,6 +19,7 @@ public enum ChromaGuis {
 	INFO(),
 	STRUCTURE(),
 	CRAFTING(),
+	ALLOYING(),
 	RECIPE(),
 	RITUAL(),
 	ABILITYDESC(),
@@ -28,7 +29,8 @@ public enum ChromaGuis {
 	PROGRESS(),
 	REFRAGMENT(),
 	AURAPOUCH(),
-	TRANSITION();
+	TRANSITION(),
+	TELEPORT();
 
 	public static final ChromaGuis[] guiList = values();
 

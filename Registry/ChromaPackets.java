@@ -44,7 +44,10 @@ public enum ChromaPackets {
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
 	PYLONCACHE(),
-	TRANSITIONWAND(1);
+	TRANSITIONWAND(1),
+	TELEPORT(),
+	NEWTELEPORT(),
+	DELTELEPORT();
 
 	public final int numInts;
 	public final PacketTypes type;

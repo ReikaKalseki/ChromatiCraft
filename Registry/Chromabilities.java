@@ -92,7 +92,7 @@ public enum Chromabilities implements Ability {
 	DEATHPROOF(null, false),
 	HOTBAR(null, true),
 	SHOCKWAVE(null, true),
-	TELEPORT(null, false),
+	TELEPORT(null, true),
 	LEECH(null, false);
 
 	private final boolean tickBased;
@@ -189,7 +189,7 @@ public enum Chromabilities implements Ability {
 			return AbilityHelper.instance.getUsageElementsFor(c);
 		}
 
-		if (c == HEALTH || c == PYLON)
+		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF)
 			return AbilityHelper.instance.getUsageElementsFor(c);
 		else if (c == REACH)
 			return AbilityHelper.instance.getUsageElementsFor(c).scale(0.5F);
@@ -459,7 +459,7 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void teleportPlayerMenu(EntityPlayer ep) {
-		//TODO
+		ep.openGui(ChromatiCraft.instance, ChromaGuis.TELEPORT.ordinal(), ep.worldObj, 0, 0, 0);
 	}
 
 	private static void causeShockwave(EntityPlayer ep) {

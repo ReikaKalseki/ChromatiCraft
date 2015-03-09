@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Items.PoolRecipes;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
@@ -156,6 +157,7 @@ public enum ChromaResearch {
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
+	ALLOYS("Alloying",				ChromaStacks.magicIngot,								ResearchLevel.BASICCRAFT,	ProgressStage.CHROMA),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -451,6 +453,8 @@ public enum ChromaResearch {
 			return true;
 		if (this == CORES)
 			return true;
+		if (this == ALLOYS)
+			return true;
 		if (this == IRID)
 			return true;
 		if (this == SEED)
@@ -503,10 +507,11 @@ public enum ChromaResearch {
 		}
 		if (this == RELAY) {
 			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaTiles.RELAYSOURCE.getCraftedProduct());
 			for (int i = 0; i < 16; i++) {
 				li.add(ChromaBlocks.RELAY.getStackOfMetadata(i));
 			}
-			li.add(ChromaTiles.RELAYSOURCE.getCraftedProduct());
+			li.add(ChromaBlocks.RELAY.getStackOfMetadata(16));
 			return li;
 		}
 		if (this == PENDANT) {
@@ -540,6 +545,9 @@ public enum ChromaResearch {
 				li.add(ChromaItems.CLUSTER.getStackOfMetadata(i));
 			}
 			return li;
+		}
+		if (this == ALLOYS) {
+			return new ArrayList(PoolRecipes.instance.getAllOutputItems());
 		}
 		if (this == ORES) {
 			ArrayList<ItemStack> li = new ArrayList();
@@ -616,6 +624,8 @@ public enum ChromaResearch {
 	}
 
 	public boolean isCraftable() {
+		if (this == ALLOYS)
+			return true;
 		if (!this.isConfigDisabled() && this.isCrafting()) {
 			return this.isVanillaRecipe() ? this.getVanillaRecipeCount() > 0 : this.getRecipeCount() > 0;
 		}
@@ -633,6 +643,8 @@ public enum ChromaResearch {
 	}
 
 	public ChromaGuis getCraftingType() {
+		if (this == ALLOYS)
+			return ChromaGuis.ALLOYING;
 		return this.isVanillaRecipe() ? ChromaGuis.CRAFTING : ChromaGuis.RECIPE;
 	}
 

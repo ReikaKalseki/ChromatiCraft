@@ -28,6 +28,27 @@ public class TelePumpRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.glass, 0, -2);
 		this.addAuxItem(Blocks.glass, 2, -2);
 
+		this.addAuxItem(Blocks.cobblestone, -2, 4);
+		this.addAuxItem(Blocks.cobblestone, 0, 4);
+		this.addAuxItem(Blocks.cobblestone, 2, 4);
+
+		this.addAuxItem(Blocks.cobblestone, -2, -4);
+		this.addAuxItem(Blocks.cobblestone, 0, -4);
+		this.addAuxItem(Blocks.cobblestone, 2, -4);
+
+		this.addAuxItem(ChromaStacks.magicIngot4, -4, 4);
+		this.addAuxItem(ChromaStacks.magicIngot4, -4, -4);
+		this.addAuxItem(ChromaStacks.magicIngot4, 4, 4);
+		this.addAuxItem(ChromaStacks.magicIngot4, 4, -4);
+
+		this.addAuxItem(ChromaStacks.magicIngot3, -4, 2);
+		this.addAuxItem(ChromaStacks.magicIngot3, -4, 0);
+		this.addAuxItem(ChromaStacks.magicIngot3, -4, -2);
+
+		this.addAuxItem(ChromaStacks.magicIngot3, 4, 2);
+		this.addAuxItem(ChromaStacks.magicIngot3, 4, 0);
+		this.addAuxItem(ChromaStacks.magicIngot3, 4, -2);
+
 		this.addAuxItem(ChromaStacks.beaconDust, 2, 0);
 		this.addAuxItem(ChromaStacks.beaconDust, -2, 0);
 

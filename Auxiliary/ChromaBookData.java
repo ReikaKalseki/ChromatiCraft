@@ -16,21 +16,29 @@ import java.util.Map;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Items.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ChromaBookData {
 
 	private static final ReikaGuiAPI gui = ReikaGuiAPI.instance;
+
+	private static final int[][] permuOffset = new int[5][5];
 
 	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY) {
 		if (h.isCrafting()) {
@@ -76,7 +84,18 @@ public class ChromaBookData {
 				int ty = Math.abs(k) == 2 ? 38 : 63;
 				int dx = posX+120+sx*tx;
 				int dy = posY+94+sy*ty;
-				ItemStack out = items.get(key);
+				ItemStack out = items.get(key).copy();
+				if (out.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					List<ItemStack> dmg = ReikaItemHelper.getAllMetadataPermutations(out.getItem());
+					if (System.currentTimeMillis()%1000 == 0) {
+						for (int f = 0; f < permuOffset.length; f++) {
+							for (int g = 0; g < permuOffset[f].length; g++) {
+								permuOffset[f][g] = ReikaRandomHelper.getRandomPlusMinus(0, 16);
+							}
+						}
+					}
+					out = dmg.get((int)((System.currentTimeMillis()/1000+permuOffset[i/2+2][k/2+2])%dmg.size()));
+				}
 				gui.drawItemStackWithTooltip(ri, fr, out, dx, dy);
 			}
 		}
@@ -100,5 +119,21 @@ public class ChromaBookData {
 				gui.drawRect(x, y1+dy, x+w, y, e.getColor());
 			}
 		}
+	}
+
+	public static void drawPoolRecipe(FontRenderer fr, RenderItem ri, PoolRecipe r, int subpage, int posX, int posY) {
+		gui.drawItemStackWithTooltip(ri, fr, r.getOutput(), posX+120, posY+128);
+		gui.drawItemStackWithTooltip(ri, fr, r.getMainInput(), posX+34, posY+91);
+		int i = 0;
+		for (ItemStack is : r.getInputs()) {
+			int dx = posX+103+(i%3)*17;
+			int dy = posY+29+(i/3)*17;
+			gui.drawItemStackWithTooltip(ri, fr, is, dx, dy);
+			i++;
+		}
+		ReikaTextureHelper.bindTerrainTexture();
+		GL11.glDisable(GL11.GL_BLEND);
+		gui.drawTexturedModelRectFromIcon(posX+196, posY+81, ChromatiCraft.chroma.getIcon(), 36, 36);
+		GL11.glEnable(GL11.GL_BLEND);
 	}
 }

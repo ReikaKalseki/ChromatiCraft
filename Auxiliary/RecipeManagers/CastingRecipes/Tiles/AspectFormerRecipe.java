@@ -22,9 +22,12 @@ public class AspectFormerRecipe extends MultiBlockCastingRecipe {
 	public AspectFormerRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(Items.iron_ingot, -2, -2);
-		this.addAuxItem(Items.iron_ingot, 0, -2);
-		this.addAuxItem(Items.iron_ingot, 2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, -2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, 0, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, 2, -2);
+
+		this.addAuxItem(ChromaStacks.magicIngot5, -2, -4);
+		this.addAuxItem(ChromaStacks.magicIngot5, 2, -4);
 
 		this.addAuxItem(ChromaStacks.chromaDust, -2, 0);
 		this.addAuxItem(ChromaStacks.chromaDust, 2, 0);

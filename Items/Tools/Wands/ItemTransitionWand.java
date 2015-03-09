@@ -81,6 +81,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				BlockReplace brp = new BlockReplace(ep, id, meta, mode);
 				if (mode == TransitionMode.VOLUMETRIC) {
 					br.bounds = this.getStoredBox(is);
+					br.isOmni = true;
 					br.pathTracking = true;
 				}
 				is.stackTagCompound.removeTag("bbox");

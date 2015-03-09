@@ -31,10 +31,10 @@ public class InvTickerRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, 0, 2);
 		this.addAuxItem(ChromaStacks.auraDust, 0, -2);
 
-		this.addAuxItem(Items.iron_ingot, -2, -2);
-		this.addAuxItem(Items.iron_ingot, -2, 2);
-		this.addAuxItem(Items.iron_ingot, 2, -2);
-		this.addAuxItem(Items.iron_ingot, 2, 2);
+		this.addAuxItem(ChromaStacks.magicIngot, -2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, -2, 2);
+		this.addAuxItem(ChromaStacks.magicIngot, 2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, 2, 2);
 
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), -2, -2);
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOf(), -2, 2);

@@ -194,6 +194,8 @@ public enum ChromaItems implements ItemEnum {
 	public String getMultiValuedName(int meta) {
 		if (!this.hasMultiValuedName())
 			throw new RuntimeException("Item "+name+" was called for a multi-name, yet does not have one!");
+		if (meta == OreDictionary.WILDCARD_VALUE)
+			return this.getBasicName()+" (Any)";
 		switch(this) {
 		case PLACER:
 			return ChromaTiles.TEList[meta].getName();

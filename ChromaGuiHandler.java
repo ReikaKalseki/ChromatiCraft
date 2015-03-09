@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.GUI.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.GuiTelePump;
+import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
 import Reika.ChromatiCraft.GUI.GuiTransitionWand;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
 import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
@@ -63,6 +64,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiCraftingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiFragmentRecovery;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
+import Reika.ChromatiCraft.GUI.Book.GuiPoolRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
@@ -226,6 +228,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiCraftingRecipe(player, ChromaResearch.researchList[x].getVanillaRecipes(), y);
 		case RECIPE:
 			return new GuiCastingRecipe(player, ChromaResearch.researchList[x].getCraftingRecipes(), y, z > 0);
+		case ALLOYING:
+			return new GuiPoolRecipe(player, y, z > 0);
 		case RITUAL:
 			return new GuiRitual(player, ChromaResearch.researchList[x].getAbility());
 		case ABILITYDESC:
@@ -242,6 +246,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiAuraPouch(player);
 		case TRANSITION:
 			return new GuiTransitionWand(player);
+		case TELEPORT:
+			return new GuiTeleportAbility(player);
 		default:
 			break;
 		}

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -27,6 +28,29 @@ public class CrystalFurnaceRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.furnace, -2, 0);
 		this.addAuxItem(Blocks.furnace, 0, 2);
 		this.addAuxItem(Blocks.furnace, 0, -2);
+
+		this.addAuxItem(ChromaStacks.magicIngot2, -2, 2);
+		this.addAuxItem(ChromaStacks.magicIngot2, -2, -2);
+		this.addAuxItem(ChromaStacks.magicIngot2, 2, 2);
+		this.addAuxItem(ChromaStacks.magicIngot2, 2, -2);
+
+		this.addAuxItem(ChromaStacks.whiteShard, -4, -4);
+		this.addAuxItem(ChromaStacks.whiteShard, 4, 4);
+		this.addAuxItem(ChromaStacks.whiteShard, -4, 4);
+		this.addAuxItem(ChromaStacks.whiteShard, 4, -4);
+
+		this.addAuxItem(ChromaStacks.magicIngot, -2, -4);
+		this.addAuxItem(ChromaStacks.magicIngot, 0, -4);
+		this.addAuxItem(ChromaStacks.magicIngot, 2, -4);
+		this.addAuxItem(ChromaStacks.magicIngot, 4, -2);
+		this.addAuxItem(ChromaStacks.magicIngot, 4, 0);
+		this.addAuxItem(ChromaStacks.magicIngot, 4, 2);
+		this.addAuxItem(ChromaStacks.magicIngot, 2, 4);
+		this.addAuxItem(ChromaStacks.magicIngot, 0, 4);
+		this.addAuxItem(ChromaStacks.magicIngot, -2, 4);
+		this.addAuxItem(ChromaStacks.magicIngot, -4, 2);
+		this.addAuxItem(ChromaStacks.magicIngot, -4, 0);
+		this.addAuxItem(ChromaStacks.magicIngot, -4, -2);
 	}
 
 }

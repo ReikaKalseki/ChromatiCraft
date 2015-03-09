@@ -42,7 +42,8 @@ public enum ChromaSounds implements SoundEnum {
 	DING("ding2"),
 	SHOCKWAVE("shockwave"),
 	BALLLIGHTNING("balllightning"),
-	ITEMSTAND("stand");
+	ITEMSTAND("stand"),
+	POWERCRYS("powercrystal");
 
 	public static final ChromaSounds[] soundList = values();
 

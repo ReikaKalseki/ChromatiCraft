@@ -33,9 +33,9 @@
 	<augment>
 		The constructs running on the energy stored in crystals are useful to be sure, but you wonder if they are running at peak performance. In particular, you may be able to reduce their energy consumption, increase their speed, and for the mining device, get a product usable in that ore processing contraption that seems to quintuple the yield.
 	</augment>
-	<name>
-		
-	</name>
+	<alloys>
+		Much like how raw metals can be combined to yield materials of superior properties, you suspect that you can try the same with base metals like iron and gold to augment their characteristics, not for strength, but to imbue them with magic energy. Obviously, liquid chroma will be needed.
+	</alloys>
 	<name>
 		
 	</name>

@@ -19,6 +19,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
@@ -253,6 +254,8 @@ public enum ChromaBlocks implements BlockEnum {
 
 	@Override
 	public String getMultiValuedName(int meta) {
+		if (meta == OreDictionary.WILDCARD_VALUE)
+			return this.getBasicName()+" (Any)";
 		if (this == GLOW) {
 			return Bases.baseList[meta/16].displayName+"-Based "+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 		}
@@ -277,6 +280,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return PathType.list[meta].name+" "+this.getBasicName();
 		case STRUCTSHIELD:
 			return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
+		case RELAY:
+			return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
 		default:
 			return "";
 		}

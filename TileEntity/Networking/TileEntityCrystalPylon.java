@@ -238,6 +238,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					return;
 				}
 			}
+			if (blocks.getSize() > 0 && this.getTicksExisted()%875 == 0) {
+				ChromaSounds.POWERCRYS.playSoundAtBlock(this);
+			}
 			if (world.isRemote && !blocks.isEmpty())
 				this.spawnRechargeParticles(world, x, y, z, blocks);
 		}

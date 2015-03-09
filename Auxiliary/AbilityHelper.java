@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -83,6 +84,8 @@ public class AbilityHelper {
 	private final PlayerMap<Integer> healthCache = new PlayerMap();
 
 	private final PlayerMap<InventoryArray> inventories = new PlayerMap();
+
+	private final PlayerMap<Collection<WarpPoint>> teleports = new PlayerMap();
 
 	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap();
 
@@ -501,12 +504,66 @@ public class AbilityHelper {
 
 	}
 
+	public Collection<WarpPoint> getTeleportLocations(EntityPlayer ep) {
+		Collection<WarpPoint> c = teleports.get(ep);
+		return c != null ? Collections.unmodifiableCollection(c) : new HashSet();
+	}
+
+	public void addWarpPoint(String s, EntityPlayer ep) {
+		Collection<WarpPoint> c = teleports.get(ep);
+		if (c == null) {
+			c = new HashSet();
+			teleports.put(ep, c);
+		}
+		c.add(new WarpPoint(s, ep));
+	}
+
+	public boolean playerCanWarpTo(EntityPlayer ep, WorldLocation loc) {
+		Collection<WarpPoint> c = teleports.get(ep);
+		return c != null && c.contains(new WarpPoint("", ep));
+	}
+
+	public static class WarpPoint {
+
+		public final String label;
+		public final WorldLocation location;
+
+		private WarpPoint(String s, EntityPlayer ep) {
+			this(s, new WorldLocation(ep));
+		}
+
+		private WarpPoint(String s, World world, int x, int y, int z) {
+			this(s, new WorldLocation(world, x, y, z));
+		}
+
+		private WarpPoint(String s, WorldLocation loc) {
+			label = s;
+			location = loc;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof WarpPoint && ((WarpPoint)o).location.equals(location);
+		}
+
+		@Override
+		public int hashCode() {
+			return ~location.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return label+" ("+location.toString()+")";
+		}
+
+	}
+
 	public ElementTagCompound getElementsFor(Ability a) {
 		return tagMap.get(a).copy();
 	}
 
 	public ElementTagCompound getUsageElementsFor(Ability c) {
-		return tagMap.get(c).copy().scale(0.0008F); //was 0.0002F
+		return tagMap.get(c).copy().scale(0.0008F); //was 0.0008F //was 0.0002F
 	}
 
 	public boolean playerCanGetAbility(Chromabilities c, EntityPlayer ep) {

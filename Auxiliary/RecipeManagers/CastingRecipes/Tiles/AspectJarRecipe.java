@@ -25,6 +25,8 @@ public class AspectJarRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.glass, 2, 0);
 		this.addAuxItem(Blocks.glass, 2, 2);
 
+		this.addAuxItem(ChromaStacks.magicIngot, 0, 2);
+
 		this.addAuxItem(Blocks.wooden_slab, -2, -2);
 		this.addAuxItem(Blocks.wooden_slab, 2, -2);
 

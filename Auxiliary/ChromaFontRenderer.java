@@ -62,6 +62,11 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 	}
 
 	@Override
+	protected boolean needsGLBlending() {
+		return true;
+	}
+
+	@Override
 	protected void renderCharInString(String sg, int idx, boolean shadow) {
 		if (type == FontType.OBFUSCATED) {
 			preChar = idx > 0 ? sg.charAt(idx-1) : 0;

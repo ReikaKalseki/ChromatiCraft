@@ -3,6 +3,9 @@ package Reika.ChromatiCraft.GUI;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -18,8 +21,8 @@ public class GuiTransitionWand extends GuiScreen {
 
 	private final EntityPlayer player;
 
-	private int xSize = 176;
-	private int ySize = 52;
+	private final int xSize = 176;
+	private final int ySize = 52;
 
 	public GuiTransitionWand(EntityPlayer ep) {
 		player = ep;
@@ -50,6 +53,9 @@ public class GuiTransitionWand extends GuiScreen {
 
 	@Override
 	public void drawScreen(int x, int y, float ptick) {
+		super.drawScreen(x, y, ptick);
+		GL11.glPushMatrix();
+		GL11.glTranslated(0, 0, -500);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/transition.png");
@@ -67,8 +73,7 @@ public class GuiTransitionWand extends GuiScreen {
 			ty = k+33;
 			ChromaFontRenderer.FontType.GUI.renderer.drawSplitString(TransitionMode.list[i].desc, tx, ty, w, color);
 		}
-
-		super.drawScreen(x, y, ptick);
+		GL11.glPopMatrix();
 	}
 
 	private TransitionMode getCurrentMode() {

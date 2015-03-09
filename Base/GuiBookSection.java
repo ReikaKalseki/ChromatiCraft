@@ -125,7 +125,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		PYLONCAST("pyloncast"),
 		STRUCT("structure"),
 		RITUAL("ritual"),
-		ELEMENT("element");
+		ELEMENT("element"),
+		POOL("pool");
 
 		private final String endString;
 
