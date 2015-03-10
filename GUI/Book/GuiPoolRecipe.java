@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -23,11 +24,12 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
-import Reika.ChromatiCraft.Items.PoolRecipes;
-import Reika.ChromatiCraft.Items.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -81,7 +83,8 @@ public class GuiPoolRecipe extends GuiBookSection {
 			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
 				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
 				if (is != null) {
-					codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
+					if (!MinecraftForge.EVENT_BUS.post(new NEIRecipeCheckEvent(null, is)))
+						codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
 				}
 			}
 		}

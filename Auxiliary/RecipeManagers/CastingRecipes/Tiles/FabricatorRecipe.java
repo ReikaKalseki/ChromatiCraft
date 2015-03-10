@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
@@ -42,6 +43,11 @@ public class FabricatorRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, 4, -4);
 		this.addAuxItem(ChromaStacks.auraDust, 4, 4);
 		this.addAuxItem(ChromaStacks.auraDust, -4, 4);
+
+		this.addAuxItem(Items.iron_ingot, -2, -2);
+		this.addAuxItem(Items.iron_ingot, 2, -2);
+		this.addAuxItem(Items.iron_ingot, 2, 2);
+		this.addAuxItem(Items.iron_ingot, -2, 2);
 
 		this.addAuraRequirement(CrystalElement.GRAY, 10000);
 		this.addAuraRequirement(CrystalElement.BLUE, 2000);

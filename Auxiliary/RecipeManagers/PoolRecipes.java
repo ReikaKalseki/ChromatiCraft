@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Items;
+package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +34,11 @@ public class PoolRecipes {
 	private PoolRecipes() {
 
 		recipes.add(new PoolRecipe(ChromaStacks.magicIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.chromaDust, 16)));
-		recipes.add(new PoolRecipe(ChromaStacks.magicIngot2, new ItemStack(Items.gold_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.firaxite, 16), new ItemStack(Items.blaze_powder, 8)));
+		recipes.add(new PoolRecipe(ChromaStacks.magicIngot2, new ItemStack(Items.gold_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.firaxite, 16), new ItemStack(Items.blaze_powder, 8), new ItemStack(Items.coal, 2, 0)));
 		recipes.add(new PoolRecipe(ChromaStacks.magicIngot3, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.enderDust, 16), new ItemStack(Items.ender_pearl, 4, 0)));
-		recipes.add(new PoolRecipe(ChromaStacks.magicIngot4, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.waterDust, 16)));
+		recipes.add(new PoolRecipe(ChromaStacks.magicIngot4, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.waterDust, 16), new ItemStack(Items.gold_ingot, 2, 0)));
 		recipes.add(new PoolRecipe(ChromaStacks.magicIngot5, new ItemStack(Items.gold_ingot), new ItemStack(Items.redstone, 8, 0), ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, 16)));
+		recipes.add(new PoolRecipe(ChromaStacks.magicIngot6, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 8), new ItemStack(Items.glowstone_dust, 8, 0), new ItemStack(Items.redstone, 16, 0), new ItemStack(Items.quartz, 4, 0)));
 
 	}
 

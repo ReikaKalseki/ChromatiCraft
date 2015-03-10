@@ -116,12 +116,15 @@ public class GuiTeleportAbility extends GuiScreen {
 			}
 		}
 		else if (b.id == 0 && this.isValidPoint()) {
+			AbilityHelper.instance.addWarpPoint(newLabel.getText(), player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.NEWTELEPORT.ordinal(), newLabel.getText());
 		}
 		else if (b.id == 1 && this.getCurrentSelected() != null) {
+			AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected().label, player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORT.ordinal(), this.getCurrentSelected().label);
 		}
 		else if (b.id == 2 && this.getCurrentSelected() != null) {
+			AbilityHelper.instance.removeWarpPoint(this.getCurrentSelected().label, player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.DELTELEPORT.ordinal(), this.getCurrentSelected().label);
 		}
 		this.initGui();

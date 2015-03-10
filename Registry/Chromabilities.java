@@ -561,6 +561,7 @@ public enum Chromabilities implements Ability {
 						ent.velocityChanged = true;
 				}
 			}
+			ent.noClip = true;
 		}
 		List<EntityXPOrb> inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
 		for (EntityXPOrb ent : inbox2) {
@@ -584,6 +585,7 @@ public enum Chromabilities implements Ability {
 				if (!world.isRemote)
 					ent.velocityChanged = true;
 			}
+			ent.noClip = true;
 		}
 	}
 

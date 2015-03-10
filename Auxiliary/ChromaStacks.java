@@ -49,6 +49,7 @@ public class ChromaStacks {
 	public static final ItemStack magicIngot3 			= ChromaItems.CRAFTING.getStackOfMetadata(17);
 	public static final ItemStack magicIngot4 			= ChromaItems.CRAFTING.getStackOfMetadata(18);
 	public static final ItemStack magicIngot5 			= ChromaItems.CRAFTING.getStackOfMetadata(19);
+	public static final ItemStack magicIngot6 			= ChromaItems.CRAFTING.getStackOfMetadata(20);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);

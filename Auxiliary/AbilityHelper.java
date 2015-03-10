@@ -85,7 +85,7 @@ public class AbilityHelper {
 
 	private final PlayerMap<InventoryArray> inventories = new PlayerMap();
 
-	private final PlayerMap<Collection<WarpPoint>> teleports = new PlayerMap();
+	private final PlayerMap<HashMap<String, WarpPoint>> teleports = new PlayerMap();
 
 	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap();
 
@@ -505,22 +505,44 @@ public class AbilityHelper {
 	}
 
 	public Collection<WarpPoint> getTeleportLocations(EntityPlayer ep) {
-		Collection<WarpPoint> c = teleports.get(ep);
-		return c != null ? Collections.unmodifiableCollection(c) : new HashSet();
+		HashMap<String, WarpPoint> c = teleports.get(ep);
+		return c != null ? Collections.unmodifiableCollection(c.values()) : new HashSet();
 	}
 
 	public void addWarpPoint(String s, EntityPlayer ep) {
-		Collection<WarpPoint> c = teleports.get(ep);
+		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c == null) {
-			c = new HashSet();
+			c = new HashMap();
 			teleports.put(ep, c);
 		}
-		c.add(new WarpPoint(s, ep));
+		c.put(s, new WarpPoint(s, ep));
+		WarpPointData.initWarpData(ep.worldObj).setDirty(true);
+	}
+
+	public void gotoWarpPoint(String s, EntityPlayer ep) {
+		HashMap<String, WarpPoint> c = teleports.get(ep);
+		if (c != null) {
+			WarpPoint wp = c.get(s);
+			if (ep != null) {
+				wp.teleportPlayerTo(ep);
+			}
+		}
+	}
+
+	public void removeWarpPoint(String s, EntityPlayer ep) {
+		HashMap<String, WarpPoint> c = teleports.get(ep);
+		if (c != null) {
+			c.remove(s);
+			if (c.isEmpty()) {
+
+			}
+		}
+		WarpPointData.initWarpData(ep.worldObj).setDirty(true);
 	}
 
 	public boolean playerCanWarpTo(EntityPlayer ep, WorldLocation loc) {
-		Collection<WarpPoint> c = teleports.get(ep);
-		return c != null && c.contains(new WarpPoint("", ep));
+		HashMap<String, WarpPoint> c = teleports.get(ep);
+		return c != null && c.values().contains(new WarpPoint("", ep));
 	}
 
 	public static class WarpPoint {
@@ -554,6 +576,71 @@ public class AbilityHelper {
 		@Override
 		public String toString() {
 			return label+" ("+location.toString()+")";
+		}
+
+		private void teleportPlayerTo(EntityPlayer ep) {
+			ep.setPositionAndUpdate(location.xCoord+0.5, location.yCoord+0.25, location.zCoord+0.5);
+			ep.playSound("mob.endermen.portal", 1, 1);
+		}
+
+	}
+
+	public static class WarpPointData extends WorldSavedData {
+
+		public static final String TAG = "CHROMAWARPPOINT";
+
+		public WarpPointData() {
+			super(TAG);
+		}
+
+		public WarpPointData(String s) {
+			super(s);
+		}
+
+		private static WarpPointData initWarpData(World world) {
+			WarpPointData data = (WarpPointData)world.loadItemData(WarpPointData.class, TAG);
+			if (data == null) {
+				data = new WarpPointData();
+				world.setItemData(TAG, data);
+			}
+			return data;
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound nbt) {
+			instance.teleports.clear();
+			NBTTagCompound data = nbt.getCompoundTag("warpdata");
+			for (Object o : data.func_150296_c()) {
+				String player = (String)o;
+				NBTTagList points = data.getTagList(player, NBTTypes.COMPOUND.ID);
+				HashMap<String, WarpPoint> map = new HashMap();
+				instance.teleports.directPut(UUID.fromString(player), map);
+				for (Object o2 : points.tagList) {
+					NBTTagCompound pt = (NBTTagCompound)o2;
+					String label = pt.getString("label");
+					WorldLocation pos = WorldLocation.readFromNBT("pos", pt);
+					if (pos != null) {
+						map.put(label, new WarpPoint(label, pos));
+					}
+				}
+			}
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound nbt) {
+			NBTTagCompound data = new NBTTagCompound();
+			for (UUID uid : instance.teleports.keySet()) {
+				NBTTagList points = new NBTTagList();
+				HashMap<String, WarpPoint> map = instance.teleports.directGet(uid);
+				for (String label : map.keySet()) {
+					WarpPoint wp = map.get(label);
+					NBTTagCompound pt = new NBTTagCompound();
+					pt.setString("label", label);
+					wp.location.writeToNBT("pos", pt);
+					points.appendTag(pt);
+				}
+				data.setTag(uid.toString(), points);
+			}
 		}
 
 	}

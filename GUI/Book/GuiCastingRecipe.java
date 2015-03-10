@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -35,6 +36,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -95,7 +97,8 @@ public class GuiCastingRecipe extends GuiBookSection {
 			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
 				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
 				if (is != null) {
-					codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
+					if (!MinecraftForge.EVENT_BUS.post(new NEIRecipeCheckEvent(null, is)))
+						codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
 				}
 			}
 		}

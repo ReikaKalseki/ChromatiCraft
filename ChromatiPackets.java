@@ -372,6 +372,15 @@ public class ChromatiPackets implements IPacketHandler {
 			case TRANSITIONWAND: {
 				((ItemTransitionWand)ep.getCurrentEquippedItem().getItem()).setMode(ep.getCurrentEquippedItem(), TransitionMode.list[data[0]]);
 			}
+			case NEWTELEPORT:
+				AbilityHelper.instance.addWarpPoint(stringdata, ep);
+				break;
+			case TELEPORT:
+				AbilityHelper.instance.gotoWarpPoint(stringdata, ep);
+				break;
+			case DELTELEPORT:
+				AbilityHelper.instance.removeWarpPoint(stringdata, ep);
+				break;
 			}
 		}
 		catch (NullPointerException e) {

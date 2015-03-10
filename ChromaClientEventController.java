@@ -67,7 +67,6 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -155,7 +154,6 @@ public class ChromaClientEventController {
 			if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
 				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 				ChromaResearch r = ChromaResearch.getPageFor(is);
-				ReikaJavaLibrary.pConsole(r.playerCanSee(ep));
 				if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe()) {
 					ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
 					return true;

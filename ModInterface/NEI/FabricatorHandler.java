@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.TemplateRecipeHandler;
 
@@ -38,7 +39,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 		private final ElementTagCompound cost;
 
 		public FabricationRecipe(ItemStack out, ElementTagCompound tag) {
-			item = out;
+			item = ReikaItemHelper.getSizedItemStack(out, 1);
 			cost = tag;
 		}
 
