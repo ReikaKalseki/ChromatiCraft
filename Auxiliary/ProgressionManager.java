@@ -187,6 +187,7 @@ public class ProgressionManager {
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
+		progressMap.addParent(ProgressStage.DIE,		ProgressStage.CHARGE);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
@@ -265,6 +266,10 @@ public class ProgressionManager {
 	}
 
 	private boolean stepPlayerTo(EntityPlayer ep, ProgressStage s) {
+		if (ep == null) {
+			ChromatiCraft.logger.logError("Tried to give progress '"+s+"' to null player???");
+			return false;
+		}
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
 		if (this.isPlayerAtStage(ep, s))

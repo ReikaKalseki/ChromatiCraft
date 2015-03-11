@@ -31,8 +31,6 @@ public class RelaySourceRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.focusDust, 0, -2);
 		this.addAuxItem(ChromaStacks.focusDust, 0, -4);
 		this.addAuxItem(ChromaStacks.focusDust, 0, 2);
-		this.addAuxItem(ChromaStacks.focusDust, -2, 0);
-		this.addAuxItem(ChromaStacks.focusDust, 2, 0);
 
 		this.addAuxItem(ChromaItems.LENS.getAnyMetaStack(), -4, 0);
 		this.addAuxItem(ChromaItems.LENS.getAnyMetaStack(), 4, 0);

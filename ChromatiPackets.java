@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -72,6 +73,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -368,9 +370,11 @@ public class ChromatiPackets implements IPacketHandler {
 			}
 			case PYLONCACHE: {
 				PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
+				break;
 			}
 			case TRANSITIONWAND: {
 				((ItemTransitionWand)ep.getCurrentEquippedItem().getItem()).setMode(ep.getCurrentEquippedItem(), TransitionMode.list[data[0]]);
+				break;
 			}
 			case NEWTELEPORT:
 				AbilityHelper.instance.addWarpPoint(stringdata, ep);
@@ -381,6 +385,10 @@ public class ChromatiPackets implements IPacketHandler {
 			case DELTELEPORT:
 				AbilityHelper.instance.removeWarpPoint(stringdata, ep);
 				break;
+			case GROWTH: {
+				this.doGrowthParticles(world, data);
+				break;
+			}
 			}
 		}
 		catch (NullPointerException e) {
@@ -389,6 +397,19 @@ public class ChromatiPackets implements IPacketHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doGrowthParticles(World world, int[] data) {
+		int x = data[0];
+		int y = data[1];
+		int z = data[2];
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0.1875, 0.0625);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(1).setLife(20).setGravity(0.25F);
+		fx.noClip = true;
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SideOnly(Side.CLIENT)

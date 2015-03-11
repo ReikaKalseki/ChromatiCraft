@@ -1187,10 +1187,15 @@ public class ChromaStructures {
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 
 		for (int i = -7; i <= 7; i++) {
-			array.setBlock(x-7, y, z+i, b, 0);
-			array.setBlock(x+7, y, z+i, b, 0);
-			array.setBlock(x+i, y, z-7, b, 0);
-			array.setBlock(x+i, y, z+7, b, 0);
+			array.addBlock(x-7, y, z+i, b, 0);
+			array.addBlock(x+7, y, z+i, b, 0);
+			array.addBlock(x+i, y, z-7, b, 0);
+			array.addBlock(x+i, y, z+7, b, 0);
+
+			array.addBlock(x-7, y, z+i, b, 12);
+			array.addBlock(x+7, y, z+i, b, 12);
+			array.addBlock(x+i, y, z-7, b, 12);
+			array.addBlock(x+i, y, z+7, b, 12);
 		}
 
 		for (int i = -8; i <= 8; i++) {

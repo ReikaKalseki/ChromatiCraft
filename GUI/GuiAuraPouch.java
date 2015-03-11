@@ -33,14 +33,16 @@ public class GuiAuraPouch extends GuiContainer {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2)
 	{
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
-		ItemAuraPouch iap = (ItemAuraPouch)player.getCurrentEquippedItem().getItem();
-		boolean[] active = iap.getActiveSlots(player.getCurrentEquippedItem());
-		for (int i = 0; i < iap.SIZE; i++) {
-			int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D));
-			int c = (a << 24) | (active[i] ? 0x00ff00 : 0xff0000);
-			int x = 8+(i%9)*18;
-			int y = 17+(i/9)*18;
-			this.drawRect(x, y, x+16, y+16, c);
+		if (player.getCurrentEquippedItem() != null) {
+			ItemAuraPouch iap = (ItemAuraPouch)player.getCurrentEquippedItem().getItem();
+			boolean[] active = iap.getActiveSlots(player.getCurrentEquippedItem());
+			for (int i = 0; i < iap.SIZE; i++) {
+				int a = 96+(int)(48*Math.sin(System.currentTimeMillis()/400D));
+				int c = (a << 24) | (active[i] ? 0x00ff00 : 0xff0000);
+				int x = 8+(i%9)*18;
+				int y = 17+(i/9)*18;
+				this.drawRect(x, y, x+16, y+16, c);
+			}
 		}
 	}
 

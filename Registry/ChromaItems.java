@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -103,7 +104,8 @@ public enum ChromaItems implements ItemEnum {
 	SHOO(39, false,			"chroma.shoo",			ItemShooWand.class),
 	OREPICK(27, false,		"chroma.orepick",		ItemOrePick.class),
 	ORESILK(26, false,		"chroma.oresilk",		ItemOreSilker.class),
-	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class);
+	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class),
+	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class);
 
 	private final int index;
 	private final boolean hasSubtypes;

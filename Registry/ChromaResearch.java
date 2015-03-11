@@ -35,8 +35,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -144,6 +144,7 @@ public enum ChromaResearch {
 	MULTITOOL(			ChromaItems.MULTITOOL,		ResearchLevel.RUNECRAFT),
 	OREPICK(			ChromaItems.OREPICK,		ResearchLevel.RUNECRAFT),
 	ORESILK(			ChromaItems.ORESILK,		ResearchLevel.RUNECRAFT),
+	GROWTH(				ChromaItems.GROWTH,			ResearchLevel.MULTICRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),

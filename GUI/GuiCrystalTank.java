@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.GUI;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fluids.Fluid;
 
 import org.lwjgl.input.Keyboard;
@@ -38,6 +37,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
+		//fontRendererObj = Minecraft.getMinecraft().fontRenderer;
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		Fluid f = tank.getFluid();
@@ -58,9 +58,7 @@ public class GuiCrystalTank extends GuiChromaBase {
 		int c = 0xffffff;
 		for (float d = s; d < 1; d += s) {
 			String sg = String.format("%.1f%sB", ReikaMathLibrary.getThousandBase(cap*d), ReikaEngLibrary.getSIPrefix(cap*d));
-			String st = EnumChatFormatting.STRIKETHROUGH.toString();
-			String sr = EnumChatFormatting.RESET.toString();
-			String sg2 = String.format("%s %s %d%s %s %s", st, sr, Math.round(d*100), "%", st, sr);
+			String sg2 = String.format("- %d%s -", Math.round(d*100), "%");
 			fontRendererObj.drawString(sg, 146-fontRendererObj.getStringWidth(sg), fontRendererObj.FONT_HEIGHT/2+109-(int)(d*101), c);
 			fontRendererObj.drawString(sg2, 24, fontRendererObj.FONT_HEIGHT/2+109-(int)(d*101), c);
 		}

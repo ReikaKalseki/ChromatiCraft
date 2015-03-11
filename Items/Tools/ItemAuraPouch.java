@@ -18,8 +18,10 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 
-public class ItemAuraPouch extends ItemChromaTool {
+public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryItem {
 
 	public static final int SIZE = 27;
 
@@ -105,6 +107,18 @@ public class ItemAuraPouch extends ItemChromaTool {
 	@Override
 	public int getItemEnchantability() {
 		return Items.leather_chestplate.getItemEnchantability();
+	}
+
+	@Override
+	public void decrementSlot(ItemStack is, int slot) {
+		ItemStack[] inv = this.getInventory(is);
+		ReikaInventoryHelper.decrStack(slot, inv);
+		this.setItems(is, inv);
+	}
+
+	@Override
+	public boolean isSlotActive(ItemStack is, int slot) {
+		return this.getActiveSlots(is)[slot];
 	}
 
 }

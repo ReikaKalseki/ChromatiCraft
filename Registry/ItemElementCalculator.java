@@ -259,7 +259,7 @@ public class ItemElementCalculator {
 			tag.addButMinimizeWith(this.getFromBCLasers(is));
 		if (ModList.TINKERER.isLoaded())
 			tag.addButMinimizeWith(this.getFromTinkerTable(is));
-		ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
+		//ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
 		currentCalculation.remove(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 		return tag;
 	}

@@ -1,11 +1,11 @@
 /*******************************************************************************
- * @author Reika Kalseki
- * 
- * Copyright 2015
- * 
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
+ *@author Reika Kalseki
+ *
+ *Copyright 2015
+ *
+ *All rights reserved.
+ *Distribution of the software in any form is only allowed with
+ *explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -45,6 +46,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -65,8 +67,10 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import com.google.common.collect.HashBiMap;
@@ -93,7 +97,8 @@ public enum Chromabilities implements Ability {
 	HOTBAR(null, true),
 	SHOCKWAVE(null, true),
 	TELEPORT(null, true),
-	LEECH(null, false);
+	LEECH(null, false),
+	FLOAT(Phase.END, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -207,6 +212,9 @@ public enum Chromabilities implements Ability {
 			break;
 		case COMMUNICATE:
 			this.deAggroMobs(ep);
+			break;
+		case FLOAT:
+			this.waterRun(ep);
 			break;
 		default:
 			break;
@@ -420,6 +428,35 @@ public enum Chromabilities implements Ability {
 			this.setReachDistance(ep, -1);
 		else if (this == HEALTH)
 			this.setPlayerMaxHealth(ep, 0);
+	}
+
+	private static void waterRun(EntityPlayer ep) {
+		int x = MathHelper.floor_double(ep.posX);
+		int y = MathHelper.floor_double(ep.posY);
+		int z = MathHelper.floor_double(ep.posZ);
+
+		Block id = ep.worldObj.getBlock(x, y-1, z);
+		Block idbelow = ep.worldObj.getBlock(x, y-2, z);
+
+		if (isValidWaterBlocks(id, idbelow) && ReikaMathLibrary.py3d(ep.motionX, 0, ep.motionZ) >= 0.15) {
+			ep.fallDistance = 0;
+			if (ep instanceof EntityPlayerMP) {
+				((EntityPlayerMP)ep).playerNetServerHandler.floatingTickCount = 0;
+			}
+			for (int i = 0; i < 8; i++)
+				ReikaParticleHelper.RAIN.spawnAt(ep.worldObj, ReikaRandomHelper.getRandomPlusMinus(ep.posX, 0.25), ep.posY-1, ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 0.25));
+			if (ep.ticksExisted%2 == 0)
+				ep.playSound("random.splash", 0.125F+ep.worldObj.rand.nextFloat()*0.5F, 0.25F+ep.worldObj.rand.nextFloat());
+
+			ep.motionY = Math.max(0, ep.motionY);
+			ep.setPosition(ep.posX, (int)ep.posY+0.7, ep.posZ);
+			ep.addVelocity(0.05*ep.motionX, 0, 0.05*ep.motionZ);
+		}
+
+	}
+
+	private static boolean isValidWaterBlocks(Block id, Block idbelow) {
+		return (idbelow instanceof BlockLiquid || idbelow instanceof BlockFluidBase) && !((id instanceof BlockLiquid || id instanceof BlockFluidBase));
 	}
 
 	private static void spawnLightning(EntityPlayer ep, int power) {

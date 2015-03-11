@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,18 +29,15 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -56,8 +55,9 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
@@ -76,6 +76,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
@@ -86,9 +87,12 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
+import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
+import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
@@ -103,6 +107,8 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaticEventManager {
 
@@ -118,13 +124,30 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void doPoolRecipes(ItemExpireEvent evt) {
+	public void doPoolRecipes(ItemUpdateEvent evt) {
 		EntityItem ei = evt.entityItem;
-		ItemStack out = PoolRecipes.instance.getPoolRecipe(ei);
-		if (out != null) {
-			ReikaItemHelper.dropItem(ei, out);
-			ei.worldObj.setBlock(MathHelper.floor_double(ei.posX), MathHelper.floor_double(ei.posY), MathHelper.floor_double(ei.posZ), Blocks.air);
+		if (rand.nextInt(5) == 0) {
+			PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
+			if (out != null) {
+				if (ei.worldObj.isRemote) {
+					this.poolRecipeParticles(ei);
+				}
+				if (!ei.worldObj.isRemote && ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
+					PoolRecipes.instance.makePoolRecipe(ei, out);
+				}
+			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void poolRecipeParticles(EntityItem ei) {
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
+		float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.5);
+		EntityFX fx = new EntityChromaFluidFX(ei.worldObj, ei.posX, ei.posY, ei.posZ, vx, vy, vz).setGravity(0.125F).setScale(s);
+		fx.noClip = true;
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SubscribeEvent
@@ -336,20 +359,27 @@ public class ChromaticEventManager {
 	public void sendLinkedItems(EntityItemPickupEvent ev) {
 		this.fillFragments(ev);
 		EntityPlayer ep = ev.entityPlayer;
+		this.parseInventoryForLinking(ev, ep.inventory.mainInventory);
+	}
+
+	private void parseInventoryForLinking(EntityItemPickupEvent ev, ItemStack[] inv) {
 		EntityItem e = ev.item;
 		ItemStack picked = e.getEntityItem();
-		for (int i = 0; i < ep.inventory.mainInventory.length; i++) {
-			ItemStack in = ep.inventory.mainInventory[i];
+		for (int i = 0; i < inv.length; i++) {
+			ItemStack in = inv[i];
 			if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
 				ItemInventoryLinker iil = (ItemInventoryLinker)in.getItem();
 				if (iil.linksItem(in, picked)) {
-					if (iil.processItem(ep.worldObj, in, picked)) {
+					if (iil.processItem(ev.entityPlayer.worldObj, in, picked)) {
 						e.playSound("random.pop", 0.5F, 1);
 						e.setDead();
 						ev.setCanceled(true);
 						return;
 					}
 				}
+			}
+			else if (in != null && in.getItem() instanceof ActivatedInventoryItem) {
+				this.parseInventoryForLinking(ev, ((ActivatedInventoryItem)in.getItem()).getInventory(in));
 			}
 		}
 	}
@@ -391,15 +421,22 @@ public class ChromaticEventManager {
 		Entity tg = ev.target;
 		if (tg instanceof EntityLivingBase) {
 			EntityLivingBase elb = (EntityLivingBase)tg;
-			for (int i = 0; i < ep.inventory.mainInventory.length; i++) {
-				ItemStack is = ep.inventory.mainInventory[i];
-				if (is != null) {
-					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
-					}
-					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
-					}
+			this.parseInventoryForPendantCarry(ev, elb, ep.inventory.mainInventory);
+		}
+	}
+
+	private void parseInventoryForPendantCarry(AttackEntityEvent ev, EntityLivingBase elb, ItemStack[] inv) {
+		for (int i = 0; i < inv.length; i++) {
+			ItemStack is = inv[i];
+			if (is != null) {
+				if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
+					CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
+				}
+				else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
+					CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
+				}
+				else if (is.getItem() instanceof ActivatedInventoryItem) {
+					this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is));
 				}
 			}
 		}
