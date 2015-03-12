@@ -446,7 +446,7 @@ public enum Chromabilities implements Ability {
 			for (int i = 0; i < 8; i++)
 				ReikaParticleHelper.RAIN.spawnAt(ep.worldObj, ReikaRandomHelper.getRandomPlusMinus(ep.posX, 0.25), ep.posY-1, ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 0.25));
 			if (ep.ticksExisted%2 == 0)
-				ep.playSound("random.splash", 0.125F+ep.worldObj.rand.nextFloat()*0.5F, 0.25F+ep.worldObj.rand.nextFloat());
+				ep.playSound("random.splash", 0.0625F+ep.worldObj.rand.nextFloat()*0.25F, 0.25F+ep.worldObj.rand.nextFloat());
 
 			ep.motionY = Math.max(0, ep.motionY);
 			ep.setPosition(ep.posX, (int)ep.posY+0.7, ep.posZ);

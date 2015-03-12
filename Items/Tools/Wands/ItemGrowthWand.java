@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -40,11 +41,7 @@ public class ItemGrowthWand extends ItemWandBase {
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
 		if (this.sufficientEnergy(ep)) {
-			ticker.addLocation(world, x, y, z, 4, 2, ep.isSneaking());
-			if (ep.isSneaking())
-				this.drainPlayer(ep, 16);
-			else
-				this.drainPlayer(ep);
+			ticker.addLocation(ep, world, x, y, z, 4, 2, ep.isSneaking());
 			ChromaSounds.USE.playSoundAtBlock(world, x, y, z);
 			return true;
 		}
@@ -75,8 +72,8 @@ public class ItemGrowthWand extends ItemWandBase {
 			isIterating = false;
 		}
 
-		private void addLocation(World world, int x, int y, int z, int w, int h, boolean e) {
-			GrowthLocation g = new GrowthLocation(world, x, y, z, w, h, e);
+		private void addLocation(EntityPlayer ep, World world, int x, int y, int z, int w, int h, boolean e) {
+			GrowthLocation g = new GrowthLocation(ep, world, x, y, z, w, h, e);
 			if (isIterating)
 				holdingCache.add(g);
 			else
@@ -103,14 +100,16 @@ public class ItemGrowthWand extends ItemWandBase {
 	private static class GrowthLocation {
 
 		private final WorldLocation origin;
+		private final EntityPlayer player;
 
 		private static final Random rand = new Random();
 		private final boolean enhanced;
 
 		private TreeMap<Integer, ArrayList<Coordinate>> locations = new TreeMap();
 
-		private GrowthLocation(World world, int x, int y, int z, int r1, int r2, boolean e) {
+		private GrowthLocation(EntityPlayer ep, World world, int x, int y, int z, int r1, int r2, boolean e) {
 			origin = new WorldLocation(world, x, y, z);
+			player = ep;
 			for (int i = -r1; i <= r1; i++) {
 				for (int k = -r1; k <= r1; k++) {
 					this.addLocation(x+i, y, z+k, i*i+k*k);
@@ -154,6 +153,8 @@ public class ItemGrowthWand extends ItemWandBase {
 					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GROWTH.ordinal(), pt, c.xCoord, c.yCoord, c.zCoord);
 				}
 				this.removeLocation(c, idx, li, d);
+				int f = enhanced ? 16 : 1;
+				((ItemGrowthWand)ChromaItems.GROWTH.getItemInstance()).drainPlayer(player, f);
 			}
 		}
 

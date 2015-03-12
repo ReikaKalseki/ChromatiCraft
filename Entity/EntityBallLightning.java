@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.SphericalVector;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.DimensionTarget;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -228,6 +229,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		//particle effect
 		if (worldObj.isRemote) {
 			this.doDeathParticles(worldObj, posX, posY, posZ, this.getRenderColor());
+		}
+		else {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LIGHTNINGDIE.ordinal(), new PacketTarget.RadiusTarget(this, 32), this.calcRenderColor());
 		}
 		this.setDead();
 	}
