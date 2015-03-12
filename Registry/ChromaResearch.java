@@ -177,6 +177,7 @@ public enum ChromaResearch {
 	SHOCKWAVE(		Chromabilities.SHOCKWAVE),
 	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
 	LEECH(			Chromabilities.LEECH),
+	FLOAT(			Chromabilities.FLOAT),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

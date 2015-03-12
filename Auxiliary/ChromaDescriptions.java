@@ -247,7 +247,8 @@ public final class ChromaDescriptions {
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
-		return abilityText.get(c);
+		String s = abilityText.get(c);
+		return s != null ? s : "This ability has no lexicon info yet.";
 	}
 
 	public static String getElementDescription(CrystalElement e) {
