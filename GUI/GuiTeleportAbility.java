@@ -23,14 +23,18 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.WarpPoint;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.RectangleMap;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiTeleportAbility extends GuiScreen {
+public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 
 	private final int xSize = 176;
 	private final int ySize = 220;
@@ -49,6 +53,14 @@ public class GuiTeleportAbility extends GuiScreen {
 		points.addAll(AbilityHelper.instance.getTeleportLocations(ep));
 	}
 
+	public void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+	}
+
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -58,15 +70,15 @@ public class GuiTeleportAbility extends GuiScreen {
 		String tex = "Textures/GUIs/buttons.png";
 
 		if (screen == Screen.SET) {
-			buttonList.add(new GuiButton(0, j+28, k+ySize-28, 120, 20, ChromaFontRenderer.FontType.GUI.id+"   Add Point"));
+			buttonList.add(new CustomSoundGuiButton(0, j+28, k+ySize-28, 120, 20, ChromaFontRenderer.FontType.GUI.id+"   Add Point", this));
 		}
 		else if (screen == Screen.SELECT) {
-			buttonList.add(new GuiButton(1, j+28, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Go To"));
-			buttonList.add(new GuiButton(2, j+88, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Remove"));
+			buttonList.add(new CustomSoundGuiButton(1, j+28, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Go To", this));
+			buttonList.add(new CustomSoundGuiButton(2, j+88, k+ySize-28, 60, 20, ChromaFontRenderer.FontType.GUI.id+"   Remove", this));
 		}
 
-		buttonList.add(new GuiButton(10, j+8, k+ySize-28, 20, 20, ChromaFontRenderer.FontType.GUI.id+"   <"));
-		buttonList.add(new GuiButton(11, j+148, k+ySize-28, 20, 20, ChromaFontRenderer.FontType.GUI.id+"   >"));
+		buttonList.add(new CustomSoundGuiButton(10, j+8, k+ySize-28, 20, 20, ChromaFontRenderer.FontType.GUI.id+"   <", this));
+		buttonList.add(new CustomSoundGuiButton(11, j+148, k+ySize-28, 20, 20, ChromaFontRenderer.FontType.GUI.id+"   >", this));
 
 		if (screen == Screen.SET) {
 			newLabel = new GuiTextField(ChromaFontRenderer.FontType.GUI.renderer, j+8, k+30, 160, 16);

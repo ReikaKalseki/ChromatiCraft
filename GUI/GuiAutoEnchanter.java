@@ -22,11 +22,12 @@ import net.minecraftforge.fluids.FluidRegistry;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -62,11 +63,11 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int dx = 122;
 		int dy = 33;
 		int w = 4;
-		buttonList.add(new GuiButton(0, j+dx-w, k+dy, 20, 20, "-"));
-		buttonList.add(new GuiButton(1, j+dx+20+w, k+dy, 20, 20, "+"));
+		buttonList.add(new CustomSoundGuiButton(0, j+dx-w, k+dy, 20, 20, "-", this));
+		buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy, 20, 20, "+", this));
 
-		buttonList.add(new ImagedGuiButton(2, j+16, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(3, j+154, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(2, j+16, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(3, j+154, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
 	}
 
 	@Override

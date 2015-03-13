@@ -17,16 +17,19 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public class GuiTransitionWand extends GuiScreen {
+public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 
 	private final EntityPlayer player;
 
@@ -49,8 +52,16 @@ public class GuiTransitionWand extends GuiScreen {
 		TransitionMode md = this.getCurrentMode();
 		for (int i = 0; i < l; i++) {
 			int u = md.ordinal() == i ? 18 : 0;
-			buttonList.add(new ImagedGuiButton(i, j+8+i*(xSize-10)/l, k+14, 18, 18, u, 0, tex, ChromatiCraft.class));
+			buttonList.add(new CustomSoundImagedGuiButton(i, j+8+i*(xSize-10)/l, k+14, 18, 18, u, 0, tex, ChromatiCraft.class, this));
 		}
+	}
+
+	public void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
 	}
 
 	@Override

@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,15 +20,17 @@ import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 public class GuiAspectFormer extends GuiChromaBase {
@@ -64,8 +65,8 @@ public class GuiAspectFormer extends GuiChromaBase {
 		int out = xSize/2-14;
 
 		String tex = "Textures/GUIs/aspect.png";
-		buttonList.add(new ImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 184, 0, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, midx+out, midy-h/2, w, h, 176, 0, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 184, 0, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 176, 0, tex, ChromatiCraft.class, this));
 	}
 
 	private Aspect getActive() {
@@ -121,7 +122,8 @@ public class GuiAspectFormer extends GuiChromaBase {
 		int maxx = minx+w;
 		int maxy = miny+w;
 		if (api.isMouseInBox(j+minx, j+maxx, k+miny, k+maxy)) {
-			Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
+			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 			clickDelay = 90;
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ASPECT.ordinal(), this.getActive().getTag(), tile);
 		}

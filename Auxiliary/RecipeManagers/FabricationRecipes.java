@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,6 @@ public class FabricationRecipes {
 
 	private static final FabricationRecipes instance = new FabricationRecipes();
 
-	private ArrayList<ItemStack> products = new ArrayList();
 	private final HashMap<KeyedItemStack, ElementTagCompound> data = new HashMap();
 	private static final float SCALE = 0.8F;
 
@@ -75,6 +75,10 @@ public class FabricationRecipes {
 
 	public int getMaximumCost() {
 		return max;
+	}
+
+	public Collection<KeyedItemStack> getFabricableItems() {
+		return Collections.unmodifiableCollection(data.keySet());
 	}
 
 }

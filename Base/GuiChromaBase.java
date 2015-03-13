@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -22,12 +23,15 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
-public abstract class GuiChromaBase extends GuiContainer {
+public abstract class GuiChromaBase extends GuiContainer implements CustomSoundGui {
 
 	private final TileEntityChromaticBase tile;
 	protected EntityPlayer player;
@@ -132,6 +136,14 @@ public abstract class GuiChromaBase extends GuiContainer {
 			ReikaTextureHelper.bindFontTexture();
 			fontRendererObj.drawString(String.format("%d", slot.getSlotIndex()), slot.xDisplayPosition+1, slot.yDisplayPosition+1, 0x888888);
 		}
+	}
+
+	public void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
 	}
 
 }

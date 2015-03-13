@@ -43,7 +43,9 @@ public enum ChromaSounds implements SoundEnum {
 	SHOCKWAVE("shockwave"),
 	BALLLIGHTNING("balllightning"),
 	ITEMSTAND("stand"),
-	POWERCRYS("powercrystal");
+	POWERCRYS("powercrystal"),
+	GUICLICK("gui2"),
+	GUISEL("gui4");
 
 	public static final ChromaSounds[] soundList = values();
 

@@ -14,7 +14,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
@@ -30,9 +29,11 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class GuiProgressStages extends GuiScrollingPage {
@@ -247,7 +248,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 		ProgressStage p = this.getUnderMouse(x, y);
 		if (p != null) {
-			Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
+			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 		}
 		active = p;
 	}

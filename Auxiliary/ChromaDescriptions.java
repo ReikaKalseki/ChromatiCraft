@@ -21,7 +21,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -58,6 +61,8 @@ public final class ChromaDescriptions {
 
 	private static final HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
 	private static final HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
+	private static final HashMap<ChromaBlocks, Object[]> blockData = new HashMap<ChromaBlocks, Object[]>();
+	private static final HashMap<ChromaItems, Object[]> itemData = new HashMap<ChromaItems, Object[]>();
 	private static final HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
 	private static final EnumMap<Chromabilities, Object[]> abilityData = new EnumMap(Chromabilities.class);
 	private static final HashMap<String, Object[]> hoverData = new HashMap<String, Object[]>();
@@ -102,6 +107,14 @@ public final class ChromaDescriptions {
 
 	private static void addData(ChromaTiles m, Object... data) {
 		machineData.put(m, data);
+	}
+
+	private static void addData(ChromaBlocks m, Object... data) {
+		blockData.put(m, data);
+	}
+
+	private static void addData(ChromaItems m, Object... data) {
+		itemData.put(m, data);
 	}
 
 	private static void addData(ChromaResearch h, Object... data) {
@@ -190,11 +203,13 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : blocktabs) {
 			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase());
+			desc = String.format(desc, blockData.get(h));
 			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : tooltabs) {
 			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase());
+			desc = String.format(desc, itemData.get(h));
 			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
 				notes.put(h, ((ItemWandBase)h.getItem().getItemInstance()).generateUsageData());
 			}
@@ -305,6 +320,8 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
+
+		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];

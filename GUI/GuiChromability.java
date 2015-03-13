@@ -20,14 +20,17 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
-public class GuiChromability extends GuiScreen {
+public class GuiChromability extends GuiScreen implements CustomSoundGui {
 
 	protected final EntityPlayer player;
 	protected int xSize;
@@ -49,6 +52,14 @@ public class GuiChromability extends GuiScreen {
 		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
 	}
 
+	public final void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public final void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+	}
+
 	protected final Ability getActiveAbility() {
 		return abilities.get(index);
 	}
@@ -65,8 +76,8 @@ public class GuiChromability extends GuiScreen {
 		int out = xSize/2;//+60;
 
 		String tex = "Textures/GUIs/ability.png";
-		buttonList.add(new ImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class, this));
 
 		/*
 		for (int i = 0; i < available.size(); i++) {

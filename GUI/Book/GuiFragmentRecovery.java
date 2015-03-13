@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -23,6 +22,7 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -31,11 +31,12 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -71,7 +72,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
-		buttonList.add(new ImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -90,7 +91,8 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 		ChromaResearch r = locations.getRegion(x, y);
 		if (r != null && this.canMakeFragments()) {
 			this.giveResearch(r);
-			Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 		}
 	}
 

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -54,10 +55,10 @@ public class GuiLampController extends GuiChromaBase {
 		input.setMaxStringLength(3);
 
 		if (control == Control.MANUAL) {
-			buttonList.add(new GuiButton(1, j+85, k+60, 60, 20, "Toggle"));
+			buttonList.add(new CustomSoundGuiButton(1, j+85, k+60, 60, 20, "Toggle", this));
 		}
 
-		buttonList.add(new GuiButton(0, j+15, k+60, 20, 20, ""));
+		buttonList.add(new CustomSoundGuiButton(0, j+15, k+60, 20, 20, "", this));
 	}
 
 	@Override

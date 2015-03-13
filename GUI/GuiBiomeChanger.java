@@ -25,6 +25,7 @@ import org.lwjgl.input.Keyboard;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
@@ -33,6 +34,7 @@ import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
@@ -173,7 +175,8 @@ public class GuiBiomeChanger extends GuiChromaBase {
 				int k = (height - ySize) / 2;
 				BiomeGenBase biome = biomeRegions.getRegion(x-j, y-k);
 				if (biome != null || painter.activeElement != null)
-					Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+					//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 				painter.activeElement = biome != null ? biomeEntries.get(biome) : null;
 			}
 		}

@@ -24,16 +24,18 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import codechicken.nei.NEIClientConfig;
 
 public class GuiPoolRecipe extends GuiBookSection {
@@ -61,8 +63,8 @@ public class GuiPoolRecipe extends GuiBookSection {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		if (recipes.size() > 1) {
-			buttonList.add(new ImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class));
-			buttonList.add(new ImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class));
+			buttonList.add(new CustomSoundImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class, this));
 		}
 
 		if (NEItrigger && !centeredMouse) {
@@ -83,6 +85,7 @@ public class GuiPoolRecipe extends GuiBookSection {
 			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
 				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
 				if (is != null) {
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 					if (!MinecraftForge.EVENT_BUS.post(new NEIRecipeCheckEvent(null, is)))
 						codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
 				}

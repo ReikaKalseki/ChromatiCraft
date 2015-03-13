@@ -83,7 +83,7 @@ public enum Chromabilities implements Ability {
 
 	REACH(null, true),
 	MAGNET(Phase.END, false),
-	SONIC(null, false),
+	SONIC(null, true),
 	SHIFT(null, false),
 	HEAL(null, false),
 	SHIELD(Phase.END, false),
@@ -643,26 +643,28 @@ public enum Chromabilities implements Ability {
 		int y = MathHelper.floor_double(ep.posY)+1;
 		int z = MathHelper.floor_double(ep.posZ);
 		int r = power;
-		for (int i = -r; i <= r; i++) {
-			for (int j = -r; j <= r; j++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = x+i;
-					int dy = y+j;
-					int dz = z+k;
-					if (ReikaMathLibrary.py3d(i, j, k) <= r+0.5) {
-						Block b = ep.worldObj.getBlock(dx, dy, dz);
-						if (b != Blocks.air && b.isOpaqueCube()) {
-							if (power > b.blockResistance/12F) {
-								b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
-								ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
-								ep.worldObj.setBlockToAir(dx, dy, dz);
+		if (!ep.worldObj.isRemote) {
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					for (int k = -r; k <= r; k++) {
+						int dx = x+i;
+						int dy = y+j;
+						int dz = z+k;
+						if (ReikaMathLibrary.py3d(i, j, k) <= r+0.5) {
+							Block b = ep.worldObj.getBlock(dx, dy, dz);
+							if (b != Blocks.air && b.isOpaqueCube()) {
+								if (power > b.blockResistance/12F) {
+									b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
+									ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
+									ep.worldObj.setBlockToAir(dx, dy, dz);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-
+		ep.playSound("random.explode", power/6F, 2-power/6F);
 	}
 
 	public static void shiftArea(WorldServer world, BlockBox box, ForgeDirection dir, int dist, EntityPlayerMP ep) {

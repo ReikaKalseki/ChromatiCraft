@@ -19,11 +19,11 @@ import net.minecraftforge.fluids.Fluid;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -54,12 +54,12 @@ public class GuiTelePump extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		String tex = this.getFullTexturePath();
-		buttonList.add(new ImagedGuiButton(1000, j+7, k+15, 140, 8, 7, 15, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1001, j+7, k+63, 140, 8, 7, 63, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(1000, j+7, k+15, 140, 8, 7, 15, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1001, j+7, k+63, 140, 8, 7, 63, tex, ChromatiCraft.class, this));
 
 		//for (int i = 0; i < list.size(); i++) {
 		//	Fluid f = list.get(i);
-		buttonList.add(new ImagedGuiButton(0, j+9, k+31, 136, 24, 0, 168, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+9, k+31, 136, 24, 0, 168, tex, ChromatiCraft.class, this));
 		//}
 	}
 

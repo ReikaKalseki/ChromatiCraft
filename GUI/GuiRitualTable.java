@@ -13,11 +13,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiRitualTable extends GuiChromability {
@@ -36,7 +36,7 @@ public class GuiRitualTable extends GuiChromability {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/ability.png";
-		buttonList.add(new ImagedGuiButton(2, j+8, k+8, 50, 50, 0, 193, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(2, j+8, k+8, 50, 50, 0, 193, tex, ChromatiCraft.class, this));
 	}
 
 	@Override

@@ -11,10 +11,8 @@ package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.MouseEvent;
 
 import org.lwjgl.input.Keyboard;
@@ -69,6 +67,9 @@ public class GuiAbilitySelect extends GuiScreen {
 		int w = 50;
 		int step = w+sep;
 		int move = Mouse.getDWheel();
+		if (move != 0) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+		}
 		boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (move > 0) {
 			if (ability != null && ctrl) {
@@ -146,7 +147,8 @@ public class GuiAbilitySelect extends GuiScreen {
 		if (button == 0 && ReikaGuiAPI.instance.isMouseInBox(width/2-37, width/2+37, height/2-37, height/2+37)) {
 			if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
 				if (Chromabilities.canPlayerExecuteAt(player, ability)) {
-					mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+					//mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 					player.closeScreen();
 					Chromabilities.triggerAbility(player, ability, data);
 				}

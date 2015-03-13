@@ -18,17 +18,20 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiBookPages extends GuiContainer {
+public class GuiBookPages extends GuiContainer implements CustomSoundGui {
 
 	private final EntityPlayer player;
 
@@ -46,6 +49,14 @@ public class GuiBookPages extends GuiContainer {
 		inv.populate();
 	}
 
+	public void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+	}
+
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -54,8 +65,8 @@ public class GuiBookPages extends GuiContainer {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
-		buttonList.add(new ImagedGuiButton(0, j+148, k+4, 10, 10, 90, 16, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, j+158, k+4, 10, 10, 90, 26, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+148, k+4, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, j+158, k+4, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 	}
 
 	@Override

@@ -45,7 +45,8 @@ public enum ChromaOptions implements ConfigList {
 	BIOMEPAINTER("Enable Biome Painter", true),
 	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
 	ENDERWEIGHT("Ender Forest Biome Weight", 10),
-	HOSTILEFOREST("Allow Danger in Rainbow Forests", false);
+	HOSTILEFOREST("Allow Danger in Rainbow Forests", false),
+	RELAYRANGE("Lumen Relay Range", 16);
 
 	private String label;
 	private boolean defaultState;

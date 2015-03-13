@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -57,12 +58,12 @@ public class GuiStructure extends GuiBookSection {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		buttonList.add(new GuiButton(0, j+185, k-2, 20, 20, "3D"));
-		buttonList.add(new GuiButton(1, j+205, k-2, 20, 20, "2D"));
+		buttonList.add(new CustomSoundGuiButton(0, j+185, k-2, 20, 20, "3D", this));
+		buttonList.add(new CustomSoundGuiButton(1, j+205, k-2, 20, 20, "2D", this));
 
 		if (mode == 1) {
-			buttonList.add(new GuiButton(2, j+165, k-2, 20, 20, "+"));
-			buttonList.add(new GuiButton(3, j+145, k-2, 20, 20, "-"));
+			buttonList.add(new CustomSoundGuiButton(2, j+165, k-2, 20, 20, "+", this));
+			buttonList.add(new CustomSoundGuiButton(3, j+145, k-2, 20, 20, "-", this));
 		}
 	}
 

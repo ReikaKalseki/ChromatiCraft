@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -57,11 +58,11 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		buttonList.add(new GuiButton(50, j+xSize-27, k-2, 20, 20, "X"));	//back to main navigation
+		buttonList.add(new CustomSoundGuiButton(50, j+xSize-27, k-2, 20, 20, "X", this));	//back to main navigation
 
 		if (this.getMaxSubpage() > 0) {
-			buttonList.add(new GuiButton(13, j+xSize-27, k+32, 20, 20, ">"));
-			buttonList.add(new GuiButton(14, j+xSize-27, k+52, 20, 20, "<"));
+			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));
+			buttonList.add(new CustomSoundGuiButton(14, j+xSize-27, k+52, 20, 20, "<", this));
 		}
 	}
 

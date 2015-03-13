@@ -23,12 +23,15 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
-public abstract class ChromaBookGui extends GuiScreen {
+public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui {
 
 	protected static final Random rand = new Random();
 
@@ -63,6 +66,14 @@ public abstract class ChromaBookGui extends GuiScreen {
 		ySize = y;
 
 		cacheMouse = true;
+	}
+
+	public final void playButtonSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+	}
+
+	public final void playHoverSound(GuiButton b) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
 	}
 
 	@Override
@@ -135,7 +146,8 @@ public abstract class ChromaBookGui extends GuiScreen {
 	}
 
 	protected final void goTo(ChromaGuis next, ChromaResearch to) {
-		Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+		//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 		preMouseX = Mouse.getX();
 		preMouseY = Mouse.getY();
 		player.closeScreen();

@@ -22,11 +22,11 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -64,8 +64,8 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 		int dy = 33;
 		int w = 4;
 
-		buttonList.add(new ImagedGuiButton(0, j+16, k+52, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, j+154, k+52, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+16, k+52, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, j+154, k+52, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
 	}
 
 	@Override

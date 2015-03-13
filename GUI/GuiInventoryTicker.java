@@ -12,11 +12,11 @@ package Reika.ChromatiCraft.GUI;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class GuiInventoryTicker extends GuiChromaBase {
@@ -40,8 +40,8 @@ public class GuiInventoryTicker extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		String tex = "Textures/GUIs/invtick.png";
-		buttonList.add(new ImagedGuiButton(0, j+171, k+33, 10, 10, 171, 33, tex, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(1, j+171, k+43, 10, 10, 171, 43, tex, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+171, k+33, 10, 10, 171, 33, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, j+171, k+43, 10, 10, 171, 43, tex, ChromatiCraft.class, this));
 	}
 
 	@Override

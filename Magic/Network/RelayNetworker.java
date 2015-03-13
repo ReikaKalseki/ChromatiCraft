@@ -16,11 +16,13 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -32,12 +34,16 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public final class RelayNetworker {
 
-	public static final RelayNetworker instance = new RelayNetworker(16);
+	public static final RelayNetworker instance = new RelayNetworker(getConfigurableRange());
 
 	public final int maxRange;
 
 	private RelayNetworker(int r) {
 		maxRange = r;
+	}
+
+	private static int getConfigurableRange() {
+		return MathHelper.clamp_int(ChromaOptions.RELAYRANGE.getValue(), 8, 24);
 	}
 
 	public TileEntityRelaySource findRelaySource(World world, int x, int y, int z, ForgeDirection dir, CrystalElement e, int amt, int dist) {

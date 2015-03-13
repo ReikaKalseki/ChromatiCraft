@@ -9,7 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface.NEI;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -24,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.GUI.GuiItemFabricator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -88,6 +91,29 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getGuiTexture());
 		this.drawExtras(recipe);
+	}
+
+	@Override
+	public void loadTransferRects() {
+		transferRects.add(new RecipeTransferRect(new Rectangle(42, 5, 110, 16), "ccfabric"));
+	}
+
+	@Override
+	public void loadCraftingRecipes(String outputId, Object... results) {
+		if (outputId != null && outputId.equals("ccfabric")) {
+			Collection<KeyedItemStack> li = FabricationRecipes.recipes().getFabricableItems();
+			for (KeyedItemStack is : li)
+				arecipes.add(new FabricationRecipe(is.getItemStack(), FabricationRecipes.recipes().getItemCost(is.getItemStack())));
+		}
+		super.loadCraftingRecipes(outputId, results);
+	}
+
+	@Override
+	public void loadUsageRecipes(String inputId, Object... ingredients) {
+		if (inputId != null && inputId.equals("ccfabric")) {
+			this.loadCraftingRecipes(inputId, ingredients);
+		}
+		super.loadUsageRecipes(inputId, ingredients);
 	}
 
 	@Override

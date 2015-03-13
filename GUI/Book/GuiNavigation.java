@@ -27,6 +27,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -36,7 +37,6 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import com.google.common.collect.TreeMultimap;
@@ -95,16 +95,16 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		if (craftMode) {
-			buttonList.add(new ImagedGuiButton(0, j-13, k-7, 13, 88, 15, 95, file, ChromatiCraft.class));
-			buttonList.add(new ImagedGuiButton(1, j-13, k+27, 13, 88, 15, 4, file, ChromatiCraft.class));
+			buttonList.add(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 95, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 4, file, ChromatiCraft.class, this));
 		}
 		else {
-			buttonList.add(new ImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class));
-			buttonList.add(new ImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class));
+			buttonList.add(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class, this));
 		}
 
-		buttonList.add(new ImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class));
-		buttonList.add(new ImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class));
+		buttonList.add(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class, this));
 	}
 
 	@Override
