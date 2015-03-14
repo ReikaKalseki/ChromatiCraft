@@ -156,8 +156,6 @@ public class ItemConnector extends ItemChromaTool {
 				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
 				if (src && tg) {
 					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
-					if (!ep.capabilities.isCreativeMode)
-						is.stackSize -= dl;
 				}
 				is.stackTagCompound = null;
 			}

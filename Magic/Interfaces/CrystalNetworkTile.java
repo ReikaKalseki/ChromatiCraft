@@ -32,6 +32,7 @@ public interface CrystalNetworkTile {
 
 	public int getZ();
 
+	/** Max per-tick flow. Called on connection for repeaters, called every tick for sources, to let them throttle as they drain. */
 	public int maxThroughput();
 
 	public boolean canConduct();

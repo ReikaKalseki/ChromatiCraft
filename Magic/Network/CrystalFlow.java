@@ -91,11 +91,15 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	int drain() {
-		int ret = Math.min(transmitter.getEnergy(element), Math.min(maxFlow, remainingAmount));
+		int ret = Math.min(transmitter.getEnergy(element), this.getDrainThisTick());
 		if (ret <= 0)
 			return 0;
 		remainingAmount -= ret;
 		return ret;
+	}
+
+	private int getDrainThisTick() {
+		return Math.min(Math.min(maxFlow, transmitter.maxThroughput()), remainingAmount);
 	}
 
 }

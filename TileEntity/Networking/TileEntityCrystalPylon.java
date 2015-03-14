@@ -24,6 +24,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.nodes.INode;
@@ -34,6 +35,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
+import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
+import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -128,7 +132,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	public int getRenderColor() {
-		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/this.getMaxStorage(color));
+		return ReikaColorAPI.mixColors(color.getColor(), 0x888888, (float)energy/this.getCapacity());
 	}
 
 	@Override
@@ -165,7 +169,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (hasMultiblock) {
 			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);
 
-			int max = this.getMaxStorage(color);
+			int max = this.getCapacity();
 			if (world.getTotalWorldTime() != lastWorldTick) {
 				this.charge(world, x, y, z, max);
 				lastWorldTick = world.getTotalWorldTime();
@@ -204,7 +208,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnLightning(world, x, y, z);
 			}
 
-			if (!world.isRemote && energy >= MAX_ENERGY/2 && rand.nextInt(3600) == 0 && this.isChunkLoaded()) {
+			if (!world.isRemote && energy >= this.getCapacity()/2 && rand.nextInt(3600) == 0 && this.isChunkLoaded()) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 		}
@@ -218,6 +222,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	private void charge(World world, int x, int y, int z, int max) {
+		int laste = energy;
+		boolean lastconn = this.canConduct();
+
 		if (energy < max) {
 			energy += energyStep;
 		}
@@ -243,6 +250,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 			if (world.isRemote && !blocks.isEmpty())
 				this.spawnRechargeParticles(world, x, y, z, blocks);
+		}
+
+		if (energy == this.getCapacity() && laste != this.getCapacity()) {
+			MinecraftForge.EVENT_BUS.post(new PylonFullyChargedEvent(this));
+		}
+		if (this.canConduct() && !lastconn) {
+			MinecraftForge.EVENT_BUS.post(new PylonRechargedEvent(this));
 		}
 	}
 
@@ -450,7 +464,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public int maxThroughput() {
-		return this.isEnhanced() ? 15000 : 5000;
+		int base = this.isEnhanced() ? 15000 : 5000;
+		int thresh = this.getCapacity()/4;
+		return energy >= thresh ? base : this.getReducedThroughput(thresh, base);
+	}
+
+	private int getReducedThroughput(int thresh, int max) {
+		int sigx = energy/(thresh/12)-6;
+		int sig = (int)(max/(1+Math.pow(Math.E, -sigx)));
+		return Math.max(0, Math.min(energy-1, sig-10));
 	}
 
 	@Override
@@ -476,8 +498,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public boolean drain(CrystalElement e, int amt) {
-		if (e == color && energy >= amt) {
+		if (e == color && energy >= amt && amt > 0) {
 			energy -= amt;
+			if (energy == 0) {
+				MinecraftForge.EVENT_BUS.post(new PylonDrainedEvent(this));
+			}
 			return true;
 		}
 		return false;
@@ -542,7 +567,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public String getId() { //Normally based on world coords, but uses just color to make each node color scannable once
+	public String getId() { //Normally based on world coords, but uses just color to make each pylon color scannable once
 		return "Pylon_"+color.toString();//"Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
 	}
 
@@ -622,7 +647,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
 					int added = amt-ret;
 					if (added > 0) {
-						energy = Math.max(0, energy-added*48);
+						this.drain(color, Math.min(energy, energy-added*48));
 					}
 				}
 			}
@@ -643,6 +668,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
+		return this.getCapacity();
+	}
+
+	private int getCapacity() {
 		return this.isEnhanced() ? MAX_ENERGY_ENHANCED : MAX_ENERGY;
 	}
 
