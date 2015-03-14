@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
@@ -136,5 +137,10 @@ public class ChromaAux {
 			double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 4);
 			world.spawnEntityInWorld(new EntityBallLightning(world, e, dx, dy, dz).setNoDrops());
 		}
+	}
+
+	public static boolean requiresSpecialSpawnEnforcement(EntityLiving e) {
+		String name = e.getClass().getName().toLowerCase();
+		return name.contains("lycanite");
 	}
 }

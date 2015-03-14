@@ -15,7 +15,10 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Block.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 
@@ -47,6 +50,28 @@ public class FabricationRecipes {
 			data.put(k, tag);
 			max = Math.max(max, tag.getMaximumValue());
 		}
+
+		ElementTagCompound tag = new ElementTagCompound();
+		tag.addTag(CrystalElement.RED, 5000);
+		tag.addTag(CrystalElement.BROWN, 500);
+		tag.addTag(CrystalElement.BLACK, 500);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal())), tag);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal())), tag);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal())), tag);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal())), tag);
+
+		ElementTagCompound tag2 = tag.copy();
+		tag2.addTag(CrystalElement.WHITE, 500);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal())), tag);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.WINDOW.ordinal())), tag);
+
+		tag2 = tag.copy();
+		tag2.addTag(CrystalElement.BLUE, 500);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal())), tag);
+
+		tag2 = tag.copy();
+		tag2.addTag(CrystalElement.GREEN, 500);
+		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal())), tag);
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {

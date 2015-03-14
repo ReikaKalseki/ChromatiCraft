@@ -276,7 +276,7 @@ public class BlockLumenRelay extends Block {
 			return;
 		TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
 		if (te != null) {
-			ItemStack is = ChromaBlocks.RELAY.getStackOfMetadata(te.color.ordinal());
+			ItemStack is = ChromaBlocks.RELAY.getStackOfMetadata(te.isMulti ? 16 : te.color.ordinal());
 			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 		}
 	}

@@ -54,6 +54,7 @@ import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -585,6 +586,7 @@ public class ChromaticEventManager {
 		}
 	}
 
+
 	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void killSpawns(EntityJoinWorldEvent ev) {
 		World world = ev.world;
@@ -595,14 +597,14 @@ public class ChromaticEventManager {
 			EntityLiving e = (EntityLiving)ev.entity;
 			BiomeGenBase b = world.getBiomeGenForCoords(x, z);
 			if (ChromatiCraft.isRainbowForest(b)) {
-				if (!BiomeRainbowForest.isMobAllowed(e)) {
+				if (!BiomeRainbowForest.isMobAllowed(e) && ChromaAux.requiresSpecialSpawnEnforcement(e)) {
 					//e.setDead();
 					ev.setCanceled(true);
 				}
 			}
 		}
 	}
-
+	/*
 	@ModDependent(ModList.LYCANITE)
 	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void specialEnforce(LivingUpdateEvent ev) {
@@ -622,6 +624,7 @@ public class ChromaticEventManager {
 			}
 		}
 	}
+	 */
 
 	@SubscribeEvent
 	@ModDependent(ModList.THAUMCRAFT)
