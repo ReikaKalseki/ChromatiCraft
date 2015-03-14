@@ -142,11 +142,13 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
-		ForgeDirection dir = ((TileEntityCrystalGlow)world.getTileEntity(x, y, z)).direction;
+		TileEntityCrystalGlow te = (TileEntityCrystalGlow)world.getTileEntity(x, y, z);
+		ForgeDirection dir = te.direction;
 		if (!this.canPlaceOn(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, dir)) {
+			ItemStack is = ChromaBlocks.GLOW.getStackOfMetadata(world.getBlockMetadata(x, y, z)+16*te.base.ordinal());
 			world.setBlock(x, y, z, Blocks.air);
 			ReikaSoundHelper.playBreakSound(world, x, y, z, this);
-			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, new ItemStack(this));
+			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 		}
 	}
 

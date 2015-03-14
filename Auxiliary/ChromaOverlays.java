@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -33,6 +34,8 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
@@ -88,6 +91,9 @@ public class ChromaOverlays {
 			if (ChromaItems.OREPICK.matchWith(is)) {
 				this.renderOreHUD(ep, evt.resolution, is);
 			}
+			else if (ChromaItems.TRANSITION.matchWith(is)) {
+				this.renderTransitionHUD(ep, evt.resolution, is);
+			}
 			this.renderAbilityStatus(ep, gsc);
 			this.renderPylonAura(ep, gsc);
 		}
@@ -97,6 +103,28 @@ public class ChromaOverlays {
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
 		}
+	}
+
+	private void renderTransitionHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {
+		ItemTransitionWand itw = (ItemTransitionWand)is.getItem();
+		ItemStack place = itw.getStoredItem(is);
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/transitionhud.png");
+		Tessellator v5 = Tessellator.instance;
+		v5.startDrawingQuads();
+		int x = 2;
+		int y = 2;
+		int w = 256;
+		int h = 32;
+		v5.addVertexWithUV(x, y+h, 0, 0, 1);
+		v5.addVertexWithUV(x+w, y+h, 0, 1, 1);
+		v5.addVertexWithUV(x+w, y, 0, 1, 0);
+		v5.addVertexWithUV(x, y, 0, 0, 0);
+		v5.draw();
+		x = 8;
+		y = 8;
+		ReikaGuiAPI.instance.drawItemStack(new RenderItem(), place, x, y);
+		TransitionMode mode = itw.getMode(is);
+		ChromaFontRenderer.FontType.HUD.renderer.drawString(mode.desc, x+20, y+4, 0xffffff, true);
 	}
 
 	private void renderOreHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {

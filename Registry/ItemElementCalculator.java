@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -64,6 +65,8 @@ public class ItemElementCalculator {
 			cache.put(ChromaItems.ELEMENTAL.getStackOf(e), tag);
 			cache.put(ChromaBlocks.RUNE.getStackOfMetadata(i), tag);
 			cache.put(ChromaBlocks.DYELEAF.getStackOfMetadata(i), tag1);
+			cache.put(ChromaItems.DYE.getStackOfMetadata(i), tag1);
+			cache.put(new ItemStack(Items.dye, 1, i), tag1);
 
 			ElementTagCompound tag2 = tag1.copy();
 			tag2.addValueToColor(CrystalElement.GREEN, 1);
