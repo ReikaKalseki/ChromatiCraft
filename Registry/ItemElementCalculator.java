@@ -65,6 +65,7 @@ public class ItemElementCalculator {
 			cache.put(ChromaItems.ELEMENTAL.getStackOf(e), tag);
 			cache.put(ChromaBlocks.RUNE.getStackOfMetadata(i), tag);
 			cache.put(ChromaBlocks.DYELEAF.getStackOfMetadata(i), tag1);
+			cache.put(ChromaBlocks.GLOW.getStackOfMetadata(i), tag1);
 			cache.put(ChromaItems.DYE.getStackOfMetadata(i), tag1);
 			cache.put(new ItemStack(Items.dye, 1, i), tag1);
 

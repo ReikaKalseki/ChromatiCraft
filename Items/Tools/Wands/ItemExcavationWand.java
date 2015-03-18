@@ -24,13 +24,13 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
-public class ItemExcavator extends ItemWandBase implements BreakerCallback {
+public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
 
 	public static final int MAX_DEPTH = 12;
 
 	private static HashMap<Integer, EntityPlayer> breakers = new HashMap();
 
-	public ItemExcavator(int index) {
+	public ItemExcavationWand(int index) {
 		super(index);
 		this.addEnergyCost(CrystalElement.BROWN, 1);
 		this.addEnergyCost(CrystalElement.YELLOW, 2);

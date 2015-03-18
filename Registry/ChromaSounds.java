@@ -45,7 +45,8 @@ public enum ChromaSounds implements SoundEnum {
 	ITEMSTAND("stand"),
 	POWERCRYS("powercrystal"),
 	GUICLICK("gui2"),
-	GUISEL("gui4");
+	GUISEL("gui4"),
+	DRONE("drone2");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -147,6 +148,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean canOverlap() {
-		return this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING;
+		return this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE;
 	}
 }

@@ -49,7 +49,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
-import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
@@ -79,7 +79,7 @@ public enum ChromaItems implements ItemEnum {
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),
-	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavator.class),
+	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavationWand.class),
 	VACUUMGUN(8, false,		"chroma.vac",			ItemVacuumGun.class),
 	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
@@ -105,7 +105,8 @@ public enum ChromaItems implements ItemEnum {
 	OREPICK(27, false,		"chroma.orepick",		ItemOrePick.class),
 	ORESILK(26, false,		"chroma.oresilk",		ItemOreSilker.class),
 	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class),
-	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class);
+	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),;
+	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG);
 
 	private final int index;
 	private final boolean hasSubtypes;

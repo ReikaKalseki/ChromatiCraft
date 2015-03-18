@@ -79,7 +79,9 @@ public class BlockLumenRelay extends Block {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta];
 		if (!this.canPlaceOn(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, meta)) {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, this);
-			ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, this.getDrops(world, x, y, z, meta, 0));
+			TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
+			ItemStack is = ChromaBlocks.RELAY.getStackOfMetadata(te.isMulti ? 16 : te.color.ordinal());
+			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 			world.setBlock(x, y, z, Blocks.air);
 		}
 	}

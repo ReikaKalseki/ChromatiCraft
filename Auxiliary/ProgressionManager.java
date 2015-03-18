@@ -90,6 +90,7 @@ public class ProgressionManager {
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
 		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
+		BREAKSPAWNER(Blocks.mob_spawner),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 

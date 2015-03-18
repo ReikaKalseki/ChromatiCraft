@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
@@ -98,6 +99,11 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		if (particles && world.isRemote) {
 			this.spawnParticles(world, x, y, z, meta);
 		}
+
+		float f = 1+this.getTier()/(float)MAX_TIER;
+		int l = (int)(221/f);
+		if (this.getTicksExisted()%l == 0)
+			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 1, f);
 
 		long time = System.nanoTime();
 		for (int i = 0; i < 6; i++) {

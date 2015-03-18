@@ -151,6 +151,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			break;
 		case AURAPOUCH:
 			return new ContainerAuraPouch(player);
+			//case REMOTETERMINAL:
+			//	return new ContainerRemoteTerminal(player);
 		default:
 			break;
 		}
@@ -248,6 +250,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiTransitionWand(player);
 		case TELEPORT:
 			return new GuiTeleportAbility(player);
+			//case REMOTETERMINAL:
+			//	return new GuiRemoteTerminal(player);
 		default:
 			break;
 		}

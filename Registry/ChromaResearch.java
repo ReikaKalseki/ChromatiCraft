@@ -67,6 +67,7 @@ public enum ChromaResearch {
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
+	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -178,6 +179,7 @@ public enum ChromaResearch {
 	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
 	LEECH(			Chromabilities.LEECH),
 	FLOAT(			Chromabilities.FLOAT),
+	SPAWNERSEE(		Chromabilities.SPAWNERSEE),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

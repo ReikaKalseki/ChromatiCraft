@@ -71,7 +71,7 @@ public class GuiCrystalCharger extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "charger";
+		return "charger2";
 	}
 
 }

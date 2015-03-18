@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,6 +51,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
@@ -122,6 +124,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void harvestSpawner(BlockEvent.BreakEvent evt) {
+		if (evt.block == Blocks.mob_spawner) {
+			ProgressStage.BREAKSPAWNER.stepPlayerTo(evt.getPlayer());
+		}
 	}
 
 	@SubscribeEvent

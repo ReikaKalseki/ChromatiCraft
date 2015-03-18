@@ -106,6 +106,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
 		progressMap.addValue(Chromabilities.DEATHPROOF, ProgressStage.DIE);
 		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
 	}
 
 	public void boostHealth(EntityPlayer ep, int attr) {

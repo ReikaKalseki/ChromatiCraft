@@ -114,7 +114,7 @@ public enum ChromaTiles {
 	CREATIVEPYLON("chroma.creativepylon",ChromaBlocks.PYLON, 		TileEntityCreativeSource.class, 	4, "RenderCreativePylon"),
 	STRUCTCONTROL("chroma.structcontrol",ChromaBlocks.PYLON,		TileEntityStructControl.class,		5, "RenderStructControl"),
 	LIFEEMITTER("chroma.lifeemitter",	ChromaBlocks.TILEMODELLED2, TileEntityLifeEmitter.class,		1/*, "RenderLifeEmitter"*/),
-	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				4);
+	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				4, "RenderFarmer");
 
 	private final Class tile;
 	private final String name;

@@ -55,23 +55,28 @@ public class FabricationRecipes {
 		tag.addTag(CrystalElement.RED, 5000);
 		tag.addTag(CrystalElement.BROWN, 500);
 		tag.addTag(CrystalElement.BLACK, 500);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal())), tag);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal())), tag);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal())), tag);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal())), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal()), tag);
 
 		ElementTagCompound tag2 = tag.copy();
 		tag2.addTag(CrystalElement.WHITE, 500);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal())), tag);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.WINDOW.ordinal())), tag);
-
-		tag2 = tag.copy();
-		tag2.addTag(CrystalElement.BLUE, 500);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal())), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal()), tag2);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.WINDOW.ordinal()), tag2);
 
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.GREEN, 500);
-		data.put(new KeyedItemStack(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal())), tag);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), tag2);
+
+		tag2 = tag.copy();
+		tag2.addTag(CrystalElement.BLUE, 500);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), tag2);
+	}
+
+	private void addRecipe(ItemStack is, ElementTagCompound tag) {
+		data.put(new KeyedItemStack(is).setSimpleHash(true), tag);
+		max = Math.max(max, tag.getMaximumValue());
 	}
 
 	public Collection<ItemStack> getItemsFabricableWith(ElementTagCompound tag) {

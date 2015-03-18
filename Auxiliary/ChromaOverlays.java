@@ -125,6 +125,7 @@ public class ChromaOverlays {
 		ReikaGuiAPI.instance.drawItemStack(new RenderItem(), place, x, y);
 		TransitionMode mode = itw.getMode(is);
 		ChromaFontRenderer.FontType.HUD.renderer.drawString(mode.desc, x+20, y+4, 0xffffff, true);
+		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 
 	private void renderOreHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {

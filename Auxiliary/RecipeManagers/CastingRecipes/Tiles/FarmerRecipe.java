@@ -13,6 +13,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class FarmerRecipe extends PylonRecipe {
@@ -30,7 +31,7 @@ public class FarmerRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, 2, -4);
 		this.addAuxItem(ChromaStacks.auraDust, 2, 4);
 
-		this.addAuxItem(Items.iron_shovel, -4, 0);
+		this.addAuxItem(ChromaItems.LENS.getStackOf(CrystalElement.GREEN), -4, 0);
 		this.addAuxItem(Items.iron_hoe, 4, 0);
 
 		this.addAuxItem(Items.iron_ingot, -4, -4);

@@ -114,6 +114,7 @@ import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -504,6 +505,11 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.FORESTRY.isLoaded()) {
 			CrystalBees.register();
+		}
+
+		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
+			ChromaTiles m = ChromaTiles.TEList[i];
+			TimeTorchHelper.blacklistTileEntity(m.getTEClass());
 		}
 
 		this.finishTiming();

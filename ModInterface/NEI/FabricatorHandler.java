@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
-import Reika.ChromatiCraft.GUI.GuiItemFabricator;
+import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -95,7 +95,8 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadTransferRects() {
-		transferRects.add(new RecipeTransferRect(new Rectangle(42, 5, 110, 16), "ccfabric"));
+		if (!(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerItemFabricator))
+			transferRects.add(new RecipeTransferRect(new Rectangle(32, -12, 105, 10), "ccfabric"));
 	}
 
 	@Override
@@ -132,7 +133,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 	@Override
 	public Class<? extends GuiContainer> getGuiClass()
 	{
-		return GuiItemFabricator.class;
+		return null;//GuiItemFabricator.class;
 	}
 
 	@Override

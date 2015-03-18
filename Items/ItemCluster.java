@@ -9,11 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import java.util.Collection;
+
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-
-public class ItemCluster extends ItemChromaMulti {
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+public class ItemCluster extends ItemChromaMulti implements ResearchDependentName {
 
 	private final IIcon[] icons = new IIcon[this.getNumberTypes()];
 
@@ -25,5 +30,10 @@ public class ItemCluster extends ItemChromaMulti {
 	@Override
 	public int getNumberTypes() {
 		return ChromaItems.CLUSTER.getNumberMetadatas();
+	}
+
+	@Override
+	public Collection<ChromaResearch> getRequiredResearch(ItemStack is) {
+		return ReikaJavaLibrary.makeListFrom(ChromaResearch.GROUPS);
 	}
 }

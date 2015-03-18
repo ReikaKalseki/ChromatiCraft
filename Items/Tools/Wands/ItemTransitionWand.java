@@ -166,6 +166,8 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+		if (world.getTileEntity(x, y, z) != null)
+			return false;
 		BlockReplace r = breakers.get(b.hashCode());
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;

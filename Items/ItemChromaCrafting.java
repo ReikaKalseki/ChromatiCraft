@@ -9,15 +9,20 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import java.util.Collection;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class ItemChromaCrafting extends ItemChromaMulti {
+public class ItemChromaCrafting extends ItemChromaMulti implements ResearchDependentName {
 
 	public ItemChromaCrafting(int tex) {
 		super(tex);
@@ -38,6 +43,11 @@ public class ItemChromaCrafting extends ItemChromaMulti {
 	@Override
 	public int getNumberTypes() {
 		return ChromaNames.craftingNames.length;
+	}
+
+	@Override
+	public Collection<ChromaResearch> getRequiredResearch(ItemStack is) {
+		return ChromaResearch.getPageFor(is) == ChromaResearch.CORES ? ReikaJavaLibrary.makeListFrom(ChromaResearch.CORES) : null;
 	}
 
 }

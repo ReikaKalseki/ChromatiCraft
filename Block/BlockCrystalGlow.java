@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -285,6 +284,8 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		private ForgeDirection direction = ForgeDirection.UNKNOWN;
 		private ForgeDirection longAxis = ForgeDirection.UNKNOWN;
 		public Bases base = Bases.STONE;
+		public boolean isIridescent;
+		public boolean isRainbow;
 
 		@Override
 		public boolean canUpdate() {
@@ -338,10 +339,26 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 			return longAxis;
 		}
 
+		public void toggle() {
+			CrystalTypeBlock.ding(worldObj, xCoord, yCoord, zCoord);
+
+			if (isIridescent) {
+				isIridescent = false;
+				isRainbow = true;
+			}
+			else if (isRainbow) {
+				isRainbow = false;
+			}
+			else {
+				isIridescent = true;
+			}
+
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
 		public void rotate() {
 			CrystalTypeBlock.ding(worldObj, xCoord, yCoord, zCoord);
 			longAxis = longAxis.getRotation(direction);
-			ReikaJavaLibrary.pConsole(direction+": "+longAxis);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}

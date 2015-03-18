@@ -20,6 +20,8 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -199,6 +201,10 @@ public class CrystalGlowRenderer implements ISimpleBlockRenderingHandler {
 		v5.clear();
 
 		ico = e.getOverbrightIcon();
+		if (te.isIridescent)
+			ico = ChromaBlocks.RAINBOWCRYSTAL.getBlockInstance().blockIcon;
+		else if (te.isRainbow)
+			ico = ChromaIcons.ALLCOLORS.getIcon();
 		float u2 = ico.getMinU();
 		float v2 = ico.getMinV();
 		float du2 = ico.getMaxU();

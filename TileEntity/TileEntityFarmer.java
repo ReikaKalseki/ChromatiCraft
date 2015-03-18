@@ -16,8 +16,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -25,6 +27,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.CropType;
 import Reika.DragonAPI.Interfaces.CropType.CropMethods;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -35,7 +38,7 @@ import Reika.DragonAPI.ModRegistry.ModCropList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityFarmer extends CrystalReceiverBase {
+public class TileEntityFarmer extends TileEntityRelayPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -95,13 +98,16 @@ public class TileEntityFarmer extends CrystalReceiverBase {
 	}
 
 	private Coordinate getRandomPosition(World world, int x, int y, int z) {
-		int r = 16;
-		int dx = ReikaRandomHelper.getRandomPlusMinus(x, r);
-		int dz = ReikaRandomHelper.getRandomPlusMinus(z, r);
+		ForgeDirection dir = this.getFacing();
+		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+		int r = rand.nextInt(16);
+		int sp = ReikaRandomHelper.getRandomPlusMinus(0, r);//r/2
+		int dx = x+r*dir.offsetX+sp*left.offsetX;//ReikaRandomHelper.getRandomPlusMinus(x, r);
+		int dz = z+r*dir.offsetZ+sp*left.offsetZ;//ReikaRandomHelper.getRandomPlusMinus(z, r);
 		int dy = 1+ReikaWorldHelper.findTopBlockBelowY(world, dx, y, dz);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
 		return new Coordinate(dx, dy, dz);
 	}
-
+	/*
 	@Override
 	public void onPathBroken(CrystalElement e) {
 
@@ -126,7 +132,7 @@ public class TileEntityFarmer extends CrystalReceiverBase {
 	public boolean canConduct() {
 		return true;
 	}
-
+	 */
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		switch(e) {
@@ -168,5 +174,38 @@ public class TileEntityFarmer extends CrystalReceiverBase {
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		return true;
 	}*/
+
+	@Override
+	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
+		return this.isAcceptingColor(e);
+	}
+
+	@Override
+	protected ElementTagCompound getRequiredEnergy() {
+		ElementTagCompound tag = new ElementTagCompound();
+		tag.addTag(CrystalElement.GREEN, this.getMaxStorage(CrystalElement.GREEN)-energy.getValue(CrystalElement.GREEN));
+		tag.addTag(CrystalElement.PURPLE, this.getMaxStorage(CrystalElement.PURPLE)-energy.getValue(CrystalElement.PURPLE));
+		return tag;
+	}
+
+	@Override
+	public boolean isAcceptingColor(CrystalElement e) {
+		return e == CrystalElement.GREEN || e == CrystalElement.PURPLE;
+	}
+
+	public ForgeDirection getFacing() {
+		switch(this.getBlockMetadata()) {
+		case 0:
+			return ForgeDirection.WEST;
+		case 1:
+			return ForgeDirection.EAST;
+		case 2:
+			return ForgeDirection.NORTH;
+		case 3:
+			return ForgeDirection.SOUTH;
+		default:
+			return ForgeDirection.UNKNOWN;
+		}
+	}
 
 }

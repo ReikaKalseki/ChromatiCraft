@@ -98,7 +98,8 @@ public enum Chromabilities implements Ability {
 	SHOCKWAVE(null, true),
 	TELEPORT(null, true),
 	LEECH(null, false),
-	FLOAT(Phase.END, true);
+	FLOAT(Phase.END, true),
+	SPAWNERSEE(null, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;

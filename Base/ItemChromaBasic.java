@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -23,8 +24,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.IndexedItemSprites;
@@ -130,6 +134,16 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 		if (this instanceof TieredItem) {
 			if (this.obfuscateIf(is))
 				return true;
+		}
+		else if (this instanceof ResearchDependentName) {
+			Collection<ChromaResearch> rs = ((ResearchDependentName)this).getRequiredResearch(is);
+			if (rs != null) {
+				for (ChromaResearch r : rs) {
+					if (!ChromaResearchManager.instance.playerHasFragment(Minecraft.getMinecraft().thePlayer, r)) {
+						return true;
+					}
+				}
+			}
 		}
 		if (this instanceof ItemCrystalBasic) {
 			CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];

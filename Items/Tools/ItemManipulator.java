@@ -153,7 +153,10 @@ public class ItemManipulator extends ItemChromaTool {
 			return true;
 		}
 		if (tile instanceof TileEntityCrystalGlow) {
-			((TileEntityCrystalGlow)tile).rotate();
+			if (ep.isSneaking())
+				((TileEntityCrystalGlow)tile).toggle();
+			else
+				((TileEntityCrystalGlow)tile).rotate();
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
 		return false;

@@ -28,6 +28,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
@@ -45,13 +46,14 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
-import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavator;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.DragonAPI.ModList;
@@ -63,6 +65,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.TileEntityRenderEvent;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -84,6 +87,105 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent
+	public void renderSpawners(TileEntityRenderEvent evt) {
+		if (evt.tileEntity instanceof TileEntityMobSpawner && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			GL11.glPushMatrix();
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+			GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+
+			Tessellator v5 = Tessellator.instance;
+
+			int a = (int)(64+64*Math.sin(System.currentTimeMillis()/400D));
+
+			v5.startDrawingQuads();
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(0, 0, 1);
+			v5.addVertex(1, 0, 1);
+			v5.addVertex(1, 1, 1);
+			v5.addVertex(0, 1, 1);
+
+			v5.addVertex(0, 1, 0);
+			v5.addVertex(1, 1, 0);
+			v5.addVertex(1, 0, 0);
+			v5.addVertex(0, 0, 0);
+
+			v5.addVertex(1, 1, 0);
+			v5.addVertex(1, 1, 1);
+			v5.addVertex(1, 0, 1);
+			v5.addVertex(1, 0, 0);
+
+			v5.addVertex(0, 0, 0);
+			v5.addVertex(0, 0, 1);
+			v5.addVertex(0, 1, 1);
+			v5.addVertex(0, 1, 0);
+
+			v5.addVertex(1, 0, 0);
+			v5.addVertex(1, 0, 1);
+			v5.addVertex(0, 0, 1);
+			v5.addVertex(0, 0, 0);
+
+			v5.addVertex(0, 1, 0);
+			v5.addVertex(0, 1, 1);
+			v5.addVertex(1, 1, 1);
+			v5.addVertex(1, 1, 0);
+			v5.draw();
+
+			a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
+
+			v5.startDrawing(GL11.GL_LINE_LOOP);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(0, 0, 0);
+			v5.addVertex(1, 0, 0);
+			v5.addVertex(1, 0, 1);
+			v5.addVertex(0, 0, 1);
+			v5.draw();
+
+			v5.startDrawing(GL11.GL_LINE_LOOP);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(0, 1, 0);
+			v5.addVertex(1, 1, 0);
+			v5.addVertex(1, 1, 1);
+			v5.addVertex(0, 1, 1);
+			v5.draw();
+
+			v5.startDrawing(GL11.GL_LINES);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(0, 0, 0);
+			v5.addVertex(0, 1, 0);
+			v5.draw();
+
+			v5.startDrawing(GL11.GL_LINES);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(1, 0, 0);
+			v5.addVertex(1, 1, 0);
+			v5.draw();
+
+			v5.startDrawing(GL11.GL_LINES);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(1, 0, 1);
+			v5.addVertex(1, 1, 1);
+			v5.draw();
+
+			v5.startDrawing(GL11.GL_LINES);
+			v5.setColorRGBA_I(0xffffff, a);
+			v5.addVertex(0, 0, 1);
+			v5.addVertex(0, 1, 1);
+			v5.draw();
+
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+			GL11.glPopMatrix();
+		}
 	}
 
 	@SubscribeEvent
@@ -492,7 +594,7 @@ public class ChromaClientEventController {
 					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
 					GL11.glTranslated(p2, p4, p6);
 					BlockArray blocks = new BlockArray();
-					blocks.maxDepth = ItemExcavator.MAX_DEPTH-1;
+					blocks.maxDepth = ItemExcavationWand.MAX_DEPTH-1;
 					blocks.recursiveAddWithMetadata(world, x, y, z, id, meta);
 					ReikaRenderHelper.prepareGeoDraw(true);
 					Tessellator v5 = Tessellator.instance;
