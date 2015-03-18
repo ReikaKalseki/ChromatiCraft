@@ -9,8 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Network;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -22,7 +23,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 public class CrystalPath implements Comparable<CrystalPath> {
 
-	protected final LinkedList<WorldLocation> nodes;
+	protected final ArrayList<WorldLocation> nodes;
 	public final CrystalSource transmitter;
 	public final WorldLocation origin;
 	public final CrystalElement element;
@@ -30,10 +31,10 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	private final HashSet<CrystalLink> links = new HashSet();
 	protected final CrystalNetworker network;
 
-	protected CrystalPath(CrystalNetworker net, CrystalElement e, LinkedList<WorldLocation> li) {
-		nodes = li;
-		transmitter = (CrystalSource)nodes.getLast().getTileEntity();
-		origin = nodes.getFirst();
+	protected CrystalPath(CrystalNetworker net, CrystalElement e, List<WorldLocation> li) {
+		nodes = new ArrayList(li);
+		transmitter = (CrystalSource)nodes.get(nodes.size()-1).getTileEntity();
+		origin = nodes.get(0);
 		element = e;
 		network = net;
 		this.initialize();

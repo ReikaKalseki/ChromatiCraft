@@ -260,7 +260,8 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		CRYSTALSTONE("Crystal Stone", ChromaBlocks.PYLONSTRUCT.getBlockInstance()),
 		IRON("Iron", Items.iron_ingot, Blocks.iron_block),
 		GOLD("Gold", Items.gold_ingot, Blocks.gold_block),
-		OBSIDIAN("Obsidian", Blocks.obsidian);
+		OBSIDIAN("Obsidian", Blocks.obsidian),
+		QUARTZ("Quartz", Blocks.quartz_block);
 
 		public final Object ingredient;
 		public final Block texture;

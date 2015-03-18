@@ -21,23 +21,35 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -53,6 +65,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -60,7 +73,9 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -91,6 +106,10 @@ public class AbilityHelper {
 
 	private final HashMap<Ability, ElementTagCompound> tagMap = new HashMap();
 
+	private final HashMap<Class, TileXRays> xRayMap = new HashMap();
+
+	private final PlayerMap<PlayerPath> playerPaths = new PlayerMap();
+
 	public static final AbilityHelper instance = new AbilityHelper();
 
 	private static final Random rand = new Random();
@@ -107,6 +126,14 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.DEATHPROOF, ProgressStage.DIE);
 		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
+
+		for (TileXRays x : TileXRays.values()) {
+			xRayMap.put(x.tileClass, x);
+		}
+	}
+
+	public TileXRays getTileEntityXRay(TileEntity te) {
+		return xRayMap.get(te.getClass());
 	}
 
 	public void boostHealth(EntityPlayer ep, int attr) {
@@ -667,6 +694,154 @@ public class AbilityHelper {
 
 	public Collection<ProgressStage> getProgressFor(Chromabilities c) {
 		return Collections.unmodifiableCollection(progressMap.get(c));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static enum TileXRays {
+		SPAWNERS(TileEntityMobSpawner.class, Blocks.mob_spawner, 0x224466),
+		CHESTS(TileEntityChest.class, 0xC17C32);
+
+		public final Class tileClass;
+		private final Block texture;
+		public final int highlightColor;
+
+		private TileXRays(Class t, int c) {
+			this(t, null, c);
+		}
+
+		public IIcon getTexture() {
+			return texture != null ? texture.blockIcon : null;
+		}
+
+		private TileXRays(Class t, Block tex, int c) {
+			texture = tex;
+			tileClass = t;
+			highlightColor = c;
+		}
+	}
+
+	@SubscribeEvent
+	public void addPoint(LivingUpdateEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
+			if (Chromabilities.BREADCRUMB.enabledOn(ep) && ep.worldObj.isRemote) {
+				PlayerPath path = playerPaths.get(ep);
+				if (path == null) {
+					path = new PlayerPath();
+					playerPaths.put(ep, path);
+				}
+				path.addPoint(ep);
+			}
+		}
+	}
+
+	public void setPathLength(EntityPlayer ep, int len) {
+		PlayerPath path = playerPaths.get(ep);
+		if (path == null) {
+			path = new PlayerPath();
+			playerPaths.put(ep, path);
+		}
+		path.setLength(len);
+	}
+
+	public void renderPath(EntityPlayer ep) {
+		PlayerPath path = playerPaths.get(ep);
+		if (path != null) {
+			path.render();
+		}
+	}
+
+	private static class PlayerPath {
+
+		private int maxLength = 32;
+		private boolean renderLock = false;
+		private LinkedList<DecimalPosition> points = new LinkedList();
+
+		private void addPoint(EntityPlayer ep) {
+			this.addPoint(ep.posX, ep.posY-1.62, ep.posZ);
+		}
+
+		private void addPoint(double x, double y, double z) {
+			if (maxLength > 0 && !renderLock) {
+				DecimalPosition dec = new DecimalPosition(x, y, z);
+				points.addLast(dec);
+				if (points.size() > maxLength + 8) {
+					points.removeFirst();
+				}
+			}
+		}
+
+		public void setLength(int len) {
+			if (len == 0)
+				points.clear();
+			else if (len < points.size())
+				points = new LinkedList(points.subList(points.size()-len, points.size()));
+			maxLength = len;
+		}
+
+		public void render() {
+			if (maxLength > 0) {
+				renderLock = true;
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+				GL11.glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				ReikaRenderHelper.disableEntityLighting();
+				GL11.glDisable(GL11.GL_LIGHTING);
+				//Tessellator.instance.startDrawing(GL11.GL_LINE_STRIP);
+				Tessellator.instance.startDrawingQuads();
+				float f = 0;
+				int i = 0;
+				for (DecimalPosition d : points) {
+					if (i < points.size()-8) {
+						int c = f >= 0.5F ? ReikaColorAPI.mixColors(0xffffff, 0x00ffff, (f-0.5F)*2) : ReikaColorAPI.mixColors(0x00ffff, 0x0000ff, f*2);
+						Tessellator.instance.setColorOpaque_I(c);
+						double s = 0.25;
+						//Tessellator.instance.addVertex(d.xCoord, d.yCoord, d.zCoord);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord-s);
+
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord+s);
+
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord-s);
+
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord-s);
+
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord-s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord-s, d.zCoord+s);
+
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord-s);
+						Tessellator.instance.addVertex(d.xCoord+s, d.yCoord+s, d.zCoord+s);
+						Tessellator.instance.addVertex(d.xCoord-s, d.yCoord+s, d.zCoord+s);
+					}
+					f += 1F/(points.size()-8);
+					i++;
+				}
+				Tessellator.instance.draw();
+				ReikaRenderHelper.enableEntityLighting();
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+				renderLock = false;
+			}
+		}
+
 	}
 
 }

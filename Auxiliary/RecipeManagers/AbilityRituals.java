@@ -22,15 +22,18 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayMap;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
-public class AbilityRituals {
+public final class AbilityRituals {
 
-	private final HashMap<Ability, AbilityRitual> data = new HashMap();
+	private final OneWayMap<Ability, AbilityRitual> data = new OneWayMap();
 
 	public static final AbilityRituals instance = new AbilityRituals();
 
 	private static Collection<WorldLocation> tables = new ArrayList();
+
+	private static int maxCost = 0;
 
 	private AbilityRituals() {
 
@@ -144,6 +147,12 @@ public class AbilityRituals {
 		rit.addAura(CrystalElement.BLACK, 20000);
 		rit.addAura(CrystalElement.PINK, 25000);
 		rit.addAura(CrystalElement.LIGHTGRAY, 25000);
+
+		rit = new AbilityRitual(Chromabilities.BREADCRUMB);
+		rit.addAura(CrystalElement.BLUE, 40000);
+		rit.addAura(CrystalElement.LIGHTBLUE, 10000);
+		rit.addAura(CrystalElement.LIME, 25000);
+		rit.addAura(CrystalElement.LIGHTGRAY, 5000);
 		this.addRitual(rit);
 	}
 
@@ -193,6 +202,10 @@ public class AbilityRituals {
 		tables.remove(new WorldLocation(te));
 	}
 
+	public int getMaxAbilityCost() {
+		return maxCost;
+	}
+
 	private static class AbilityRitual {
 
 		private final ElementTagCompound energy = new ElementTagCompound();
@@ -206,6 +219,8 @@ public class AbilityRituals {
 
 		private void addAura(CrystalElement e, int amt) {
 			energy.addTag(e, amt);
+
+			maxCost = Math.max(maxCost, amt);
 		}
 
 		public ElementTagCompound getRequiredAura() {

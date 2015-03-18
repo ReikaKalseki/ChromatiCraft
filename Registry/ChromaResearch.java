@@ -180,6 +180,7 @@ public enum ChromaResearch {
 	LEECH(			Chromabilities.LEECH),
 	FLOAT(			Chromabilities.FLOAT),
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE),
+	BREADCRUMB(		Chromabilities.BREADCRUMB),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

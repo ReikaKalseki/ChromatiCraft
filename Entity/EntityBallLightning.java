@@ -68,6 +68,8 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	private boolean isPylonSpawn = false;
 	private boolean doDrops = true;
 
+	private static int spawnedEntities;
+
 	public EntityBallLightning(World world, CrystalElement color, double x, double y, double z) {
 		super(world);
 		this.color = color;
@@ -128,6 +130,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			color = CrystalElement.randomElement();
 
 		dataWatcher.addObject(30, 0);
+
+		if (worldObj != null)
+			spawnedEntities++;
 	}
 
 	@Override
@@ -236,6 +241,14 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		this.setDead();
 	}
 
+	@Override
+	public void setDead()
+	{
+		super.setDead();
+		if (worldObj != null)
+			spawnedEntities--;
+	}
+
 	private void doBolt(EntityBallLightning other) {
 		Vec3 vec = ReikaVectorHelper.getVec2Pt(posX, posY, posZ, other.posX, other.posY, other.posZ);
 		//EntityGluon g = new EntityGluon(this, other);
@@ -326,6 +339,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 				this.die();
 			}
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
+				this.die();
+			}
+			else if (spawnedEntities > 200 && rand.nextInt(spawnedEntities-200) > 0) {
 				this.die();
 			}
 			else if (rand.nextInt(20) == 0) {

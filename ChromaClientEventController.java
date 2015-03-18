@@ -28,7 +28,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
@@ -42,6 +42,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.research.ResearchItem;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -62,6 +64,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
@@ -90,101 +93,124 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
+	public void renderBreadcrumb(EntityRenderingLoopEvent evt) {
+		AbilityHelper.instance.renderPath(Minecraft.getMinecraft().thePlayer);
+	}
+
+	@SubscribeEvent
 	public void renderSpawners(TileEntityRenderEvent evt) {
-		if (evt.tileEntity instanceof TileEntityMobSpawner && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
-			GL11.glPushMatrix();
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-			GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+		if (evt.tileEntity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			TileXRays tx = AbilityHelper.instance.getTileEntityXRay(evt.tileEntity);
+			if (tx != null) {
+				TileEntity te = evt.tileEntity;
+				GL11.glPushMatrix();
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				ReikaRenderHelper.disableEntityLighting();
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.DEFAULT.apply();
+				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+				GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
 
-			Tessellator v5 = Tessellator.instance;
+				Tessellator v5 = Tessellator.instance;
 
-			int a = (int)(64+64*Math.sin(System.currentTimeMillis()/400D));
+				TileEntityRendererDispatcher.instance.getSpecialRenderer(te).renderTileEntityAt(te, 0, 0, 0, evt.partialTickTime);
 
-			v5.startDrawingQuads();
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(0, 0, 1);
-			v5.addVertex(1, 0, 1);
-			v5.addVertex(1, 1, 1);
-			v5.addVertex(0, 1, 1);
+				IIcon ico = tx.getTexture();
+				if (ico != null) {
+					ReikaTextureHelper.bindTerrainTexture();
+					int a = 255;//(int)(64+64*Math.sin(System.currentTimeMillis()/400D));
+					float u = ico.getMinU();
+					float du = ico.getMaxU();
+					float v = ico.getMinV();
+					float dv = ico.getMaxV();
 
-			v5.addVertex(0, 1, 0);
-			v5.addVertex(1, 1, 0);
-			v5.addVertex(1, 0, 0);
-			v5.addVertex(0, 0, 0);
+					v5.startDrawingQuads();
+					v5.setColorRGBA_I(0xffffff, a);
+					v5.addVertexWithUV(0, 0, 1, u, v);
+					v5.addVertexWithUV(1, 0, 1, du, v);
+					v5.addVertexWithUV(1, 1, 1, du, dv);
+					v5.addVertexWithUV(0, 1, 1, u, dv);
 
-			v5.addVertex(1, 1, 0);
-			v5.addVertex(1, 1, 1);
-			v5.addVertex(1, 0, 1);
-			v5.addVertex(1, 0, 0);
+					v5.addVertexWithUV(0, 1, 0, u, v);
+					v5.addVertexWithUV(1, 1, 0, du, v);
+					v5.addVertexWithUV(1, 0, 0, du, dv);
+					v5.addVertexWithUV(0, 0, 0, u, dv);
 
-			v5.addVertex(0, 0, 0);
-			v5.addVertex(0, 0, 1);
-			v5.addVertex(0, 1, 1);
-			v5.addVertex(0, 1, 0);
+					v5.addVertexWithUV(1, 1, 0, u, v);
+					v5.addVertexWithUV(1, 1, 1, du, v);
+					v5.addVertexWithUV(1, 0, 1, du, dv);
+					v5.addVertexWithUV(1, 0, 0, u, dv);
 
-			v5.addVertex(1, 0, 0);
-			v5.addVertex(1, 0, 1);
-			v5.addVertex(0, 0, 1);
-			v5.addVertex(0, 0, 0);
+					v5.addVertexWithUV(0, 0, 0, u, v);
+					v5.addVertexWithUV(0, 0, 1, du, v);
+					v5.addVertexWithUV(0, 1, 1, du, dv);
+					v5.addVertexWithUV(0, 1, 0, u, dv);
 
-			v5.addVertex(0, 1, 0);
-			v5.addVertex(0, 1, 1);
-			v5.addVertex(1, 1, 1);
-			v5.addVertex(1, 1, 0);
-			v5.draw();
+					v5.addVertexWithUV(1, 0, 0, u, v);
+					v5.addVertexWithUV(1, 0, 1, du, v);
+					v5.addVertexWithUV(0, 0, 1, du, dv);
+					v5.addVertexWithUV(0, 0, 0, u, dv);
 
-			a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
+					v5.addVertexWithUV(0, 1, 0, u, v);
+					v5.addVertexWithUV(0, 1, 1, du, v);
+					v5.addVertexWithUV(1, 1, 1, du, dv);
+					v5.addVertexWithUV(1, 1, 0, u, dv);
+					v5.draw();
+				}
 
-			v5.startDrawing(GL11.GL_LINE_LOOP);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(0, 0, 0);
-			v5.addVertex(1, 0, 0);
-			v5.addVertex(1, 0, 1);
-			v5.addVertex(0, 0, 1);
-			v5.draw();
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				int a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
+				int c = tx.highlightColor;//0xffffff;
 
-			v5.startDrawing(GL11.GL_LINE_LOOP);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(0, 1, 0);
-			v5.addVertex(1, 1, 0);
-			v5.addVertex(1, 1, 1);
-			v5.addVertex(0, 1, 1);
-			v5.draw();
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(0, 0, 0);
+				v5.addVertex(1, 0, 0);
+				v5.addVertex(1, 0, 1);
+				v5.addVertex(0, 0, 1);
+				v5.draw();
 
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(0, 0, 0);
-			v5.addVertex(0, 1, 0);
-			v5.draw();
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(0, 1, 0);
+				v5.addVertex(1, 1, 0);
+				v5.addVertex(1, 1, 1);
+				v5.addVertex(0, 1, 1);
+				v5.draw();
 
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(1, 0, 0);
-			v5.addVertex(1, 1, 0);
-			v5.draw();
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(0, 0, 0);
+				v5.addVertex(0, 1, 0);
+				v5.draw();
 
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(1, 0, 1);
-			v5.addVertex(1, 1, 1);
-			v5.draw();
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(1, 0, 0);
+				v5.addVertex(1, 1, 0);
+				v5.draw();
 
-			v5.startDrawing(GL11.GL_LINES);
-			v5.setColorRGBA_I(0xffffff, a);
-			v5.addVertex(0, 0, 1);
-			v5.addVertex(0, 1, 1);
-			v5.draw();
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(1, 0, 1);
+				v5.addVertex(1, 1, 1);
+				v5.draw();
 
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-			GL11.glPopMatrix();
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(0, 0, 1);
+				v5.addVertex(0, 1, 1);
+				v5.draw();
+
+				ReikaRenderHelper.enableEntityLighting();
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+				GL11.glPopMatrix();
+			}
 		}
 	}
 
@@ -597,6 +623,7 @@ public class ChromaClientEventController {
 					blocks.maxDepth = ItemExcavationWand.MAX_DEPTH-1;
 					blocks.recursiveAddWithMetadata(world, x, y, z, id, meta);
 					ReikaRenderHelper.prepareGeoDraw(true);
+					BlendMode.DEFAULT.apply();
 					Tessellator v5 = Tessellator.instance;
 					double o = 0.0125;
 					int r = 255;

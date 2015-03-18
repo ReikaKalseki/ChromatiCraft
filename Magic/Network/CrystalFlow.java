@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Network;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
@@ -26,7 +26,7 @@ public class CrystalFlow extends CrystalPath {
 	private final int maxFlow;
 	public final CrystalReceiver receiver;
 
-	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, LinkedList<WorldLocation> li, int maxthru) {
+	protected CrystalFlow(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt, List<WorldLocation> li, int maxthru) {
 		super(net, e, li);
 		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
@@ -45,7 +45,7 @@ public class CrystalFlow extends CrystalPath {
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalSource)nodes.getLast().getTileEntity()).addTarget(nodes.get(nodes.size()-2), element, 0, 0, 0);
+		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).addTarget(nodes.get(nodes.size()-2), element, 0, 0, 0);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
@@ -64,7 +64,7 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	public void resetTiles() {
-		((CrystalSource)nodes.getLast().getTileEntity()).removeTarget(nodes.get(nodes.size()-2), element);
+		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).removeTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {

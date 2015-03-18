@@ -99,7 +99,8 @@ public enum Chromabilities implements Ability {
 	TELEPORT(null, true),
 	LEECH(null, false),
 	FLOAT(Phase.END, true),
-	SPAWNERSEE(null, true);
+	SPAWNERSEE(null, true),
+	BREADCRUMB(null, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -263,6 +264,10 @@ public enum Chromabilities implements Ability {
 			break;
 		case TELEPORT:
 			teleportPlayerMenu(ep);
+			break;
+		case BREADCRUMB:
+			AbilityHelper.instance.setPathLength(ep, this.enabledOn(ep) ? ReikaMathLibrary.intpow2(2, data) : 0);
+			break;
 		default:
 			break;
 		}
@@ -284,6 +289,8 @@ public enum Chromabilities implements Ability {
 			use.scale(25);
 		if (a == LIGHTNING)
 			use.scale(10*(1+data*data));
+		if (a == BREADCRUMB)
+			use.scale(5*(1+data*4));
 		if (a == LIFEPOINT)
 			use.scale(5);
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
@@ -802,6 +809,8 @@ public enum Chromabilities implements Ability {
 			return 40;
 		case LIGHTNING:
 			return 2;
+		case BREADCRUMB:
+			return 12;
 		default:
 			return 0;
 		}
