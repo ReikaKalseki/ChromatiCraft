@@ -69,6 +69,8 @@ import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
+import Reika.ChromatiCraft.ModInterface.ContainerRemoteTerminal;
+import Reika.ChromatiCraft.ModInterface.GuiRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -151,8 +153,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			break;
 		case AURAPOUCH:
 			return new ContainerAuraPouch(player);
-			//case REMOTETERMINAL:
-			//	return new ContainerRemoteTerminal(player);
+		case REMOTETERMINAL:
+			return new ContainerRemoteTerminal(player);
 		default:
 			break;
 		}
@@ -250,8 +252,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiTransitionWand(player);
 		case TELEPORT:
 			return new GuiTeleportAbility(player);
-			//case REMOTETERMINAL:
-			//	return new GuiRemoteTerminal(player);
+		case REMOTETERMINAL:
+			return new GuiRemoteTerminal(player);
 		default:
 			break;
 		}

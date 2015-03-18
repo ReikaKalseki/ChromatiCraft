@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.ModInterface.ItemRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.ModList;
@@ -105,8 +106,8 @@ public enum ChromaItems implements ItemEnum {
 	OREPICK(27, false,		"chroma.orepick",		ItemOrePick.class),
 	ORESILK(26, false,		"chroma.oresilk",		ItemOreSilker.class),
 	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class),
-	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),;
-	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG);
+	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),
+	REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG);
 
 	private final int index;
 	private final boolean hasSubtypes;
