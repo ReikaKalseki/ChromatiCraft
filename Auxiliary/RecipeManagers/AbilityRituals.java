@@ -33,7 +33,7 @@ public final class AbilityRituals {
 
 	private static Collection<WorldLocation> tables = new ArrayList();
 
-	private static int maxCost = 0;
+	private int maxCost = 0;
 
 	private AbilityRituals() {
 
@@ -147,6 +147,7 @@ public final class AbilityRituals {
 		rit.addAura(CrystalElement.BLACK, 20000);
 		rit.addAura(CrystalElement.PINK, 25000);
 		rit.addAura(CrystalElement.LIGHTGRAY, 25000);
+		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.BREADCRUMB);
 		rit.addAura(CrystalElement.BLUE, 40000);
@@ -158,6 +159,7 @@ public final class AbilityRituals {
 
 	private void addRitual(AbilityRitual ar) {
 		data.put(ar.ability, ar);
+		maxCost = Math.max(maxCost, ar.maxCost);
 	}
 
 	public void addRitual(Ability a, HashMap<CrystalElementProxy, Integer> elements) {
@@ -211,6 +213,7 @@ public final class AbilityRituals {
 		private final ElementTagCompound energy = new ElementTagCompound();
 		public final int duration;
 		public final Ability ability;
+		private int maxCost;
 
 		private AbilityRitual(Ability c) {
 			ability = c;

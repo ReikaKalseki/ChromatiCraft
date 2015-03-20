@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.UUID;
+
+import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -80,7 +83,9 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 
 	@Override
 	public boolean canTransmitTo(CrystalReceiver te) {
-		return true;
+		EntityPlayer ep = this.getPlacer();
+		UUID other = te.getPlacerUUID();
+		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
 	}
 
 }

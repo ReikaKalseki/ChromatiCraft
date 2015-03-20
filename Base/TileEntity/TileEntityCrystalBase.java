@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.UUID;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -83,8 +84,13 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 			uniqueID = CrystalNetworker.instance.getNewUniqueID();
 	}
 
-	public UUID getUniqueID() {
+	public final UUID getUniqueID() {
 		return uniqueID;
+	}
+
+	public final UUID getPlacerUUID() {
+		EntityPlayer ep = this.getPlacer();
+		return ep != null ? ep.getUniqueID() : null;
 	}
 
 }

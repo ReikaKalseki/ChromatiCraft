@@ -68,7 +68,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	private boolean isPylonSpawn = false;
 	private boolean doDrops = true;
 
-	private static int spawnedEntities;
+	//private static int spawnedEntities;
 
 	public EntityBallLightning(World world, CrystalElement color, double x, double y, double z) {
 		super(world);
@@ -132,7 +132,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		dataWatcher.addObject(30, 0);
 
 		if (worldObj != null)
-			spawnedEntities++;
+			;//spawnedEntities++;
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	{
 		super.setDead();
 		if (worldObj != null)
-			spawnedEntities--;
+			;//spawnedEntities--;
 	}
 
 	private void doBolt(EntityBallLightning other) {
@@ -341,9 +341,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
 				this.die();
 			}
-			else if (spawnedEntities > 200 && rand.nextInt(spawnedEntities-200) > 0) {
-				this.die();
-			}
+			//else if (spawnedEntities > 200 && rand.nextInt(spawnedEntities-200) > 0) {
+			//	this.die();
+			//}
 			else if (rand.nextInt(20) == 0) {
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(posX, 0, posZ, posX, 1024, posZ).expand(24, 0, 24);
 				List<EntityBallLightning> li = worldObj.getEntitiesWithinAABB(this.getClass(), box);

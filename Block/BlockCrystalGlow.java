@@ -301,6 +301,9 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 			NBT.setInteger("long", longAxis.ordinal());
 
 			NBT.setInteger("base", base.ordinal());
+
+			NBT.setBoolean("irid", isIridescent);
+			NBT.setBoolean("rainbow", isRainbow);
 		}
 
 		@Override
@@ -309,6 +312,9 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 
 			direction = ForgeDirection.values()[NBT.getInteger("dir")];
 			longAxis = ForgeDirection.values()[NBT.getInteger("long")];
+
+			isIridescent = NBT.getBoolean("irid");
+			isRainbow = NBT.getBoolean("rainbow");
 
 			base = Bases.baseList[NBT.getInteger("base")];
 		}

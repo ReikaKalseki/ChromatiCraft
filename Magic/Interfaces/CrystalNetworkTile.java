@@ -39,4 +39,6 @@ public interface CrystalNetworkTile {
 
 	public UUID getUniqueID();
 
+	public UUID getPlacerUUID();
+
 }

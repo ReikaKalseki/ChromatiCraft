@@ -132,6 +132,7 @@ public class AbilityHelper {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public TileXRays getTileEntityXRay(TileEntity te) {
 		return xRayMap.get(te.getClass());
 	}
@@ -696,7 +697,6 @@ public class AbilityHelper {
 		return Collections.unmodifiableCollection(progressMap.get(c));
 	}
 
-	@SideOnly(Side.CLIENT)
 	public static enum TileXRays {
 		SPAWNERS(TileEntityMobSpawner.class, Blocks.mob_spawner, 0x224466),
 		CHESTS(TileEntityChest.class, 0xC17C32);
