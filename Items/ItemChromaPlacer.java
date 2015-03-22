@@ -36,13 +36,22 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import com.bioxx.tfc.api.Enums.EnumItemReach;
+import com.bioxx.tfc.api.Enums.EnumSize;
+import com.bioxx.tfc.api.Enums.EnumWeight;
+import com.bioxx.tfc.api.Interfaces.ISize;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemChromaPlacer extends Item {
+@Strippable(value = {"com.bioxx.tfc.api.Interfaces.ISize"})
+public class ItemChromaPlacer extends Item implements ISize {
 
 	public ItemChromaPlacer(int tex) {
 		super();
@@ -218,6 +227,30 @@ public class ItemChromaPlacer extends Item {
 	public String getItemStackDisplayName(ItemStack is) {
 		ChromaItems ir = ChromaItems.getEntry(is);
 		return ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
+	}
+
+	@Override
+	@ModDependent(ModList.TFC)
+	public EnumSize getSize(ItemStack is) {
+		return EnumSize.LARGE;
+	}
+
+	@Override
+	@ModDependent(ModList.TFC)
+	public EnumWeight getWeight(ItemStack is) {
+		return EnumWeight.HEAVY;
+	}
+
+	@Override
+	@ModDependent(ModList.TFC)
+	public EnumItemReach getReach(ItemStack is) {
+		return EnumItemReach.MEDIUM;
+	}
+
+	@Override
+	@ModDependent(ModList.TFC)
+	public boolean canStack() {
+		return true;
 	}
 
 

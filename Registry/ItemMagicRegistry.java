@@ -212,7 +212,7 @@ public class ItemMagicRegistry {
 			ItemStack crystal = new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i);
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
 			ItemStack dye = ChromaItems.DYE.getStackOfMetadata(i);
-			ItemStack vdye = ChromaItems.DYE.getStackOfMetadata(i);
+			ItemStack vdye = new ItemStack(Items.dye, 1, i);
 			this.addElement(seed, e, 1);
 			this.addElement(crystal, e, 10);
 			this.addElement(berry, e, 1);

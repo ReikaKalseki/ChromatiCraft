@@ -40,8 +40,14 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	public static final int CAPACITY = 500;
 	public static final int CAPACITY_PRIMAL = 6000;
 
-	private PrimalBiasAspectTank tank = new PrimalBiasAspectTank(CAPACITY, CAPACITY_PRIMAL, 16);
+	@ModDependent(ModList.THAUMCRAFT)
+	private PrimalBiasAspectTank tank;
 	private JarTilt angle = null;
+
+	public TileEntityAspectJar() {
+		if (ModList.THAUMCRAFT.isLoaded())
+			tank = new PrimalBiasAspectTank(CAPACITY, CAPACITY_PRIMAL, 16);
+	}
 
 	public static class PrimalBiasAspectTank extends CompoundAspectTank {
 
@@ -212,16 +218,19 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean isConnectable(ForgeDirection face) {
 		return true;
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean canInputFrom(ForgeDirection face) {
 		return true;
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean canOutputTo(ForgeDirection face) {
 		return true;
 	}
@@ -239,6 +248,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getSuctionAmount(ForgeDirection face) {
 		return tank.getAspects() != null ? 64 : 32;
 	}
@@ -262,16 +272,19 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getEssentiaAmount(ForgeDirection face) {
 		return tank.getLevel(tank.getFirstAspect());
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public int getMinimumSuction() {
 		return 0;
 	}
 
 	@Override
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean renderExtendedTube() {
 		return false;
 	}
@@ -280,43 +293,50 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		tank.writeToNBT(NBT);
+		if (ModList.THAUMCRAFT.isLoaded())
+			tank.writeToNBT(NBT);
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		tank.readFromNBT(NBT);
+		if (ModList.THAUMCRAFT.isLoaded())
+			tank.readFromNBT(NBT);
 	}
 
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
-		tank.writeToNBT(NBT);
+		if (ModList.THAUMCRAFT.isLoaded())
+			tank.writeToNBT(NBT);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
-		if (is.stackTagCompound != null && ReikaItemHelper.matchStacks(is, ChromaTiles.ASPECTJAR.getCraftedProduct()))
+		if (is.stackTagCompound != null && ReikaItemHelper.matchStacks(is, ChromaTiles.ASPECTJAR.getCraftedProduct()) && ModList.THAUMCRAFT.isLoaded())
 			tank.readFromNBT(is.stackTagCompound);
 	}
 
+	@ModDependent(ModList.THAUMCRAFT)
 	public boolean hasAspects() {
 		return !tank.isEmpty();
 	}
 
+	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getFirstAspect() {
 		return tank.getFirstAspect();
 	}
 
 	public static ArrayList<String> parseNBT(NBTTagCompound tag) {
 		ArrayList<String> li = new ArrayList();
-		CompoundAspectTank cat = new CompoundAspectTank(Integer.MAX_VALUE);
-		cat.readFromNBT(tag);
-		li.add("Aspects: ");
-		for (Aspect a : cat.getAspects()) {
-			int amt = cat.getLevel(a);
-			li.add("  "+a.getName()+": "+amt);
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			CompoundAspectTank cat = new CompoundAspectTank(Integer.MAX_VALUE);
+			cat.readFromNBT(tag);
+			li.add("Aspects: ");
+			for (Aspect a : cat.getAspects()) {
+				int amt = cat.getLevel(a);
+				li.add("  "+a.getName()+": "+amt);
+			}
 		}
 		return li;
 	}

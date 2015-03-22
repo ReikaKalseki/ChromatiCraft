@@ -18,6 +18,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerInventoryLinker extends Container {
@@ -82,8 +83,10 @@ public class ContainerInventoryLinker extends Container {
 		}
 
 		ItemStack is = ep.getCurrentEquippedItem();
-		ItemInventoryLinker iil = (ItemInventoryLinker)is.getItem();
-		iil.setItems(is, li);
+		if (ChromaItems.LINK.matchWith(is)) {
+			ItemInventoryLinker iil = (ItemInventoryLinker)is.getItem();
+			iil.setItems(is, li);
+		}
 	}
 
 	@Override

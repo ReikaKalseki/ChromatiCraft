@@ -48,7 +48,7 @@ public class ItemGrowthWand extends ItemWandBase {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
+	public boolean onItemUseFirst(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
 		if (this.sufficientEnergy(ep)) {
 			ticker.addLocation(ep, world, x, y, z, 4, 2, ep.isSneaking());
 			ChromaSounds.USE.playSoundAtBlock(world, x, y, z);

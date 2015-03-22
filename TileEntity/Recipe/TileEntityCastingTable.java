@@ -51,6 +51,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
@@ -60,7 +61,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -644,7 +645,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int maxThroughput() {
-		return 50;
+		return 100;
 	}
 
 	@Override
@@ -715,6 +716,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(12, 6, 12);
+	}
+
+	@Override
+	public boolean trigger() {
+		return this.getPlacer() != null && this.triggerCrafting(this.getPlacer());
 	}
 
 }

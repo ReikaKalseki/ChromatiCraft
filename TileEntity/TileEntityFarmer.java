@@ -44,9 +44,9 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		int n = this.getNumberAttempts();
-		for (int i = 0; i < n; i++) {
-			if (!world.isRemote && this.getEnergy(CrystalElement.GREEN) >= 200) {
+		if (!world.isRemote && this.getEnergy(CrystalElement.GREEN) >= 200) {
+			int n = this.getNumberAttempts();
+			for (int i = 0; i < n; i++) {
 				Coordinate c = this.getRandomPosition(world, x, y, z);
 				CropType crop = this.getCropAt(world, c);
 				if (crop != null && crop.isRipe(world, c.xCoord, c.yCoord, c.zCoord)) {
@@ -61,6 +61,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 					this.drainEnergy(CrystalElement.GREEN, 200);
 					this.drainEnergy(CrystalElement.PURPLE, 50);
 					this.sendParticles(c);
+					break;
 				}
 			}
 		}

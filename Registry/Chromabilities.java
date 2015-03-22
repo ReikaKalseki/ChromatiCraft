@@ -196,10 +196,8 @@ public enum Chromabilities implements Ability {
 			return AbilityHelper.instance.getUsageElementsFor(c);
 		}
 
-		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF)
+		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF || c == BREADCRUMB || c == SPAWNERSEE || c == REACH)
 			return AbilityHelper.instance.getUsageElementsFor(c);
-		else if (c == REACH)
-			return AbilityHelper.instance.getUsageElementsFor(c).scale(0.5F);
 
 		return null;
 	}
@@ -207,7 +205,7 @@ public enum Chromabilities implements Ability {
 	public void apply(EntityPlayer ep) {
 		switch(this) {
 		case MAGNET:
-			this.attractItemsAndXP(ep, 24);
+			this.attractItemsAndXP(ep, 24, AbilityHelper.instance.isMagnetNoClip(ep));
 			break;
 		case SHIELD:
 			this.stopArrows(ep);
@@ -293,9 +291,13 @@ public enum Chromabilities implements Ability {
 			use.scale(5*(1+data*4));
 		if (a == LIFEPOINT)
 			use.scale(5);
+
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
+
+		if (a == MAGNET)
+			AbilityHelper.instance.setNoClippingMagnet(ep, !flag && data > 0);
 
 		if (a.isTickBased()) {
 
@@ -436,6 +438,8 @@ public enum Chromabilities implements Ability {
 			this.setReachDistance(ep, -1);
 		else if (this == HEALTH)
 			this.setPlayerMaxHealth(ep, 0);
+		else if (this == MAGNET)
+			AbilityHelper.instance.setNoClippingMagnet(ep, false);
 	}
 
 	private static void waterRun(EntityPlayer ep) {
@@ -576,7 +580,7 @@ public enum Chromabilities implements Ability {
 		AbilityHelper.instance.boostHealth(ep, value);
 	}
 
-	private static void attractItemsAndXP(EntityPlayer ep, int range) {
+	private static void attractItemsAndXP(EntityPlayer ep, int range, boolean nc) {
 		World world = ep.worldObj;
 		double x = ep.posX;
 		double y = ep.posY+1.5;
@@ -606,7 +610,9 @@ public enum Chromabilities implements Ability {
 						ent.velocityChanged = true;
 				}
 			}
-			ent.noClip = true;
+			ent.age--;
+			if (nc)
+				ent.noClip = true;
 		}
 		List<EntityXPOrb> inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
 		for (EntityXPOrb ent : inbox2) {
@@ -630,7 +636,9 @@ public enum Chromabilities implements Ability {
 				if (!world.isRemote)
 					ent.velocityChanged = true;
 			}
-			ent.noClip = true;
+			ent.xpOrbAge--;
+			if (nc)
+				ent.noClip = true;
 		}
 	}
 
@@ -809,6 +817,8 @@ public enum Chromabilities implements Ability {
 			return 40;
 		case LIGHTNING:
 			return 2;
+		case MAGNET:
+			return 1;
 		case BREADCRUMB:
 			return 12;
 		default:

@@ -535,6 +535,13 @@ public enum ChromaResearch {
 			return li;
 		}
 		if (item != null) {
+			if (item.getItemInstance() instanceof ItemCrystalBasic) {
+				ArrayList<ItemStack> li = new ArrayList();
+				for (int i = 0; i < 16; i++) {
+					li.add(item.getStackOfMetadata(i));
+				}
+				return li;
+			}
 			return ReikaJavaLibrary.makeListFrom(item.getStackOf());
 		}
 		if (iconItem != null && iconItem.getItem() instanceof ItemCrystalBasic) {

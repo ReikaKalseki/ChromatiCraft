@@ -335,10 +335,16 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			if (posY >= 128) {
 				this.die();
 			}
+			else if (worldObj.playerEntities.isEmpty()) {
+				this.die();
+			}
 			else if (ticksExisted >= 12000 || rand.nextInt(12000-ticksExisted) == 0) {
 				this.die();
 			}
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
+				this.die();
+			}
+			else if (worldObj.getClosestPlayerToEntity(this, -1).getDistanceSqToEntity(this) >= 65536) {
 				this.die();
 			}
 			//else if (spawnedEntities > 200 && rand.nextInt(spawnedEntities-200) > 0) {

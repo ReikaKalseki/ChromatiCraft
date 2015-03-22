@@ -77,10 +77,16 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 			if (!world.isRemote)
 				this.applyEffects(world, x, y, z, dir);
 
-			int c = 4+4*Minecraft.getMinecraft().gameSettings.particleSetting;
-			if (world.isRemote && rand.nextInt(c) == 0) {
-				this.spawnParticle(world, x, y, z, dir);
-			}
+			if (world.isRemote)
+				this.spawnParticles(world, x, y, z, dir);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnParticles(World world, int x, int y, int z, ForgeDirection dir) {
+		int c = 4+4*Minecraft.getMinecraft().gameSettings.particleSetting;
+		if (rand.nextInt(c) == 0) {
+			this.spawnParticle(world, x, y, z, dir);
 		}
 	}
 

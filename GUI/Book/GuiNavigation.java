@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 import com.google.common.collect.TreeMultimap;
@@ -82,6 +83,10 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 		maxX -= paneWidth+Section.sectionSpacing+Section.margin*2;
 		maxY -= paneHeight+SectionSpacing/2;
+
+		int sc = ReikaRenderHelper.getGUIScale();
+		maxX *= 1;//sc;
+		maxY *= 1;//sc;
 
 		//craftMode = false;
 	}
@@ -201,7 +206,7 @@ public class GuiNavigation extends GuiScrollingPage {
 					fontRendererObj.drawString(z.title, dx+2, dy-fontRendererObj.FONT_HEIGHT, 0xffffff);
 			z.drawElements(dx, dy+fontRendererObj.FONT_HEIGHT+2, n);
 			dy += z.getHeight(n)+SectionSpacing;
-			if (dy >= paneHeight)
+			if (dy >= paneHeight && Minecraft.getMinecraft().gameSettings.guiScale == 0) //causes errors on other gui scales
 				break;
 		}
 		GL11.glLineWidth(line);

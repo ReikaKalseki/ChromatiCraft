@@ -76,7 +76,7 @@ public class ItemManipulator extends ItemChromaTool {
 			return flag;
 		}
 		if (t == ChromaTiles.RITUAL) {
-			boolean flag = ((TileEntityRitualTable)tile).triggerRitual(is, ep);
+			boolean flag = ((TileEntityRitualTable)tile).triggerRitual(ep);
 			return flag;
 		}
 		if (t == ChromaTiles.MINER) {

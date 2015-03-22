@@ -33,13 +33,14 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction {
 
 	private boolean hasStructure = false;
 	private int abilityTick = 0;
@@ -220,7 +221,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 	}
 
-	public boolean triggerRitual(ItemStack is, EntityPlayer ep) {
+	public boolean triggerRitual(EntityPlayer ep) {
 		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isPlacer(ep)) {
 			if (worldObj.isRemote)
 				return true;
@@ -260,7 +261,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int maxThroughput() {
-		return 40;
+		return 200;
 	}
 
 	@Override
@@ -321,6 +322,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).offset(0, 2, 0).expand(0, 1, 0);
 		return energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
+	}
+
+	@Override
+	public boolean trigger() {
+		return this.getPlacer() != null && this.triggerRitual(this.getPlacer());
 	}
 
 }
