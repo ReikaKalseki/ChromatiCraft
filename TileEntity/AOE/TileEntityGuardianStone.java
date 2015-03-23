@@ -95,7 +95,7 @@ public class TileEntityGuardianStone extends TileEntityChromaticBase {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && placer != null) {
 			if (this.getTicksExisted() == 0 || this.getZone() == null) {
-				zone = GuardianStoneManager.instance.addZone(world, x, y, z, this.getPlacer(), 16);
+				zone = GuardianStoneManager.instance.addZone(world, x, y, z, this.getPlacer(), RANGE);
 			}
 		}
 	}

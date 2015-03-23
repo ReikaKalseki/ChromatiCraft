@@ -369,7 +369,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 
+		float last = e.getHealth();
+
 		e.attackEntityFrom(ChromatiCraft.pylon, amt);
+
+		if (e.getHealth() > last-amt) {
+			if (amt > last) { //kill
+				e.setHealth(0.1F);
+				e.attackEntityFrom(ChromatiCraft.pylon, Float.MAX_VALUE);
+			}
+			else
+				e.setHealth(last-amt);
+		}
+
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
 		if (eff != null) {
 			e.addPotionEffect(eff);

@@ -72,7 +72,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 	}
 
 	private void sendParticles(Coordinate c) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FARMERHARVEST.ordinal(), this, c.xCoord, c.yCoord, c.zCoord);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FARMERHARVEST.ordinal(), this, 48, c.xCoord, c.yCoord, c.zCoord);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -105,7 +105,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		int sp = ReikaRandomHelper.getRandomPlusMinus(0, r);//r/2
 		int dx = x+r*dir.offsetX+sp*left.offsetX;//ReikaRandomHelper.getRandomPlusMinus(x, r);
 		int dz = z+r*dir.offsetZ+sp*left.offsetZ;//ReikaRandomHelper.getRandomPlusMinus(z, r);
-		int dy = 1+ReikaWorldHelper.findTopBlockBelowY(world, dx, y, dz);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
+		int dy = ReikaWorldHelper.findTopBlockBelowY(world, dx, y, dz);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
 		return new Coordinate(dx, dy, dz);
 	}
 	/*

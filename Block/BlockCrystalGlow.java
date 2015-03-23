@@ -159,10 +159,11 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		float xmax = 1;
 		float ymax = 1;
 		float zmax = 1;
-		float h = 0.625F;
-		float w = 0.375F;
+		float h = 0.125F;
+		float w = 0.25F;
 		TileEntity te = iba.getTileEntity(x, y, z);
 		ForgeDirection dir = te instanceof TileEntityCrystalGlow ? ((TileEntityCrystalGlow)te).direction : ForgeDirection.UNKNOWN;
+		ForgeDirection ax = te instanceof TileEntityCrystalGlow ? ((TileEntityCrystalGlow)te).longAxis : ForgeDirection.UNKNOWN;
 		switch(dir) {
 		case WEST:
 			zmin = 0.5F-w;

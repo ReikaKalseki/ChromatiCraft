@@ -13,9 +13,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public final class ProtectionZone {
 
@@ -60,8 +60,9 @@ public final class ProtectionZone {
 	}
 
 	public boolean isBlockInZone(int x, int y, int z) {
-		double dd = ReikaMathLibrary.py3d(x-originX, y-originY, z-originZ);
-		return dd <= range+0.5;
+		//double dd = ReikaMathLibrary.py3d(x-originX, y-originY, z-originZ);
+		//return dd <= range+0.5;
+		return Math.abs(x-originX) <= range && Math.abs(z-originZ) <= range && (ChromaOptions.GUARDCHUNK.getState() || Math.abs(y-originY) <= range);
 	}
 
 	@Override

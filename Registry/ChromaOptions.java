@@ -21,6 +21,7 @@ public enum ChromaOptions implements ConfigList {
 	CRYSTALFARM("Crystal Plants May Drop Shards", true),
 	TILELAG("Max Accelerator Lag in NanoSeconds", 1000000),
 	GUARDIAN("Guardian Stone Range", 16),
+	GUARDCHUNK("Guardian Stone is Full Chunk Height", false),
 	BLOCKPARTICLES("Dye Block Particles", true),
 	ETHEREAL("Generate Anti-Taint plants in Rainbow Forest", true),
 	DYEFRAC("Vanilla Dye Drop Percentage", 100),

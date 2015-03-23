@@ -113,7 +113,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
+import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
@@ -353,8 +354,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ChromaOptions.HANDBOOK.getState())
 			PlayerFirstTimeTracker.addTracker(new ChromaBookSpawner());
 
-		ReikaMystcraftHelper.disableFluidPage("chroma");
-
 		for (int i = 0; i < 16; i++) {
 			ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
 			ItemStack used = ChromaOptions.isVanillaDyeMoreCommon() ? dye.getStackOf() : ChromaItems.DYE.getStackOfMetadata(i);
@@ -423,21 +422,25 @@ public class ChromatiCraft extends DragonAPIMod {
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and mod interaction");
 
+		for (int i = 0; i < ChromaItems.itemList.length; i++) {
+			ChromaItems ir = ChromaItems.itemList[i];
+			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
+				SensitiveItemRegistry.instance.registerItem(ir.getItemInstance());
+			}
+		}
+
+		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
+			ChromaBlocks ir = ChromaBlocks.blockList[i];
+			SensitiveItemRegistry.instance.registerItem(ir.getBlockInstance());
+		}
+
 		if (MTInteractionManager.isMTLoaded()) {
-			for (int i = 0; i < ChromaItems.itemList.length; i++) {
-				ChromaItems ir = ChromaItems.itemList[i];
-				if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
-					MTInteractionManager.instance.blacklistNewRecipesFor(ir.getItemInstance());
-				}
-			}
-
-			for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
-				ChromaBlocks ir = ChromaBlocks.blockList[i];
-				MTInteractionManager.instance.blacklistNewRecipesFor(ir.getBlockInstance());
-			}
-
 			MTInteractionManager.instance.blacklistRecipeRemovalFor(ChromaTiles.TABLE.getCraftedProduct());
 		}
+
+		SensitiveFluidRegistry.instance.registerFluid("chroma");
+		SensitiveFluidRegistry.instance.registerFluid("ender");
+		SensitiveFluidRegistry.instance.registerFluid("potion crystal");
 
 		ReikaEEHelper.blacklistEntry(ChromaItems.TIERED);
 		ReikaEEHelper.blacklistEntry(ChromaItems.SHARD);
