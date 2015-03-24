@@ -46,9 +46,9 @@ public class CrystalTankRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.obsidian, 0, -4);
 		this.addAuxItem(Blocks.obsidian, 4, 0);
 
-		this.addAuxItem(ChromaStacks.magicIngot, -4, -4);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, -4);
 	}
 }

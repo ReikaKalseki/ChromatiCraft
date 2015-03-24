@@ -19,11 +19,11 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -33,9 +33,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		super.renderTileEntityAt(tile, par2, par4, par6, par8);
+		TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 
-		ChromaTiles c = ((TileEntityChromaticBase)tile).getTile();
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1 && ((CrystalTransmitter)tile).canConduct()) {
+		ChromaTiles c = te.getTile();
+		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1 && te.canConduct()) {
 			//TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			IIcon ico = ChromaIcons.SPARKLE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
@@ -65,6 +66,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			v5.addVertexWithUV(1, 1, 0, du, dv);
 			v5.addVertexWithUV(-1, 1, 0, u, dv);
 			v5.draw();
+
+			if (te.canConduct() && te.isTurbocharged()) {
+				this.renderHalo(te);
+			}
 
 			GL11.glPopMatrix();
 			BlendMode.DEFAULT.apply();
@@ -113,6 +118,52 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			RenderHelper.enableStandardItemLighting();
 			//GL11.glEnable(GL11.GL_LIGHTING);
 		}
+	}
+
+	private void renderHalo(TileEntityCrystalRepeater te) {
+		GL11.glAlphaFunc(GL11.GL_GEQUAL, 1/255F);
+		int c = this.getHaloRenderColor(te);
+		Tessellator v5 = Tessellator.instance;
+
+		int step = 15;
+		double d = (System.currentTimeMillis()/50D)%360;
+		int n = 0;
+		for (int i = 0; i < 90; i += step) {
+			float u = 0;//ico.getMinU();
+			float v = 0;//ico.getMinV();
+			float du = 1;//ico.getMaxU();
+			float dv = 1;//ico.getMaxV();
+
+			GL11.glRotated(i+d, 0, 0, 1);
+
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Turbo/sections.png");
+			double s = 1.5+0.5*Math.sin(Math.toRadians(4*d+i*2));
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(c);
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(s, -s, 0, du, v);
+			v5.addVertexWithUV(s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.draw();
+
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Turbo/radiate.png");
+			s = 3;//2+1*Math.sin(Math.toRadians(4*d+i*2));
+			u = (te.getTicksExisted()+n*2)%18/18F;
+			du = u+1/18F;
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(c);
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(s, -s, 0, du, v);
+			v5.addVertexWithUV(s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.draw();
+			n++;
+		}
+		GL11.glAlphaFunc(GL11.GL_GEQUAL, 0.1F);
+	}
+
+	protected int getHaloRenderColor(TileEntityCrystalRepeater te) {
+		return te.getActiveColor().getColor();
 	}
 
 }

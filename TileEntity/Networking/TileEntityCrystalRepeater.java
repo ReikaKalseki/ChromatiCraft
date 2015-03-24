@@ -31,6 +31,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
 	private int depth = -1;
+	private boolean isTurbo = false;
 
 	public static final int RANGE = 32;
 
@@ -63,7 +64,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int getSignalDegradation() {
-		return 5;
+		return this.isTurbocharged() ? 0 : 5;
 	}
 
 	@Override
@@ -111,6 +112,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		facing = dirs[NBT.getInteger("face")];
 		hasMultiblock = NBT.getBoolean("multi");
 		depth = NBT.getInteger("depth");
+		isTurbo = NBT.getBoolean("turbo");
 	}
 
 	@Override
@@ -122,11 +124,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("depth", depth);
+		NBT.setBoolean("turbo", isTurbo);
+	}
+
+	public boolean isTurbocharged() {
+		return isTurbo;
 	}
 
 	@Override
 	public int maxThroughput() {
-		return 500;
+		return this.isTurbocharged() ? 8000 : 1000;
 	}
 
 	@Override

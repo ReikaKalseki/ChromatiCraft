@@ -82,6 +82,15 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 				GL11.glPopMatrix();
 			}
 
+			if (te.canConduct() && te.isEnhanced()) {
+				GL11.glPushMatrix();
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+				this.renderBoostedHalo(te);
+				GL11.glPopMatrix();
+			}
+
 			GL11.glPopMatrix();
 			BlendMode.DEFAULT.apply();
 			//GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -122,6 +131,38 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			//RenderHelper.enableStandardItemLighting();
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
+	}
+
+	private void renderBoostedHalo(TileEntityCrystalPylon te) {
+		int c = te.getRenderColor();
+		GL11.glAlphaFunc(GL11.GL_GEQUAL, 1/255F);
+		Tessellator v5 = Tessellator.instance;
+
+		int step = 15;
+		double d = (System.currentTimeMillis()/50D)%360;
+		int n = 0;
+		int mn = 90/step;
+		IIcon ico = ChromaIcons.TRIDOT.getIcon();
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+		for (int i = 0; i < 90; i += step) {
+			GL11.glRotated(i+d, 0, 0, 1);
+
+			double s = 2+4*Math.sin(Math.toRadians(4*d+i*2));
+			//u = 0;//(te.getTicksExisted()+n*2)%18/18F;
+			//du = u+1/18F;
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(c);
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(s, -s, 0, du, v);
+			v5.addVertexWithUV(s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.draw();
+			n++;
+		}
+		GL11.glAlphaFunc(GL11.GL_GEQUAL, 0.1F);
 	}
 
 }

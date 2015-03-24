@@ -27,9 +27,9 @@
 	<leylines>
 		Pylons transmit energy in concentrated beams, which you have come to call ley lines (no relation to the similarly named phenomena those with poor reasoning skills attribute to extraterrestrial construction projects and spontaneous combustion of people). These beams have a maximum range, and additionally are blocked by anything even remotely opaque.
 	</leylines>
-	<name>
-		
-	</name>
+	<turbo>
+		With your ever-larger crystal network and your increasing load on your pylons, even a full ring of power crystals is insufficient to keep your energy flowing. Similarly, you outstripped the throughput of your repeaters long ago, and they are becoming an increasingly tight bottleneck on your network. If you can somehow enhance the power of the pylons and repeaters, it would be most convenient.
+	</turbo>
 	<name>
 		
 	</name>

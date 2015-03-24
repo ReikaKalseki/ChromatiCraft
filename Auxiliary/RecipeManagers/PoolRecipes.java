@@ -37,12 +37,12 @@ public class PoolRecipes {
 
 	private PoolRecipes() {
 
-		this.addRecipe(ChromaStacks.magicIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.chromaDust, 16));
-		this.addRecipe(ChromaStacks.magicIngot2, new ItemStack(Items.gold_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.firaxite, 16), new ItemStack(Items.blaze_powder, 8), new ItemStack(Items.coal, 2, 0));
-		this.addRecipe(ChromaStacks.magicIngot3, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.enderDust, 16), new ItemStack(Items.ender_pearl, 4, 0));
-		this.addRecipe(ChromaStacks.magicIngot4, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.waterDust, 16), new ItemStack(Items.gold_ingot, 2, 0));
-		this.addRecipe(ChromaStacks.magicIngot5, new ItemStack(Items.gold_ingot), new ItemStack(Items.redstone, 8, 0), ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, 16));
-		this.addRecipe(ChromaStacks.magicIngot6, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 8), new ItemStack(Items.glowstone_dust, 8, 0), new ItemStack(Items.redstone, 16, 0), new ItemStack(Items.quartz, 4, 0));
+		this.addRecipe(ChromaStacks.chromaIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.chromaDust, 16));
+		this.addRecipe(ChromaStacks.fieryIngot, new ItemStack(Items.gold_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.firaxite, 16), new ItemStack(Items.blaze_powder, 8), new ItemStack(Items.coal, 2, 0));
+		this.addRecipe(ChromaStacks.enderIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.enderDust, 16), new ItemStack(Items.ender_pearl, 4, 0));
+		this.addRecipe(ChromaStacks.waterIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.waterDust, 16), new ItemStack(Items.gold_ingot, 2, 0));
+		this.addRecipe(ChromaStacks.conductiveIngot, new ItemStack(Items.gold_ingot), new ItemStack(Items.redstone, 8, 0), ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, 16));
+		this.addRecipe(ChromaStacks.auraIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 8), new ItemStack(Items.glowstone_dust, 8, 0), new ItemStack(Items.redstone, 16, 0), new ItemStack(Items.quartz, 4, 0));
 
 	}
 

@@ -20,10 +20,10 @@ public class TintedLensRecipe extends MultiBlockCastingRecipe {
 	public TintedLensRecipe(CrystalElement e, ItemStack main) {
 		super(ChromaItems.LENS.getStackOf(e), main);
 
-		this.addAuxItem(ChromaStacks.magicIngot, -2, -2);
-		this.addAuxItem(ChromaStacks.magicIngot, -2, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, 2, -2);
-		this.addAuxItem(ChromaStacks.magicIngot, 2, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, 2);
 
 		this.addAuxItem(ChromaStacks.focusDust, -2, 0);
 		this.addAuxItem(ChromaStacks.focusDust, 2, 0);

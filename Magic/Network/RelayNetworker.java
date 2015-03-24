@@ -78,7 +78,6 @@ public final class RelayNetworker {
 			}
 		}
 
-		//Trigger render fx
 		public void transmit(CrystalElement e) {
 			if (!source.worldObj.isRemote) {
 				List<Integer> dat = new ArrayList();

@@ -46,7 +46,10 @@ public enum ChromaIcons {
 	GLOWFRAMEDOT_TRANS("glowframe_dot2"),
 	DIAMOND("diamond"),
 	QUESTION("question"),
-	ALLCOLORS("allcolors");
+	ALLCOLORS("allcolors"),
+	NODE("node"),
+	TURBO("turbo"),
+	TRIDOT("tridot-strip");
 
 	private IIcon icon;
 	private final String iconName;

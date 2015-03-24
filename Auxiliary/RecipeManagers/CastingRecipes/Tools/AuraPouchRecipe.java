@@ -44,10 +44,10 @@ public class AuraPouchRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.chromaDust, 2, 4);
 		this.addAuxItem(ChromaStacks.chromaDust, 2, -4);
 
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, -4);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, -4);
 
 		this.addRune(CrystalElement.WHITE, -4, -1, 2);
 		this.addRune(CrystalElement.BLACK, -4, -1, -2);

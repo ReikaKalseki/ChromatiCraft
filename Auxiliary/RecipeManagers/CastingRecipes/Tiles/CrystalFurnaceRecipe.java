@@ -29,28 +29,28 @@ public class CrystalFurnaceRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.furnace, 0, 2);
 		this.addAuxItem(Blocks.furnace, 0, -2);
 
-		this.addAuxItem(ChromaStacks.magicIngot2, -2, 2);
-		this.addAuxItem(ChromaStacks.magicIngot2, -2, -2);
-		this.addAuxItem(ChromaStacks.magicIngot2, 2, 2);
-		this.addAuxItem(ChromaStacks.magicIngot2, 2, -2);
+		this.addAuxItem(ChromaStacks.fieryIngot, -2, 2);
+		this.addAuxItem(ChromaStacks.fieryIngot, -2, -2);
+		this.addAuxItem(ChromaStacks.fieryIngot, 2, 2);
+		this.addAuxItem(ChromaStacks.fieryIngot, 2, -2);
 
 		this.addAuxItem(ChromaStacks.whiteShard, -4, -4);
 		this.addAuxItem(ChromaStacks.whiteShard, 4, 4);
 		this.addAuxItem(ChromaStacks.whiteShard, -4, 4);
 		this.addAuxItem(ChromaStacks.whiteShard, 4, -4);
 
-		this.addAuxItem(ChromaStacks.magicIngot, -2, -4);
-		this.addAuxItem(ChromaStacks.magicIngot, 0, -4);
-		this.addAuxItem(ChromaStacks.magicIngot, 2, -4);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, -2);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 0);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, 2, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, 0, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, -2, 4);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 0);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 0, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, -4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 0);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, 0, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, 4);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 0);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, -2);
 	}
 
 }

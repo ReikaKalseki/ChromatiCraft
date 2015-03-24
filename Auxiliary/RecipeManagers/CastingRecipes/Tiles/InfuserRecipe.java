@@ -18,14 +18,14 @@ public class InfuserRecipe extends MultiBlockCastingRecipe {
 	public InfuserRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(ChromaStacks.magicIngot, 2, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, -2, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 2);
-		this.addAuxItem(ChromaStacks.magicIngot, 4, 0);
-		this.addAuxItem(ChromaStacks.magicIngot, -4, 0);
-		this.addAuxItem(ChromaStacks.magicIngot, 2, -2);
-		this.addAuxItem(ChromaStacks.magicIngot, -2, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 2);
+		this.addAuxItem(ChromaStacks.chromaIngot, 4, 0);
+		this.addAuxItem(ChromaStacks.chromaIngot, -4, 0);
+		this.addAuxItem(ChromaStacks.chromaIngot, 2, -2);
+		this.addAuxItem(ChromaStacks.chromaIngot, -2, -2);
 	}
 
 }

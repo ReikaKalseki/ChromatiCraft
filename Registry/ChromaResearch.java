@@ -68,6 +68,7 @@ public enum ChromaResearch {
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
+	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -159,7 +160,7 @@ public enum ChromaResearch {
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
-	ALLOYS("Alloying",				ChromaStacks.magicIngot,								ResearchLevel.BASICCRAFT,	ProgressStage.CHROMA),
+	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.BASICCRAFT,	ProgressStage.CHROMA),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),

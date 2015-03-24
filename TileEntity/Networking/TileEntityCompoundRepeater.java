@@ -59,9 +59,17 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			double px = x+0.5;//rand.nextDouble();
 			double py = y+0.5;//0.25+y+rand.nextDouble();
 			double pz = z+0.5;//rand.nextDouble();
-			CrystalElement e = CrystalElement.elements[((colorTimer+8)/32)%16]; //compensate for particle delay
+			CrystalElement e = this.getRenderColor(); //compensate for particle delay
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, px, py, pz, 0, 0, 0, e).setScale(5).setFading());
 		}
+	}
+
+	public CrystalElement getRenderColor() {
+		return this.getRenderColorWithOffset(8);
+	}
+
+	public CrystalElement getRenderColorWithOffset(int i) {
+		return CrystalElement.elements[((colorTimer+i)/32)%16];
 	}
 
 	@Override
@@ -71,12 +79,12 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public int maxThroughput() {
-		return 1000;
+		return this.isTurbocharged() ? 10000 : 1000;
 	}
 
 	@Override
 	public int getSignalDegradation() {
-		return 20;
+		return this.isTurbocharged() ? 2 : 20;
 	}
 
 	@Override

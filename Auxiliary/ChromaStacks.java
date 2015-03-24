@@ -40,16 +40,16 @@ public class ChromaStacks {
 	public static final ItemStack elementUnit 			= ChromaItems.CRAFTING.getStackOfMetadata(8);
 	public static final ItemStack iridCrystal 			= ChromaItems.CRAFTING.getStackOfMetadata(9);
 	public static final ItemStack iridChunk 			= ChromaItems.CRAFTING.getStackOfMetadata(10);
-	public static final ItemStack magicIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(11);
+	public static final ItemStack chromaIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(11);
 	public static final ItemStack chassisBasic 			= ChromaItems.CRAFTING.getStackOfMetadata(12);
 	public static final ItemStack chassisIntermediate 	= ChromaItems.CRAFTING.getStackOfMetadata(13);
 	public static final ItemStack chassisAdvanced 		= ChromaItems.CRAFTING.getStackOfMetadata(14);
 	public static final ItemStack chassisUltimate 		= ChromaItems.CRAFTING.getStackOfMetadata(15);
-	public static final ItemStack magicIngot2 			= ChromaItems.CRAFTING.getStackOfMetadata(16);
-	public static final ItemStack magicIngot3 			= ChromaItems.CRAFTING.getStackOfMetadata(17);
-	public static final ItemStack magicIngot4 			= ChromaItems.CRAFTING.getStackOfMetadata(18);
-	public static final ItemStack magicIngot5 			= ChromaItems.CRAFTING.getStackOfMetadata(19);
-	public static final ItemStack magicIngot6 			= ChromaItems.CRAFTING.getStackOfMetadata(20);
+	public static final ItemStack fieryIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(16);
+	public static final ItemStack enderIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(17);
+	public static final ItemStack waterIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(18);
+	public static final ItemStack conductiveIngot 		= ChromaItems.CRAFTING.getStackOfMetadata(19);
+	public static final ItemStack auraIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(20);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);
