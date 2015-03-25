@@ -79,7 +79,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -342,7 +341,6 @@ public class AbilityHelper {
 		if (evt.key == Key.PGDN || evt.key == Key.PGUP) {
 			boolean up = evt.key == Key.PGUP;
 			this.cycleInventory(evt.player, up);
-			ReikaJavaLibrary.pConsole(inventories.get(evt.player));
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INVCYCLE.ordinal(), (EntityPlayerMP)evt.player, up ? 1 : 0);
 		}
 	}

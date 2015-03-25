@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -30,29 +31,67 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
 public class BlockPylonStructure extends Block {
 
-	private final IIcon[] icons = new IIcon[16];
+	private final IIcon[][] icons = new IIcon[16][16];
+
+	private final int[] variants = ReikaArrayHelper.getArrayOf(1, 16);
 
 	public BlockPylonStructure(Material mat) {
 		super(mat);
 		this.setHardness(4);
 		this.setResistance(12);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
+
+		variants[0] = 3;
+		variants[6] = 4;
+		variants[15] = 2;
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		if (s < 2 && meta < 6)
-			return icons[0];
-		return icons[meta];
+			return icons[0][0];
+		return icons[meta][0];
+	}
+
+	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		int meta = iba.getBlockMetadata(x, y, z);
+		if (meta == 15 && s <= 1) {
+			if (iba.getBlock(x+1, y, z) == this && iba.getBlockMetadata(x+1, y, z) == meta)
+				return icons[meta][0];
+			if (iba.getBlock(x-1, y, z) == this && iba.getBlockMetadata(x-1, y, z) == meta)
+				return icons[meta][0];
+
+			if (iba.getBlock(x, y, z+1) == this && iba.getBlockMetadata(x, y, z+1) == meta)
+				return icons[meta][1];
+			if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
+				return icons[meta][1];
+		}
+		if ((meta == 1 || meta == 4) && s <= 1) {
+			if (iba.getBlock(x+1, y, z) == this && iba.getBlockMetadata(x+1, y, z) == meta)
+				return icons[0][2];
+			if (iba.getBlock(x-1, y, z) == this && iba.getBlockMetadata(x-1, y, z) == meta)
+				return icons[0][2];
+
+			if (iba.getBlock(x, y, z+1) == this && iba.getBlockMetadata(x, y, z+1) == meta)
+				return icons[0][1];
+			if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
+				return icons[0][1];
+		}
+		return super.getIcon(iba, x, y, z, s);
 	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < 16; i++) {
-			icons[i] = ico.registerIcon("chromaticraft:pylon/block_"+i);
+			for (int k = 0; k < variants[i]; k++) {
+				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
+				icons[i][k] = ico.registerIcon("chromaticraft:pylon/block_"+suff);
+			}
 		}
 	}
 

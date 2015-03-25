@@ -11,9 +11,9 @@ package Reika.ChromatiCraft.GUI;
 
 import java.util.ArrayList;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.MouseEvent;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -27,7 +27,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class GuiAbilitySelect extends GuiScreen {
 
@@ -43,6 +42,58 @@ public class GuiAbilitySelect extends GuiScreen {
 	public GuiAbilitySelect(EntityPlayer ep) {
 		player = ep;
 		abilities.addAll(Chromabilities.getAbilitiesAvailableToPlayer(ep));
+	}
+
+	@Override
+	protected final void keyTyped(char c, int key)
+	{
+		super.keyTyped(c, key);
+		int sep = 22;
+		int w = 50;
+		int step = w+sep;
+		if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_SPACE)
+			this.selectAbility();
+		else if (key == Keyboard.KEY_RIGHT || key == Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode()) {
+			this.scrollRight(step);
+		}
+		else if (key == Keyboard.KEY_LEFT || key == Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode()) {
+			this.scrollLeft(step);
+		}
+		else if (key == Keyboard.KEY_UP || key == Minecraft.getMinecraft().gameSettings.keyBindForward.getKeyCode()) {
+			if (ability != null && data < Chromabilities.maxPower(player, ability) && Chromabilities.playerHasAbility(player, ability))
+				data++;
+		}
+		else if (key == Keyboard.KEY_DOWN || key == Minecraft.getMinecraft().gameSettings.keyBindBack.getKeyCode()) {
+			if (data > 0)
+				data--;
+		}
+		else if (key == Keyboard.KEY_END) {
+			this.scrollRight(Integer.MAX_VALUE);
+		}
+		else if (key == Keyboard.KEY_HOME) {
+			this.scrollLeft(Integer.MAX_VALUE);
+		}
+		else if (key == Keyboard.KEY_NEXT) {
+			this.scrollRight(step*2);
+		}
+		else if (key == Keyboard.KEY_PRIOR) {
+			this.scrollLeft(step*2);
+		}
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		Keyboard.enableRepeatEvents(true);
+	}
+
+	@Override
+	public void onGuiClosed()
+	{
+		super.onGuiClosed();
+
+		Keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
@@ -77,8 +128,7 @@ public class GuiAbilitySelect extends GuiScreen {
 					data++;
 			}
 			else {
-				dx += step;
-				data = 0;
+				this.scrollRight(step);
 			}
 		}
 		if (move < 0) {
@@ -87,8 +137,7 @@ public class GuiAbilitySelect extends GuiScreen {
 					data--;
 			}
 			else {
-				dx -= step;
-				data = 0;
+				this.scrollLeft(step);
 			}
 		}
 
@@ -131,6 +180,16 @@ public class GuiAbilitySelect extends GuiScreen {
 		//fontRendererObj.drawString(String.valueOf(data), 8, 8, 0xffffff);
 	}
 
+	private void scrollLeft(int step) {
+		dx += step;
+		data = 0;
+	}
+
+	private void scrollRight(int step) {
+		dx -= step;
+		data = 0;
+	}
+
 	@Override
 	protected void mouseMovedOrUp(int x, int y, int control) { //actually a mouse release
 
@@ -141,21 +200,24 @@ public class GuiAbilitySelect extends GuiScreen {
 	}
 
 	@Override
-	protected void mouseClicked(int x, int y, int button)
-	{
+	protected void mouseClicked(int x, int y, int button) {
 		super.mouseClicked(x, y, button);
 		if (button == 0 && ReikaGuiAPI.instance.isMouseInBox(width/2-37, width/2+37, height/2-37, height/2+37)) {
-			if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
-				if (Chromabilities.canPlayerExecuteAt(player, ability)) {
-					//mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
-					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
-					player.closeScreen();
-					Chromabilities.triggerAbility(player, ability, data);
-				}
-				else {
-					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
-					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 2);
-				}
+			this.selectAbility();
+		}
+	}
+
+	private void selectAbility() {
+		if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
+			if (Chromabilities.canPlayerExecuteAt(player, ability)) {
+				//mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+				player.closeScreen();
+				Chromabilities.triggerAbility(player, ability, data);
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 2);
 			}
 		}
 	}
@@ -164,16 +226,6 @@ public class GuiAbilitySelect extends GuiScreen {
 	public boolean doesGuiPauseGame()
 	{
 		return false;
-	}
-
-	@Override
-	public void onGuiClosed() {
-
-	}
-
-	@SubscribeEvent
-	public void mouseEvent(MouseEvent evt) {
-
 	}
 
 }
