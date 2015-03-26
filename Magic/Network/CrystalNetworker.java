@@ -157,7 +157,7 @@ public class CrystalNetworker implements TickHandler {
 	public void checkConnectivity(CrystalElement e, CrystalReceiver r, World world, LinkCallback lc) {
 		try {
 			//CrystalPath p = new PylonFinder(e, r, world, lc).findPylon();
-			new Thread(new PylonFinder(e, r, world, lc)).start();
+			new Thread(new PylonFinder(e, r, world, lc), "ChromatiCraft Crystal Network Connectivity").start();
 			//return p != null && p.canTransmit();
 		}
 		catch (ConcurrentModificationException ex) {
@@ -192,7 +192,7 @@ public class CrystalNetworker implements TickHandler {
 			return;
 		if (this.hasFlowTo(r, e, world))
 			return;
-		new Thread(new PylonFinder(e, r, amount, maxthru, world, new FlowCallback(r, e, amount))).start();
+		new Thread(new PylonFinder(e, r, amount, maxthru, world, new FlowCallback(this, r, e, amount)), "ChromatiCraft Crystal Network Flow").start();
 		//CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
 		//CrystalNetworkLogger.logRequest(r, e, amount, p);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
@@ -204,13 +204,15 @@ public class CrystalNetworker implements TickHandler {
 		return false;*/
 	}
 
-	static class FlowCallback implements LinkCallback {
+	private static class FlowCallback implements LinkCallback {
 
+		private final CrystalNetworker network;
 		private final CrystalReceiver target;
 		private final CrystalElement color;
 		private final int amount;
 
-		private FlowCallback(CrystalReceiver r, CrystalElement e, int amt) {
+		private FlowCallback(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt) {
+			network = net;
 			target = r;
 			color = e;
 			amount = amt;
@@ -220,7 +222,7 @@ public class CrystalNetworker implements TickHandler {
 		public void onCompleted(World world, CrystalPath p) {
 			if (p instanceof CrystalFlow || p == null) {
 				if (p instanceof CrystalFlow)
-					instance.flows.addValue(world.provider.dimensionId, (CrystalFlow)p);
+					network.flows.addValue(world.provider.dimensionId, (CrystalFlow)p);
 				CrystalNetworkLogger.logRequest(target, color, amount, (CrystalFlow)p);
 			}
 		}
