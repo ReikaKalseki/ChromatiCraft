@@ -44,7 +44,6 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 
 	@Override //Identical except cannot die outside of end
 	public boolean attackEntityFrom(DamageSource src, float amt) {
-		this.setDead();
 		if (worldObj.provider.dimensionId != 1) {
 			ReikaParticleHelper.EXPLODE.spawnAt(this);
 			return false;
