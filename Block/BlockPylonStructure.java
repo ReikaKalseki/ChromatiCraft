@@ -82,6 +82,62 @@ public class BlockPylonStructure extends Block {
 			if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
 				return icons[0][1];
 		}
+		if (meta == 6) {
+			switch(s) {
+			case 0:
+				return icons[0][0];
+			case 1:
+				if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][0];
+				if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][1];
+				if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][3];
+				if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][2];
+				break;
+			case 2:
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
+					return icons[meta][1];
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
+					return icons[meta][0];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
+					return icons[meta][2];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
+					return icons[meta][3];
+				break;
+			case 3:
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
+					return icons[meta][0];
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
+					return icons[meta][1];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
+					return icons[meta][3];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
+					return icons[meta][2];
+				break;
+			case 4:
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][0];
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][1];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][3];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][2];
+				break;
+			case 5:
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][1];
+				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][0];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
+					return icons[meta][2];
+				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
+					return icons[meta][3];
+				break;
+			}
+		}
 		return super.getIcon(iba, x, y, z, s);
 	}
 

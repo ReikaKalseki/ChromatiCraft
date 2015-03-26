@@ -19,8 +19,8 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder.LinkCallback;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -156,9 +156,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return null;
 	}
 
-	public boolean checkConnectivity() {
+	public void checkConnectivity(LinkCallback lc) {
 		CrystalElement c = this.getActiveColor();
-		return c != null && CrystalNetworker.instance.checkConnectivity(c, this);
+		if (c != null)
+			CrystalNetworker.instance.checkConnectivity(c, this, worldObj, lc);
 	}
 
 	public CrystalElement getActiveColor() {
@@ -167,12 +168,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		int dz = zCoord+facing.offsetZ;
 		return this.canConduct() ? CrystalElement.elements[worldObj.getBlockMetadata(dx, dy, dz)] : null;
 	}
-
+	/*
 	public CrystalSource getEnergySource() {
 		CrystalElement e = this.getActiveColor();
 		return e != null ? CrystalNetworker.instance.getConnectivity(e, this) : null;
 	}
-
+	 */
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
 		if (!worldObj.isRemote) {
 			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(60) == 0)

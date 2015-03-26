@@ -22,6 +22,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGluon;
@@ -45,6 +46,7 @@ import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
+import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonAPIInit;
@@ -171,6 +173,7 @@ public class ChromaClient extends ChromaCommon {
 		}
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLootChest.class, new RenderLootChest());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPortal.class, new RenderCrystalPortal());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);

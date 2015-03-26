@@ -96,9 +96,10 @@ public class ItemEnderCrystal extends ItemChromaTool {
 			//world.setBlock(x, y, z, RedstoneBlocks.WIRE.getBlock());
 			if (!world.isRemote) {
 				world.setBlock(x, y, z, Blocks.bedrock);
+				world.setBlock(x, y+1, z, Blocks.fire);
 				EntityChromaEnderCrystal cry = new EntityChromaEnderCrystal(world);
-				world.spawnEntityInWorld(cry);
 				cry.setPosition(x+0.5, y+1, z+0.5);
+				world.spawnEntityInWorld(cry);
 			}
 			ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.bedrock);
 		}

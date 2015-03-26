@@ -20,8 +20,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.SoundEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
 
 public enum ChromaSounds implements SoundEnum {
 
@@ -46,7 +44,8 @@ public enum ChromaSounds implements SoundEnum {
 	POWERCRYS("powercrystal"),
 	GUICLICK("gui2"),
 	GUISEL("gui4"),
-	DRONE("drone2");
+	DRONE("drone2"),
+	PORTAL("portal2");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -99,7 +98,7 @@ public enum ChromaSounds implements SoundEnum {
 	}
 
 	public void playSound(World world, double x, double y, double z, float vol, float pitch) {
-		if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER)
+		if (world.isRemote)
 			return;
 		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol*this.getModVolume(), pitch);
 	}

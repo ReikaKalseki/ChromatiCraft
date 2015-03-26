@@ -33,6 +33,9 @@ public class WorldProviderChroma extends WorldProvider {
 	protected void generateLightBrightnessTable()
 	{
 		super.generateLightBrightnessTable();
+		for (int i = 0; i < lightBrightnessTable.length; i++) {
+			lightBrightnessTable[i] *= 1.5F;
+		}
 	}
 
 	@Override
@@ -69,21 +72,21 @@ public class WorldProviderChroma extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getSkyRenderer()
 	{
-		return null;
+		return super.getSkyRenderer();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getCloudRenderer()
 	{
-		return null;
+		return super.getCloudRenderer();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getWeatherRenderer()
 	{
-		return null;
+		return super.getWeatherRenderer();
 	}
 
 	@Override
@@ -104,13 +107,14 @@ public class WorldProviderChroma extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	public float[] calcSunriseSunsetColors(float celang, float ptick)
 	{
-		return super.calcSunriseSunsetColors(celang, ptick);
+		float[] ret = super.calcSunriseSunsetColors(celang, ptick);
+		return ret;
 	}
 
 	@Override
 	public boolean isSurfaceWorld()
 	{
-		return false;
+		return true;//false; //return false makes sun and the like not render
 	}
 
 	@Override
