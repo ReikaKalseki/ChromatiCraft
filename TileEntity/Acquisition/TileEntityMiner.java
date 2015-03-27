@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -218,6 +219,8 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	}
 
 	private void removeFound(World world, int x, int y, int z, Block b, int meta) {
+		if (Item.getItemFromBlock(b) == null)
+			return;
 		ItemStack is = new ItemStack(b, 1, meta);
 		if (b instanceof SpecialOreBlock) {
 			is = ((SpecialOreBlock)b).getDisplayItem(world, x, y, z);
@@ -242,6 +245,10 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	}
 
 	private void addFound(World world, int x, int y, int z, Block b, int meta) {
+		if (b != null && Item.getItemFromBlock(b) == null) {
+			ChromatiCraft.logger.logError("Block "+b+" has no item to drop when mined???");
+			return;
+		}
 		ItemStack is = new ItemStack(b, 1, meta);
 		if (b instanceof SpecialOreBlock) {
 			is = ((SpecialOreBlock)b).getDisplayItem(world, x, y, z);

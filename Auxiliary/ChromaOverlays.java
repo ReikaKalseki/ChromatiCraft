@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -66,6 +68,8 @@ public class ChromaOverlays {
 	private int tick = 0;
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
+
+	private final HashMap<ProgressElement, Integer> progressFlags = new HashMap();
 
 	private ChromaOverlays() {
 
@@ -96,6 +100,7 @@ public class ChromaOverlays {
 			}
 			this.renderAbilityStatus(ep, gsc);
 			this.renderPylonAura(ep, gsc);
+			this.renderProgressOverlays(ep, gsc);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			this.renderCustomCrosshair(evt);
@@ -103,6 +108,56 @@ public class ChromaOverlays {
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
 		}
+	}
+
+	private void renderProgressOverlays(EntityPlayer ep, int gsc) {
+		HashMap<ProgressElement, Integer> map = new HashMap();
+		int dy = 0;
+		for (ProgressElement p : progressFlags.keySet()) {
+			int tick = progressFlags.get(p);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_LIGHTING);
+
+			FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
+			int sw = fr.getStringWidth(p.getTitle());
+			int sh = 24+(fr.listFormattedStringToWidth(p.getShortDesc(), sw*2).size()-1)*4;//24;
+			int w = sw+28;//144;
+			int h = tick > 800-sh ? 800-tick : tick < sh ? tick : sh;
+
+			int x = Minecraft.getMinecraft().displayWidth/gsc-w-1;
+
+			ReikaGuiAPI.instance.drawRect(x, dy, x+w, dy+h, 0xff444444);
+			ReikaGuiAPI.instance.drawRectFrame(x+1, dy+1, w-2, h-2, 0xcccccc);
+			ReikaGuiAPI.instance.drawRectFrame(x+2, dy+2, w-4, h-4, 0xcccccc);
+
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+			if (h == sh) {
+
+				fr.drawString(p.getTitle(), x+w-4-sw, dy+8-4, 0xffffff);
+				GL11.glPushMatrix();
+				double s = 0.5;
+				GL11.glScaled(s, s, s);
+				GL11.glTranslated(x+16+8, dy+16-1, 0);
+				fr.drawSplitString(p.getShortDesc(), x+w-4-sw, dy+8+4, sw*2, 0xffffff);
+				GL11.glPopMatrix();
+
+				GL11.glEnable(GL11.GL_LIGHTING);
+
+				ReikaGuiAPI.instance.drawItemStack(new RenderItem(), fr, p.getIcon(), x+4, dy+4);
+
+			}
+
+			GL11.glEnable(GL11.GL_LIGHTING);
+
+			if (tick > 1) {
+				map.put(p, tick-1);
+			}
+			dy += h+4;
+		}
+		progressFlags.clear();
+		progressFlags.putAll(map);
 	}
 
 	private void renderTransitionHUD(EntityPlayer ep, ScaledResolution sr, ItemStack is) {
@@ -642,5 +697,9 @@ public class ChromaOverlays {
 		String s = "Cap: "+cap;
 		FontRenderer f = Minecraft.getMinecraft().fontRenderer;
 		ReikaGuiAPI.instance.drawCenteredString(f, s, ox, oy+r+f.FONT_HEIGHT-4, 0xffffff);
+	}
+
+	public void addProgressionNote(ProgressElement p) {
+		progressFlags.put(p, 800);
 	}
 }

@@ -19,11 +19,13 @@ import java.util.Random;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -33,6 +35,12 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+
+import com.google.common.collect.HashBiMap;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ChromaResearchManager {
 
@@ -47,6 +55,8 @@ public final class ChromaResearchManager {
 	public static final ChromaResearchManager instance = new ChromaResearchManager();
 
 	public final Comparator researchComparator = new ChromaResearchComparator();
+
+	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
 
 	private ChromaResearchManager() {
 		priority.addValue(ResearchLevel.ENTRY, new ChromaResearchTarget(ChromaResearch.FRAGMENT, -1)); //get fragment first, always
@@ -217,6 +227,7 @@ public final class ChromaResearchManager {
 		if (r.movePlayerTo(ep)) {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			this.notifyPlayerOfProgression(ep, r);
 			return true;
 		}
 		return false;
@@ -268,8 +279,17 @@ public final class ChromaResearchManager {
 		return li;
 	}
 
+	public void notifyPlayerOfProgression(EntityPlayer ep, ProgressElement p) {
+		if (ep.worldObj.isRemote) {
+			ChromaOverlays.instance.addProgressionNote(p);
+		}
+		else if (ep instanceof EntityPlayerMP) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
+		}
+	}
+
 	/** The part that must be completed before getting a given research available */
-	public static enum ResearchLevel {
+	public static enum ResearchLevel implements ProgressElement {
 		ENTRY(),
 		RAWEXPLORE(),
 		BASICCRAFT(),
@@ -282,6 +302,10 @@ public final class ChromaResearchManager {
 		ENDGAME();
 
 		public static final ResearchLevel[] levelList = values();
+
+		private ResearchLevel() {
+			instance.register(this);
+		}
 
 		private boolean movePlayerTo(EntityPlayer ep) {
 			NBTTagCompound tag = instance.getNBT(ep);
@@ -331,6 +355,24 @@ public final class ChromaResearchManager {
 		public ResearchLevel post() {
 			return this.ordinal() < levelList.length-1 ? levelList[this.ordinal()+1] : this;
 		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getTitle() {
+			return this.getDisplayName();
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getShortDesc() {
+			return "More of the world becomes visible to you.";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public ItemStack getIcon() {
+			return ChromaItems.FRAGMENT.getStackOf();
+		}
 	}
 
 	public static class ChromaResearchDebugCommand extends DragonCommandBase {
@@ -375,6 +417,31 @@ public final class ChromaResearchManager {
 			weight = w;
 		}
 
+	}
+
+	public static interface ProgressElement {
+
+		@SideOnly(Side.CLIENT)
+		public String getTitle();
+
+		@SideOnly(Side.CLIENT)
+		public String getShortDesc();
+
+		@SideOnly(Side.CLIENT)
+		public ItemStack getIcon();
+
+	}
+
+	public void register(ProgressElement p) {
+		progressIDs.put(progressIDs.size(), p);
+	}
+
+	public ProgressElement getProgressForID(int id) {
+		return progressIDs.get(id);
+	}
+
+	public int getID(ProgressElement e) {
+		return progressIDs.inverse().get(e);
 	}
 
 }

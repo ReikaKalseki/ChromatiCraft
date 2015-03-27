@@ -171,9 +171,10 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		velocityChanged = true;
 		//ReikaJavaLibrary.pConsole(velocity.inclination+"/"+targetTheta+"; "+velocity.rotation+"/"+targetPhi, Side.SERVER);
 
-		motionX = velocity.getXProjection();
-		motionY = velocity.getYProjection();
-		motionZ = velocity.getZProjection();
+		double[] v = velocity.getCartesian();
+		motionX = v[0];
+		motionY = v[1];
+		motionZ = v[2];
 
 		if (targetColor != null) {
 			colorTransitionFraction += 0.1F;
@@ -194,17 +195,20 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@SideOnly(Side.CLIENT)
 	private void lifeParticles() {
-		double d = 0.25;
-		double px = ReikaRandomHelper.getRandomPlusMinus(posX, d);
-		double py = ReikaRandomHelper.getRandomPlusMinus(posY, d);
-		double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
-		float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.05, 0.025);
-		if (rand.nextInt(4) == 0)
-			g = -g;
-		EntityLaserFX fx = new EntityLaserFX(color, worldObj, px, py, pz).setColor(this.getRenderColor()).setGravity(g);
-		EntityLaserFX fx2 = new EntityLaserFX(color, worldObj, px, py, pz).setColor(0xffffff).setScale(0.42F).setGravity(g);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+		if (rand.nextInt(1+p*2) == 0) {
+			double d = 0.25;
+			double px = ReikaRandomHelper.getRandomPlusMinus(posX, d);
+			double py = ReikaRandomHelper.getRandomPlusMinus(posY, d);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(posZ, d);
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.05, 0.025);
+			if (rand.nextInt(4) == 0)
+				g = -g;
+			EntityLaserFX fx = new EntityLaserFX(color, worldObj, px, py, pz).setColor(this.getRenderColor()).setGravity(g);
+			EntityLaserFX fx2 = new EntityLaserFX(color, worldObj, px, py, pz).setColor(0xffffff).setScale(0.42F).setGravity(g);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		}
 	}
 
 
@@ -324,7 +328,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 		//	ChromaSounds.POWER.playSound(this, 0.1F, 2F);
 		//}
 
-		if (!worldObj.isRemote && rand.nextInt(20) == 0) {
+		if (!worldObj.isRemote && rand.nextInt(1600) == 0) {
 			if (!CrystalNetworker.instance.getNearbyPylons(worldObj, posX, posY, posZ, color, 24, false).isEmpty()) {
 				this.heal(this.getMaxHealth());
 			}
@@ -332,10 +336,11 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		if (!worldObj.isRemote) {
 
+			EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, -1);
 			if (posY >= 128) {
 				this.die();
 			}
-			else if (worldObj.playerEntities.isEmpty()) {
+			else if (ep == null || worldObj.playerEntities.isEmpty()) {
 				this.die();
 			}
 			else if (ticksExisted >= 12000 || rand.nextInt(12000-ticksExisted) == 0) {
@@ -344,7 +349,10 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			else if (worldObj.isRaining() && rand.nextInt(80) == 0) {
 				this.die();
 			}
-			else if (worldObj.getClosestPlayerToEntity(this, -1).getDistanceSqToEntity(this) >= 65536) {
+			else if (this.getDistanceSqToEntity(ep) >= 65536) {
+				this.die();
+			}
+			else if (this.getDistanceSqToEntity(ep) >= 1024 && rand.nextInt(200) == 0) {
 				this.die();
 			}
 			//else if (spawnedEntities > 200 && rand.nextInt(spawnedEntities-200) > 0) {
@@ -361,7 +369,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public boolean getCanSpawnHere() {
-		return worldObj.canBlockSeeTheSky(MathHelper.floor_double(posX), MathHelper.floor_double(posY)+1, MathHelper.floor_double(posZ));
+		return rand.nextInt(5) == 0 && worldObj.canBlockSeeTheSky(MathHelper.floor_double(posX), MathHelper.floor_double(posY)+1, MathHelper.floor_double(posZ));
 	}
 
 	@Override

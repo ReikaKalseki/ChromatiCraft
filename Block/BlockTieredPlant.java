@@ -37,7 +37,9 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -59,18 +61,20 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	public static enum TieredPlants {
 
-		FLOWER(ProgressStage.CRYSTALS),
-		CAVE(ProgressStage.RUNEUSE),
-		LILY(ProgressStage.CHARGE),
-		BULB(ProgressStage.MULTIBLOCK),
-		DESERT(ProgressStage.PYLON);
+		FLOWER(ProgressStage.CRYSTALS, 0x33aaff),
+		CAVE(ProgressStage.RUNEUSE, 0xffffff),
+		LILY(ProgressStage.CHARGE, 0xff00ff),
+		BULB(ProgressStage.MULTIBLOCK, 0x00ffff),
+		DESERT(ProgressStage.PYLON, 0xffcc33);
 
 		public final ProgressStage level;
+		public final int color;
 
 		public static final TieredPlants[] list = values();
 
-		private TieredPlants(ProgressStage lvl) {
+		private TieredPlants(ProgressStage lvl, int c) {
 			level = lvl;
+			color = c;
 		}
 
 		public Coordinate generate(World world, int x, int z, Random r) {
@@ -144,6 +148,12 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		public Block getBlock() {
 			return ChromaBlocks.TIEREDPLANT.getBlockInstance();
 		}
+	}
+
+	@Override
+	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		int l = !(iba instanceof World && !((World)iba).isRemote) ? 4 : 0;
+		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(TieredPlants.list[iba.getBlockMetadata(x, y, z)].color, l) : l;
 	}
 
 	@Override

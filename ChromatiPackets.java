@@ -385,10 +385,12 @@ public class ChromatiPackets implements IPacketHandler {
 			case DELTELEPORT:
 				AbilityHelper.instance.removeWarpPoint(stringdata, ep);
 				break;
-			case GROWTH: {
+			case GROWTH:
 				this.doGrowthParticles(world, data);
 				break;
-			}
+			case PROGRESSNOTE:
+				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, ChromaResearchManager.instance.getProgressForID(data[0]));
+				break;
 			}
 		}
 		catch (NullPointerException e) {

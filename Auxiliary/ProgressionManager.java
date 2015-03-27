@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -31,6 +32,8 @@ import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -59,7 +62,9 @@ public class ProgressionManager {
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap();
 
-	public static enum ProgressStage {
+	private final EnumMap<CrystalElement, ColorDiscovery> colorDiscoveries = new EnumMap(CrystalElement.class);
+
+	public static enum ProgressStage implements ProgressElement {
 
 		CASTING(ChromaTiles.TABLE.getCraftedProduct()), //Do a recipe
 		CRYSTALS(ChromaBlocks.CRYSTAL.getStackOfMetadata(CrystalElement.RED.ordinal())), //Found a crystal
@@ -113,6 +118,7 @@ public class ProgressionManager {
 			for (int i = 0; i < cond.length; i++)
 				flag = flag && cond[i];
 			active = flag;
+			ChromaResearchManager.instance.register(this);
 		}
 
 		public boolean stepPlayerTo(EntityPlayer ep) {
@@ -129,6 +135,16 @@ public class ProgressionManager {
 
 		public boolean isOneStepAway(EntityPlayer ep) {
 			return instance.isOneStepAway(ep, this);
+		}
+
+		@SideOnly(Side.CLIENT)
+		public String getTitle() {
+			return this.getTitleString();
+		}
+
+		@SideOnly(Side.CLIENT)
+		public String getShortDesc() {
+			return this.getRevealedString();
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -157,6 +173,13 @@ public class ProgressionManager {
 
 	private ProgressionManager() {
 		this.load();
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			ColorDiscovery c = new ColorDiscovery(e);
+			colorDiscoveries.put(e, c);
+			ChromaResearchManager.instance.register(c);
+		}
 	}
 
 	public void reload() {
@@ -278,6 +301,7 @@ public class ProgressionManager {
 		if (!this.playerHasPrerequisites(ep, s))
 			return false;
 		this.setPlayerStage(ep, s, true);
+		ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 		return true;
 	}
 
@@ -410,6 +434,8 @@ public class ProgressionManager {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			this.updateChunks(ep);
+			if (disc)
+				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
 		}
 	}
 
@@ -442,6 +468,34 @@ public class ProgressionManager {
 				c.add(CrystalElement.valueOf(tag));
 		}
 		return c;
+	}
+
+	private static class ColorDiscovery implements ProgressElement {
+
+		private final CrystalElement color;
+
+		private ColorDiscovery(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getTitle() {
+			return color.displayName;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getShortDesc() {
+			return "A new form of crystal energy";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public ItemStack getIcon() {
+			return ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal());
+		}
+
 	}
 
 }

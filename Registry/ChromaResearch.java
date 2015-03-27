@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -55,7 +56,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ChromaResearch {
+public enum ChromaResearch implements ProgressElement {
 
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
@@ -351,6 +352,11 @@ public enum ChromaResearch {
 
 	private ItemStack getTabIcon() {
 		return iconItem;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ItemStack getIcon() {
+		return this.getTabIcon();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -752,6 +758,12 @@ public enum ChromaResearch {
 		return false;
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getShortDesc() {
+		return "A new item to investigate";
+	}
+
 	static {
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
@@ -774,6 +786,7 @@ public enum ChromaResearch {
 					cr.setFragment(r);
 				}
 			}
+			ChromaResearchManager.instance.register(r);
 		}
 	}
 

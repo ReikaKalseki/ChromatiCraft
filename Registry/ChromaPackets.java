@@ -48,7 +48,8 @@ public enum ChromaPackets {
 	TELEPORT(),
 	NEWTELEPORT(),
 	DELTELEPORT(),
-	GROWTH(3);
+	GROWTH(3),
+	PROGRESSNOTE(1);
 
 	public final int numInts;
 	public final PacketTypes type;
