@@ -30,7 +30,7 @@ import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 
-public class PylonFinder implements Runnable {
+public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
 	private final Collection<WorldLocation> blacklist = new ArrayList();
@@ -46,32 +46,17 @@ public class PylonFinder implements Runnable {
 
 	private static boolean invalid = false;
 
-	private final int requestedAmount;
-	private final int maxThroughput;
-
-	private final LinkCallback callback;
-
-	private final World world;
-
 	private static final HashMap<WorldLocation, EnumMap<CrystalElement, ArrayList<CrystalPath>>> paths = new HashMap();
 
-	PylonFinder(CrystalElement e, CrystalReceiver r, World world, LinkCallback lc) {
-		this(e, r, -1, -1, world, lc);
-	}
-
-	PylonFinder(CrystalElement e, CrystalReceiver r, int amount, int maxthru, World world, LinkCallback lc) {
+	PylonFinder(CrystalElement e, CrystalReceiver r) {
 		element = e;
 		target = r;
 		//stepRange = r;
 		net = CrystalNetworker.instance;
 		blacklist.add(this.getLocation(r));
-		requestedAmount = amount;
-		maxThroughput = maxthru;
-		callback = lc;
-		this.world = world;
 	}
 
-	private CrystalPath findPylon() {
+	CrystalPath findPylon() {
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths();
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
@@ -90,7 +75,7 @@ public class PylonFinder implements Runnable {
 		return null;
 	}
 
-	private CrystalFlow findPylon(int amount, int maxthru) {
+	CrystalFlow findPylon(int amount, int maxthru) {
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths();
 		if (p != null)
@@ -107,19 +92,6 @@ public class PylonFinder implements Runnable {
 			return flow;
 		}
 		return null;
-	}
-
-	public void run() {
-		CrystalPath p = null;
-		//ReikaJavaLibrary.pConsole("Running "+this);
-		if (requestedAmount >= 0) {
-			p = this.findPylon(requestedAmount, maxThroughput);
-		}
-		else {
-			p = this.findPylon();
-		}
-		//ReikaJavaLibrary.pConsole("Finished "+this+" with "+p);
-		callback.onCompleted(world, p);
 	}
 
 	private boolean anyConnectedSources() {
@@ -309,12 +281,6 @@ public class PylonFinder implements Runnable {
 
 	static void stopAllSearches() {
 		invalid = true;
-	}
-
-	public static interface LinkCallback {
-
-		void onCompleted(World world, CrystalPath p);
-
 	}
 
 }

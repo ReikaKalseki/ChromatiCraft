@@ -26,8 +26,6 @@ import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
-import Reika.ChromatiCraft.Magic.Network.CrystalPath;
-import Reika.ChromatiCraft.Magic.Network.PylonFinder.LinkCallback;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -85,11 +83,6 @@ public class ItemManipulator extends ItemChromaTool {
 			((TileEntityMiner)tile).triggerDigging();
 			return true;
 		}
-		if (t == ChromaTiles.ACCELERATOR && ep.isSneaking()) {
-			world.getBlock(x, y, z).harvestBlock(world, ep, x, y, z, world.getBlockMetadata(x, y, z));
-			world.setBlockToAir(x, y, z);
-			return true;
-		}
 		if (t == ChromaTiles.ITEMRIFT) {
 			TileEntityItemRift ir = (TileEntityItemRift)tile;
 			ir.isEmitting = !ir.isEmitting;
@@ -118,7 +111,6 @@ public class ItemManipulator extends ItemChromaTool {
 				}
 			}
 			else if (!world.isRemote) {
-				/*
 				if (te.checkConnectivity()) {
 					CrystalElement e = te.getActiveColor();
 					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
@@ -130,8 +122,7 @@ public class ItemManipulator extends ItemChromaTool {
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
-				}*/
-				te.checkConnectivity(new DebugCallback(te));
+				}
 			}
 			return true;
 		}
@@ -146,7 +137,18 @@ public class ItemManipulator extends ItemChromaTool {
 				}
 			}
 			else if (!world.isRemote) {
-				te.checkConnectivity(new DebugCallback(te));
+				if (te.checkConnectivity()) {
+					CrystalElement e = te.getActiveColor();
+					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
+					int rd = e.getRed();
+					int gn = e.getGreen();
+					int bl = e.getBlue();
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, te.getSignalDepth(e));
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+				}
 			}
 			return true;
 		}
@@ -158,32 +160,6 @@ public class ItemManipulator extends ItemChromaTool {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
 		return false;
-	}
-
-	private static class DebugCallback implements LinkCallback {
-
-		private final TileEntityCrystalRepeater tile;
-
-		private DebugCallback(TileEntityCrystalRepeater te) {
-			tile = te;
-		}
-
-		@Override
-		public void onCompleted(World world, CrystalPath p) {
-			if (p != null) {
-				CrystalElement e = tile.getActiveColor();
-				ChromaSounds.CAST.playSoundAtBlock(tile);
-				int rd = e.getRed();
-				int gn = e.getGreen();
-				int bl = e.getBlue();
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, rd, gn, bl, 32, 8);
-				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), tile, tile.getSignalDepth(e));
-			}
-			else {
-				ChromaSounds.ERROR.playSoundAtBlock(tile);
-			}
-		}
-
 	}
 
 	@Override

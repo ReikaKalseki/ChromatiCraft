@@ -33,7 +33,6 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
-import Reika.ChromatiCraft.Magic.Network.PylonFinder.LinkCallback;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -154,19 +153,18 @@ public class CrystalNetworker implements TickHandler {
 		//ReikaJavaLibrary.pConsole(tiles+" from "+tag, Side.SERVER);
 	}
 
-	public void checkConnectivity(CrystalElement e, CrystalReceiver r, World world, LinkCallback lc) {
+	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
 		try {
-			//CrystalPath p = new PylonFinder(e, r, world, lc).findPylon();
-			new Thread(new PylonFinder(e, r, world, lc), "ChromatiCraft Crystal Network Connectivity").start();
-			//return p != null && p.canTransmit();
+			CrystalPath p = new PylonFinder(e, r).findPylon();
+			return p != null && p.canTransmit();
 		}
 		catch (ConcurrentModificationException ex) {
 			ex.printStackTrace();
 			ChromatiCraft.logger.logError("CME during pathfinding!");
-			//return false;
+			return false;
 		}
 	}
-	/*
+
 	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
 		try {
 			CrystalPath p = new PylonFinder(e, r).findPylon();
@@ -178,55 +176,28 @@ public class CrystalNetworker implements TickHandler {
 			return null;
 		}
 	}
-	 */
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
-		this.makeRequest(r, e, amount, r.getWorld(), range, Integer.MAX_VALUE);
+
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range) {
+		return this.makeRequest(r, e, amount, r.getWorld(), range, Integer.MAX_VALUE);
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range, int maxthru) {
-		this.makeRequest(r, e, amount, r.getWorld(), range, maxthru);
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, int range, int maxthru) {
+		return this.makeRequest(r, e, amount, r.getWorld(), range, maxthru);
 	}
 
-	public void makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
+	public boolean makeRequest(CrystalReceiver r, CrystalElement e, int amount, World world, int range, int maxthru) {
 		if (amount <= 0)
-			return;
+			return false;
 		if (this.hasFlowTo(r, e, world))
-			return;
-		new Thread(new PylonFinder(e, r, amount, maxthru, world, new FlowCallback(this, r, e, amount)), "ChromatiCraft Crystal Network Flow").start();
-		//CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
-		//CrystalNetworkLogger.logRequest(r, e, amount, p);
+			return false;
+		CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
-		/*
+		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			flows.addValue(world.provider.dimensionId, p);
 			return true;
 		}
-		return false;*/
-	}
-
-	private static class FlowCallback implements LinkCallback {
-
-		private final CrystalNetworker network;
-		private final CrystalReceiver target;
-		private final CrystalElement color;
-		private final int amount;
-
-		private FlowCallback(CrystalNetworker net, CrystalReceiver r, CrystalElement e, int amt) {
-			network = net;
-			target = r;
-			color = e;
-			amount = amt;
-		}
-
-		@Override
-		public void onCompleted(World world, CrystalPath p) {
-			if (p instanceof CrystalFlow || p == null) {
-				if (p instanceof CrystalFlow)
-					network.flows.addValue(world.provider.dimensionId, (CrystalFlow)p);
-				CrystalNetworkLogger.logRequest(target, color, amount, (CrystalFlow)p);
-			}
-		}
-
+		return false;
 	}
 
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {

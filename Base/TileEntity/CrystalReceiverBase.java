@@ -64,22 +64,26 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		return a * this.getEnergy(e) / this.getMaxStorage(e);
 	}
 
-	protected final void requestEnergy(CrystalElement e, int amount) {
+	protected final boolean requestEnergy(CrystalElement e, int amount) {
 		int amt = Math.min(amount, this.getRemainingSpace(e));
+		boolean flag = false;
 		if (amt > 0) {
-			CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
+			flag = CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
 		}
+		return flag;
 	}
 
-	protected final void requestEnergy(ElementTagCompound tag) {
+	protected final boolean requestEnergy(ElementTagCompound tag) {
+		boolean flag = false;
 		for (CrystalElement e : tag.elementSet()) {
-			this.requestEnergy(e, tag.getValue(e));
+			flag &= this.requestEnergy(e, tag.getValue(e));
 		}
+		return flag;
 	}
 
-	protected final void requestEnergyDifference(ElementTagCompound tag) {
+	protected final boolean requestEnergyDifference(ElementTagCompound tag) {
 		tag.subtract(energy);
-		this.requestEnergy(tag);
+		return this.requestEnergy(tag);
 	}
 
 	public final int getRemainingSpace(CrystalElement e) {
