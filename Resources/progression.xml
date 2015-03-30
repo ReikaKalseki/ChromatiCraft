@@ -6,7 +6,7 @@
 		</title>
 		<hint>
 			Crystal energy is mostly an ethereal, intagible force. However, when concentrated, it may have a physical manifestation.
-			</hint>
+		</hint>
 		<reveal>
 			Sure enough, you have found places where crystal energy has coalesced and formed regular, glassy formations, ones that radiate the effects of their element.
 		</reveal>
@@ -253,6 +253,182 @@
 			These refractors of a sort seem to be able to reconcentrate and repeat the signal.
 		</reveal>
 	</repeater>
+	<rainbowforest>
+		<title>
+			Magical Forests
+		</title>
+		<hint>
+			You have heard rumors of forests populated with those brightly colored trees as far as the eye can see...
+		</hint>
+		<reveal>
+			Not only do such forests exist, but they also teem with animals and plants, and the magic keeps hostile forces at bay.
+		</reveal>
+	</rainbowforest>
+	<dimension>
+		<title>
+			Other Worlds
+		</title>
+		<hint>
+			You have been to several other worlds, each stranger than the last...could there be more?
+		</hint>
+		<reveal>
+			There are indeed, but this one...is different.
+		</reveal>
+	</dimension>
+	<ctm>
+		<title>
+			Restoration
+		</title>
+		<hint>
+			A ruined structure. Scattered pieces.
+		</hint>
+		<reveal>
+			The reward for completing and restoring the monument must be large.
+		</reveal>
+	</ctm>
+	<storage>
+		<title>
+			Lumen Storage
+		</title>
+		<hint>
+			Some constructs need to be moved around, making repeater-based power difficult. Is there an alternative?
+		</hint>
+		<reveal>
+			Fortunately, you have found out how to store energy in a crystal matrix for exactly this purpose.
+		</reveal>
+	</storage>
+	<balllightning>
+		<title>
+			Orbs of Energy
+		</title>
+		<hint>
+			Pylons and some trees seem to spawn odd balls of energy.
+		</hint>
+		<reveal>
+			They do not seem particularly useful, but at least they are not obviously dangerous.
+		</reveal>
+	</balllightning>
+	<powercrystal>
+		<title>
+			Recharge
+		</title>
+		<hint>
+			Pylons drain too quickly for instensive use, and take too long to recharge.
+		</hint>
+		<reveal>
+			That ring of iridescent crystals dramatically helps.
+		</reveal>
+	</powercrystal>
+	<killdragon>
+		<title>
+			Aerial Predator
+		</title>
+		<hint>
+			The static sky is empty...save for a massive dragon.
+		</hint>
+		<reveal>
+			Killing it has revealed yet more of the world to you.
+		</reveal>
+	</killdragon>
+	<breakspawner>
+		<title>
+			Endless Mobs
+		</title>
+		<hint>
+			These metal cages spew forth endless creatures...
+		</hint>
+		<reveal>
+			The only way to stop them is to destroy them.
+		</reveal>
+	</breakspawner>
+	<killwither>
+		<title>
+			Eldritch Nightmare
+		</title>
+		<hint>
+			Four soul sand. Three wither skulls. What could this possibly be useful for?
+		</hint>
+		<reveal>
+			An undead monstrosity, though its loot proved useful.
+		</reveal>
+	</killwither>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
+	<name>
+		<title>
+
+		</title>
+		<hint>
+
+		</hint>
+		<reveal>
+
+		</reveal>
+	</name>
 	<name>
 		<title>
 

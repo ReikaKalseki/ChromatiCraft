@@ -110,6 +110,7 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(4, j+xSize, k+80, 22, 39, 42, 168, file, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -130,6 +131,10 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 		else if (button.id == 3) {
 			this.goTo(ChromaGuis.REFRAGMENT, null);
+			this.resetOffset();
+		}
+		else if (button.id == 4) {
+			this.goTo(ChromaGuis.NOTES, null);
 			this.resetOffset();
 		}
 		this.initGui();

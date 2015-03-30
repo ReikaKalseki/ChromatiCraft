@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
@@ -131,7 +131,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 	}
 
 	private void giveResearch(ChromaResearch r) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RERESEARCH.ordinal(), (World)null, 0, 0, 0, r.ordinal());
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RERESEARCH.ordinal(), Minecraft.getMinecraft().theWorld, 0, 0, 0, r.ordinal());
 		missing.remove(r);
 		this.recalculateMissingVisible();
 	}

@@ -39,7 +39,7 @@ public class ChromaNames {
 		"chromacraft.chromadust", "chromacraft.auradust", "chromacraft.puredust", "chromacraft.focusdust", "chromacraft.elementdust",
 		"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust", "chromacraft.enderdust", "chromacraft.waterdust",
 		"chromacraft.firaxite", "chromacraft.placeholder4", "chromacraft.placeholder5", "chromacraft.cavern", "chromacraft.burrow",
-		"chromacraft.ocean", "chromacraft.placeholder6", "chromacraft.placeholder7", "chromacraft.placeholder8"
+		"chromacraft.ocean", "chromacraft.placeholder6", "chromacraft.placeholder7", "chromacraft.endcrystal", "chromacraft.spacedust"
 	};
 
 	public static final String[] storageNames = {

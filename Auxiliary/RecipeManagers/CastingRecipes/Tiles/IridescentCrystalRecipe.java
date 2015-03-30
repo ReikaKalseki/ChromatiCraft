@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
@@ -52,7 +51,7 @@ public class IridescentCrystalRecipe extends PylonRecipe {
 	@Override
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
 		super.onCrafted(te, ep);
-		ProgressStage.POWERCRYSTAL.stepPlayerTo(ep);
+		//ProgressStage.POWERCRYSTAL.stepPlayerTo(ep);
 	}
 
 }

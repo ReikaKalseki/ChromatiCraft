@@ -217,7 +217,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
 			MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);
-			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 			MinecraftForge.EVENT_BUS.register(PylonFinderOverlay.instance);
 		}
 
@@ -300,6 +299,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!this.isLocked()) {
 			proxy.addArmorRenders();
 			proxy.registerRenderers();
+		}
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 		}
 
 		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());

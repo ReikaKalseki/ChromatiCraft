@@ -42,11 +42,17 @@ public class PylonFinder {
 	//private final int stepRange;
 	private final CrystalReceiver target;
 	private final CrystalElement element;
+
 	private int steps = 0;
+	private int stepsThisTick = 0;
+	private boolean suspended = false;
+	public static final int MAX_STEPS_PER_TICK = 1000;
 
 	private static boolean invalid = false;
 
 	private static final HashMap<WorldLocation, EnumMap<CrystalElement, ArrayList<CrystalPath>>> paths = new HashMap();
+
+	//private final HashMap<ChunkCoordIntPair, ChunkCopy> chunkCache = new HashMap();
 
 	PylonFinder(CrystalElement e, CrystalReceiver r) {
 		element = e;
@@ -195,9 +201,17 @@ public class PylonFinder {
 			return;
 		}
 		steps++;
+		stepsThisTick++;
 		if (steps > 200) {
 			//return;
 		}
+		/*
+		if (stepsThisTick >= MAX_STEPS_PER_TICK) {
+			stepsThisTick = 0;
+			this.suspendUntilNextTick(r);
+			return;
+		}
+		 */
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
 		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
@@ -231,6 +245,12 @@ public class PylonFinder {
 			duplicates.remove(loc);
 		}
 	}
+
+	/*
+	private void suspendUntilNextTick(CrystalReceiver r) {
+		suspended = true;
+	}
+	 */
 
 	static boolean lineOfSight(WorldLocation l1, WorldLocation l2) {
 		return lineOfSight(l1.getWorld(), l1.xCoord, l1.yCoord, l1.zCoord, l2.xCoord, l2.yCoord, l2.zCoord);
@@ -282,5 +302,88 @@ public class PylonFinder {
 	static void stopAllSearches() {
 		invalid = true;
 	}
+	/*
+	void receiveChunk(Chunk c) {
+		ChunkCoordIntPair key = c.getChunkCoordIntPair();
+		ChunkCopy copy = new ChunkCopy(c);
+		chunkCache.put(key, copy);
+	}
 
+	private static class ChunkCopy extends Chunk/*implements IBlockAccess*//* {
+
+		private final short[][][] data = new short[16][256][16];
+
+		private ChunkCopy(Chunk c) {
+			super(c.worldObj, c.xPosition, c.zPosition);
+			for (int i = 0; i < 16; i++) {
+				for (int k = 0; k < 16; k++) {
+					for (int j = 0; j < 256; j++) {
+						data[i][j][k] = encode(c.getBlock(i, j, k), c.getBlockMetadata(i, j, k));
+					}
+				}
+			}
+		}
+
+		private static short encode(Block b, int meta) {
+			return (short)(Block.getIdFromBlock(b)+(meta << 12));
+		}
+
+		private static BlockKey decode(short id) {
+			return new BlockKey(Block.getBlockById(id & 4095), (id >> 12));
+		}
+
+		@Override
+		public Block getBlock(int x, int y, int z) {
+			return this.decode(data[x&15][y][z&15]).blockID;
+		}
+
+		@Override
+		public int getBlockMetadata(int x, int y, int z) {
+			return this.decode(data[x&15][y][z&15]).metadata;
+		}
+		/*
+		@Override
+		public boolean isAirBlock(int x, int y, int z) {
+			return this.getBlock(x, y, z).getMaterial() == Material.air;
+		}
+
+		@Override
+		public TileEntity getTileEntity(int x, int y, int z) {return null;}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public int getLightBrightnessForSkyBlocks(int x, int y, int z, int p_72802_4_) {return 0;}
+
+		@Override
+		public int isBlockProvidingPowerTo(int x, int y, int z, int side) {return 0;}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public BiomeGenBase getBiomeGenForCoords(int x, int z) {return null;}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public int getHeight() {return 256;}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public boolean extendedLevelsInChunkCache() {return false;}
+
+		@Override
+		public boolean isSideSolid(int x, int y, int z, ForgeDirection side, boolean _default) {return false;}
+	 *//*
+}
+
+static class ChunkRequest {
+
+	final PylonFinder pathfinder;
+	final WorldChunk chunk;
+
+	private ChunkRequest(PylonFinder f, WorldChunk wc) {
+		pathfinder = f;
+		chunk = wc;
+	}
+
+}
+	  */
 }

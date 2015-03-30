@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -25,12 +27,19 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -76,14 +85,25 @@ public class BlockChromaPortal extends Block {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof TileEntityCrystalPortal && ((TileEntityCrystalPortal)te).complete) {
-			ReikaEntityHelper.transferEntityToDimension(e, ExtraChromaIDs.DIMID.getValue(), new ChromaTeleporter());
-		}
-		else {
-			e.motionY = 1.5;
-			e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
-			ChromaSounds.POWERDOWN.playSound(e);
+		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof TileEntityCrystalPortal) {
+			TileEntityCrystalPortal te = (TileEntityCrystalPortal)tile;
+			if (e instanceof EntityPlayer) {
+				if (te.complete) {
+					EntityPlayer ep = (EntityPlayer)e;
+					if (te.canPlayerUse(ep)) {
+						int dim = te.getTargetDimension();
+						ReikaEntityHelper.transferEntityToDimension(e, dim, new ChromaTeleporter(dim));
+						ProgressStage.DIMENSION.stepPlayerTo(ep);
+						return;
+					}
+				}
+				else {
+					e.motionY = 1.5;
+					e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
+					ChromaSounds.POWERDOWN.playSound(e);
+				}
+			}
 		}
 	}
 
@@ -91,7 +111,7 @@ public class BlockChromaPortal extends Block {
 
 		private boolean complete;
 		private int charge;
-		public static final int MINCHARGE = 200;
+		public final int MINCHARGE = 300;
 		private int ticks = 0;
 
 		@Override
@@ -99,19 +119,22 @@ public class BlockChromaPortal extends Block {
 			if (ticks == 0)
 				this.onFirstTick();
 			ticks++;
-			if (charge > 0 && charge < MINCHARGE) {
-				charge++;
+			if (complete) {
+				if (charge < MINCHARGE) {
+					charge++;
+					this.chargingParticles();
+				}
+			}
+			else {
+				charge = 0;
 			}
 			int pos = this.getPortalPosition();
 			if (worldObj.isRemote) {
 				if (pos == 5) {
+					this.idleParticles();
 					if (complete) {
-						this.idleParticles();
-						if (charge > 0) {
-							this.chargingParticles();
-							if (charge >= MINCHARGE) {
-								this.activeParticles();
-							}
+						if (charge >= MINCHARGE) {
+							this.activeParticles();
 						}
 					}
 				}
@@ -123,6 +146,14 @@ public class BlockChromaPortal extends Block {
 					ChromaSounds.PORTAL.playSoundAtBlock(this);
 				}
 			}
+		}
+
+		public int getTargetDimension() {
+			return this.getBlockMetadata() == 15 ? 0 : ExtraChromaIDs.DIMID.getValue();
+		}
+
+		public boolean canPlayerUse(EntityPlayer ep) {
+			return charge >= MINCHARGE && ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.DIMENSION);
 		}
 
 		public int getTicks() {
@@ -139,48 +170,99 @@ public class BlockChromaPortal extends Block {
 
 		@SideOnly(Side.CLIENT)
 		private void idleParticles() {
-			/*
-			if (worldObj.rand.nextInt(4) == 0) {
-				Coordinate[] pos = new Coordinate[]{new Coordinate(-2, 5, -2), new Coordinate(2, 5, -2), new Coordinate(-2, 5, 2), new Coordinate(2, 5, 2)};
-				for (int i = 0; i < pos.length; i++) {
-					Coordinate c = pos[i];
-					int x = xCoord+c.xCoord;
-					int y = yCoord+c.yCoord;
-					int z = zCoord+c.zCoord;
-					if (worldObj.getBlock(x, y, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance() && worldObj.getBlockMetadata(x, y, z) == 5) {
-						//EntityFX fx = new EntityBoltFX(worldObj, x+0.5, y+0.5, z+0.5, x+5, y, z+5);
-						double px = x+worldObj.rand.nextDouble();
-						double py = y+worldObj.rand.nextDouble();
-						double pz = z+worldObj.rand.nextDouble();
-						EntityBallLightningFX fx = new EntityBallLightningFX(worldObj, px, py, pz, CrystalElement.elements[ticks/8%16]);
-						fx.noClip = false;
-						double v = 0.125;
-						double vx = v*-Math.signum(c.xCoord);
-						double vy = -0.125;
-						double vz = v*-Math.signum(c.zCoord);
-						fx.motionX = vx;
-						fx.motionY = vy;
-						fx.motionZ = vz;
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					}
-				}
-			}*/
-
-			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
-			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+			double px = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 1.5);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 1.5);
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+8.25, zCoord+0.5, vx, 0, vz).setGravity(g);
+			int color = CrystalElement.getBlendedColor(ticks, 40);
+			int red = ReikaColorAPI.getRed(color);
+			int green = ReikaColorAPI.getGreen(color);
+			int blue = ReikaColorAPI.getBlue(color);
+			int l = ReikaRandomHelper.getRandomPlusMinus(80, 40);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, yCoord+1.25, pz, 0, 0, 0).setGravity(g).setLife(l).setColor(red, green, blue);
+			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
 		@SideOnly(Side.CLIENT)
 		private void chargingParticles() {
-
+			if (worldObj.rand.nextInt(4) == 0) {
+				int dx = worldObj.rand.nextBoolean() ? 3 : -3;
+				int dz = worldObj.rand.nextBoolean() ? 3 : -3;
+				int x = xCoord+dx;
+				int y = yCoord+5;
+				int z = zCoord+dz;
+				if (worldObj.getBlock(x, y, z) == ChromaBlocks.PYLONSTRUCT.getBlockInstance() && worldObj.getBlockMetadata(x, y, z) == 5) {
+					//EntityFX fx = new EntityBoltFX(worldObj, x+0.5, y+0.5, z+0.5, x+5, y, z+5);
+					double px = x+worldObj.rand.nextDouble();
+					double py = y+worldObj.rand.nextDouble();
+					double pz = z+worldObj.rand.nextDouble();
+					EntityBallLightningFX fx = new EntityBallLightningFX(worldObj, px, py, pz, CrystalElement.elements[ticks/8%16]);
+					fx.noClip = false;
+					double v = 0.125;
+					double vx = v*-Math.signum(dx);
+					double vy = -0.125;
+					double vz = v*-Math.signum(dz);
+					fx.motionX = vx;
+					fx.motionY = vy;
+					fx.motionZ = vz;
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
 
 		@SideOnly(Side.CLIENT)
 		private void activeParticles() {
+			CrystalElement e = CrystalElement.elements[ticks/8%16];
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+8.25, zCoord+0.5, vx, 0, vz).setGravity(g);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
+
+			//---------------------------
+			int dx = worldObj.rand.nextBoolean() ? 3 : -3;
+			int dz = worldObj.rand.nextBoolean() ? 3 : -3;
+			double x = xCoord+dx+worldObj.rand.nextDouble();
+			double y = yCoord+5+worldObj.rand.nextDouble();
+			double z = zCoord+dz+worldObj.rand.nextDouble();
+			double v = 0.0625;
+			vx = x < xCoord ? v : -v;
+			vz = z < zCoord ? v : -v;
+			if (worldObj.rand.nextBoolean())
+				vx = 0;
+			else
+				vz = 0;
+
+			EntityFX fx2 = new EntityCenterBlurFX(e, worldObj, x, y, z, vx, 0, vz).setScale(2).setNoSlowdown();
+			fx2.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+
+
+			//----------------------------------
+			dx = worldObj.rand.nextBoolean() ? 7 : -7;
+			dz = worldObj.rand.nextBoolean() ? 7 : -7;
+			if (worldObj.rand.nextBoolean())
+				dx += Math.signum(dx)*-4;
+			else
+				dz += Math.signum(dz)*-4;
+			x = xCoord+dx+worldObj.rand.nextDouble();
+			y = yCoord+5+worldObj.rand.nextDouble();
+			z = zCoord+dz+worldObj.rand.nextDouble();
+			v = 0.0625;
+			vx = x < xCoord ? v : -v;
+			vz = z < zCoord ? v : -v;
+			if (worldObj.rand.nextBoolean())
+				vx = 0;
+			else
+				vz = 0;
+
+			boolean longAxis = (Math.abs(dx) == 7 && vx != 0) || (Math.abs(dz) == 7 && vz != 0);
+			int l = !longAxis ? 100 : 60;
+
+			EntityRuneFX fx3 = new EntityRuneFX(worldObj, x, y, z, vx, 0, vz, e).setScale(2).setLife(l);
+			fx3.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx3);
 		}
 
 		@Override
@@ -195,8 +277,13 @@ public class BlockChromaPortal extends Block {
 		public void validateStructure(World world, int x, int y, int z) {
 			if (worldObj.isRemote)
 				return;
-			complete = ChromaStructures.getPortalStructure(world, x, y, z).matchInWorld();
-			complete &= this.getEntities(world, x, y, z);
+			if (this.getBlockMetadata() == 15) {
+				complete = true;
+			}
+			else {
+				complete = ChromaStructures.getPortalStructure(world, x, y, z).matchInWorld();
+				complete &= this.getEntities(world, x, y, z);
+			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
@@ -298,8 +385,32 @@ public class BlockChromaPortal extends Block {
 
 	public static class ChromaTeleporter extends Teleporter {
 
-		public ChromaTeleporter() {
-			super(MinecraftServer.getServer().worldServerForDimension(ExtraChromaIDs.DIMID.getValue()));
+		private ChromaTeleporter() {
+			this(ExtraChromaIDs.DIMID.getValue());
+		}
+
+		private ChromaTeleporter(int dim) {
+			super(MinecraftServer.getServer().worldServerForDimension(dim));
+		}
+
+		@Override
+		public void placeInPortal(Entity e, double x, double y, double z, float facing) {
+			e.setLocationAndAngles(0, 1024, 0, 0, 0);
+			this.placeInExistingPortal(e, x, y, z, facing);
+		}
+
+		@Override
+		public boolean placeInExistingPortal(Entity entity, double x, double y, double z, float facing) {
+			return true;
+		}
+
+		private void makeReturnPortal(World world, int x, int y, int z) {
+
+		}
+
+		@Override
+		public boolean makePortal(Entity e) { //NOOP - custom worldgen for return portal
+			return false;//super.makePortal(e);
 		}
 
 	}

@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -125,6 +126,7 @@ public enum ChromaResearch implements ProgressElement {
 	PATH(			ChromaBlocks.PATH,												ResearchLevel.RUNECRAFT),
 	GLOW(			ChromaBlocks.GLOW,			CrystalElement.RED.ordinal(),		ResearchLevel.BASICCRAFT),
 	RELAY(			ChromaBlocks.RELAY,												ResearchLevel.NETWORKING),
+	PORTAL(			ChromaBlocks.PORTAL,											ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -161,7 +163,7 @@ public enum ChromaResearch implements ProgressElement {
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
-	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.BASICCRAFT,	ProgressStage.CHROMA),
+	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -197,6 +199,7 @@ public enum ChromaResearch implements ProgressElement {
 	CAVERN(			ChromaStructures.Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
 	BURROW(			ChromaStructures.Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
 	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	;
 
 	private final ItemStack iconItem;
@@ -493,6 +496,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == GLOW)
 			return true;
+		if (this == PORTAL)
+			return true;
 		return false;
 	}
 
@@ -608,13 +613,16 @@ public enum ChromaResearch implements ProgressElement {
 		}
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
+			ArrayList<ItemStack> li = new ArrayList();
 			if (item instanceof ItemBlockDyeTypes || item instanceof ItemBlockCrystalColors || item instanceof ItemBlockCrystal) {
-				ArrayList<ItemStack> li = new ArrayList();
 				for (int i = 0; i < 16; i++) {
 					li.add(block.getStackOfMetadata(i));
 				}
-				return li;
 			}
+			else {
+				li.add(block.getStackOf());
+			}
+			return li;
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());
@@ -679,7 +687,11 @@ public enum ChromaResearch implements ProgressElement {
 			return new ArrayList();
 		ArrayList<CastingRecipe> rec = new ArrayList();
 		for (ItemStack is : li) {
-			rec.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is));
+			Collection<CastingRecipe> cr = RecipesCastingTable.instance.getAllRecipesMaking(is);
+			for (CastingRecipe c : cr) {
+				if (c.isIndexed())
+					rec.add(c);
+			}
 		}
 		return rec;
 	}
@@ -761,7 +773,7 @@ public enum ChromaResearch implements ProgressElement {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public String getShortDesc() {
-		return "A new item to investigate";
+		return "Something new to investigate";//"A new item to investigate";
 	}
 
 	static {

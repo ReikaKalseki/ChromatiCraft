@@ -33,11 +33,13 @@ import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Recipe.RecipePattern;
@@ -83,8 +85,12 @@ public class CastingRecipe {
 		return 1;
 	}
 
-	public void drawInParticlesTo(World world, int x, int y, int z) {
+	public void onRecipeTick(TileEntityCastingTable te) {
 
+	}
+
+	public ChromaSounds getSoundOverride(int craftSoundTimer) {
+		return null;
 	}
 
 	public int getExperience() {
@@ -171,6 +177,10 @@ public class CastingRecipe {
 		return tag;
 	}
 
+	public boolean isIndexed() {
+		return true;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		protected static final BlockArray runeRing = new BlockArray();
@@ -220,6 +230,13 @@ public class CastingRecipe {
 
 		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
 			runes.addRune(color, rx, ry, rz);
+			return this;
+		}
+
+		protected CastingRecipe addRunes(RuneViewer view) {
+			Map<Coordinate, CrystalElement> map = view.getRunes();
+			for (Coordinate c : map.keySet())
+				runes.addRune(map.get(c), c.xCoord, c.yCoord, c.zCoord);
 			return this;
 		}
 

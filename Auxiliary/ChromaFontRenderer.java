@@ -81,7 +81,7 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 		this.rerandomize();
 	}
 
-	private void rerandomize() {
+	public void rerandomize() {
 		for (int i = 0; i < offsets.length; i++) {
 			offsets[i] = ReikaRandomHelper.getRandomPlusMinus(0, 4);
 		}

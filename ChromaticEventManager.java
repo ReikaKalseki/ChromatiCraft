@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -105,6 +106,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
+import codechicken.lib.math.MathHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -328,6 +330,17 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void checkRainbowForest(LivingUpdateEvent evt) {
+		if (evt.entityLiving.ticksExisted > 600 && evt.entityLiving.ticksExisted%32 == 0 && evt.entityLiving instanceof EntityPlayer) {
+			int x = MathHelper.floor_double(evt.entityLiving.posX);
+			int z = MathHelper.floor_double(evt.entityLiving.posZ);
+			if (evt.entityLiving.worldObj.getBiomeGenForCoords(x, z) instanceof BiomeRainbowForest) {
+				ProgressStage.RAINBOWFOREST.stepPlayerTo((EntityPlayer)evt.entityLiving);
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void stopSomeTicks(LivingUpdateEvent evt) {
 		if (TileEntityAIShutdown.stopUpdate(evt.entityLiving)) {
 			evt.setCanceled(true);
@@ -448,6 +461,19 @@ public class ChromaticEventManager {
 				else if (is.getItem() instanceof ActivatedInventoryItem) {
 					this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is));
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+	public void triggerBossProgress(LivingDeathEvent ev) {
+		if (ev.source.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)ev.source.getEntity();
+			if (ev.entityLiving instanceof EntityDragon) {
+				ProgressStage.KILLDRAGON.stepPlayerTo(ep);
+			}
+			else if (ev.entityLiving instanceof EntityWither) {
+				ProgressStage.KILLWITHER.stepPlayerTo(ep);
 			}
 		}
 	}

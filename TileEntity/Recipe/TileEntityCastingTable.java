@@ -173,11 +173,17 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 
 		craftSoundTimer++;
-		if (craftSoundTimer >= this.getSoundLength() && activeRecipe != null && activeRecipe.getDuration() > 20) {
+		ChromaSounds sound = activeRecipe.getSoundOverride(craftSoundTimer);
+		if (sound != null) {
+			sound.playSoundAtBlock(this);
+			craftSoundTimer = 0;
+		}
+		else if (craftSoundTimer >= this.getSoundLength() && activeRecipe.getDuration() > 20) {
 			craftSoundTimer = 0;
 			ChromaSounds.CRAFTING.playSoundAtBlock(this);
 		}
 		//ReikaJavaLibrary.pConsole(craftingTick, Side.SERVER);
+		activeRecipe.onRecipeTick(this);
 		if (activeRecipe instanceof PylonRecipe) {
 			ElementTagCompound req = ((PylonRecipe)activeRecipe).getRequiredAura();
 			if (!energy.containsAtLeast(req)) {
@@ -625,12 +631,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return false;
+		return slot != 9;
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return false;
+		return slot == 9;
 	}
 
 	@Override

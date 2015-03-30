@@ -11,10 +11,10 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +34,7 @@ import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
@@ -58,6 +59,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -65,6 +67,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -91,6 +94,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public static final int RANGE = 48;
 
+	private static final Collection<Coordinate> crystalPositions = new ArrayList();
+
 	private static Class node;
 	private static HashMap<String, ArrayList<Integer>> nodeCache;
 
@@ -106,6 +111,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				e.printStackTrace();
 			}
 		}
+
+		crystalPositions.add(new Coordinate(-3, -3, -1));
+		crystalPositions.add(new Coordinate(-1, -3, -3));
+		crystalPositions.add(new Coordinate(3, -3, -1));
+		crystalPositions.add(new Coordinate(1, -3, -3));
+		crystalPositions.add(new Coordinate(-3, -3, 1));
+		crystalPositions.add(new Coordinate(-1, -3, 3));
+		crystalPositions.add(new Coordinate(3, -3, 1));
+		crystalPositions.add(new Coordinate(1, -3, 3));
 	}
 
 	@Override
@@ -233,9 +247,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 		int a = 1;
 		if (energy <= max-a) {
-			BlockArray blocks = this.getBoosterCrystals(world, x, y, z);
+			ArrayList<TileEntityChromaCrystal> blocks = this.getBoosterCrystals(world, x, y, z);
 			int c = this.isEnhanced() ? 3 : 2;
-			for (int i = 0; i < blocks.getSize(); i++) {
+			for (int i = 0; i < blocks.size(); i++) {
 				energy += a;
 				a *= c;
 				if (i == 7) { //8 crystals
@@ -245,8 +259,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					return;
 				}
 			}
-			if (blocks.getSize() > 0 && this.getTicksExisted()%875 == 0) {
+			if (blocks.size() > 0 && this.getTicksExisted()%875 == 0) {
 				ChromaSounds.POWERCRYS.playSoundAtBlock(this);
+			}
+			if (blocks.size() == 8) {
+				ProgressStage.POWERCRYSTAL.stepPlayerTo(blocks.get(0).getPlacer());
 			}
 			if (world.isRemote && !blocks.isEmpty())
 				this.spawnRechargeParticles(world, x, y, z, blocks);
@@ -265,12 +282,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void spawnRechargeParticles(World world, int x, int y, int z, BlockArray blocks) {
-		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);//blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+	private void spawnRechargeParticles(World world, int x, int y, int z, ArrayList<TileEntityChromaCrystal> blocks) {
+		int i = 0;
+		for (TileEntityChromaCrystal te : blocks) {
+			int dx = te.xCoord;
+			int dy = te.yCoord;
+			int dz = te.zCoord;
 			double ddx = dx-x;
 			double ddy = dy-y-0.25;
 			double ddz = dz-z;
@@ -283,10 +300,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			double py = dy+0.125;
 			double pz = dz+0.5;
 			//EntityRuneFX fx = new EntityRuneFX(world, dx+0.5, dy+0.5, dz+0.5, vx, vy, vz, color);
-			float sc = (float)(2F+Math.sin(4*Math.toRadians(this.getTicksExisted()+i*90/blocks.getSize())));
+			float sc = (float)(2F+Math.sin(4*Math.toRadians(this.getTicksExisted()+i*90/blocks.size())));
 			EntityBlurFX fx = new EntityBlurFX(color, world, px, py, pz, vx, vy, vz).setScale(sc).setLife(38).setNoSlowdown();
 			//EntityLaserFX fx = new EntityLaserFX(color, world, px, py, pz, vx, vy, vz).setScale(3);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			i++;
 		}
 	}
 
@@ -306,22 +324,22 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		return blocks;
 	}
 
-	public BlockArray getBoosterCrystals(World world, int x, int y, int z) {
-		BlockArray blocks = new BlockArray();
-		Block b = ChromaTiles.CRYSTAL.getBlock();
-		int meta = ChromaTiles.CRYSTAL.getBlockMetadata();
-		blocks.addBlockCoordinateIf(world, x-3, y-3, z-1, b, meta);
-		blocks.addBlockCoordinateIf(world, x-1, y-3, z-3, b, meta);
-
-		blocks.addBlockCoordinateIf(world, x+3, y-3, z-1, b, meta);
-		blocks.addBlockCoordinateIf(world, x+1, y-3, z-3, b, meta);
-
-		blocks.addBlockCoordinateIf(world, x-3, y-3, z+1, b, meta);
-		blocks.addBlockCoordinateIf(world, x-1, y-3, z+3, b, meta);
-
-		blocks.addBlockCoordinateIf(world, x+3, y-3, z+1, b, meta);
-		blocks.addBlockCoordinateIf(world, x+1, y-3, z+3, b, meta);
-		return blocks;
+	public ArrayList<TileEntityChromaCrystal> getBoosterCrystals(World world, int x, int y, int z) {
+		ArrayList<TileEntityChromaCrystal> li = new ArrayList();
+		EntityPlayer owner = null;
+		for (Coordinate c : crystalPositions) {
+			if (ChromaTiles.getTile(world, x+c.xCoord, y+c.yCoord, z+c.zCoord) == ChromaTiles.CRYSTAL) {
+				TileEntityChromaCrystal te = (TileEntityChromaCrystal)world.getTileEntity(x+c.xCoord, y+c.yCoord, z+c.zCoord); {
+					EntityPlayer ep = te.getPlacer();
+					if (ep != null && (owner == null || ep == owner)) {
+						if (owner == null)
+							owner = ep;
+						li.add(te);
+					}
+				}
+			}
+		}
+		return li;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -359,6 +377,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.SHOCK.stepPlayerTo(ep);
+			ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
 			if (ModList.BLOODMAGIC.isLoaded()) {
 				int drain = 5000;
 				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {

@@ -279,14 +279,14 @@ public class ChromaClientEventController {
 	private boolean loadLexiconRecipe(GuiContainer gui, ItemStack is) {
 		if (is != null && is.getItem() != null) {
 			UniqueIdentifier uid = GameRegistry.findUniqueIdentifierFor(is.getItem());
-			if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
-				EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-				ChromaResearch r = ChromaResearch.getPageFor(is);
-				if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe()) {
-					ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
-					return true;
-				}
+			//if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			ChromaResearch r = ChromaResearch.getPageFor(is);
+			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe()) {
+				ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
+				return true;
 			}
+			//}
 		}
 		return false;
 	}

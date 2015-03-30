@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -343,10 +344,19 @@ public class TankRender extends ChromaRenderBase {
 				double min = flip ? 1-o : 0+o;
 				double max = flip ? h+o : h-o;
 
-				int br = f.getLuminosity() > 10 ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
+				int bc = te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
+				int[] brs = new int[6];
+				for (int k = 0; k < 6; k++) {
+					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
+					brs[k] = b.getMixedBrightnessForBlock(te.worldObj, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+				}
+
+				int br = f.getLuminosity() > 10 ? 240 : bc;
 				if (x == te.xCoord && y == te.yCoord && z == te.zCoord)
 					br = te.worldObj.getBlock(x, y+1, z).getMixedBrightnessForBlock(te.worldObj, x, y+1, z);
 				v5.setBrightness(br);
+
+				RenderBlocks rb = RenderBlocks.getInstance();
 
 				if (h < 1 || b.shouldSideBeRendered(te.worldObj, x, y, z, ForgeDirection.UP.ordinal())) {
 					this.setFaceBrightness(v5, ForgeDirection.UP, f.getLuminosity());
@@ -354,9 +364,38 @@ public class TankRender extends ChromaRenderBase {
 					double ew = blocks.hasBlock(x-1, y, z) ? 0 : 0+o;
 					double es = blocks.hasBlock(x, y, z+1) ? 1 : 1-o;
 					double en = blocks.hasBlock(x, y, z-1) ? 0 : 0+o;
+					//ReikaRenderHelper.prepareAmbientOcclusion(te.worldObj, x, y, z, b, rb, ForgeDirection.UP, 1, 1, 1);
+
+					//v5.setColorOpaque_F(rb.colorRedTopRight, rb.colorGreenTopRight, rb.colorBlueTopRight);
+					//v5.setBrightness(rb.brightnessTopRight);
+
+					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
+					//	v5.setBrightness((bc+brs[ForgeDirection.WEST.ordinal()]+brs[ForgeDirection.SOUTH.ordinal()])/4);
+					//}
 					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, 1, h, par8), es, u, dv);
+
+					//v5.setColorOpaque_F(rb.colorRedBottomRight, rb.colorGreenBottomRight, rb.colorBlueBottomRight);
+					//v5.setBrightness(rb.brightnessBottomRight);
+
+					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
+					//	v5.setBrightness((bc+brs[ForgeDirection.EAST.ordinal()]+brs[ForgeDirection.SOUTH.ordinal()])/4);
+					//}
 					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, 1, h, par8), es, du, dv);
+
+					//v5.setColorOpaque_F(rb.colorRedBottomLeft, rb.colorGreenBottomLeft, rb.colorBlueBottomLeft);
+					//v5.setBrightness(rb.brightnessBottomLeft);
+
+					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
+					//	v5.setBrightness((bc+brs[ForgeDirection.EAST.ordinal()]+brs[ForgeDirection.NORTH.ordinal()])/4);
+					//}
 					v5.addVertexWithUV(ee, max+te.getHeightOffsetAtCorner(x, y, z, 1, -1, h, par8), en, du, v);
+
+					//v5.setColorOpaque_F(rb.colorRedTopLeft, rb.colorGreenTopLeft, rb.colorBlueTopLeft);
+					//v5.setBrightness(rb.brightnessTopLeft);
+
+					//if (Minecraft.getMinecraft().gameSettings.fancyGraphics && f.getLuminosity() < 10) {
+					//	v5.setBrightness((bc+brs[ForgeDirection.WEST.ordinal()]+brs[ForgeDirection.NORTH.ordinal()])/4);
+					//}
 					v5.addVertexWithUV(ew, max+te.getHeightOffsetAtCorner(x, y, z, -1, -1, h, par8), en, u, v);
 				}
 

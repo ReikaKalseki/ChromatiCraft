@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -125,6 +126,26 @@ public class ItemChromaBook extends ItemChromaTool {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return 0;
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagCount();
+	}
+
+	public static HashMap<String, PlayerNote> getNotes(ItemStack is) {
+		return null;
+	}
+
+	public static void setNotes(ItemStack is, HashMap<String, PlayerNote> notes) {
+
+	}
+
+	public static class PlayerNote {
+
+		public final String title;
+		public final String note;
+
+		private PlayerNote(String t, String n) {
+			title = t;
+			note = n;
+		}
+
 	}
 
 }

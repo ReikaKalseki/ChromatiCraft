@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -162,6 +163,9 @@ public class GuiCastingRecipe extends GuiBookSection {
 	}
 
 	protected void drawAuxData(int posX, int posY) {
+		ReikaRenderHelper.disableLighting();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glColor4f(1, 1, 1, 1);
 		ChromaBookData.drawCastingRecipe(fontRendererObj, ri, this.getActiveRecipe(), subpage, posX, posY);
 	}
 
@@ -170,6 +174,8 @@ public class GuiCastingRecipe extends GuiBookSection {
 		int posY = (height - ySize) / 2-8;
 
 		ReikaRenderHelper.disableLighting();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glColor4f(1, 1, 1, 1);
 		int msx = ReikaGuiAPI.instance.getMouseRealX();
 		int msy = ReikaGuiAPI.instance.getMouseRealY();
 
@@ -202,12 +208,17 @@ public class GuiCastingRecipe extends GuiBookSection {
 		if (subpage == 3) {
 			ElementTagCompound tag = ((PylonRecipe)this.getActiveRecipe()).getRequiredAura();
 			int i = 0;
-			for (CrystalElement e : tag.elementSet()) {
+			Collection<CrystalElement> set = tag.elementSet();
+			boolean wrap = set.size() > 10;
+			for (CrystalElement e : set) {
 				String s1 = String.format("%s:", e.displayName);
-				String s2 = String.format("%d Lumens", tag.getValue(e));
+				String s2 = String.format("%d %s", tag.getValue(e), wrap ? "L" : "Lumens");
 				int color = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
-				fontRendererObj.drawString(s1, posX+descX+3, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, color);
-				fontRendererObj.drawString(s2, posX+descX+3+56, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*i, color);
+				int x1 = posX+descX+3+(wrap ? (i/8)*120 : 0);
+				int x2 = x1+56;
+				int y = posY+descY+(fontRendererObj.FONT_HEIGHT+2)*(wrap ? i%8 : i);
+				fontRendererObj.drawString(s1, x1, y, color);
+				fontRendererObj.drawString(s2, x2, y, color);
 				i++;
 			}
 		}

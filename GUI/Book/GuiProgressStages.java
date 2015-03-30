@@ -34,6 +34,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class GuiProgressStages extends GuiScrollingPage {
@@ -224,6 +225,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 		}
 		else {
 			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
 			ProgressStage p = active;//this.getStage();
 			fontRendererObj.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
 
@@ -239,6 +242,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(this.getIncompleteText(), px, dy, 242, 0xffffff);
 			}
 			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_BLEND);
 		}
 	}
 
@@ -250,6 +254,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		if (p != null) {
 			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			ChromaFontRenderer.FontType.OBFUSCATED.renderer.rerandomize();
 		}
 		active = p;
 	}

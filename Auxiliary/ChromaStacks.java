@@ -69,7 +69,8 @@ public class ChromaStacks {
 	public static final ItemStack oceanLoot 		= ChromaItems.TIERED.getStackOfMetadata(15);
 	public static final ItemStack placehold6Dust 	= ChromaItems.TIERED.getStackOfMetadata(16);
 	public static final ItemStack placehold7Dust 	= ChromaItems.TIERED.getStackOfMetadata(17);
-	public static final ItemStack placehold8Dust 	= ChromaItems.TIERED.getStackOfMetadata(18);
+	public static final ItemStack resocrystal 		= ChromaItems.TIERED.getStackOfMetadata(18);
+	public static final ItemStack spaceDust 		= ChromaItems.TIERED.getStackOfMetadata(19);
 
 	public static final ItemStack blackShard 		= ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard 			= ChromaItems.SHARD.getStackOfMetadata(1);

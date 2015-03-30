@@ -62,7 +62,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 		PLACEHOLDER8(Blocks.stone, ProgressStage.NEVER),
 		NETHER1(Blocks.netherrack, ProgressStage.LINK),
 		NETHER2(Blocks.netherrack, ProgressStage.END),
-		END(Blocks.end_stone, ProgressStage.ABILITY);
+		END(Blocks.end_stone, ProgressStage.ABILITY),
+		END2(Blocks.end_stone, ProgressStage.KILLDRAGON);
 
 		public final ProgressStage level;
 		private final Block genBlock;
@@ -85,6 +86,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 				return 4;
 			if (this == END)
 				return 8;
+			if (this == END2)
+				return 12;
 			return this == PLACEHOLDER8 ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
 		}
 
@@ -93,7 +96,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public boolean renderAsGeode() {
-			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == NETHER2;
+			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == NETHER2 || this == END2;
 		}
 	}
 
@@ -169,7 +172,12 @@ public class BlockTieredOre extends BlockChromaTiered {
 		case END:
 			n = 1+fortune*4;
 			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold8Dust.copy());
+				li.add(ChromaStacks.resocrystal.copy());
+			break;
+		case END2:
+			n = 1+fortune+2*rand.nextInt(1+fortune);
+			for (int i = 0; i < n; i++)
+				li.add(ChromaStacks.spaceDust.copy());
 			break;
 		}
 		return li;
@@ -183,7 +191,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 	@Override
 	public Collection<ItemStack> getNoHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
-		li.addAll(Blocks.stone.getDrops(world, x, y, z, 0, fortune));
+		li.addAll(this.getDisguise(world.getBlockMetadata(x, y, z)).getDrops(world, x, y, z, 0, fortune));
 		return li;
 	}
 

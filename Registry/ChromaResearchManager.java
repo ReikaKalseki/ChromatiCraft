@@ -56,6 +56,8 @@ public final class ChromaResearchManager {
 
 	public final Comparator researchComparator = new ChromaResearchComparator();
 
+	//public final Comparator progressComparator = new ProgressComparator();
+
 	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
 
 	private ChromaResearchManager() {
@@ -72,6 +74,16 @@ public final class ChromaResearchManager {
 		priority.addValue(ResearchLevel.NETWORKING, new ChromaResearchTarget(ChromaResearch.COMPOUNDSTRUCT, 2));
 
 		priority.shuffleValues();
+
+		/*
+		for (int i = 0; i < ResearchLevel.levelList.length; i++) {
+			this.register(ResearchLevel.levelList[i]);
+		}
+
+		for (int i = 0; i < ProgressStage.list.length; i++) {
+			this.register(ProgressStage.list[i]);
+		}
+		 */
 	}
 
 	private void addLink(ChromaResearch obj, ChromaResearch parent) {
@@ -163,6 +175,7 @@ public final class ChromaResearchManager {
 			this.checkForUpgrade(ep);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			this.notifyPlayerOfProgression(ep, r);
 			return true;
 		}
 		return false;

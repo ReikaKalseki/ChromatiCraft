@@ -61,6 +61,7 @@ public class CrystalNetworker implements TickHandler {
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
+	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();
 
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -244,6 +245,13 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		toBreak.clear();
+		/*
+		for (ChunkRequest cr : pathfindingChunkRequests) {
+			Chunk c = cr.chunk.load();
+			cr.pathfinder.receiveChunk(c);
+		}
+		pathfindingChunkRequests.clear();
+		 */
 	}
 
 	public void clear(int dim) {

@@ -42,7 +42,6 @@ public class TileEntityCrystalPlant extends TileEntity {
 	public void grow() {
 		if (growthTick > 0) {
 			growthTick--;
-			this.updateLight();
 			for (int i = 2; i < 6; i++) {
 				if (ReikaRandomHelper.doWithChance(25)) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -58,6 +57,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 				}
 			}
 		}
+		this.updateLight();
 	}
 
 	public void makeRipe() {

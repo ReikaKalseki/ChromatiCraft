@@ -39,7 +39,7 @@ public class BlockCrystalTile extends BlockChromaTile {
 		super(mat);
 		this.setLightLevel(1F);
 		this.setResistance(6000);
-		this.setHardness(6);
+		this.setHardness(4.5F);
 		stepSound = new SoundType("stone", 1.0F, 0.5F);
 	}
 

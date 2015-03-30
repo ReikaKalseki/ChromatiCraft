@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiCraftingRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiFragmentRecovery;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
+import Reika.ChromatiCraft.GUI.Book.GuiNotes;
 import Reika.ChromatiCraft.GUI.Book.GuiPoolRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
@@ -246,6 +247,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiProgressStages(player);
 		case REFRAGMENT:
 			return new GuiFragmentRecovery(player);
+		case NOTES:
+			return new GuiNotes(player);
 		case AURAPOUCH:
 			return new GuiAuraPouch(player);
 		case TRANSITION:

@@ -11,12 +11,14 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -25,8 +27,9 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
@@ -127,7 +130,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setBoolean("turbo", isTurbo);
 	}
 
-	public boolean isTurbocharged() {
+	public final boolean isTurbocharged() {
 		return isTurbo;
 	}
 
@@ -195,6 +198,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	public void setSignalDepth(CrystalElement e, int d) {
 		if (e == this.getActiveColor())
 			depth = d;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		NBT.setBoolean("boosted", isTurbo);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
 	}
 
 }

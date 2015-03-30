@@ -90,12 +90,14 @@ public class ProgressionManager {
 		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
 		RAINBOWFOREST(ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
-		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance(), false),
-		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal()), false), //icon is a placeholder
+		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance()),
+		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //icon is a placeholder
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
 		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
 		BREAKSPAWNER(Blocks.mob_spawner),
+		KILLDRAGON(Blocks.dragon_egg),
+		KILLWITHER(Items.nether_star),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -189,29 +191,57 @@ public class ProgressionManager {
 
 	private void load() {
 		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
+
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
+
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
+
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.REPEATER);
+
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
+
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.CHARGE);
 		progressMap.addParent(ProgressStage.ABILITY, 	ProgressStage.LINK);
+
 		progressMap.addParent(ProgressStage.STONES, 	ProgressStage.MULTIBLOCK);
+
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
+
 		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
+
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
+
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
+
 		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
+
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.CTM,		ProgressStage.DIMENSION);
-		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
+
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
+
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
+
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
+
 		progressMap.addParent(ProgressStage.DIE,		ProgressStage.CHARGE);
+
+		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.END);
+
+		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.NETHER);
+
+		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.RAINBOWFOREST);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.CAVERN);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
+
+		progressMap.addParent(ProgressStage.CTM,		ProgressStage.DIMENSION);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
@@ -301,11 +331,10 @@ public class ProgressionManager {
 		if (!this.playerHasPrerequisites(ep, s))
 			return false;
 		this.setPlayerStage(ep, s, true);
-		ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 		return true;
 	}
 
-	private boolean playerHasPrerequisites(EntityPlayer ep, ProgressStage s) {
+	public boolean playerHasPrerequisites(EntityPlayer ep, ProgressStage s) {
 		Collection<ProgressStage> c = progressMap.getParents(s);
 		if (c == null || c.isEmpty())
 			return true;
@@ -314,6 +343,15 @@ public class ProgressionManager {
 				return false;
 		}
 		return true;
+	}
+
+	public Collection<ProgressStage> getPrereqs(ProgressStage s) {
+		return Collections.unmodifiableCollection(progressMap.getParents(s));
+	}
+
+	public ProgressStage[] getPrereqsArray(ProgressStage s) {
+		Collection<ProgressStage> c = progressMap.getParents(s);
+		return c != null ? c.toArray(new ProgressStage[c.size()]) : new ProgressStage[0];
 	}
 
 	private boolean isOneStepAway(EntityPlayer ep, ProgressStage s) {
@@ -385,6 +423,8 @@ public class ProgressionManager {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (set) {
 				playerMap.addValue(ep.getCommandSenderName(), s);
+
+				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 			}
 			else {
 				playerMap.remove(ep.getCommandSenderName(), s);
@@ -414,7 +454,8 @@ public class ProgressionManager {
 
 	public void maxPlayerProgression(EntityPlayer ep) {
 		for (int i = 0; i < ProgressStage.list.length; i++) {
-			this.setPlayerStage(ep, ProgressStage.list[i], true);
+			if (ProgressStage.list[i].active)
+				this.setPlayerStage(ep, ProgressStage.list[i], true);
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true);
@@ -470,9 +511,9 @@ public class ProgressionManager {
 		return c;
 	}
 
-	private static class ColorDiscovery implements ProgressElement {
+	public static class ColorDiscovery implements ProgressElement {
 
-		private final CrystalElement color;
+		public final CrystalElement color;
 
 		private ColorDiscovery(CrystalElement e) {
 			color = e;

@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -34,6 +36,8 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -43,7 +47,9 @@ import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -62,14 +68,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ChromaOverlays {
 
-	public static ChromaOverlays instance = new ChromaOverlays();
+	public static final ChromaOverlays instance = new ChromaOverlays();
+
+	private static final RenderItem itemRender = new RenderItem();
 
 	private boolean holding = false;
 	private int tick = 0;
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
-	private final HashMap<ProgressElement, Integer> progressFlags = new HashMap();
+	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
 
 	private ChromaOverlays() {
 
@@ -120,7 +128,7 @@ public class ChromaOverlays {
 			GL11.glDisable(GL11.GL_LIGHTING);
 
 			FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
-			int sw = fr.getStringWidth(p.getTitle());
+			int sw = Math.max(40, fr.getStringWidth(p.getTitle()));
 			int sh = 24+(fr.listFormattedStringToWidth(p.getShortDesc(), sw*2).size()-1)*4;//24;
 			int w = sw+28;//144;
 			int h = tick > 800-sh ? 800-tick : tick < sh ? tick : sh;
@@ -145,7 +153,7 @@ public class ChromaOverlays {
 
 				GL11.glEnable(GL11.GL_LIGHTING);
 
-				ReikaGuiAPI.instance.drawItemStack(new RenderItem(), fr, p.getIcon(), x+4, dy+4);
+				ReikaGuiAPI.instance.drawItemStack(itemRender, fr, p.getIcon(), x+4, dy+4);
 
 			}
 
@@ -155,8 +163,15 @@ public class ChromaOverlays {
 				map.put(p, tick-1);
 			}
 			dy += h+4;
+			if (dy > Minecraft.getMinecraft().displayHeight/gsc-h) {
+				//break;
+				map.put(p, tick);
+			}
 		}
+		//if (map.isEmpty())
 		progressFlags.clear();
+		//else
+		//	progressFlags.keySet().removeAll(map.keySet());
 		progressFlags.putAll(map);
 	}
 
@@ -701,5 +716,38 @@ public class ChromaOverlays {
 
 	public void addProgressionNote(ProgressElement p) {
 		progressFlags.put(p, 800);
+	}
+
+	private static final class ProgressComparator implements Comparator<ProgressElement> {
+
+		/** General order:
+			ProgressStage - 0 by ordinal
+			ColorDiscovery - 1 by color ordinal
+			ResearchLevel - 2 by ordinal
+			ChromaResearch - 3 by research level by ordinal
+		 */
+
+		@Override
+		public int compare(ProgressElement o1, ProgressElement o2) {
+			return this.getIndex(o1)-this.getIndex(o2);
+		}
+
+		private int getIndex(ProgressElement e) {
+			if (e instanceof ColorDiscovery) {
+				return ((ColorDiscovery)e).color.ordinal();
+			}
+			else if (e instanceof ProgressStage) {
+				return 1000000+((ProgressStage)e).ordinal();
+			}
+			else if (e instanceof ResearchLevel) {
+				return 2000000+((ResearchLevel)e).ordinal();
+			}
+			else if (e instanceof ChromaResearch) {
+				return 3000000+1000*((ChromaResearch)e).level.ordinal()+((ChromaResearch)e).ordinal();
+			}
+			else
+				return -1;
+		}
+
 	}
 }

@@ -93,7 +93,8 @@ public class WorldProviderChroma extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	public float getCloudHeight()
 	{
-		return 512;
+		double d = Math.sin(System.currentTimeMillis()/250000D);
+		return 128+(float)(64*d);//512;
 	}
 
 	@Override

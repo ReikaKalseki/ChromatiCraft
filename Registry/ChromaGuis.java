@@ -28,6 +28,7 @@ public enum ChromaGuis {
 	BASICDESC(),
 	PROGRESS(),
 	REFRAGMENT(),
+	NOTES(),
 	AURAPOUCH(),
 	TRANSITION(),
 	TELEPORT(),
