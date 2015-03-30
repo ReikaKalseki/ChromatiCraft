@@ -32,6 +32,26 @@ public final class ElementTagCompound {
 		this.addTag(e, value);
 	}
 
+	public ElementTagCompound(int bk, int r, int g, int br, int b, int p, int c, int lg, int gy, int pk, int l, int y, int lb, int m, int o, int w) {
+		this();
+		this.addTag(CrystalElement.BLACK, bk);
+		this.addTag(CrystalElement.RED, r);
+		this.addTag(CrystalElement.GREEN, g);
+		this.addTag(CrystalElement.BROWN, br);
+		this.addTag(CrystalElement.BLUE, b);
+		this.addTag(CrystalElement.PURPLE, p);
+		this.addTag(CrystalElement.CYAN, c);
+		this.addTag(CrystalElement.LIGHTGRAY, lg);
+		this.addTag(CrystalElement.GRAY, gy);
+		this.addTag(CrystalElement.PINK, pk);
+		this.addTag(CrystalElement.LIME, l);
+		this.addTag(CrystalElement.YELLOW, y);
+		this.addTag(CrystalElement.LIGHTBLUE, lb);
+		this.addTag(CrystalElement.MAGENTA, m);
+		this.addTag(CrystalElement.ORANGE, o);
+		this.addTag(CrystalElement.WHITE, w);
+	}
+
 	public boolean addTag(CrystalElement e, int value) {
 		if (value <= 0)
 			return false;

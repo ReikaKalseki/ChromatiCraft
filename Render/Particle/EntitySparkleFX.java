@@ -13,6 +13,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -38,6 +39,13 @@ public class EntitySparkleFX extends EntityFX {
 
 	public EntitySparkleFX setLife(int life) {
 		particleMaxAge = life;
+		return this;
+	}
+
+	public EntitySparkleFX setColor(int color) {
+		particleRed = ReikaColorAPI.getRed(color)/255F;
+		particleGreen = ReikaColorAPI.getGreen(color)/255F;
+		particleBlue = ReikaColorAPI.getBlue(color)/255F;
 		return this;
 	}
 

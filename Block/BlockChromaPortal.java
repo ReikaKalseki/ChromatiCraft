@@ -95,16 +95,22 @@ public class BlockChromaPortal extends Block {
 						int dim = te.getTargetDimension();
 						ReikaEntityHelper.transferEntityToDimension(e, dim, new ChromaTeleporter(dim));
 						ProgressStage.DIMENSION.stepPlayerTo(ep);
-						return;
+					}
+					else {
+						this.denyEntity(e);
 					}
 				}
 				else {
-					e.motionY = 1.5;
-					e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
-					ChromaSounds.POWERDOWN.playSound(e);
+					this.denyEntity(e);
 				}
 			}
 		}
+	}
+
+	private void denyEntity(Entity e) {
+		e.motionY = 1.5;
+		e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
+		ChromaSounds.POWERDOWN.playSound(e);
 	}
 
 	public static class TileEntityCrystalPortal extends TileEntity {
@@ -130,7 +136,7 @@ public class BlockChromaPortal extends Block {
 			}
 			int pos = this.getPortalPosition();
 			if (worldObj.isRemote) {
-				if (pos == 5) {
+				if (pos == 5 && this.isFull9x9()) {
 					this.idleParticles();
 					if (complete) {
 						if (charge >= MINCHARGE) {
@@ -139,7 +145,7 @@ public class BlockChromaPortal extends Block {
 					}
 				}
 			}
-			if (pos == 5) {
+			if (pos == 5 && this.isFull9x9()) {
 				if (ticks%20 == 0)
 					this.validateStructure(worldObj, xCoord, yCoord, zCoord);
 				if (complete && ticks%90 == 0) {
@@ -379,6 +385,17 @@ public class BlockChromaPortal extends Block {
 		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
 			this.readFromNBT(p.field_148860_e);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		public boolean isFull9x9() {
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
+					if (worldObj.getBlock(xCoord+i, yCoord, zCoord+k) != ChromaBlocks.PORTAL.getBlockInstance()) {
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 
 	}

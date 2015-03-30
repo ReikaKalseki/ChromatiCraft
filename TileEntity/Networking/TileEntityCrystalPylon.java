@@ -75,6 +75,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -723,6 +724,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public boolean regeneratesEnergy() {
 		return true;
+	}
+
+	@ModDependent(ModList.ROTARYCRAFT)
+	public void onEMP(TileEntityEMP te) {
+		energy = rand.nextBoolean() ? 0 : this.getCapacity();
+		worldObj.createExplosion(null, xCoord+0.5, yCoord+0.5, zCoord+0.5, 16, false);
+		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 	}
 
 }

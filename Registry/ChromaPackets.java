@@ -49,7 +49,9 @@ public enum ChromaPackets {
 	NEWTELEPORT(),
 	DELTELEPORT(),
 	GROWTH(3),
-	PROGRESSNOTE(1);
+	PROGRESSNOTE(1),
+	PORTALRECIPE(4),
+	HEATLAMP(1);
 
 	public final int numInts;
 	public final PacketTypes type;

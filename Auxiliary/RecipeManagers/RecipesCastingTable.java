@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRuneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.HeatLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.LumenLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PathRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
@@ -275,7 +276,8 @@ public class RecipesCastingTable {
 
 		is = ChromaTiles.HEATLILY.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " F ", "FBF", "LSL", 'L', Blocks.waterlily, 'F', Blocks.yellow_flower, 'S', ChromaStacks.orangeShard, 'B', Items.blaze_powder);
-		this.addRecipe(new HeatLilyRecipe(is, sr));
+		HeatLilyRecipe hr = new HeatLilyRecipe(is, sr);
+		this.addRecipe(hr);
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();
 		sr = new ShapedOreRecipe(is, "SSS", "CSC", "CCC", 'C', "cobblestone", 'S', ChromaItems.SHARD.getAnyMetaStack());
@@ -374,6 +376,10 @@ public class RecipesCastingTable {
 		this.addRecipe(new RepeaterTurboRecipe());
 
 		this.addRecipe(new PortalRecipe(ChromaBlocks.PORTAL.getStackOf(), ChromaStacks.voidCore, repeater));
+
+		is = ChromaBlocks.HEATLAMP.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', ChromaStacks.auraIngot);
+		this.addRecipe(new HeatLampRecipe(is, sr, hr));
 	}
 
 	public void addPostLoadRecipes() {

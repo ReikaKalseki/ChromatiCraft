@@ -70,6 +70,7 @@ public enum ChromaResearch implements ProgressElement {
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
+	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 
 	MACHINEDESC("Constructs", ""),

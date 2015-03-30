@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSlime;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
@@ -27,12 +28,14 @@ import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
+import Reika.ChromatiCraft.Render.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
@@ -219,6 +222,8 @@ public class ChromaClient extends ChromaCommon {
 		//MinecraftForgeClient.registerItemRenderer(ChromaBlocks.ACCELERATOR.getItem(), teibr);
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
+
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ChromaBlocks.PORTAL.getBlockInstance()), new PortalItemRenderer());
 	}
 
 

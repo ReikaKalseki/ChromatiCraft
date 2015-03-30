@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +20,7 @@ import net.minecraftforge.common.DimensionManager;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -140,6 +142,12 @@ public class GuiEnderTNT extends GuiContainer {
 		ty_last = ty;
 		tz_last = tz;
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TNT.ordinal(), tile, dim, tx, ty, tz);
+	}
+
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int x, int y) {
+		super.setWorldAndResolution(mc, x, y);
+		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
 	}
 
 	@Override

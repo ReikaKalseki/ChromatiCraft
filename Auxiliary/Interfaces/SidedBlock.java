@@ -7,20 +7,16 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.GUI.Book;
+package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.Base.ChromaBookGui;
+import net.minecraft.world.World;
 
-public class GuiNotes extends ChromaBookGui {
+public interface SidedBlock {
 
-	public GuiNotes(EntityPlayer ep) {
-		super(ep, 256, 220);
-	}
+	boolean canPlaceOn(World world, int x, int y, int z, int side);
 
-	@Override
-	public String getBackgroundTexture() {
-		return "";
-	}
+	void setSide(World world, int x, int y, int z, int side);
+
+
 
 }

@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
+import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockLootChest;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
@@ -75,6 +76,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.BlockEnum;
@@ -121,7 +123,8 @@ public enum ChromaBlocks implements BlockEnum {
 	LOOTCHEST(BlockLootChest.class,												"chroma.loot"),
 	PORTAL(BlockChromaPortal.class,												"chroma.portal"),
 	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay"),
-	GLOW(BlockCrystalGlow.class,				ItemBlockCrystalGlow.class,		"chroma.glow");
+	GLOW(BlockCrystalGlow.class,				ItemBlockCrystalGlow.class,		"chroma.glow"),
+	HEATLAMP(BlockHeatLamp.class,				ItemBlockSidePlaced.class,		"chroma.heatlamp");
 
 	private Class blockClass;
 	private String blockName;
@@ -296,6 +299,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this == FENCE)
 			return false;
 		if (this == LOOTCHEST)
+			return false;
+		if (this == HEATLAMP)
 			return false;
 		return true;
 	}

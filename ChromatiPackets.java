@@ -32,8 +32,10 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
+import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
@@ -63,6 +65,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
@@ -390,6 +393,12 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case PROGRESSNOTE:
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, ChromaResearchManager.instance.getProgressForID(data[0]));
+				break;
+			case PORTALRECIPE:
+				PortalRecipe.onClientSideRandomTick((TileEntityCastingTable)tile, data[0], data[1], data[2], data[3]);
+				break;
+			case HEATLAMP:
+				((TileEntityHeatLamp)tile).temperature = data[0];
 				break;
 			}
 		}

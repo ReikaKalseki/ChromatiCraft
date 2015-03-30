@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
+import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.GuiEnderTNT;
+import Reika.ChromatiCraft.GUI.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiInventoryTicker;
 import Reika.ChromatiCraft.GUI.GuiItemCollector;
@@ -209,6 +211,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiInventoryTicker(player, (TileEntityInventoryTicker) te);
 			if (te instanceof TileEntityBiomePainter)
 				return new GuiBiomeChanger(player, (TileEntityBiomePainter) te);
+			if (te instanceof TileEntityHeatLamp)
+				return new GuiHeatLamp((TileEntityHeatLamp) te, player);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);
