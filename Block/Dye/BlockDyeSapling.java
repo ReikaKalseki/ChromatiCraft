@@ -36,7 +36,7 @@ public class BlockDyeSapling extends BlockSapling {
 
 	public BlockDyeSapling() {
 		super();
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		this.setStepSound(soundTypeGrass);
 	}
 

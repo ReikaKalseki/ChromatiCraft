@@ -148,6 +148,10 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		public Block getBlock() {
 			return ChromaBlocks.TIEREDPLANT.getBlockInstance();
 		}
+
+		public boolean isWaterPlaced() {
+			return this == LILY;
+		}
 	}
 
 	@Override

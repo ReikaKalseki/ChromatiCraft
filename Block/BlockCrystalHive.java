@@ -45,7 +45,7 @@ public class BlockCrystalHive extends Block implements MinerBlock {
 		super(par2Material);
 		this.setHardness(3);
 		this.setResistance(5);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

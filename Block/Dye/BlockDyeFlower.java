@@ -21,7 +21,7 @@ public class BlockDyeFlower extends BlockFlower {
 
 	public BlockDyeFlower() {
 		super(1);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		this.setStepSound(soundTypeGrass);
 	}
 

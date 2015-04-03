@@ -51,6 +51,7 @@ public class BlockCrystalGlow extends CrystalTypeBlock {
 		super(mat);
 		this.setHardness(0);
 		this.setResistance(0);
+		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
 	}
 
 	@Override

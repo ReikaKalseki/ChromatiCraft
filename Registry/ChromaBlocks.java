@@ -56,6 +56,7 @@ import Reika.ChromatiCraft.Block.BlockStructureShield;
 import Reika.ChromatiCraft.Block.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import Reika.ChromatiCraft.Block.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -124,7 +125,8 @@ public enum ChromaBlocks implements BlockEnum {
 	PORTAL(BlockChromaPortal.class,												"chroma.portal"),
 	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay"),
 	GLOW(BlockCrystalGlow.class,				ItemBlockCrystalGlow.class,		"chroma.glow"),
-	HEATLAMP(BlockHeatLamp.class,				ItemBlockSidePlaced.class,		"chroma.heatlamp");
+	HEATLAMP(BlockHeatLamp.class,				ItemBlockSidePlaced.class,		"chroma.heatlamp"),
+	VOIDRIFT(BlockVoidRift.class,				ItemBlockDyeTypes.class,		"chroma.voidrift");
 
 	private Class blockClass;
 	private String blockName;
@@ -269,6 +271,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case PLANT: //"Crystal Bloom"
 		case LAMPBLOCK:
 		case POWERTREE:
+		case VOIDRIFT:
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		case HIVE:
 			return meta == 0 ? "Crystal Hive" : "Pure Hive";
@@ -316,6 +319,7 @@ public enum ChromaBlocks implements BlockEnum {
 		switch(this) {
 		case RUNE:
 		case PLANT:
+		case VOIDRIFT:
 			return 16;
 		case HIVE:
 			return 2;

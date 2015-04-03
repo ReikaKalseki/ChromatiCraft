@@ -10,21 +10,29 @@
 package Reika.ChromatiCraft.Items.ItemBlock;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.BlockSnapshot;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Block.BlockTieredOre;
 import Reika.ChromatiCraft.Block.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.DragonAPI.Instantiable.Data.BlockKey;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -43,6 +51,56 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 		//	;//return false;
 		//}
 		return super.onItemUse(is, ep, world, x, y, z, s, a, b, c);
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+
+		BlockKey bk = this.getWaterPlaced(is);
+		ReikaJavaLibrary.pConsole(bk);
+		if (bk == null)
+			return is;
+
+		MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(world, ep, true);
+
+		if (movingobjectposition == null) {
+			return is;
+		}
+		else {
+			if (movingobjectposition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+				int i = movingobjectposition.blockX;
+				int j = movingobjectposition.blockY;
+				int k = movingobjectposition.blockZ;
+
+				if (!world.canMineBlock(ep, i, j, k))
+					return is;
+
+				if (!ep.canPlayerEdit(i, j, k, movingobjectposition.sideHit, is))
+					return is;
+
+				if (world.getBlock(i, j, k).getMaterial() == Material.water && world.getBlockMetadata(i, j, k) == 0 && world.isAirBlock(i, j+1, k)) {
+					// special case for handling block placement with water lilies
+					BlockSnapshot blocksnapshot = BlockSnapshot.getBlockSnapshot(world, i, j+1, k);
+					world.setBlock(i, j+1, k, bk.blockID, bk.metadata, 3);
+					if (ForgeEventFactory.onPlayerBlockPlace(ep, blocksnapshot, ForgeDirection.UP).isCanceled()) {
+						blocksnapshot.restore(true, false);
+						return is;
+					}
+
+					if (!ep.capabilities.isCreativeMode)
+						--is.stackSize;
+				}
+			}
+
+			return is;
+		}
+	}
+
+	private BlockKey getWaterPlaced(ItemStack is) {
+		if (field_150939_a == ChromaBlocks.TIEREDPLANT.getBlockInstance() && TieredPlants.list[is.getItemDamage()].isWaterPlaced()) {
+			return new BlockKey(field_150939_a, is.getItemDamage());
+		}
+		return null;
 	}
 
 	@Override

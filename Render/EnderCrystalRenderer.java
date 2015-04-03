@@ -47,9 +47,9 @@ public class EnderCrystalRenderer implements IItemRenderer {
 		if (crystal == null) {
 			crystal = new EntityChromaEnderCrystal(world);
 		}
-		crystal.ticksExisted++;
-		if (crystal.ticksExisted%30 == 0)
-			crystal.innerRotation++;
+		int tick = (int)(Minecraft.getMinecraft().theWorld.getTotalWorldTime()%24000);
+		crystal.ticksExisted = tick;
+		crystal.innerRotation = tick;
 		try {
 			GL11.glPushMatrix();
 			double ax = type == ItemRenderType.ENTITY ? 0 : 0.5;

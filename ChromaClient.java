@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Block.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
@@ -48,9 +49,11 @@ import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
+import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.DragonOptions;
@@ -87,6 +90,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final LampRenderer lamp = new LampRenderer();
 	private static final RelayRenderer relay = new RelayRenderer();
 	private static final CrystalGlowRenderer glow = new CrystalGlowRenderer();
+	private static final VoidRiftRenderer vrift = new VoidRiftRenderer();
 	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -177,6 +181,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLootChest.class, new RenderLootChest());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPortal.class, new RenderCrystalPortal());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVoidRift.class, new RenderVoidRift());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
@@ -201,6 +206,9 @@ public class ChromaClient extends ChromaCommon {
 
 		glowRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(glowRender, glow);
+
+		vriftRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(vriftRender, vrift);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

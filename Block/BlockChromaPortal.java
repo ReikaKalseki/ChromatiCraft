@@ -109,6 +109,7 @@ public class BlockChromaPortal extends Block {
 
 	private void denyEntity(Entity e) {
 		e.motionY = 1.5;
+		e.fallDistance = Math.max(e.fallDistance, 500);
 		e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
 		ChromaSounds.POWERDOWN.playSound(e);
 	}
@@ -128,7 +129,8 @@ public class BlockChromaPortal extends Block {
 			if (complete) {
 				if (charge < MINCHARGE) {
 					charge++;
-					this.chargingParticles();
+					if (worldObj.isRemote)
+						this.chargingParticles();
 				}
 			}
 			else {
@@ -137,10 +139,12 @@ public class BlockChromaPortal extends Block {
 			int pos = this.getPortalPosition();
 			if (worldObj.isRemote) {
 				if (pos == 5 && this.isFull9x9()) {
-					this.idleParticles();
+					if (worldObj.isRemote)
+						this.idleParticles();
 					if (complete) {
 						if (charge >= MINCHARGE) {
-							this.activeParticles();
+							if (worldObj.isRemote)
+								this.activeParticles();
 						}
 					}
 				}

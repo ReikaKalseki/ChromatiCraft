@@ -55,13 +55,6 @@ import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes.WorktableRecipe;
 import appeng.recipes.handlers.Inscribe;
 import appeng.recipes.handlers.Inscribe.InscriberRecipe;
-import buildcraft.api.recipes.BuildcraftRecipeRegistry;
-import buildcraft.api.recipes.CraftingResult;
-import buildcraft.api.recipes.IFlexibleRecipe;
-import buildcraft.api.recipes.IIntegrationRecipe;
-import buildcraft.core.recipes.FlexibleRecipe;
-import buildcraft.silicon.TileAssemblyTable;
-import buildcraft.silicon.TileIntegrationTable;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemElementCalculator {
@@ -303,6 +296,7 @@ public class ItemElementCalculator {
 		return tag;
 	}
 
+	/*
 	@ModDependent(ModList.BCSILICON)
 	private ElementTagCompound getFromBCLasers(ItemStack is) {
 		ElementTagCompound tag = new ElementTagCompound();
@@ -332,7 +326,7 @@ public class ItemElementCalculator {
 		}
 		return tag;
 	}
-
+	 */
 	@ModDependent(ModList.TINKERER)
 	private ElementTagCompound getFromTinkerTable(ItemStack is) {
 		ElementTagCompound tag = new ElementTagCompound();
@@ -425,11 +419,11 @@ public class ItemElementCalculator {
 		if (ModList.THAUMCRAFT.isLoaded())
 			tag.addButMinimizeWith(this.getFromThaumCraft(is));
 		if (ModList.BCSILICON.isLoaded())
-			tag.addButMinimizeWith(this.getFromBCLasers(is));
+			;//tag.addButMinimizeWith(this.getFromBCLasers(is));
 		if (ModList.TINKERER.isLoaded())
-			tag.addButMinimizeWith(this.getFromTinkerTable(is));
+			;//tag.addButMinimizeWith(this.getFromTinkerTable(is));
 		if (ModList.APPENG.isLoaded())
-			tag.addButMinimizeWith(this.getFromAECrafting(is));
+			;//tag.addButMinimizeWith(this.getFromAECrafting(is));
 		//ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
 		currentCalculation.remove(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 		return tag;
@@ -519,33 +513,37 @@ public class ItemElementCalculator {
 	private static Field pulverizerOut2;
 
 	static {
-		toolRecipeHeads = loadField(ToolRecipe.class, "headList");
-		toolRecipeHandles = loadField(ToolRecipe.class, "handleList");
-		toolRecipeAccessories = loadField(ToolRecipe.class, "accessoryList");
-		toolRecipeExtras = loadField(ToolRecipe.class, "extraList");
+		if (ModList.TINKERER.isLoaded()) {
+			toolRecipeHeads = loadField(ToolRecipe.class, "headList");
+			toolRecipeHandles = loadField(ToolRecipe.class, "handleList");
+			toolRecipeAccessories = loadField(ToolRecipe.class, "accessoryList");
+			toolRecipeExtras = loadField(ToolRecipe.class, "extraList");
+		}
 
-		getTransposerFilling = loadMethod("cofh.thermalexpansion.util.crafting.TransposerManager", "getFillRecipeList");
-		getTransposerDraining = loadMethod("cofh.thermalexpansion.util.crafting.TransposerManager", "getExtractionRecipeList");
-		getSmelter = loadMethod("cofh.thermalexpansion.util.crafting.SmelterManager", "getRecipeList");
-		getSawmill = loadMethod("cofh.thermalexpansion.util.crafting.SawmillManager", "getRecipeList");
-		getPulverizer = loadMethod("cofh.thermalexpansion.util.crafting.PulverizerManager", "getRecipeList");
-		//getPrecipitator = loadMethod("cofh.thermalexpansion.util.crafting.PrecipitatorManager", "getRecipeList");
+		if (ModList.THERMALEXPANSION.isLoaded()) {
+			getTransposerFilling = loadMethod("cofh.thermalexpansion.util.crafting.TransposerManager", "getFillRecipeList");
+			getTransposerDraining = loadMethod("cofh.thermalexpansion.util.crafting.TransposerManager", "getExtractionRecipeList");
+			getSmelter = loadMethod("cofh.thermalexpansion.util.crafting.SmelterManager", "getRecipeList");
+			getSawmill = loadMethod("cofh.thermalexpansion.util.crafting.SawmillManager", "getRecipeList");
+			getPulverizer = loadMethod("cofh.thermalexpansion.util.crafting.PulverizerManager", "getRecipeList");
+			//getPrecipitator = loadMethod("cofh.thermalexpansion.util.crafting.PrecipitatorManager", "getRecipeList");
 
-		transposerIn = loadField("cofh.thermalexpansion.util.crafting.TransposerManager$RecipeTransposer", "input");
-		transposerOut = loadField("cofh.thermalexpansion.util.crafting.TransposerManager$RecipeTransposer", "output");
+			transposerIn = loadField("cofh.thermalexpansion.util.crafting.TransposerManager$RecipeTransposer", "input");
+			transposerOut = loadField("cofh.thermalexpansion.util.crafting.TransposerManager$RecipeTransposer", "output");
 
-		smelterIn1 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "primaryInput");
-		smelterIn2 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "secondaryInput");
-		smelterOut1 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "primaryOutput");
-		smelterOut2 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "secondaryOutput");
+			smelterIn1 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "primaryInput");
+			smelterIn2 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "secondaryInput");
+			smelterOut1 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "primaryOutput");
+			smelterOut2 = loadField("cofh.thermalexpansion.util.crafting.SmelterManager$RecipeSmelter", "secondaryOutput");
 
-		sawmillIn = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "input");
-		sawmillOut1 = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "primaryOutput");
-		sawmillOut2 = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "secondaryOutput");
+			sawmillIn = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "input");
+			sawmillOut1 = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "primaryOutput");
+			sawmillOut2 = loadField("cofh.thermalexpansion.util.crafting.SawmillManager$RecipeSawmill", "secondaryOutput");
 
-		pulverizerIn = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "input");
-		pulverizerOut1 = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "primaryOutput");
-		pulverizerOut2 = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "secondaryOutput");
+			pulverizerIn = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "input");
+			pulverizerOut1 = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "primaryOutput");
+			pulverizerOut2 = loadField("cofh.thermalexpansion.util.crafting.PulverizerManager$RecipePulverizer", "secondaryOutput");
+		}
 	}
 
 	private static Field loadField(String c, String s) {

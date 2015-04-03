@@ -66,7 +66,7 @@ public class BlockStructureShield extends Block {
 		super(mat);
 		this.setHardness(2);
 		this.setResistance(6000);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		stepSound = soundTypeStone;
 	}
 

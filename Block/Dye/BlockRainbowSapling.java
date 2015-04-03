@@ -37,7 +37,7 @@ public class BlockRainbowSapling extends BlockSapling {
 
 	public BlockRainbowSapling() {
 		super();
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		this.setStepSound(soundTypeGrass);
 	}
 

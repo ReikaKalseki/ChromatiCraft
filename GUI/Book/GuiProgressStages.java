@@ -199,14 +199,15 @@ public class GuiProgressStages extends GuiScrollingPage {
 				api.drawItemStack(itemRender, p.getIcon(), x+2, y+2);
 			}
 			else {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glColor4f(0, 0, 0, 1.0F);
 				itemRender.renderWithColor = false;
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_CULL_FACE);
 				itemRender.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.getTextureManager(), p.getIcon(), x+2, y+2);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glColor4f(1, 1, 1, 1);
+				GL11.glPopAttrib();
 			}
 		}
 		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));

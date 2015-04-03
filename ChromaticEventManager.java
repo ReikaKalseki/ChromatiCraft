@@ -23,19 +23,16 @@ import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -106,7 +103,6 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
-import codechicken.lib.math.MathHelper;
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -382,27 +378,29 @@ public class ChromaticEventManager {
 	public void sendLinkedItems(EntityItemPickupEvent ev) {
 		this.fillFragments(ev);
 		EntityPlayer ep = ev.entityPlayer;
-		this.parseInventoryForLinking(ev, ep.inventory.mainInventory);
+		this.parseInventoryForLinking(ev, ep.inventory.mainInventory, null);
 	}
 
-	private void parseInventoryForLinking(EntityItemPickupEvent ev, ItemStack[] inv) {
+	private void parseInventoryForLinking(EntityItemPickupEvent ev, ItemStack[] inv, ItemStack active) {
 		EntityItem e = ev.item;
 		ItemStack picked = e.getEntityItem();
 		for (int i = 0; i < inv.length; i++) {
-			ItemStack in = inv[i];
-			if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
-				ItemInventoryLinker iil = (ItemInventoryLinker)in.getItem();
-				if (iil.linksItem(in, picked)) {
-					if (iil.processItem(ev.entityPlayer.worldObj, in, picked)) {
-						e.playSound("random.pop", 0.5F, 1);
-						e.setDead();
-						ev.setCanceled(true);
-						return;
+			if (active == null || ((ActivatedInventoryItem)active.getItem()).isSlotActive(active, i)) {
+				ItemStack in = inv[i];
+				if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
+					ItemInventoryLinker iil = (ItemInventoryLinker)in.getItem();
+					if (iil.linksItem(in, picked)) {
+						if (iil.processItem(ev.entityPlayer.worldObj, in, picked)) {
+							e.playSound("random.pop", 0.5F, 1);
+							e.setDead();
+							ev.setCanceled(true);
+							return;
+						}
 					}
 				}
-			}
-			else if (in != null && in.getItem() instanceof ActivatedInventoryItem) {
-				this.parseInventoryForLinking(ev, ((ActivatedInventoryItem)in.getItem()).getInventory(in));
+				else if (in != null && in.getItem() instanceof ActivatedInventoryItem) {
+					this.parseInventoryForLinking(ev, ((ActivatedInventoryItem)in.getItem()).getInventory(in), in);
+				}
 			}
 		}
 	}
@@ -444,22 +442,24 @@ public class ChromaticEventManager {
 		Entity tg = ev.target;
 		if (tg instanceof EntityLivingBase) {
 			EntityLivingBase elb = (EntityLivingBase)tg;
-			this.parseInventoryForPendantCarry(ev, elb, ep.inventory.mainInventory);
+			this.parseInventoryForPendantCarry(ev, elb, ep.inventory.mainInventory, null);
 		}
 	}
 
-	private void parseInventoryForPendantCarry(AttackEntityEvent ev, EntityLivingBase elb, ItemStack[] inv) {
+	private void parseInventoryForPendantCarry(AttackEntityEvent ev, EntityLivingBase elb, ItemStack[] inv, ItemStack active) {
 		for (int i = 0; i < inv.length; i++) {
-			ItemStack is = inv[i];
-			if (is != null) {
-				if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-					CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
-				}
-				else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-					CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
-				}
-				else if (is.getItem() instanceof ActivatedInventoryItem) {
-					this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is));
+			if (active == null || ((ActivatedInventoryItem)active.getItem()).isSlotActive(active, i)) {
+				ItemStack is = inv[i];
+				if (is != null) {
+					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
+						CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
+					}
+					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
+						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
+					}
+					else if (is.getItem() instanceof ActivatedInventoryItem) {
+						this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is), is);
+					}
 				}
 			}
 		}
@@ -681,6 +681,7 @@ public class ChromaticEventManager {
 		}
 	}
 
+	/*
 	@SubscribeEvent
 	public void pylonDrops(LivingDropsEvent ev) {
 		if (ev.source instanceof PylonDamage) {
@@ -710,6 +711,7 @@ public class ChromaticEventManager {
 			}
 		}
 	}
+	 */
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void fillFragments(EntityItemPickupEvent ev) {

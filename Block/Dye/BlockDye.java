@@ -30,7 +30,7 @@ public class BlockDye extends Block {
 
 	public BlockDye(Material mat) {
 		super(mat);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
 		this.setStepSound(soundTypeStone);
 		this.setHardness(1F);
 	}

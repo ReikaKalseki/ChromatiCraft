@@ -54,7 +54,7 @@ public class BlockLootChest extends BlockContainer {
 		super(mat);
 		this.setHardness(6);
 		this.setResistance(60);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

@@ -115,6 +115,7 @@ public enum ChromaResearch implements ProgressElement {
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
 	CHROMA(			ChromaBlocks.CHROMA,											ResearchLevel.RAWEXPLORE),
+	HEATLAMP(		ChromaBlocks.HEATLAMP,											ResearchLevel.RUNECRAFT,	ProgressStage.NETHER),
 	TNT(			ChromaBlocks.TNT,												ResearchLevel.PYLONCRAFT),
 	TANKAUX(		ChromaBlocks.TANK,												ResearchLevel.MULTICRAFT),
 	FENCEAUX(		ChromaBlocks.FENCE,												ResearchLevel.MULTICRAFT),
@@ -151,6 +152,7 @@ public enum ChromaResearch implements ProgressElement {
 	OREPICK(			ChromaItems.OREPICK,		ResearchLevel.RUNECRAFT),
 	ORESILK(			ChromaItems.ORESILK,		ResearchLevel.RUNECRAFT),
 	GROWTH(				ChromaItems.GROWTH,			ResearchLevel.MULTICRAFT),
+	ENDERCRYS(			ChromaItems.ENDERCRYSTAL,	ResearchLevel.ENDGAME,		ProgressStage.END),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -355,6 +357,9 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	private ItemStack getTabIcon() {
+		if (this == ENDERCRYS) {
+			return item.getStackOfMetadata(1);
+		}
 		return iconItem;
 	}
 
@@ -498,6 +503,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == GLOW)
 			return true;
 		if (this == PORTAL)
+			return true;
+		if (this == HEATLAMP)
 			return true;
 		return false;
 	}

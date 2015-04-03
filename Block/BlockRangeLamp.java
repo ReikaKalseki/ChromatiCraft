@@ -43,7 +43,7 @@ public class BlockRangeLamp extends Block {
 		blockHardness = 5;
 		blockResistance = 10;
 		stepSound = new SoundType("stone", 1.0F, 0.5F);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
 	}
 
 	@Override

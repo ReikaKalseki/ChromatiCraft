@@ -17,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -25,6 +26,7 @@ public class BlockCrystalLamp extends CrystalBlock {
 
 	public BlockCrystalLamp(Material mat) {
 		super(mat);
+		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
 	}
 
 	@Override

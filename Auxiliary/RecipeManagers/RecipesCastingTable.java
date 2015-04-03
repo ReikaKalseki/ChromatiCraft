@@ -87,6 +87,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraPou
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BuilderWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CaptureWandRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnhancedPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.GrowthWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.InventoryLinkRecipe;
@@ -198,6 +199,9 @@ public class RecipesCastingTable {
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 11), " S ", " S ", " S ", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 3, 11), sr));
+
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 10), "SSS", 'S', new ItemStack(block, 1, 0));
+		this.addRecipe(new CastingRecipe(new ItemStack(block, 3, 10), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 4, 14), "sSs", "ScS", "sSs", 'S', new ItemStack(block, 1, 0), 'c', ChromaStacks.chargedWhiteShard, 's', new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 15));
 		this.addRecipe(new CastingRecipe(new ItemStack(block, 4, 14), sr));
@@ -380,6 +384,8 @@ public class RecipesCastingTable {
 		is = ChromaBlocks.HEATLAMP.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', ChromaStacks.auraIngot);
 		this.addRecipe(new HeatLampRecipe(is, sr, hr));
+
+		this.addRecipe(new EnderCrystalRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), ChromaStacks.crystalStar));
 	}
 
 	public void addPostLoadRecipes() {

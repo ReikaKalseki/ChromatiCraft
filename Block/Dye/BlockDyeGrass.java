@@ -26,7 +26,7 @@ public class BlockDyeGrass extends BlockGrass {
 
 	public BlockDyeGrass() {
 		super();
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		this.setStepSound(Blocks.grass.stepSound);
 		//this.setHardness(Blocks.grass.blockHardness);
 	}

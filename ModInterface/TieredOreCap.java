@@ -63,9 +63,10 @@ public class TieredOreCap extends WandCap {
 	}
 
 	static {
-		items.put(TieredOres.FIRAXITE, new WandType(ChromaStacks.firaxiteCap, ChromaStacks.firaxite, Aspect.FIRE, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
-		items.put(TieredOres.WATERY, new WandType(ChromaStacks.waterCap, ChromaStacks.waterDust, Aspect.WATER, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
-		items.put(TieredOres.END, new WandType(ChromaStacks.endCap, ChromaStacks.enderDust, Aspect.ENTROPY, Aspect.ELDRITCH, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
+		items.put(TieredOres.FIRAXITE, new WandType(ChromaStacks.firaxiteCap, ChromaStacks.fieryIngot, Aspect.FIRE, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
+		items.put(TieredOres.WATERY, new WandType(ChromaStacks.waterCap, ChromaStacks.waterIngot, Aspect.WATER, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
+		items.put(TieredOres.END, new WandType(ChromaStacks.endCap, ChromaStacks.enderIngot, Aspect.ENTROPY, Aspect.ELDRITCH, Aspect.ORDER, Aspect.MAGIC, Aspect.CRYSTAL));
+		//need a lategame one that uses dimension materials, has 50% discount on all
 	}
 
 	public static void addRecipes() {

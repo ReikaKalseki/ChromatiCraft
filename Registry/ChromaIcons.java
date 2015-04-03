@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 
 public enum ChromaIcons {
@@ -49,7 +50,8 @@ public enum ChromaIcons {
 	ALLCOLORS("allcolors"),
 	NODE("node"),
 	TURBO("turbo"),
-	TRIDOT("tridot-strip");
+	TRIDOT("tridot-strip"),
+	AURA("aura/11");
 
 	private IIcon icon;
 	private final String iconName;
@@ -65,10 +67,15 @@ public enum ChromaIcons {
 	}
 
 	private void register(IIconRegister ico) {
-		icon = ico.registerIcon("chromaticraft:icons/"+iconName);
+		String s = this.getIconName();
+		icon = ico.registerIcon(s);
 	}
 
-	public static void registerAll(IIconRegister ico) {
+	private String getIconName() {
+		return "chromaticraft:icons/"+iconName;
+	}
+
+	public static void registerAll(TextureMap ico) {
 		for (int i = 0; i < iconList.length; i++) {
 			ChromaIcons c = iconList[i];
 			c.register(ico);

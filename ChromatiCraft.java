@@ -143,6 +143,8 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final String packetChannel = "ChromaData";
 
 	public static final TabChromatiCraft tabChroma = new TabChromatiCraft("ChromatiCraft");
+	public static final TabChromatiCraft tabChromaDeco = new TabChromatiCraft("ChromatiCraft Deco");
+	public static final TabChromatiCraft tabChromaGen = new TabChromatiCraft("ChromatiCraft Worldgen");
 	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft("ChromatiCraft Tools");
 	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft("ChromatiCraft Items");
 	public static final FragmentTab tabChromaFragments = new FragmentTab("ChromatiCraft Fragments");
@@ -268,8 +270,12 @@ public class ChromatiCraft extends DragonAPIMod {
 		proxy.registerKeys();
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
+		tabChromaDeco.setIcon(ChromaTiles.CHROMAFLOWER.getCraftedProduct());
+		tabChromaGen.setIcon(ChromaBlocks.RAINBOWSAPLING.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaDeco, tabChroma);
+		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaGen, tabChroma);
 		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaItems, tabChroma);
 		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaTools, tabChroma);
 		CreativeTabSorter.instance.registerCreativeTabAfter(tabChromaFragments, tabChroma);

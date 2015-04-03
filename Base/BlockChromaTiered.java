@@ -29,17 +29,19 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+@Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
 public abstract class BlockChromaTiered extends BlockTieredResource implements IWailaDataProvider {
 
 	public BlockChromaTiered(Material mat) {
 		super(mat);
-		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	public final ProgressStage getProgressStage(IBlockAccess world, int x, int y, int z) {

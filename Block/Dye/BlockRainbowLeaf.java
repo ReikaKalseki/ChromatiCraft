@@ -72,7 +72,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return ChromatiCraft.tabChroma;
+		return ChromatiCraft.tabChromaGen;
 	}
 
 	@Override
