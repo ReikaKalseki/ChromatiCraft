@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 
 import net.minecraft.world.biome.BiomeGenBase;
@@ -19,6 +20,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.IO.ReikaFileReader;
 
 public class ChromaDimensionManager {
 
@@ -69,6 +71,14 @@ public class ChromaDimensionManager {
 			Biomes b = Biomes.list[i];
 			b.create();
 			BiomeDictionary.registerBiomeType(b.instance, b.types);
+		}
+	}
+
+	public static void resetDimension() {
+		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
+		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
+		if (dim.exists() && dim.isDirectory()) {
+			ReikaFileReader.deleteFolderWithContents(dim, 100);
 		}
 	}
 

@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -399,6 +400,9 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case HEATLAMP:
 				((TileEntityHeatLamp)tile).temperature = data[0];
+				break;
+			case WANDCHARGE:
+				CrystalWand.updateWandClient(ep, data);
 				break;
 			}
 		}

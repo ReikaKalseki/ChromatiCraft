@@ -9,8 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
-import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.ANIMALS;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -21,23 +20,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
-import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.MapGenBase;
-import net.minecraft.world.gen.MapGenRavine;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
-import net.minecraft.world.gen.structure.MapGenMineshaft;
-import net.minecraft.world.gen.structure.MapGenScatteredFeature;
-import net.minecraft.world.gen.structure.MapGenStronghold;
-import net.minecraft.world.gen.structure.MapGenVillage;
-import net.minecraftforge.event.terraingen.TerrainGen;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
 
@@ -58,10 +50,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private NoiseGeneratorOctaves noiseGen3;
 	private NoiseGeneratorPerlin noiseGen4;
 	/** A NoiseGeneratorOctaves used in generating terrain */
-	public NoiseGeneratorOctaves noiseGen5;
+	private NoiseGeneratorOctaves noiseGen5;
 	/** A NoiseGeneratorOctaves used in generating terrain */
-	public NoiseGeneratorOctaves noiseGen6;
-	public NoiseGeneratorOctaves mobSpawnerNoise;
+	private NoiseGeneratorOctaves noiseGen6;
+	private NoiseGeneratorOctaves mobSpawnerNoise;
 	/** Reference to the World object. */
 	private World worldObj;
 	/** are map structures going to be generated (e.g. strongholds) */
@@ -69,23 +61,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private final double[] field_147434_q;
 	private final float[] parabolicField;
 	private double[] stoneNoise = new double[256];
-	private MapGenBase caveGenerator = new MapGenTendrils();
-	/** Holds Stronghold Generator */
-	private MapGenStronghold strongholdGenerator = new MapGenStronghold();
-	/** Holds Village Generator */
-	private MapGenVillage villageGenerator = new MapGenVillage();
-	/** Holds Mineshaft Generator */
-	private MapGenMineshaft mineshaftGenerator = new MapGenMineshaft();
-	private MapGenScatteredFeature scatteredFeatureGenerator = new MapGenScatteredFeature();
-	/** Holds ravine generator */
-	private MapGenBase ravineGenerator = new MapGenRavine();
 	/** The biomes that are used to generate the chunk */
 	private BiomeGenBase[] biomesForGeneration;
-	double[] noiseData3;
-	double[] noiseData1;
-	double[] noiseData2;
-	double[] noiseData6;
-	int[][] field_73219_j = new int[32][32];
+	private double[] noiseData3;
+	private double[] noiseData1;
+	private double[] noiseData2;
+	private double[] noiseData6;
+	private int[][] field_73219_j = new int[32][32];
+
+	private final MapGenCanyons canyonGen = new MapGenCanyons();
+	private final MapGenTendrils caveGenerator = new MapGenTendrils();
 
 	{
 		/*
@@ -102,7 +87,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	{
 		worldObj = world;
 		worldType = world.getWorldInfo().getTerrainType();
-		rand = new Random(world.getSeed());
+		rand = new Random(System.currentTimeMillis()); //make independent of world seed
 		noiseGen1 = new NoiseGeneratorOctaves(rand, 16); //16
 		noiseGen2 = new NoiseGeneratorOctaves(rand, 16); //16
 		noiseGen3 = new NoiseGeneratorOctaves(rand, 96); //8 //smoothness factor
@@ -129,20 +114,17 @@ public class ChunkProviderChroma implements IChunkProvider {
 		biomesForGeneration = worldObj.getWorldChunkManager().getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
 		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
 
-		for (int k = 0; k < 4; ++k)
-		{
+		for (int k = 0; k < 4; ++k) {
 			int l = k * 5;
 			int i1 = (k + 1) * 5;
 
-			for (int j1 = 0; j1 < 4; ++j1)
-			{
+			for (int j1 = 0; j1 < 4; ++j1) {
 				int k1 = (l + j1) * 33;
 				int l1 = (l + j1 + 1) * 33;
 				int i2 = (i1 + j1) * 33;
 				int j2 = (i1 + j1 + 1) * 33;
 
-				for (int k2 = 0; k2 < 32; ++k2)
-				{
+				for (int k2 = 0; k2 < 32; ++k2) {
 					double d0 = 0.125D;
 					double d1 = field_147434_q[k1 + k2];
 					double d2 = field_147434_q[l1 + k2];
@@ -153,8 +135,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 					double d7 = (field_147434_q[i2 + k2 + 1] - d3) * d0;
 					double d8 = (field_147434_q[j2 + k2 + 1] - d4) * d0;
 
-					for (int l2 = 0; l2 < 8; ++l2)
-					{
+					for (int l2 = 0; l2 < 8; ++l2) {
 						double d9 = 0.25D;
 						double d10 = d1;
 						double d11 = d2;
@@ -170,10 +151,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 							double d16 = (d11 - d10) * d14;
 							double d15 = d10 - d16;
 
-							for (int k3 = 0; k3 < 4; ++k3)
-							{
-								if ((d15 += d16) > 0.0D)
-								{
+							for (int k3 = 0; k3 < 4; ++k3) {
+								if ((d15 += d16) > 0.0D) {
 									columnData[j3 += short1] = Blocks.stone;
 								}
 								else if (k2 * 8 + l2 < b0)
@@ -199,7 +178,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 			}
 		}
 
-		this.applyRawBumpMapping(chunkX, chunkZ, columnData);
+		//this.applyRawBumpMapping(chunkX, chunkZ, columnData);
 	}
 
 	private void applyRawBumpMapping(int cx, int cz, Block[] data) {
@@ -209,9 +188,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 				int posIndex = d*data.length/256;
 				int x = cx*16+dx;
 				int z = cz*16+dz;
-				int bump = this.calculateBlendedBump(x, z, bumpMaps[CrystalElement.CYAN.ordinal()]);
-				//(int)(24*Math.sin(x/64D)+32*Math.sin(z/512D)+4*Math.cos(x/16D+z/32D+x*z/128D));
-				/*
+				//int bump = this.calculateBlendedBump(x, z, bumpMaps[CrystalElement.CYAN.ordinal()]);
+				int bump = -(int)(0.25*Math.abs(Math.tan((x%256)*(x%256)+(z%256)*(z%256))));//(int)(3*Math.sin(x/64D)+4*Math.sin(z/512D)+1*Math.cos(x/16D+z/32D+x*z/128D));
+
 				if (bump != 0) {
 					int sy = -1;
 					for (int y = 255; y > 0; y--) {
@@ -236,10 +215,11 @@ public class ChunkProviderChroma implements IChunkProvider {
 						}
 					}
 				}
-				 */
+				/*
 				for (int y = 0; y < 256; y++) {
 					data[posIndex+y] = y > bump ? Blocks.air : Blocks.stone;
 				}
+				 */
 			}
 		}
 	}
@@ -257,8 +237,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return 127 + (bp.getBump(mx, mz)+bp.getBump(mxp, mz)+bp.getBump(mxm, mz)+bp.getBump(mx, mzp)+bp.getBump(mx, mzm)) / 5 / 16;
 	}
 
-	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData)
-	{
+	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData) {
 		double d0 = 0.03125D;
 		stoneNoise = noiseGen4.func_151599_a(stoneNoise, chunkX * 16, chunkZ * 16, 16, 16, d0 * 2.0D, d0 * 2.0D, 1.0D);
 
@@ -269,37 +248,52 @@ public class ChunkProviderChroma implements IChunkProvider {
 				BiomeGenBase biome = biomeData[dz + dx * 16];
 				int d = (dx*16+dz);
 				int posIndex = d*columnData.length/256;
-				double stone = stoneNoise[d];
-				columnData[posIndex] = Blocks.bedrock;
-				int maxBedrockY = 5;
-				for (int i = 0; i < 4; i++) {
-					if (1+i <= maxBedrockY && rand.nextInt(4-i) > 0)
-						columnData[posIndex+1+i] = Blocks.bedrock;
+
+				this.generateBedrockLayer(x, z, posIndex, columnData, metaData);
+				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData);
+			}
+		}
+	}
+
+	private void generateSurfaceGrass(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
+		int surface = 0;
+		int filler = 0;
+		int maxSurface = 1;
+		int maxFiller = 3+(int)(2*Math.sin(x/4D)+3*Math.sin(z/16D));
+
+		Block surf = Blocks.grass;
+		Block fill = Blocks.dirt;
+
+		for (int y = 255; y > 0; y--) {
+			Block b = columnData[y+posIndex];
+			if (b == Blocks.stone) {
+				if (surface < maxSurface) {
+					surface++;
+					columnData[y+posIndex] = surf;
 				}
-				int l = (int)(stone/3D+3D+rand.nextDouble()*0.25);
-
-				int surface = 0;
-				int filler = 0;
-				int maxSurface = 1;
-				int maxFiller = 3+(int)(2*Math.sin(x/4D)+3*Math.sin(z/16D));
-
-				Block surf = Blocks.grass;
-				Block fill = Blocks.dirt;
-
-				for (int y = 255; y > 0; y--) {
-					Block b = columnData[y+posIndex];
-					if (b == Blocks.stone) {
-						if (surface < maxSurface) {
-							surface++;
-							columnData[y+posIndex] = surf;
-						}
-						else if (filler < maxFiller) {
-							filler++;
-							columnData[y+posIndex] = fill;
-						}
-					}
+				else if (filler < maxFiller) {
+					filler++;
+					columnData[y+posIndex] = fill;
 				}
 			}
+		}
+	}
+
+	private void generateBedrockLayer(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
+		double d1 = 1.5-0.1875+rand.nextDouble()*0.1875;
+		double d2 = 1-0.125+rand.nextDouble()*0.125;
+		double d3 = 0.5-0.0625+rand.nextDouble()*0.0625;
+		double d4 = 0.25-0.0625+rand.nextDouble()*0.0625;
+		double sx = d1*Math.sin(Math.toRadians((x%64/64D)*360D));
+		double sz = d2*Math.cos(Math.PI*1.5+Math.toRadians((z%128/128D)*360D));
+		double sxz1 = d3*Math.sin(Math.toRadians(x*z/8D))*Math.cos(Math.toRadians(x*z/16D));
+		double sxz2 = d4*Math.cos(Math.toRadians(x*z*z/128D))*Math.sin(Math.toRadians(x*x*z/256D));
+		double maxBedrockY = 2.25+sx+sz+sxz1+sxz2;
+		if (maxBedrockY > 0)
+			columnData[posIndex] = Blocks.bedrock;
+		for (int i = 0; i < 4; i++) {
+			if (1+i <= maxBedrockY && (rand.nextInt(4) > 0 || rand.nextInt(4-i) > 0))
+				columnData[posIndex+1+i] = Blocks.bedrock;
 		}
 	}
 
@@ -324,18 +318,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		biomesForGeneration = worldObj.getWorldChunkManager().loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
 		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration);
 
-		/*
-
-		caveGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
-		ravineGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
-
-		mineshaftGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
-		villageGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
-		strongholdGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
-
-		 */
-
-		scatteredFeatureGenerator.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
+		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
 
 		Chunk chunk = new Chunk(worldObj, ablock, abyte, chunkX, chunkZ);
 		byte[] biomeData = chunk.getBiomeArray();
@@ -349,6 +332,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 		chunk.isTerrainPopulated = true; //use this to disable all populators
 
 		return chunk;
+	}
+
+	private void runGenerators(int chunkX, int chunkZ, Block[] ablock, byte[] abyte) {
+		canyonGen.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
 	}
 
 	private void applyNoiseLayers(int chunkX, int p_147423_2_, int chunkZ)
@@ -487,80 +474,18 @@ public class ChunkProviderChroma implements IChunkProvider {
 		rand.setSeed(chunkX * i1 + chunkZ * j1 ^ worldObj.getSeed());
 		boolean flag = false;
 
-		//MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(loader, worldObj, rand, chunkX, chunkZ, flag));
-
-		//mineshaftGenerator.generateStructuresInChunk(worldObj, rand, chunkX, chunkZ);
-		//flag = villageGenerator.generateStructuresInChunk(worldObj, rand, chunkX, chunkZ);
-		//strongholdGenerator.generateStructuresInChunk(worldObj, rand, chunkX, chunkZ);
-
-		scatteredFeatureGenerator.generateStructuresInChunk(worldObj, rand, chunkX, chunkZ);
-
 		int k1;
 		int l1;
 		int i2;
 
-		/*
-		if (biomegenbase != BiomeGenBase.desert && biomegenbase != BiomeGenBase.desertHills && !flag && rand.nextInt(4) == 0
-				&& TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, LAKE)) {
-			k1 = k + rand.nextInt(16) + 8;
-			l1 = rand.nextInt(256);
-			i2 = l + rand.nextInt(16) + 8;
-			(new WorldGenLakes(Blocks.water)).generate(worldObj, rand, k1, l1, i2);
-		}
-		 */
-
-		/*
-		if (TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, LAVA) && !flag && rand.nextInt(8) == 0) {
-			k1 = k + rand.nextInt(16) + 8;
-			l1 = rand.nextInt(rand.nextInt(248) + 8);
-			i2 = l + rand.nextInt(16) + 8;
-
-			if (l1 < 63 || rand.nextInt(10) == 0)
-			{
-				(new WorldGenLakes(Blocks.lava)).generate(worldObj, rand, k1, l1, i2);
-			}
-		}
-		 */
-
-		/*
-		boolean doGen = TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, DUNGEON);
-		for (k1 = 0; doGen && k1 < 8; ++k1) {
-			l1 = k + rand.nextInt(16) + 8;
-			i2 = rand.nextInt(256);
-			int j2 = l + rand.nextInt(16) + 8;
-			(new WorldGenDungeons()).generate(worldObj, rand, l1, i2, j2);
-		}
-		 */
-
 		//controls vanilla ores and things like dirt patches
 		//biomegenbase.decorate(worldObj, rand, k, l);
 
-		if (TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, ANIMALS)) {
-			SpawnerAnimals.performWorldGenSpawning(worldObj, biomegenbase, k + 8, l + 8, 16, 16, rand);
-		}
+		//if (TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, ANIMALS)) {
+		//	SpawnerAnimals.performWorldGenSpawning(worldObj, biomegenbase, k + 8, l + 8, 16, 16, rand);
+		//}
 		k += 8;
 		l += 8;
-
-		/*
-		doGen = TerrainGen.populate(loader, worldObj, rand, chunkX, chunkZ, flag, ICE);
-		for (k1 = 0; doGen && k1 < 16; k1++) {
-			for (l1 = 0; l1 < 16; l1++) {
-				i2 = worldObj.getPrecipitationHeight(k + k1, l + l1);
-
-				if (worldObj.isBlockFreezable(k1 + k, i2 - 1, l1 + l))
-				{
-					worldObj.setBlock(k1 + k, i2 - 1, l1 + l, Blocks.ice, 0, 2);
-				}
-
-				if (worldObj.func_147478_e(k1 + k, i2, l1 + l, true))
-				{
-					worldObj.setBlock(k1 + k, i2, l1 + l, Blocks.snow_layer, 0, 2);
-				}
-			}
-		}
-		 */
-
-		//MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Post(loader, worldObj, rand, chunkX, chunkZ, flag));
 
 		BlockFalling.fallInstantly = false;
 	}
@@ -593,7 +518,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	 */
 	public boolean canSave()
 	{
-		return true;
+		return false;
 	}
 
 	/**
@@ -609,8 +534,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 	 */
 	public List getPossibleCreatures(EnumCreatureType type, int x, int y, int z)
 	{
-		BiomeGenBase biomegenbase = worldObj.getBiomeGenForCoords(x, z);
-		return type == EnumCreatureType.monster && scatteredFeatureGenerator.func_143030_a(x, y, z) ? scatteredFeatureGenerator.getScatteredFeatureSpawnList() : biomegenbase.getSpawnableList(type);
+		//BiomeGenBase biomegenbase = worldObj.getBiomeGenForCoords(x, z);
+		//return type == EnumCreatureType.monster && scatteredFeatureGenerator.func_143030_a(x, y, z) ? scatteredFeatureGenerator.getScatteredFeatureSpawnList() : biomegenbase.getSpawnableList(type);
+		return new ArrayList();
 	}
 
 	public ChunkPosition func_147416_a(World world, String type, int x, int y, int z)
@@ -628,7 +554,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		//mineshaftGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
 		//villageGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
 		//strongholdGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
-		scatteredFeatureGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
+		//scatteredFeatureGenerator.func_151539_a(this, worldObj, p_82695_1_, p_82695_2_, (Block[])null);
 	}
 
 }

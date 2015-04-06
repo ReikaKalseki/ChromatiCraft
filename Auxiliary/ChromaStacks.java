@@ -50,6 +50,8 @@ public class ChromaStacks {
 	public static final ItemStack waterIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(18);
 	public static final ItemStack conductiveIngot 		= ChromaItems.CRAFTING.getStackOfMetadata(19);
 	public static final ItemStack auraIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(20);
+	public static final ItemStack complexIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(21);
+	public static final ItemStack spaceIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(22);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);
@@ -114,6 +116,7 @@ public class ChromaStacks {
 	public static final ItemStack firaxiteCap	= ChromaItems.MODINTERACT.getStackOfMetadata(1);
 	public static final ItemStack waterCap		= ChromaItems.MODINTERACT.getStackOfMetadata(2);
 	public static final ItemStack endCap		= ChromaItems.MODINTERACT.getStackOfMetadata(3);
+	public static final ItemStack chromaCap		= ChromaItems.MODINTERACT.getStackOfMetadata(4);
 
 	public static ItemStack getShard(CrystalElement e) {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());

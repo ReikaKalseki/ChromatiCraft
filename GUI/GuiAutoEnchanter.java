@@ -117,6 +117,8 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		GL11.glDisable(GL11.GL_BLEND);
+
 		int level = ench.getLevel();
 		if (level > 0) {
 			Fluid f = FluidRegistry.getFluid("chroma");
@@ -129,6 +131,8 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 
 		String display = this.getEnchantDisplayString();
 		ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 75, 0xffffff);
+
+		GL11.glEnable(GL11.GL_BLEND);
 	}
 
 	@Override

@@ -43,8 +43,7 @@ public class RenderVoidRift extends ChromaRenderBase {
 		GL11.glPopAttrib();
 	}
 
-	private boolean renderAura(TileEntityVoidRift te) {
-		boolean flag = false;
+	private void renderAura(TileEntityVoidRift te) {
 		CrystalElement e = te.getColor();
 		Integer[] colors = new Integer[4];
 		for (int i = 2; i < 6; i++) {
@@ -75,7 +74,7 @@ public class RenderVoidRift extends ChromaRenderBase {
 				int h = te.HEIGHT;
 				long tick = System.currentTimeMillis();
 
-				int hx = (16+((te.xCoord+te.zCoord)%16)%16);
+				int hx = (16+((te.xCoord+te.zCoord)%16))%16;
 
 				v5.startDrawingQuads();
 				v5.setBrightness(240);
@@ -85,21 +84,19 @@ public class RenderVoidRift extends ChromaRenderBase {
 				for (int k = 1; k < h; k++) {
 					int dk = k+1;
 
-					double u = hx/256D+((f-1)%16)/16D;//0;//hx/256D;//tick/512%128/128D+hx/2048D;
-					double du = u+1/256D;//u+1/2048D;
+					double u = hx/256D+(f%16)/16D;
+					double du = u+1/256D;
 
-					double dv = (f/16+1)/8D + (1-(double)k/h)/8D;//1;//v-1/16D;//1-k/(double)h;
-					double v = dv-1/128D;//1-k/(double)h;//1-(k+1)/(double)h;
-
-					//ReikaJavaLibrary.pConsole(f+ " > "+f/16+ " > "+dv);
+					double dv = (f/16+1)/8D + (1-(double)k/h)/8D;
+					double v = dv-1/128D;
 
 					v5.setColorOpaque_I(color);
 
 					double t = tick/200D;
 					double r = 0.03125;
-					double w0 = r*Math.sin(k-1+t);
-					double w = r*Math.sin(k+t);
-					double w2 = r*Math.sin(k+1+t);
+					double w0 = this.calcWave(te, k-1, t, r);
+					double w = this.calcWave(te, k, t, r);
+					double w2 = this.calcWave(te, k+1, t, r);
 
 					double o1a = (w+w0)/2;
 					double o1b = (w+w2)/2;
@@ -143,9 +140,11 @@ public class RenderVoidRift extends ChromaRenderBase {
 				}
 
 				v5.draw();
-				flag = true;
 			}
 		}
-		return flag;
+	}
+
+	private double calcWave(TileEntityVoidRift te, int k, double t, double r) {
+		return r*Math.sin(k+t)+r*Math.cos(k+t/3D);
 	}
 }

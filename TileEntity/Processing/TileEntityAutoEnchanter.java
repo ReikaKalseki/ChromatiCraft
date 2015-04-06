@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered {
 
@@ -120,6 +121,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		}
 		else {
 			if (this.getEnchantment(e) == 0) {
+				ReikaJavaLibrary.pConsole(selected);
 				if (!ReikaEnchantmentHelper.isCompatible(selected.keySet(), e)) {
 					return false;
 				}
@@ -209,7 +211,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
 			if (Enchantment.enchantmentsList[i] != null) {
 				int lvl = NBT.getInteger(Enchantment.enchantmentsList[i].getName());
-				selected.put(Enchantment.enchantmentsList[i], lvl);
+				if (lvl > 0)
+					selected.put(Enchantment.enchantmentsList[i], lvl);
 			}
 		}
 	}

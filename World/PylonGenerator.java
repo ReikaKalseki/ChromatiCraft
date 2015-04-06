@@ -22,6 +22,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
@@ -56,6 +57,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -89,6 +91,12 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			this.clear(evt.world);
 			ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCLEAR.ordinal(), evt.world.provider.dimensionId);
 		}
+	}
+
+	@SubscribeEvent
+	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
+
+		colorCache.clear();
 	}
 
 	private void clear(World world) {
@@ -299,6 +307,8 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (b == Blocks.gravel)
 			return true;
 		if (b == Blocks.sand)
+			return true;
+		if (b.getMaterial() == Material.ground)
 			return true;
 		if (b == Blocks.log || b == Blocks.log2 || ModWoodList.isModWood(b, meta))
 			return true;

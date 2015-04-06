@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -34,8 +36,96 @@ public class WorldProviderChroma extends WorldProvider {
 	{
 		super.generateLightBrightnessTable();
 		for (int i = 0; i < lightBrightnessTable.length; i++) {
-			lightBrightnessTable[i] *= 1.5F;
+			//lightBrightnessTable[i] = Math.max(0, lightBrightnessTable[i]*4F-3);
 		}
+	}
+
+	@Override
+	public float calculateCelestialAngle(long time, float ptick)
+	{
+		return 0.5F;//super.calculateCelestialAngle(time, ptick);
+	}
+
+	@Override
+	public double getVoidFogYFactor()
+	{
+		return 1;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean doesXZShowFog(int x, int z)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean shouldMapSpin(String entity, double x, double y, double z)
+	{
+		return true;
+	}
+
+	@Override
+	public boolean isDaytime()
+	{
+		return false;
+	}
+
+	@Override
+	public float getSunBrightnessFactor(float par1)
+	{
+		return worldObj.getSunBrightnessFactor(par1);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks)
+	{
+		return worldObj.getSkyColorBody(cameraEntity, partialTicks);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public float getSunBrightness(float par1)
+	{
+		return worldObj.getSunBrightnessBody(par1);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public float getStarBrightness(float par1)
+	{
+		return worldObj.getStarBrightnessBody(par1);
+	}
+
+	@Override
+	public void calculateInitialWeather()
+	{
+
+	}
+
+	@Override
+	public void updateWeather()
+	{
+
+	}
+
+	@Override
+	public long getSeed()
+	{
+		return worldObj.getWorldInfo().getSeed();
+	}
+
+	@Override
+	public long getWorldTime()
+	{
+		return worldObj.getWorldInfo().getWorldTime();
+	}
+
+	@Override
+	public boolean canMineBlock(EntityPlayer player, int x, int y, int z)
+	{
+		return worldObj.canMineBlockBody(player, x, y, z);
 	}
 
 	@Override
@@ -72,14 +162,14 @@ public class WorldProviderChroma extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getSkyRenderer()
 	{
-		return super.getSkyRenderer();
+		return ChromaSkyRenderer.instance;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getCloudRenderer()
 	{
-		return super.getCloudRenderer();
+		return ChromaCloudRenderer.instance;
 	}
 
 	@Override
@@ -98,10 +188,9 @@ public class WorldProviderChroma extends WorldProvider {
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
 	public Vec3 getFogColor(float celang, float ptick)
 	{
-		return super.getFogColor(celang, ptick);
+		return Vec3.createVectorHelper(0, 0, 0);
 	}
 
 	@Override
@@ -115,7 +204,7 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public boolean isSurfaceWorld()
 	{
-		return true;//false; //return false makes sun and the like not render
+		return true;//false;//false; //return false makes sun and the like not render
 	}
 
 	@Override

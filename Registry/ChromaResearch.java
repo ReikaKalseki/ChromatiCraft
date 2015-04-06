@@ -132,7 +132,7 @@ public enum ChromaResearch implements ProgressElement {
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
-	FINDER(				ChromaItems.FINDER, 		ResearchLevel.RAWEXPLORE,	ProgressStage.PYLON),
+	FINDER(				ChromaItems.FINDER, 		ResearchLevel.BASICCRAFT,	ProgressStage.PYLON),
 	EXCAVATOR(			ChromaItems.EXCAVATOR, 		ResearchLevel.CHARGESELF),
 	TRANSITION(			ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
 	INVLINK(			ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
@@ -591,6 +591,8 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.enderDust);
 			li.add(ChromaStacks.waterDust);
 			li.add(ChromaStacks.firaxite);
+			li.add(ChromaStacks.spaceDust);
+			li.add(ChromaStacks.resocrystal);
 			return li;
 		}
 		if (this == DUSTS) {
@@ -619,6 +621,20 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.crystalLens);
 			return li;
 		}
+		if (this == PATH) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.PATH.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.PATH.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
+		if (this == CRYSTALSTONE) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < ChromaBlocks.PYLONSTRUCT.getNumberMetadatas(); i++) {
+				li.add(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, i));
+			}
+			return li;
+		}
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
 			ArrayList<ItemStack> li = new ArrayList();
@@ -634,20 +650,6 @@ public enum ChromaResearch implements ProgressElement {
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());
-		if (this == PATH) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < ChromaBlocks.PATH.getNumberMetadatas(); i++) {
-				li.add(new ItemStack(ChromaBlocks.PATH.getBlockInstance(), 1, i));
-			}
-			return li;
-		}
-		if (this == CRYSTALSTONE) {
-			ArrayList<ItemStack> li = new ArrayList();
-			for (int i = 0; i < ChromaBlocks.PYLONSTRUCT.getNumberMetadatas(); i++) {
-				li.add(new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, i));
-			}
-			return li;
-		}
 		return null;
 	}
 

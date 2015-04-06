@@ -72,6 +72,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 		int k = (height - ySize) / 2;
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
+
 		if (recipes.size() > 1) {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+205, k-3, 10, 12, 183, 6, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(1, j+215, k-3, 10, 12, 193, 6, file, ChromatiCraft.class, this));

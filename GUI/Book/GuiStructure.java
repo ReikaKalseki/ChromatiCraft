@@ -26,10 +26,13 @@ import org.lwjgl.util.vector.Vector3f;
 
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -60,6 +63,8 @@ public class GuiStructure extends GuiBookSection {
 
 		buttonList.add(new CustomSoundGuiButton(0, j+185, k-2, 20, 20, "3D", this));
 		buttonList.add(new CustomSoundGuiButton(1, j+205, k-2, 20, 20, "2D", this));
+		buttonList.add(new CustomSoundGuiButton(4, mode == 1 ? j+125 : j+165, k-2, 20, 20, "N#", this));
+
 
 		if (mode == 1) {
 			buttonList.add(new CustomSoundGuiButton(2, j+165, k-2, 20, 20, "+", this));
@@ -78,7 +83,6 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (b.id == 1) {
 			mode = 1;
-			rx = ry = rz = 0;
 			this.initGui();
 		}
 		else if (b.id == 2 && secY < page.getStructure().getStructureForDisplay().getSizeY()-1) {
@@ -87,6 +91,10 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (b.id == 3 && secY > 0) {
 			secY--;
+			this.initGui();
+		}
+		else if (b.id == 4 ) {
+			mode = 2;
 			this.initGui();
 		}
 	}
@@ -122,6 +130,26 @@ public class GuiStructure extends GuiBookSection {
 		case 1:
 			this.drawSlice(arr, j, k);
 			break;
+		case 2:
+			this.drawTally(arr, j, k);
+			break;
+		}
+	}
+
+	private void drawTally(FilledBlockArray arr, int j, int k) {
+		ItemHashMap<Integer> map = arr.tally();
+		int i = 0;
+		int n = 8;
+		for (ItemStack is : map.keySet()) {
+			int dx = j+10+(i/n)*50;
+			int dy = k+30+(i%n)*22;
+			ItemStack is2 = is.copy();
+			if (ChromaBlocks.CHROMA.match(is)) {
+				is2 = ChromaItems.BUCKET.getStackOfMetadata(0);
+			}
+			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
+			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
+			i++;
 		}
 	}
 

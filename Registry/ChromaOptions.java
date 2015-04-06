@@ -47,7 +47,8 @@ public enum ChromaOptions implements ConfigList {
 	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
 	ENDERWEIGHT("Ender Forest Biome Weight", 10),
 	HOSTILEFOREST("Allow Danger in Rainbow Forests", false),
-	RELAYRANGE("Lumen Relay Range", 16);
+	RELAYRANGE("Lumen Relay Range", 16),
+	REDRAGON("Always Respawn EnderDragon", false);
 
 	private String label;
 	private boolean defaultState;

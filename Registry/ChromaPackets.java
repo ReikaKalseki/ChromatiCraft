@@ -51,7 +51,8 @@ public enum ChromaPackets {
 	GROWTH(3),
 	PROGRESSNOTE(1),
 	PORTALRECIPE(4),
-	HEATLAMP(1);
+	HEATLAMP(1),
+	WANDCHARGE(16);
 
 	public final int numInts;
 	public final PacketTypes type;

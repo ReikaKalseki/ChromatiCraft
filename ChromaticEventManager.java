@@ -41,6 +41,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -51,6 +52,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -61,6 +63,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
+import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
@@ -77,6 +80,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
@@ -90,6 +94,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -122,6 +127,28 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void teleportPlayerOut(LivingHurtEvent evt) {
+		if (evt.source == DamageSource.outOfWorld && evt.entityLiving instanceof EntityPlayer) {
+			if (evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+				double y = evt.entityLiving.posY;
+				if (y < -256) {
+					ReikaEntityHelper.transferEntityToDimension(evt.entityLiving, 0, new ChromaTeleporter(0));
+				}
+				else {
+					evt.ammount = 0;
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void resetDimension(WorldEvent.Unload evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			//ChromaDimensionManager.resetDimension();
+		}
 	}
 
 	@SubscribeEvent
@@ -165,6 +192,29 @@ public class ChromaticEventManager {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();;
 			if (Chromabilities.LEECH.enabledOn(ep)) {
 				ep.heal(evt.ammount*0.1F);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void carryFortuneFromRangedAttack(LivingDropsEvent evt) {
+		DamageSource src = evt.source;
+		if (src.isProjectile() && src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			if (Chromabilities.LEECH.enabledOn(ep)) {
+				int looting = (int)(4*ep.getHealth()/ep.getMaxHealth());
+				try {
+					Entity e = evt.entityLiving;
+					ReikaObfuscationHelper.getMethod("dropFewItems").invoke(e, true, looting);
+					ReikaObfuscationHelper.getMethod("dropEquipment").invoke(e, true, looting);
+					int rem = rand.nextInt(200) - looting*2;
+					if (rem <= 5)
+						ReikaObfuscationHelper.getMethod("dropRareDrop").invoke(e, 1);
+				}
+				catch (Exception e) {
+					ChromatiCraft.logger.logError("Could not perform pylon-void monster bonus drops interaction!");
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -303,6 +353,11 @@ public class ChromaticEventManager {
 		}
 		else if (evt.toDim == 1) {
 			ProgressStage.END.stepPlayerTo(evt.player);
+			if (ChromaOptions.REDRAGON.getState()) {
+				EntityDragon ed = new EntityDragon(evt.player.worldObj);
+				ed.setLocationAndAngles(0.0D, 128.0D, 0.0D, evt.player.worldObj.rand.nextFloat() * 360.0F, 0.0F);
+				evt.player.worldObj.spawnEntityInWorld(ed);
+			}
 		}
 		else if (evt.toDim == ReikaTwilightHelper.getDimensionID()) {
 			ProgressStage.TWILIGHT.stepPlayerTo(evt.player);

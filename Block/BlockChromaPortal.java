@@ -86,7 +86,7 @@ public class BlockChromaPortal extends Block {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		TileEntity tile = world.getTileEntity(x, y, z);
-		if (tile instanceof TileEntityCrystalPortal) {
+		if (tile instanceof TileEntityCrystalPortal && !world.isRemote) {
 			TileEntityCrystalPortal te = (TileEntityCrystalPortal)tile;
 			if (e instanceof EntityPlayer) {
 				if (te.complete) {
@@ -410,7 +410,7 @@ public class BlockChromaPortal extends Block {
 			this(ExtraChromaIDs.DIMID.getValue());
 		}
 
-		private ChromaTeleporter(int dim) {
+		public ChromaTeleporter(int dim) {
 			super(MinecraftServer.getServer().worldServerForDimension(dim));
 		}
 

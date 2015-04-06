@@ -14,6 +14,11 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -22,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -31,6 +37,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public abstract class GuiBookSection extends ChromaBookGui {
@@ -192,7 +199,20 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			CrystalRenderer.renderAllArmsInInventory = true;
 			GL11.glTranslated(-0.5, -0.33, -0.5);
 		}
-		rb.renderBlockAsItem(b, meta, 1);
+		else if (b instanceof BlockChromaPortal) {
+			GL11.glTranslated(-0.5, -0.4, -0.5);
+			BlendMode.ADDITIVEDARK.apply();
+		}
+		Item item = Item.getItemFromBlock(b);
+		IItemRenderer iit = null;
+		if (item != null) {
+			iit = MinecraftForgeClient.getItemRenderer(new ItemStack(b), ItemRenderType.INVENTORY);
+		}
+		if (iit != null) {
+			iit.renderItem(ItemRenderType.INVENTORY, new ItemStack(b), rb);
+		}
+		else
+			rb.renderBlockAsItem(b, meta, 1);
 		CrystalRenderer.renderAllArmsInInventory = false;
 		GL11.glPopMatrix();
 		GL11.glPopMatrix();
