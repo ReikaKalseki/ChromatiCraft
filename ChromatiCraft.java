@@ -89,6 +89,7 @@ import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
@@ -118,6 +119,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.RotaryCraft.API.BlockColorInterface;
+import Reika.VoidMonster.API.DimensionAPI;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -356,6 +358,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
+			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
 		}
@@ -517,6 +520,11 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.FORESTRY.isLoaded()) {
 			CrystalBees.register();
+		}
+
+		if (ModList.VOIDMONSTER.isLoaded()) {
+			DimensionAPI.blacklistDimensionForSounds(ExtraChromaIDs.DIMID.getValue());
+			DimensionAPI.blacklistDimensionForSpawning(ExtraChromaIDs.DIMID.getValue());
 		}
 
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {

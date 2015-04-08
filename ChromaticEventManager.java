@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -36,6 +37,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -88,9 +90,11 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
@@ -130,6 +134,20 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void deleteEnd(WorldEvent.Unload evt) {
+		if (ChromaOptions.DELEND.getState()) {
+			if (evt.world.provider.dimensionId == 1) {
+				String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
+				File dim = new File(path+"/DIM1");
+				if (dim.exists() && dim.isDirectory()) {
+					ReikaFileReader.deleteFolderWithContents(dim, 100);
+				}
+			}
+		}
+	}
+
+
+	@SubscribeEvent
 	public void teleportPlayerOut(LivingHurtEvent evt) {
 		if (evt.source == DamageSource.outOfWorld && evt.entityLiving instanceof EntityPlayer) {
 			if (evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
@@ -147,7 +165,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void resetDimension(WorldEvent.Unload evt) {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			//ChromaDimensionManager.resetDimension();
+			ChromaDimensionManager.resetDimension();
 		}
 	}
 

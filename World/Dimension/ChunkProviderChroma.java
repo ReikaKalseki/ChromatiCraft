@@ -23,6 +23,7 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
@@ -72,6 +73,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private final MapGenCanyons canyonGen = new MapGenCanyons();
 	private final MapGenTendrils caveGenerator = new MapGenTendrils();
 
+	private final WorldChunkManager chunkManager;
+
 	{
 		/*
 		caveGenerator = TerrainGen.getModdedMapGen(caveGenerator, CAVE);
@@ -86,6 +89,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	public ChunkProviderChroma(World world)
 	{
 		worldObj = world;
+		chunkManager = new ChromaChunkManager(world);
 		worldType = world.getWorldInfo().getTerrainType();
 		rand = new Random(System.currentTimeMillis()); //make independent of world seed
 		noiseGen1 = new NoiseGeneratorOctaves(rand, 16); //16
@@ -111,7 +115,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
 	{
 		byte b0 = 63;
-		biomesForGeneration = worldObj.getWorldChunkManager().getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
+		biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
 		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
 
 		for (int k = 0; k < 4; ++k) {
@@ -315,7 +319,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		Block[] ablock = new Block[65536];
 		byte[] abyte = new byte[65536];
 		this.generateColumnData(chunkX, chunkZ, ablock);
-		biomesForGeneration = worldObj.getWorldChunkManager().loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
+		biomesForGeneration = chunkManager.loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
 		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
@@ -335,7 +339,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private void runGenerators(int chunkX, int chunkZ, Block[] ablock, byte[] abyte) {
-		canyonGen.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
+		//canyonGen.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
 	}
 
 	private void applyNoiseLayers(int chunkX, int p_147423_2_, int chunkZ)
@@ -360,24 +364,23 @@ public class ChunkProviderChroma implements IChunkProvider {
 				float f1 = 0.0F;
 				float f2 = 0.0F;
 				byte b0 = 2;
-				BiomeGenBase biomegenbase = biomesForGeneration[j1 + 2 + (k1 + 2) * 10];
 
 				for (int l1 = -b0; l1 <= b0; l1++) {
 					for (int i2 = -b0; i2 <= b0; i2++) {
-						BiomeGenBase biome = biomesForGeneration[j1 + l1 + 2 + (k1 + i2 + 2) * 10];
-						float f3 = biome.rootHeight;
-						float f4 = biome.heightVariation;
 
-						if (worldType == WorldType.AMPLIFIED && f3 > 0.0F) {
-							f3 = 1.0F + f3 * 2.0F;
-							f4 = 1.0F + f4 * 4.0F;
-						}
+						//normally biome dependent
+						float f3 = 0.5F; //avg height
+						float f4 = 0.0625F; //height variation
+
+						//Math.sqrt(chunkX*chunkX+chunkZ*chunkZ)/32F;
+						//8*Math.sin(chunkX/256D)+32*Math.cos(chunkZ/512D); - large mountains, interesting terrain
+						//4*Math.sin(chunkX/256)+8*Math.cos(chunkZ/512)-4 ^ 2
+						//8*Math.sin(chunkX/32D)*Math.cos(chunkX/4D)+8*Math.cos(chunkZ/16D)*Math.sin(chunkZ/8D);
+						double offset = 0;
+						if (offset > 0)
+							f4 *= 1+offset;
 
 						float f5 = parabolicField[l1 + 2 + (i2 + 2) * 5] / (f3 + 2.0F);
-
-						if (biome.rootHeight > biomegenbase.rootHeight) {
-							f5 /= 2.0F;
-						}
 
 						f += f4 * f5;
 						f1 += f3 * f5;
@@ -443,6 +446,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 						double d11 = (j2 - 29) / 3.0F;
 						d10 = d10 * (1.0D - d11) + -10.0D * d11;
 					}
+
+					//d10 = Math.max(d10-2.5, (d10-5)*8);
+					//d10 *= 1+0.5*Math.sin(chunkX*chunkX*chunkZ*chunkZ/256D);
 
 					field_147434_q[l] = d10;
 					++l;

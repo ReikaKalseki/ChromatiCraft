@@ -94,7 +94,7 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	@Override
 	public int maxThroughput() {
-		return 250;
+		return 4000;
 	}
 
 	@Override

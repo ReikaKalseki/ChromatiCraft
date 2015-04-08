@@ -10,7 +10,7 @@ public class MapGenCanyons extends ChromaFeatureBase {
 	//private float[] field_75046_d = new float[1024];
 
 	public MapGenCanyons() {
-		range = 8;
+		range = 0;
 	}
 
 	@Override

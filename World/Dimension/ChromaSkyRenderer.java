@@ -21,6 +21,10 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 	public static final ChromaSkyRenderer instance = new ChromaSkyRenderer();
 
+	private final int[] starColors = {
+			0xffffff, 0xC6FFFA, 0xC6E5FF, 0x9BB6FF, 0x7C70FF, 0xFF6868, 0xFFADAD, 0xFFDAAD, 0xFFF0AD
+	};
+
 	private ChromaSkyRenderer() {
 
 	}
@@ -297,7 +301,8 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				int n = random.nextInt(16);//4+random.nextInt(4);
 
 				int dt = nstar-i;
-				int c = dt >= 4 ? 0xffffff : ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, dt/4F);
+				int c1 = starColors[random.nextInt(starColors.length)];
+				int c = dt >= 4 ? c1 : ReikaColorAPI.getColorWithBrightnessMultiplier(c1, dt/4F);
 
 				//this.renderStar(random, 0x080808, 220, size*4, n, d0, d1, d2, d3, d9, d10, d12, d13, d16);
 				//this.renderStar(random, 0x555555, 210, size*2, n, d0, d1, d2, d3, d9, d10, d12, d13, d16);
