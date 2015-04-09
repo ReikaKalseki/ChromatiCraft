@@ -165,7 +165,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void resetDimension(WorldEvent.Unload evt) {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			ChromaDimensionManager.resetDimension();
+			ChromaDimensionManager.resetDimension(evt.world);
 		}
 	}
 

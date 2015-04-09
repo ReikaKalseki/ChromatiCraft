@@ -20,6 +20,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class WorldProviderChroma extends WorldProvider {
 
+	private ChunkProviderChroma chunkGen;
+
 	public WorldProviderChroma() {
 
 	}
@@ -155,7 +157,13 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public IChunkProvider createChunkGenerator()
 	{
-		return new ChunkProviderChroma(worldObj);
+		return this.getChunkGenerator();
+	}
+
+	public ChunkProviderChroma getChunkGenerator() {
+		if (chunkGen == null)
+			chunkGen = new ChunkProviderChroma(worldObj);
+		return chunkGen;
 	}
 
 	@Override

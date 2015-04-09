@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.io.File;
 import java.lang.reflect.Constructor;
 
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
@@ -25,6 +26,7 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 public class ChromaDimensionManager {
 
 	public static enum Biomes {
+		PLAINS(BiomeGenChromaPlains.class, 4, ExtraChromaIDs.PLAINS, Type.PLAINS, Type.MAGICAL),
 		ISLANDS(BiomeGenIslands.class, 10, ExtraChromaIDs.ISLANDS, Type.BEACH, Type.WET),
 		SKYLANDS(BiomeGenSkylands.class, 2, ExtraChromaIDs.SKYLANDS, Type.MAGICAL, Type.COLD);
 
@@ -74,7 +76,8 @@ public class ChromaDimensionManager {
 		}
 	}
 
-	public static void resetDimension() {
+	public static void resetDimension(World world) {
+		((WorldProviderChroma)world.provider).getChunkGenerator().clearCaches();
 		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
 		if (dim.exists() && dim.isDirectory()) {

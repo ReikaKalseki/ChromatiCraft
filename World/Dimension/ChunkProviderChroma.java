@@ -23,13 +23,13 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
@@ -73,17 +73,12 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private final MapGenCanyons canyonGen = new MapGenCanyons();
 	private final MapGenTendrils caveGenerator = new MapGenTendrils();
 
-	private final WorldChunkManager chunkManager;
+	private final ChromaChunkManager chunkManager;
 
-	{
-		/*
-		caveGenerator = TerrainGen.getModdedMapGen(caveGenerator, CAVE);
-		strongholdGenerator = (MapGenStronghold) TerrainGen.getModdedMapGen(strongholdGenerator, STRONGHOLD);
-		villageGenerator = (MapGenVillage) TerrainGen.getModdedMapGen(villageGenerator, VILLAGE);
-		mineshaftGenerator = (MapGenMineshaft) TerrainGen.getModdedMapGen(mineshaftGenerator, MINESHAFT);
-		scatteredFeatureGenerator = (MapGenScatteredFeature) TerrainGen.getModdedMapGen(scatteredFeatureGenerator, SCATTERED_FEATURE);
-		ravineGenerator = TerrainGen.getModdedMapGen(ravineGenerator, RAVINE);
-		 */
+	//private final HashSet<ChunkCoordIntPair> populatedChunks = new HashSet();
+
+	public void clearCaches() {
+		//populatedChunks.clear();
 	}
 
 	public ChunkProviderChroma(World world)
@@ -114,7 +109,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
 	{
-		byte b0 = 63;
+		byte b0 = 63;//32;//63;
 		biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
 		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
 
@@ -163,6 +158,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 								{
 									columnData[j3 += short1] = Blocks.water;
 								}
+								//else if (k2 * 8 + l2 < b0+1)
+								//{
+								//	columnData[j3 += short1] = Blocks.sand; //sand beaches
+								//}
 								else
 								{
 									columnData[j3 += short1] = null;
@@ -254,7 +253,25 @@ public class ChunkProviderChroma implements IChunkProvider {
 				int posIndex = d*columnData.length/256;
 
 				this.generateBedrockLayer(x, z, posIndex, columnData, metaData);
+				this.generateSandBeaches(x, z, posIndex, columnData, metaData);
 				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData);
+			}
+		}
+	}
+
+	private void generateSandBeaches(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
+		Block b = columnData[62+posIndex];
+		Block bb = columnData[61+posIndex];
+		Block ba = columnData[63+posIndex];
+		if (b == Blocks.stone && ba == null && bb == Blocks.stone) {
+			columnData[62+posIndex] = Blocks.sand;
+		}
+
+		for (int y = 66; y > 0; y--) {
+			b = columnData[y+posIndex];
+			ba = columnData[y+1+posIndex];
+			if (b == Blocks.stone && ba == Blocks.water) {
+				columnData[y+posIndex] = Blocks.sand;
 			}
 		}
 	}
@@ -268,9 +285,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 		Block surf = Blocks.grass;
 		Block fill = Blocks.dirt;
 
-		for (int y = 255; y > 0; y--) {
+		for (int y = 254; y > 0; y--) {
 			Block b = columnData[y+posIndex];
-			if (b == Blocks.stone) {
+			Block ba = columnData[y+1+posIndex];
+			if (b == Blocks.stone && ba == null) {
 				if (surface < maxSurface) {
 					surface++;
 					columnData[y+posIndex] = surf;
@@ -333,7 +351,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 		chunk.generateSkylightMap();
 
-		chunk.isTerrainPopulated = true; //use this to disable all populators
+		this.populate(null, chunkX, chunkZ);
+
+		//chunk.isTerrainPopulated = true; //use this to disable all populators
 
 		return chunk;
 	}
@@ -368,9 +388,39 @@ public class ChunkProviderChroma implements IChunkProvider {
 				for (int l1 = -b0; l1 <= b0; l1++) {
 					for (int i2 = -b0; i2 <= b0; i2++) {
 
+						/*
 						//normally biome dependent
 						float f3 = 0.5F; //avg height
 						float f4 = 0.0625F; //height variation
+
+						//These two gives a map that is half plains, half mountains - desirable
+						f4 *= 8;
+						f3 = 0.125F;
+
+						//Very flat, below sea level
+						f4 = 0;
+						f3 = -0.5F;
+
+						//Low plains, with sizeable hills
+						f3 = -1F;
+						f4 = 0.125F;
+
+						//very low plains around 33, lots of tall mountains
+						f3 = -1F;
+						f4 = 1F;
+						 */
+
+						//float f3 = -0.25F+0.75F*MathHelper.sin(chunkX/32F)*MathHelper.cos(chunkZ/48F);
+						//float f4 = 0.0625F*2*(2+1F*MathHelper.cos(chunkX/96F)+1F*MathHelper.sin(chunkZ/64F));
+
+						//float f3 = -0.25F+(float)Math.sqrt(Math.sin(chunkX/8D)*Math.sin(chunkX/8D)+Math.cos(chunkZ/8D)*Math.cos(chunkZ/8D));
+						//float f4 = 0.0625F*(float)Math.sqrt((chunkX*chunkX+chunkZ*chunkZ)/128D);
+
+
+						//FINAL GENERATION
+						float f0 = (float)Math.sqrt((chunkX*chunkX+chunkZ*chunkZ)/65536D);
+						float f3 = Math.max(-0.25F, 0.125F-f0*0.125F);
+						float f4 = 0.5F*f0;
 
 						//Math.sqrt(chunkX*chunkX+chunkZ*chunkZ)/32F;
 						//8*Math.sin(chunkX/256D)+32*Math.cos(chunkZ/512D); - large mountains, interesting terrain
@@ -494,6 +544,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 		l += 8;
 
 		BlockFalling.fallInstantly = false;
+	}
+
+	public void onPopulationHook(IChunkProvider gen, IChunkProvider loader, int x, int z) {
+		this.generateExtraChromaOre(worldObj, gen, loader, x, z);
+	}
+
+	private void generateExtraChromaOre(World world, IChunkProvider gen, IChunkProvider loader, int x, int z) {
+		for (int i = 0; i < 6; i++) {
+			TieredWorldGenerator.instance.generate(rand, x, z, world, gen, loader);
+		}
 	}
 
 	/**

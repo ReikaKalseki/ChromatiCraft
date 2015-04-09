@@ -17,6 +17,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 
@@ -31,7 +32,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 
-		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState() && !world.provider.hasNoSky) {
+		if (this.generateIn(world)) {
 			chunkX *= 16;
 			chunkZ *= 16;
 
@@ -52,7 +53,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 			}
 		}
 
-		if (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState()) {
+		if (this.generateIn(world)) {
 			for (int i = 0; i < TieredOres.list.length; i++) {
 				TieredOres p = TieredOres.list[i];
 				boolean flag = false;
@@ -67,6 +68,12 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 			}
 		}
 
+	}
+
+	private boolean generateIn(World world) {
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return true;
+		return world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState() && !world.provider.hasNoSky;
 	}
 
 	@Override

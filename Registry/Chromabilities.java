@@ -671,6 +671,7 @@ public enum Chromabilities implements Ability {
 							if (b != Blocks.air && b.isOpaqueCube()) {
 								if (power > b.blockResistance/12F) {
 									b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
+									b.removedByPlayer(ep.worldObj, ep, dx, dy, dz, true);
 									ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
 									ep.worldObj.setBlockToAir(dx, dy, dz);
 								}
