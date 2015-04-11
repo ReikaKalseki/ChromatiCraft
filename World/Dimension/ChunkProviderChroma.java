@@ -28,11 +28,18 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
+import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class ChunkProviderChroma implements IChunkProvider {
 
@@ -75,6 +82,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	private final ChromaChunkManager chunkManager;
 
+	private final OneWayList<ChromaWorldGenerator> decorators = new OneWayList();
+
 	//private final HashSet<ChunkCoordIntPair> populatedChunks = new HashSet();
 
 	public void clearCaches() {
@@ -105,6 +114,15 @@ public class ChunkProviderChroma implements IChunkProvider {
 				parabolicField[j + 2 + (k + 2) * 5] = f;
 			}
 		}
+
+		this.createDecorators();
+	}
+
+	private void createDecorators() {
+		decorators.add(new WorldGenMiasma());
+		decorators.add(new WorldGenFloatstone());
+		decorators.add(new WorldGenMoonPool());
+		decorators.add(new WorldGenFissure());
 	}
 
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
@@ -546,12 +564,27 @@ public class ChunkProviderChroma implements IChunkProvider {
 		BlockFalling.fallInstantly = false;
 	}
 
+	private void runDecorators(int x, int z) {
+		for (ChromaWorldGenerator wg : decorators) {
+			if (ReikaRandomHelper.doWithChance(wg.getGenerationChance(x, z))) {
+				int dx = x + rand.nextInt(16) + 8;
+				int dz = z + rand.nextInt(16) + 8;
+				int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
+				wg.generate(worldObj, rand, dx, y, dz);
+			}
+		}
+	}
+
 	public void onPopulationHook(IChunkProvider gen, IChunkProvider loader, int x, int z) {
 		this.generateExtraChromaOre(worldObj, gen, loader, x, z);
+
+		this.runDecorators(x*16, z*16);
 	}
 
 	private void generateExtraChromaOre(World world, IChunkProvider gen, IChunkProvider loader, int x, int z) {
 		for (int i = 0; i < 6; i++) {
+			if (i < 3)
+				TieredWorldGenerator.instance.skipPlants = true;
 			TieredWorldGenerator.instance.generate(rand, x, z, world, gen, loader);
 		}
 	}

@@ -25,6 +25,9 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 
 	public static final TieredWorldGenerator instance = new TieredWorldGenerator();
 
+	public boolean skipPlants = false;
+	public boolean skipOres = false;
+
 	private TieredWorldGenerator() {
 
 	}
@@ -32,7 +35,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 
-		if (this.generateIn(world)) {
+		if (!skipPlants && this.generateIn(world)) {
 			chunkX *= 16;
 			chunkZ *= 16;
 
@@ -53,7 +56,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 			}
 		}
 
-		if (this.generateIn(world)) {
+		if (!skipOres && this.generateIn(world)) {
 			for (int i = 0; i < TieredOres.list.length; i++) {
 				TieredOres p = TieredOres.list[i];
 				boolean flag = false;
@@ -67,6 +70,9 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 				}
 			}
 		}
+
+		skipOres = false;
+		skipPlants = false;
 
 	}
 

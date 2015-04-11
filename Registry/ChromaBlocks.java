@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Block.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
@@ -126,7 +127,8 @@ public enum ChromaBlocks implements BlockEnum {
 	RELAY(BlockLumenRelay.class,				ItemBlockLumenRelay.class,		"chroma.relay"),
 	GLOW(BlockCrystalGlow.class,				ItemBlockCrystalGlow.class,		"chroma.glow"),
 	HEATLAMP(BlockHeatLamp.class,				ItemBlockSidePlaced.class,		"chroma.heatlamp"),
-	VOIDRIFT(BlockVoidRift.class,				ItemBlockDyeTypes.class,		"chroma.voidrift");
+	VOIDRIFT(BlockVoidRift.class,				ItemBlockDyeTypes.class,		"chroma.voidrift"),
+	DIMGEN(BlockDimensionDeco.class,			ItemBlockMultiType.class,		"chroma.dimdeco");
 
 	private Class blockClass;
 	private String blockName;
@@ -288,6 +290,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
 		case RELAY:
 			return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
+		case DIMGEN:
+			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.Types.list[meta].name().toLowerCase());
 		default:
 			return "";
 		}
@@ -331,6 +335,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return BlockPath.PathType.list.length;
 		case STRUCTSHIELD:
 			return BlockStructureShield.BlockType.list.length;
+		case DIMGEN:
+			return BlockDimensionDeco.Types.list.length;
 		default:
 			return 1;
 		}

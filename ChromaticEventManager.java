@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -68,6 +69,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -112,6 +114,9 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
+
+import com.xcompwiz.mystcraft.api.event.LinkEvent;
+
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -134,9 +139,25 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	@ModDependent(ModList.MYSTCRAFT)
+	public void noDimensionLinking(LinkEvent.LinkEventAllow evt) {
+		if (evt.origin.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || evt.destination.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			evt.setCanceled(true);
+	}
+
+	@SubscribeEvent
+	public void unloadLightnings(WorldEvent.Unload evt) {
+		for (Entity e : ((List<Entity>)evt.world.loadedEntityList)) {
+			if (e instanceof EntityBallLightning) {
+				e.setDead();
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void deleteEnd(WorldEvent.Unload evt) {
 		if (ChromaOptions.DELEND.getState()) {
-			if (evt.world.provider.dimensionId == 1) {
+			if (evt.world.provider.dimensionId == 1 && !evt.world.isRemote) {
 				String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 				File dim = new File(path+"/DIM1");
 				if (dim.exists() && dim.isDirectory()) {
@@ -164,7 +185,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void resetDimension(WorldEvent.Unload evt) {
-		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && !evt.world.isRemote) {
 			ChromaDimensionManager.resetDimension(evt.world);
 		}
 	}
