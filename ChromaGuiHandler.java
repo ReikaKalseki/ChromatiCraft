@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
+import Reika.ChromatiCraft.Container.ContainerBulkMover;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
@@ -37,6 +38,7 @@ import Reika.ChromatiCraft.GUI.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiBiomeChanger;
+import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
@@ -158,6 +160,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new ContainerAuraPouch(player);
 		case REMOTETERMINAL:
 			return new ContainerRemoteTerminal(player);
+		case BULKMOVER:
+			return new ContainerBulkMover(player);
 		default:
 			break;
 		}
@@ -261,6 +265,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiTeleportAbility(player);
 		case REMOTETERMINAL:
 			return new GuiRemoteTerminal(player);
+		case BULKMOVER:
+			return new GuiBulkMover(player);
 		default:
 			break;
 		}

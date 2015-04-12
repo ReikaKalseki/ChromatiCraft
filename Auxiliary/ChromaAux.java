@@ -36,13 +36,14 @@ public class ChromaAux {
 	public static final Color[] sideColors = {Color.CYAN, Color.BLUE, Color.YELLOW, Color.BLACK, new Color(255, 120, 0), Color.MAGENTA};
 	public static final String[] sideColorNames = {"CYAN", "BLUE", "YELLOW", "BLACK", "ORANGE", "MAGENTA"};
 
-	public static void interceptChunkPopulation(int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
+	public static boolean interceptChunkPopulation(int cx, int cz, World world, IChunkProvider generator, IChunkProvider loader) {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			((WorldProviderChroma)world.provider).getChunkGenerator().onPopulationHook(generator, loader, cx, cz);
 		}
 		else {
 			GameRegistry.generateWorld(cx, cz, world, generator, loader);
 		}
+		return true;
 	}
 
 	public static final boolean hasGui(World world, int x, int y, int z, EntityPlayer ep) {

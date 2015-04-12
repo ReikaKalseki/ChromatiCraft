@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +38,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import ttftcuts.atg.api.ATGBiomes;
+import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.LoginApplier;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -522,9 +524,28 @@ public class ChromatiCraft extends DragonAPIMod {
 			CrystalBees.register();
 		}
 
+		if (ModList.BOTANIA.isLoaded()) {
+			BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
+			BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
+		}
+
 		if (ModList.VOIDMONSTER.isLoaded()) {
 			DimensionAPI.blacklistDimensionForSounds(ExtraChromaIDs.DIMID.getValue());
 			DimensionAPI.blacklistDimensionForSpawning(ExtraChromaIDs.DIMID.getValue());
+		}
+
+		if (ModList.MINEFACTORY.isLoaded()) {
+			try {
+				Class c = Class.forName("powercrystals.minefactoryreloaded.MFRRegistry");
+				Method m = c.getMethod("registerSafariNetBlacklist", Class.class);
+				m.invoke(null, EntityBallLightning.class);
+				m = c.getMethod("registerAutoSpawnerBlacklistClass", Class.class);
+				m.invoke(null, EntityBallLightning.class);
+			}
+			catch (Exception e) {
+				logger.logError("Could not blacklist Void Monster from MFR Safari Net!");
+				e.printStackTrace();
+			}
 		}
 
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {

@@ -22,6 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
+import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -403,6 +405,13 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case WANDCHARGE:
 				CrystalWand.updateWandClient(ep, data);
+				break;
+			case BULKITEM:
+				ItemStack is = new ItemStack(Item.getItemById(data[0]), 1, data[1]);
+				ItemBulkMover.setStoredItem(ep.getCurrentEquippedItem(), is);
+				break;
+			case BULKNUMBER:
+				ItemBulkMover.setNumberToCarry(ep.getCurrentEquippedItem(), data[0]);
 				break;
 			}
 		}

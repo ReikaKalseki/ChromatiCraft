@@ -141,7 +141,9 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	@ModDependent(ModList.MYSTCRAFT)
 	public void noDimensionLinking(LinkEvent.LinkEventAllow evt) {
-		if (evt.origin.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || evt.destination.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+		if (evt.origin != null && evt.origin.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			evt.setCanceled(true);
+		if (evt.destination != null && evt.destination.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			evt.setCanceled(true);
 	}
 

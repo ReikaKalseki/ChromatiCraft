@@ -64,18 +64,20 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 
 	@SideOnly(Side.CLIENT)
 	private void spawnBeamParticles(World world, int x, int y, int z) {
-		for (int i = 0; i < targets.size(); i++) {
-			CrystalTarget tg = targets.get(i);
-			double dx = tg.location.xCoord+tg.offsetX-x;
-			double dy = tg.location.yCoord+tg.offsetY-y;
-			double dz = tg.location.zCoord+tg.offsetZ-z;
-			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
-			double dr = rand.nextDouble();
-			double px = dx*dr+x+0.5;
-			double py = dy*dr+y+0.5;
-			double pz = dz*dr+z+0.5;
-			EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+		if (rand.nextInt(1+p*2) == 0) {
+			for (CrystalTarget tg : targets) {
+				double dx = tg.location.xCoord+tg.offsetX-x;
+				double dy = tg.location.yCoord+tg.offsetY-y;
+				double dz = tg.location.zCoord+tg.offsetZ-z;
+				double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+				double dr = rand.nextDouble();
+				double px = dx*dr+x+0.5;
+				double py = dy*dr+y+0.5;
+				double pz = dz*dr+z+0.5;
+				EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 	}
 

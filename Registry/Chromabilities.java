@@ -86,7 +86,7 @@ public enum Chromabilities implements Ability {
 	SONIC(null, true),
 	SHIFT(null, false),
 	HEAL(null, false),
-	SHIELD(Phase.END, false),
+	SHIELD(Phase.START, false),
 	FIREBALL(null, false),
 	COMMUNICATE(Phase.START, false),
 	HEALTH(null, true),
@@ -738,7 +738,7 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void stopArrows(EntityPlayer ep) {
-		AxisAlignedBB box = ep.boundingBox.expand(4, 4, 4);
+		AxisAlignedBB box = ep.boundingBox.expand(6, 4, 6);
 		List<EntityArrow> li = ep.worldObj.getEntitiesWithinAABB(EntityArrow.class, box);
 		for (EntityArrow e : li) {
 			if (e.shootingEntity != ep && !e.worldObj.isRemote) { //bounceback code

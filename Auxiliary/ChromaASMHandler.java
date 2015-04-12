@@ -69,7 +69,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 		private static enum ClassPatch {
 			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "ara"),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje"),
-			CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
+			//CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
 			CHUNKPOPLN("net.minecraft.world.gen.ChunkProviderServer", "ms"),
 			;
 
@@ -131,7 +131,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 					}
 				}
-				break;
+				break;/*
 				case CHARWIDTH: { //[I to [F
 					try {
 						Class optifine = Class.forName("optifine.OptiFineClassTransformer");
@@ -174,9 +174,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 								primed = false;
 							}
 						}
-					}*/
-					break;
-				}
+					}*//*
+				break;
+				}*/
 				case CHUNKPOPLN: {
 					MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73153_a", "populate", "(Lnet/minecraft/world/chunk/IChunkProvider;II)V");
 					boolean primed = false;

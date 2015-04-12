@@ -32,7 +32,8 @@ public enum ChromaGuis {
 	AURAPOUCH(),
 	TRANSITION(),
 	TELEPORT(),
-	REMOTETERMINAL();
+	REMOTETERMINAL(),
+	BULKMOVER();
 
 	public static final ChromaGuis[] guiList = values();
 
