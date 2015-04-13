@@ -185,7 +185,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						if (ain.getOpcode() == Opcodes.INVOKEINTERFACE) {
 							primed = true;
 						}
-						else if (primed && ain.getOpcode() == Opcodes.INVOKESTATIC) {
+						else if (primed && ain.getOpcode() == Opcodes.INVOKESTATIC && ((MethodInsnNode)ain).owner.contains("GameRegistry")) {
 							primed = false;
 							MethodInsnNode min = (MethodInsnNode)ain;
 
