@@ -59,6 +59,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -118,7 +119,8 @@ public enum ChromaTiles {
 	LIFEEMITTER("chroma.lifeemitter",	ChromaBlocks.TILEMODELLED2, TileEntityLifeEmitter.class,		1/*, "RenderLifeEmitter"*/),
 	FARMER("chroma.farmer",				ChromaBlocks.TILEMODELLED2,	TileEntityFarmer.class,				4, "RenderFarmer"),
 	AURAPOINT("chroma.aurapoint",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAuraPoint.class,		1, "RenderAuraPoint"),
-	DIMENSIONCORE("chroma.dimcore",		ChromaBlocks.PYLON,			TileEntityDimensionCore.class,		6, "RenderDimensionCore");
+	DIMENSIONCORE("chroma.dimcore",		ChromaBlocks.PYLON,			TileEntityDimensionCore.class,		6, "RenderDimensionCore"),
+	AUTOMATOR("chroma.automator",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCastingAuto.class,	2, "RenderCastingAuto");
 
 	private final Class tile;
 	private final String name;
@@ -189,6 +191,7 @@ public enum ChromaTiles {
 		case CHROMAFLOWER:
 		case DIMENSIONCORE:
 		case AURAPOINT:
+		case AUTOMATOR:
 			//case TANK:
 			//case ITEMRIFT:
 			return true;

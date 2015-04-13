@@ -62,6 +62,8 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 		case 0:
 		case 1:
 			return ChromaIcons.TRANSPARENT.getIcon();
+		case 2:
+			return ChromaIcons.GLOWFRAME_TRANS.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

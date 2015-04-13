@@ -103,7 +103,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		float f = 1+this.getTier()/(float)MAX_TIER;
 		int l = (int)(221/f);
 		if (this.getTicksExisted()%l == 0)
-			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 1, f);
+			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 0.25F, f);
 
 		long time = System.nanoTime();
 		for (int i = 0; i < 6; i++) {

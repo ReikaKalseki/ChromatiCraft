@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
@@ -68,6 +69,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -412,6 +414,13 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case BULKNUMBER:
 				ItemBulkMover.setNumberToCarry(ep.getCurrentEquippedItem(), data[0]);
+				break;
+			case CASTAUTOUPDATE:
+				((TileEntityCastingAuto)tile).receiveUpdatePacket(data);
+				break;
+			case AUTORECIPE:
+				CastingRecipe cr = data[0] >= 0 ? ChromaResearch.researchList[data[0]].getCraftingRecipes().get(data[1]) : null;
+				((TileEntityCastingAuto)tile).setRecipe(cr);
 				break;
 			}
 		}

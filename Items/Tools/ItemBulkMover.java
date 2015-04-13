@@ -79,15 +79,17 @@ public class ItemBulkMover extends ItemChromaTool {
 			return true;
 		}
 
-		InventoryInteraction ii = this.getInteraction(world, x, y, z, s);
-		if (ii != null) {
-			if (this.hasItems(is)) {
-				int added = ii.addItems(this.getStoredItem(is), this.getStoredItems(is));
-				removeItems(is, added);
-			}
-			else {
-				int rem = ii.drawItems(this.getStoredItem(is), this.getNumberToCarry(is));
-				addItems(is, rem);
+		if (this.getStoredItem(is) != null) {
+			InventoryInteraction ii = this.getInteraction(world, x, y, z, s);
+			if (ii != null) {
+				if (this.hasItems(is)) {
+					int added = ii.addItems(this.getStoredItem(is), this.getStoredItems(is));
+					removeItems(is, added);
+				}
+				else {
+					int rem = ii.drawItems(this.getStoredItem(is), this.getNumberToCarry(is));
+					addItems(is, rem);
+				}
 			}
 		}
 

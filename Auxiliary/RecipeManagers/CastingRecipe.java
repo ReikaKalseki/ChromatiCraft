@@ -110,6 +110,20 @@ public class CastingRecipe {
 		return ReikaRecipeHelper.getRecipeArray(recipe);
 	}
 
+	public ItemStack[] getBasicRecipeArray() {
+		List<ItemStack>[] lia = this.getRecipeArray();
+		ItemStack[] out = new ItemStack[9];
+		for (int i = 0; i < lia.length; i++) {
+			List<ItemStack> li = lia[i];
+			out[i] = li.get(0).copy();
+		}
+		return out;
+	}
+
+	public Object[] getInputArray() {
+		return ReikaRecipeHelper.getInputArrayCopy(recipe);
+	}
+
 	public boolean usesItem(ItemStack is) {
 		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is, true);
 	}

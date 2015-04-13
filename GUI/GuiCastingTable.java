@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -50,6 +51,8 @@ public class GuiCastingTable extends GuiChromaBase {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		int a = (width - xSize) / 2;
 		int b = (height - ySize) / 2;
+
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
 		if (this.isMultiForm()) {
 			HashMap<List<Integer>, TileEntityItemStand> li = tile.getOtherStands();
@@ -134,6 +137,10 @@ public class GuiCastingTable extends GuiChromaBase {
 			}
 			zLevel = 0;
 			//this.drawRect(188, 11, 188+18, 29, 0xffABABAB);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_BLEND);
+			Tessellator.instance.setColorOpaque_I(0xffffff);
+			Tessellator.instance.setBrightness(240);
 
 			if (r instanceof PylonRecipe) {
 				PylonRecipe p = (PylonRecipe)r;
@@ -151,6 +158,8 @@ public class GuiCastingTable extends GuiChromaBase {
 				}
 			}
 		}
+
+		GL11.glPopAttrib();
 	}
 
 	@Override

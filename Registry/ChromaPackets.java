@@ -54,7 +54,9 @@ public enum ChromaPackets {
 	HEATLAMP(1),
 	WANDCHARGE(16),
 	BULKITEM(2),
-	BULKNUMBER(1);
+	BULKNUMBER(1),
+	CASTAUTOUPDATE(7),
+	AUTORECIPE(2);
 
 	public final int numInts;
 	public final PacketTypes type;

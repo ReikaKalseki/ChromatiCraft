@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.GuiBiomeChanger;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
+import Reika.ChromatiCraft.GUI.GuiCastingAuto;
 import Reika.ChromatiCraft.GUI.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
@@ -92,6 +93,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -217,6 +219,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiBiomeChanger(player, (TileEntityBiomePainter) te);
 			if (te instanceof TileEntityHeatLamp)
 				return new GuiHeatLamp((TileEntityHeatLamp) te, player);
+			if (te instanceof TileEntityCastingAuto)
+				return new GuiCastingAuto((TileEntityCastingAuto) te, player);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

@@ -382,6 +382,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		return false;
 	}
 
+	public boolean isReadyToCraft() {
+		return craftingTick == 0 && inv[9] == null;
+	}
+
 	/*
 	private boolean getRecipeRequirements() {
 		if (activeRecipe instanceof PylonRecipe) {

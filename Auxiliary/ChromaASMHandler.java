@@ -191,6 +191,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 							min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
 							min.name = "interceptChunkPopulation";
+							min.desc = "(IILnet/minecraft/world/World;Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/chunk/IChunkProvider;)V";
 
 							ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
 							break;

@@ -97,7 +97,7 @@ public enum ChromaResearch implements ProgressElement {
 	FABRICATOR(		ChromaTiles.FABRICATOR, 	ResearchLevel.PYLONCRAFT),
 	ENCHANTER(		ChromaTiles.ENCHANTER, 		ResearchLevel.RUNECRAFT),
 	CHROMAFLOWER(	ChromaTiles.CHROMAFLOWER, 	ResearchLevel.BASICCRAFT),
-	COLLECTOR(		ChromaTiles.COLLECTOR, 		ResearchLevel.ENERGYEXPLORE),
+	COLLECTOR(		ChromaTiles.COLLECTOR, 		ResearchLevel.BASICCRAFT),
 	BREWER(			ChromaTiles.BREWER, 		ResearchLevel.BASICCRAFT),
 	RITUALTABLE(	ChromaTiles.RITUAL, 		ResearchLevel.ENERGYEXPLORE),
 	CASTTABLE(		ChromaTiles.TABLE, 			ResearchLevel.ENTRY),
@@ -153,6 +153,7 @@ public enum ChromaResearch implements ProgressElement {
 	ORESILK(			ChromaItems.ORESILK,		ResearchLevel.RUNECRAFT),
 	GROWTH(				ChromaItems.GROWTH,			ResearchLevel.MULTICRAFT),
 	ENDERCRYS(			ChromaItems.ENDERCRYSTAL,	ResearchLevel.ENDGAME,		ProgressStage.END),
+	BULKMOVER(			ChromaItems.BULKMOVER,		ResearchLevel.RUNECRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
