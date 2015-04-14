@@ -27,6 +27,8 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 
 	private int requestTimer = rand.nextInt(200);
 
+	private long lastRequestDecrTime = -1;
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (DragonAPICore.debugtest && !world.isRemote) {
@@ -47,8 +49,13 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 				}
 				requestTimer = 200;
 			}
-			else
-				requestTimer--;
+			else {
+				long time = world.getTotalWorldTime();
+				if (lastRequestDecrTime != time) {
+					requestTimer--;
+				}
+				lastRequestDecrTime = time;
+			}
 		}
 	}
 

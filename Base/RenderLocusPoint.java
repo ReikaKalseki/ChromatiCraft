@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
 import java.nio.FloatBuffer;
@@ -46,8 +55,10 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.5, 0.5, 0.5);
 		RenderManager rm = RenderManager.instance;
-		GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+		if (tile.hasWorldObj()) {
+			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+		}
 
 		int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 		//ReikaJavaLibrary.pConsole(te.getEnergy());

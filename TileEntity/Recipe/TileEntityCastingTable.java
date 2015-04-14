@@ -261,7 +261,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (this.getTier().isAtLeast(RecipeType.PYLON) && hasPylonConnections && activeRecipe instanceof PylonRecipe) {
 			BlockArray blocks = this.getStructureRuneLocations(((PylonRecipe)activeRecipe).getRequiredAura());
 			int mod = 17-blocks.getSize();
-			if (this.getTicksExisted()%mod == 0) {
+			if (blocks.getSize() > 0 && this.getTicksExisted()%mod == 0) {
 				int[] xyz = blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
 				int dx = xyz[0];
 				int dy = xyz[1];
@@ -506,15 +506,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				ProgressStage.LINK.stepPlayerTo(ep);
 			}
 			ProgressStage.CASTING.stepPlayerTo(ep);
-			recipe.onCrafted(this, ep);
+			activeRecipe.onCrafted(this, ep);
+			activeRecipe = recipe;
 			recipe = this.getValidRecipe();
-			if (recipe instanceof PylonRecipe && recipe == activeRecipe) {
+			if (activeRecipe instanceof PylonRecipe && recipe == activeRecipe) {
 				craftingTick = recipe.getDuration();
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				repeat = true;
 				break;
 			}
-			//ReikaJavaLibrary.pConsole(count+": "+recipe, Side.SERVER);
 		}
 		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
 		if (inv[9] != null) {

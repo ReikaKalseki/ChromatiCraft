@@ -34,7 +34,6 @@ import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
@@ -378,7 +377,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.SHOCK.stepPlayerTo(ep);
-			ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
+			//DO NOT UNCOMMENT, AS ALLOWS DISCOVERY OF ALL COLORS BEFORE PREREQ//ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
 			if (ModList.BLOODMAGIC.isLoaded()) {
 				int drain = 5000;
 				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {

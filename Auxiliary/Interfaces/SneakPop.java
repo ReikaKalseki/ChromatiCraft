@@ -7,15 +7,11 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World.Dimension;
+package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 
-public class BiomeGenChromaPlains extends ChromaDimensionBiome {
+public interface SneakPop {
 
-	public BiomeGenChromaPlains(int id) {
-		super(id);
-		this.setBiomeName("Crystal Plains");
-	}
+	public void drop();
 
 }

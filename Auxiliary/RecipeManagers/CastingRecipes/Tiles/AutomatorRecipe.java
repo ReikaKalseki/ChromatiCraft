@@ -1,9 +1,19 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class AutomatorRecipe extends PylonRecipe {
 
@@ -41,6 +51,11 @@ public class AutomatorRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.enderDust, 0, 2);
 		this.addAuxItem(ChromaStacks.enderDust, -2, 0);
 		this.addAuxItem(ChromaStacks.enderDust, 2, 0);
+
+		this.addAuraRequirement(CrystalElement.BLACK, 25000);
+		this.addAuraRequirement(CrystalElement.PURPLE, 20000);
+		this.addAuraRequirement(CrystalElement.WHITE, 10000);
+		this.addAuraRequirement(CrystalElement.LIGHTGRAY, 5000);
 	}
 
 }

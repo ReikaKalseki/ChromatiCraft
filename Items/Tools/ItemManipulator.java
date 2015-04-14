@@ -23,6 +23,7 @@ import thaumcraft.api.IScribeTools;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
@@ -67,14 +68,14 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			return false;
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
+		if (tile instanceof SneakPop && ep.isSneaking()) {
+			((SneakPop)tile).drop();
+			ChromaSounds.RIFT.playSoundAtBlock(tile);
+			return true;
+		}
 		if (t == ChromaTiles.RIFT) {
 			TileEntityRift te = (TileEntityRift)tile;
-			if (ep.isSneaking()) {
-				te.drop();
-			}
-			else {
-				te.setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
-			}
+			te.setDirection(ForgeDirection.VALID_DIRECTIONS[s]);
 			return true;
 		}
 		if (t == ChromaTiles.TABLE) {
@@ -190,21 +191,24 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				PlayerElementBuffer.instance.checkUpgrade(player, true);
 			}
 		}
-		if (mov != null) {
-			World world = player.worldObj;
-			int x = mov.blockX;
-			int y = mov.blockY;
-			int z = mov.blockZ;
-			ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
-			if (c == ChromaTiles.PYLON) {
-				TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-				CrystalElement e = te.getColor();
-				this.chargeFromPylon(player, te, e, count);
-			}
-			else if (world.getBlock(x, y, z) == ChromaBlocks.POWERTREE.getBlockInstance()) {
-				TileEntityPowerTree te = ((TileEntityPowerTreeAux)world.getTileEntity(x, y, z)).getCenter();
-				if (te != null && this.chargeFromPylon(player, te, CrystalElement.elements[world.getBlockMetadata(x, y, z)], count)) {
 
+		if (ProgressStage.PYLON.isPlayerAtStage(player)) {
+			if (mov != null) {
+				World world = player.worldObj;
+				int x = mov.blockX;
+				int y = mov.blockY;
+				int z = mov.blockZ;
+				ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+				if (c == ChromaTiles.PYLON) {
+					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
+					CrystalElement e = te.getColor();
+					this.chargeFromPylon(player, te, e, count);
+				}
+				else if (world.getBlock(x, y, z) == ChromaBlocks.POWERTREE.getBlockInstance()) {
+					TileEntityPowerTree te = ((TileEntityPowerTreeAux)world.getTileEntity(x, y, z)).getCenter();
+					if (te != null && this.chargeFromPylon(player, te, CrystalElement.elements[world.getBlockMetadata(x, y, z)], count)) {
+
+					}
 				}
 			}
 		}

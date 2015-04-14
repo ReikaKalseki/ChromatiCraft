@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -35,10 +36,11 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAccelerator extends TileEntityChromaticBase implements NBTTile {
+public class TileEntityAccelerator extends TileEntityChromaticBase implements NBTTile, SneakPop {
 
 	public static final long MAX_LAG = calculateLagLimit();
 
@@ -225,6 +227,15 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		NBT.setInteger("tier", this.getTier());
+	}
+
+	@Override
+	public void drop() {
+		ItemStack is = this.getTile().getCraftedProduct();
+		is.stackTagCompound = new NBTTagCompound();
+		this.getTagsToWriteToStack(is.stackTagCompound);
+		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
+		this.delete();
 	}
 
 }

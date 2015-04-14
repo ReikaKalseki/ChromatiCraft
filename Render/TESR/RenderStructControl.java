@@ -35,7 +35,7 @@ public class RenderStructControl extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityStructControl te = (TileEntityStructControl)tile;
-		if (te.isInWorld() && te.isVisible() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (!te.isInWorld() || (te.isInWorld() && te.isVisible() && MinecraftForgeClient.getRenderPass() == 1)) {
 			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();
@@ -56,8 +56,14 @@ public class RenderStructControl extends ChromaRenderBase {
 			double s = 0.5;
 			GL11.glScaled(s, s, s);
 			RenderManager rm = RenderManager.instance;
-			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			if (te.isInWorld()) {
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			}
+			else {
+				GL11.glRotatef(45, 0, 1, 0);
+				GL11.glRotatef(-45, 1, 0, 0);
+			}
 
 			int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 			//ReikaJavaLibrary.pConsole(te.getEnergy());

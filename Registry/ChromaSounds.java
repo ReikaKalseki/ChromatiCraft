@@ -147,6 +147,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean canOverlap() {
-		return this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE;
+		return this == RIFT || this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE;
 	}
 }
