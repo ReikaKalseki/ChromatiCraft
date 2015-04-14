@@ -111,6 +111,7 @@ public enum ChromaResearch implements ProgressElement {
 	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
 	ASPECTJAR(		ChromaTiles.ASPECTJAR,		ResearchLevel.PYLONCRAFT),
 	FARMER(			ChromaTiles.FARMER,			ResearchLevel.PYLONCRAFT),
+	AUTO(			ChromaTiles.AUTOMATOR,		ResearchLevel.ENDGAME),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

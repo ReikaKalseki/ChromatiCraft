@@ -38,6 +38,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -53,6 +55,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -160,7 +163,7 @@ public class ChromaOverlays {
 			GL11.glEnable(GL11.GL_LIGHTING);
 
 			if (tick > 1) {
-				map.put(p, tick-1);
+				map.put(p, tick-(DragonAPICore.debugtest ? 32 : 1));
 			}
 			dy += h+4;
 			if (dy > Minecraft.getMinecraft().displayHeight/gsc-h) {
@@ -725,6 +728,7 @@ public class ChromaOverlays {
 			ColorDiscovery - 1 by color ordinal
 			ResearchLevel - 2 by ordinal
 			ChromaResearch - 3 by research level by ordinal
+			CastingRecipe - 4 by ID
 		 */
 
 		@Override
@@ -744,6 +748,9 @@ public class ChromaOverlays {
 			}
 			else if (e instanceof ChromaResearch) {
 				return 3000000+1000*((ChromaResearch)e).level.ordinal()+((ChromaResearch)e).ordinal();
+			}
+			else if (e instanceof CastingRecipe) {
+				return 3000000+RecipesCastingTable.instance.getIDForRecipe((CastingRecipe)e);
 			}
 			else
 				return -1;

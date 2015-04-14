@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -20,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -46,6 +48,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
@@ -55,6 +58,7 @@ import Reika.DragonAPI.Interfaces.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -72,6 +76,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	public boolean hasPylonConnections = false;
 	private int tableXP;
 	private RecipeType tier = RecipeType.CRAFTING;
+
+	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 
 	public RecipeType getTier() {
 		return tier;
@@ -122,8 +128,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
-		if (DragonAPICore.debugtest)
+		if (DragonAPICore.debugtest) {
 			this.addXP(3434);
+
+			for (CastingRecipe cr : RecipesCastingTable.instance.getAllRecipes()) {
+				completedRecipes.add(new KeyedItemStack(cr.getOutput()));
+			}
+			this.markDirty();
+			this.syncAllData(true);
+		}
 
 		//if (world.isRemote)
 		//	this.spawnIdleParticles(world, x, y, z);
@@ -396,6 +409,40 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			return true;
 		}
 	}*/
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		this.readRecipes(NBT);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		this.writeRecipes(NBT);
+	}
+
+	private void writeRecipes(NBTTagCompound NBT) {
+		NBTTagList li = new NBTTagList();
+		for (KeyedItemStack is : completedRecipes) {
+			NBTTagCompound tag = new NBTTagCompound();
+			is.getItemStack().writeToNBT(tag);
+			li.appendTag(tag);
+		}
+		NBT.setTag("recipes", li);
+	}
+
+	private void readRecipes(NBTTagCompound NBT) {
+		completedRecipes.clear();
+		NBTTagList li = NBT.getTagList("recipes", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			NBTTagCompound tag = (NBTTagCompound)o;
+			ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+			completedRecipes.add(new KeyedItemStack(is));
+		}
+	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
@@ -688,6 +735,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("lvl", this.getTier().ordinal());
 		NBT.setInteger("xp", tableXP);
+
+		this.writeRecipes(NBT);
 	}
 
 	@Override
@@ -702,6 +751,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				}
 			}
 		}
+
+		if (is.stackTagCompound != null)
+			this.readRecipes(is.stackTagCompound);
 	}
 
 	@Override
@@ -732,6 +784,20 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public boolean trigger() {
 		return this.getPlacer() != null && this.triggerCrafting(this.getPlacer());
+	}
+
+	public void giveRecipe(EntityPlayer ep, CastingRecipe cr) {
+		completedRecipes.add(new KeyedItemStack(cr.getOutput()));
+		this.markDirty();
+		this.syncAllData(true);
+	}
+
+	public HashSet<CastingRecipe> getCompletedRecipes() {
+		HashSet<CastingRecipe> set = new HashSet();
+		for (KeyedItemStack is : completedRecipes) {
+			set.addAll(RecipesCastingTable.instance.getAllRecipesMaking(is.getItemStack()));
+		}
+		return set;
 	}
 
 }

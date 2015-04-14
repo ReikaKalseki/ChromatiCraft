@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
@@ -419,8 +420,8 @@ public class ChromatiPackets implements IPacketHandler {
 				((TileEntityCastingAuto)tile).receiveUpdatePacket(data);
 				break;
 			case AUTORECIPE:
-				CastingRecipe cr = data[0] >= 0 ? ChromaResearch.researchList[data[0]].getCraftingRecipes().get(data[1]) : null;
-				((TileEntityCastingAuto)tile).setRecipe(cr);
+				CastingRecipe cr = data[0] >= 0 ? RecipesCastingTable.instance.getRecipeByID(data[0]) : null;
+				((TileEntityCastingAuto)tile).setRecipe(cr, data[1]);
 				break;
 			}
 		}

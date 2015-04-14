@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.Repea
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectJarRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AutomatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
@@ -118,13 +120,21 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
+import com.google.common.collect.HashBiMap;
+
 public class RecipesCastingTable {
 
 	public static final RecipesCastingTable instance = new RecipesCastingTable();
+
 	private final HashMap<RecipeType, OneWayList<CastingRecipe>> recipes = new HashMap();
 	private final OneWayList<CastingRecipe> APIrecipes = new OneWayList();
 
+	private int maxID = 0;
+	private final HashBiMap<Integer, CastingRecipe> recipeIDs;
+
 	private RecipesCastingTable() {
+
+		recipeIDs = HashBiMap.create();
 
 		if (ChromatiCraft.instance.isLocked())
 			return;
@@ -391,6 +401,8 @@ public class RecipesCastingTable {
 		is = ChromaItems.BULKMOVER.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "OCO", "ODO", " I ", 'O', Blocks.obsidian, 'D', Items.diamond, 'C', Blocks.chest, 'I', Items.iron_ingot);
 		this.addRecipe(new RecipeItemMover(is, sr));
+
+		this.addRecipe(new AutomatorRecipe(ChromaTiles.AUTOMATOR.getCraftedProduct(), ChromaStacks.transformCore));
 	}
 
 	public void addPostLoadRecipes() {
@@ -408,6 +420,10 @@ public class RecipesCastingTable {
 			recipes.put(r.type, li);
 		}
 		li.add(r);
+
+		recipeIDs.put(maxID, r);
+		maxID++;
+		//ChromaResearchManager.instance.register(r);
 	}
 
 	public void addModdedRecipe(CastingRecipe r) {
@@ -473,6 +489,22 @@ public class RecipesCastingTable {
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
 		cast.setBoolean(type.name().toLowerCase(), true);
 		nbt.setTag("castingprog", cast);
+	}
+
+	public CastingRecipe getRecipeByID(int id) {
+		return recipeIDs.get(id);
+	}
+
+	public int getIDForRecipe(CastingRecipe cr) {
+		return recipeIDs.inverse().get(cr);
+	}
+
+	public Collection<CastingRecipe> getAllRecipes() {
+		ArrayList<CastingRecipe> li = new ArrayList();
+		for (OneWayList oli : recipes.values()) {
+			li.addAll(oli);
+		}
+		return li;
 	}
 
 }

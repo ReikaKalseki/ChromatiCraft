@@ -51,8 +51,10 @@ public class ChromabilityHandler implements TickHandler {
 			}
 		}
 		if (DragonAPICore.debugtest)
-			for (Ability c : Chromabilities.getAbilities())
-				Chromabilities.give(ep, c);
+			for (Ability c : Chromabilities.getAbilities()) {
+				if (!Chromabilities.playerHasAbility(ep, c))
+					Chromabilities.give(ep, c);
+			}
 	}
 
 	@Override
