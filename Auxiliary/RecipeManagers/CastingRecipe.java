@@ -127,7 +127,25 @@ public class CastingRecipe {
 	public boolean usesItem(ItemStack is) {
 		return ReikaItemHelper.listContainsItemStack(ReikaRecipeHelper.getAllItemsInRecipe(recipe), is, true);
 	}
+	/*
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getTitle() {
+		return this.getOutput().getDisplayName();
+	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public String getShortDesc() {
+		return "A new item to craft";
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public ItemStack getIcon() {
+		return this.getOutput();
+	}
+	 */
 	protected static final ItemStack getShard(CrystalElement e) {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());
 	}
@@ -163,7 +181,8 @@ public class CastingRecipe {
 	}
 
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-
+		//ChromaResearchManager.instance.givePlayerRecipe(ep, this);
+		te.giveRecipe(ep, this);
 	}
 
 	@Override

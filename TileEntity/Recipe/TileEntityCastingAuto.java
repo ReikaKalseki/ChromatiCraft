@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +71,11 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 
 	private CastingRecipe recipe;
 
-	private StepTimer stepDelay = new StepTimer(20);
+	private StepTimer stepDelay = new StepTimer(6);
 
 	private StepTimer cacheTimer = new StepTimer(40);
+
+	private int recipesToGo = 0;
 
 	private final ItemCollection ingredients = new ItemCollection();
 	@ModDependent(ModList.APPENG)
@@ -90,6 +93,15 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	private TileEntityCastingTable getTable(World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y-5, z);
 		return te instanceof TileEntityCastingTable ? (TileEntityCastingTable)te : null;
+	}
+
+	public Collection<CastingRecipe> getAvailableRecipes() {
+		TileEntityCastingTable te = this.getTable(worldObj, xCoord, yCoord, zCoord);
+		return te != null ? te.getCompletedRecipes() : new HashSet();
+	}
+
+	public CastingRecipe getCurrentRecipeOutput() {
+		return recipe;
 	}
 
 	@Override
@@ -119,13 +131,14 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				this.buildCache();
 			}
 
-			if (recipe != null && energy.containsAtLeast(required)) {
+			if (recipe != null && recipesToGo > 0 && energy.containsAtLeast(required)) {
 				if (te != null) {
 					if (this.canCraft(world, x, y, z, te)) {
 						if (this.isRecipeReady(world, x, y, z, te)) {
 							if (this.triggerCrafting(world, x, y, z, te)) {
 								te.syncAllData(true);
 								this.drainEnergy(required);
+								recipesToGo--;
 							}
 						}
 						else {
@@ -147,6 +160,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						}
 					}
 				}
+			}
+			else if (recipe == null || recipesToGo == 0) {
+				this.setRecipe(null, 0);
 			}
 		}
 	}
@@ -379,11 +395,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 
 	@Override
 	public void onPathBroken(CrystalElement e) {
-		this.setRecipe(null);
+		this.setRecipe(null, 0);
 	}
 
-	public void setRecipe(CastingRecipe c) {
+	public void setRecipe(CastingRecipe c, int amt) {
 		recipe = c;
+		recipesToGo = amt;
 	}
 
 	@Override

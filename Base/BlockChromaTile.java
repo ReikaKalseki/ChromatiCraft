@@ -76,6 +76,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.HitAction;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -169,6 +170,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	public final boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int side, float par7, float par8, float par9) {
 		super.onBlockActivated(world, x, y, z, ep, side, par7, par8, par9);
 		if (ChromatiCraft.instance.isLocked())
+			return false;
+		if (ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 8))
 			return false;
 		if (ReikaRandomHelper.doWithChance(2))
 			ChromaAux.spawnInteractionBallLightning(world, x, y, z, CrystalElement.randomElement());

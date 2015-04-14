@@ -186,15 +186,17 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 							primed = true;
 						}
 						else if (primed && ain.getOpcode() == Opcodes.INVOKESTATIC) {
-							primed = false;
 							MethodInsnNode min = (MethodInsnNode)ain;
+							if (min.owner.contains("GameRegistry") && min.name.equals("generateWorld")) {
+								primed = false;
 
-							min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
-							min.name = "interceptChunkPopulation";
-							min.desc = "(IILnet/minecraft/world/World;Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/chunk/IChunkProvider;)V";
+								min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+								min.name = "interceptChunkPopulation";
+								min.desc = "(IILnet/minecraft/world/World;Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/chunk/IChunkProvider;)V";
 
-							ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
-							break;
+								ReikaJavaLibrary.pConsole("CHROMATICRAFT: Successfully applied "+this+" ASM handler!");
+								break;
+							}
 						}
 					}
 

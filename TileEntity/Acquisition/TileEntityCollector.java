@@ -98,7 +98,7 @@ public class TileEntityCollector extends FluidIOInventoryBase {
 
 	private void intakeXPFromPlayer(World world, int x, int y, int z) {
 		EntityPlayer ep = this.getPlacer();
-		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+		if (ep != null && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 2)) {
 			int mult = this.getConversionSpeed();
 			if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 1, 0);

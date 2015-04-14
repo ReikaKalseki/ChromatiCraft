@@ -23,6 +23,7 @@ public class RitualTableRecipe extends CastingRecipe {
 
 	@Override
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+		super.onCrafted(te, ep);
 		//achievement
 	}
 

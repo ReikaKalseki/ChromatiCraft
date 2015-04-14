@@ -414,7 +414,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 			Entity e = src.getEntity();
 			if (e instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)e;
-				if (doDrops && !ReikaPlayerAPI.isFake(ep)) {
+				if (doDrops && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, posX, posY, posZ, 8)) {
 					int looting = EnchantmentHelper.getLootingModifier((EntityPlayer)src.getEntity());
 					ReikaItemHelper.dropItem(this, ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, rand.nextInt(1+looting*2)));
 					if (looting > 1) {

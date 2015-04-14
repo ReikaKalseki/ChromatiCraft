@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.ModList;
@@ -54,6 +55,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		addEntry("com.sci.torcherino.tile.TileTorcherino", null, BlacklistReason.CRASH); //StackOverflow
 
 		addEntry(TileEntityCastingTable.class);
+		addEntry(TileEntityCastingAuto.class);
 		addEntry(TileEntityRitualTable.class);
 		addEntry(TileEntityAuraInfuser.class);
 		addEntry(TileEntityCrystalPylon.class);

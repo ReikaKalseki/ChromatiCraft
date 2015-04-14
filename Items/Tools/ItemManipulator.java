@@ -63,6 +63,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
+		if (ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 8))
+			return false;
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (t == ChromaTiles.RIFT) {

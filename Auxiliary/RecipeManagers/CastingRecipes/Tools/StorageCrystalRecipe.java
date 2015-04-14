@@ -90,6 +90,7 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
+		super.onCrafted(te, ep);
 		ProgressStage.STORAGE.stepPlayerTo(ep);
 	}
 

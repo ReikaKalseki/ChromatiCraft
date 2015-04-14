@@ -89,7 +89,7 @@ public class PortalRecipe extends PylonRecipe {
 
 	@Override
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-
+		super.onCrafted(te, ep);
 	}
 
 	@Override
