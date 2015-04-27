@@ -254,7 +254,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 		ProgressStage p = this.getUnderMouse(x, y);
 		if (p != null) {
 			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 1, 1);
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 			ChromaFontRenderer.FontType.OBFUSCATED.renderer.rerandomize();
 		}
 		active = p;

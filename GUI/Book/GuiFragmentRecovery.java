@@ -92,7 +92,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 		if (r != null && this.canMakeFragments()) {
 			this.giveResearch(r);
 			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 		}
 	}
 

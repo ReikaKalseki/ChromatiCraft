@@ -34,7 +34,6 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -52,6 +51,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -721,7 +721,7 @@ public enum Chromabilities implements Ability {
 
 	private static void launchFireball(EntityPlayer ep, int charge) {
 		double[] look = ReikaVectorHelper.getPlayerLookCoords(ep, 2);
-		EntityLargeFireball ef = new EntityLargeFireball(ep.worldObj, ep, look[0], look[1]+1, look[2]);
+		EntityAbilityFireball ef = new EntityAbilityFireball(ep.worldObj, ep, look[0], look[1]+1, look[2]);
 		Vec3 lookv = ep.getLookVec();
 		ef.motionX = lookv.xCoord/5;
 		ef.motionY = lookv.yCoord/5;

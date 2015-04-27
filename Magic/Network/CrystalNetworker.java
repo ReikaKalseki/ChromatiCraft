@@ -43,6 +43,8 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -74,13 +76,22 @@ public class CrystalNetworker implements TickHandler {
 			Collection<CrystalLink> c = losCache.get(wc);
 			if (c != null) {
 				for (CrystalLink l : c) {
-					l.hasLOS = false;
 
-					//Kill active flows if blocked
-					for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
-						if (!toBreak.contains(p) && p.containsLink(l) && !p.checkLineOfSight()) {
-							CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
-							this.schedulePathBreak(p);
+					WorldLocation l1 = l.loc1;
+					WorldLocation l2 = l.loc2;
+
+					double[] angs = ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-l2.xCoord, l1.yCoord-l2.yCoord, l1.zCoord-l2.zCoord);
+					double[] angs2 = ReikaPhysicsHelper.cartesianToPolar(l1.xCoord-evt.xCoord, l1.yCoord-evt.yCoord, l1.zCoord-evt.zCoord);
+					//Only check link if block near it
+					if (ReikaMathLibrary.approxrAbs(angs[1], angs2[1], 3) && ReikaMathLibrary.approxrAbs(angs[2], angs2[2], 3)) {
+						l.hasLOS = false;
+
+						//Kill active flows if blocked
+						for (CrystalFlow p : flows.get(evt.world.provider.dimensionId)) {
+							if (!toBreak.contains(p) && p.containsLink(l) && !p.checkLineOfSight(l)) { //make only link check, not entire path
+								CrystalNetworkLogger.logFlowBreak(p, FlowFail.SIGHT);
+								this.schedulePathBreak(p);
+							}
 						}
 					}
 				}

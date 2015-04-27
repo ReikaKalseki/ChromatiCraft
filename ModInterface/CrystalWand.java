@@ -65,17 +65,20 @@ public class CrystalWand extends WandRod {
 
 				ElementTagCompound tag = new ElementTagCompound();
 
+				boolean flag = false;
+
 				for (Aspect a : Aspect.getPrimalAspects()) {
 					if (al.getAmount(a) > 0) {
 						int sp = ReikaThaumHelper.getWandSpaceFor(is, a);
 						if (sp > 0) {
 							ReikaThaumHelper.addVisToWand(is, a, Math.min(sp, 10));
 							tag.addTag(ChromaAspectManager.instance.getElementCost(a, 1));
+							flag = true;
 						}
 					}
 				}
 
-				if (player instanceof EntityPlayerMP) {
+				if (flag && player instanceof EntityPlayerMP) {
 					int[] data = new int[16];
 					for (int i = 0; i < CrystalElement.elements.length; i++) {
 						CrystalElement e = CrystalElement.elements[i];

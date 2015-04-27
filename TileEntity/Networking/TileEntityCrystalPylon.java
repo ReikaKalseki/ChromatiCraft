@@ -382,9 +382,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				int drain = 5000;
 				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {
 					amt *= 10; //counter the 90% reduction
-					drain = 150000;
+					drain = 50000;
 				}
 				SoulNetworkHandler.syphonFromNetwork(ep.getCommandSenderName(), drain);
+			}
+
+			if (e.ticksExisted < 600) {
+				amt = 1; //1/2 heart for first 30s
+			}
+			else if (e.ticksExisted <= 1000) {
+				amt = 1+(e.ticksExisted-600)/100; //increase by 1/2 heart every 5 seconds, up to 2.5 hearts at 50 seconds
 			}
 		}
 
@@ -455,12 +462,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticle(World world, int x, int y, int z) {
-		double d = 1.25;
-		double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
-		double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, d);
-		double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
-		EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz);
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+		if (rand.nextInt(1+p/2) == 0) {
+			double d = 1.25;
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, d);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, d);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, d);
+			EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override

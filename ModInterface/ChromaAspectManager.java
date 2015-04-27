@@ -10,11 +10,17 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
+import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -105,9 +111,11 @@ public class ChromaAspectManager {
 			ItemStack lamp = new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i);
 			ItemStack potion = new ItemStack(ChromaBlocks.SUPER.getBlockInstance(), 1, i);
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
+			ItemStack bshard = ChromaItems.SHARD.getStackOfMetadata(i+16);
 			ItemStack rune = new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i);
 			ArrayList<Aspect> li = this.getAspects(dye);
 			ReikaThaumHelper.addAspects(shard, Aspect.CRYSTAL, 1);
+			ReikaThaumHelper.addAspects(bshard, Aspect.CRYSTAL, 2);
 			ReikaThaumHelper.addAspects(crystal, Aspect.CRYSTAL, 20);
 			ReikaThaumHelper.addAspects(crystal, Aspect.AURA, 4);
 			ReikaThaumHelper.addAspects(crystal, Aspect.LIGHT, 3);
@@ -118,12 +126,12 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(potion, Aspect.MAGIC, 16);
 			ReikaThaumHelper.addAspects(potion, Aspect.AURA, 16);
 			ReikaThaumHelper.addAspects(potion, Aspect.CRYSTAL, 20);
-			for (int k = 0; k < li.size(); k++) {
-				Aspect as = li.get(k);
-				ReikaThaumHelper.addAspects(shard, as, 2);
-				ReikaThaumHelper.addAspects(crystal, as, 16);
-				ReikaThaumHelper.addAspects(potion, as, 16);
-				ReikaThaumHelper.addAspects(rune, as, 4);
+			for (Aspect a : li) {
+				ReikaThaumHelper.addAspects(shard, a, 2);
+				ReikaThaumHelper.addAspects(bshard, a, 5);
+				ReikaThaumHelper.addAspects(crystal, a, 16);
+				ReikaThaumHelper.addAspects(potion, a, 16);
+				ReikaThaumHelper.addAspects(rune, a, 4);
 			}
 		}
 
@@ -147,6 +155,53 @@ public class ChromaAspectManager {
 		};
 		for (int i = 0; i < 16; i++)
 			ReikaThaumHelper.addAspectsToBlockMeta(ChromaBlocks.DYEFLOWER.getBlockInstance(), i, flowers[i], 1, Aspect.PLANT, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.auraDust, Aspect.AURA, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.auraDust, Aspect.MAGIC, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.beaconDust, Aspect.AURA, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.beaconDust, Aspect.ENERGY, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.beaconDust, Aspect.LIGHT, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.purityDust, Aspect.ORDER, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.elementDust, Aspect.MAGIC, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.bindingCrystal, Aspect.TRAP, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.bindingCrystal, Aspect.CRYSTAL, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.focusDust, Aspect.LIGHT, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.focusDust, Aspect.EXCHANGE, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.firaxite, Aspect.FIRE, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.spaceDust, Aspect.ELDRITCH, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.spaceDust, Aspect.VOID, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.waterDust, Aspect.WATER, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.enderDust, Aspect.TRAVEL, 2);
+		ReikaThaumHelper.addAspects(ChromaStacks.enderDust, Aspect.MAGIC, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.resocrystal, Aspect.ENERGY, 2);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.resonanceDust, Aspect.AURA, 2);
+
+		for (PoolRecipe r : PoolRecipes.instance.getAllPoolRecipes()) {
+			Collection<ItemStack> ins = r.getInputs();
+			ItemStack main = r.getMainInput();
+			ItemStack out = r.getOutput();
+			AspectList al = new AspectList();
+			for (ItemStack in : ins) {
+				AspectList al2 = ThaumcraftApiHelper.generateTags(in.getItem(), in.getItemDamage());
+				if (al2 != null)
+					al.merge(al2);
+			}
+			AspectList al2 = ThaumcraftApiHelper.generateTags(main.getItem(), main.getItemDamage());
+			if (al2 != null)
+				al.merge(al2);
+			ReikaThaumHelper.addAspects(out, al);
+		}
 	}
 
 	public ElementTagCompound getElementCost(Aspect a, float depthcost) {

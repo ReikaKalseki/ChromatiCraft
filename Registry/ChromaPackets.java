@@ -20,6 +20,7 @@ public enum ChromaPackets {
 	ABILITY(2),
 	PYLONATTACK(6),
 	ABILITYCHOOSE(1),
+	BUFFERSET(1),
 	BUFFERINC(1),
 	TELEPUMP(1),
 	//TRANSMIT(3),

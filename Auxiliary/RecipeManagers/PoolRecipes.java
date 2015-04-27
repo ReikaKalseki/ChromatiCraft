@@ -58,14 +58,14 @@ public class PoolRecipes {
 	}
 
 	public PoolRecipe getPoolRecipe(EntityItem ei) {
-		int x = MathHelper.floor_double(ei.posX);
-		int y = MathHelper.floor_double(ei.posY);
-		int z = MathHelper.floor_double(ei.posZ);
-		if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance() && ei.worldObj.getBlockMetadata(x, y, z) == 0) {
-			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-			Collection<EntityItem> li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
-			Collection<PoolRecipe> prs = recipes.get(ei.getEntityItem());
-			if (prs != null) {
+		Collection<PoolRecipe> prs = recipes.get(ei.getEntityItem());
+		if (prs != null) {
+			int x = MathHelper.floor_double(ei.posX);
+			int y = MathHelper.floor_double(ei.posY);
+			int z = MathHelper.floor_double(ei.posZ);
+			if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance() && ei.worldObj.getBlockMetadata(x, y, z) == 0) {
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
+				Collection<EntityItem> li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (PoolRecipe pr : prs) {
 					if (pr.canBeMadeFrom(li)) {
 						return pr;

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.Collection;
+
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.MixMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.PairMap;
@@ -54,6 +56,18 @@ public class ElementMixer {
 
 	public boolean isCompatible(CrystalElement e1, CrystalElement e2) {
 		return !locks.contains(e1, e2);
+	}
+
+	public Collection<CrystalElement> getMixablesWith(CrystalElement color) {
+		return data.getMixablesWith(color);
+	}
+
+	public Collection<CrystalElement> getChildrenOf(CrystalElement color) {
+		return data.getChildrenOf(color);
+	}
+
+	public Collection<CrystalElement> getMixParents(CrystalElement color) {
+		return data.getMixParents(color);
 	}
 
 }

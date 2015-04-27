@@ -130,7 +130,15 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		}
 		ChromaSounds.TRAP.playSound(ep, 1, 1);
 		trapTick = 40;
+		this.disableJetpack(ep);
 		//ep.addPotionEffect(new PotionEffect(Potion.poison.id, 600, 2));
+	}
+
+	private void disableJetpack(EntityPlayer ep) {
+		ItemStack chest = ep.getCurrentArmor(2);
+		if (chest != null) {
+			//no idea how to do this
+		}
 	}
 
 	private void resetOceanTrap() {

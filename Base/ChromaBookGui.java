@@ -69,11 +69,11 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 	}
 
 	public final void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 	}
 
 	public final void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.67F, 1);
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 
 	protected final void goTo(ChromaGuis next, ChromaResearch to) {
 		//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 		preMouseX = Mouse.getX();
 		preMouseY = Mouse.getY();
 		player.closeScreen();

@@ -211,7 +211,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		if (ability != null && Chromabilities.playerHasAbility(player, ability)) {
 			if (Chromabilities.canPlayerExecuteAt(player, ability)) {
 				//mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F));
-				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.75F, 1);
 				player.closeScreen();
 				Chromabilities.triggerAbility(player, ability, data);
 			}

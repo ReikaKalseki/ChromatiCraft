@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +57,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
 import appeng.api.AEApi;
+import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -72,19 +72,20 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	static {
-		required.addTag(CrystalElement.BLACK, 5000);
-		required.addTag(CrystalElement.PURPLE, 2000);
-		required.addTag(CrystalElement.LIGHTBLUE, 1000);
-		required.addTag(CrystalElement.WHITE, 2000);
+		required.addTag(CrystalElement.BLACK, 50);
+		required.addTag(CrystalElement.PURPLE, 20);
+		required.addTag(CrystalElement.LIGHTBLUE, 10);
+		required.addTag(CrystalElement.WHITE, 20);
 	}
 
 	private CastingRecipe recipe;
 
-	private StepTimer stepDelay = new StepTimer(6);
+	private StepTimer stepDelay = new StepTimer(5);
 
 	private StepTimer cacheTimer = new StepTimer(40);
 
 	private int recipesToGo = 0;
+	private int recipeCycles = 0;
 
 	private final ItemCollection ingredients = new ItemCollection();
 	@ModDependent(ModList.APPENG)
@@ -140,6 +141,10 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				this.buildCache();
 			}
 
+			if (this.getCooldown() == 0 && checkTimer.checkCap()) {
+				this.checkAndRequest();
+			}
+
 			if (recipe != null && recipesToGo > 0 && energy.containsAtLeast(required)) {
 				if (te != null) {
 					if (this.canCraft(world, x, y, z, te)) {
@@ -147,12 +152,15 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 							if (this.triggerCrafting(world, x, y, z, te)) {
 								te.syncAllData(true);
 								this.drainEnergy(required);
-								recipesToGo--;
+								recipesToGo -= recipeCycles;
+								recipeCycles = 0;
 							}
 						}
 						else {
-							UpdateStep c = this.prepareRecipeStep(world, x, y, z, te);
+							int amt = Math.min(recipesToGo, recipe.getOutput().getMaxStackSize()/recipe.getOutput().stackSize);
+							UpdateStep c = this.prepareRecipeStep(world, x, y, z, te, amt);
 							if (c != null) {
+								recipeCycles = recipeCycles > 0 ? Math.min(recipeCycles, c.item.stackSize) : c.item.stackSize;
 								ChromaSounds.CAST.playSoundAtBlock(world, c.loc.xCoord, c.loc.yCoord, c.loc.zCoord);
 								int[] dat = new int[]{c.loc.xCoord, c.loc.yCoord, c.loc.zCoord, 0, Item.getIdFromItem(c.item.getItem()), c.item.getItemDamage(), c.item.stackTagCompound != null ? 1 : 0};
 								ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CASTAUTOUPDATE.ordinal(), this, 48, dat);
@@ -173,6 +181,15 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			else if (recipe == null || recipesToGo == 0) {
 				this.setRecipe(null, 0);
 			}
+		}
+	}
+
+	private void checkAndRequest() {
+		for (CrystalElement e : required.elementSet()) {
+			int amt = this.getEnergy(e);
+			int sp = this.getRemainingSpace(e);
+			if (amt < sp)
+				this.requestEnergy(e, sp);
 		}
 	}
 
@@ -257,7 +274,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		return te.isCrafting();
 	}
 
-	private UpdateStep prepareRecipeStep(World world, int x, int y, int z, TileEntityCastingTable te) {
+	private UpdateStep prepareRecipeStep(World world, int x, int y, int z, TileEntityCastingTable te, int amt) {
 		stepDelay.update();
 		if (stepDelay.checkCap()) {
 			if (recipe instanceof MultiBlockCastingRecipe) {
@@ -276,9 +293,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 									return new UpdateStep(stand, in);
 								}
 							}
-							else if (this.findItem(item)) {
-								stand.setInventorySlotContents(0, item);
-								return new UpdateStep(stand, item);
+							else {
+								ItemStack ret = this.findItem(item, amt);
+								if (ret != null) {
+									stand.setInventorySlotContents(0, ret);
+									return new UpdateStep(stand, ret);
+								}
 							}
 						}
 						else {
@@ -301,9 +321,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 								}
 							}
 						}
-						else if (this.findItem(ctr)) {
-							te.setInventorySlotContents(i, ctr);
-							return new UpdateStep(te, ctr);
+						else {
+							ItemStack ret = this.findItem(ctr, amt);
+							if (ret != null) {
+								te.setInventorySlotContents(i, ret);
+								return new UpdateStep(te, ret);
+							}
 						}
 					}
 					else {
@@ -329,9 +352,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 								return new UpdateStep(te, in);
 							}
 						}
-						else if (this.findItem(item)) {
-							te.setInventorySlotContents(i, (ItemStack)(item instanceof List ? ((List)item).get(0) : item));
-							return new UpdateStep(te, te.getStackInSlot(i));
+						else {
+							ItemStack ret = this.findItem(item, amt);
+							if (ret != null) {
+								te.setInventorySlotContents(i, ret);
+								return new UpdateStep(te, ret);
+							}
 						}
 					}
 				}
@@ -347,41 +373,45 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		else if (object instanceof List) {
 			return ReikaItemHelper.listContainsItemStack((Collection<ItemStack>)object, is, true);
 		}
+		else if (object == null && is == null)
+			return true;
 		return false;
 	}
 
-	private boolean findItem(Object item) {
-		if (DragonAPICore.debugtest)
-			return true;
+	private ItemStack findItem(Object item, int amt) {
 		List<ItemStack> li = new ArrayList();
 		if (item instanceof ItemStack)
 			li.add((ItemStack)item);
 		if (item instanceof List)
 			li.addAll((List)item);
 
-		Iterator<ItemStack> it = li.iterator();
-		ArrayList<ItemStack> li2 = new ArrayList();
-		while (it.hasNext()) {
-			ItemStack is = it.next();
-			if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-				it.next();
-				li2.addAll(ReikaItemHelper.getAllMetadataPermutations(is.getItem()));
-			}
-		}
-		li.addAll(li2);
+		if (DragonAPICore.debugtest)
+			return ReikaItemHelper.getSizedItemStack(li.get(0), amt);
 
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
-				long rem = network.removeItem(is, false);
-				if (rem > 0)
-					return true;
+				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false);
+					if (rem > 0) {
+						ItemStack ret = ReikaItemHelper.getSizedItemStack(is, rem);
+						ret.setItemDamage(0);
+						return ret;
+					}
+				}
+				else {
+					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false);
+					if (rem > 0)
+						return ReikaItemHelper.getSizedItemStack(is, rem);
+				}
 			}
-			if (ingredients.getItemCount(is) > 0) {
-				ingredients.removeXItems(is, 1);
-				return true;
+			int has = ingredients.getItemCount(is);
+			if (has > 0) {
+				int rem = Math.min(amt, has);
+				ingredients.removeXItems(is, rem);
+				return ReikaItemHelper.getSizedItemStack(is, rem);
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private boolean recoverItem(ItemStack is) {
@@ -434,7 +464,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return required.getMaximumValue()*5/4;
+		return 12000;
 	}
 
 	@Override

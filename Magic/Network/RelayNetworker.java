@@ -34,12 +34,14 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public final class RelayNetworker {
 
-	public static final RelayNetworker instance = new RelayNetworker(getConfigurableRange());
+	public static final RelayNetworker instance = new RelayNetworker(getConfigurableRange(), 48);
 
 	public final int maxRange;
+	public final int maxDepth;
 
-	private RelayNetworker(int r) {
+	private RelayNetworker(int r, int d) {
 		maxRange = r;
+		maxDepth = d;
 	}
 
 	private static int getConfigurableRange() {
@@ -49,7 +51,7 @@ public final class RelayNetworker {
 	public TileEntityRelaySource findRelaySource(World world, int x, int y, int z, ForgeDirection dir, CrystalElement e, int amt, int dist) {
 		if (amt <= 0)
 			return null;
-		RelayFinder rf = new RelayFinder(world, new Coordinate(x, y, z), Math.min(dist, maxRange), e, amt);
+		RelayFinder rf = new RelayFinder(world, new Coordinate(x, y, z), Math.min(dist, maxRange), maxDepth, e, amt);
 		rf.look = dir;
 		RelayPath path = rf.find();
 		if (path != null) {
@@ -113,6 +115,7 @@ public final class RelayNetworker {
 		private final World world;
 		private final Coordinate target;
 		private final int maxRange;
+		private final int maxDepth;
 		private final CrystalElement color;
 		private final int amount;
 
@@ -120,20 +123,23 @@ public final class RelayNetworker {
 
 		private final LinkedList<Coordinate> path = new LinkedList();
 
-		private RelayFinder(World world, Coordinate loc, int r, CrystalElement e, int amt) {
+		private RelayFinder(World world, Coordinate loc, int r, int d, CrystalElement e, int amt) {
 			this.world = world;
 			target = loc;
 			maxRange = r;
+			maxDepth = d;
 			color = e;
 			amount = amt;
 			path.addFirst(target);
 		}
 
 		private RelayPath find() {
-			return this.findFrom(target);
+			return this.findFrom(target, 0);
 		}
 
-		private RelayPath findFrom(Coordinate start) {
+		private RelayPath findFrom(Coordinate start, int depth) {
+			if (depth > maxDepth)
+				return null;
 			for (int i = 1; i < maxRange; i++) {
 				Coordinate c = start.offset(look, i);
 				Block b = c.getBlock(world);
@@ -147,7 +153,7 @@ public final class RelayNetworker {
 					TileEntityLumenRelay te = (TileEntityLumenRelay)c.getTileEntity(world);
 					if (te.canTransmit(color)) {
 						look = te.getInput();
-						return this.findFrom(c);
+						return this.findFrom(c, depth+1);
 					}
 				}
 				else {

@@ -257,6 +257,9 @@ public class ChromatiPackets implements IPacketHandler {
 			case ABILITYCHOOSE:
 				((TileEntityRitualTable)tile).setChosenAbility(Chromabilities.getAbilityByInt(data[0]));
 				break;
+			case BUFFERSET:
+				PlayerElementBuffer.instance.setPlayerCapOnClient(ep, data[0]);
+				break;
 			case BUFFERINC:
 				PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
 				break;

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -26,6 +27,8 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 	public boolean generate(World world, Random rand, int x, int y, int z) {
 
 		if (world.getBlock(x, y, z) == Blocks.water)
+			return false;
+		if (world.getBlock(x, y+1, z) == Blocks.water)
 			return false;
 
 		int my = 8+rand.nextInt(16);
@@ -64,7 +67,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 						int dx2 = dx+dir.offsetX;
 						int dy2 = dy+dir.offsetY;
 						int dz2 = dz+dir.offsetZ;
-						if (world.getBlock(dx2, dy2, dz2) == Blocks.stone)
+						if (world.getBlock(dx2, dy2, dz2).getMaterial() == Material.rock)
 							world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
 					}
 				}

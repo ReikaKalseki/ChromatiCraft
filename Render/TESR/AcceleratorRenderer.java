@@ -125,9 +125,11 @@ public class AcceleratorRenderer extends ChromaRenderBase {
 		int g2 = (int)(255*b2);
 		int g3 = (int)(255*b3);
 
-		int c1 = ReikaColorAPI.RGBtoHex(0, g1, 255);
-		int c2 = ReikaColorAPI.RGBtoHex(0, g2, 255);
-		int c3 = ReikaColorAPI.RGBtoHex(0, g3, 255);
+		boolean dis = te.worldObj != null && te.worldObj.getBlockPowerInput(te.xCoord, te.yCoord, te.zCoord) == 15;
+
+		int c1 = dis ? ReikaColorAPI.GStoHex(g1) : ReikaColorAPI.RGBtoHex(0, g1, 255);
+		int c2 = dis ? ReikaColorAPI.GStoHex(g2) : ReikaColorAPI.RGBtoHex(0, g2, 255);
+		int c3 = dis ? ReikaColorAPI.GStoHex(g3) : ReikaColorAPI.RGBtoHex(0, g3, 255);
 
 		GL11.glRotated(rx, 1, 0, 0);
 		ReikaRenderHelper.renderVCircle(0.25, 0, 0, 0, c1, 90, 15);

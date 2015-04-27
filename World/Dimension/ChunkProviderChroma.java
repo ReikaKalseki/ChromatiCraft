@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -27,18 +28,21 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class ChunkProviderChroma implements IChunkProvider {
@@ -47,7 +51,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	static {
 		for (int i = 0; i < 16; i++) {
-			bumpMaps[i] = new BumpMap(ChromatiCraft.class, "Textures/Dimension Bump Maps/"+CrystalElement.elements[i].name().toLowerCase()+".png");
+			//bumpMaps[i] = new BumpMap(ChromatiCraft.class, "Textures/Dimension Bump Maps/"+CrystalElement.elements[i].name().toLowerCase()+".png");
 		}
 	}
 
@@ -86,8 +90,21 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	//private final HashSet<ChunkCoordIntPair> populatedChunks = new HashSet();
 
+	private final HashSet<CrystalElement> unusedColors = new HashSet();
+	private final HashSet<DimensionStructureType> unusedTypes = new HashSet();
+	private final MonumentGenerator monument = new MonumentGenerator();
+	private boolean gennedMonument = false;
+
 	public void clearCaches() {
 		//populatedChunks.clear();
+
+		for (int i = 0; i < 16; i++) {
+			unusedColors.add(CrystalElement.elements[i]);
+		}
+		for (int i = 0; i < DimensionStructureType.types.length; i++) {
+			unusedTypes.add(DimensionStructureType.types[i]);
+		}
+		gennedMonument = false;
 	}
 
 	public ChunkProviderChroma(World world)
@@ -115,14 +132,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 			}
 		}
 
+		this.clearCaches();
 		this.createDecorators();
 	}
 
 	private void createDecorators() {
-		decorators.add(new WorldGenMiasma());
+		//decorators.add(new WorldGenMiasma());
+		decorators.add(new WorldGenFissure());
 		decorators.add(new WorldGenFloatstone());
 		decorators.add(new WorldGenMoonPool());
-		decorators.add(new WorldGenFissure());
+		decorators.add(new WorldGenFireJet());
 	}
 
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
@@ -573,6 +592,34 @@ public class ChunkProviderChroma implements IChunkProvider {
 				wg.generate(worldObj, rand, dx, y, dz);
 			}
 		}
+
+		if (rand.nextInt(6000/300) == 0) {
+			StructurePair s = this.getGenStructure();
+			if (s != null) {
+				//s.generator.getGenerator().generate(worldObj, x+8, z+8, s.color, rand);
+				for (int i = 0; i < 256; i++) {
+					worldObj.setBlock(x+8, i, z+8, Blocks.glass);
+				}
+			}
+		}
+
+		if (!gennedMonument && rand.nextInt(12000/120) == 0) {
+			int dx = x + rand.nextInt(16) + 8;
+			int dz = z + rand.nextInt(16) + 8;
+			int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
+			monument.generate(worldObj, rand, dx, y, dz);
+			gennedMonument = true;
+		}
+	}
+
+	private StructurePair getGenStructure() {
+		CrystalElement e = unusedColors.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(unusedColors);
+		unusedColors.remove(e);
+
+		DimensionStructureType gen = unusedTypes.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(unusedTypes);
+		unusedTypes.remove(gen);
+
+		return e != null && gen != null ? new StructurePair(gen, e) : null;
 	}
 
 	public void onPopulationHook(IChunkProvider gen, IChunkProvider loader, int x, int z) {

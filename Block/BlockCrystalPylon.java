@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
@@ -44,6 +45,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
 		TileEntity te = iba.getTileEntity(x, y, z);
 		int color = te instanceof TileEntityCrystalPylon ? ((TileEntityCrystalPylon)te).getColor().getColor() : 0xffffff;
+		color = te instanceof TileEntityDimensionCore ? ((TileEntityDimensionCore)te).getColor().getColor() : color;
 		int b = te instanceof TileEntityStructControl ? ((TileEntityStructControl)te).getBrightness() : 15;
 		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, b) : b;
 	}
@@ -56,6 +58,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		switch(c) {
 		case PYLON:
 		case STRUCTCONTROL:
+		case AURAPOINT:
+		case DIMENSIONCORE:
 			return null;
 		default:
 			return this.getBlockAABB(x, y, z);
@@ -87,6 +91,9 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		case 4:
 			return ChromaIcons.CHROMA.getIcon();
 		case 5:
+			return ChromaIcons.TRANSPARENT.getIcon();
+		case 6:
+			//return ChromaIcons.GUARDIANOUTER.getIcon();
 			return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);

@@ -101,7 +101,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			if (x >= j && y >= k && x < j+xSize && y < k+ySize) {
 				ItemStack is = ReikaGuiAPI.instance.getItemRenderAt(x, y);
 				if (is != null) {
-					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 					if (!MinecraftForge.EVENT_BUS.post(new NEIRecipeCheckEvent(null, is)))
 						codechicken.nei.recipe.GuiCraftingRecipe.openRecipeGui("item", is);
 				}

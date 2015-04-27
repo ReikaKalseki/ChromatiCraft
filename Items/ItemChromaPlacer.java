@@ -180,6 +180,14 @@ public class ItemChromaPlacer extends Item implements ISize {
 						par3List.add(item2);
 					}
 				}
+				else if (c == ChromaTiles.DIMENSIONCORE) {
+					for (int k = 0; k < 16; k++) {
+						ItemStack item2 = item.copy();
+						item2.stackTagCompound = new NBTTagCompound();
+						item2.stackTagCompound.setInteger("color", k);
+						par3List.add(item2);
+					}
+				}
 				else {
 					par3List.add(item);
 				}

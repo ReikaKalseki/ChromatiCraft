@@ -45,6 +45,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		this.renderBlackscreen();
 
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ADDITIVEDARK.apply();
+
 		GL11.glPushMatrix();
 		this.renderStars();
 		GL11.glPopMatrix();
@@ -52,6 +55,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		GL11.glPushMatrix();
 		this.renderPlanets();
 		GL11.glPopMatrix();
+
+		BlendMode.DEFAULT.apply();
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	private void renderBrightStars() {
@@ -75,7 +81,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 			double d3 = 0.15F + random.nextFloat() * 0.1F;
 			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
 
-			double size = 50;
+			double size = 175;
 
 			if (d4 < 1.0D && d4 > 0.01D) {
 				d4 = 1.0D / Math.sqrt(d4);
@@ -97,7 +103,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				v5.setBrightness(240);
 				v5.setColorOpaque_I(0xffffff);
 
-				double d = 200;
+				double d = 380;
 
 				double d5 = d0 * d;
 				double d6 = d1 * d;
@@ -162,7 +168,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 			double d3 = 0.15F + random.nextFloat() * 0.1F;
 			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
 
-			double size = 10;
+			double size = 30;
 
 			if (d4 < 1.0D && d4 > 0.01D) {
 				d4 = 1.0D / Math.sqrt(d4);
@@ -184,7 +190,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				v5.setBrightness(240);
 				v5.setColorOpaque_I(0xffffff);
 
-				double d = 200;
+				double d = 380;
 
 				double d5 = d0 * d;
 				double d6 = d1 * d;
@@ -223,7 +229,7 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		Tessellator v5 = Tessellator.instance;
 		for (int i = 0; i < 6; i++) {
 
-			double d = 250;
+			double d = 450;
 
 			double u = 0;
 			double v = 0;
@@ -280,9 +286,6 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/stars.png");
 
-		GL11.glEnable(GL11.GL_BLEND);
-		BlendMode.ADDITIVEDARK.apply();
-
 		int nstar = 5000+(int)(2500*Math.sin(System.currentTimeMillis()/24000D));
 
 		for (int i = 0; i < nstar; i++) {
@@ -318,13 +321,11 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				//this.renderStar(random, 0xffffff, 200, size, n, d0, d1, d2, d3, d9, d10, d12, d13, d16);
 
 				double dl = i/10D/nstar;
-
-				this.renderStar(random, c, 200-dl, size*4, n, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+				//200-dl
+				this.renderStar(random, c, 320-dl, size*4*3, n, d0, d1, d2, d3, d9, d10, d12, d13, d16);
 
 			}
 		}
-
-		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	private void renderStar(Random random, int c, double d, double size, int n, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {

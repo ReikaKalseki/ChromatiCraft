@@ -27,7 +27,8 @@ public class EntityBlurFX extends EntityFX {
 
 	private float scale;
 	private float cyclescale;
-	private boolean noSlow;
+	private boolean noSlow = false;
+	private boolean rapidExpand = false;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -72,6 +73,11 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setRapidExpand() {
+		rapidExpand = true;
+		return this;
+	}
+
 	public final EntityBlurFX setGravity(float g) {
 		particleGravity = g;
 		return this;
@@ -100,7 +106,10 @@ public class EntityBlurFX extends EntityFX {
 			super.onUpdate();
 		}
 
-		particleScale = scale*(float)Math.sin(Math.toRadians(180D*particleAge/particleMaxAge));
+		if (rapidExpand)
+			particleScale = scale*(particleMaxAge/particleAge >= 12 ? particleAge*12F/particleMaxAge : 1-particleAge/(float)particleMaxAge);
+		else
+			particleScale = scale*(float)Math.sin(Math.toRadians(180D*particleAge/particleMaxAge));
 		//if (particleAge < 10)
 		//	particleScale = scale*(particleAge+1)/10F;
 		//else if (particleAge > 50)

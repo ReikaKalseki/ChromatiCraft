@@ -142,14 +142,19 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		//	this.spawnIdleParticles(world, x, y, z);
 
 		/*
-		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(ChromaBlocks.PORTAL.getStackOf());
-		TempleCastingRecipe t = (TempleCastingRecipe)li.get(0);
-		Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
-		for (Coordinate c : map.keySet()) {
-			Coordinate c2 = c.offset(x, y, z);
-			CrystalElement e = map.get(c);
-			c2.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
-		}*/
+		Collection<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipes();
+		for (CastingRecipe cr : li) {
+			if (cr instanceof TempleCastingRecipe) {
+				TempleCastingRecipe t = (TempleCastingRecipe)cr;
+				Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
+				for (Coordinate c : map.keySet()) {
+					Coordinate c2 = c.offset(x, y, z);
+					CrystalElement e = map.get(c);
+					c2.setBlock(world, ChromaBlocks.RUNE.getBlockInstance(), e.ordinal());
+				}
+			}
+		}
+		 */
 
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);

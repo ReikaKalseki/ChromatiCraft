@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 
 public class RenderDimensionCore extends RenderLocusPoint {
@@ -23,6 +24,11 @@ public class RenderDimensionCore extends RenderLocusPoint {
 	@Override
 	protected void doOtherRendering(TileEntityLocusPoint tile, float par8) {
 
+	}
+
+	@Override
+	protected int getColor(TileEntityLocusPoint tile) { //do an iridescent effect
+		return ((TileEntityDimensionCore)tile).getColor().getColor();
 	}
 
 }

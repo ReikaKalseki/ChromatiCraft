@@ -228,12 +228,14 @@ public class BlockPylonStructure extends Block {
 		int my = blocks.getMinY(); //intentionally bottom
 		int mz = blocks.getMidZ();
 
-		TileEntity te = world.getTileEntity(mx, my+9, mz);
-		if (te instanceof TileEntityCrystalPylon) {
-			((TileEntityCrystalPylon)te).invalidateMultiblock();
+		for (int h = 9; h < 16; h++) {
+			TileEntity te = world.getTileEntity(mx, my+h, mz);
+			if (te instanceof TileEntityCrystalPylon) {
+				((TileEntityCrystalPylon)te).invalidateMultiblock();
+			}
 		}
 
-		te = world.getTileEntity(mx, my+1, mz);
+		TileEntity te = world.getTileEntity(mx, my+1, mz);
 		//ReikaJavaLibrary.pConsole(te+" @ "+mx+", "+(my+1)+", "+mz, Side.SERVER);
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
@@ -282,14 +284,16 @@ public class BlockPylonStructure extends Block {
 		int my = blocks.getMinY(); //intentionally bottom
 		int mz = blocks.getMidZ();
 
-		TileEntity te = world.getTileEntity(mx, my+9, mz);
-		if (te instanceof TileEntityCrystalPylon) {
-			if (ChromaStructures.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
-				((TileEntityCrystalPylon)te).validateMultiblock();
+		for (int h = 9; h < 16; h++) {
+			TileEntity te = world.getTileEntity(mx, my+9, mz);
+			if (te instanceof TileEntityCrystalPylon) {
+				if (ChromaStructures.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
+					((TileEntityCrystalPylon)te).validateMultiblock();
+				}
 			}
 		}
 
-		te = world.getTileEntity(mx, my+1, mz);
+		TileEntity te = world.getTileEntity(mx, my+1, mz);
 		if (te instanceof TileEntityCastingTable) {
 			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
 		}

@@ -25,6 +25,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -54,14 +55,18 @@ public class TankRender extends ChromaRenderBase {
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD5))
+			return;
 		TileEntityCrystalTank te = (TileEntityCrystalTank)tile;
 		Fluid f = te.getFluid();
 		if (te.hasWorldObj()) {
 			if (f != null && te.getLevel() > 0) {
 				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-				this.renderLiquid(te, par2, par4, par6, par8, f);
+				if (!Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
+					this.renderLiquid(te, par2, par4, par6, par8, f);
 				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
-				this.renderRunes(te, par2, par4, par6, par8);
+				if (!Keyboard.isKeyDown(Keyboard.KEY_NUMPAD3))
+					this.renderRunes(te, par2, par4, par6, par8);
 			}
 			//this.renderGlint(te, par2, par4, par6, par8);
 		}
@@ -84,7 +89,7 @@ public class TankRender extends ChromaRenderBase {
 		CrystalElement et = getRune(tick, te.getFluid());
 		Integer lastp = lastptick.get(loc);
 		int last = lastp != null ? lastp.intValue() : -1;
-		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0) {
+		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			int[] dat = blocks.getRandomBlock();
 			colors.put(Arrays.asList((float)dat[0], (float)dat[1], (float)dat[2]), et);
 			lastptick.put(loc, te.getTicksExisted());
@@ -344,7 +349,7 @@ public class TankRender extends ChromaRenderBase {
 				double min = flip ? 1-o : 0+o;
 				double max = flip ? h+o : h-o;
 
-				int bc = te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
+				int bc = Keyboard.isKeyDown(Keyboard.KEY_NUMPAD7) ? 240 : te.getBlockType().getMixedBrightnessForBlock(te.worldObj, x, y, z);
 				int[] brs = new int[6];
 				for (int k = 0; k < 6; k++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
@@ -471,6 +476,8 @@ public class TankRender extends ChromaRenderBase {
 	}
 
 	private void setFaceBrightness(Tessellator v5, ForgeDirection dir, int brightness) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8))
+			return;
 		float f = 1;
 		float sub = 0;
 		switch(dir) {

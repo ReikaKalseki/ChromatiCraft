@@ -96,7 +96,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		super(par2Material);
 		this.setCreativeTab(null);
 		blockHardness = 5;
-		blockResistance = 10;
+		blockResistance = 40;//10;
 	}
 
 	@Override
@@ -253,7 +253,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			}
 		}
 
-		if (is != null && m == ChromaTiles.TANK) {
+		if (is != null && is.stackSize == 1 && m == ChromaTiles.TANK) {
 			TileEntityCrystalTank tile = (TileEntityCrystalTank)te;
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 			if (fs != null) {

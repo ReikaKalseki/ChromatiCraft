@@ -35,9 +35,10 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 
+		chunkX *= 16;
+		chunkZ *= 16;
+
 		if (!skipPlants && this.generateIn(world)) {
-			chunkX *= 16;
-			chunkZ *= 16;
 
 			for (int i = 0; i < TieredPlants.list.length; i++) {
 				TieredPlants p = TieredPlants.list[i];

@@ -117,8 +117,9 @@ public class GuiEnderTNT extends GuiContainer {
 		if (input4.isFocused())
 			tz = this.parseInt(input4);
 
-		if (this.isChanged())
+		if (this.isChanged()) {
 			this.sendData();
+		}
 	}
 
 	private boolean isChanged() {

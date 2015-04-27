@@ -35,6 +35,7 @@ public class RenderStructControl extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityStructControl te = (TileEntityStructControl)tile;
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		if (!te.isInWorld() || (te.isInWorld() && te.isVisible() && MinecraftForgeClient.getRenderPass() == 1)) {
 			IIcon ico = ChromaIcons.SPINFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
@@ -86,6 +87,7 @@ public class RenderStructControl extends ChromaRenderBase {
 			ReikaRenderHelper.enableEntityLighting();
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
+		GL11.glPopAttrib();
 	}
 
 }

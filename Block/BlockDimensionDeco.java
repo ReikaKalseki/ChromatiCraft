@@ -62,27 +62,27 @@ public class BlockDimensionDeco extends Block {
 	}
 
 	@Override
-	public int getRenderType() {
+	public final int getRenderType() {
 		return ChromatiCraft.proxy.dimgenRender;
 	}
 
 	@Override
-	public boolean isOpaqueCube() {
+	public final boolean isOpaqueCube() {
 		return false;
 	}
 
 	@Override
-	public boolean renderAsNormalBlock() {
+	public final boolean renderAsNormalBlock() {
 		return false;
 	}
 
 	@Override
-	public int getRenderBlockPass() {
+	public final int getRenderBlockPass() {
 		return 1;
 	}
 
 	@Override
-	public boolean canRenderInPass(int pass) {
+	public final boolean canRenderInPass(int pass) {
 		DimensionDecoRenderer.renderPass = pass;
 		return pass <= 1;
 	}

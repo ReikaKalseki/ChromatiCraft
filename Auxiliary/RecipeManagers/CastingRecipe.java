@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTag;
@@ -116,6 +117,8 @@ public class CastingRecipe {
 		for (int i = 0; i < lia.length; i++) {
 			List<ItemStack> li = lia[i];
 			out[i] = li.get(0).copy();
+			if (out[i].getItemDamage() == OreDictionary.WILDCARD_VALUE)
+				out[i].setItemDamage(0);
 		}
 		return out;
 	}
@@ -190,6 +193,7 @@ public class CastingRecipe {
 		return super.toString()+" _ "+type+" > "+out.getDisplayName();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public ItemHashMap<Integer> getItemCounts() {
 		ItemHashMap<Integer> map = new ItemHashMap();
 		ItemStack[] items = this.getArrayForDisplay();
@@ -212,6 +216,17 @@ public class CastingRecipe {
 
 	public boolean isIndexed() {
 		return true;
+	}
+
+	public Collection<ItemStack> getAllInputs() {
+		Collection<ItemStack> c = new ArrayList();
+		List<ItemStack>[] o = this.getRecipeArray();
+		for (int i = 0; i < 9; i++) {
+			if (o[i] != null) {
+				c.addAll(o[i]);
+			}
+		}
+		return c;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {
@@ -438,6 +453,14 @@ public class CastingRecipe {
 				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is));
 			}
 			return tag;
+		}
+
+		@Override
+		public Collection<ItemStack> getAllInputs() {
+			Collection<ItemStack> c = new ArrayList();
+			c.add(main);
+			c.addAll(inputs.values());
+			return c;
 		}
 	}
 

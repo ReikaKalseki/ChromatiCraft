@@ -46,9 +46,11 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 		case ACCELERATOR:
 			r = 0.3125;
 			box = this.getBlockAABB(x, y, z).contract(r, r, r);
+			break;
 		case AURAPOINT:
 			r = 0.125;
 			box = this.getBlockAABB(x, y, z).contract(r, r, r);
+			break;
 		default:
 			break;
 		}

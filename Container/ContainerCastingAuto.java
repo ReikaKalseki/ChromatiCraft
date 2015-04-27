@@ -9,23 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-@Deprecated
 public class ContainerCastingAuto extends CoreContainer {
 
 	private final TileEntityCastingAuto tile;
+
+	private ItemStack recipeFilter;
 
 	private final InventoryCrafting inventory = new InventoryCrafting(this, 1, 1);
 
@@ -37,13 +35,13 @@ public class ContainerCastingAuto extends CoreContainer {
 
 		tile = te;
 
-		this.addSlotToContainer(new Slot(inventory, 0, 80, 75));
+		this.addSlotToContainer(new Slot(inventory, 0, 8, 8));
 
 		for (var6 = 0; var6 < 3; ++var6)
 			for (var7 = 0; var7 < 9; ++var7)
-				this.addSlotToContainer(new Slot(player.inventory, var7 + var6 * 9 + 9, 8 + var7 * 18, 34 + var6 * 18));
+				this.addSlotToContainer(new Slot(player.inventory, var7 + var6 * 9 + 9, 8 + var7 * 18, 112 + var6 * 18));
 		for (var6 = 0; var6 < 9; ++var6)
-			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 92));
+			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 170));
 
 		//inventory.setInventorySlotContents(0, te.getCurrentRecipeOutput());
 
@@ -68,9 +66,17 @@ public class ContainerCastingAuto extends CoreContainer {
 	{
 		super.onCraftMatrixChanged(ii);
 
-		ItemStack is = inventory.getStackInSlot(0);
-		List<CastingRecipe> li = is != null ? RecipesCastingTable.instance.getAllRecipesMaking(is) : null;
-		tile.setRecipe(li != null && !li.isEmpty() ? li.get(0) : null, 1);
+		if (inventory == ii) {
+			ItemStack is = inventory.getStackInSlot(0);
+			recipeFilter = is;
+		}
+	}
+
+	public boolean isRecipeValid(CastingRecipe cr) {
+		if (recipeFilter == null)
+			return true;
+		ItemStack out = cr.getOutput();
+		return ReikaItemHelper.matchStacks(recipeFilter, out) && ItemStack.areItemStackTagsEqual(recipeFilter, out);
 	}
 
 	@Override

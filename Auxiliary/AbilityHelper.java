@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -207,7 +206,12 @@ public class AbilityHelper {
 		if (evt.entityLiving instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
 			if (Chromabilities.DEATHPROOF.enabledOn(ep)) {
-				lossCache.put(ep, new LossCache(ep));
+				LossCache lc = new LossCache(ep);
+				lossCache.put(ep, lc);
+			}
+			else {
+				NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+				nbt.removeTag(LossCache.NBT_TAG);
 			}
 		}
 	}
@@ -218,12 +222,14 @@ public class AbilityHelper {
 		if (c != null) {
 			c.applyToPlayer(evt.player);
 		}
+		Chromabilities.DEATHPROOF.setToPlayer(evt.player, true);
 	}
 
 	private static class LossCache {
 
 		private final Collection<Ability> savedAbilities = new ArrayList();
-		private final EnumMap<CrystalElement, Integer> savedEnergy = new EnumMap(CrystalElement.class);
+		private final ElementTagCompound savedEnergy = new ElementTagCompound();
+		private int cap;
 
 		private static final double INIT_CHANCE = 10;
 		private static final double INC_CHANCE = 5;
@@ -244,7 +250,7 @@ public class AbilityHelper {
 			}
 			nbt.setDouble(NBT_TAG, chance);
 			for (Ability a : Chromabilities.getAvailableFrom(ep)) {
-				if (ReikaRandomHelper.doWithChance(chance)) {
+				if (a == Chromabilities.DEATHPROOF || ReikaRandomHelper.doWithChance(chance)) {
 					savedAbilities.add(a);
 				}
 			}
@@ -256,13 +262,21 @@ public class AbilityHelper {
 				int random = (int)(max*nrat);
 				int save = (int)(max*ratio)+rand.nextInt(random);
 				save *= chance/100D;
-				savedEnergy.put(e, save);
+				savedEnergy.addTag(e, save);
 			}
+
+			//int pcap = PlayerElementBuffer.instance.getElementCap(ep);
+			//cap = Math.max(savedEnergy.getMaximumValue(), Math.max(24, ReikaRandomHelper.doWithChance(chance) ? pcap : pcap/4));
+			cap = 24;
+			int max = savedEnergy.getMaximumValue();
+			while (cap < max)
+				cap *= 4;
 		}
 
 		private void applyToPlayer(EntityPlayer player) {
-			for (CrystalElement e : savedEnergy.keySet()) {
-				PlayerElementBuffer.instance.addToPlayer(player, e, savedEnergy.get(e));
+			PlayerElementBuffer.instance.setElementCap(player, cap, false);
+			for (CrystalElement e : savedEnergy.elementSet()) {
+				PlayerElementBuffer.instance.addToPlayer(player, e, savedEnergy.getValue(e));
 			}
 			for (Ability a : savedAbilities) {
 				Chromabilities.give(player, a);

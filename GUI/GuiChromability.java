@@ -53,11 +53,11 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 	}
 
 	public final void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
 	}
 
 	public final void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
 	}
 
 	protected final Ability getActiveAbility() {

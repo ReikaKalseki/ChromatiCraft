@@ -66,6 +66,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.EntityRenderingLoopEvent;
+import Reika.DragonAPI.Instantiable.Event.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
@@ -92,6 +93,12 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent
+	public void noDimClipping(FarClippingPlaneEvent evt) {
+		if (Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			evt.farClippingPlaneDistance = 20000000F;
 	}
 
 	@SubscribeEvent

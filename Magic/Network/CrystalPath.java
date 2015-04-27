@@ -76,13 +76,19 @@ public class CrystalPath implements Comparable<CrystalPath> {
 	}
 
 	public final boolean checkLineOfSight() {
+		return this.checkLineOfSight(null);
+	}
+
+	public final boolean checkLineOfSight(CrystalLink l) {
 		for (int i = 0; i < nodes.size()-2; i++) {
 			WorldLocation tgt = nodes.get(i);
-			WorldLocation src = nodes.get(i+1);
-			if (!PylonFinder.lineOfSight(src, tgt)) {
-				CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
-				if (sr.needsLineOfSight()) {
-					return false;
+			if (l == null || tgt.equals(l.loc1) || tgt.equals(l.loc2)) {
+				WorldLocation src = nodes.get(i+1);
+				if (!PylonFinder.lineOfSight(src, tgt)) {
+					CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
+					if (sr.needsLineOfSight()) {
+						return false;
+					}
 				}
 			}
 		}

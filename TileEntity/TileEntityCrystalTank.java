@@ -22,6 +22,9 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+
+import org.lwjgl.input.Keyboard;
+
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -31,6 +34,8 @@ import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction {
 
@@ -233,7 +238,10 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		return blocks.asAABB();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public double getFillLevelForY(int y) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
+			return 1;
 		int height = blocks.getSizeY();
 		int min = blocks.getMinY();
 		int max = blocks.getMaxY();
@@ -252,7 +260,10 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public double getHeightOffsetAtCorner(int x, int y, int z, int dx, int dz, double h, float ptick) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
+			return 0;
 		if (h == 1 || h == 0)
 			return 0;
 		Fluid f = fluidType;

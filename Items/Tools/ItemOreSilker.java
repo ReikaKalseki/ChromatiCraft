@@ -61,7 +61,7 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
 		World world = ep.worldObj;
 		Block id = world.getBlock(x, y, z);
 		int meta = world.getBlockMetadata(x, y, z);
-		if (id == Blocks.glowstone || ReikaOreHelper.isVanillaOre(id) || ModOreList.isModOre(is)) {
+		if (id == Blocks.glowstone || ReikaOreHelper.isVanillaOre(id) || ModOreList.isModOre(id, meta)) {
 			if (id.canSilkHarvest(world, ep, x, y, z, meta)) {
 				this.dropSilkedOre(world, x, y, z, id, meta);
 				is.damageItem(1, ep);

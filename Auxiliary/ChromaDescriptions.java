@@ -180,7 +180,7 @@ public final class ChromaDescriptions {
 			aux = String.format(aux, machineNotes.get(m));
 
 			if (XMLInterface.NULL_VALUE.equals(desc))
-				desc = "There is no handbook data for this machine yet.";
+				desc = "There is no lexicon data for this machine yet.";
 			//ReikaJavaLibrary.pConsole(m.name().toLowerCase()+":"+desc);
 
 			if (m.isDummiedOut()) {

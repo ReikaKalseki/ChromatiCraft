@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -33,7 +34,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
-	private final Collection<WorldLocation> blacklist = new ArrayList();
+	private final Collection<WorldLocation> blacklist = new HashSet();
 	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap();
 
 	private final CrystalNetworker net;

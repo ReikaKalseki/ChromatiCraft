@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import net.minecraft.client.renderer.entity.RenderFireball;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSlime;
 import net.minecraft.client.settings.KeyBinding;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.BlockVoidRift.TileEntityVoidRift;
+import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
@@ -119,6 +121,7 @@ public class ChromaClient extends ChromaCommon {
 		}
 
 		RenderingRegistry.registerEntityRenderingHandler(EntityBallLightning.class, new RenderBallLightning());
+		RenderingRegistry.registerEntityRenderingHandler(EntityAbilityFireball.class, new RenderFireball(2));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGluon.class, new RenderGluon());
 
 		this.registerSpriteSheets();

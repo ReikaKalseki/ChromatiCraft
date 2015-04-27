@@ -24,6 +24,8 @@ import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class PlayerElementBuffer {
@@ -141,9 +143,13 @@ public class PlayerElementBuffer {
 	}
 
 	public boolean upgradeCap(EntityPlayer ep) {
+		return this.setElementCap(ep, this.getElementCap(ep)*4, true);
+	}
+
+	public boolean setElementCap(EntityPlayer ep, int cap, boolean notify) {
 		NBTTagCompound tag = this.getTag(ep);
 		int prev = this.getElementCap(ep);
-		int val = Math.min(prev*4, 400000);
+		int val = Math.min(cap, 400000);
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
@@ -152,6 +158,10 @@ public class PlayerElementBuffer {
 			if (ep instanceof EntityPlayerMP)
 				this.sendUpgradePacket((EntityPlayerMP)ep);
 		}
+		if (ep instanceof EntityPlayerMP) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERSET.ordinal(), (EntityPlayerMP)ep, val);
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+		}
 		return flag;
 	}
 
@@ -159,6 +169,12 @@ public class PlayerElementBuffer {
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERINC.ordinal(), ep, 0);
 	}
 
+	@SideOnly(Side.CLIENT)
+	public void setPlayerCapOnClient(EntityPlayer ep, int cap) {
+		this.setElementCap(ep, cap, false);
+	}
+
+	@SideOnly(Side.CLIENT)
 	public void upgradePlayerOnClient(EntityPlayer ep) {
 		recentUpgrades.put(ep, 2000);
 	}

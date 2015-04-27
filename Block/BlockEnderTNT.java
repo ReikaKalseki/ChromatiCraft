@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -21,7 +22,9 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -158,9 +161,12 @@ public class BlockEnderTNT extends Block {
 		}
 
 		public void setTarget(EntityPlayer ep, int dim, int x, int y, int z) {
-			target = new WorldLocation(dim, x, y, z);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			owner = ep.getCommandSenderName();
+			World ws = DimensionManager.getWorld(dim);
+			if (ep instanceof EntityPlayerMP && ws != null && GuardianStoneManager.instance.doesPlayerHavePermissions(ws, x, y, z, (EntityPlayerMP)ep)) {
+				target = new WorldLocation(dim, x, y, z);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+				owner = ep.getCommandSenderName();
+			}
 		}
 
 		public int getCountdown() {

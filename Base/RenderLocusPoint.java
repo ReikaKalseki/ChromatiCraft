@@ -39,7 +39,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glTranslated(par2, par4, par6);
-		if (MinecraftForgeClient.getRenderPass() == 1)
+		if (MinecraftForgeClient.getRenderPass() == 1 || !tile.hasWorldObj())
 			this.renderCore((TileEntityLocusPoint)tile, par2, par4, par6, par8);
 		this.doOtherRendering((TileEntityLocusPoint)tile, par8);
 		GL11.glPopAttrib();
@@ -59,6 +59,11 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		}
+		else {
+			GL11.glTranslated(0.55, 0.5, 0.5);
+			GL11.glRotatef(45, 0, 1, 0);
+			GL11.glRotatef(-30, 1, 0, 0);
+		}
 
 		int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 		//ReikaJavaLibrary.pConsole(te.getEnergy());
@@ -74,7 +79,9 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 
 			GL11.glPushMatrix();
 
-			GL11.glScaled(s, s, s);
+			double s1 = tile.isInWorld() ? s : s*1.5;
+
+			GL11.glScaled(s1, s1, s1);
 
 			GL11.glMatrixMode(GL11.GL_TEXTURE);
 			GL11.glPushMatrix();
@@ -99,7 +106,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 			v5.startDrawingQuads();
-			v5.setColorRGBA_I(this.getColor(), alpha);
+			v5.setColorRGBA_I(this.getColor(tile), alpha);
 			v5.addVertexWithUV(-1, -1, 0, u, v);
 			v5.addVertexWithUV(1, -1, 0, du, v);
 			v5.addVertexWithUV(1, 1, 0, du, dv);
@@ -230,7 +237,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		return fBuffer;
 	}
 
-	protected int getColor() { //do an iridescent effect
+	protected int getColor(TileEntityLocusPoint tile) { //do an iridescent effect
 		return 0xffffff;
 	}
 

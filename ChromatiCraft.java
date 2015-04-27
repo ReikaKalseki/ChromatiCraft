@@ -63,14 +63,17 @@ import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
+import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
+import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -120,6 +123,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
+import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.VoidMonster.API.DimensionAPI;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -139,6 +143,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
 
 
 @Mod( modid = "ChromatiCraft", name="ChromatiCraft", version="Alpha", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
@@ -362,6 +367,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
+			FMLCommonHandler.instance().bus().register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
 		}
 
@@ -469,10 +475,14 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	private void addEntities() {
-		int id = EntityRegistry.findGlobalUniqueEntityId();
-		EntityRegistry.registerModEntity(EntityBallLightning.class, "Ball Lightning", id, ChromatiCraft.instance, 64, 20, true);
-		EntityRegistry.registerGlobalEntityID(EntityBallLightning.class, "Ball Lightning", id);
+		int id = 0;//EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerModEntity(EntityBallLightning.class, "Ball Lightning", id, this, 64, 20, true);
+		//EntityRegistry.registerGlobalEntityID(EntityBallLightning.class, "Ball Lightning", id);
 		EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, 0xbbbbbb, 0xffffff));
+
+		id = 1;//EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerModEntity(EntityAbilityFireball.class, "Ability Fireball", id, this, 64, 20, true);
+		//EntityRegistry.registerGlobalEntityID(EntityAbilityFireball.class, "Ability Fireball", id);
 
 		//id = EntityRegistry.findGlobalUniqueEntityId();
 		//EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
@@ -515,6 +525,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();
+			ChromaAspectMapper.instance.register();
 
 			new CrystalWand().setGlowing(true);
 			TieredOreCap.registerAll();
@@ -522,11 +533,16 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.FORESTRY.isLoaded()) {
 			CrystalBees.register();
+			ApiaryAcceleration.instance.register();
 		}
 
 		if (ModList.BOTANIA.isLoaded()) {
 			BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
 			BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
+		}
+
+		if (ModList.METEORCRAFT.isLoaded()) {
+			MeteorSpawnAPI.blacklistDimension(ExtraChromaIDs.DIMID.getValue());
 		}
 
 		if (ModList.VOIDMONSTER.isLoaded()) {

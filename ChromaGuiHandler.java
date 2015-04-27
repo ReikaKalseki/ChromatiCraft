@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Container.ContainerBulkMover;
+import Reika.ChromatiCraft.Container.ContainerCastingAuto;
 import Reika.ChromatiCraft.Container.ContainerCastingTable;
 import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
@@ -145,6 +146,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerCrystalTank(player, (TileEntityCrystalTank) te);
 			if (te instanceof TileEntityInventoryTicker)
 				return new ContainerInventoryTicker(player, (TileEntityInventoryTicker) te);
+			if (te instanceof TileEntityCastingAuto)
+				return new ContainerCastingAuto((TileEntityCastingAuto) te, player);
 
 			if (te instanceof ItemOnRightClick)
 				return null;

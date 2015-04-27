@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Generators;
 
 import java.util.Random;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.BlockDimensionDeco.Types;
@@ -37,7 +38,7 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 					int dy = world.getTopSolidOrLiquidBlock(dx, dz);
 					int h = 4+rand.nextInt(8);
 					for (int dy2 = dy+e; dy2 <= dy+h+e; dy2++) {
-						if (rand.nextInt(dy2-dy) == 0)
+						if (rand.nextInt(dy2-dy) == 0 && world.getBlock(dx, dy2, dz) == Blocks.air)
 							world.setBlock(dx, dy2, dz, ChromaBlocks.DIMGEN.getBlockInstance(), Types.MIASMA.ordinal(), 3);
 					}
 				}

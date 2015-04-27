@@ -13,9 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.inventory.Container;
 
 import org.lwjgl.input.Keyboard;
 
@@ -24,14 +25,12 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiBu
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Container.ContainerCastingAuto;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
-import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class GuiCastingAuto extends GuiChromaBase {
 
@@ -50,29 +49,30 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 	private int number = 1;
 
+	private final List<CastingRecipe> usableRecipes = new ArrayList();
 	private final List<CastingRecipe> visible = new ArrayList();
 
 	private final TileEntityCastingAuto tile;
 
 	public GuiCastingAuto(TileEntityCastingAuto te, EntityPlayer ep) {
-		super(new CoreContainer(ep, te), ep, te);
+		super(new ContainerCastingAuto(te, ep), ep, te);
 		ySize = 194;
 
 		tile = te;
 
 		Collection<CastingRecipe> recipes = te.getAvailableRecipes();//ChromaResearchManager.instance.getRecipesPerformed(ep);
-		ReikaJavaLibrary.pConsole(recipes);
 		for (ChromaResearch r : list) {
 			if (ChromaResearchManager.instance.playerHasFragment(ep, r)) {
 				Collection<CastingRecipe> c = r.getCraftingRecipes();
 				for (CastingRecipe cr : c) {
 					if (recipes.contains(cr)) {
-						visible.add(cr);
+						usableRecipes.add(cr);
 					}
 				}
 			}
 		}
 
+		this.filterRecipes();
 		index = visible.contains(te.getCurrentRecipeOutput()) ? visible.indexOf(te.getCurrentRecipeOutput()) : 0;
 	}
 
@@ -94,6 +94,30 @@ public class GuiCastingAuto extends GuiChromaBase {
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+xSize/2-80, k+45, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 
 		buttonList.add(new CustomSoundImagedGuiButton(4, j+xSize/2+55, k+45, 10, 10, 90, 6, tex, ChromatiCraft.class, this));
+	}
+
+	@Override
+	public void updateScreen() {
+		super.updateScreen();
+
+		if (Minecraft.getMinecraft().theWorld.getTotalWorldTime()%5 == 0)
+			this.filterRecipes();
+	}
+
+	private void filterRecipes() {
+		visible.clear();
+
+		Container c = Minecraft.getMinecraft().thePlayer.openContainer;
+		if (c instanceof ContainerCastingAuto) {
+			ContainerCastingAuto cc = (ContainerCastingAuto)c;
+			for (CastingRecipe cr : usableRecipes) {
+				if (cc.isRecipeValid(cr)) {
+					visible.add(cr);
+				}
+			}
+		}
+
+		index = Math.min(index, visible.size()-1);
 	}
 
 	@Override
@@ -158,6 +182,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 			api.drawItemStack(itemRender, cr.getOutput(), 80, 75);
 			fontRendererObj.drawString(String.format("x%d = %d", number, number*cr.getOutput().stackSize), 102, 79, 0xffffff);
 
+			/*
 			ItemHashMap<Integer> map = cr.getItemCounts();
 			int dx = 6;
 			int dy = 97;
@@ -173,12 +198,13 @@ public class GuiCastingAuto extends GuiChromaBase {
 					dx += 42;
 				}
 			}
+			 */
 		}
 	}
 
 	@Override
 	public String getGuiTexture() {
-		return "automator";
+		return "automator2";
 	}
 
 }

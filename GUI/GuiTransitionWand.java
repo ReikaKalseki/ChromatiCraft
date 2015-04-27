@@ -57,11 +57,11 @@ public class GuiTransitionWand extends GuiScreen implements CustomSoundGui {
 	}
 
 	public void playButtonSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
 	}
 
 	public void playHoverSound(GuiButton b) {
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 0.8F, 1);
 	}
 
 	@Override

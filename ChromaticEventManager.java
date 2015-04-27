@@ -175,7 +175,7 @@ public class ChromaticEventManager {
 		if (evt.source == DamageSource.outOfWorld && evt.entityLiving instanceof EntityPlayer) {
 			if (evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 				double y = evt.entityLiving.posY;
-				if (y < -256) {
+				if (y < -1024) {
 					ReikaEntityHelper.transferEntityToDimension(evt.entityLiving, 0, new ChromaTeleporter(0));
 				}
 				else {
@@ -208,7 +208,7 @@ public class ChromaticEventManager {
 				if (ei.worldObj.isRemote) {
 					this.poolRecipeParticles(ei);
 				}
-				if (!ei.worldObj.isRemote && ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
+				else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
 					PoolRecipes.instance.makePoolRecipe(ei, out);
 				}
 			}
@@ -565,7 +565,7 @@ public class ChromaticEventManager {
 	public void triggerBossProgress(LivingDeathEvent ev) {
 		if (ev.source.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)ev.source.getEntity();
-			if (ev.entityLiving instanceof EntityDragon) {
+			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving.getClass().getName().equals("chylex.hee.entity.boss.EntityBossDragon")) {
 				ProgressStage.KILLDRAGON.stepPlayerTo(ep);
 			}
 			else if (ev.entityLiving instanceof EntityWither) {
