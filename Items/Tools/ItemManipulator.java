@@ -50,7 +50,6 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -101,7 +100,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		//	return true;
 		//}
 
-		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.debugtest) {
 			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;
 			cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
 			return true;

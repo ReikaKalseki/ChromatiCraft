@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -60,6 +58,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -85,7 +84,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
@@ -104,7 +102,6 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
@@ -122,8 +119,6 @@ import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaticEventManager {
 
@@ -206,24 +201,13 @@ public class ChromaticEventManager {
 			PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
 			if (out != null) {
 				if (ei.worldObj.isRemote) {
-					this.poolRecipeParticles(ei);
+					ChromaFX.poolRecipeParticles(ei);
 				}
 				else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
 					PoolRecipes.instance.makePoolRecipe(ei, out);
 				}
 			}
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void poolRecipeParticles(EntityItem ei) {
-		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
-		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
-		double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-		float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.5);
-		EntityFX fx = new EntityChromaFluidFX(ei.worldObj, ei.posX, ei.posY, ei.posZ, vx, vy, vz).setGravity(0.125F).setScale(s);
-		fx.noClip = true;
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SubscribeEvent

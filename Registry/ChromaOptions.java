@@ -49,7 +49,8 @@ public enum ChromaOptions implements ConfigList {
 	HOSTILEFOREST("Allow Danger in Rainbow Forests", false),
 	RELAYRANGE("Lumen Relay Range", 16),
 	REDRAGON("Always Respawn EnderDragon", false),
-	DELEND("Delete End on Unload", false);
+	DELEND("Delete End on Unload", false),
+	EASYFRAG("Auxiliary Fragment Acquisition", false);
 
 	private String label;
 	private boolean defaultState;

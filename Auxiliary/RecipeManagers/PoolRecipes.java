@@ -58,14 +58,19 @@ public class PoolRecipes {
 	}
 
 	public PoolRecipe getPoolRecipe(EntityItem ei) {
+		return this.getPoolRecipe(ei, null, true);
+	}
+
+	public PoolRecipe getPoolRecipe(EntityItem ei, Collection<EntityItem> li, boolean block) {
 		Collection<PoolRecipe> prs = recipes.get(ei.getEntityItem());
 		if (prs != null) {
 			int x = MathHelper.floor_double(ei.posX);
 			int y = MathHelper.floor_double(ei.posY);
 			int z = MathHelper.floor_double(ei.posZ);
-			if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance() && ei.worldObj.getBlockMetadata(x, y, z) == 0) {
+			if (!block || (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance() && ei.worldObj.getBlockMetadata(x, y, z) == 0)) {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-				Collection<EntityItem> li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
+				if (li == null)
+					li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (PoolRecipe pr : prs) {
 					if (pr.canBeMadeFrom(li)) {
 						return pr;
@@ -86,7 +91,8 @@ public class PoolRecipes {
 		ReikaEntityHelper.decrEntityItemStack(ei, 1);
 		EntityItem newitem = ReikaItemHelper.dropItem(ei, pr.getOutput());
 		newitem.lifespan = Integer.MAX_VALUE;
-		ei.worldObj.setBlock(x, y, z, Blocks.air);
+		if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance())
+			ei.worldObj.setBlock(x, y, z, Blocks.air);
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
 	}
 

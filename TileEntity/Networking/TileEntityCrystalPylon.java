@@ -172,11 +172,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				CrystalElement e = CrystalElement.randomElement();
 				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y-9, z, e);
 				b.place();
-				world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
-				TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
-				te.color = e;
-				te.hasMultiblock = true;
-				te.syncAllData(true);
+				//world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
+				//TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
+				color = e;
+				hasMultiblock = true;
+				this.syncAllData(true);
 			}
 		}
 

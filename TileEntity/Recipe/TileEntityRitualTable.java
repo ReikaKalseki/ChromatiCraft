@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
@@ -188,6 +189,10 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	private void giveAbility(EntityPlayer ep) {
+		if (ep == null) {
+			ChromatiCraft.logger.logError("Tried to give ability to null player???");
+			return;
+		}
 		Chromabilities.give(ep, ability);
 		abilitySoundTick = 2000;
 		ability = null;

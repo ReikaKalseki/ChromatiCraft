@@ -71,6 +71,8 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
+import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
@@ -125,6 +127,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.BlockColorInterface;
+import Reika.RotaryCraft.API.ReservoirAPI;
 import Reika.VoidMonster.API.DimensionAPI;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -539,6 +542,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.BOTANIA.isLoaded()) {
 			BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
 			BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
+		}
+
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			ReservoirAPI.registerHandler(new PoolRecipeHandler());
+			ReservoirAPI.registerHandler(new ShardBoostingHandler());
 		}
 
 		if (ModList.METEORCRAFT.isLoaded()) {

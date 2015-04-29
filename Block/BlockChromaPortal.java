@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -95,6 +96,7 @@ public class BlockChromaPortal extends Block {
 						int dim = te.getTargetDimension();
 						ReikaEntityHelper.transferEntityToDimension(e, dim, new ChromaTeleporter(dim));
 						ProgressStage.DIMENSION.stepPlayerTo(ep);
+						ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
 					}
 					else {
 						this.denyEntity(e);

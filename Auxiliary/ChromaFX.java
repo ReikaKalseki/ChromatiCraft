@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -23,18 +25,30 @@ import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ChromaFX {
+
+	public static void poolRecipeParticles(EntityItem ei) {
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
+		float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.5);
+		EntityFX fx = new EntityChromaFluidFX(ei.worldObj, ei.posX, ei.posY, ei.posZ, vx, vy, vz).setGravity(0.125F).setScale(s);
+		fx.noClip = true;
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
 
 	public static void createPylonChargeBeam(CrystalSource te, EntityPlayer ep, double dist, CrystalElement e) {
 		//WorldLocation loc = new WorldLocation(ep);

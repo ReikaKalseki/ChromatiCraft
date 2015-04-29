@@ -16,8 +16,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
@@ -29,12 +32,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -44,6 +51,7 @@ import org.lwjgl.opengl.GL11;
 import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -73,9 +81,13 @@ import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.TileEntityRenderEvent;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -614,6 +626,72 @@ public class ChromaClientEventController {
 					GL11.glDisable(GL11.GL_BLEND);
 					GL11.glPopMatrix();
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void reachBoostHighlight(RenderGameOverlayEvent evt) {
+		if (evt.type == ElementType.HELMET) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (Chromabilities.REACH.enabledOn(ep)) {
+				MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 192, false);
+				if (mov != null) {
+					int x = mov.blockX;
+					int y = mov.blockY;
+					int z = mov.blockZ;
+					double dd = ReikaMathLibrary.py3d(x+0.5-ep.posX, y+0.5-ep.posY, z+0.5-ep.posZ);
+					GL11.glPushMatrix();
+					double s = 1.5;
+					GL11.glScaled(s, s, s);
+					String sg = String.format("%.3fm", dd);
+					FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
+					f.drawString(sg, evt.resolution.getScaledWidth()/3+4, evt.resolution.getScaledHeight()/3-9, 0xffffff);
+					GL11.glPopMatrix();
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void reachBoostHighlight(DrawBlockHighlightEvent evt) {
+		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (Chromabilities.REACH.enabledOn(ep)) {
+				GL11.glPushMatrix();
+				World world = Minecraft.getMinecraft().theWorld;
+				int x = evt.target.blockX;
+				int y = evt.target.blockY;
+				int z = evt.target.blockZ;
+				double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
+				double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
+				double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
+				GL11.glTranslated(p2, p4, p6);
+				//GL11.glEnable(GL11.GL_BLEND);
+				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+				GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
+				GL11.glLineWidth(3.0F);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glDepthMask(false);
+				float f1 = 0.002F;
+				double d = 0.005;
+				AxisAlignedBB box = world.getBlock(x, y, z).getSelectedBoundingBoxFromPool(world, x, y, z);
+				box = box.offset(-x, -y, -z).expand(d, d, d);
+				float r = (float)(0.5+Math.sin(System.currentTimeMillis()/500D));
+				r = Math.max(0, Math.min(1, r));
+				int c = ReikaColorAPI.mixColors(CrystalElement.LIME.getColor(), CrystalElement.PURPLE.getColor(), r);
+				RenderGlobal.drawOutlinedBoundingBox(box, c);
+
+
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+				GL11.glPopMatrix();
+
+				GL11.glDepthMask(true);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glLineWidth(2.0F);
+
+				evt.setCanceled(true);
 			}
 		}
 	}

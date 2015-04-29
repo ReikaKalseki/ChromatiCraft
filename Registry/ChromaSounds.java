@@ -46,7 +46,8 @@ public enum ChromaSounds implements SoundEnum {
 	GUISEL("gui4"),
 	DRONE("drone2"),
 	PORTAL("portal2"),
-	ORB("orb");
+	ORB("orb"),
+	GOTODIM("todim");
 
 	public static final ChromaSounds[] soundList = values();
 
