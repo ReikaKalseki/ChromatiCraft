@@ -19,9 +19,9 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
 public class ItemBlockCrystalGlow extends ItemBlock {

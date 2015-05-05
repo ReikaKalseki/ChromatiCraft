@@ -648,6 +648,27 @@ public class ChromaClientEventController {
 					FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
 					f.drawString(sg, evt.resolution.getScaledWidth()/3+4, evt.resolution.getScaledHeight()/3-9, 0xffffff);
 					GL11.glPopMatrix();
+					Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
+					if (b != null && b != Blocks.air) {
+						IIcon ico = b.getIcon(1, Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z));
+						if (ico != null) {
+							float u = ico.getMinU();
+							float v = ico.getMinV();
+							float du = ico.getMaxU();
+							float dv = ico.getMaxV();
+							Tessellator v5 = Tessellator.instance;
+							int sz = 16;
+							int dx = evt.resolution.getScaledWidth()/2-sz*5/4;
+							int dy = evt.resolution.getScaledHeight()/2-sz*5/4;
+							ReikaTextureHelper.bindTerrainTexture();
+							v5.startDrawingQuads();
+							v5.addVertexWithUV(dx, dy+sz, 0, u, dv);
+							v5.addVertexWithUV(dx+sz, dy+sz, 0, du, dv);
+							v5.addVertexWithUV(dx+sz, dy, 0, du, v);
+							v5.addVertexWithUV(dx, dy, 0, u, v);
+							v5.draw();
+						}
+					}
 				}
 			}
 		}

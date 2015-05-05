@@ -18,7 +18,7 @@ public class ReservoirHandlers {
 
 	private static final Random rand = new Random();
 
-	private static abstract class ChromaRecipeHandlerBase implements TankHandler {
+	private static abstract class ChromaReservoirRecipeHandlerBase implements TankHandler {
 
 		@Override
 		public final int onTick(TileEntity te, Fluid stored, int amt) {
@@ -34,7 +34,7 @@ public class ReservoirHandlers {
 
 	}
 
-	public static class ShardBoostingHandler extends ChromaRecipeHandlerBase {
+	public static class ShardBoostingHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
 		protected int onTick(TileEntity te) {
@@ -43,7 +43,7 @@ public class ReservoirHandlers {
 
 	}
 
-	public static class PoolRecipeHandler extends ChromaRecipeHandlerBase {
+	public static class PoolRecipeHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
 		protected int onTick(TileEntity te) {
@@ -58,9 +58,11 @@ public class ReservoirHandlers {
 						}
 						else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
 							PoolRecipes.instance.makePoolRecipe(ei, pr);
+							return 1000;
 						}
 						break;
 					}
+					ei.lifespan = Integer.MAX_VALUE;
 				}
 			}
 			return 0;

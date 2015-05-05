@@ -123,9 +123,9 @@ public class BlockCrystalTile extends BlockChromaTile {
 		if (Minecraft.getMinecraft().gameSettings.fancyGraphics)
 			return true;
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
-		int dx = x+dir.offsetX;
-		int dy = y+dir.offsetY;
-		int dz = z+dir.offsetZ;
+		int dx = x;//+dir.offsetX;
+		int dy = y;//+dir.offsetY;
+		int dz = z;//+dir.offsetZ;
 		Block id = world.getBlock(dx, dy, dz);
 		if (id == Blocks.air)
 			return true;

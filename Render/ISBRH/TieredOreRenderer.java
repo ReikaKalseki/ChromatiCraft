@@ -21,8 +21,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockTieredOre;
-import Reika.ChromatiCraft.Block.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;

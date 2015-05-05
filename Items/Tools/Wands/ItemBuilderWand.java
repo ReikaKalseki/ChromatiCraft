@@ -41,7 +41,7 @@ public class ItemBuilderWand extends ItemWandBase {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
-		if (this.sufficientEnergy(ep)) {
+		if (!world.isRemote && this.sufficientEnergy(ep)) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
 			Block b = world.getBlock(x, y, z);
 			int m = world.getBlockMetadata(x, y, z);

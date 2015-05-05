@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -129,7 +130,7 @@ public class BlockChromaPortal extends Block {
 				this.onFirstTick();
 			ticks++;
 			if (complete) {
-				if (charge < MINCHARGE) {
+				if (charge < MINCHARGE || !ChunkProviderChroma.areStructuresReady()) {
 					charge++;
 					if (worldObj.isRemote)
 						this.chargingParticles();
@@ -165,7 +166,7 @@ public class BlockChromaPortal extends Block {
 		}
 
 		public boolean canPlayerUse(EntityPlayer ep) {
-			return charge >= MINCHARGE && ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.DIMENSION);
+			return ChunkProviderChroma.areStructuresReady() && charge >= MINCHARGE && ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.DIMENSION);
 		}
 
 		public int getTicks() {

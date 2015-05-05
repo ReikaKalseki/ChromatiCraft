@@ -25,14 +25,10 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
-import Reika.ChromatiCraft.Block.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
-import Reika.ChromatiCraft.Block.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
 import Reika.ChromatiCraft.Block.BlockCrystalPylon;
 import Reika.ChromatiCraft.Block.BlockCrystalRune;
@@ -40,25 +36,27 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
-import Reika.ChromatiCraft.Block.BlockDimensionDeco;
-import Reika.ChromatiCraft.Block.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
-import Reika.ChromatiCraft.Block.BlockLootChest;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
-import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
-import Reika.ChromatiCraft.Block.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
-import Reika.ChromatiCraft.Block.BlockStructureShield;
-import Reika.ChromatiCraft.Block.BlockSuperCrystal;
-import Reika.ChromatiCraft.Block.BlockTieredOre;
-import Reika.ChromatiCraft.Block.BlockTieredPlant;
-import Reika.ChromatiCraft.Block.BlockVoidRift;
+import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalLamp;
+import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
+import Reika.ChromatiCraft.Block.Crystal.BlockRainbowCrystal;
+import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
+import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
+import Reika.ChromatiCraft.Block.Dimension.BlockStructureDataStorage;
+import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -66,6 +64,11 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLockKey;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -130,7 +133,10 @@ public enum ChromaBlocks implements BlockEnum {
 	HEATLAMP(BlockHeatLamp.class,				ItemBlockSidePlaced.class,		"chroma.heatlamp"),
 	VOIDRIFT(BlockVoidRift.class,				ItemBlockDyeTypes.class,		"chroma.voidrift"),
 	DIMGEN(BlockDimensionDeco.class,			ItemBlockMultiType.class,		"chroma.dimdeco"),
-	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2");
+	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2"),
+	COLORLOCK(BlockColoredLock.class,			ItemBlockDyeTypes.class,		"chroma.colorlock"),
+	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
+	LOCKKEY(BlockLockKey.class,													"chroma.lockkey");
 
 	private Class blockClass;
 	private String blockName;

@@ -11,15 +11,15 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.StructurePiece;
-import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public class AltarCenter extends StructurePiece {
 
 	@Override
-	public void generate(World world, int x, int y, int z) {
+	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 
 		int r = 16;
 		Block b1 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
@@ -35,8 +35,8 @@ public class AltarCenter extends StructurePiece {
 						int dx = x+i;
 						int dz = z+k;
 						int dy = y+h;
-						world.setBlock(dx, dy, dz, b, m, 3);
-						world.setBlock(dx, dy+1, dz, b1, m1, 3);
+						world.setBlock(dx, dy, dz, b, m);
+						world.setBlock(dx, dy+1, dz, b1, m1);
 					}
 				}
 			}

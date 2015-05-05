@@ -23,7 +23,7 @@ public class AcceleratorBlacklist {
 	static {
 		try {
 			tile = Class.forName("Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator");
-			add = tile.getMethod("addEntry", Class.class);
+			add = tile.getMethod("blacklistTile", Class.class);
 		}
 		catch (ClassNotFoundException e) {
 			ReikaJavaLibrary.pConsole("Could not load ChromatiCraft class!");

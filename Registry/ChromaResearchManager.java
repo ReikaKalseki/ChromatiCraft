@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -61,8 +60,6 @@ public final class ChromaResearchManager {
 	//public final Comparator progressComparator = new ProgressComparator();
 
 	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
-
-	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
 	private ChromaResearchManager() {
 		priority.addValue(ResearchLevel.ENTRY, new ChromaResearchTarget(ChromaResearch.FRAGMENT, -1)); //get fragment first, always

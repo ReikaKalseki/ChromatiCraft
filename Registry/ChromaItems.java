@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
+import Reika.ChromatiCraft.Items.Tools.ItemChainGun;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
@@ -108,7 +109,8 @@ public enum ChromaItems implements ItemEnum {
 	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class),
 	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),
 	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG),
-	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class);
+	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
+	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class);
 	;
 
 	private final int index;

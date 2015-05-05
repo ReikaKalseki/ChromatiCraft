@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block;
+package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.Random;
 
@@ -20,8 +20,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Interfaces.ConditionallyUnbreakable;
 
-public class BlockStructureShield extends Block {
+public class BlockStructureShield extends Block implements ConditionallyUnbreakable {
 
 	public static enum BlockType {
 		CLOAK("Cloak"),
@@ -123,6 +124,11 @@ public class BlockStructureShield extends Block {
 		if (BlockType.list[meta%8].isTransparent(side))
 			return false;
 		return meta < 8;
+	}
+
+	@Override
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return meta >= 8 && !BlockType.list[meta%8].isMineable();
 	}
 
 }

@@ -28,10 +28,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.FakePlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -63,6 +65,8 @@ public class ProgressionManager {
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap();
 
 	private final EnumMap<CrystalElement, ColorDiscovery> colorDiscoveries = new EnumMap(CrystalElement.class);
+
+	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
 	public static enum ProgressStage implements ProgressElement {
 
@@ -249,6 +253,17 @@ public class ProgressionManager {
 				progressMap.addChildless(p);
 			}
 		}
+
+
+		auxiliaryReference.put(ProgressStage.CRYSTALS, ChromaResearch.CRYSTALS);
+		auxiliaryReference.put(ProgressStage.PYLON, ChromaResearch.PYLONS);
+		auxiliaryReference.put(ProgressStage.BURROW, ChromaResearch.BURROW);
+		auxiliaryReference.put(ProgressStage.CAVERN, ChromaResearch.CAVERN);
+		auxiliaryReference.put(ProgressStage.OCEAN, ChromaResearch.OCEAN);
+		auxiliaryReference.put(ProgressStage.RAINBOWLEAF, ChromaResearch.RAINBOWLEAVES);
+		auxiliaryReference.put(ProgressStage.DYETREE, ChromaResearch.DYELEAVES);
+		auxiliaryReference.put(ProgressStage.BALLLIGHTNING, ChromaResearch.BALLLIGHTNING);
+		auxiliaryReference.put(ProgressStage.ALLCOLORS, ChromaResearch.RUNES);
 	}
 
 	public Topology getTopology() {
@@ -425,6 +440,7 @@ public class ProgressionManager {
 				playerMap.addValue(ep.getCommandSenderName(), s);
 
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
+				this.giveAuxiliaryResearch(ep, s);
 			}
 			else {
 				playerMap.remove(ep.getCommandSenderName(), s);
@@ -537,6 +553,14 @@ public class ProgressionManager {
 			return ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal());
 		}
 
+	}
+
+	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
+		if (ChromaOptions.EASYFRAG.getState()) {
+			ChromaResearch r = auxiliaryReference.get(p);
+			if (r != null)
+				ChromaResearchManager.instance.givePlayerFragment(ep, r);
+		}
 	}
 
 }

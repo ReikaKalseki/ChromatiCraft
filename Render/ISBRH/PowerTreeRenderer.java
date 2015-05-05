@@ -16,7 +16,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 

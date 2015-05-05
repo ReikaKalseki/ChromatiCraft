@@ -39,10 +39,11 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
-import Reika.ChromatiCraft.Block.BlockPowerTree;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
@@ -425,6 +426,12 @@ public class ChromatiPackets implements IPacketHandler {
 			case AUTORECIPE:
 				CastingRecipe cr = data[0] >= 0 ? RecipesCastingTable.instance.getRecipeByID(data[0]) : null;
 				((TileEntityCastingAuto)tile).setRecipe(cr, data[1]);
+				break;
+			case CHAINGUNHURT:
+				EntityChainGunShot.doDamagingParticles(data[0]);
+				break;
+			case CHAINGUNEND:
+				EntityChainGunShot.doDestructionParticles(data[0]);
 				break;
 			}
 		}

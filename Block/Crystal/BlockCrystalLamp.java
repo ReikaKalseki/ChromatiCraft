@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block;
+package Reika.ChromatiCraft.Block.Crystal;
 
 import java.util.Random;
 
@@ -17,16 +17,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class BlockSuperCrystal extends CrystalBlock {
+public class BlockCrystalLamp extends CrystalBlock {
 
-	public BlockSuperCrystal(Material mat) {
+	public BlockCrystalLamp(Material mat) {
 		super(mat);
-		this.setLightLevel(1F);
-		this.setResistance(6000);
+		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
 	}
 
 	@Override
@@ -39,6 +39,10 @@ public class BlockSuperCrystal extends CrystalBlock {
 		return meta;
 	}
 
+	@Override
+	public final int quantityDropped(Random r) {
+		return 1;
+	}
 	/*
 	@SideOnly(Side.CLIENT)
 	@Override
@@ -46,8 +50,7 @@ public class BlockSuperCrystal extends CrystalBlock {
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			icons[i] = ico.registerIcon("ChromatiCraft:crystal/lamp_"+ReikaDyeHelper.dyes[i].name().toLowerCase());
 		}
-	}
-	 */
+	}*/
 
 	@Override
 	public boolean shouldMakeNoise() {
@@ -56,17 +59,17 @@ public class BlockSuperCrystal extends CrystalBlock {
 
 	@Override
 	public boolean shouldGiveEffects(CrystalElement e) {
-		return true;
+		return false;//ChromaOptions.EFFECTS.getState();
 	}
 
 	@Override
 	public int getRange() {
-		return 12;
+		return 3;
 	}
 
 	@Override
 	public int getDuration(CrystalElement e) {
-		return 6000;
+		return 200;
 	}
 
 	@Override
@@ -76,12 +79,12 @@ public class BlockSuperCrystal extends CrystalBlock {
 
 	@Override
 	public Block getBaseBlock(ForgeDirection side) {
-		return Blocks.obsidian;
+		return side.offsetY == 0 ? Blocks.stone : Blocks.double_stone_slab;
 	}
 
 	@Override
 	public int getPotionLevel(CrystalElement e) {
-		return 2;
+		return 0;
 	}
 
 	@Override
@@ -91,7 +94,6 @@ public class BlockSuperCrystal extends CrystalBlock {
 
 	@Override
 	public boolean performEffect(CrystalElement e) {
-		return true;
+		return false;
 	}
-
 }

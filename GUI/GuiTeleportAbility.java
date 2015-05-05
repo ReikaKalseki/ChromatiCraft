@@ -134,6 +134,7 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		else if (b.id == 1 && this.getCurrentSelected() != null) {
 			AbilityHelper.instance.gotoWarpPoint(this.getCurrentSelected().label, player);
 			ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORT.ordinal(), this.getCurrentSelected().label);
+			player.closeScreen();
 		}
 		else if (b.id == 2 && this.getCurrentSelected() != null) {
 			AbilityHelper.instance.removeWarpPoint(this.getCurrentSelected().label, player);
@@ -167,14 +168,16 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 		String s = screen.title;
 		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fr, s, tx, ty, 0xffffff);
 
-		int h = 10;
-		for (int i = 0; i < points.size(); i++) {
-			WarpPoint p = points.get(i);
-			int dx = 0;
-			int w = 40;
-			int dy = 0+i*h;
-			locations.addItem(p, dx, dy, w, h);
-			fr.drawString(p.toString(), dx, dy, i == selection ? 0x00ff00 : 0xffffff);
+		if (screen == Screen.SELECT) {
+			int h = 12;
+			for (int i = 0; i < points.size(); i++) {
+				WarpPoint p = points.get(i);
+				int dx = j+8;
+				int w = 40;
+				int dy = k+18+i*h;
+				locations.addItem(p, dx, dy, w, h);
+				fr.drawString(p.toString(), dx, dy, i == selection ? 0x00ff00 : 0xffffff);
+			}
 		}
 
 		if (screen == Screen.SET) {

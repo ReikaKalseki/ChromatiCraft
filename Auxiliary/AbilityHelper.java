@@ -257,12 +257,14 @@ public class AbilityHelper {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {
 				CrystalElement e = CrystalElement.elements[i];
 				int max = PlayerElementBuffer.instance.getPlayerContent(ep, e);
-				double ratio = 1D/(2+rand.nextInt(3));
-				double nrat = 1D-ratio;
-				int random = (int)(max*nrat);
-				int save = (int)(max*ratio)+rand.nextInt(random);
-				save *= chance/100D;
-				savedEnergy.addTag(e, save);
+				if (max > 0) {
+					double ratio = 1D/(2+rand.nextInt(3));
+					double nrat = 1D-ratio;
+					int random = (int)(max*nrat);
+					int save = (int)(max*ratio)+rand.nextInt(random);
+					save *= chance/100D;
+					savedEnergy.addTag(e, save);
+				}
 			}
 
 			//int pcap = PlayerElementBuffer.instance.getElementCap(ep);
@@ -298,6 +300,7 @@ public class AbilityHelper {
 			if (Chromabilities.REACH.enabledOn(ep)) {
 				Chromabilities.triggerAbility(ep, Chromabilities.REACH, 0);
 			}
+			WarpPointData.initWarpData(ep.worldObj).setDirty(true);
 		}
 
 		@Override
@@ -687,6 +690,7 @@ public class AbilityHelper {
 				}
 				data.setTag(uid.toString(), points);
 			}
+			nbt.setTag("warpdata", data);
 		}
 
 	}

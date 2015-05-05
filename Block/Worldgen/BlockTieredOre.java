@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block;
+package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -207,6 +207,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 		for (int i = 0; i < geodestone.length; i++) {
 			geodestone[i] = ico.registerIcon("chromaticraft:ore/geodestone/"+i);
 		}
+
+		blockIcon = Blocks.stone.getIcon(0, 0);
 	}
 
 	public IIcon getOverlay(int meta) {

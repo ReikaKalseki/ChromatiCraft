@@ -18,8 +18,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Block.BlockCrystalGlow.Bases;
-import Reika.ChromatiCraft.Block.BlockCrystalGlow.TileEntityCrystalGlow;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;

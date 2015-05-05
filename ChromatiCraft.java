@@ -65,6 +65,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -97,6 +98,7 @@ import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
@@ -165,7 +167,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private boolean isLocked = false;
 
-	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(400).setDensity(300).setLuminosity(15);
+	public static final EnhancedFluid chroma = (EnhancedFluid)new EnhancedFluid("chroma").setColor(0x00aaff).setViscosity(300).setTemperature(288).setDensity(300).setLuminosity(15);
 	//public static final EnhancedFluid activechroma = (EnhancedFluid)new EnhancedFluid("activechroma").setColor(0x00aaff).setViscosity(300).setTemperature(500).setDensity(300);
 	public static EnhancedFluid crystal = (EnhancedFluid)new EnhancedFluid("potion crystal").setColor(0x66aaff).setLuminosity(15).setTemperature(500).setUnlocalizedName("potioncrystal");
 	public static final Fluid ender = new Fluid("ender").setViscosity(2000).setDensity(1500).setTemperature(270).setUnlocalizedName("endere").setLuminosity(4);
@@ -487,6 +489,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		EntityRegistry.registerModEntity(EntityAbilityFireball.class, "Ability Fireball", id, this, 64, 20, true);
 		//EntityRegistry.registerGlobalEntityID(EntityAbilityFireball.class, "Ability Fireball", id);
 
+		id = 2;//EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerModEntity(EntityChainGunShot.class, "ChainGun Shot", id, this, 64, 20, true);
+		//EntityRegistry.registerGlobalEntityID(EntityChainGunShot.class, "ChainGun Shot", id);
+
 		//id = EntityRegistry.findGlobalUniqueEntityId();
 		//EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
 		//EntityRegistry.registerGlobalEntityID(EntityGluon.class, "Gluon", id);
@@ -525,6 +531,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		proxy.addDonatorRender();
 
 		TileEntityBiomePainter.buildBiomeList();
+		ChunkProviderChroma.triggerStructureGen();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();

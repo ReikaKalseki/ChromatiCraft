@@ -11,14 +11,13 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.Random;
 
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class LocksGenerator extends DimensionStructureGenerator {
 
 	@Override
-	public void generate(World world, int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	public void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 
 	}
 }

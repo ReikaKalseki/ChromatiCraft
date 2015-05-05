@@ -18,7 +18,7 @@ import net.minecraft.world.IBlockAccess;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.Block.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {

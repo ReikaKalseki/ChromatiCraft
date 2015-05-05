@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Block.BlockStructureShield;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;

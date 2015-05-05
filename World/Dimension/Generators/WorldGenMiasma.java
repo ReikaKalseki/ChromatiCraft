@@ -14,7 +14,7 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
-import Reika.ChromatiCraft.Block.BlockDimensionDeco.Types;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.Types;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 

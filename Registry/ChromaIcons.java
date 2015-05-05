@@ -51,7 +51,8 @@ public enum ChromaIcons {
 	NODE("node"),
 	TURBO("turbo"),
 	TRIDOT("tridot-strip"),
-	PURPLESPIN("purplespin");
+	PURPLESPIN("purplespin"),
+	ROSES("roses");
 
 	private IIcon icon;
 	private final String iconName;

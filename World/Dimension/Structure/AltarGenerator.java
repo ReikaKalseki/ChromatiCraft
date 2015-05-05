@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -29,7 +28,7 @@ public class AltarGenerator extends DimensionStructureGenerator {
 	int lastPosY;
 
 	@Override
-	public void generate(World world, int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	public void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 
 		posY = 10+rand.nextInt(30);
 		posY = 80;
@@ -40,11 +39,11 @@ public class AltarGenerator extends DimensionStructureGenerator {
 			if (rand.nextInt(3) > 0)
 				li.add(ForgeDirection.VALID_DIRECTIONS[i]);
 		}
-		this.recursiveGeneratePaths(world, chunkX, posY, chunkZ, rand, li, 0, 17);
+		this.recursiveGeneratePaths(chunkX, posY, chunkZ, rand, li, 0, 17);
 
 	}
 
-	private void recursiveGeneratePaths(World world, int x, int y, int z, Random rand, ArrayList<ForgeDirection> li, int depth, int step) {
+	private void recursiveGeneratePaths(int x, int y, int z, Random rand, ArrayList<ForgeDirection> li, int depth, int step) {
 		if (depth > 2)
 			return;
 		for (ForgeDirection dir : li) {
@@ -61,7 +60,7 @@ public class AltarGenerator extends DimensionStructureGenerator {
 			for (int i = 2; i < 6; i++) {
 				ForgeDirection dir2 = ForgeDirection.VALID_DIRECTIONS[i];
 				if (dir2 != dir.getOpposite() && rand.nextInt(1+step*0) == 0) {
-					this.recursiveGeneratePaths(world, dx2, y, dz2, rand, ReikaJavaLibrary.makeListFrom(dir2), depth+1, 5);
+					this.recursiveGeneratePaths(dx2, y, dz2, rand, ReikaJavaLibrary.makeListFrom(dir2), depth+1, 5);
 				}
 			}
 
@@ -69,7 +68,7 @@ public class AltarGenerator extends DimensionStructureGenerator {
 				for (int i = 2; i < 6; i++) {
 					ForgeDirection dir2 = ForgeDirection.VALID_DIRECTIONS[i];
 					if (rand.nextInt(1+step*0) == 0) {
-						this.recursiveGeneratePaths(world, dx2, y+11, dz2, rand, ReikaJavaLibrary.makeListFrom(dir2), depth+1, 5);
+						this.recursiveGeneratePaths(dx2, y+11, dz2, rand, ReikaJavaLibrary.makeListFrom(dir2), depth+1, 5);
 					}
 				}
 			}

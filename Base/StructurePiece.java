@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import net.minecraft.world.World;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public abstract class StructurePiece {
 
-	public abstract void generate(World world, int x, int y, int z);
+	public abstract void generate(ChunkSplicedGenerationCache world, int x, int y, int z);
 
 }
