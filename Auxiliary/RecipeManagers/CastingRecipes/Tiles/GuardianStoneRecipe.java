@@ -37,4 +37,9 @@ public class GuardianStoneRecipe extends PylonRecipe {
 		return 4;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
 }

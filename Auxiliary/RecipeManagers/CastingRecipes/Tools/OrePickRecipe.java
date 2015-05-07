@@ -25,4 +25,9 @@ public class OrePickRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.BROWN, -1, -1, 1);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 2;
+	}
+
 }

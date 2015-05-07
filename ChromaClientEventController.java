@@ -52,7 +52,9 @@ import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -73,13 +75,14 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Event.EntityRenderingLoopEvent;
-import Reika.DragonAPI.Instantiable.Event.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
-import Reika.DragonAPI.Instantiable.Event.NightVisionBrightnessEvent;
-import Reika.DragonAPI.Instantiable.Event.RenderFirstPersonItemEvent;
-import Reika.DragonAPI.Instantiable.Event.RenderItemInSlotEvent;
-import Reika.DragonAPI.Instantiable.Event.TileEntityRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -105,6 +108,22 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void customCreativeTab(CreativeTabGuiRenderEvent evt) {
+		if (evt.tab instanceof TabChromatiCraft || evt.tab instanceof FragmentTab) {
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ALPHA.apply();
+			String s = evt.tab.hasSearchBar() ? "Textures/GUIs/creativetab_search.png" : "Textures/GUIs/creativetab.png";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+			evt.gui.drawTexturedModalRect(evt.gui.guiLeft, evt.gui.guiTop, 0, 0, evt.guiXSize, evt.guiYSize);
+			BlendMode.DEFAULT.apply();
+			evt.gui.drawTexturedModalRect(evt.gui.guiLeft, evt.gui.guiTop, 0, 0, evt.guiXSize, evt.guiYSize);
+			ChromaFontRenderer.FontType.GUI.drawString(evt.tab.getTabLabel(), evt.gui.guiLeft+4, evt.gui.guiTop+5, 0xffffff);
+			GL11.glDisable(GL11.GL_BLEND);
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent

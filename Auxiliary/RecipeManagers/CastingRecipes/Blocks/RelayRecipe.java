@@ -11,12 +11,13 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class RelayRecipe extends MultiBlockCastingRecipe {
+public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
 
 	public RelayRecipe(CrystalElement e) {
 		super(ChromaBlocks.RELAY.getStackOfMetadata(e.ordinal()), ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));

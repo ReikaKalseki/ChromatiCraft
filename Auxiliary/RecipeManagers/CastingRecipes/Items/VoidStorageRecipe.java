@@ -62,4 +62,9 @@ public class VoidStorageRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.chromaDust, 4, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 10; //1 drive bay
+	}
+
 }

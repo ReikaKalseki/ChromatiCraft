@@ -28,4 +28,9 @@ public class HeatLilyRecipe extends TempleCastingRecipe {
 		return 3;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
+
 }

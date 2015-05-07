@@ -29,4 +29,9 @@ public class CrystalFocusRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getChargedShard(CrystalElement.PURPLE), 2, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 32;
+	}
+
 }

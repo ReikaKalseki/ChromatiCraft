@@ -22,4 +22,9 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 		this.addRunes(r.getRunes());
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
+
 }

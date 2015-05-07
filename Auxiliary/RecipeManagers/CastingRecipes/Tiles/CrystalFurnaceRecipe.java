@@ -53,4 +53,9 @@ public class CrystalFurnaceRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.chromaIngot, -4, -2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 8;
+	}
+
 }

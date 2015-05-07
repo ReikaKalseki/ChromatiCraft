@@ -14,13 +14,14 @@ import java.util.Collection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
-public class RepeaterTurboRecipe extends PylonRecipe {
+public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRecipe {
 
 	public RepeaterTurboRecipe() {
 		super(ChromaTiles.REPEATER.getCraftedProduct(), getOutputItem());

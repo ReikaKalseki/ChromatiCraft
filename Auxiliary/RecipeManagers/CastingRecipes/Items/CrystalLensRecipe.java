@@ -30,4 +30,9 @@ public class CrystalLensRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(this.getShard(CrystalElement.BLUE), 0, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 64;
+	}
+
 }

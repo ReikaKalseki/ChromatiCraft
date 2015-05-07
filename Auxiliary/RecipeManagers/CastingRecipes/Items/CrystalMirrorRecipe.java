@@ -32,4 +32,10 @@ public class CrystalMirrorRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.iron_ingot, 2, 2);
 	}
 
+
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
+
 }

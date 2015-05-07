@@ -12,11 +12,12 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class CrystalStarRecipe extends MultiBlockCastingRecipe {
+public class CrystalStarRecipe extends MultiBlockCastingRecipe implements ShardGroupingRecipe {
 
 	public CrystalStarRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

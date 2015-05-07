@@ -96,6 +96,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
@@ -107,6 +108,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
@@ -132,6 +134,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void burnRainbowLeaves(BlockConsumedByFireEvent evt) {
+		if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {
+			ReikaMystcraftHelper.addInstabilityForAge(evt.world, (short)4);
+		}
 	}
 
 	@SubscribeEvent

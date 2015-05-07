@@ -8,7 +8,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class StructureCalculator implements Runnable {
 
@@ -66,7 +68,7 @@ public class StructureCalculator implements Runnable {
 
 		int structureOriginX = 0;//ReikaRandomHelper.getRandomPlusMinus(0, 10000);
 		int structureOriginZ = 0;//ReikaRandomHelper.getRandomPlusMinus(0, 10000);
-		float structureAngleOrigin = rand.nextFloat()*360;
+		float structureAngleOrigin = 0;//rand.nextFloat()*360;
 
 		for (StructurePair s : ChunkProviderChroma.structures) {
 			float ang = structureAngleOrigin+s.color.ordinal()*22.5F;
@@ -74,6 +76,9 @@ public class StructureCalculator implements Runnable {
 			int x = structureOriginX+(int)(r*MathHelper.cos(ang));
 			int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 			s.generator.getGenerator().calculate(x, z, s.color, rand);
+			if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+				ReikaJavaLibrary.pConsole("CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+x+", "+z);
+			}
 		}
 	}
 

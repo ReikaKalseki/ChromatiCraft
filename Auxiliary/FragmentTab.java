@@ -23,6 +23,19 @@ public class FragmentTab extends SortedCreativeTab {
 
 	public FragmentTab(String name) {
 		super(name);
+		this.setNoTitle();
+	}
+
+	@Override
+	public boolean hasSearchBar()
+	{
+		return true;
+	}
+
+	@Override
+	public int getSearchbarWidth()
+	{
+		return 73;//super.getSearchbarWidth();
 	}
 
 	@Override

@@ -57,4 +57,9 @@ public class RecipeEnderTNT extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.LIME, 500);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 64;
+	}
+
 }

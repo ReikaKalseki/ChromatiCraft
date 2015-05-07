@@ -45,4 +45,9 @@ public class ElementUnitRecipe extends MultiBlockCastingRecipe {
 		ProgressStage.STONES.stepPlayerTo(ep);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
+
 }

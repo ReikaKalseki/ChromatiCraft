@@ -161,7 +161,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final TabChromatiCraft tabChromaGen = new TabChromatiCraft("ChromatiCraft Worldgen");
 	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft("ChromatiCraft Tools");
 	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft("ChromatiCraft Items");
-	public static final FragmentTab tabChromaFragments = new FragmentTab("ChromatiCraft Fragments");
+	public static final FragmentTab tabChromaFragments = new FragmentTab("CC Info Fragments");
 
 	static final Random rand = new Random();
 

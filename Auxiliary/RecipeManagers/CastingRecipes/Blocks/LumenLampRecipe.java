@@ -29,4 +29,14 @@ public class LumenLampRecipe extends TempleCastingRecipe {
 		return ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SLS", "GSG", 'G', Blocks.glass, 'L', Blocks.redstone_lamp, 'S', getShard(e));
 	}
 
+	@Override
+	public int getNumberProduced() {
+		return 16;
+	}
+
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
 }

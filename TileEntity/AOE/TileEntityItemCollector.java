@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -18,14 +19,17 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.LocationCached;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityItemCollector extends InventoriedRelayPowered implements LocationCached {
@@ -33,8 +37,11 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	private int experience = 0;
 	public boolean canIntake = false;
 
-	public static final int MAXRANGE = 16;
-	public static final int MAXYRANGE = 3;
+	public static final int MAXRANGE = 24;
+	public static final int MAXYRANGE = 4;
+
+	private ItemStack[] filter = new ItemStack[2*9];
+	private final StepTimer scanTimer = new StepTimer(200);
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -56,12 +63,12 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return slot < 27;
+		return true;
 	}
 
 	@Override
 	public int getSizeInventory() {
-		return 45;
+		return 27;
 	}
 
 	@Override
@@ -82,6 +89,23 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		if (canIntake && !world.isRemote) {
+			scanTimer.update();
+			if (scanTimer.checkCap()) {
+				this.doScan(world, x, y, z);
+			}
+		}
+	}
+
+	private void doScan(World world, int x, int y, int z) {
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-MAXRANGE, y-MAXYRANGE, z-MAXRANGE, x+MAXRANGE+1, y+MAXYRANGE+1, z+MAXRANGE+1);
+		List<Entity> li = world.selectEntitiesWithinAABB(Entity.class, box, ReikaEntityHelper.itemOrXPSelector);
+		for (Entity e : li) {
+			if (this.checkAbsorb(e)) {
+				e.setDead();
+			}
+		}
 	}
 
 	@Override
@@ -89,6 +113,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		WorldLocation loc = new WorldLocation(this);
 		if (!cache.contains(loc))
 			cache.add(loc);
+		canIntake = true;
 	}
 
 	@Override
@@ -136,8 +161,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	private boolean canAbsorbItem(ItemStack is) {
-		for (int i = 27; i < this.getSizeInventory(); i++) {
-			if (ReikaItemHelper.matchStacks(is, inv[i]) && ItemStack.areItemStackTagsEqual(is, inv[i])) {
+		for (int i = 0; i < filter.length; i++) {
+			if (ReikaItemHelper.matchStacks(is, filter[i]) && ItemStack.areItemStackTagsEqual(is, filter[i])) {
 				return true;
 			}
 			else {
@@ -228,6 +253,38 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBTTagCompound fil = new NBTTagCompound();
+		for (int i = 0; i < filter.length; i++) {
+			ItemStack is = filter[i];
+			if (is != null) {
+				NBTTagCompound tag = new NBTTagCompound();
+				is.writeToNBT(tag);
+				fil.setTag("filter_"+i, tag);
+			}
+		}
+		NBT.setTag("filter", fil);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		filter = new ItemStack[filter.length];
+		NBTTagCompound fil = NBT.getCompoundTag("filter");
+		for (int i = 0; i < filter.length; i++) {
+			String name = "filter_"+i;
+			if (fil.hasKey(name)) {
+				NBTTagCompound tag = fil.getCompoundTag(name);
+				ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+				filter[i] = is;
+			}
+		}
+	}
+
+	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
 		return required.contains(e);
 	}
@@ -240,6 +297,15 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
 		return true;
+	}
+
+	public void setMapping(int slot, ItemStack is) {
+		filter[slot] = is;
+		this.syncAllData(true);
+	}
+
+	public ItemStack getMapping(int slot) {
+		return filter[slot] != null ? filter[slot].copy() : null;
 	}
 
 }

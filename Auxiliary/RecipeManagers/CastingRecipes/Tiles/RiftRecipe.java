@@ -43,4 +43,9 @@ public class RiftRecipe extends PylonRecipe {
 		return 4;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 8;
+	}
+
 }

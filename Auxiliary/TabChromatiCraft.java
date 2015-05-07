@@ -20,6 +20,7 @@ public class TabChromatiCraft extends RegistryEnumCreativeTab {
 
 	public TabChromatiCraft(String tabID) {
 		super(tabID);
+		this.setNoTitle();
 	}
 
 	@Override

@@ -11,10 +11,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class StandRecipe extends TempleCastingRecipe {
+public class StandRecipe extends TempleCastingRecipe implements CoreRecipe {
 
 	public StandRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
@@ -28,6 +29,11 @@ public class StandRecipe extends TempleCastingRecipe {
 	@Override
 	public int getExperience() {
 		return 2*super.getExperience();
+	}
+
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 24;
 	}
 
 }

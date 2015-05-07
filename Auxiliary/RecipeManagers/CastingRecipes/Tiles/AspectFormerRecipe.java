@@ -44,4 +44,9 @@ public class AspectFormerRecipe extends MultiBlockCastingRecipe {
 		return super.canRunRecipe(ep) && (!ChromaOptions.HARDTHAUM.getState() || ReikaThaumHelper.isResearchComplete(ep, "INFUSION"));
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 8;
+	}
+
 }

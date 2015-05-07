@@ -47,4 +47,9 @@ public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, 15), -4, -2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 256;
+	}
+
 }

@@ -99,4 +99,9 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 		return input;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 8;
+	}
+
 }

@@ -53,6 +53,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Interfaces.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -78,6 +79,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private RecipeType tier = RecipeType.CRAFTING;
 
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
+	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
 
 	public RecipeType getTier() {
 		return tier;
@@ -437,6 +439,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			li.appendTag(tag);
 		}
 		NBT.setTag("recipes", li);
+
+		li = new NBTTagList();
+		for (ItemStack is : craftedItems.keySet()) {
+			NBTTagCompound tag = new NBTTagCompound();
+			is.writeToNBT(tag);
+			tag.setInteger("total", craftedItems.get(is));
+			li.appendTag(tag);
+		}
+		NBT.setTag("counts", li);
 	}
 
 	private void readRecipes(NBTTagCompound NBT) {
@@ -446,6 +457,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			NBTTagCompound tag = (NBTTagCompound)o;
 			ItemStack is = ItemStack.loadItemStackFromNBT(tag);
 			completedRecipes.add(new KeyedItemStack(is));
+		}
+
+		craftedItems.clear();
+		li = NBT.getTagList("counts", NBTTypes.COMPOUND.ID);
+		for (Object o : li.tagList) {
+			NBTTagCompound tag = (NBTTagCompound)o;
+			ItemStack is = ItemStack.loadItemStackFromNBT(tag);
+			int amt = tag.getInteger("total");
+			craftedItems.put(is, amt);
 		}
 	}
 
@@ -484,7 +504,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
-			this.addXP(activeRecipe.getExperience());
+			this.addXP((int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe)));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 				HashMap<WorldLocation, ItemStack> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
@@ -521,7 +541,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				break;
 			}
 		}
-		inv[9] = ReikaItemHelper.getSizedItemStack(activeRecipe.getOutput(), count);
+		ItemStack out = activeRecipe.getOutput();
+		inv[9] = ReikaItemHelper.getSizedItemStack(out, count);
+		this.addCrafted(out, count);
 		if (inv[9] != null) {
 			if (NBTin != null) {
 				ReikaNBTHelper.combineNBT(NBTin, inv[9].stackTagCompound);
@@ -546,6 +568,21 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 		if (worldObj.isRemote)
 			this.particleBurst();
+	}
+
+	private float getXPModifier(CastingRecipe recipe) {
+		Integer get = craftedItems.get(recipe.getOutput());
+		if (get != null && get.intValue() >= recipe.getPenaltyThreshold()) {
+			float mult = recipe.getPenaltyMultiplier();
+			return mult > 0 ? Math.max(0.05F, 65536F/(get.intValue()*get.intValue()*mult)) : 0;
+		}
+		return 1;
+	}
+
+	private void addCrafted(ItemStack is, int count) {
+		Integer get = craftedItems.get(is);
+		int has = get != null ? get.intValue() : 0;
+		craftedItems.put(is, has+count);
 	}
 
 	public void breakBlock() {

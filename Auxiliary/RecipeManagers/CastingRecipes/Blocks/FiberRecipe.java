@@ -14,6 +14,7 @@ import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
+@Deprecated
 public class FiberRecipe extends TempleCastingRecipe {
 
 	public FiberRecipe(ItemStack out, IRecipe recipe) {

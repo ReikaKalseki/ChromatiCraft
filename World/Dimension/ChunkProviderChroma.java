@@ -34,7 +34,9 @@ import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
@@ -161,6 +163,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private void createDecorators() {
 		//decorators.add(new WorldGenMiasma());
 		decorators.add(new WorldGenFissure());
+		decorators.add(new WorldGenTreeCluster());
+		decorators.add(new WorldGenLightedTree());
 		decorators.add(new WorldGenFloatstone());
 		decorators.add(new WorldGenMoonPool());
 		decorators.add(new WorldGenFireJet());
@@ -299,7 +303,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return 127 + (bp.getBump(mx, mz)+bp.getBump(mxp, mz)+bp.getBump(mxm, mz)+bp.getBump(mx, mzp)+bp.getBump(mx, mzm)) / 5 / 16;
 	}
 
-	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData) {
+	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData, int dy) {
 		double d0 = 0.03125D;
 		stoneNoise = noiseGen4.func_151599_a(stoneNoise, chunkX * 16, chunkZ * 16, 16, 16, d0 * 2.0D, d0 * 2.0D, 1.0D);
 
@@ -307,26 +311,26 @@ public class ChunkProviderChroma implements IChunkProvider {
 			for (int dz = 0; dz < 16; dz++) {
 				int x = chunkX*16+dx;
 				int z = chunkZ*16+dz;
-				BiomeGenBase biome = biomeData[dz + dx * 16];
 				int d = (dx*16+dz);
+				BiomeGenBase biome = biomeData[d];
 				int posIndex = d*columnData.length/256;
 
 				this.generateBedrockLayer(x, z, posIndex, columnData, metaData);
-				this.generateSandBeaches(x, z, posIndex, columnData, metaData);
-				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData);
+				this.generateSandBeaches(x, z, posIndex, columnData, metaData, dy);
+				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData, dy);
 			}
 		}
 	}
 
-	private void generateSandBeaches(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
-		Block b = columnData[62+posIndex];
-		Block bb = columnData[61+posIndex];
-		Block ba = columnData[63+posIndex];
+	private void generateSandBeaches(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy) {
+		Block b = columnData[62+dy+posIndex];
+		Block bb = columnData[61+dy+posIndex];
+		Block ba = columnData[63+dy+posIndex];
 		if (b == Blocks.stone && ba == null && bb == Blocks.stone) {
-			columnData[62+posIndex] = Blocks.sand;
+			columnData[62+dy+posIndex] = Blocks.sand;
 		}
 
-		for (int y = 66; y > 0; y--) {
+		for (int y = 66+dy; y > 0; y--) {
 			b = columnData[y+posIndex];
 			ba = columnData[y+1+posIndex];
 			if (b == Blocks.stone && ba == Blocks.water) {
@@ -335,7 +339,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		}
 	}
 
-	private void generateSurfaceGrass(int x, int z, int posIndex, Block[] columnData, byte[] metaData) {
+	private void generateSurfaceGrass(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy) {
 		int surface = 0;
 		int filler = 0;
 		int maxSurface = 1;
@@ -396,8 +400,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 		Block[] ablock = new Block[65536];
 		byte[] abyte = new byte[65536];
 		this.generateColumnData(chunkX, chunkZ, ablock);
+		int dy = 40;
+		ablock = this.shiftTerrainGen(ablock, dy);
 		biomesForGeneration = chunkManager.loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
-		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration);
+		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, dy);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
 
@@ -415,6 +421,23 @@ public class ChunkProviderChroma implements IChunkProvider {
 		//chunk.isTerrainPopulated = true; //use this to disable all populators
 
 		return chunk;
+	}
+
+	private Block[] shiftTerrainGen(Block[] ablock, int dy) {
+		Block[] temp = new Block[ablock.length];
+		for (int dx = 0; dx < 16; dx++) {
+			for (int dz = 0; dz < 16; dz++) {
+				int d = (dx*16+dz);
+				int posIndex = d*ablock.length/256;
+				for (int j = 255-dy; j >= 0; j--) {
+					temp[posIndex+j+dy] = ablock[posIndex+j];
+				}
+				for (int j = 0; j < dy; j++) {
+					temp[posIndex+j] = Blocks.stone;
+				}
+			}
+		}
+		return temp;
 	}
 
 	private void runGenerators(int chunkX, int chunkZ, Block[] ablock, byte[] abyte) {

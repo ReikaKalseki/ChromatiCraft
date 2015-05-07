@@ -46,4 +46,9 @@ public class FarmerRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.YELLOW, 6000);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 32;
+	}
+
 }

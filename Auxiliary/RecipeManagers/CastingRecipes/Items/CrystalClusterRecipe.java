@@ -11,12 +11,13 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
-public class CrystalClusterRecipe extends TempleCastingRecipe {
+public class CrystalClusterRecipe extends TempleCastingRecipe implements ShardGroupingRecipe {
 
 	public CrystalClusterRecipe(ItemStack out) {
 		super(out, getRecipe(out));

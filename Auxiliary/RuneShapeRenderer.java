@@ -122,7 +122,7 @@ public class RuneShapeRenderer {
 		v5.draw();
 
 		if (!map.isEmpty())
-			Minecraft.getMinecraft().fontRenderer.drawString("y="+y, midx+93, midy-4, 0x000000);
+			Minecraft.getMinecraft().fontRenderer.drawString("y="+y, midx+93, midy-4, 0xffffff);
 
 		GL11.glPopMatrix();
 	}

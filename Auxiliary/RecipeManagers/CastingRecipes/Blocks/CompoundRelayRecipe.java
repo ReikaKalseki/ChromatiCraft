@@ -12,10 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
-public class CompoundRelayRecipe extends MultiBlockCastingRecipe {
+public class CompoundRelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
 
 	public CompoundRelayRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

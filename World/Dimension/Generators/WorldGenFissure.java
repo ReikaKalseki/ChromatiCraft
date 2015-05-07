@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -61,14 +62,18 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 				for (int k = -r; k <= r; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					world.setBlock(dx, dy, dz, Blocks.air);
-					for (int d = 0; d < 6; d++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
-						int dx2 = dx+dir.offsetX;
-						int dy2 = dy+dir.offsetY;
-						int dz2 = dz+dir.offsetZ;
-						if (world.getBlock(dx2, dy2, dz2).getMaterial() == Material.rock)
-							world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
+					if (!(world.getBlock(dx, dy, dz) == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.getBlockMetadata(dx, dy, dz) >= 8)) {
+						world.setBlock(dx, dy, dz, Blocks.air);
+						for (int d = 0; d < 6; d++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
+							int dx2 = dx+dir.offsetX;
+							int dy2 = dy+dir.offsetY;
+							int dz2 = dz+dir.offsetZ;
+							Block b = world.getBlock(dx2, dy2, dz2);
+							int m = world.getBlockMetadata(dx2, dy2, dz2);
+							if (b.getMaterial() == Material.rock && (b != ChromaBlocks.STRUCTSHIELD.getBlockInstance() || m < 8))
+								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
+						}
 					}
 				}
 			}

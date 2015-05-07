@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipeCrystalRepeater;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -39,7 +40,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PortalRecipe extends PylonRecipe {
+public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 
 	public PortalRecipe(ItemStack out, ItemStack main, RecipeCrystalRepeater repeater) {
 		super(out, main);
@@ -186,6 +187,21 @@ public class PortalRecipe extends PylonRecipe {
 	@Override
 	public int getDuration() {
 		return 2400;
+	}
+
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 1;
+	}
+
+	@Override
+	public int getPenaltyThreshold() {
+		return 1;
+	}
+
+	@Override
+	public float getPenaltyMultiplier() {
+		return 0;
 	}
 
 }

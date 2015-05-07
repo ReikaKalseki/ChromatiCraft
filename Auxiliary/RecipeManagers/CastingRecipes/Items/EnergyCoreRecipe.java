@@ -10,10 +10,11 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class EnergyCoreRecipe extends MultiBlockCastingRecipe {
+public class EnergyCoreRecipe extends MultiBlockCastingRecipe implements ShardGroupingRecipe {
 
 	public EnergyCoreRecipe(ItemStack out, ItemStack main) {
 		super(out, main);

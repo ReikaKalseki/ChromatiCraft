@@ -31,7 +31,7 @@ public class BlockStructureShield extends Block implements ConditionallyUnbreaka
 		CRACK("Crack"),
 		MOSS("Moss"),
 		GLASS("Glass"),
-		WINDOW("Window"),
+		LIGHT("Window"),
 		CRACKS("Cracks");
 
 		public final String name;
@@ -49,11 +49,15 @@ public class BlockStructureShield extends Block implements ConditionallyUnbreaka
 		}
 
 		public boolean isTransparent(ForgeDirection side) {
-			return this == CLOAK || this == CRACK || this == GLASS || this == WINDOW || this == CRACKS;
+			return this == CLOAK || this == CRACK || this == GLASS || this == CRACKS;
 		}
 
 		public boolean isTransparentToLight() {
-			return this == GLASS || this == WINDOW;
+			return this == GLASS;
+		}
+
+		public int getLightValue() {
+			return this == LIGHT ? 15 : 0;
 		}
 
 		public boolean isMineable() {
@@ -69,6 +73,12 @@ public class BlockStructureShield extends Block implements ConditionallyUnbreaka
 		this.setResistance(6000);
 		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		stepSound = soundTypeStone;
+	}
+
+	@Override
+	public int getLightValue(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		return BlockType.list[meta%8].getLightValue();
 	}
 
 	@Override

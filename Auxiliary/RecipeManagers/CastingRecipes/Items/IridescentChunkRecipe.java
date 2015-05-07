@@ -29,4 +29,9 @@ public class IridescentChunkRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.beaconDust, 2, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 768;
+	}
+
 }

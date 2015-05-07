@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.GUI;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -77,6 +78,23 @@ public class GuiItemCollector extends GuiChromaBase
 		int var6 = (height - ySize) / 2;
 		this.drawTexturedModalRect(var5, var6, 0, 0, xSize, inventoryRows * 18 + 17);
 		this.drawTexturedModalRect(var5, var6 + inventoryRows * 18 + 17, 0, 126, xSize, 96);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
+		fontRendererObj.drawString("Filter", xSize-32, 79, 0xffffff);
+
+		for (int i = 0; i < 2; i++) {
+			for (int k = 0; k < 9; k++) {
+				ItemStack is = vac.getMapping(i*9+k);
+				if (is != null) {
+					int dx = 8+k*18;
+					int dy = 90+i*18;
+					api.drawItemStack(itemRender, fontRendererObj, is, dx, dy);
+				}
+			}
+		}
 	}
 
 	@Override

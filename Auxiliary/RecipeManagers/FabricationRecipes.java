@@ -63,7 +63,11 @@ public class FabricationRecipes {
 		ElementTagCompound tag2 = tag.copy();
 		tag2.addTag(CrystalElement.WHITE, 500);
 		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal()), tag2);
-		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.WINDOW.ordinal()), tag2);
+
+		tag2 = tag.copy();
+		tag2.addTag(CrystalElement.WHITE, 500);
+		tag2.addTag(CrystalElement.BLUE, 500);
+		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.LIGHT.ordinal()), tag2);
 
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.GREEN, 500);

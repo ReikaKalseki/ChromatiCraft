@@ -62,4 +62,9 @@ public class LampControlRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.BLUE, 4, -1, 0);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
 }

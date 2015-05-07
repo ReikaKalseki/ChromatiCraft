@@ -14,12 +14,13 @@ import java.util.Collection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
-public class RuneRecipe extends CastingRecipe {
+public class RuneRecipe extends CastingRecipe implements CoreRecipe {
 
 	private final boolean isBoosted;
 

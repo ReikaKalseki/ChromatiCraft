@@ -42,4 +42,9 @@ public class AspectJarRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.CYAN, 2000);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 32;
+	}
+
 }

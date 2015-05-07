@@ -26,4 +26,9 @@ public class OreSilkerRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.LIME, -1, -1, 0);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
 }

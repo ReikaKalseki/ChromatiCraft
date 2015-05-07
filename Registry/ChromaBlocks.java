@@ -64,6 +64,8 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLeaf;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLockKey;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -136,7 +138,9 @@ public enum ChromaBlocks implements BlockEnum {
 	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2"),
 	COLORLOCK(BlockColoredLock.class,			ItemBlockDyeTypes.class,		"chroma.colorlock"),
 	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
-	LOCKKEY(BlockLockKey.class,													"chroma.lockkey");
+	LOCKKEY(BlockLockKey.class,													"chroma.lockkey"),
+	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
+	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog");
 
 	private Class blockClass;
 	private String blockName;
@@ -187,6 +191,10 @@ public enum ChromaBlocks implements BlockEnum {
 			return Material.tnt;
 		case PORTAL:
 			return Material.portal;
+		case GLOWLOG:
+			return Material.wood;
+		case GLOWLEAF:
+			return Material.leaves;
 		default:
 			return Material.rock;
 		}
@@ -238,6 +246,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return new Class[]{boolean.class};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Class[0];
+		if (this == GLOWLOG)
+			return new Class[0];
 		return new Class[]{Material.class};
 	}
 
@@ -248,6 +258,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this == DECAY || this == DYELEAF)
 			return new Object[]{this == DECAY};
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
+			return new Object[0];
+		if (this == GLOWLOG)
 			return new Object[0];
 		return new Object[]{this.getBlockMaterial()};
 	}

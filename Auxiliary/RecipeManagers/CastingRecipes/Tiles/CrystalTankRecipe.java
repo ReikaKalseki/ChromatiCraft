@@ -51,4 +51,9 @@ public class CrystalTankRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.chromaIngot, 4, 4);
 		this.addAuxItem(ChromaStacks.chromaIngot, 4, -4);
 	}
+
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
 }

@@ -58,4 +58,9 @@ public class ItemCollectorRecipe extends PylonRecipe {
 		this.addAuraRequirement(CrystalElement.BROWN, 2000);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 8;
+	}
+
 }

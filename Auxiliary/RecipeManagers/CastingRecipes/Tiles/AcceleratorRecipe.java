@@ -53,4 +53,9 @@ public class AcceleratorRecipe extends PylonRecipe {
 		return is;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 64;
+	}
+
 }

@@ -31,4 +31,9 @@ public class UpgradeRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.bindingCrystal, 0, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 16;
+	}
+
 }

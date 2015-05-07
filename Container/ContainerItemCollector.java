@@ -15,7 +15,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Instantiable.GUI.Slot.SlotXItems;
+import Reika.DragonAPI.Instantiable.GUI.Slot.GhostSlot;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerItemCollector extends CoreContainer {
 
@@ -38,11 +39,16 @@ public class ContainerItemCollector extends CoreContainer {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 9; j++) {
 				//this.addSlotToContainer(new GhostSlot(te, 18+i*3+j, dx+26+j*18, dy+i*18));
-				this.addSlotToContainer(new SlotXItems(te, 27+i*9+j, dx+26+j*18, dy+i*18+9, 1));
+				this.addSlotToContainer(new GhostSlot(te, 27+i*9+j, dx+26+j*18, dy+i*18+9));
 			}
 		}
 
 		this.addPlayerInventoryWithOffset(player, 0, 55);
+	}
+
+	@Override
+	public boolean allowShiftClicking(EntityPlayer player, int slot, ItemStack stack) {
+		return false;
 	}
 
 	@Override
@@ -55,8 +61,13 @@ public class ContainerItemCollector extends CoreContainer {
 		}
 		 */
 
-		if (action == 4 && slot >= 18 && slot < tile.getSizeInventory())
+		if (slot >= tile.getSizeInventory() && slot < tile.getSizeInventory()+2*9) {
 			action = 0;
+			ItemStack held = ep.inventory.getItemStack();
+			tile.setMapping(slot-tile.getSizeInventory(), ReikaItemHelper.getSizedItemStack(held, 1));
+			//this.detectAndSendChanges();
+			return held;
+		}
 
 		ItemStack is = super.slotClick(slot, par2, action, ep);
 		InventoryPlayer ip = ep.inventory;

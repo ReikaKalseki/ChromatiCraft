@@ -26,4 +26,9 @@ public class MultiToolRecipe extends TempleCastingRecipe {
 		this.addRune(CrystalElement.BROWN, xyz[0], xyz[1], xyz[2]);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 2;
+	}
+
 }

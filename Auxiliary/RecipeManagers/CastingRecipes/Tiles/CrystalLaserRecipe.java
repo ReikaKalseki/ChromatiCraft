@@ -37,4 +37,9 @@ public class CrystalLaserRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.redstone_block, 0, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 32;
+	}
+
 }

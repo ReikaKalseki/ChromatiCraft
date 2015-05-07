@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -57,7 +58,7 @@ public class CastingRecipe {
 	private IRecipe recipe;
 	private ChromaResearch fragment;
 
-	public CastingRecipe(ItemStack out, IRecipe recipe) {
+	protected CastingRecipe(ItemStack out, IRecipe recipe) {
 		this(out, RecipeType.CRAFTING, recipe);
 	}
 
@@ -227,6 +228,21 @@ public class CastingRecipe {
 			}
 		}
 		return c;
+	}
+
+	/** This is "per ItemStack", and is number of cycles (so total crafted number = amt crafted * this) */
+	public int getTypicalCraftedAmount() {
+		return this instanceof CoreRecipe ? Integer.MAX_VALUE : 1;
+	}
+
+	/** This is "per ItemStack", and is number of cycles (so total crafted number = amt crafted * this) */
+	public int getPenaltyThreshold() {
+		return this instanceof CoreRecipe ? Integer.MAX_VALUE : this.getTypicalCraftedAmount()*3/4;
+	}
+
+	/** Return zero to make all over-threshold yield zero XP */
+	public float getPenaltyMultiplier() {
+		return 1;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {

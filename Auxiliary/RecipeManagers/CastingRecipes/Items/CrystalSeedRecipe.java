@@ -37,4 +37,9 @@ public class CrystalSeedRecipe extends TempleCastingRecipe {
 		return enhanced ? 8 : 1;
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 4;
+	}
+
 }

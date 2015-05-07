@@ -54,4 +54,9 @@ public class IridescentCrystalRecipe extends PylonRecipe {
 		//ProgressStage.POWERCRYSTAL.stepPlayerTo(ep);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 128;
+	}
+
 }

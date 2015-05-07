@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuiAuraPouch extends GuiContainer {
 
@@ -48,12 +49,17 @@ public class GuiAuraPouch extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float ptick, int mx, int my) {
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ALPHA.apply();
 		String var4 = "/Reika/ChromatiCraft/Textures/GUIs/basicstorage_small.png";
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);
 		int var5 = (width - xSize) / 2;
 		int var6 = (height - ySize) / 2;
 		this.drawTexturedModalRect(var5, var6, 0, 0, xSize, ySize);
+		BlendMode.DEFAULT.apply();
+		this.drawTexturedModalRect(var5, var6, 0, 0, xSize, ySize);
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 }

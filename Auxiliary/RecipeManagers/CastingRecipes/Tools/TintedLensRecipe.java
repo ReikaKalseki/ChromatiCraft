@@ -31,4 +31,9 @@ public class TintedLensRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.getShard(e), 0, 2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 64;
+	}
+
 }

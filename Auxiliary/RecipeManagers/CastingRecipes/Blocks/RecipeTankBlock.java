@@ -28,4 +28,19 @@ public class RecipeTankBlock extends MultiBlockCastingRecipe {
 		this.addAuxItem(Blocks.glass, -2, -2);
 	}
 
+	@Override
+	public int getTypicalCraftedAmount() {
+		return 256;
+	}
+
+	@Override
+	public int getPenaltyThreshold() {
+		return super.getPenaltyThreshold()*2/3;
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 4;
+	}
+
 }

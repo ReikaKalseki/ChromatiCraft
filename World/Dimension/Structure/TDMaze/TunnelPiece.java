@@ -20,6 +20,7 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 public class TunnelPiece extends StructurePiece {
 
 	private boolean[] connections = new boolean[6];
+	private boolean lights = false;
 
 	public final int size;
 
@@ -34,6 +35,11 @@ public class TunnelPiece extends StructurePiece {
 
 	public TunnelPiece disconnect(ForgeDirection dir) {
 		connections[dir.ordinal()] = false;
+		return this;
+	}
+
+	public TunnelPiece setLighted() {
+		lights = true;
 		return this;
 	}
 
@@ -60,8 +66,15 @@ public class TunnelPiece extends StructurePiece {
 					boolean tunnel5 = connections[5] && i == size && j != 0 && j != size && k != 0 && k != size;
 					boolean tunnel = tunnel0 || tunnel1 || tunnel2 || tunnel3 || tunnel4 || tunnel5;
 					boolean fill = !tunnel && (i == 0 || i == size || j == 0 || j == size || k == 0 || k == size);
+					boolean light0 = lights && i == 0 && j == size/2 && k == size/2;
+					boolean light1 = lights && i == size && j == size/2 && k == size/2;
+					boolean light2 = lights && j == 0 && i == size/2 && k == size/2;
+					boolean light3 = lights && j == size && i == size/2 && k == size/2;
+					boolean light4 = lights && k == 0 && j == size/2 && i == size/2;
+					boolean light5 = lights && k == size && j == size/2 && i == size/2;
+					boolean light = light0 || light1 || light2 || light3 || light4 || light5;
 					Block b = fill ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : Blocks.air;
-					int meta = fill ? BlockType.STONE.metadata : 0;
+					int meta = fill ? (light ? BlockType.LIGHT.metadata : BlockType.STONE.metadata) : 0;
 					world.setBlock(dx, dy, dz, b, meta);
 				}
 			}
