@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
@@ -122,7 +123,8 @@ public enum ChromaTiles {
 	AURAPOINT("chroma.aurapoint",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAuraPoint.class,		1, "RenderAuraPoint"),
 	DIMENSIONCORE("chroma.dimcore",		ChromaBlocks.PYLON,			TileEntityDimensionCore.class,		6, "RenderDimensionCore"),
 	AUTOMATOR("chroma.automator",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCastingAuto.class,	2, "RenderCastingAuto"),
-	DISPLAY("chroma.display",			ChromaBlocks.TILECRYSTAL,	TileEntityDisplayPoint.class,		1);
+	DISPLAY("chroma.display",			ChromaBlocks.TILECRYSTAL,	TileEntityDisplayPoint.class,		1),
+	MEDISTRIBUTOR("chroma.medistrib",	ChromaBlocks.TILEMODELLED2,	TileEntityMEDistributor.class,		5, "RenderMEDistributor", ModList.APPENG);
 
 	private final Class tile;
 	private final String name;

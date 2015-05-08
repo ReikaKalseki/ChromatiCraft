@@ -160,7 +160,7 @@ public class ItemBulkMover extends ItemChromaTool {
 
 		@Override
 		public int addItems(ItemStack is, int max) {
-			return max-ReikaInventoryHelper.addToInventoryWithLeftover(ReikaItemHelper.getSizedItemStack(is, max), inventory);
+			return max-ReikaInventoryHelper.addToInventoryWithLeftover(ReikaItemHelper.getSizedItemStack(is, max), inventory, false);
 		}
 
 		@Override

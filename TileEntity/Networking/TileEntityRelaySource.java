@@ -53,7 +53,7 @@ public class TileEntityRelaySource extends CrystalReceiverBase {
 
 	@Override
 	public int maxThroughput() {
-		return 2500;
+		return 6000;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class TileEntityRelaySource extends CrystalReceiverBase {
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 300000;
+		return 720000;
 	}
 
 	@Override

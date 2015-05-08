@@ -160,9 +160,9 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	}
 
 	static {
-		smelt.addTag(CrystalElement.ORANGE, 1000);
-		smelt.addTag(CrystalElement.YELLOW, 200);
-		smelt.addTag(CrystalElement.PURPLE, 500);
+		smelt.addTag(CrystalElement.ORANGE, 200);
+		smelt.addTag(CrystalElement.YELLOW, 40);
+		smelt.addTag(CrystalElement.PURPLE, 100);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 12000;
+		return 120000;
 	}
 
 	public static ElementTagCompound smeltTags() {

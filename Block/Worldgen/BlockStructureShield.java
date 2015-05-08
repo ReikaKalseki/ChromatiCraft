@@ -20,9 +20,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.ConditionallyUnbreakable;
+import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 
-public class BlockStructureShield extends Block implements ConditionallyUnbreakable {
+public class BlockStructureShield extends Block implements SemiUnbreakable {
 
 	public static enum BlockType {
 		CLOAK("Cloak"),

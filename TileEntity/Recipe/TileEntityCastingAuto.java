@@ -423,7 +423,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			if (left == 0)
 				return true;
 		}
-		int left = ingredients.addItemsToUnderlyingInventories(is);
+		int left = ingredients.addItemsToUnderlyingInventories(is, false);
 		return left <= 0;
 	}
 

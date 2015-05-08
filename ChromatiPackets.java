@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -432,6 +433,12 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case CHAINGUNEND:
 				EntityChainGunShot.doDestructionParticles(data[0]);
+				break;
+			case METRANSFER:
+				((TileEntityMEDistributor)tile).spawnTransferParticles(world, x, y, z, data[0], data[1]);
+				break;
+			case MEDISTRIBTHRESH:
+				((TileEntityMEDistributor)tile).setThreshold(data[0], data[1]);
 				break;
 			}
 		}

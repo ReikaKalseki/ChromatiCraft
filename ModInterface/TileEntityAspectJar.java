@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.aspects.IAspectContainer;
+import thaumcraft.api.aspects.IAspectSource;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -34,8 +34,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
-@Strippable(value={"thaumcraft.api.aspects.IAspectContainer", "thaumcraft.api.aspects.IEssentiaTransport"})
-public class TileEntityAspectJar extends TileEntityChromaticBase implements IAspectContainer, IEssentiaTransport, NBTTile, HitAction {
+@Strippable(value={"thaumcraft.api.aspects.IAspectSource", "thaumcraft.api.aspects.IEssentiaTransport"})
+public class TileEntityAspectJar extends TileEntityChromaticBase implements IAspectSource, IEssentiaTransport, NBTTile, HitAction {
 
 	public static final int CAPACITY = 500;
 	public static final int CAPACITY_PRIMAL = 6000;

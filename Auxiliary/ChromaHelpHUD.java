@@ -37,7 +37,15 @@ public class ChromaHelpHUD {
 	private int rollx;
 	private int rolly;
 
-	private MovingObjectPosition last_look;
+	//private MovingObjectPosition last_look;
+	private String last_text;
+
+	private String text;
+	private int posX;
+	private int posY;
+	private int posZ;
+	private Block block;
+	private int metadata;
 
 	private static final int xSize = 64;
 	private static final int ySize = 128;
@@ -50,37 +58,50 @@ public class ChromaHelpHUD {
 	public void renderHUD(RenderGameOverlayEvent evt) {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			int gsc = evt.resolution.getScaleFactor();
-			MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
-			if (look != null) {
-				if (this.isDifferent(look)) {
-					this.closePanel();
+			boolean recalc = ep.ticksExisted%8 == 0; //Only update 1/8 ticks, to help FPS
+			if (recalc)
+				this.getData(ep);
+			if (/*this.isDifferent(look)*/text == null || text.isEmpty() || text != last_text) {
+				this.closePanel();
+			}
+			else {
+				boolean flag = true;
+				if (block instanceof BlockTieredResource) {
+					flag = ((BlockTieredResource)block).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, posX, posY, posZ, ep);
 				}
-				else {
-					int x = look.blockX;
-					int y = look.blockY;
-					int z = look.blockZ;
-					Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
-					int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
-					boolean flag = true;
-					if (b instanceof BlockTieredResource) {
-						flag = ((BlockTieredResource)b).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, x, y, z, ep);
-					}
-					String text = ChromaHelpData.instance.getText(b, meta);
-					if (text != null && !text.isEmpty()) {
-						this.openPanel();
-						this.renderPanel(gsc);
-						if (this.isPanelOpen()) {
-							this.renderText(text, gsc, flag);
-							if (flag)
-								ChromaHelpData.instance.markDiscovered(ep, b, meta);
-						}
-					}
+				int gsc = evt.resolution.getScaleFactor();
+				this.openPanel();
+				this.renderPanel(gsc);
+				if (this.isPanelOpen()) {
+					this.renderText(text, gsc, flag);
+					if (flag && recalc)
+						ChromaHelpData.instance.markDiscovered(ep, block, metadata);
 				}
 			}
-			last_look = look;
+			//last_look = look;
+			last_text = text;
 
 			ReikaTextureHelper.bindHUDTexture();
+		}
+	}
+
+	private void getData(EntityPlayer ep) {
+		MovingObjectPosition look = ReikaPlayerAPI.getLookedAtBlock(ep, 5, false);
+		if (look != null) {
+			posX = look.blockX;
+			posY = look.blockY;
+			posZ = look.blockZ;
+			block = ep.worldObj.getBlock(posX, posY, posZ);
+			metadata = ep.worldObj.getBlockMetadata(posX, posY, posZ);
+			text = ChromaHelpData.instance.getText(block, metadata);
+		}
+		else {
+			text = null;
+			posX = -1;
+			posY = -1;
+			posZ = -1;
+			block = null;
+			metadata = -1;
 		}
 	}
 
@@ -168,13 +189,14 @@ public class ChromaHelpHUD {
 	private void closePanel() {
 		rollx = rolly = 0;
 	}
-
+	/*
 	private boolean isDifferent(MovingObjectPosition look) {
 		if (look == last_look)
 			return false;
 		if (look == null || last_look == null)
 			return true;
-		return look.blockX != last_look.blockX || look.blockY != last_look.blockY || look.blockZ != last_look.blockZ;
+		//return look.blockX != last_look.blockX || look.blockY != last_look.blockY || look.blockZ != last_look.blockZ;
+		World world = Minecraft.getMinecraft().theWorld;
 	}
-
+	 */
 }

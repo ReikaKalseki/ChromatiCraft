@@ -76,9 +76,12 @@ import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
+import Reika.ChromatiCraft.ModInterface.ContainerMEDistributor;
 import Reika.ChromatiCraft.ModInterface.ContainerRemoteTerminal;
+import Reika.ChromatiCraft.ModInterface.GuiMEDistributor;
 import Reika.ChromatiCraft.ModInterface.GuiRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
+import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -148,6 +151,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerInventoryTicker(player, (TileEntityInventoryTicker) te);
 			if (te instanceof TileEntityCastingAuto)
 				return new ContainerCastingAuto((TileEntityCastingAuto) te, player);
+			if (te instanceof TileEntityMEDistributor)
+				return new ContainerMEDistributor(player, (TileEntityMEDistributor) te);
 
 			if (te instanceof ItemOnRightClick)
 				return null;
@@ -224,6 +229,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiHeatLamp((TileEntityHeatLamp) te, player);
 			if (te instanceof TileEntityCastingAuto)
 				return new GuiCastingAuto((TileEntityCastingAuto) te, player);
+			if (te instanceof TileEntityMEDistributor)
+				return new GuiMEDistributor(player, (TileEntityMEDistributor) te);
 
 			if (te instanceof OneSlotMachine) {
 				return new GuiOneSlot(player, (TileEntityChromaticBase)te);

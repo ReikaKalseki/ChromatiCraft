@@ -59,7 +59,9 @@ public enum ChromaPackets {
 	CASTAUTOUPDATE(7),
 	AUTORECIPE(2),
 	CHAINGUNHURT(1),
-	CHAINGUNEND(1);
+	CHAINGUNEND(1),
+	METRANSFER(2),
+	MEDISTRIBTHRESH(2);
 
 	public final int numInts;
 	public final PacketTypes type;
