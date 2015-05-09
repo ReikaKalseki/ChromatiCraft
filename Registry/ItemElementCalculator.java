@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Registry;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,8 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -61,6 +64,8 @@ public class ItemElementCalculator {
 
 	public static final ItemElementCalculator instance = new ItemElementCalculator();
 	private final ItemHashMap<ElementTagCompound> cache = new ItemHashMap();
+
+	private final Collection<ItemInOutHandler> handlers = new ArrayList();
 
 	private final ElementTagCompound empty = new ElementTagCompound();
 
@@ -421,9 +426,22 @@ public class ItemElementCalculator {
 		if (ModList.BCSILICON.isLoaded())
 			;//tag.addButMinimizeWith(this.getFromBCLasers(is));
 		if (ModList.TINKERER.isLoaded())
-			;//tag.addButMinimizeWith(this.getFromTinkerTable(is));
+			tag.addButMinimizeWith(this.getFromTinkerTable(is));
 		if (ModList.APPENG.isLoaded())
 			;//tag.addButMinimizeWith(this.getFromAECrafting(is));
+		for (ItemInOutHandler h : handlers) {
+			Collection<ItemStack> c = h.getInputItemsFor(is);
+			if (c != null && !c.isEmpty()) {
+				for (ItemStack in : c)
+					tag.addButMinimizeWith(this.getValueForItem(in));
+				Collection<CrystalElementProxy> c2 = h.getBonusElements();
+				if (c2 != null && !c2.isEmpty()) {
+					for (CrystalElementProxy e : c2) {
+						tag.addValueToColor(CrystalElement.getFromAPI(e), 1);
+					}
+				}
+			}
+		}
 		//ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
 		currentCalculation.remove(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 		return tag;

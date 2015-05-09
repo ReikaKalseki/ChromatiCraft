@@ -447,6 +447,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and mod interaction");
 
+		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
+		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
+
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];
 			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {

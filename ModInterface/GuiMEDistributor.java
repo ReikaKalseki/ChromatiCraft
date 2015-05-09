@@ -102,7 +102,7 @@ public class GuiMEDistributor extends GuiChromaBase
 		super.drawGuiContainerBackgroundLayer(par1, par2, par3);
 
 		for (int i = 0; i < texts.length; i++) {
-			texts[i].setTextColor(med.isFuzzy(i) ? (med.useOreDict(i) ? 0x00ff00 : 0x00aaff) : 0xffcc00);
+			texts[i].setTextColor(med.getMode(i).color);
 			texts[i].drawTextBox();
 		}
 	}
@@ -117,6 +117,8 @@ public class GuiMEDistributor extends GuiChromaBase
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), xSize-76, (ySize - 97) + 3, 0xffffff);
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
 
 		int w = 67;
 		int w2 = 115;
@@ -127,6 +129,10 @@ public class GuiMEDistributor extends GuiChromaBase
 			int dy = 7+(i%5)*20+9;
 			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i), dx, dy);
 			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i+med.NSLOTS), dx+w, dy);
+			if (api.isMouseInBox(j+dx-1, j+dx+w+18-1, k+dy-1, k+dy+18-1)) {
+				String s = med.getMode(i).desc;
+				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()+fontRendererObj.getStringWidth(s)-80, api.getMouseRealY()+12);
+			}
 		}
 	}
 

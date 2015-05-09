@@ -37,11 +37,12 @@ import Reika.RotaryCraft.API.ItemFetcher;
 
 public class BlockTieredOre extends BlockChromaTiered {
 
-	private final IIcon[] overlay = new IIcon[16];
-	private final IIcon[] back = new IIcon[16];
-	private final IIcon[] geode = new IIcon[16];
+	public static final int ARR_LENGTH = 13;
 
-	private final IIcon[] geodestone = new IIcon[16];
+	private final IIcon[] overlay = new IIcon[ARR_LENGTH];
+	private final IIcon[] back = new IIcon[ARR_LENGTH];
+	private final IIcon[] geode = new IIcon[ARR_LENGTH];
+	private final IIcon[] geodestone = new IIcon[ARR_LENGTH];
 
 	public BlockTieredOre(Material mat) {
 		super(mat);
@@ -197,7 +198,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < back.length; i++) {
+		for (int i = 0; i < ARR_LENGTH; i++) {
 			String s = "chromaticraft:ore/tier_"+i;
 			back[i] = ico.registerIcon(s+"_underlay");
 			overlay[i] = ico.registerIcon(s+"_overlay");

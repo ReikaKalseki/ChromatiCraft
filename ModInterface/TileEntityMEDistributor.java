@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,8 +11,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemElementCalculator;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -20,6 +26,7 @@ import Reika.DragonAPI.Instantiable.ModInteract.DirectionalAEInterface;
 import Reika.DragonAPI.Interfaces.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
@@ -50,13 +57,68 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 	private ItemStack[] filter = new ItemStack[NSLOTS*2];
 	private int[] threshold = new int[NSLOTS];
-	private boolean[] fuzzy = new boolean[NSLOTS];
-	private boolean[] oreDict = new boolean[NSLOTS];
+	private MatchMode[] match = new MatchMode[NSLOTS];
+
+	public static enum MatchMode {
+		EXACT(0xffcc00, "Exact Match"),
+		FUZZY(0x00aaff, "Fuzzy Match"),
+		FUZZYORE(0x00ff00, "Fuzzy/Ore Match"),
+		FUZZYNBT(0xaa00ff, "Fuzzy/Ore Match, Ignore NBT");
+
+		public final int color;
+		public final String desc;
+
+		private static final MatchMode[] list = values();
+
+		private MatchMode(int c, String s) {
+			color = c;
+			desc = s;
+		}
+
+		private long countItems(MESystemReader net, ItemStack is) {
+			switch(this) {
+			case EXACT:
+				return net.getItemCount(is);
+			case FUZZY:
+				return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false);
+			case FUZZYORE:
+				return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true);
+			case FUZZYNBT:
+				return net.getFuzzyItemCountIgnoreNBT(is, FuzzyMode.IGNORE_ALL, true);
+			}
+			return 0;
+		}
+
+		private void removeItems(MESystemReader net, ItemStack is) {
+			switch(this) {
+			case EXACT:
+				net.removeItem(is, false);
+				break;
+			case FUZZY:
+				net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, false);
+				break;
+			case FUZZYORE:
+				net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, true);
+				break;
+			case FUZZYNBT:
+				net.removeItemFuzzyIgnoreNBT(is, false, FuzzyMode.IGNORE_ALL, true);
+				break;
+			}
+		}
+
+		public MatchMode next() {
+			return list[(this.ordinal()+1)%list.length];
+		}
+	}
 
 	public TileEntityMEDistributor() {
 		if (ModList.APPENG.isLoaded()) {
 			aeGridBlock = new DirectionalAEInterface(this, this.getTile().getCraftedProduct());
 			aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
+		}
+
+		for (int i = 0; i < match.length; i++) {
+			match[i] = MatchMode.EXACT;
 		}
 	}
 
@@ -97,10 +159,11 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 						if (f1 != null && f2 != null) {
 							int fit = f2.getMaxStackSize()-output.addItemsToUnderlyingInventories(ReikaItemHelper.getSizedItemStack(f2, f2.getMaxStackSize()), true);
 							if (fit > 0) {
-								long has = this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
+								MatchMode mode = this.getMode(i);
+								long has = mode.countItems(network, f1);//this.isFuzzy(i) ? network.getFuzzyItemCount(f1, FuzzyMode.IGNORE_ALL, this.useOreDict(i)) : network.getItemCount(f1);
 								int missing = this.getThreshold(i)-(has > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)has);
 								if (missing > 0) {
-									this.transferItem(ReikaItemHelper.getSizedItemStack(f2, Math.min(Math.min(fit, missing), f2.getMaxStackSize())), (IInventory)te);
+									this.transferItem(ReikaItemHelper.getSizedItemStack(f2, Math.min(Math.min(fit, missing), f2.getMaxStackSize())), (IInventory)te, mode);
 								}
 							}
 						}
@@ -114,12 +177,8 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		return threshold[i];
 	}
 
-	public boolean useOreDict(int i) {
-		return oreDict[i];
-	}
-
-	public boolean isFuzzy(int i) {
-		return fuzzy[i];
+	public MatchMode getMode(int i) {
+		return match[i];
 	}
 
 	private void buildCache() {
@@ -133,9 +192,9 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		}
 	}
 
-	private void transferItem(ItemStack is, IInventory ii) {
+	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
 		ReikaInventoryHelper.addToIInv(is, ii);
-		network.removeItem(is, false);
+		mode.removeItems(network, is);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
 	}
 
@@ -158,8 +217,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 		for (int i = 0; i < threshold.length; i++) {
 			fil.setInteger("thresh_"+i, threshold[i]);
-			fil.setBoolean("fuzzy_"+i, fuzzy[i]);
-			fil.setBoolean("ore_"+i, oreDict[i]);
+			fil.setInteger("match_"+i, match[i].ordinal());
 		}
 
 		NBT.setTag("filter", fil);
@@ -181,13 +239,11 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		}
 
 		threshold = new int[threshold.length];
-		fuzzy = new boolean[fuzzy.length];
-		oreDict = new boolean[oreDict.length];
+		match = new MatchMode[match.length];
 		for (int i = 0; i < threshold.length; i++) {
 			String name = "filter_"+i;
 			threshold[i] = fil.getInteger("thresh_"+i);
-			fuzzy[i] = fil.getBoolean("fuzzy_"+i);
-			oreDict[i] = fil.getBoolean("ore_"+i);
+			match[i] = MatchMode.list[fil.getInteger("match_"+i)];
 		}
 	}
 
@@ -206,29 +262,59 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	}
 
 	public void toggleFuzzy(int slot) {
-		if (fuzzy[slot]) {
-			if (oreDict[slot]) {
-				fuzzy[slot] = false;
-				oreDict[slot] = false;
-			}
-			else {
-				oreDict[slot] = true;
-			}
-		}
-		else {
-			fuzzy[slot] = true;
-		}
+		match[slot] = match[slot].next();
 		this.syncAllData(true);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z, int meta) {
-
+		ForgeDirection dir = this.getFacing();
+		double r = 0.475;
+		double v = -ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.015);
+		double dx = x+0.5+dir.offsetX*r;
+		double dy = y+0.5+dir.offsetY*r;
+		double dz = z+0.5+dir.offsetZ*r;
+		double vx = v*dir.offsetX;
+		double vy = v*dir.offsetY;
+		double vz = v*dir.offsetZ;
+		dx = ReikaRandomHelper.getRandomPlusMinus(dx, 0.03125);
+		dy = ReikaRandomHelper.getRandomPlusMinus(dy, 0.03125);
+		dz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.03125);
+		vx = ReikaRandomHelper.getRandomPlusMinus(vx, 0.008);
+		vy = ReikaRandomHelper.getRandomPlusMinus(vy, 0.008);
+		vz = ReikaRandomHelper.getRandomPlusMinus(vz, 0.008);
+		float s = (float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.25);
+		int l = 40+rand.nextInt(30);
+		EntityFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz).setRapidExpand().setLife(l).setScale(s).setColor(135, 90, 165);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void spawnTransferParticles(World world, int x, int y, int z, int id, int meta) {
 		ItemStack is = new ItemStack(Item.getItemById(id), 1, meta);
+		ForgeDirection dir = this.getFacing();
+		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is);
+		float s = ReikaRandomHelper.getRandomPlusMinus(6, 2);
+		int l = 20+rand.nextInt(20);
+		if (tag == null || tag.isEmpty()) {
+			int n = 1+rand.nextInt(5);
+			for (int i = 0; i < n; i++) {
+				double dx = x-dir.offsetX+rand.nextDouble();
+				double dy = y-dir.offsetY+rand.nextDouble();
+				double dz = z-dir.offsetZ+rand.nextDouble();
+				EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setLife(l).setScale(s).setColor(32, 150, 255);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+		else {
+			for (CrystalElement e : tag.elementSet()) {
+				double dx = x-dir.offsetX+rand.nextDouble();
+				double dy = y-dir.offsetY+rand.nextDouble();
+				double dz = z-dir.offsetZ+rand.nextDouble();
+				EntityFX fx = new EntityBlurFX(e, world, dx, dy, dz, 0, 0, 0).setRapidExpand().setLife(l).setScale(s);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
 	}
 
 	@Override

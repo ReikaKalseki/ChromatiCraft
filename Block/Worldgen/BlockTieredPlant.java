@@ -49,8 +49,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public final class BlockTieredPlant extends BlockChromaTiered implements IPlantable {
 
-	private final IIcon[] front_icons = new IIcon[16];
-	private final IIcon[] back_icons = new IIcon[16];
+	public static final int ARR_LENGTH = 5;
+
+	private final IIcon[] front_icons = new IIcon[ARR_LENGTH];
+	private final IIcon[] back_icons = new IIcon[ARR_LENGTH];
 
 	public BlockTieredPlant(Material mat) {
 		super(mat);
@@ -323,7 +325,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < ARR_LENGTH; i++) {
 			front_icons[i] = ico.registerIcon("chromaticraft:plant/tierplant_"+i+"_front");
 			back_icons[i] = ico.registerIcon("chromaticraft:plant/tierplant_"+i+"_back");
 		}

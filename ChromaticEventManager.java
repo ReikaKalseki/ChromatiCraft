@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -81,6 +82,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -88,6 +90,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
@@ -134,6 +137,25 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventStructureMining(BlockEvent.BreakEvent evt) {
+		if (!evt.getPlayer().capabilities.isCreativeMode) {
+			if (evt.block == ChromaBlocks.PYLON.getBlockInstance()) {
+				if (evt.blockMetadata == ChromaTiles.PYLON.getBlockMetadata())
+					evt.setCanceled(true);
+				else if (evt.blockMetadata == ChromaTiles.REPEATER.getBlockMetadata() || evt.blockMetadata == ChromaTiles.COMPOUND.getBlockMetadata()) {
+					TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)evt.world.getTileEntity(evt.x, evt.y, evt.z);
+					if (!te.getPlacerUUID().equals(evt.getPlayer().getUniqueID()))
+						evt.setCanceled(true);
+				}
+			}
+			else if (evt.block == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+				if (evt.blockMetadata >= 8 && !BlockType.list[evt.blockMetadata%8].isMineable())
+					evt.setCanceled(true);
+			}
+		}
 	}
 
 	@SubscribeEvent

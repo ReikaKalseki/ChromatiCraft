@@ -196,6 +196,7 @@ public enum ChromaTiles {
 		case DIMENSIONCORE:
 		case AURAPOINT:
 		case AUTOMATOR:
+		case MEDISTRIBUTOR:
 			//case TANK:
 			//case ITEMRIFT:
 			return true;
