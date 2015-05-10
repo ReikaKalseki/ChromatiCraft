@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class StructureCalculator implements Runnable {
 
@@ -61,7 +62,8 @@ public class StructureCalculator implements Runnable {
 			String sg = "Error calculating structures: "+e.toString()+"! "+(redo ? "Re-attempting..." : "Already failed too many times. Giving up.");
 			ChromatiCraft.logger.logError(sg);
 			ChunkProviderChroma.structures.clear();
-			this.generate(attempt+1);
+			if (redo)
+				this.generate(attempt+1);
 		}
 	}
 
@@ -75,18 +77,18 @@ public class StructureCalculator implements Runnable {
 			ChunkProviderChroma.structures.add(new StructurePair(DimensionStructureType.types[i], e));
 		}
 
-		int structureOriginX = 0;//ReikaRandomHelper.getRandomPlusMinus(0, 10000);
-		int structureOriginZ = 0;//ReikaRandomHelper.getRandomPlusMinus(0, 10000);
-		float structureAngleOrigin = 0;//rand.nextFloat()*360;
+		int structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 10000);
+		int structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 10000);
+		float structureAngleOrigin = rand.nextFloat()*360;
 
 		for (StructurePair s : ChunkProviderChroma.structures) {
 			float ang = structureAngleOrigin+s.color.ordinal()*22.5F;
-			int r = 200;//ReikaRandomHelper.getRandomPlusMinus(5000, 4000);
+			int r = ReikaRandomHelper.getRandomPlusMinus(5000, 4000);
 			int x = structureOriginX+(int)(r*MathHelper.cos(ang));
 			int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 			s.generator.getGenerator().startCalculate(x, z, s.color, rand);
 			if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
-				ReikaJavaLibrary.pConsole("CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+x+", "+z);
+				ReikaJavaLibrary.pConsole("CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getGenerator().getCentralLocation());
 			}
 		}
 	}

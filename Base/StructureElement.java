@@ -9,14 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public abstract class StructurePiece extends StructureElement {
+public abstract class StructureElement {
 
-	protected StructurePiece(DimensionStructureGenerator s) {
-		super(s);
+	protected final DimensionStructureGenerator parent;
+
+	protected StructureElement(DimensionStructureGenerator s) {
+		parent = s;
 	}
 
-	public abstract void generate(ChunkSplicedGenerationCache world, int x, int y, int z);
+	protected final void placeCore(int x, int y, int z) {
+		parent.placeCore(x, y, z);
+	}
 
 }

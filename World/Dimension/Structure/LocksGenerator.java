@@ -20,4 +20,14 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	public void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 
 	}
+
+	@Override
+	protected int getCenterXOffset() {
+		return 0;
+	}
+
+	@Override
+	protected int getCenterZOffset() {
+		return 0;
+	}
 }

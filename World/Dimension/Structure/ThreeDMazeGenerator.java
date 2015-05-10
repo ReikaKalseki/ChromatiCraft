@@ -49,18 +49,20 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	private int minZ;
 	private int maxZ;
 
+	private int partSize;
+
 	@Override
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
 
 		int y = 75;
 		//this.generateFrom(rand.nextInt(MAX_SIZE), rand.nextInt(MAX_SIZE), rand.nextInt(6), 5, x, y, z, e, rand);
-		int s = 4;
-		minX = x-s*MAX_SIZE_X/2;
-		maxX = x+s*MAX_SIZE_X/2;
-		minZ = z-s*MAX_SIZE_Z/2;
-		maxZ = z+s*MAX_SIZE_Z/2;
+		partSize = 4;
+		minX = x-partSize*MAX_SIZE_X/2;
+		maxX = x+partSize*MAX_SIZE_X/2;
+		minZ = z-partSize*MAX_SIZE_Z/2;
+		maxZ = z+partSize*MAX_SIZE_Z/2;
 		maxY = y;
-		minY = y-s*MAX_SIZE_Y;
+		minY = y-partSize*MAX_SIZE_Y;
 		/*
 		for (int i = 0; i < MAX_SIZE; i++) {
 			for (int j = 0; j < MAX_SIZE; j++) {
@@ -73,36 +75,46 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, e, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
-		this.generateBlocks(s, x, y, z, rand);
+		this.generateBlocks(x, y, z, rand);
 
-		int mx = x+s*MAX_SIZE_X/2+s/2;
-		int mz = z+s*MAX_SIZE_Z/2+s/2;
-		int by = y-s*(MAX_SIZE_Y+1)+s/2;
+		int mx = x+partSize*MAX_SIZE_X/2+partSize/2;
+		int mz = z+partSize*MAX_SIZE_Z/2+partSize/2;
+		int by = y-partSize*(MAX_SIZE_Y+1)+partSize/2;
 		new LootRoom(this, rand).generate(world, mx, by, mz);
 		// Need a way to connect to the surface
-		new TDMazeEntrance(this).generate(world, mx, y+1, mz);
+		this.addDynamicStructure(new TDMazeEntrance(this, y+1), mx, mz);
 	}
 
-	private void generateBlocks(int s, int x, int y, int z, Random rand) {
+	@Override
+	protected int getCenterXOffset() {
+		return (partSize*(MAX_SIZE_X+1))/2;
+	}
+
+	@Override
+	protected int getCenterZOffset() {
+		return (partSize*(MAX_SIZE_Z+1))/2;
+	}
+
+	private void generateBlocks(int x, int y, int z, Random rand) {
 		//s = s+2;
 		for (int i = 0; i < MAX_SIZE_X; i++) {
 			for (int j = 0; j < MAX_SIZE_Y; j++) {
 				for (int k = 0; k < MAX_SIZE_Z; k++) {
-					TunnelPiece p = new TunnelPiece(this, s);
+					TunnelPiece p = new TunnelPiece(this, partSize);
 					for (ForgeDirection dir : locationCache.get(new Coordinate(i, j, k))) {
 						p.connect(dir);
 					}
 					if (i%4 == 0 && j%2 == 0 && k%4 == 0)
 						p.setLighted();
-					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X && j != MAX_SIZE_Y && k != MAX_SIZE_Z && rand.nextInt(40) == 0) {
+					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X && j != MAX_SIZE_Y && k != MAX_SIZE_Z && rand.nextInt(20) == 0) {
 						p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
-						if (rand.nextInt(40) == 0) {
+						if (rand.nextInt(20) == 0) {
 							p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
 						}
 					}
-					int dx = x+i*s;
-					int dy = y+j*s-MAX_SIZE_Y*s;
-					int dz = z+k*s;
+					int dx = x+i*partSize;
+					int dy = y+j*partSize-MAX_SIZE_Y*partSize;
+					int dz = z+k*partSize;
 					p.generate(world, dx, dy, dz);
 				}
 			}

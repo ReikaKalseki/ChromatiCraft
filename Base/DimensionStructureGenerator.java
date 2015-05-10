@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -34,6 +36,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	protected final ChunkSplicedGenerationCache world = new ChunkSplicedGenerationCache();
 	private DimensionStructureType structureType;
 	private CrystalElement genColor;
+	private ChunkCoordIntPair genCore;
+	private ChunkCoordIntPair center;
+
+	private final MultiMap<ChunkCoordIntPair, DynamicPieceLocation> dynamicParts = new MultiMap().setNullEmpty();
 
 	protected DimensionStructureGenerator() {
 
@@ -43,22 +49,56 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return structureType;
 	}
 
+	protected final void addDynamicStructure(DynamicStructurePiece dsp, int x, int z) {
+		dynamicParts.addValue(new ChunkCoordIntPair(x >> 4, z >> 4), new DynamicPieceLocation(dsp, x, z));
+	}
+
 	/** chunk X and Z are already *16 */
 	protected abstract void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand);
 
 	public final void startCalculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 		genColor = e;
+		genCore = new ChunkCoordIntPair(chunkX, chunkZ);
 		this.calculate(chunkX, chunkZ, e, rand);
 	}
 
 	public final void generateChunk(World w, ChunkCoordIntPair cp) {
 		world.generate(w, cp);
+
+		Collection<DynamicPieceLocation> c = dynamicParts.get(cp);
+		if (c != null) {
+			for (DynamicPieceLocation dsp : c) {
+				int x = (cp.chunkXPos << 4)+dsp.relX;
+				int z = (cp.chunkZPos << 4)+dsp.relZ;
+				dsp.generator.generate(w, x, z);
+			}
+		}
 	}
 
 	public final void clear() {
 		world.clear();
+		dynamicParts.clear();
+		center = null;
 		this.clearCaches();
 	}
+
+	public final CrystalElement getColor() {
+		return genColor;
+	}
+
+	public final ChunkCoordIntPair getLocation() {
+		return genCore;
+	}
+
+	public final ChunkCoordIntPair getCentralLocation() {
+		if (center == null) {
+			center = new ChunkCoordIntPair(genCore.chunkXPos+(this.getCenterXOffset() >> 4), genCore.chunkZPos+(this.getCenterZOffset() >> 4));
+		}
+		return center;
+	}
+
+	protected abstract int getCenterXOffset();
+	protected abstract int getCenterZOffset();
 
 	protected void clearCaches() {
 
@@ -128,6 +168,32 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 			NBTTagCompound dat = tag.getCompoundTag(NBT_TAG);
 			return dat.getBoolean("struct_"+this.ordinal());
+		}
+
+	}
+
+	public static class DynamicPieceLocation {
+
+		private final DynamicStructurePiece generator;
+		private final int relX;
+		private final int relZ;
+
+		private DynamicPieceLocation(DynamicStructurePiece gen, int x, int z) {
+			generator = gen;
+			x = x%16;
+			z = z%16;
+			if (x < 0) {
+				x += 16;
+				if (x%16 == 0)
+					x += 16;
+			}
+			if (z < 0) {
+				z += 16;
+				if (z%16 == 0)
+					z += 16;
+			}
+			relX = x;
+			relZ = z;
 		}
 
 	}

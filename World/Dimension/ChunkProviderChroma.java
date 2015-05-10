@@ -170,6 +170,18 @@ public class ChunkProviderChroma implements IChunkProvider {
 		decorators.add(new WorldGenFireJet());
 	}
 
+	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
+		double d = Double.POSITIVE_INFINITY;
+		for (StructurePair s : structures) {
+			ChunkCoordIntPair p = s.generator.getGenerator().getCentralLocation();
+			double dx = chunkX-p.chunkXPos;
+			double dz = chunkZ-p.chunkZPos;
+			double dd = Math.sqrt(dx*dx+dz*dz);
+			d = Math.min(d, dd);
+		}
+		return d;
+	}
+
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
 	{
 		byte b0 = 63;//32;//63;
@@ -479,7 +491,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 						f4 *= 8;
 						f3 = 0.125F;
 
-						//Very flat, below sea level
+						//V2ery flat, below sea level
 						f4 = 0;
 						f3 = -0.5F;
 
@@ -500,7 +512,11 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 
 						//FINAL GENERATION
-						float f0 = (float)Math.sqrt((chunkX*chunkX+chunkZ*chunkZ)/65536D);
+						float f0 = (float)Math.sqrt((chunkX*chunkX+chunkZ*chunkZ)/(65536D*32));
+						double dd = this.getDistanceToNearestStructure(chunkX, chunkZ);
+						if (dd <= 8) {
+							f0 *= dd/8D;
+						}
 						float f3 = Math.max(-0.25F, 0.125F-f0*0.125F);
 						float f4 = 0.5F*f0;
 

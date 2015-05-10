@@ -63,6 +63,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -668,9 +669,13 @@ public enum Chromabilities implements Ability {
 						int dz = z+k;
 						if (ReikaMathLibrary.py3d(i, j, k) <= r+0.5) {
 							Block b = ep.worldObj.getBlock(dx, dy, dz);
-							if (b != Blocks.air && b.isOpaqueCube()) {
+							if (b != Blocks.air && b.isOpaqueCube() && b.blockHardness >= 0) {
+								int meta = ep.worldObj.getBlockMetadata(dx, dy, dz);
+								if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(ep.worldObj, dx, dy, dz, meta)) {
+									continue;
+								}
 								if (power > b.blockResistance/12F) {
-									b.dropBlockAsItem(ep.worldObj, dx, dy, dz, ep.worldObj.getBlockMetadata(dx, dy, dz), 0);
+									b.dropBlockAsItem(ep.worldObj, dx, dy, dz, meta, 0);
 									b.removedByPlayer(ep.worldObj, ep, dx, dy, dz, true);
 									ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
 									ep.worldObj.setBlockToAir(dx, dy, dz);

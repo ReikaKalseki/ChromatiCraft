@@ -71,8 +71,11 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
 		if (te instanceof NaturalCrystalSource)
 			return -1;
-		if (te instanceof TileEntityStructControl) {
+		else if (te instanceof TileEntityStructControl) {
 			return ((TileEntityStructControl)te).isBreakable() ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*32 : -1;
+		}
+		else if (te instanceof TileEntityDimensionCore) {
+			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*8;
 		}
 		return te.isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}

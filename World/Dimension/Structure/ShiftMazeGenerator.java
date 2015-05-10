@@ -34,4 +34,14 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		 */
 	}
 
+	@Override
+	protected int getCenterXOffset() {
+		return 0;
+	}
+
+	@Override
+	protected int getCenterZOffset() {
+		return 0;
+	}
+
 }

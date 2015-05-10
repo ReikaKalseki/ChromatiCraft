@@ -36,6 +36,7 @@ public class LootRoom extends StructurePiece {
 		Block sh = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ml = BlockType.LIGHT.metadata;
 		int ms = BlockType.STONE.metadata;
+		int mg = BlockType.GLASS.metadata;
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 
 		this.placeCore(i+5, j+2, k+5);
@@ -298,7 +299,7 @@ public class LootRoom extends StructurePiece {
 		world.setBlock(i+3, j+2, k+2, Blocks.air);
 		world.setBlock(i+3, j+2, k+3, sh, ms);
 		world.setBlock(i+3, j+2, k+4, sh, ms);
-		world.setBlock(i+3, j+2, k+5, sh, 5);
+		world.setBlock(i+3, j+2, k+5, sh, mg);
 		world.setBlock(i+3, j+2, k+6, sh, ms);
 		world.setBlock(i+3, j+2, k+7, sh, ms);
 		world.setBlock(i+3, j+2, k+8, Blocks.air);
@@ -450,10 +451,10 @@ public class LootRoom extends StructurePiece {
 		world.setBlock(i+5, j+2, k+0, sh, ms);
 		world.setBlock(i+5, j+2, k+1, Blocks.air);
 		world.setBlock(i+5, j+2, k+2, Blocks.air);
-		world.setBlock(i+5, j+2, k+3, sh, 5);
+		world.setBlock(i+5, j+2, k+3, sh, mg);
 		world.setBlock(i+5, j+2, k+4, Blocks.air);
 		world.setBlock(i+5, j+2, k+6, Blocks.air);
-		world.setBlock(i+5, j+2, k+7, sh, 5);
+		world.setBlock(i+5, j+2, k+7, sh, mg);
 		world.setBlock(i+5, j+2, k+8, Blocks.air);
 		world.setBlock(i+5, j+2, k+9, Blocks.air);
 		world.setBlock(i+5, j+2, k+10, sh, ms);
@@ -605,7 +606,7 @@ public class LootRoom extends StructurePiece {
 		world.setBlock(i+7, j+2, k+2, Blocks.air);
 		world.setBlock(i+7, j+2, k+3, sh, ms);
 		world.setBlock(i+7, j+2, k+4, sh, ms);
-		world.setBlock(i+7, j+2, k+5, sh, 5);
+		world.setBlock(i+7, j+2, k+5, sh, mg);
 		world.setBlock(i+7, j+2, k+6, sh, ms);
 		world.setBlock(i+7, j+2, k+7, sh, ms);
 		world.setBlock(i+7, j+2, k+8, Blocks.air);

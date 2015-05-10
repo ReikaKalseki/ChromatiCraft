@@ -56,7 +56,7 @@ public class WorldGenMoonPool extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(int cx, int cz) {
-		return 0.2F; //0.002F
+		return 0.002F;
 	}
 
 }
