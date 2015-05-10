@@ -9,26 +9,35 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementMixer;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -37,11 +46,16 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //Structure core, does FX and things
-public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBTTile {
+public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBTTile, PlayerBreakHook {
 
 	private CrystalElement color = CrystalElement.WHITE;
+	private DimensionStructureType structure = null;
+	private boolean triggered = false;
+	private int soundPitch;
 
 	private static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
+	private static final EnumMap<CrystalElement, HashSet<CrystalElement>> beams = new EnumMap(CrystalElement.class);
+
 
 	static {
 		addColor(CrystalElement.BLACK, -3, -1, -3);
@@ -60,21 +74,99 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		addColor(CrystalElement.MAGENTA, 0, -2, 7);
 		addColor(CrystalElement.ORANGE, 4, -1, 0);
 		addColor(CrystalElement.WHITE, 3, -1, 3);
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			HashSet<CrystalElement> m = new HashSet();
+			Collection<CrystalElement> m2 = ElementMixer.instance.getMixablesWith(e);
+			if (m2 != null) {
+				m.addAll(m2);
+			}
+			m2 = ElementMixer.instance.getMixParents(e);
+			if (m2 != null) {
+				m.addAll(m2);
+			}
+			m2 = ElementMixer.instance.getChildrenOf(e);
+			if (m2 != null) {
+				m.addAll(m2);
+			}
+			beams.put(e, m);
+		}
 	}
 
 	private static void addColor(CrystalElement e, int x, int y, int z) {
 		locations.put(e, new Coordinate(x, y, z));
 	}
 
-	private int soundPitch;
+	private Collection<CrystalElement> getColorBeams() {
+		return beams.get(color);
+	}
+
+	public void setStructure(StructurePair p) {
+		structure = p.generator;
+		color = p.color;
+		this.syncAllData(false);
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (world.isRemote) {
-			this.spawnConnectFX(world, x, y, z);
+		if (DragonAPICore.debugtest) {
+			triggered = false;
+			structure = DimensionStructureType.TDMAZE;
 		}
+
+		if (world.isRemote) {
+			if (placer != null) {
+				this.spawnConnectFX(world, x, y, z);
+			}
+			else if (structure != null) {
+				this.structureControlFX();
+			}
+		}
+		else {
+			if (!triggered && structure != null) {
+				this.doStructureCalculation(world, x, y, z);
+			}
+		}
+	}
+
+	private void doStructureCalculation(World world, int x, int y, int z) {
+		switch(structure) {
+		case ALTAR:
+			break;
+		case LOCKS:
+			break;
+		case SHIFTMAZE:
+			break;
+		case TDMAZE:
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-1, y+2, z-1, x+2, y+4, z+2);
+			List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, box);
+			if (!li.isEmpty()) {
+				EntityPlayer ep = li.get(0);
+				triggered = true;
+				boolean w = rand.nextBoolean();
+				int dx = w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
+				int dz = !w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
+				int dx2 = Math.abs(dx) == 1 ? dx : (int)Math.signum(dx)*(Math.abs(dx)+1);
+				int dz2 = Math.abs(dz) == 1 ? dz : (int)Math.signum(dz)*(Math.abs(dz)+1);
+				world.setBlockMetadataWithNotify(x+dx, y+2, z+dz, BlockType.CRACKS.metadata, 3);
+				world.setBlockMetadataWithNotify(x+dx, y+3, z+dz, BlockType.CRACKS.metadata, 3);
+				world.setBlockMetadataWithNotify(x-dx2, y+1, z-dz2, BlockType.CRACKS.metadata, 3);
+				world.setBlockMetadataWithNotify(x+dx, y, z+dz, BlockType.CRACKS.metadata, 3);
+				world.setBlockMetadataWithNotify(x+dx, y-1, z+dz, BlockType.CRACKS.metadata, 3);
+				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+			}
+			break;
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void structureControlFX() {
+
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -83,47 +175,42 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		if ((this.getTicksExisted()/sp)%16 == color.ordinal() && this.getTicksExisted()%sp == 0) {
 			float mult = this.getSoundPitch();
 			//CrystalMusicManager.instance.getRandomScaledDing(color);
-			//ReikaJavaLibrary.pConsole(color+": "+mult);
-			ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult);
-			ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
-			ArrayList<CrystalElement> m = new ArrayList();
-			Collection<CrystalElement> m2 = ElementMixer.instance.getMixablesWith(color);
-			if (m2 != null) {
-				m.addAll(m2);
-			}
-			m2 = ElementMixer.instance.getMixParents(color);
-			if (m2 != null) {
-				m.addAll(m2);
-			}
-			m2 = ElementMixer.instance.getChildrenOf(color);
-			if (m2 != null) {
-				m.addAll(m2);
-			}
-			//ReikaJavaLibrary.pConsole(color+": "+m);
-
-			int n = 8+rand.nextInt(8);
-			for (int i = 0; i < n; i++) {
-				double px = x+rand.nextDouble();
-				double py = y+rand.nextDouble();
-				double pz = z+rand.nextDouble();
-				int l = 40;
-				float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
-				float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
-				EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
-
+			Collection<CrystalElement> m = this.getColorBeams();
 			//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
 			//CrystalElement e = ReikaJavaLibrary.getRandomListEntry(m);
+			boolean flag = false;
+
 			for (CrystalElement e : m) {
 				Coordinate c = this.getOtherColor(e);
 				TileEntity te = c.getTileEntity(world);
 				if (te instanceof TileEntityDimensionCore && ((TileEntityDimensionCore)te).getColor() == e) {
 					this.createBeamLine(world, x, y, z, c, e);
+					flag = true;
 				}
 				//}
 			}
-			this.createBeamLine(world, x, y, z, this.getCenter(), color);
+			Coordinate cc = this.getCenter();
+			if (cc.getTileEntity(world) instanceof TileEntityStructControl) {
+				this.createBeamLine(world, x, y, z, cc, color);
+				flag = true;
+			}
+
+			if (flag) {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult);
+				ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
+
+				int n = 8+rand.nextInt(8);
+				for (int i = 0; i < n; i++) {
+					double px = x+rand.nextDouble();
+					double py = y+rand.nextDouble();
+					double pz = z+rand.nextDouble();
+					int l = 40;
+					float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
+					float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
+					EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
 	}
 
@@ -224,6 +311,21 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		color = is.stackTagCompound != null ? CrystalElement.elements[is.stackTagCompound.getInteger("color")] : CrystalElement.WHITE;
+	}
+
+	@Override
+	public boolean breakByPlayer(EntityPlayer ep) {
+		if (ep.capabilities.isCreativeMode)
+			return true;
+		if (structure != null) {
+			if (structure.hasPlayerCompleted(ep)) {
+				return false;
+			}
+			else {
+				structure.markPlayerCompleted(ep);
+			}
+		}
+		return true;
 	}
 
 }

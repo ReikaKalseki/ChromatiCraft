@@ -73,26 +73,33 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, e, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
-		this.generateBlocks(s, x, y, z);
+		this.generateBlocks(s, x, y, z, rand);
 
-		int mx = x+s*MAX_SIZE_X/2;
-		int mz = z+s*MAX_SIZE_Z/2;
-		int ty = y+s*MAX_SIZE_Y;
-		new LootRoom().generate(world, mx, y-1, mz);
-		new TDMazeEntrance().generate(world, mx, ty+1, mz);
+		int mx = x+s*MAX_SIZE_X/2+s/2;
+		int mz = z+s*MAX_SIZE_Z/2+s/2;
+		int by = y-s*(MAX_SIZE_Y+1)+s/2;
+		new LootRoom(this, rand).generate(world, mx, by, mz);
+		// Need a way to connect to the surface
+		new TDMazeEntrance(this).generate(world, mx, y+1, mz);
 	}
 
-	private void generateBlocks(int s, int x, int y, int z) {
+	private void generateBlocks(int s, int x, int y, int z, Random rand) {
 		//s = s+2;
 		for (int i = 0; i < MAX_SIZE_X; i++) {
 			for (int j = 0; j < MAX_SIZE_Y; j++) {
 				for (int k = 0; k < MAX_SIZE_Z; k++) {
-					TunnelPiece p = new TunnelPiece(s);
+					TunnelPiece p = new TunnelPiece(this, s);
 					for (ForgeDirection dir : locationCache.get(new Coordinate(i, j, k))) {
 						p.connect(dir);
 					}
 					if (i%4 == 0 && j%2 == 0 && k%4 == 0)
 						p.setLighted();
+					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X && j != MAX_SIZE_Y && k != MAX_SIZE_Z && rand.nextInt(40) == 0) {
+						p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
+						if (rand.nextInt(40) == 0) {
+							p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
+						}
+					}
 					int dx = x+i*s;
 					int dy = y+j*s-MAX_SIZE_Y*s;
 					int dz = z+k*s;

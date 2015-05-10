@@ -88,7 +88,7 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 
 	@Override
 	public int getRange() {
-		return 3;
+		return 4;
 	}
 
 	@Override

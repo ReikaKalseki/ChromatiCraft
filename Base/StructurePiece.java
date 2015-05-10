@@ -13,6 +13,16 @@ import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public abstract class StructurePiece {
 
+	protected final DimensionStructureGenerator parent;
+
+	protected StructurePiece(DimensionStructureGenerator s) {
+		parent = s;
+	}
+
 	public abstract void generate(ChunkSplicedGenerationCache world, int x, int y, int z);
+
+	protected final void placeCore(int x, int y, int z) {
+		parent.placeCore(x, y, z);
+	}
 
 }

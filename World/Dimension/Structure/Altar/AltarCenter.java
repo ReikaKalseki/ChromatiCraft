@@ -11,12 +11,17 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public class AltarCenter extends StructurePiece {
+
+	public AltarCenter(DimensionStructureGenerator g) {
+		super(g);
+	}
 
 	@Override
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {

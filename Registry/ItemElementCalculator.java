@@ -14,9 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import mantle.utils.ItemMetaWrapper;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -27,13 +25,8 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import tconstruct.library.TConstructRegistry;
-import tconstruct.library.crafting.Smeltery;
-import tconstruct.library.crafting.ToolBuilder;
-import tconstruct.library.crafting.ToolRecipe;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.crafting.CrucibleRecipe;
@@ -56,8 +49,6 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes.WorktableRecipe;
-import appeng.recipes.handlers.Inscribe;
-import appeng.recipes.handlers.Inscribe.InscriberRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemElementCalculator {
@@ -332,6 +323,7 @@ public class ItemElementCalculator {
 		return tag;
 	}
 	 */
+	/*
 	@ModDependent(ModList.TINKERER)
 	private ElementTagCompound getFromTinkerTable(ItemStack is) {
 		ElementTagCompound tag = new ElementTagCompound();
@@ -360,7 +352,9 @@ public class ItemElementCalculator {
 		}
 		return tag;
 	}
+	 */
 
+	/*
 	@ModDependent(ModList.TINKERER)
 	private ElementTagCompound getFromTinkerSmeltery(FluidStack fs) {
 		ElementTagCompound tag = new ElementTagCompound();
@@ -379,7 +373,8 @@ public class ItemElementCalculator {
 		tag.addValueToColor(CrystalElement.ORANGE, 2);
 		return tag;
 	}
-
+	 */
+	/*
 	@ModDependent(ModList.APPENG)
 	private ElementTagCompound getFromAECrafting(ItemStack is) {
 		ElementTagCompound tag = new ElementTagCompound();
@@ -403,6 +398,7 @@ public class ItemElementCalculator {
 		}
 		return tag;
 	}
+	 */
 
 	//In case of multiple recipes, need to take cheapest tag of each color possible, as risk exploit otherwise
 	//check : Crafting, Smelting, TE3 machines, BC laser table, ChromatiCraft manufacture, TiC, Thaumcraft
@@ -426,7 +422,7 @@ public class ItemElementCalculator {
 		if (ModList.BCSILICON.isLoaded())
 			;//tag.addButMinimizeWith(this.getFromBCLasers(is));
 		if (ModList.TINKERER.isLoaded())
-			tag.addButMinimizeWith(this.getFromTinkerTable(is));
+			;//tag.addButMinimizeWith(this.getFromTinkerTable(is));
 		if (ModList.APPENG.isLoaded())
 			;//tag.addButMinimizeWith(this.getFromAECrafting(is));
 		for (ItemInOutHandler h : handlers) {
@@ -532,10 +528,10 @@ public class ItemElementCalculator {
 
 	static {
 		if (ModList.TINKERER.isLoaded()) {
-			toolRecipeHeads = loadField(ToolRecipe.class, "headList");
-			toolRecipeHandles = loadField(ToolRecipe.class, "handleList");
-			toolRecipeAccessories = loadField(ToolRecipe.class, "accessoryList");
-			toolRecipeExtras = loadField(ToolRecipe.class, "extraList");
+			toolRecipeHeads = loadField("tconstruct.library.crafting.ToolRecipe", "headList");
+			toolRecipeHandles = loadField("tconstruct.library.crafting.ToolRecipe", "handleList");
+			toolRecipeAccessories = loadField("tconstruct.library.crafting.ToolRecipe", "accessoryList");
+			toolRecipeExtras = loadField("tconstruct.library.crafting.ToolRecipe", "extraList");
 		}
 
 		if (ModList.THERMALEXPANSION.isLoaded()) {

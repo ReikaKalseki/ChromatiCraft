@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -24,7 +25,8 @@ public class AltarTunnel extends StructurePiece {
 	public final ForgeDirection direction;
 	private final ForgeDirection left;
 
-	public AltarTunnel(ForgeDirection dir, int len) {
+	public AltarTunnel(DimensionStructureGenerator g, ForgeDirection dir, int len) {
+		super(g);
 		direction = dir;
 		length = len;
 		left = ReikaDirectionHelper.getLeftBy90(dir);

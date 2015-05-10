@@ -22,17 +22,15 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class AltarGenerator extends DimensionStructureGenerator {
 
-	private final AltarCenter center = new AltarCenter();
-
-	int posY = 0;
-	int lastPosY;
+	private int posY = 0;
+	private int lastPosY;
 
 	@Override
 	public void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 
 		posY = 10+rand.nextInt(30);
 		posY = 80;
-		center.generate(world, chunkX, posY, chunkZ);
+		new AltarCenter(this).generate(world, chunkX, posY, chunkZ);
 
 		ArrayList<ForgeDirection> li = new ArrayList();
 		for (int i = 2; i < 6; i++) {
@@ -48,11 +46,11 @@ public class AltarGenerator extends DimensionStructureGenerator {
 			return;
 		for (ForgeDirection dir : li) {
 			int len = 8+rand.nextInt(32);
-			AltarTunnel at = new AltarTunnel(dir, len);
+			AltarTunnel at = new AltarTunnel(this, dir, len);
 			int dx = x+dir.offsetX*step;
 			int dz = z+dir.offsetZ*step;
 			at.generate(world, dx, y, dz);
-			AltarNode node = new AltarNode(rand.nextBoolean());
+			AltarNode node = new AltarNode(this, rand.nextBoolean());
 			int dx2 = dx+dir.offsetX*(len+5);
 			int dz2 = dz+dir.offsetZ*(len+5);
 			node.generate(world, dx2, y, dz2);

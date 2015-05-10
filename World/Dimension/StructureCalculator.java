@@ -84,7 +84,7 @@ public class StructureCalculator implements Runnable {
 			int r = 200;//ReikaRandomHelper.getRandomPlusMinus(5000, 4000);
 			int x = structureOriginX+(int)(r*MathHelper.cos(ang));
 			int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
-			s.generator.getGenerator().calculate(x, z, s.color, rand);
+			s.generator.getGenerator().startCalculate(x, z, s.color, rand);
 			if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
 				ReikaJavaLibrary.pConsole("CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+x+", "+z);
 			}

@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -159,10 +160,10 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 			}
 			if (this.shouldGiveEffects(color) && this.performEffect(color)) {
 				int r = this.getRange();
-				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);
+				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 				List<EntityLivingBase> inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 				for (EntityLivingBase e : inbox) {
-					if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= 4) {
+					if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
 						this.applyEffectFromColor(this.getDuration(color), this.getPotionLevel(color), e, color);
 					}
 				}

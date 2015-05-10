@@ -31,7 +31,7 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 		CRACK("Crack"),
 		MOSS("Moss"),
 		GLASS("Glass"),
-		LIGHT("Window"),
+		LIGHT("Light"),
 		CRACKS("Cracks");
 
 		public final String name;

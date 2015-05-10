@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -20,11 +21,12 @@ public class AltarNode extends StructurePiece {
 
 	public final boolean Yshunt;
 
-	public AltarNode() {
-		this(false);
+	public AltarNode(DimensionStructureGenerator g) {
+		this(g, false);
 	}
 
-	public AltarNode(boolean y) {
+	public AltarNode(DimensionStructureGenerator g, boolean y) {
+		super(g);
 		Yshunt = y;
 	}
 
