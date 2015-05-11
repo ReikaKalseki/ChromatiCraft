@@ -10,13 +10,14 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
-import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Base.LockLevel;
+import Reika.ChromatiCraft.Block.Dimension.BlockLockKey.LockChannel;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class LocksRoom1 extends StructurePiece {
+public class LocksRoomHouse extends LockLevel {
 
-	public LocksRoom1(DimensionStructureGenerator g) {
-		super(g);
+	public LocksRoomHouse(DimensionStructureGenerator g) {
+		super(g, LockChannel.HOUSE);
 	}
 
 	@Override

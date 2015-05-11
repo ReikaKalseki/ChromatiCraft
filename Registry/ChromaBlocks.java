@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
+import Reika.ChromatiCraft.Block.Dimension.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
@@ -66,7 +67,6 @@ import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLog;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLockKey;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -79,6 +79,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLockKey;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLumenRelay;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
@@ -136,9 +137,9 @@ public enum ChromaBlocks implements BlockEnum {
 	VOIDRIFT(BlockVoidRift.class,				ItemBlockDyeTypes.class,		"chroma.voidrift"),
 	DIMGEN(BlockDimensionDeco.class,			ItemBlockMultiType.class,		"chroma.dimdeco"),
 	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2"),
-	COLORLOCK(BlockColoredLock.class,			ItemBlockDyeTypes.class,		"chroma.colorlock"),
+	COLORLOCK(BlockColoredLock.class,											"chroma.colorlock"),
 	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
-	LOCKKEY(BlockLockKey.class,													"chroma.lockkey"),
+	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog");
 
@@ -312,6 +313,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
 		case DIMGEN:
 			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.Types.list[meta].name().toLowerCase());
+		case LOCKKEY:
+			return this.getBasicName();
 		default:
 			return "";
 		}
@@ -319,17 +322,20 @@ public enum ChromaBlocks implements BlockEnum {
 
 	@Override
 	public boolean hasMultiValuedName() {
-		if (this == TANK)
+		switch(this) {
+		case TANK:
+		case TNT:
+		case FENCE:
+		case LOOTCHEST:
+		case HEATLAMP:
+		case COLORLOCK:
+		case LOCKKEY:
+		case GLOWLOG:
+		case GLOWLEAF:
 			return false;
-		if (this == TNT)
-			return false;
-		if (this == FENCE)
-			return false;
-		if (this == LOOTCHEST)
-			return false;
-		if (this == HEATLAMP)
-			return false;
-		return true;
+		default:
+			return true;
+		}
 	}
 
 	public boolean isCrystal() {
@@ -357,6 +363,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return BlockStructureShield.BlockType.list.length;
 		case DIMGEN:
 			return BlockDimensionDeco.Types.list.length;
+		case LOCKKEY:
+			return BlockLockKey.LockChannel.lockList.length;
 		default:
 			return 1;
 		}

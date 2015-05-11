@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Render.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
+import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
@@ -99,6 +100,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final VoidRiftRenderer vrift = new VoidRiftRenderer();
 	private static final DimensionDecoRenderer dimgen = new DimensionDecoRenderer();
 	private static final GlowTreeRenderer glowtree = new GlowTreeRenderer();
+	private static final ColorLockRenderer colorlock = new ColorLockRenderer();
 	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -225,6 +227,9 @@ public class ChromaClient extends ChromaCommon {
 
 		glowTreeRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(glowTreeRender, glowtree);
+
+		colorLockRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(colorLockRender, colorlock);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);
