@@ -58,9 +58,12 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 		if (!worldObj.isRemote) {
 			//ReikaJavaLibrary.pConsole(xCoord+dx);
 			ReikaWorldHelper.setBiomeForXZ(worldObj, dx, dz, biome);
+			//ReikaJavaLibrary.pConsole("Setting biome "+biome+" @ "+dx+", "+dz);
 		}
 		else {
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, biome.biomeID);
+			int id = biome != null ? biome.biomeID : -1;
+			//ReikaJavaLibrary.pConsole("Setting biome "+biome+" with ID "+id+" @ "+dx+", "+dz);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, id);
 		}
 	}
 

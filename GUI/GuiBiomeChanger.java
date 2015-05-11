@@ -24,7 +24,6 @@ import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -33,9 +32,7 @@ import Reika.DragonAPI.Instantiable.GUI.ColorDistributor;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
-import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
 public class GuiBiomeChanger extends GuiChromaBase {
@@ -80,11 +77,13 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	private final TileEntityBiomePainter tile;
 	private final RegionMap<BiomeGenBase> biomeRegions = new RegionMap();
 
-	private GuiPainter painter;
+	private BiomePainter painter;
 	private GuiTextField search;
 	private GuiPages page = GuiPages.PAINT;
 
 	private boolean erase = false;
+
+	private int frame = 0;
 
 	public GuiBiomeChanger(EntityPlayer ep, TileEntityBiomePainter te) {
 		super(new CoreContainer(ep, te), ep, te);
@@ -177,7 +176,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 				if (biome != null || painter.activeElement != null)
 					//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
 					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
-				painter.activeElement = biome != null ? biomeEntries.get(biome) : null;
+				painter.activeElement = erase ? fallback : biome != null ? biomeEntries.get(biome) : null;
 			}
 		}
 	}
@@ -191,6 +190,9 @@ public class GuiBiomeChanger extends GuiChromaBase {
 				//this.recalcSelectedBiomes();
 			}
 		}
+
+		if (erase)
+			painter.activeElement = fallback;
 	}
 
 	private void recalcSelectedBiomes() {
@@ -249,8 +251,12 @@ public class GuiBiomeChanger extends GuiChromaBase {
 			search.drawTextBox();
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
+		frame++;
 
 		if (page == GuiPages.PAINT) {
+			if (frame < 5 || frame%8 == 0) {
+				this.redrawBiomes();
+			}
 			painter.onRenderTick(a, b);
 			painter.draw();
 			painter.drawLegend(fontRendererObj, j+10+TileEntityBiomePainter.RANGE*2+3, k+ySize/2-TileEntityBiomePainter.RANGE);
@@ -262,16 +268,59 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		api.drawCenteredStringNoShadow(fontRendererObj, "Brush: "+painter.brush.name, j+xSize/2, k+190, 0xffffff);
 	}
 
+	private void redrawBiomes() {
+		for (int ix = -tile.RANGE; ix <= tile.RANGE; ix++) {
+			for (int iz = -tile.RANGE; iz <= tile.RANGE; iz++) {
+				int dx = tile.xCoord+ix;
+				int dz = tile.zCoord+iz;
+				BiomeGenBase biome = tile.worldObj.getBiomeGenForCoords(dx, dz);
+				BiomePaint bp = biomeEntries.get(biome);
+				if (bp != null) {
+					painter.force(ix+tile.RANGE, iz+tile.RANGE, bp);
+				}
+			}
+		}
+	}
+
 	@Override
 	public String getGuiTexture() {
 		return "biome";
 	}
 
+	private static final PaintElement fallback = new PaintElement() {
+
+		@Override
+		public void draw(int x, int y, int s) {
+			//api.drawRect(x, y, s, s, 0, true); //transparent
+		}
+
+		@Override
+		public String getName() {
+			return "Natural";
+		}
+
+		@Override
+		public boolean isPaintable(PaintElement original) {
+			return true;
+		}
+
+		@Override
+		public void onPaintedTo(int x, int y) {
+			GuiBiomeChanger gui = (GuiBiomeChanger)Minecraft.getMinecraft().currentScreen;
+			if (gui == null)
+				return;
+			int dx = gui.tile.xCoord+x-TileEntityBiomePainter.RANGE;
+			int dz = gui.tile.zCoord+y-TileEntityBiomePainter.RANGE;
+			gui.painter.erase(x, y);
+			gui.tile.changeBiomeAt(dx, dz, null);
+		}
+
+	};
+
 	private static class BiomePaint implements PaintElement {
 
 		private final BiomeGenBase biome;
 		private final int color;
-		private final GuiBiomeChanger gui = (GuiBiomeChanger)Minecraft.getMinecraft().currentScreen;
 
 		private BiomePaint(BiomeGenBase b, int c) {
 			color = 0xff000000 | c;
@@ -290,23 +339,20 @@ public class GuiBiomeChanger extends GuiChromaBase {
 
 		@Override
 		public boolean isPaintable(PaintElement original) {
-			return TileEntityBiomePainter.getValidBiomesFor(((BiomePaint)original).biome).contains(biome);
+			return original == fallback || TileEntityBiomePainter.getValidBiomesFor(((BiomePaint)original).biome).contains(biome);
 		}
 
 		@Override
 		public void onPaintedTo(int x, int y) {
+			GuiBiomeChanger gui = (GuiBiomeChanger)Minecraft.getMinecraft().currentScreen;
 			if (gui == null) {
-				ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui: "+gui+"/"+gui != null ? gui.tile : "/?");
+				//ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui: "+gui+"/"+gui != null ? gui.tile : "/?");
+				ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui");
 				return;
 			}
 			int dx = gui.tile.xCoord+x-TileEntityBiomePainter.RANGE;
 			int dz = gui.tile.zCoord+y-TileEntityBiomePainter.RANGE;
-			if (gui.erase) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), gui.tile, dx, dz, -1);
-				gui.painter.erase(x, y);
-			}
-			else
-				gui.tile.changeBiomeAt(dx, dz, biome); //113, 118
+			gui.tile.changeBiomeAt(dx, dz, biome);
 		}
 
 	}
@@ -319,12 +365,21 @@ public class GuiBiomeChanger extends GuiChromaBase {
 			super(x, y, w, h, s);
 			tile = te;
 			this.init();
-			ReikaJavaLibrary.pConsole(biomeEntries+":"+this.getFallbackEntry(0, 0));
+			//ReikaJavaLibrary.pConsole(biomeEntries+":"+this.getFallbackEntry(0, 0));
+		}
+
+		@Override
+		protected PaintElement getDefaultEntry(int x, int y) {
+			return null;
 		}
 
 		@Override
 		protected PaintElement getFallbackEntry(int x, int y) {
-			return biomeEntries.get(tile.getNaturalBiomeAt(x, y));
+			return fallback;
+		}
+
+		private void force(int x, int y, BiomePaint bp) {
+			this.put(x, y, bp);
 		}
 
 	}
