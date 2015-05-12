@@ -88,14 +88,14 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 		Collection<CrystalElement> c = te.getColors();
 		if (!c.isEmpty()) {
 			v5.addTranslation(x, y, z);
-			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
 			IIcon[] ico = new IIcon[]{ChromaIcons.BASICFADE.getIcon(), ChromaIcons.FRAME.getIcon()};
-			int s = (int)Math.ceil(Math.sqrt(c.size()));
-			double dx = s == 1 ? 0.25 : 0.0625;
-			double dy = s == 1 ? 0.25 : 0.0625;
+			int s = c.size();
+			double iy = 0.0625;
+			double dx = 0.0625;
 			//s will never be more than 4
-			double w = s == 1 ? 0.5 : s == 2 ? 0.375 : s == 3 ? 0.25 : 0.1875;
-			double sp = s == 2 ? 0.5 : s == 3 ? 0.3125 : 0.2275;
+			double spc = 0.03125;
+			double w = (1D-(dx*2D)-spc*(s-1))/s;
+			double sp = spc+w;
 			double o = 0.001;
 			for (CrystalElement e : c) {
 				if (!BlockColoredLock.isOpen(e, te.getChannel())) {
@@ -103,9 +103,12 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 						if (i == 0) {
 							int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.getModifiedSat(e.getColor(), 0.85F), 0.85F);
 							v5.setColorRGBA_I(clr, 192);
+							v5.setBrightness(240);
 						}
-						else
+						else {
 							v5.setColorOpaque_I(0xffffff);
+							v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
+						}
 
 						for (int k = 0; k < 4; k++) {
 
@@ -122,38 +125,34 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 
 							switch(k) {
 							case 0:
-								v5.addVertexWithUV(1+o, dx, dy, du, v);
-								v5.addVertexWithUV(1+o, dx+w, dy, u, v);
-								v5.addVertexWithUV(1+o, dx+w, dy+w, u, dv);
-								v5.addVertexWithUV(1+o, dx, dy+w, du, dv);
+								v5.addVertexWithUV(1+o, dx, iy, du, v);
+								v5.addVertexWithUV(1+o, dx+w, iy, u, v);
+								v5.addVertexWithUV(1+o, dx+w, 1-iy, u, dv);
+								v5.addVertexWithUV(1+o, dx, 1-iy, du, dv);
 								break;
 							case 1:
-								v5.addVertexWithUV(dy+w, dx, 1+o, du, dv);
-								v5.addVertexWithUV(dy+w, dx+w, 1+o, u, dv);
-								v5.addVertexWithUV(dy, dx+w, 1+o, u, v);
-								v5.addVertexWithUV(dy, dx, 1+o, du, v);
+								v5.addVertexWithUV(1-iy, dx, 1+o, du, dv);
+								v5.addVertexWithUV(1-iy, dx+w, 1+o, u, dv);
+								v5.addVertexWithUV(iy, dx+w, 1+o, u, v);
+								v5.addVertexWithUV(iy, dx, 1+o, du, v);
 								break;
 							case 2:
-								v5.addVertexWithUV(-o, dx, dy+w, du, dv);
-								v5.addVertexWithUV(-o, dx+w, dy+w, u, dv);
-								v5.addVertexWithUV(-o, dx+w, dy, u, v);
-								v5.addVertexWithUV(-o, dx, dy, du, v);
+								v5.addVertexWithUV(-o, dx, 1-iy, du, dv);
+								v5.addVertexWithUV(-o, dx+w, 1-iy, u, dv);
+								v5.addVertexWithUV(-o, dx+w, iy, u, v);
+								v5.addVertexWithUV(-o, dx, iy, du, v);
 								break;
 							case 3:
-								v5.addVertexWithUV(dy, dx, -o, du, v);
-								v5.addVertexWithUV(dy, dx+w, -o, u, v);
-								v5.addVertexWithUV(dy+w, dx+w, -o, u, dv);
-								v5.addVertexWithUV(dy+w, dx, -o, du, dv);
+								v5.addVertexWithUV(iy, dx, -o, du, v);
+								v5.addVertexWithUV(iy, dx+w, -o, u, v);
+								v5.addVertexWithUV(1-iy, dx+w, -o, u, dv);
+								v5.addVertexWithUV(1-iy, dx, -o, du, dv);
 								break;
 							}
 						}
 					}
 
 					dx += sp;
-					if (dx+w >= 1) {
-						dx = 0.0625;
-						dy += sp;
-					}
 				}
 			}
 			v5.addTranslation(-x, -y, -z);

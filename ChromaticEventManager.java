@@ -140,6 +140,30 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventMovingKeyThroughFence(EntityItemPickupEvent evt) {
+		if (ReikaItemHelper.matchStackWithBlock(evt.item.getEntityItem(), ChromaBlocks.LOCKKEY.getBlockInstance())) {
+			int x = MathHelper.floor_double(evt.entityPlayer.posX);
+			int y = MathHelper.floor_double(evt.entityPlayer.posY);
+			int z = MathHelper.floor_double(evt.entityPlayer.posZ);
+			Block b = ChromaBlocks.LOCKFENCE.getBlockInstance();
+			boolean flag =
+					evt.entityPlayer.worldObj.getBlock(x, y, z-1) == b ||
+					evt.entityPlayer.worldObj.getBlock(x, y, z) == b ||
+					evt.entityPlayer.worldObj.getBlock(x, y, z+1) == b ||
+					evt.entityPlayer.worldObj.getBlock(x-1, y, z-1) == b ||
+					evt.entityPlayer.worldObj.getBlock(x-1, y, z) == b ||
+					evt.entityPlayer.worldObj.getBlock(x-1, y, z+1) == b ||
+					evt.entityPlayer.worldObj.getBlock(x+1, y, z-1) == b ||
+					evt.entityPlayer.worldObj.getBlock(x+1, y, z) == b ||
+					evt.entityPlayer.worldObj.getBlock(x+1, y, z+1) == b
+					;
+			if (flag) {
+				evt.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void preventStructureMining(BlockEvent.BreakEvent evt) {
 		if (!evt.getPlayer().capabilities.isCreativeMode) {
 			if (evt.block == ChromaBlocks.PYLON.getBlockInstance()) {

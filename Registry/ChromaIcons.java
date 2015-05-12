@@ -54,6 +54,7 @@ public enum ChromaIcons {
 	PURPLESPIN("purplespin"),
 	ROSES("roses"),
 	BASICFADE("basicfade"),
+	BASICFADE_FAST("basicfade_f"),
 	FRAME("frame");
 
 	private IIcon icon;

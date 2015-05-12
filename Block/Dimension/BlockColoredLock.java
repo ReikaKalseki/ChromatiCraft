@@ -83,6 +83,8 @@ public class BlockColoredLock extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		ItemStack is = ep.getCurrentEquippedItem();
+		if (is != null && ReikaItemHelper.matchStackWithBlock(is, this))
+			return false;
 		if (ep.capabilities.isCreativeMode) {
 			TileEntityColorLock te = (TileEntityColorLock)world.getTileEntity(x, y, z);
 			if (ChromaItems.SHARD.matchWith(is)) {

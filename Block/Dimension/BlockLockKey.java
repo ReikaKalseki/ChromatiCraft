@@ -99,7 +99,7 @@ public class BlockLockKey extends Block {
 			return;
 		lastPlace = world.getTotalWorldTime();
 
-		for (int i = 2; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
@@ -125,7 +125,7 @@ public class BlockLockKey extends Block {
 		if (world.isRemote)
 			return;
 
-		for (int i = 2; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;

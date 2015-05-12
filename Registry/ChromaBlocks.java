@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
 import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
+import Reika.ChromatiCraft.Block.Dimension.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
@@ -139,6 +140,7 @@ public enum ChromaBlocks implements BlockEnum {
 	DIMGENTILE(BlockDimensionDecoTile.class,	ItemBlockMultiType.class,		"chroma.dimdeco2"),
 	COLORLOCK(BlockColoredLock.class,											"chroma.colorlock"),
 	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
+	LOCKFENCE(BlockLockFence.class,												"chroma.lockfence"),
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog");
@@ -330,6 +332,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case HEATLAMP:
 		case COLORLOCK:
 		case LOCKKEY:
+		case LOCKFENCE:
 		case GLOWLOG:
 		case GLOWLEAF:
 			return false;

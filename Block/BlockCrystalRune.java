@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -71,6 +72,8 @@ public class BlockCrystalRune extends BlockDyeTypes {
 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return -1;
 		TileEntity te = world.getTileEntity(x, y+1, z);
 		if (!(te instanceof TileEntityBase))
 			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
