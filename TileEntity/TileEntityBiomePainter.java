@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -23,10 +25,14 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.GuiController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityBiomePainter extends TileEntityChromaticBase implements GuiController {
 
@@ -34,6 +40,20 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 	private static final MultiMap<BiomeGenBase, BiomeGenBase> availableBiomes = new MultiMap();
 
 	public static final int RANGE = 64;
+
+	@SideOnly(Side.CLIENT)
+	public double angX = rand.nextInt(360);
+	@SideOnly(Side.CLIENT)
+	public double angY = rand.nextInt(360);
+	@SideOnly(Side.CLIENT)
+	public double angZ = rand.nextInt(360);
+
+	@SideOnly(Side.CLIENT)
+	public double rvX;
+	@SideOnly(Side.CLIENT)
+	public double rvY;
+	@SideOnly(Side.CLIENT)
+	public double rvZ;
 
 	public BiomeGenBase getNaturalBiomeAt(int dx, int dz) {
 		return ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, xCoord+dx-RANGE, zCoord+dz-RANGE);
@@ -47,6 +67,21 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		//ReikaJavaLibrary.pConsole(world.getBiomeGenForCoords(x, z)+"/"+ReikaWorldHelper.getNaturalGennedBiomeAt(world, x, z), Side.SERVER);
+		if (world.isRemote) {
+			this.doParticles(world, x, y, z);
+		}
+	}
+
+	private void doParticles(World world, int x, int y, int z) {
+		double px = x+0.0625+rand.nextDouble()*0.875;
+		double py = y+0.0625+rand.nextDouble()*0.875;
+		double pz = z+0.0625+rand.nextDouble()*0.875;
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
+		EntityFX fx = new EntityCenterBlurFX(world, px, py, pz, vx, vy, vz).setGravity(g).setColor(rand.nextInt(0xffffff));
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@Override

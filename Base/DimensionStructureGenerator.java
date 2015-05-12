@@ -75,6 +75,21 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 	}
 
+	public final void generateAll(World w) {
+		world.generateAll(w);
+
+		for (ChunkCoordIntPair cp : dynamicParts.keySet()) {
+			Collection<DynamicPieceLocation> c = dynamicParts.get(cp);
+			if (c != null) {
+				for (DynamicPieceLocation dsp : c) {
+					int x = (cp.chunkXPos << 4)+dsp.relX;
+					int z = (cp.chunkZPos << 4)+dsp.relZ;
+					dsp.generator.generate(w, x, z);
+				}
+			}
+		}
+	}
+
 	public final void clear() {
 		world.clear();
 		dynamicParts.clear();

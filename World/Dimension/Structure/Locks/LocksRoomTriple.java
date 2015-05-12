@@ -25,4 +25,14 @@ public class LocksRoomTriple extends LockLevel {
 
 	}
 
+	@Override
+	public int getWidth() {
+		return 19;
+	}
+
+	@Override
+	public int getLength() {
+		return 27;
+	}
+
 }

@@ -106,9 +106,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 		for (int i = 0; i < DimensionStructureType.types.length; i++) {
 			unusedTypes.add(DimensionStructureType.types[i]);
 		}*/
-		for (StructurePair s : structures)
-			s.generator.getGenerator().clear();
-		structures.clear();
 		this.regenerateStructures();
 		gennedMonument = false;
 	}
@@ -119,6 +116,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	static void regenerateStructures() {
 		generatingStructures = true;
+		for (StructurePair s : structures)
+			s.generator.getGenerator().clear();
+		structures.clear();
 		StructureCalculator thread = new StructureCalculator();
 		new Thread(thread, "ChromatiCraft Structure Gen").start();
 	}

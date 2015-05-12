@@ -355,6 +355,8 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		pathCache.clear();
 		coordCache.clear();
 		locationCache.clear();
+		step = null;
+		nextDir = null;
 		//step.clear();
 		//nextTemp.clear();
 	}

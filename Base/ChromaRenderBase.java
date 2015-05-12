@@ -57,9 +57,13 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, Object... args) {
+		this.renderModel(tile, model, this.getTextureFolder()+this.getImageFileName(tile), args);
+	}
+
+	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, String tex, Object... args) {
 		if (MinecraftForgeClient.getRenderPass() != 0 && tile.isInWorld())
 			return;
-		this.bindTextureByName(this.getTextureFolder()+this.getImageFileName(tile));
+		this.bindTextureByName(tex);
 		GL11.glPushMatrix();
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 		GL11.glTranslatef(0.5F, -1.5F, -0.5F);

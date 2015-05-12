@@ -25,4 +25,14 @@ public class LocksRoomLayer extends LockLevel {
 
 	}
 
+	@Override
+	public int getWidth() {
+		return 0;
+	}
+
+	@Override
+	public int getLength() {
+		return 0;
+	}
+
 }

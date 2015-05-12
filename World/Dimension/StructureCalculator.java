@@ -59,8 +59,12 @@ public class StructureCalculator implements Runnable {
 			if (e instanceof OutOfMemoryError)
 				throw (OutOfMemoryError)e;
 			boolean redo = attempt < 10;
-			String sg = "Error calculating structures: "+e.toString()+"! "+(redo ? "Re-attempting..." : "Already failed too many times. Giving up.");
-			ChromatiCraft.logger.logError(sg);
+			StackTraceElement[] st = e.getStackTrace();
+			String sg = "Error calculating structures: "+e.toString()+" @ "+st[0]+" @ "+st[1]+" @ "+st[2]+" @ "+st[3]+" @ "+st[4]+" @ "+st[5]+"! ";
+			String end = (redo ? "Re-attempting..." : "Already failed too many times. Giving up.");
+			ChromatiCraft.logger.logError(sg+end);
+			for (StructurePair p : ChunkProviderChroma.structures)
+				p.generator.getGenerator().clear();
 			ChunkProviderChroma.structures.clear();
 			if (redo)
 				this.generate(attempt+1);

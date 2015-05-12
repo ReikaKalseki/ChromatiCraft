@@ -46,4 +46,7 @@ public abstract class LockLevel extends StructurePiece {
 
 	}
 
+	public abstract int getWidth();
+	public abstract int getLength();
+
 }

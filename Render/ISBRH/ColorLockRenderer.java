@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock.TileEntityColorLock;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -89,11 +89,7 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 		if (!c.isEmpty()) {
 			v5.addTranslation(x, y, z);
 			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
-			IIcon ico = ChromaBlocks.CRYSTAL.getBlockInstance().getIcon(0, 0);
-			float u = ico.getMinU();
-			float v = ico.getMinV();
-			float du = ico.getMaxU();
-			float dv = ico.getMaxV();
+			IIcon[] ico = new IIcon[]{ChromaIcons.BASICFADE.getIcon(), ChromaIcons.FRAME.getIcon()};
 			int s = (int)Math.ceil(Math.sqrt(c.size()));
 			double dx = s == 1 ? 0.25 : 0.0625;
 			double dy = s == 1 ? 0.25 : 0.0625;
@@ -103,26 +99,55 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 			double o = 0.001;
 			for (CrystalElement e : c) {
 				if (!BlockColoredLock.isOpen(e, te.getChannel())) {
-					v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.getModifiedSat(e.getColor(), 0.85F), 0.85F), 192);
-					v5.addVertexWithUV(1+o, dx, dy, u, v);
-					v5.addVertexWithUV(1+o, dx+w, dy, du, v);
-					v5.addVertexWithUV(1+o, dx+w, dy+w, du, dv);
-					v5.addVertexWithUV(1+o, dx, dy+w, u, dv);
+					for (int i = 0; i < ico.length; i++) {
+						if (i == 0) {
+							int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.getModifiedSat(e.getColor(), 0.85F), 0.85F);
+							v5.setColorRGBA_I(clr, 192);
+						}
+						else
+							v5.setColorOpaque_I(0xffffff);
 
-					v5.addVertexWithUV(-o, dx, dy+w, u, dv);
-					v5.addVertexWithUV(-o, dx+w, dy+w, du, dv);
-					v5.addVertexWithUV(-o, dx+w, dy, du, v);
-					v5.addVertexWithUV(-o, dx, dy, u, v);
+						for (int k = 0; k < 4; k++) {
 
-					v5.addVertexWithUV(dy+w, dx, 1+o, u, dv);
-					v5.addVertexWithUV(dy+w, dx+w, 1+o, du, dv);
-					v5.addVertexWithUV(dy, dx+w, 1+o, du, v);
-					v5.addVertexWithUV(dy, dx, 1+o, u, v);
+							float u = ico[i].getMinU();
+							float v = ico[i].getMinV();
+							float du = ico[i].getMaxU();
+							float dv = ico[i].getMaxV();
 
-					v5.addVertexWithUV(dy, dx, -o, u, v);
-					v5.addVertexWithUV(dy, dx+w, -o, du, v);
-					v5.addVertexWithUV(dy+w, dx+w, -o, du, dv);
-					v5.addVertexWithUV(dy+w, dx, -o, u, dv);
+							if (k == 0 || k == 3) {
+								float scr = v;
+								v = dv;
+								dv = scr;
+							}
+
+							switch(k) {
+							case 0:
+								v5.addVertexWithUV(1+o, dx, dy, du, v);
+								v5.addVertexWithUV(1+o, dx+w, dy, u, v);
+								v5.addVertexWithUV(1+o, dx+w, dy+w, u, dv);
+								v5.addVertexWithUV(1+o, dx, dy+w, du, dv);
+								break;
+							case 1:
+								v5.addVertexWithUV(dy+w, dx, 1+o, du, dv);
+								v5.addVertexWithUV(dy+w, dx+w, 1+o, u, dv);
+								v5.addVertexWithUV(dy, dx+w, 1+o, u, v);
+								v5.addVertexWithUV(dy, dx, 1+o, du, v);
+								break;
+							case 2:
+								v5.addVertexWithUV(-o, dx, dy+w, du, dv);
+								v5.addVertexWithUV(-o, dx+w, dy+w, u, dv);
+								v5.addVertexWithUV(-o, dx+w, dy, u, v);
+								v5.addVertexWithUV(-o, dx, dy, du, v);
+								break;
+							case 3:
+								v5.addVertexWithUV(dy, dx, -o, du, v);
+								v5.addVertexWithUV(dy, dx+w, -o, u, v);
+								v5.addVertexWithUV(dy+w, dx+w, -o, u, dv);
+								v5.addVertexWithUV(dy+w, dx, -o, du, dv);
+								break;
+							}
+						}
+					}
 
 					dx += sp;
 					if (dx+w >= 1) {

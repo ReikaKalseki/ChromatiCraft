@@ -59,6 +59,7 @@ import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
+import Reika.ChromatiCraft.Auxiliary.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
@@ -603,6 +604,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ChromabilityCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
 		evt.registerServerCommand(new ChromaResearchDebugCommand());
+		evt.registerServerCommand(new StructureGenCommand());
 	}
 
 	@EventHandler
