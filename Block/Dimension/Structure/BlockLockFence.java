@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension;
+package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class BlockLockFence extends Block {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		blockIcon = ico.registerIcon("chromaticraft:basic/lockfence");
+		blockIcon = ico.registerIcon("chromaticraft:dimstruct/lockfence");
 	}
 
 	@Override

@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension;
+package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +40,7 @@ import Reika.DragonAPI.Interfaces.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockColoredLock extends BlockContainer {
@@ -65,7 +66,7 @@ public class BlockColoredLock extends BlockContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < 2; i++) {
-			icons[i] = ico.registerIcon("chromaticraft:basic/colorlock_"+i);
+			icons[i] = ico.registerIcon("chromaticraft:dimstruct/colorlock_"+i);
 		}
 	}
 
@@ -96,6 +97,7 @@ public class BlockColoredLock extends BlockContainer {
 			else if (is != null && ReikaItemHelper.matchStackWithBlock(is, Blocks.obsidian)) {
 				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 			}
+			te.recalc();
 		}
 		world.markBlockForUpdate(x, y, z);
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
@@ -152,7 +154,7 @@ public class BlockColoredLock extends BlockContainer {
 		private HashSet<CrystalElement> colors = new HashSet();
 		private static Collection<WorldLocation> cache = new HashSet();
 		private boolean ticked = false;
-		private long queuedUpdate;
+		private int queueTick;
 
 		public TileEntityColorLock addColor(CrystalElement e) {
 			colors.add(e);
@@ -170,6 +172,8 @@ public class BlockColoredLock extends BlockContainer {
 		}
 
 		private void close() {
+			if (queueTick > 0)
+				return;
 			isOpen = false;
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
 			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
@@ -187,9 +191,9 @@ public class BlockColoredLock extends BlockContainer {
 				this.close();
 				ticked = true;
 			}
-			if (queuedUpdate > 0) {
-				if (worldObj.getTotalWorldTime() >= queuedUpdate) {
-					queuedUpdate = 0;
+			if (queueTick > 0) {
+				queueTick--;
+				if (queueTick == 0) {
 					this.recalc();
 				}
 			}
@@ -274,6 +278,10 @@ public class BlockColoredLock extends BlockContainer {
 			return channel;
 		}
 
+		public boolean isHeldOpen() {
+			return isOpen && queueTick > 0;
+		}
+
 		private void recalcGate() {
 			this.updateState(gateCodes[channel] == 0);
 		}
@@ -291,12 +299,13 @@ public class BlockColoredLock extends BlockContainer {
 	}
 
 	public static boolean isOpen(CrystalElement e, int structIndex) {
-		return keyCodes[structIndex][e.ordinal()] > 0;
+		return keyCodes[structIndex][e.ordinal()] > 0 || whiteLock[structIndex] > 0;
 	}
 
 	public static void openColor(CrystalElement e, World world, int structIndex) {
 		if (e == CrystalElement.WHITE) {
 			whiteLock[structIndex]++;
+			//ReikaJavaLibrary.pConsole("add @ "+structIndex);
 		}
 		else {
 			keyCodes[structIndex][e.ordinal()]++;
@@ -308,6 +317,7 @@ public class BlockColoredLock extends BlockContainer {
 	public static void closeColor(CrystalElement e, World world, int structIndex) {
 		if (e == CrystalElement.WHITE) {
 			whiteLock[structIndex]--;
+			//ReikaJavaLibrary.pConsole("remove @ "+structIndex);
 		}
 		else {
 			keyCodes[structIndex][e.ordinal()]--;
@@ -316,16 +326,19 @@ public class BlockColoredLock extends BlockContainer {
 		updateTiles(world, -1);
 	}
 
-	public static void freezeLocks(World world, int structIndex) {
-		long time = world.getTotalWorldTime()+100;
+	public static void freezeLocks(World world, int structIndex, int time) {
 		updateTiles(world, time);
 	}
 
-	private static void updateTiles(World world, long time) {
+	private static void updateTiles(World world, int time) {
 		for (WorldLocation loc : TileEntityColorLock.cache) {
 			TileEntityColorLock te = (TileEntityColorLock)world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+			if (te == null) {
+				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
+				continue;
+			}
 			if (time >= 0)
-				te.queuedUpdate = time;
+				te.queueTick = time;
 			else
 				te.recalc();
 		}

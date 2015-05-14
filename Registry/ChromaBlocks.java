@@ -52,13 +52,16 @@ import Reika.ChromatiCraft.Block.Crystal.BlockCrystalLamp;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Block.Crystal.BlockRainbowCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockSuperCrystal;
-import Reika.ChromatiCraft.Block.Dimension.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
-import Reika.ChromatiCraft.Block.Dimension.BlockLockFence;
-import Reika.ChromatiCraft.Block.Dimension.BlockLockKey;
-import Reika.ChromatiCraft.Block.Dimension.BlockStructureDataStorage;
+import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
+import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -66,8 +69,6 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLeaf;
-import Reika.ChromatiCraft.Block.Worldgen.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -141,6 +142,7 @@ public enum ChromaBlocks implements BlockEnum {
 	COLORLOCK(BlockColoredLock.class,											"chroma.colorlock"),
 	DIMDATA(BlockStructureDataStorage.class,									"chroma.dimdata"),
 	LOCKFENCE(BlockLockFence.class,												"chroma.lockfence"),
+	LOCKFREEZE(BlockLockFreeze.class,											"chroma.lockfreeze"),
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog");
@@ -333,6 +335,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case COLORLOCK:
 		case LOCKKEY:
 		case LOCKFENCE:
+		case LOCKFREEZE:
 		case GLOWLOG:
 		case GLOWLEAF:
 			return false;

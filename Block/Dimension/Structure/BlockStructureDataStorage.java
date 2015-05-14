@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension;
+package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -30,8 +30,7 @@ public class BlockStructureDataStorage extends BlockContainer {
 	}
 
 	public static enum StructureType {
-		SHIFTMAZE(),
-		LOCKS();
+		SHIFTMAZE();
 	}
 
 }

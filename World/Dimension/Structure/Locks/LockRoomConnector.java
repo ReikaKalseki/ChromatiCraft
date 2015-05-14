@@ -24,9 +24,18 @@ public class LockRoomConnector extends StructurePiece {
 	private final int[] length;
 	private boolean window;
 
-	public LockRoomConnector(DimensionStructureGenerator s, int lenn, int lens, int lenw, int lene) {
+	public LockRoomConnector(DimensionStructureGenerator s, int[] len) {
 		super(s);
-		length = new int[]{lenn, lens, lenw, lene};
+		length = len;
+	}
+
+	public LockRoomConnector(DimensionStructureGenerator s, int lenn, int lens, int lenw, int lene) {
+		this(s, new int[]{lenn, lens, lenw, lene});
+	}
+
+	public LockRoomConnector setLength(ForgeDirection dir, int len) {
+		length[dir.ordinal()-2] = len;
+		return this;
 	}
 
 	public LockRoomConnector setWindowed() {

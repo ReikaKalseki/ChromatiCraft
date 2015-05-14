@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Worldgen;
+package Reika.ChromatiCraft.Block.Dimension;
 
 import java.util.List;
 import java.util.Random;
@@ -100,7 +100,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	{
 		blockIcon = Blocks.leaves.getIcon(0, 0);
 		for (int i = 0; i < overlay.length; i++) {
-			overlay[i] = ico.registerIcon("chromaticraft:basic/glowleaf-light_"+i);
+			overlay[i] = ico.registerIcon("chromaticraft:dimgen/glowleaf-light_"+i);
 		}
 	}
 

@@ -9,15 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.LockLevel;
-import Reika.ChromatiCraft.Block.Dimension.BlockLockKey.LockChannel;
+import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public class LocksRoomPipe extends LockLevel {
 
-	public LocksRoomPipe(DimensionStructureGenerator g) {
-		super(g, LockChannel.PIPE);
+	public LocksRoomPipe(LocksGenerator g) {
+		super(g, null/*LockChannel.PIPE*/);
 	}
 
 	@Override
@@ -33,6 +32,26 @@ public class LocksRoomPipe extends LockLevel {
 	@Override
 	public int getLength() {
 		return 0;
+	}
+
+	@Override
+	public int getEnterExitDX() {
+		return 0;
+	}
+
+	@Override
+	public int getEnterExitDZ() {
+		return 0;
+	}
+
+	@Override
+	public int getDifficultyRating() {
+		return 2;
+	}
+
+	@Override
+	public int getFeatureRating() {
+		return 4;
 	}
 
 }

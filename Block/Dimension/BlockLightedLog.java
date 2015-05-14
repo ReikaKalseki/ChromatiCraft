@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Worldgen;
+package Reika.ChromatiCraft.Block.Dimension;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class BlockLightedLog extends BlockLog implements LightedTreeBlock {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		overlay = ico.registerIcon("chromaticraft:basic/glowlog-light");
+		overlay = ico.registerIcon("chromaticraft:dimgen/glowlog-light");
 	}
 
 	@Override

@@ -7,7 +7,9 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension;
+package Reika.ChromatiCraft.Block.Dimension.Structure;
+
+import java.lang.reflect.Constructor;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -17,9 +19,19 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomBig;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomEntry;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomFence;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomHouse;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomRecurse;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomSpiral;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
 
 public class BlockLockKey extends Block {
 
@@ -27,28 +39,37 @@ public class BlockLockKey extends Block {
 
 	public static enum LockChannel {
 
-		ENTRY("Eniro", 3),
-		BIG("Besar", 4),
-		WHITE("Sapheda", 3),
-		TRIPLE("Yerraki", 4),
-		RECURSION("Saiki", 5),
-		FENCE("Bera", 4),
-		HOUSE("Kuka", 5),
-		SPIRAL("Karkace", 5),
-		PIPE("Rura", 5),
-		COMPLEX("Jatila", 15),
-		LAYER("Shar", 4),
-		END("Ipari", 5);
+		ENTRY("Eniro", 3, LocksRoomEntry.class),
+		BIG("Besar", 4, LocksRoomBig.class),
+		WHITE("Sapheda", 3, LocksRoomWhite.class),
+		TRIPLE("Yerraki", 4, LocksRoomTriple.class),
+		RECURSION("Saiki", 5, LocksRoomRecurse.class),
+		FENCE("Bera", 4, LocksRoomFence.class),
+		HOUSE("Kuka", 5, LocksRoomHouse.class),
+		SPIRAL("Karkace", 5, LocksRoomSpiral.class),
+		//PIPE("Rura", 5, LocksRoomPipe.class),
+		//COMPLEX("Jatila", 15, LocksRoomComplex.class),
+		//LAYER("Shar", 4, LocksRoomLayer.class),
+		//END("Ipari", 5, LocksRoomEnding.class),
+		;
 
 		public final String name;
 		public final int numberKeys;
+		private final Class genClass;
 
-		private LockChannel(String s, int key) {
+		private LockChannel(String s, int key, Class c) {
 			name = s;
 			numberKeys = key;
+			genClass = c;
 		}
 
 		public static final LockChannel[] lockList = values();
+
+		public LockLevel genRoom(LocksGenerator g) throws Exception {
+			Constructor<LockLevel> c = genClass.getDeclaredConstructor(g.getClass());
+			c.setAccessible(true);
+			return c.newInstance(g);
+		}
 	}
 
 	public BlockLockKey(Material mat) {
@@ -71,7 +92,7 @@ public class BlockLockKey extends Block {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		blockIcon = ico.registerIcon("chromaticraft:basic/key");
+		blockIcon = ico.registerIcon("chromaticraft:dimstruct/key");
 	}
 
 	@Override
