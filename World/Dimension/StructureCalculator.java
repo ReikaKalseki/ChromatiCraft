@@ -24,20 +24,15 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class StructureCalculator implements Runnable {
 
-	//private final ChunkProviderChroma provider;
-	//private final ArrayList<StructurePair> structures;
 	private final Random rand = new Random();
-
-	/*
-	StructureCalculator(ChunkProviderChroma p, ArrayList<StructurePair> li, Random r) {
-		rand = r;
-		structures = li;
-		provider = p;
-	}
-	 */
+	private final int maxAttempts;
 
 	StructureCalculator() {
+		this(10);
+	}
 
+	StructureCalculator(int max) {
+		maxAttempts = max;
 	}
 
 	@Override
@@ -48,7 +43,7 @@ public class StructureCalculator implements Runnable {
 		double el = (System.nanoTime()-time)/(10e9);
 		int n = ChunkProviderChroma.structures.size();
 		ChromatiCraft.logger.log(String.format("Dimension structure generation thread complete; %d structures generated. Elapsed time: %.9fs", n, el));
-		ChunkProviderChroma.finishStructureGen();//provider.finishStructureGen();
+		ChunkProviderChroma.finishStructureGen();
 	}
 
 	private void generate(int attempt) throws OutOfMemoryError {
@@ -58,11 +53,22 @@ public class StructureCalculator implements Runnable {
 		catch (Throwable e) {
 			if (e instanceof OutOfMemoryError)
 				throw (OutOfMemoryError)e;
-			boolean redo = attempt < 10;
+			boolean redo = attempt < maxAttempts;
 			StackTraceElement[] st = e.getStackTrace();
-			String sg = "Error calculating structures: "+e.toString()+" @ "+st[0]+" @ "+st[1]+" @ "+st[2]+" @ "+st[3]+" @ "+st[4]+" @ "+st[5]+"! ";
-			String end = (redo ? "Re-attempting..." : "Already failed too many times. Giving up.");
-			ChromatiCraft.logger.logError(sg+end);
+			StringBuilder sb = new StringBuilder();
+			sb.append("Error calculating structures: ");
+			sb.append(e.toString());
+			int n = Math.min(6, st.length);
+			for (int i = 0; i < n; i++) {
+				sb.append(" @ ");
+				sb.append(st[i]);
+			}
+			sb.append("! ");
+			if (redo)
+				sb.append("Re-attempting...");
+			else
+				sb.append("Already failed too many ("+maxAttempts+") times. Giving up.");
+			ChromatiCraft.logger.logError(sb.toString());
 			for (StructurePair p : ChunkProviderChroma.structures)
 				p.generator.getGenerator().clear();
 			ChunkProviderChroma.structures.clear();
@@ -92,7 +98,8 @@ public class StructureCalculator implements Runnable {
 			int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 			s.generator.getGenerator().startCalculate(x, z, s.color, rand);
 			if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
-				ReikaJavaLibrary.pConsole("CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getGenerator().getCentralLocation());
+				String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getGenerator().getCentralBlockCoords();
+				ReikaJavaLibrary.pConsole(sg);
 			}
 		}
 	}

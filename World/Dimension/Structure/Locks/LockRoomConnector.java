@@ -23,6 +23,8 @@ public class LockRoomConnector extends StructurePiece {
 
 	private final int[] length;
 	private boolean window;
+	private int openFloor;
+	private boolean openCeiling;
 
 	public LockRoomConnector(DimensionStructureGenerator s, int[] len) {
 		super(s);
@@ -40,6 +42,16 @@ public class LockRoomConnector extends StructurePiece {
 
 	public LockRoomConnector setWindowed() {
 		window = true;
+		return this;
+	}
+
+	public LockRoomConnector setOpenFloor(int depth) {
+		openFloor = depth;
+		return this;
+	}
+
+	public LockRoomConnector setOpenCeiling() {
+		openCeiling = true;
 		return this;
 	}
 
@@ -104,13 +116,24 @@ public class LockRoomConnector extends StructurePiece {
 			}
 		}
 
-		boolean window = false;
-		if (window) {
+		if (window || openCeiling) {
 			for (int i = -1; i <= 1; i++) {
 				for (int k = -1; k <= 1; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					world.setBlock(dx, y+5, dz, b, mg);
+					world.setBlock(dx, y+5, dz, window ? b : Blocks.air, window ? mg : 0);
+				}
+			}
+		}
+
+		for (int j = 1; j < openFloor; j++) {
+			for (int i = -2; i <= 2; i++) {
+				for (int k = -2; k <= 2; k++) {
+					int dx = x+i;
+					int dy = y-j;
+					int dz = z+k;
+					boolean air = Math.abs(i) <= 1 && Math.abs(k) <= 1;
+					world.setBlock(dx, dy, dz, air ? Blocks.air : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
 				}
 			}
 		}

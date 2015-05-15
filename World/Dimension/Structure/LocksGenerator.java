@@ -38,18 +38,21 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		int y = 140;
 
 		ForgeDirection dir = ReikaDirectionHelper.getRandomDirection(false, rand);
-		LocksEntrance enter = new LocksEntrance(this, dir, 6+rand.nextInt(5));
+		this.addDynamicStructure(new LocksEntrance(this, dir, 6+rand.nextInt(5)));
 		enter.generate(world, x, y, z);
 
-		x += (enter.radius+1)*dir.offsetX;
-		z += (enter.radius+1)*dir.offsetZ;
-
-		int len = 4+rand.nextInt(8);
 		int len2 = 2+rand.nextInt(4);
+		int len = 4+rand.nextInt(8);
 		int[] lens = new int[4];
-		lens[dir.ordinal()-2] = len;
-		lens[dir.getOpposite().ordinal()-2] = len2;
-		new LockRoomConnector(this, lens).generate(world, x, y, z);
+		//lens[dir.ordinal()-2] = len2; //far side
+		lens[dir.getOpposite().ordinal()-2] = len; //near side
+
+		int d = enter.radius+3+len;
+		//ReikaJavaLibrary.pConsole("R="+enter.radius+", LEN="+len+"; pos $ ("+x+", "+(x+d)+")");
+		x += d*dir.offsetX;
+		z += d*dir.offsetZ;
+
+		new LockRoomConnector(this, lens).setWindowed().setOpenFloor(15+rand.nextInt(40)).generate(world, x, y, z);
 
 		x += (len+len2+7)*dir.offsetX;
 		z += (len+len2+7)*dir.offsetZ;

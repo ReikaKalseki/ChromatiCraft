@@ -58,7 +58,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public final void startCalculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 		genColor = e;
-		genCore = new ChunkCoordIntPair(chunkX, chunkZ);
+		genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
 		this.calculate(chunkX, chunkZ, e, rand);
 	}
 
@@ -110,6 +110,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			center = new ChunkCoordIntPair(genCore.chunkXPos+(this.getCenterXOffset() >> 4), genCore.chunkZPos+(this.getCenterZOffset() >> 4));
 		}
 		return center;
+	}
+
+	public final String getCentralBlockCoords() {
+		ChunkCoordIntPair ctr = this.getCentralLocation();
+		return String.format("%d, %d", ctr.chunkXPos*16+this.getCenterXOffset(), ctr.chunkZPos*16+this.getCenterZOffset());
 	}
 
 	protected abstract int getCenterXOffset();

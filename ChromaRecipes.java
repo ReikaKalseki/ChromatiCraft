@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -49,7 +50,8 @@ public class ChromaRecipes {
 
 		for (int i = 0; i < ReikaDyeHelper.dyes.length; i++) {
 			ItemStack berry = ChromaItems.BERRY.getStackOfMetadata(i);
-			GameRegistry.addShapelessRecipe(new ItemStack(Items.dye, 2, i), berry);
+			ItemStack dye = ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 2, i) : ChromaItems.DYE.getCraftedMetadataProduct(2, i);
+			GameRegistry.addShapelessRecipe(dye, berry);
 		}
 
 		ChromaItems.TOOL.addRecipe("  s", " S ", "S  ", 'S', Items.stick, 's', ChromaItems.SHARD.getAnyMetaStack());
