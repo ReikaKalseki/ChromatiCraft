@@ -27,22 +27,22 @@ public class LocksRoomRecurse extends LockLevel {
 
 	@Override
 	public int getWidth() {
-		return 0;
+		return 19;
 	}
 
 	@Override
 	public int getLength() {
-		return 0;
+		return 31;
 	}
 
 	@Override
 	public int getEnterExitDL() {
-		return 0;
+		return 33;
 	}
 
 	@Override
 	public int getEnterExitDT() {
-		return 0;
+		return 4;
 	}
 
 	@Override

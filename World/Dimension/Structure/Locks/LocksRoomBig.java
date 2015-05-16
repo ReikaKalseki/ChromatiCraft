@@ -27,22 +27,22 @@ public class LocksRoomBig extends LockLevel {
 
 	@Override
 	public int getWidth() {
-		return 0;
+		return 14;
 	}
 
 	@Override
 	public int getLength() {
-		return 0;
+		return 52;
 	}
 
 	@Override
 	public int getEnterExitDL() {
-		return 0;
+		return 54;
 	}
 
 	@Override
 	public int getEnterExitDT() {
-		return 0;
+		return 1;
 	}
 
 	@Override

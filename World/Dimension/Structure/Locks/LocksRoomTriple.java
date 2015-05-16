@@ -32,12 +32,12 @@ public class LocksRoomTriple extends LockLevel {
 
 	@Override
 	public int getLength() {
-		return 27;
+		return 26;
 	}
 
 	@Override
 	public int getEnterExitDL() {
-		return 0;
+		return 28;
 	}
 
 	@Override
