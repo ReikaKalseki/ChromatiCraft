@@ -35,12 +35,12 @@ public class LocksRoomComplex extends LockLevel {
 	}
 
 	@Override
-	public int getEnterExitDX() {
+	public int getEnterExitDL() {
 		return 0;
 	}
 
 	@Override
-	public int getEnterExitDZ() {
+	public int getEnterExitDT() {
 		return 0;
 	}
 

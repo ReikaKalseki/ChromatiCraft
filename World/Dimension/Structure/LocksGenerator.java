@@ -35,27 +35,32 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
 		BlockColoredLock.resetCaches(this);
 		this.genMaps(rand);
-		int y = 140;
+		int y = 40;
 
 		ForgeDirection dir = ReikaDirectionHelper.getRandomDirection(false, rand);
-		this.addDynamicStructure(new LocksEntrance(this, dir, 6+rand.nextInt(5)));
-		enter.generate(world, x, y, z);
-
-		int len2 = 2+rand.nextInt(4);
 		int len = 4+rand.nextInt(8);
-		int[] lens = new int[4];
-		//lens[dir.ordinal()-2] = len2; //far side
-		lens[dir.getOpposite().ordinal()-2] = len; //near side
+		int radius = 6+rand.nextInt(5);
+		this.addDynamicStructure(new LocksEntrance(this, dir, radius, y+5, len), x, z);
 
-		int d = enter.radius+3+len;
+		int len2 = 4+rand.nextInt(6);
+		//int[] lens = new int[4];
+		//lens[dir.ordinal()-2] = len2; //far side
+		//lens[dir.getOpposite().ordinal()-2] = len; //near side
+
+		int d = radius+3+len;
 		//ReikaJavaLibrary.pConsole("R="+enter.radius+", LEN="+len+"; pos $ ("+x+", "+(x+d)+")");
 		x += d*dir.offsetX;
 		z += d*dir.offsetZ;
 
-		new LockRoomConnector(this, lens).setWindowed().setOpenFloor(15+rand.nextInt(40)).generate(world, x, y, z);
+		//new LockRoomConnector(this, lens).setWindowed().setOpenFloor(15+rand.nextInt(40)).generate(world, x, y, z);
 
-		x += (len+len2+7)*dir.offsetX;
-		z += (len+len2+7)*dir.offsetZ;
+		//x += (len+len2+7)*dir.offsetX;
+		//z += (len+len2+7)*dir.offsetZ;
+
+		new LockRoomConnector(this, 0, 0, 0, 0).setLength(dir, len2).setOpenCeiling().generate(world, x, y, z);
+
+		x += (len2+7)*dir.offsetX;
+		z += (len2+7)*dir.offsetZ;
 
 		Coordinate c = this.genRooms(x, y, z, dir, rand);
 	}
@@ -75,8 +80,8 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			LockLevel next = i < n-1 ? genOrder.get(i+1) : null;
 			l.generate(world, dx, dy, dz);
 
-			dx += l.getEnterExitDX()+dir2.offsetX*5;
-			dz += l.getEnterExitDZ()+dir2.offsetZ*5;
+			dx += l.getEnterExitDL()+dir2.offsetX*5;
+			dz += l.getEnterExitDT()+dir2.offsetZ*5;
 
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
 			int out = 2+rand.nextInt(3);

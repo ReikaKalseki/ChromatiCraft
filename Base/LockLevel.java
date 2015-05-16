@@ -104,8 +104,8 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 	public abstract int getWidth();
 	public abstract int getLength();
 
-	public abstract int getEnterExitDX();
-	public abstract int getEnterExitDZ();
+	public abstract int getEnterExitDL();
+	public abstract int getEnterExitDT();
 
 	public abstract int getDifficultyRating();
 

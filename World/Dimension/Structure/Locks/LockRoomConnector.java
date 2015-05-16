@@ -126,14 +126,24 @@ public class LockRoomConnector extends StructurePiece {
 			}
 		}
 
-		for (int j = 1; j < openFloor; j++) {
-			for (int i = -2; i <= 2; i++) {
-				for (int k = -2; k <= 2; k++) {
+		if (openFloor > 0) {
+			for (int j = 1; j < openFloor; j++) {
+				for (int i = -2; i <= 2; i++) {
+					for (int k = -2; k <= 2; k++) {
+						int dx = x+i;
+						int dy = y-j;
+						int dz = z+k;
+						boolean air = Math.abs(i) <= 1 && Math.abs(k) <= 1;
+						world.setBlock(dx, dy, dz, air ? Blocks.air : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
+					}
+				}
+			}
+
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
 					int dx = x+i;
-					int dy = y-j;
 					int dz = z+k;
-					boolean air = Math.abs(i) <= 1 && Math.abs(k) <= 1;
-					world.setBlock(dx, dy, dz, air ? Blocks.air : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
+					world.setBlock(dx, y, dz, Blocks.air);
 				}
 			}
 		}

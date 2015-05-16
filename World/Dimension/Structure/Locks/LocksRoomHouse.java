@@ -32,16 +32,16 @@ public class LocksRoomHouse extends LockLevel {
 
 	@Override
 	public int getLength() {
-		return 0;
+		return 35;
 	}
 
 	@Override
-	public int getEnterExitDX() {
-		return 0;
+	public int getEnterExitDL() {
+		return 37;
 	}
 
 	@Override
-	public int getEnterExitDZ() {
+	public int getEnterExitDT() {
 		return 0;
 	}
 
