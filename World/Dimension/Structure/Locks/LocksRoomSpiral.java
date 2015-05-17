@@ -27,17 +27,17 @@ public class LocksRoomSpiral extends LockLevel {
 
 	@Override
 	public int getWidth() {
-		return 0;
+		return 9;
 	}
 
 	@Override
 	public int getLength() {
-		return 0;
+		return 79;
 	}
 
 	@Override
 	public int getEnterExitDL() {
-		return 0;
+		return 81;
 	}
 
 	@Override

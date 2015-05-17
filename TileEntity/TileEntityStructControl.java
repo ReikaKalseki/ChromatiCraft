@@ -169,8 +169,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private void onPlayerProximity(World world, int x, int y, int z, EntityPlayer ep) {
 		switch(struct) {
 		case CAVERN:
-			world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
-			world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 8, 3);
+			world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+			world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
 			ChromaSounds.TRAP.playSound(ep, 1, 1);
 			break;
 		case BURROW:

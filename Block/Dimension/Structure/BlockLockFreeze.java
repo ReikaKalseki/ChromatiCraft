@@ -100,7 +100,10 @@ public class BlockLockFreeze extends BlockContainer {
 				int last = timer;
 				timer--;
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-				if (timer == 5) {
+				if (timer == 0) {
+					ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 2, 0.5F);
+				}
+				else if (timer == 5) {
 					this.ding(1);
 				}
 				else if (timer == 10) {
