@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
 import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Instantiable.Worldgen.OriginBlockCache;
 
 public class LocksRoomComplex extends LockLevel {
 
@@ -20,7 +20,7 @@ public class LocksRoomComplex extends LockLevel {
 	}
 
 	@Override
-	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
+	public void generate(OriginBlockCache world, int x, int y, int z) {
 
 	}
 

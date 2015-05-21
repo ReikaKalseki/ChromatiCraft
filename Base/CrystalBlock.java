@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -130,8 +131,11 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		int color = world.getBlockMetadata(x, y, z);
 		double[] v = ReikaDyeHelper.getColorFromDamage(color).getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 1);
-		if (rand.nextInt(3) == 0)
-			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+		CrystalElement e = CrystalElement.elements[color];
+		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
+			if (rand.nextInt(3) == 0)
+				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+		}
 	}
 
 	@Override
@@ -144,8 +148,10 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		CrystalElement e = this.getCrystalElement(world, x, y, z);
 		double[] v = ReikaDyeHelper.dyes[e.ordinal()].getRedstoneParticleVelocityForColor();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
-		if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
-			ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
+			if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
+				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+		}
 		return false;
 	}
 
@@ -158,15 +164,28 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 				float f3 = 0.5F*((f1-f2)*0.7F+1.8F);
 				world.playSoundEffect(x+0.5, y+0.5, z+0.5, "random.orb", 0.05F, f3/*this.getRandomPitch(color)*/);
 			}
-			if (this.shouldGiveEffects(color) && this.performEffect(color)) {
-				int r = this.getRange();
-				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
-				List<EntityLivingBase> inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-				for (EntityLivingBase e : inbox) {
-					if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
-						this.applyEffectFromColor(this.getDuration(color), this.getPotionLevel(color), e, color);
-					}
-				}
+			int r = this.getRange();
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
+			List<EntityLivingBase> inbox = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+			Collections.shuffle(inbox);
+			this.applyEffect(color, inbox, x, y, z, r);
+		}
+	}
+
+	private void applyEffect(CrystalElement color, List<EntityLivingBase> li, int x, int y, int z, int r) {
+		int level = this.getPotionLevel(color);
+		int dura = this.getDuration(color);
+		boolean boost = level > 0;
+		boolean player = false;
+		for (EntityLivingBase e : li) {
+			if (e instanceof EntityPlayer) {
+				if (player)
+					continue;
+				else
+					player = true;
+			}
+			if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
+				this.applyEffectFromColor(dura, level, e, color);
 			}
 		}
 	}

@@ -34,10 +34,10 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	@Override
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
 		BlockColoredLock.resetCaches(this);
-		this.genMaps(rand);
 		int y = 40;
 
 		ForgeDirection dir = ReikaDirectionHelper.getRandomDirection(false, rand);
+		this.genMaps(rand, dir);
 		int len = 4+rand.nextInt(8);
 		int radius = 6+rand.nextInt(5);
 		this.addDynamicStructure(new LocksEntrance(this, dir, radius, y+5, len), x, z);
@@ -80,14 +80,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			LockLevel next = i < n-1 ? genOrder.get(i+1) : null;
 			l.generate(world, dx, dy, dz);
 
-			dx += l.getEnterExitDL()+dir2.offsetX*5;
-			dz += l.getEnterExitDT()+dir2.offsetZ*5;
+			int out = 2+rand.nextInt(3);
+
+			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*-turn.offsetX+dir2.offsetX*(5+out*2);
+			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*-turn.offsetZ+dir2.offsetZ*(5+out*2);
 
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
-			int out = 2+rand.nextInt(3);
 			con.setLength(dir, out);
 			con.setLength(dir.getOpposite(), out);
-			if (i%2 == 0) {
+			if (i%2 == 0 && false) {
 				dir2 = dir2.getOpposite();
 				turn = turn.getOpposite();
 
@@ -98,14 +99,17 @@ public class LocksGenerator extends DimensionStructureGenerator {
 				con.setLength(dir.getOpposite(), 0);
 				con.setLength(turn, step);
 			}
+
+			con.generate(world, dx-dir.offsetX*5, dy, dz-dir.offsetZ*5);
 		}
 
 		return new Coordinate(dx, dy, dz);
 	}
 
-	private void genMaps(Random rand) {
+	private void genMaps(Random rand, ForgeDirection dir) {
 		for (int i = 0; i < BlockLockKey.LockChannel.lockList.length; i++) {
 			LockLevel l = this.genNewLockLevel(i, rand);
+			l.setDirection(dir);
 			genOrder.add(l);
 		}
 		Collections.shuffle(genOrder);

@@ -66,7 +66,7 @@ public class BlockLockFreeze extends BlockContainer {
 		if (te.isActive())
 			return;
 		int time = 160;
-		BlockColoredLock.freezeLocks(world, te.channel, time);
+		BlockColoredLock.freezeLocks(world, te.getChannel(), time);
 		te.setTime(time);
 	}
 
@@ -78,20 +78,19 @@ public class BlockLockFreeze extends BlockContainer {
 	public static class TileEntityLockFreeze extends TileEntity {
 
 		private int timer = 0;
-		private int channel = 0;
 
 		public boolean isActive() {
 			return timer > 0;
+		}
+
+		public int getChannel() {
+			return this.getBlockMetadata();
 		}
 
 		private void setTime(int time) {
 			timer = time;
 			ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 1, 0.5F);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
-
-		public void setChannel(int ch) {
-			channel = ch;
 		}
 
 		@Override
@@ -127,7 +126,6 @@ public class BlockLockFreeze extends BlockContainer {
 			super.writeToNBT(NBT);
 
 			NBT.setInteger("time", timer);
-			NBT.setInteger("room", channel);
 		}
 
 		@Override
@@ -135,7 +133,6 @@ public class BlockLockFreeze extends BlockContainer {
 			super.readFromNBT(NBT);
 
 			timer = NBT.getInteger("time");
-			channel = NBT.getInteger("room");
 		}
 
 		@Override

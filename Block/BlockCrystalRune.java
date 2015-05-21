@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -38,7 +39,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockCrystalRune extends BlockDyeTypes {
+public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 
 	public BlockCrystalRune(Material par2Material) {
 		super(par2Material);
@@ -139,6 +140,11 @@ public class BlockCrystalRune extends BlockDyeTypes {
 	@Override
 	public int getRenderType() {
 		return ChromatiCraft.proxy.runeRender;
+	}
+
+	@Override
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue();
 	}
 
 }
