@@ -4145,7 +4145,7 @@ public class LocksRoomHouse extends LockLevel {
 
 	@Override
 	public int getInitialOffset() {
-		return 4;
+		return 1;
 	}
 
 	@Override

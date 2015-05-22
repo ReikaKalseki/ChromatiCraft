@@ -1864,7 +1864,7 @@ public class LocksRoomWhite extends LockLevel {
 
 	@Override
 	public int getInitialOffset() {
-		return 3;
+		return 1;
 	}
 
 	@Override

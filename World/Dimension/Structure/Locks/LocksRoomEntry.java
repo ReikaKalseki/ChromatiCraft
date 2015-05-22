@@ -1785,7 +1785,7 @@ public class LocksRoomEntry extends LockLevel {
 
 	@Override
 	public int getInitialOffset() {
-		return 6;
+		return 0;
 	}
 
 	@Override

@@ -6249,7 +6249,7 @@ public class LocksRoomFence extends LockLevel {
 
 	@Override
 	public int getInitialOffset() {
-		return 10;
+		return 2;
 	}
 
 	@Override

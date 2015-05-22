@@ -3228,7 +3228,7 @@ public class LocksRoomRecurse extends LockLevel {
 
 	@Override
 	public int getInitialOffset() {
-		return 4;
+		return 0;
 	}
 
 	@Override
