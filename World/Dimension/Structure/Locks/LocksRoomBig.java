@@ -3040,6 +3040,11 @@ public class LocksRoomBig extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 5;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 2;
 	}

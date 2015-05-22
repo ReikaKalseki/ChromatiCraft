@@ -2435,6 +2435,11 @@ public class LocksRoomTriple extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 9;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 3;
 	}

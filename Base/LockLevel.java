@@ -50,7 +50,10 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 	@Override
 	public final void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-		OriginBlockCache cache = new OriginBlockCache(x, y, z, ForgeDirection.SOUTH);
+		int f = this.getWidth()/2-this.getInitialOffset();
+		int dx = x+f*facing.offsetZ;
+		int dz = z+f*facing.offsetX;
+		OriginBlockCache cache = new OriginBlockCache(dx, y, dz, ForgeDirection.SOUTH);
 		currentGenerator = cache;
 		this.generate(cache, x, y, z);
 		cache.align(facing);
@@ -137,6 +140,8 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 	public abstract int getWidth();
 	public abstract int getLength();
+
+	public abstract int getInitialOffset();
 
 	public abstract int getEnterExitDL();
 	public abstract int getEnterExitDT();

@@ -6248,6 +6248,11 @@ public class LocksRoomFence extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 10;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 4;
 	}

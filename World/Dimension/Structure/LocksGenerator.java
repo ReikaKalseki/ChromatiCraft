@@ -36,7 +36,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		BlockColoredLock.resetCaches(this);
 		int y = 40;
 
-		ForgeDirection dir = ReikaDirectionHelper.getRandomDirection(false, rand);
+		ForgeDirection dir = ForgeDirection.SOUTH;//ReikaDirectionHelper.getRandomDirection(false, rand);
 		this.genMaps(rand, dir);
 		int len = 4+rand.nextInt(8);
 		int radius = 6+rand.nextInt(5);
@@ -82,8 +82,17 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 			int out = 2+rand.nextInt(3);
 
-			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*-turn.offsetX+dir2.offsetX*(5+out*2);
-			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*-turn.offsetZ+dir2.offsetZ*(5+out*2);
+			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*-turn.offsetX*-1;
+			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*-turn.offsetZ*-1;
+
+			int dx2 = dx+(2+out)*dir2.offsetX;
+			int dz2 = dz+(2+out)*dir2.offsetZ;
+			int d = l.getEnterExitDT();//(-l.getWidth()/2+l.getEnterExitDT());
+			dx2 += turn.offsetX*d;
+			dz2 += turn.offsetZ*d;
+
+			dx += dir2.offsetX*(5+out*2);
+			dz += dir2.offsetZ*(5+out*2);
 
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
 			con.setLength(dir, out);
@@ -100,7 +109,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 				con.setLength(turn, step);
 			}
 
-			con.generate(world, dx-dir.offsetX*5, dy, dz-dir.offsetZ*5);
+			con.generate(world, dx2, dy, dz2);
 		}
 
 		return new Coordinate(dx, dy, dz);

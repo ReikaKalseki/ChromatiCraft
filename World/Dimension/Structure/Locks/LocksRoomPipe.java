@@ -45,6 +45,11 @@ public class LocksRoomPipe extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 0;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 2;
 	}

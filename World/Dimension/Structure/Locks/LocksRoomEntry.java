@@ -1765,7 +1765,7 @@ public class LocksRoomEntry extends LockLevel {
 
 	@Override
 	public int getWidth() {
-		return 31;
+		return 13;
 	}
 
 	@Override
@@ -1784,6 +1784,11 @@ public class LocksRoomEntry extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 6;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 1;
 	}
@@ -1795,7 +1800,7 @@ public class LocksRoomEntry extends LockLevel {
 
 	@Override
 	public int getWeightValue() {
-		return Integer.MIN_VALUE;
+		return Integer.MIN_VALUE/2;
 	}
 
 }

@@ -45,6 +45,11 @@ public class LocksRoomEnding extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 0;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 5;
 	}
@@ -56,7 +61,7 @@ public class LocksRoomEnding extends LockLevel {
 
 	@Override
 	public int getWeightValue() {
-		return Integer.MAX_VALUE;
+		return Integer.MAX_VALUE/2;
 	}
 
 }

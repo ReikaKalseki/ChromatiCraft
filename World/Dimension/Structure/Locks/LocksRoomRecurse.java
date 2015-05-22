@@ -3227,6 +3227,11 @@ public class LocksRoomRecurse extends LockLevel {
 	}
 
 	@Override
+	public int getInitialOffset() {
+		return 4;
+	}
+
+	@Override
 	public int getDifficultyRating() {
 		return 3;
 	}
