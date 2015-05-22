@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -82,17 +83,21 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 			int out = 2+rand.nextInt(3);
 
-			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*-turn.offsetX*-1;
-			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*-turn.offsetZ*-1;
+			dx += l.getEnterExitDL()*dir.offsetX+l.getEnterExitDT()*turn.offsetX;
+			dz += l.getEnterExitDL()*dir.offsetZ+l.getEnterExitDT()*turn.offsetZ;
+
+			world.setBlock(dx, dy+10, dz, Blocks.brick_block);
 
 			int dx2 = dx+(2+out)*dir2.offsetX;
 			int dz2 = dz+(2+out)*dir2.offsetZ;
-			int d = l.getEnterExitDT();//(-l.getWidth()/2+l.getEnterExitDT());
+			int d = 0;//-l.getEnterExitDT();//(-l.getWidth()/2+l.getEnterExitDT());
 			dx2 += turn.offsetX*d;
 			dz2 += turn.offsetZ*d;
+			world.setBlock(dx2, dy+10, dz2, Blocks.clay);
 
 			dx += dir2.offsetX*(5+out*2);
 			dz += dir2.offsetZ*(5+out*2);
+			world.setBlock(dx, dy+10, dz, Blocks.brick_block);
 
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
 			con.setLength(dir, out);
