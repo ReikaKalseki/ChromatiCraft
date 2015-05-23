@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -34,8 +32,6 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 	public final LockChannel level;
 	private boolean[] mirror;
 	protected ForgeDirection facing;
-
-	protected Block bd = Blocks.planks;
 
 	private OriginBlockCache currentGenerator;
 
