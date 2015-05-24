@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
+import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.BlockPath;
@@ -145,7 +146,8 @@ public enum ChromaBlocks implements BlockEnum {
 	LOCKFREEZE(BlockLockFreeze.class,											"chroma.lockfreeze"),
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
-	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog");
+	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog"),
+	HOVER(BlockHoverBlock.class,												"chroma.hover");
 
 	private Class blockClass;
 	private String blockName;
@@ -200,6 +202,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return Material.wood;
 		case GLOWLEAF:
 			return Material.leaves;
+		case HOVER:
+			return Material.air;
 		default:
 			return Material.rock;
 		}
@@ -338,6 +342,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case LOCKFREEZE:
 		case GLOWLOG:
 		case GLOWLEAF:
+		case HOVER:
 			return false;
 		default:
 			return true;

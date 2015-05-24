@@ -28,7 +28,7 @@ public class LocksEntrance extends DynamicStructurePiece {
 
 	@Override
 	public void generate(World world, int x, int z) {
-		int y = 200;//world.getTopSolidOrLiquidBlock(x, z)+1;
+		int y = world.getTopSolidOrLiquidBlock(x, z)+1;
 		Block bk = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		for (int i = -radius; i <= radius; i++) {
 			int dx = x+i;
@@ -66,7 +66,7 @@ public class LocksEntrance extends DynamicStructurePiece {
 			}
 		}
 
-		this.generateTunnel(world, x, z);
+		this.generateTunnel(world, x, y, z);
 	}
 
 	private int getHeight(int d) {
@@ -74,12 +74,11 @@ public class LocksEntrance extends DynamicStructurePiece {
 		return (int)(2+Math.sqrt(2.5*in));
 	}
 
-	private void generateTunnel(World world, int x, int z) {
-		int top = 200;//world.getTopSolidOrLiquidBlock(x, z)+1;
+	private void generateTunnel(World world, int x, int y, int z) {
 		int r = length+radius+3;
 		int dx = x+facing.offsetX*r;
 		int dz = z+facing.offsetZ*r;
-		int d = top-posY;
+		int d = y-posY;
 		LockRoomConnector tunnel = new LockRoomConnector(parent, 0, 0, 0, 0).setWindowed().setLength(facing.getOpposite(), length).setOpenFloor(d);
 		tunnel.generate(new ChunkSplicedGenerationCache.RelayCache(world), dx, posY+d, dz);
 	}

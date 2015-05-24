@@ -303,9 +303,9 @@ public class BlockColoredLock extends BlockContainer {
 	}
 
 	public static void openColor(CrystalElement e, World world, int structIndex) {
+		//ReikaJavaLibrary.pConsole("add "+e+" @ "+structIndex);
 		if (e == CrystalElement.WHITE) {
 			whiteLock[structIndex]++;
-			//ReikaJavaLibrary.pConsole("add @ "+structIndex);
 		}
 		else {
 			keyCodes[structIndex][e.ordinal()]++;
@@ -315,9 +315,9 @@ public class BlockColoredLock extends BlockContainer {
 	}
 
 	public static void closeColor(CrystalElement e, World world, int structIndex) {
+		//ReikaJavaLibrary.pConsole("remove "+e+" @ "+structIndex);
 		if (e == CrystalElement.WHITE) {
 			whiteLock[structIndex]--;
-			//ReikaJavaLibrary.pConsole("remove @ "+structIndex);
 		}
 		else {
 			keyCodes[structIndex][e.ordinal()]--;

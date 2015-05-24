@@ -74,8 +74,9 @@ public class BlockLockKey extends Block {
 
 	public BlockLockKey(Material mat) {
 		super(mat);
-		this.setHardness(0.1875F);
+		this.setHardness(0.15F);
 		this.setCreativeTab(ChromatiCraft.tabChromaGen);
+		this.setLightLevel(1);
 	}
 
 	@Override
@@ -153,7 +154,7 @@ public class BlockLockKey extends Block {
 			int dz = z+dir.offsetZ;
 			Block b = world.getBlock(dx, dy, dz);
 			int m = world.getBlockMetadata(dx, dy, dz);
-			int ch = world.getBlockMetadata(x, y, z);
+			int ch = meta2;
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
 				BlockColoredLock.closeColor(CrystalElement.elements[m], world, ch);
 				break;

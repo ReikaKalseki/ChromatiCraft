@@ -42,6 +42,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
@@ -136,6 +137,11 @@ public class ChromaticEventManager {
 	//private final Collection<TileEntityItemCollector> collectors = new ArrayList();
 
 	private ChromaticEventManager() {
+
+	}
+
+	@SubscribeEvent
+	public void floatstonePads(LivingFallEvent evt) {
 
 	}
 
