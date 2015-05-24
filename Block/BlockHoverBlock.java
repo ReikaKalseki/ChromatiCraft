@@ -1,19 +1,23 @@
 package Reika.ChromatiCraft.Block;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
@@ -42,14 +46,21 @@ public class BlockHoverBlock extends Block {
 			return this.ordinal()+8;
 		}
 
+		public int getDecayingMeta() {
+			return this.ordinal()+8+4;
+		}
+
 		public boolean movesUpwards() {
 			return velocityFactor > 0;//this == ELEVATE || this == FASTELEVATE;
 		}
 
 		public void updateEntity(EntityPlayer e) {
-			double dv = e.motionY-velocityFactor;
+			double dv = e.motionY-velocityFactor-0.33;
 			if (dv < 0) {
-				e.motionY -= 0.125*dv;
+				if (dv > 0.0625)
+					e.motionY = velocityFactor;
+				else
+					e.motionY -= 0.25*dv;
 			}
 		}
 
@@ -76,6 +87,15 @@ public class BlockHoverBlock extends Block {
 	}
 
 	@Override
+	public void getSubBlocks(Item item, CreativeTabs cr, List li) {
+		for (int i = 0; i < HoverType.list.length; i++) {
+			HoverType h = HoverType.list[i];
+			li.add(new ItemStack(this, 1, h.getPermanentMeta()));
+			li.add(new ItemStack(this, 1, h.getDecayMeta()));
+		}
+	}
+
+	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:basic/hover");
 	}
@@ -96,7 +116,7 @@ public class BlockHoverBlock extends Block {
 
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
-		world.scheduleBlockUpdate(x, y, z, this, 240);
+		world.scheduleBlockUpdate(x, y, z, this, 80);
 	}
 
 	@Override
@@ -116,7 +136,7 @@ public class BlockHoverBlock extends Block {
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 32);
-		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y+1, z, 32);
+		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y-1, z, 32);
 	}
 
 	@Override
@@ -129,6 +149,7 @@ public class BlockHoverBlock extends Block {
 		if (e instanceof EntityPlayer) {
 			int meta = world.getBlockMetadata(x, y, z);
 			HoverType.getFromMeta(meta).updateEntity((EntityPlayer)e);
+			ReikaJavaLibrary.pConsole(HoverType.getFromMeta(meta));
 		}
 	}
 
