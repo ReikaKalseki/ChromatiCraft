@@ -203,7 +203,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case GLOWLEAF:
 			return Material.leaves;
 		case HOVER:
-			return Material.air;
+			return ChromatiCraft.airMat;
 		default:
 			return Material.rock;
 		}

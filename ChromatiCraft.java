@@ -114,6 +114,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
+import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -179,6 +180,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static Achievement[] achievements;
 
 	public static final Material crystalMat = new CrystalMaterial();
+	public static final Material airMat = PseudoAirMaterial.instance;
 
 	public static PotionGrowthHormone growth;
 	public static PotionBetterSaturation betterSat;
