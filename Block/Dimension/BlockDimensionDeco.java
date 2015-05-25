@@ -9,15 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
@@ -79,6 +83,11 @@ public class BlockDimensionDeco extends Block {
 	@Override
 	public final int getRenderBlockPass() {
 		return 1;
+	}
+
+	@Override
+	public Item getItemDropped(int meta, Random r, int fortune) {
+		return ChromaItems.DIMGEN.getItemInstance();
 	}
 
 	@Override

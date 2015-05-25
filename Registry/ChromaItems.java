@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.ItemCluster;
 import Reika.ChromatiCraft.Items.ItemCrystalSeeds;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
+import Reika.ChromatiCraft.Items.ItemDimGen;
 import Reika.ChromatiCraft.Items.ItemElementalStone;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.ItemRiftPlacer;
@@ -112,7 +113,8 @@ public enum ChromaItems implements ItemEnum {
 	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG),
 	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
 	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class),
-	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class);
+	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class),
+	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class);
 	;
 
 	private final int index;
