@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
 import java.util.List;
@@ -17,25 +26,27 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public class BlockHoverBlock extends Block {
 
 	public static enum HoverType {
-		STATIONARY(0xffff00, 0),
-		DAMPER(0xff00ff, -0.125),
-		ELEVATE(0x2288ff, 0.125),
-		FASTELEVATE(0x00ff00, 0.75);
+		STATIONARY("Brake", 0xffff00, 0),
+		DAMPER("Damper", 0xff00ff, -0.25),
+		ELEVATE("Elevator", 0x2288ff, 0.125),
+		FASTELEVATE("Rapid Elevator", 0x00ff00, 0.75);
 
-		private static final HoverType[] list = values();
-		private final int renderColor;
-		private final double velocityFactor;
+		public final int renderColor;
+		public final double velocityFactor;
+		public final String desc;
 
-		private HoverType(int c, double v) {
+		public static final HoverType[] list = values();
+
+		private HoverType(String s, int c, double v) {
 			renderColor = c;
 			velocityFactor = v;
+			desc = s;
 		}
 
 		public int getPermanentMeta() {
@@ -55,12 +66,14 @@ public class BlockHoverBlock extends Block {
 		}
 
 		public void updateEntity(EntityPlayer e) {
-			double dv = e.motionY-velocityFactor-0.33;
+			double dv = e.motionY-velocityFactor-0.3;
 			if (dv < 0) {
 				if (dv > 0.0625)
 					e.motionY = velocityFactor;
 				else
 					e.motionY -= 0.25*dv;
+
+				e.fallDistance = 0;
 			}
 		}
 
@@ -87,6 +100,11 @@ public class BlockHoverBlock extends Block {
 	}
 
 	@Override
+	public boolean isAir(IBlockAccess iba, int x, int y, int z) {
+		return true;
+	}
+
+	@Override
 	public void getSubBlocks(Item item, CreativeTabs cr, List li) {
 		for (int i = 0; i < HoverType.list.length; i++) {
 			HoverType h = HoverType.list[i];
@@ -109,7 +127,7 @@ public class BlockHoverBlock extends Block {
 			}
 			else {
 				world.setBlockMetadataWithNotify(x, y, z, meta+4, 3);
-				world.scheduleBlockUpdate(x, y, z, this, 60+r.nextInt(180));
+				world.scheduleBlockUpdate(x, y, z, this, 20+r.nextInt(60));
 			}
 		}
 	}
@@ -149,7 +167,6 @@ public class BlockHoverBlock extends Block {
 		if (e instanceof EntityPlayer) {
 			int meta = world.getBlockMetadata(x, y, z);
 			HoverType.getFromMeta(meta).updateEntity((EntityPlayer)e);
-			ReikaJavaLibrary.pConsole(HoverType.getFromMeta(meta));
 		}
 	}
 

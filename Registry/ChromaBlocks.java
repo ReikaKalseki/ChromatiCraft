@@ -82,6 +82,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockHover;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLockKey;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLumenRelay;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
@@ -147,7 +148,7 @@ public enum ChromaBlocks implements BlockEnum {
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog"),
-	HOVER(BlockHoverBlock.class,												"chroma.hover");
+	HOVER(BlockHoverBlock.class,				ItemBlockHover.class,			"chroma.hover");
 
 	private Class blockClass;
 	private String blockName;
@@ -322,6 +323,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case DIMGEN:
 			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.Types.list[meta].name().toLowerCase());
 		case LOCKKEY:
+		case HOVER:
 			return this.getBasicName();
 		default:
 			return "";
@@ -376,6 +378,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return BlockDimensionDeco.Types.list.length;
 		case LOCKKEY:
 			return BlockLockKey.LockChannel.lockList.length;
+		case HOVER:
+			return BlockHoverBlock.HoverType.list.length;
 		default:
 			return 1;
 		}

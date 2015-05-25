@@ -157,6 +157,7 @@ public enum ChromaResearch implements ProgressElement {
 	ENDERCRYS(			ChromaItems.ENDERCRYSTAL,	ResearchLevel.ENDGAME,		ProgressStage.END),
 	BULKMOVER(			ChromaItems.BULKMOVER,		ResearchLevel.RUNECRAFT),
 	CHAINGUN(			ChromaItems.CHAINGUN,		ResearchLevel.MULTICRAFT),
+	HOVER(				ChromaItems.HOVERWAND,		ResearchLevel.PYLONCRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),

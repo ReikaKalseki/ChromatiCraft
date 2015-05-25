@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
@@ -110,7 +111,8 @@ public enum ChromaItems implements ItemEnum {
 	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),
 	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG),
 	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
-	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class);
+	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class),
+	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class);
 	;
 
 	private final int index;
