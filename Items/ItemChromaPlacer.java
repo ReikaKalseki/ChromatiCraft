@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -90,8 +91,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 			return false;
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
 			return false;
-		else
-		{
+		else {
 			if (!ep.capabilities.isCreativeMode)
 				--is.stackSize;
 			world.setBlock(x, y, z, m.getBlock(), m.getBlockMetadata(), 3);
@@ -131,6 +131,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.ACCELERATOR) {
 			((TileEntityAccelerator)te).setTier(is);
 		}*/
+		if (m == ChromaTiles.AURAPOINT) {
+			((TileEntityAuraPoint)te).savePoint();
+		}
 		if (te instanceof NBTTile && is.stackTagCompound != null) {
 			((NBTTile)te).setDataFromItemStackTag(is);
 		}

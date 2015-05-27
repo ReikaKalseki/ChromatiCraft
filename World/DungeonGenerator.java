@@ -19,31 +19,25 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityMobSpawner;
-import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ChestGenHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
-import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -54,9 +48,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	public static final DungeonGenerator instance = new DungeonGenerator();
 
-	private ForgeDirection[] dirs = ForgeDirection.values();
+	private final ForgeDirection[] dirs = ForgeDirection.values();
 
-	private Collection<Structures> structs = new ArrayList();
+	private final Collection<Structures> structs = new ArrayList();
 
 	private DungeonGenerator() {
 		structs.add(Structures.CAVERN);
@@ -323,29 +317,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			int[] xyz = arr.getNthBlock(k);
 			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
 			if (b == ChromaStructures.getChestGen()) {
-				IInventory te = (IInventory)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
-				WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
+				TileEntityLootChest te = (TileEntityLootChest)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
 				int bonus = struct == Structures.OCEAN && xyz[1]-arr.getMinY() == 4 ? 4 : 0;
-				int count = 1+ChestGenHooks.getCount(s, r);
-				if (struct == Structures.BURROW)
-					count /= 2;
-				WeightedRandomChestContent.generateChestContents(r, loot, te, count);
-				if (bonus > 0)
-					ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, te);
-				int n1 = 3;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
-				int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
-
-				if (r.nextInt(n1) > 0) {
-					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
-					if (r.nextInt(n2) == 0)
-						ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), te);
-				}
-
-				StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct.name(), s, r);
-				MinecraftForge.EVENT_BUS.post(evt);
-				for (ItemStack is : evt.getItems()) {
-					ReikaInventoryHelper.addToIInv(is, te);
-				}
+				te.populateChest(s, struct, bonus, r);
 			}
 		}
 	}

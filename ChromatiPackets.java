@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Portal
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
+import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -65,6 +67,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -439,6 +442,18 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case MEDISTRIBTHRESH:
 				((TileEntityMEDistributor)tile).setThreshold(data[0], data[1]);
+				break;
+			case HOVERWAND: {
+				ItemFlightWand.setMode(ep.getCurrentEquippedItem(), HoverType.list[data[0]]);
+				break;
+			}
+			case AURATTACK:
+				((TileEntityAuraPoint)tile).doAttackFX(world.getEntityByID(data[0]));
+				break;
+			case AURAHEAL:
+				((TileEntityAuraPoint)tile).doHealFX(world.getEntityByID(data[0]));
+				break;
+			default:
 				break;
 			}
 		}

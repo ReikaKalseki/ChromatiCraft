@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LockRoomConnector;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksEntrance;
+import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksLoot;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -63,6 +64,8 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		z += (len2+3)*dir.offsetZ;
 
 		Coordinate c = this.genRooms(x, y, z, dir, rand);
+
+		new LocksLoot(this).generate(world, c.xCoord-dir.offsetZ*4+dir.offsetX*7, c.yCoord, c.zCoord-dir.offsetX*4+dir.offsetZ*7);
 	}
 
 	private Coordinate genRooms(int x, int y, int z, ForgeDirection dir, Random rand) {
@@ -102,7 +105,12 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			LockRoomConnector con = new LockRoomConnector(this, 0, 0, 0, 0);
 			con.setLength(dir, out);
 			con.setLength(dir.getOpposite(), out);
-			if (i%2 == 0 && false) {
+			if (next == null) {
+				con.setLength(dir, out*3);
+				dx += dir.offsetX*out*3;
+				dz += dir.offsetZ*out*3;
+			}
+			else if (i%2 == 0 && false) {
 				dir2 = dir2.getOpposite();
 				turn = turn.getOpposite();
 

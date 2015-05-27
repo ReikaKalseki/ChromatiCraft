@@ -20,6 +20,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
 import Reika.ChromatiCraft.Items.ItemChromaMisc;
@@ -331,6 +332,8 @@ public enum ChromaItems implements ItemEnum {
 			return 400;
 		case ORESILK:
 			return 180;
+		case DIMGEN:
+			return BlockDimensionDeco.Types.list.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

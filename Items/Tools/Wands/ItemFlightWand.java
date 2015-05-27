@@ -11,12 +11,15 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -34,8 +37,14 @@ public class ItemFlightWand extends ItemWandBase {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (this.canUse(ep))
-			this.trigger(world, is, ep, ReikaPlayerAPI.getLookedAtBlock(ep, 8, true));
+		boolean flag = false;
+		if (this.canUse(ep)) {
+			flag = this.trigger(world, is, ep, ReikaPlayerAPI.getLookedAtBlock(ep, 8, true));
+		}
+
+		if (!flag) {
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.HOVER.ordinal(), world, 0, 0, 0);
+		}
 		return is;
 	}
 
@@ -75,14 +84,23 @@ public class ItemFlightWand extends ItemWandBase {
 							this.drainPlayer(ep, this.getEnergyCostFactor(mode));
 						}
 					}
+
+					return true;
 				}
 			}
 		}
 		return false;
 	}
 
-	private HoverType getMode(ItemStack is) {
-		return HoverType.ELEVATE;
+	public static HoverType getMode(ItemStack is) {
+		return is.stackTagCompound != null ? HoverType.list[is.stackTagCompound.getInteger("mode")] : HoverType.ELEVATE;
+	}
+
+	public static void setMode(ItemStack is, HoverType type) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+
+		is.stackTagCompound.setInteger("mode", type.ordinal());
 	}
 
 	private float getEnergyCostFactor(HoverType type) {

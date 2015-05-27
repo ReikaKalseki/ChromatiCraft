@@ -280,6 +280,11 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		return ChromaTiles.DIMENSIONCORE;
 	}
 
+	@Override
+	public int getRenderColor() {
+		return color.getColor();
+	}
+
 	public CrystalElement getColor() {
 		return color;
 	}

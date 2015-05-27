@@ -88,6 +88,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
@@ -138,6 +139,16 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void markHostile(AttackEntityEvent evt) {
+		if (evt.target instanceof EntityPlayer) {
+			TileEntityAuraPoint te = TileEntityAuraPoint.getPoint(evt.entityPlayer);
+			if (te != null) {
+				te.markHostile((EntityPlayer)evt.target);
+			}
+		}
 	}
 
 	@SubscribeEvent

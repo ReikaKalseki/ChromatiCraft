@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.GUI.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.GuiEnderTNT;
+import Reika.ChromatiCraft.GUI.GuiFlightWand;
 import Reika.ChromatiCraft.GUI.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.GUI.GuiInventoryTicker;
@@ -281,6 +282,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 			return new GuiRemoteTerminal(player);
 		case BULKMOVER:
 			return new GuiBulkMover(player);
+		case HOVER:
+			return new GuiFlightWand(player);
 		default:
 			break;
 		}

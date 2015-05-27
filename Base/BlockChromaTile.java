@@ -60,6 +60,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
@@ -446,6 +447,10 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			else {
 				currenttip.add(String.format("Tank: Empty (Capacity %dmB)", capacity));
 			}
+		}
+		else if (te instanceof TileEntityDimensionCore) {
+			CrystalElement e = ((TileEntityDimensionCore)te).getColor();
+			currenttip.add("Color: "+e.displayName);
 		}
 		else if (te instanceof FluidIOChromaticBase) {
 			FluidIOChromaticBase liq = (FluidIOChromaticBase)te;

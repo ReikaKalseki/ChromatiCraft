@@ -33,7 +33,8 @@ public enum ChromaGuis {
 	TRANSITION(),
 	TELEPORT(),
 	REMOTETERMINAL(),
-	BULKMOVER();
+	BULKMOVER(),
+	HOVER();
 
 	public static final ChromaGuis[] guiList = values();
 

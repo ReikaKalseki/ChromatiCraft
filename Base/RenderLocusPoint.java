@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -34,6 +35,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 	public final void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -51,7 +53,8 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 	private void renderCore(TileEntityLocusPoint tile, double par2, double par4, double par6, float par8) {
 		Tessellator v5 = Tessellator.instance;
 		//this.renderStaticTexture(par2, par4, par6, par8);
-		BlendMode.ADDITIVEDARK.apply();
+		//BlendMode.ADDITIVEDARK.apply();
+		BlendMode.ADDITIVE2.apply();
 		GL11.glPushMatrix();
 		GL11.glTranslated(0.5, 0.5, 0.5);
 		RenderManager rm = RenderManager.instance;
@@ -65,24 +68,28 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			GL11.glRotatef(-30, 1, 0, 0);
 		}
 
-		int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 		//ReikaJavaLibrary.pConsole(te.getEnergy());
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/envirobulge2.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurapoint2.png");
 
-		double u = 0.125;
-		double v = 0.125;
-		double du = 0.9375;
-		double dv = 0.9375;
+		for (int i = 0; i < 3; i++) {
 
-		for (double s = 0.5; s >= 0.25; s -= 0.0625) {
+			int alpha = 255-i*64;//255;
+			double tick = (tile.getTicksExisted()*(i*3+1))%80;//+par8;
+			double u = tick/80D;//0;//0.125;
+			double v = 0;//(int)(tick/20)/4D;//0.125;
+			double du = u+1/80D;//u+1;//0.9375;
+			double dv = v+1;//0.9375;
+
+			double s = 1-i*0.25;
+			//for (double s = 0.5; s >= 0.25; s -= 0.0625) {
 
 			GL11.glPushMatrix();
 
-			double s1 = tile.isInWorld() ? s : s*1.5;
+			double s1 = tile.isInWorld() ? s : s;
 
 			GL11.glScaled(s1, s1, s1);
-
+			/*
 			GL11.glMatrixMode(GL11.GL_TEXTURE);
 			GL11.glPushMatrix();
 
@@ -99,14 +106,15 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			double dy = tile.yCoord+0.5-RenderManager.renderPosY;
 			double dz = tile.zCoord+0.5-RenderManager.renderPosZ;
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
+			GL11.glTranslated(-d, -d, -d);
 			GL11.glRotated(angs[2], 0, 0, 1);
 
-			GL11.glTranslated(-d, -d, -d);
 
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			//GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 			v5.startDrawingQuads();
-			v5.setColorRGBA_I(this.getColor(tile), alpha);
+			int color = ReikaColorAPI.getColorWithBrightnessMultiplier(tile.getRenderColor(), alpha/255F);
+			v5.setColorRGBA_I(color, alpha);
 			v5.addVertexWithUV(-1, -1, 0, u, v);
 			v5.addVertexWithUV(1, -1, 0, du, v);
 			v5.addVertexWithUV(1, 1, 0, du, dv);
@@ -114,14 +122,14 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			v5.draw();
 
 
-			GL11.glMatrixMode(GL11.GL_TEXTURE);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			//GL11.glMatrixMode(GL11.GL_TEXTURE);
+			//GL11.glPopMatrix();
+			//GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 			GL11.glPopMatrix();
 
+			//}
 		}
-
 
 		double s = 0.5;
 		GL11.glScaled(s, s, s);
@@ -235,10 +243,6 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		fBuffer.put(v1).put(v2).put(v3).put(v4);
 		fBuffer.flip();
 		return fBuffer;
-	}
-
-	protected int getColor(TileEntityLocusPoint tile) { //do an iridescent effect
-		return 0xffffff;
 	}
 
 }

@@ -59,14 +59,12 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	protected void writeSyncTag(NBTTagCompound NBT)
 	{
 		super.writeSyncTag(NBT);
-
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT)
 	{
 		super.readSyncTag(NBT);
-
 	}
 
 	@Override
@@ -78,7 +76,6 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
-
 	}
 
 	public boolean isThisTE(Block id, int meta) {

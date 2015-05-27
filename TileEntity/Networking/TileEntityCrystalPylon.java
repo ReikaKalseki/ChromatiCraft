@@ -742,4 +742,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final double getMaxRenderDistanceSquared() {
+		return 65536D;
+	}
+
 }

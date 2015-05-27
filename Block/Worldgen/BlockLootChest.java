@@ -30,13 +30,20 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -110,6 +117,13 @@ public class BlockLootChest extends BlockContainer {
 		if (world.isRemote)
 			return true;
 		else {
+			if (DragonAPICore.debugtest && ep.capabilities.isCreativeMode && ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+				int level = ep.isSneaking() ? 2 : 0;
+				String sg = level > 0 ? ChestGenHooks.PYRAMID_JUNGLE_CHEST : ChestGenHooks.DUNGEON_CHEST;
+				Structures str = level > 0 ? ChromaStructures.Structures.OCEAN : ChromaStructures.Structures.BURROW;
+				((TileEntityLootChest)world.getTileEntity(x, y, z)).populateChest(sg, str, level, rand);
+				return true;
+			}
 			boolean open = this.canOpen(world, x, y, z, ep);
 			fireEvent(world, x, y, z, ep, open);
 			if (open) {
@@ -401,6 +415,30 @@ public class BlockLootChest extends BlockContainer {
 			}
 			else {
 				return super.receiveClientEvent(id, data);
+			}
+		}
+
+		public void populateChest(String s, Structures struct, int bonus, Random r) {
+			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
+			int count = 1+ChestGenHooks.getCount(s, r);
+			if (struct == Structures.BURROW)
+				count /= 2;
+			WeightedRandomChestContent.generateChestContents(r, loot, this, count);
+			if (bonus > 0)
+				ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, this);
+			int n1 = 3;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+			int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
+
+			if (r.nextInt(n1) > 0) {
+				ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
+				if (r.nextInt(n2) == 0)
+					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
+			}
+
+			StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct.name(), s, r);
+			MinecraftForge.EVENT_BUS.post(evt);
+			for (ItemStack is : evt.getItems()) {
+				ReikaInventoryHelper.addToIInv(is, this);
 			}
 		}
 	}

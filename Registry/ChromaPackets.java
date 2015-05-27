@@ -61,7 +61,10 @@ public enum ChromaPackets {
 	CHAINGUNHURT(1),
 	CHAINGUNEND(1),
 	METRANSFER(2),
-	MEDISTRIBTHRESH(2);
+	MEDISTRIBTHRESH(2),
+	HOVERWAND(1),
+	AURATTACK(1),
+	AURAHEAL(1);
 
 	public final int numInts;
 	public final PacketTypes type;
