@@ -122,10 +122,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private void triggerOceanTrap(EntityPlayer ep) {
 		BlockArray arr = OceanStructure.getPitCover(xCoord, yCoord, zCoord);
 		for (int i = 0; i < arr.getSize(); i++) {
-			int[] xyz = arr.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			Coordinate c = arr.getNthBlock(i);
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			worldObj.setBlock(dx, dy, dz, Blocks.air);
 		}
 		ChromaSounds.TRAP.playSound(ep, 1, 1);
@@ -144,10 +144,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private void resetOceanTrap() {
 		BlockArray arr = OceanStructure.getPitCover(xCoord, yCoord, zCoord);
 		for (int i = 0; i < arr.getSize(); i++) {
-			int[] xyz = arr.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			Coordinate c = arr.getNthBlock(i);
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			worldObj.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
 		}
 	}
@@ -183,9 +183,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			BlockArray blocks = OceanStructure.getCovers(x, y, z);
 			for (int i = 0; i < blocks.getSize(); i++) {
 				Coordinate c = blocks.getNthBlock(i);
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				world.setBlockMetadataWithNotify(dx, dy, dz, BlockType.CRACKS.metadata, 3);
 			}
 			int r = 1;
@@ -213,9 +213,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
 					Coordinate c = blocks.getNthBlock(i);
-					int x = xyz[0];
-					int y = xyz[1];
-					int z = xyz[2];
+					int x = c.xCoord;
+					int y = c.yCoord;
+					int z = c.zCoord;
 					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
@@ -229,9 +229,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
 					Coordinate c = blocks.getNthBlock(i);
-					int x = xyz[0]+5;
-					int y = xyz[1]+8;
-					int z = xyz[2]+2;
+					int x = c.xCoord+5;
+					int y = c.yCoord+8;
+					int z = c.zCoord+2;
 					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
@@ -243,9 +243,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
 					Coordinate c = blocks.getNthBlock(i);
-					int x = xyz[0];//-3;
-					int y = xyz[1];//-5;
-					int z = xyz[2];//-3;
+					int x = c.xCoord;//-3;
+					int y = c.yCoord;//-5;
+					int z = c.zCoord;//-3;
 					if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
 						worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
@@ -385,7 +385,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		if (blocks != null) {
 			for (int i = 0; i < blocks.getSize(); i++) {
 				Coordinate c1 = blocks.getNthBlock(i);
-				if (worldObj.getBlock(xyz[0], xyz[1], xyz[2]) == ChromaBlocks.CRYSTAL.getBlockInstance()) {
+				if (worldObj.getBlock(c1.xCoord, c1.yCoord, c1.zCoord) == ChromaBlocks.CRYSTAL.getBlockInstance()) {
 					Coordinate c = new Coordinate(c1.xCoord-xCoord, c1.yCoord-yCoord, c1.zCoord-zCoord);
 					CrystalElement e = CrystalElement.elements[worldObj.getBlockMetadata(c1.xCoord, c1.yCoord, c1.zCoord)];
 					crystals.put(e, c);
@@ -421,9 +421,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				if (blocks != null) {
 					for (int i = 0; i < blocks.getSize(); i++) {
 						Coordinate c = blocks.getNthBlock(i);
-						int x = xyz[0]+5;
-						int y = xyz[1]+8;
-						int z = xyz[2]+2;
+						int x = c.xCoord+5;
+						int y = c.yCoord+8;
+						int z = c.zCoord+2;
 						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
@@ -437,9 +437,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				if (blocks != null) {
 					for (int i = 0; i < blocks.getSize(); i++) {
 						Coordinate c = blocks.getNthBlock(i);
-						int x = xyz[0];//-3;
-						int y = xyz[1];//-5;
-						int z = xyz[2];//-3;
+						int x = c.xCoord;//-3;
+						int y = c.yCoord;//-5;
+						int z = c.zCoord;//-3;
 						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {

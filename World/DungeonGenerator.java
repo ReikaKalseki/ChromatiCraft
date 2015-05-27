@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
@@ -245,8 +246,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			FilledBlockArray arr = this.getPitSlice(world, x, y-i, z);
 			boolean flag = true;
 			for (int k = 0; k < arr.getSize(); k++) {
-				int[] xyz = arr.getNthBlock(k);
-				Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+				Coordinate c = arr.getNthBlock(k);
+				Block b = c.getBlock(world);
 				if (b != Blocks.air) {
 					flag = false;
 				}
@@ -261,24 +262,24 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 		BlockArray arr = OceanStructure.getPitCover(x, y, z);
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
-			world.setBlock(xyz[0], xyz[1], xyz[2], ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(world);
+			c.setBlock(world, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata);
 		}
 	}
 
 	private void mossify(Structures s, FilledBlockArray arr, Random r) {
 		Block b2 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
 			if (b == b2) {
-				int meta = arr.world.getBlockMetadata(xyz[0], xyz[1], xyz[2]);
+				int meta = arr.worldc.getBlockMetadata();
 				if (meta == BlockType.STONE.metadata) {
-					int dy = xyz[1]-arr.getMinY();
-					int c = Math.max(1, dy*2-2);
-					if (r.nextInt(c) == 0) {
-						arr.world.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], BlockType.MOSS.metadata, 3);
+					int dy = c.yCoord-arr.getMinY();
+					int ct = Math.max(1, dy*2-2);
+					if (r.nextInt(ct) == 0) {
+						arr.world.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, BlockType.MOSS.metadata, 3);
 					}
 				}
 			}
@@ -287,10 +288,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private void programSpawners(Structures s, FilledBlockArray arr, String mob) {
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
 			if (b == Blocks.mob_spawner) {
-				TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
+				TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
 				ReikaSpawnerHelper.setMobSpawnerMob(te, mob);
 			}
 		}
@@ -314,11 +315,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (s == null)
 			return;
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
 			if (b == ChromaStructures.getChestGen()) {
-				TileEntityLootChest te = (TileEntityLootChest)arr.world.getTileEntity(xyz[0], xyz[1], xyz[2]);
-				int bonus = struct == Structures.OCEAN && xyz[1]-arr.getMinY() == 4 ? 4 : 0;
+				TileEntityLootChest te = (TileEntityLootChest)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
+				int bonus = struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4 ? 4 : 0;
 				te.populateChest(s, struct, bonus, r);
 			}
 		}
@@ -326,11 +327,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private void convertDirtToGrass(FilledBlockArray arr) {
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			Block b = arr.world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
 			if (b == Blocks.dirt) {
-				if (arr.world.getBlockLightValue(xyz[0], xyz[1]+1, xyz[2]) > 8) {
-					arr.world.setBlock(xyz[0], xyz[1], xyz[2], Blocks.grass);
+				if (arr.world.getBlockLightValue(c.xCoord, c.yCoord+1, c.zCoord) > 8) {
+					c.setBlock(arr.world, Blocks.grass);
 				}
 			}
 		}
@@ -349,9 +350,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 		if (flag) {
 			for (int k = 0; k < arr.getSize(); k++) {
-				int[] xyz = arr.getNthBlock(k);
-				Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
-				if (b.isAir(world, xyz[0], xyz[1], xyz[2]))
+				Coordinate c = arr.getNthBlock(k);
+				Block b = c.getBlock(world);
+				if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord))
 					return false;
 			}
 			return true;
@@ -389,10 +390,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 		//No air exposure
 		for (int k = 0; k < arr.getSize(); k++) {
-			int[] xyz = arr.getNthBlock(k);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			Coordinate c = arr.getNthBlock(k);
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			Block b = world.getBlock(dx, dy, dz);
 			if (world.getTopSolidOrLiquidBlock(dx, dz) < y-2)
 				return false;
@@ -415,16 +416,16 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		boolean flag2 = true;
 		FilledBlockArray cap = (FilledBlockArray)this.getEndcap1(world, x, y, z).offset(1, 0, 0);
 		for (int k = 0; k < cap.getSize(); k++) {
-			int[] xyz = cap.getNthBlock(k);
-			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = cap.getNthBlock(k);
+			Block b = c.getBlock(world);
 			if (b != Blocks.water && b != Blocks.flowing_water) {
 				flag1 = false;
 			}
 		}
 		cap = (FilledBlockArray)this.getEndcap2(world, x, y, z).offset(0, 0, 1);
 		for (int k = 0; k < cap.getSize(); k++) {
-			int[] xyz = cap.getNthBlock(k);
-			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = cap.getNthBlock(k);
+			Block b = c.getBlock(world);
 			if (b != Blocks.water && b != Blocks.flowing_water) {
 				flag2 = false;
 			}
@@ -434,13 +435,13 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 		//bury lower half, and ensure not near shore or intersecting another
 		for (int k = 0; k < struct.getSize(); k++) {
-			int[] xyz = struct.getNthBlock(k);
-			Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+			Coordinate c = struct.getNthBlock(k);
+			Block b = c.getBlock(world);
 			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 				return false;
-			if (world.getTopSolidOrLiquidBlock(xyz[0], xyz[2]) <= y)
+			if (world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord) <= y)
 				return false;
-			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(xyz[0], xyz[2])))
+			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(c.xCoord, c.zCoord)))
 				return false;
 		}
 
@@ -450,8 +451,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			FilledBlockArray slice = this.getPitSlice(world, x, y-i, z);
 			boolean flag = true;
 			for (int k = 0; k < slice.getSize(); k++) {
-				int[] xyz = slice.getNthBlock(k);
-				Block b = world.getBlock(xyz[0], xyz[1], xyz[2]);
+				Coordinate c = slice.getNthBlock(k);
+				Block b = c.getBlock(world);
 				if (b != Blocks.air) {
 					flag = false;
 				}

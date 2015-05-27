@@ -181,11 +181,11 @@ public class ItemDuplicationWand extends ItemWandBase {
 		StructuredBlockArray struct = structures.get(s);
 		ArrayList<PositionedBlock> ls = new ArrayList();
 		for (int i = 0; i < struct.getSize(); i++) {
-			int[] xyz = struct.getNthBlock(i);
-			int dx = xyz[0]+x+dir.offsetX;
-			int dy = xyz[1]+y+dir.offsetY;
-			int dz = xyz[2]+z+dir.offsetZ;
-			ls.add(new PositionedBlock(dx, dy, dz, struct.getBlockAt(xyz[0], xyz[1], xyz[2]), struct.getMetaAt(xyz[0], xyz[1], xyz[2])));
+			Coordinate c = struct.getNthBlock(i);
+			int dx = c.xCoord+x+dir.offsetX;
+			int dy = c.yCoord+y+dir.offsetY;
+			int dz = c.zCoord+z+dir.offsetZ;
+			ls.add(new PositionedBlock(dx, dy, dz, struct.getBlockAt(c.xCoord, c.yCoord, c.zCoord), struct.getMetaAt(c.xCoord, c.yCoord, c.zCoord)));
 		}
 
 		ticker.placing.put(s, new OperationList(world, ls));

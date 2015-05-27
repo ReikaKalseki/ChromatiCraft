@@ -531,9 +531,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		color = e;
 		BlockArray runes = this.getRuneLocations(worldObj, xCoord, yCoord, zCoord);
 		for (int i = 0; i < runes.getSize(); i++) {
-			int[] xyz = runes.getNthBlock(i);
-			if (worldObj.getBlock(xyz[0], xyz[1], xyz[2]) == ChromaBlocks.RUNE.getBlockInstance())
-				worldObj.setBlockMetadataWithNotify(xyz[0], xyz[1], xyz[2], color.ordinal(), 3);
+			Coordinate c = runes.getNthBlock(i);
+			if (c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
+				worldObj.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, color.ordinal(), 3);
 		}
 	}
 

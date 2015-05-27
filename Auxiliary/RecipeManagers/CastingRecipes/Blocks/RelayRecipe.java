@@ -16,6 +16,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
 
@@ -28,8 +29,8 @@ public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkin
 		this.addAuxItem(this.getChargedShard(e), 0, -2);
 		this.addAuxItem(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0), 0, 2);
 
-		int[] xyz = runeRing.getNthBlock(e.ordinal());
-		this.addRune(e, xyz[0], xyz[1], xyz[2]);
+		Coordinate c = runeRing.getNthBlock(e.ordinal());
+		this.addRune(e, c.xCoord, c.yCoord, c.zCoord);
 	}
 
 	@Override

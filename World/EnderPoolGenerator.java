@@ -21,6 +21,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -61,13 +62,13 @@ public class EnderPoolGenerator extends WorldGenerator {
 			//ReikaJavaLibrary.pConsole(blocks);
 			for (int i = 0; i < blocks.getSize(); i++) {
 				Coordinate c = blocks.getNthBlock(i);
-				if (xyz[1] <= y)
-					world.setBlock(xyz[0], xyz[1], xyz[2], id);
+				if (c.yCoord <= y)
+					c.setBlock(world, id);
 				else {
-					world.setBlockToAir(xyz[0], xyz[1], xyz[2]);
-					Block bid = world.getBlock(xyz[0], xyz[1]-1, xyz[2]);
+					c.setBlock(world, Blocks.air);
+					Block bid = world.getBlock(c.xCoord, c.yCoord-1, c.zCoord);
 					if (bid == Blocks.dirt) {
-						world.setBlock(xyz[0], xyz[1]-1, xyz[2], Blocks.grass);
+						world.setBlock(c.xCoord, c.yCoord-1, c.zCoord, Blocks.grass);
 					}
 				}
 			}

@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -122,10 +123,10 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, inv[0].stackSize);
 		FilledBlockArray arr = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord);
 		for (int i = 0; i < arr.getSize(); i++) {
-			int[] xyz = arr.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			Coordinate c = arr.getNthBlock(i);
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			if (arr.hasBlockAt(dx, dy, dz, ChromaBlocks.CHROMA.getBlockInstance(), 0))
 				worldObj.setBlock(dx, dy, dz, Blocks.air);
 		}

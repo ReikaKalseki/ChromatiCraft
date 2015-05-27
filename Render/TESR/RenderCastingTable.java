@@ -78,11 +78,11 @@ public class RenderCastingTable extends ChromaRenderBase {
 		Integer lastp = lastptick.get(loc);
 		int last = lastp != null ? lastp.intValue() : -1;
 		if (te.getTicksExisted() != last && te.getTicksExisted()%d == 0) {
-			int[] dat = blocks.getRandomBlock();
-			Coordinate c = new Coordinate(dat[0], dat[1], dat[2]);
+			Coordinate dat = blocks.getRandomBlock();
+			Coordinate c = new Coordinate(dat.xCoord, dat.yCoord, dat.zCoord);
 			while (c.getBlock(te.worldObj) != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || c.getBlockMetadata(te.worldObj) > 2) {
 				dat = blocks.getRandomBlock();
-				c = new Coordinate(dat[0], dat[1], dat[2]);
+				c = new Coordinate(dat.xCoord, dat.yCoord, dat.zCoord);
 			}
 			colors.put(c, new Location(CrystalElement.randomElement()));
 			lastptick.put(loc, te.getTicksExisted());

@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -90,8 +91,8 @@ public class TankRender extends ChromaRenderBase {
 		Integer lastp = lastptick.get(loc);
 		int last = lastp != null ? lastp.intValue() : -1;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
-			int[] dat = blocks.getRandomBlock();
-			colors.put(Arrays.asList((float)dat[0], (float)dat[1], (float)dat[2]), et);
+			Coordinate dat = blocks.getRandomBlock();
+			colors.put(Arrays.asList((float)dat.xCoord, (float)dat.yCoord, (float)dat.zCoord), et);
 			lastptick.put(loc, te.getTicksExisted());
 		}
 		if (!colors.isEmpty()) {
@@ -243,9 +244,9 @@ public class TankRender extends ChromaRenderBase {
 		double d = 1;
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			int x = xyz[0];
-			int y = xyz[1];
-			int z = xyz[2];
+			int x = c.xCoord;
+			int y = c.yCoord;
+			int z = c.zCoord;
 			ArrayList<ForgeDirection> li = ReikaJavaLibrary.makeListFromArray(ForgeDirection.VALID_DIRECTIONS);
 			for (int k = 0; k < 6; k++) {
 				int dx = x+dirs[k].offsetX;
@@ -335,9 +336,9 @@ public class TankRender extends ChromaRenderBase {
 			GL11.glFrontFace(GL11.GL_CW);
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			int x = xyz[0];
-			int y = xyz[1];
-			int z = xyz[2];
+			int x = c.xCoord;
+			int y = c.yCoord;
+			int z = c.zCoord;
 
 			double h = te.getFillLevelForY(y);
 			boolean disp = flip ? (h < 1 || te.getFillLevelForY(y+1) == 1) : (h > 0 || te.getFillLevelForY(y-1) == 1);

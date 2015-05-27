@@ -14,6 +14,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class PendantRecipe extends MultiBlockCastingRecipe {
 
@@ -33,8 +34,8 @@ public class PendantRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.diamond, 0, 2);
 
 		int idx = out.getItemDamage();
-		int[] rune = runeRing.getNthBlock(idx);
-		this.addRune(CrystalElement.elements[idx], rune[0], rune[1], rune[2]);
+		Coordinate rune = runeRing.getNthBlock(idx);
+		this.addRune(CrystalElement.elements[idx], rune.xCoord, rune.yCoord, rune.zCoord);
 
 		//this.addAuraRequirement(CrystalElement.PURPLE, 2000);
 		//this.addAuraRequirement(CrystalElement.WHITE, 1000);

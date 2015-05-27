@@ -13,17 +13,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class MultiToolRecipe extends TempleCastingRecipe {
 
 	public MultiToolRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
-		int[] xyz = runeRing.getNthBlock(CrystalElement.PURPLE.ordinal());
-		this.addRune(CrystalElement.PURPLE, xyz[0], xyz[1], xyz[2]);
+		Coordinate c = runeRing.getNthBlock(CrystalElement.PURPLE.ordinal());
+		this.addRune(CrystalElement.PURPLE, c.xCoord, c.yCoord, c.zCoord);
 
-		xyz = runeRing.getNthBlock(CrystalElement.BROWN.ordinal());
-		this.addRune(CrystalElement.BROWN, xyz[0], xyz[1], xyz[2]);
+		c = runeRing.getNthBlock(CrystalElement.BROWN.ordinal());
+		this.addRune(CrystalElement.BROWN, c.xCoord, c.yCoord, c.zCoord);
 	}
 
 	@Override

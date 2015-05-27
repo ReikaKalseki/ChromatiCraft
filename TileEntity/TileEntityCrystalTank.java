@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.BreakAction;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
@@ -75,8 +76,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	private void update() {
 		fluidType = tank.getActualFluid();
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] a = blocks.getNthBlock(i);
-			worldObj.markBlockForUpdate(a[0], a[1], a[2]);
+			Coordinate c = blocks.getNthBlock(i);
+			worldObj.markBlockForUpdate(c.xCoord, c.yCoord, c.zCoord);
 		}
 	}
 
@@ -87,21 +88,21 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 			toadd.recursiveAddMultipleWithBounds(world, x, y, z, li, x-32, y-32, z-32, x+32, y+32, z+32);
 
 			for (int i = 0; i < toadd.getSize(); i++) {
-				int[] xyz = toadd.getNthBlock(i);
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
-				ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
-				if (c == ChromaTiles.TANK && (dx != x || dy != y || dz != z)) {
+				Coordinate c = toadd.getNthBlock(i);
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
+				ChromaTiles ct = ChromaTiles.getTile(world, dx, dy, dz);
+				if (ct == ChromaTiles.TANK && (dx != x || dy != y || dz != z)) {
 					return; //max 1 controller
 				}
 			}
 
 			for (int i = 0; i < toadd.getSize(); i++) {
-				int[] xyz = toadd.getNthBlock(i);
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				Coordinate c = toadd.getNthBlock(i);
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				if (world.getBlock(dx, dy, dz) == ChromaBlocks.TANK.getBlockInstance()) {
 					CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
 
@@ -314,9 +315,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	public void breakBlock() {
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			TileEntity te = worldObj.getTileEntity(dx, dy, dz);
 			if (te instanceof CrystalTankAuxTile)
 				((CrystalTankAuxTile)te).reset();

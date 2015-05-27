@@ -270,9 +270,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		//precalc:
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			Block b = world.getBlock(dx, dy, dz);
 			//if (b == Blocks.stone || b == Blocks.dirt || b == Blocks.grass) {
 			//	blocks.offset(0, 1, 0);
@@ -433,10 +433,10 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		int i = 0;
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		while (i < n) {
-			int[] xyz = array.getRandomBlock();
-			int x = xyz[0];
-			int y = xyz[1];
-			int z = xyz[2];
+			Coordinate c = array.getRandomBlock();
+			int x = c.xCoord;
+			int y = c.yCoord;
+			int z = c.zCoord;
 			if (array.hasBlockAt(x, y, z, b, 0) || array.hasBlockAt(x, y, z, b, 1) || array.hasBlockAt(x, y, z, b, 2) || array.hasBlockAt(x, y, z, b, 7) || array.hasBlockAt(x, y, z, b, 8)) {
 				i++;
 				array.setBlock(x, y, z, Blocks.air);

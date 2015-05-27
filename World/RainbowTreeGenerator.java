@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.RainbowTreeEvent;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
@@ -1104,9 +1105,9 @@ public class RainbowTreeGenerator {
 
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
 			Block id = world.getBlock(dx, dy, dz);
 			if (id != Blocks.leaves && id != Blocks.leaves2 && id != Blocks.web) {
 				if (id != ChromaBlocks.RAINBOWSAPLING.getBlockInstance() && id != ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {

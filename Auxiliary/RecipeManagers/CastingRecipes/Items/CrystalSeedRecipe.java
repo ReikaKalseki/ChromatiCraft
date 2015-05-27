@@ -13,6 +13,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class CrystalSeedRecipe extends TempleCastingRecipe {
@@ -22,8 +23,8 @@ public class CrystalSeedRecipe extends TempleCastingRecipe {
 	public CrystalSeedRecipe(ItemStack out, CrystalElement e, boolean en) {
 		super(out, ReikaRecipeHelper.getShapedRecipeFor(out, "GSG", "SsS", "GSG", 'G', Items.glowstone_dust, 'S', getUsedShard(en, e), 's', Items.wheat_seeds));
 
-		int[] xyz = runeRing.getNthBlock(e.ordinal());
-		this.addRune(e, xyz[0], xyz[1], xyz[2]);
+		Coordinate c = runeRing.getNthBlock(e.ordinal());
+		this.addRune(e, c.xCoord, c.yCoord, c.zCoord);
 
 		enhanced = en;
 	}

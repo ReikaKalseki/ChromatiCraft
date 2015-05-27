@@ -498,10 +498,10 @@ public class ChromaClientEventController {
 					ReikaTextureHelper.bindTerrainTexture();
 					for (int i = 0; i < blocks.getSize(); i++) {
 						Coordinate c = blocks.getNthBlock(i);
-						float dx = xyz[0]+x-(float)TileEntityRendererDispatcher.staticPlayerX;
-						float dy = xyz[1]+y-(float)TileEntityRendererDispatcher.staticPlayerY;
-						float dz = xyz[2]+z-(float)TileEntityRendererDispatcher.staticPlayerZ;
-						Block bk = blocks.getBlockAt(xyz[0], xyz[1], xyz[2]);
+						float dx = c.xCoord+x-(float)TileEntityRendererDispatcher.staticPlayerX;
+						float dy = c.yCoord+y-(float)TileEntityRendererDispatcher.staticPlayerY;
+						float dz = c.zCoord+z-(float)TileEntityRendererDispatcher.staticPlayerZ;
+						Block bk = blocks.getBlockAt(c.xCoord, c.yCoord, c.zCoord);
 						if (bk != null && bk != Blocks.air && bk.getMaterial() != Material.air) {
 							v5.addTranslation(dx, dy, dz);
 							/*
@@ -541,97 +541,97 @@ public class ChromaClientEventController {
 							v5.startDrawingQuads();
 							v5.setBrightness(240);
 							v5.setColorRGBA(r, g, b, 96);
-							int meta = blocks.getMetaAt(xyz[0], xyz[1], xyz[2]);
-							if (!blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2])) {
+							int meta = blocks.getMetaAt(c.xCoord, c.yCoord, c.zCoord);
+							if (!blocks.hasNonAirBlock(c.xCoord, c.yCoord-1, c.zCoord)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.DOWN.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
-								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
-								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
-								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								double en = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord+1) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(c.xCoord-1, c.yCoord, c.zCoord) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(c.xCoord+1, c.yCoord, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(ew, 0-o, en, u, v);
 								v5.addVertexWithUV(ee, 0-o, en, du, v);
 								v5.addVertexWithUV(ee, 0-o, es, du, dv);
 								v5.addVertexWithUV(ew, 0-o, es, u, dv);
 							}
 
-							if (!blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2])) {
+							if (!blocks.hasNonAirBlock(c.xCoord, c.yCoord+1, c.zCoord)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.UP.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
-								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
-								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
-								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
+								double en = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord+1) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(c.xCoord-1, c.yCoord, c.zCoord) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(c.xCoord+1, c.yCoord, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(ew, 1+o, es, u, dv);
 								v5.addVertexWithUV(ee, 1+o, es, du, dv);
 								v5.addVertexWithUV(ee, 1+o, en, du, v);
 								v5.addVertexWithUV(ew, 1+o, en, u, v);
 							}
 
-							if (!blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2])) {
+							if (!blocks.hasNonAirBlock(c.xCoord+1, c.yCoord, c.zCoord)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.EAST.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
-								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
-								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
-								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								double en = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord+1) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(c.xCoord, c.yCoord-1, c.zCoord) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(c.xCoord, c.yCoord+1, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(1+o, ed, en, du, dv);
 								v5.addVertexWithUV(1+o, eu, en, du, v);
 								v5.addVertexWithUV(1+o, eu, es, u, v);
 								v5.addVertexWithUV(1+o, ed, es, u, dv);
 							}
 
-							if (!blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2])) {
+							if (!blocks.hasNonAirBlock(c.xCoord-1, c.yCoord, c.zCoord)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.WEST.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double en = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1) ? 0 : 0-o;
-								double es = blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1) ? 1 : 1+o;
-								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
-								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								double en = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord-1) ? 0 : 0-o;
+								double es = blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord+1) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(c.xCoord, c.yCoord-1, c.zCoord) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(c.xCoord, c.yCoord+1, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(0-o, ed, es, u, dv);
 								v5.addVertexWithUV(0-o, eu, es, u, v);
 								v5.addVertexWithUV(0-o, eu, en, du, v);
 								v5.addVertexWithUV(0-o, ed, en, du, dv);
 							}
 
-							if (!blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]-1)) {
+							if (!blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord-1)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.NORTH.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
-								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
-								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
-								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(c.xCoord-1, c.yCoord, c.zCoord) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(c.xCoord+1, c.yCoord, c.zCoord) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(c.xCoord, c.yCoord-1, c.zCoord) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(c.xCoord, c.yCoord+1, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(ew, ed, 0-o, u, dv);
 								v5.addVertexWithUV(ew, eu, 0-o, u, v);
 								v5.addVertexWithUV(ee, eu, 0-o, du, v);
 								v5.addVertexWithUV(ee, ed, 0-o, du, dv);
 							}
 
-							if (!blocks.hasNonAirBlock(xyz[0], xyz[1], xyz[2]+1)) {
+							if (!blocks.hasNonAirBlock(c.xCoord, c.yCoord, c.zCoord+1)) {
 								IIcon ico = RenderBlocks.getInstance().getIconSafe(bk.getIcon(ForgeDirection.SOUTH.ordinal(), meta));
 								float u = ico.getMinU();
 								float du = ico.getMaxU();
 								float v = ico.getMinV();
 								float dv = ico.getMaxV();
-								double ew = blocks.hasNonAirBlock(xyz[0]-1, xyz[1], xyz[2]) ? 0 : 0-o;
-								double ee = blocks.hasNonAirBlock(xyz[0]+1, xyz[1], xyz[2]) ? 1 : 1+o;
-								double ed = blocks.hasNonAirBlock(xyz[0], xyz[1]-1, xyz[2]) ? 0 : 0-o;
-								double eu = blocks.hasNonAirBlock(xyz[0], xyz[1]+1, xyz[2]) ? 1 : 1+o;
+								double ew = blocks.hasNonAirBlock(c.xCoord-1, c.yCoord, c.zCoord) ? 0 : 0-o;
+								double ee = blocks.hasNonAirBlock(c.xCoord+1, c.yCoord, c.zCoord) ? 1 : 1+o;
+								double ed = blocks.hasNonAirBlock(c.xCoord, c.yCoord-1, c.zCoord) ? 0 : 0-o;
+								double eu = blocks.hasNonAirBlock(c.xCoord, c.yCoord+1, c.zCoord) ? 1 : 1+o;
 								v5.addVertexWithUV(ee, ed, 1+o, du, dv);
 								v5.addVertexWithUV(ee, eu, 1+o, du, v);
 								v5.addVertexWithUV(ew, eu, 1+o, u, v);
@@ -764,9 +764,9 @@ public class ChromaClientEventController {
 					int b = 255;
 					for (int i = 0; i < blocks.getSize(); i++) {
 						Coordinate c = blocks.getNthBlock(i);
-						int dx = xyz[0]-x;
-						int dy = xyz[1]-y;
-						int dz = xyz[2]-z;
+						int dx = c.xCoord-x;
+						int dy = c.yCoord-y;
+						int dz = c.zCoord-z;
 						v5.addTranslation(dx, dy, dz);
 						v5.startDrawing(GL11.GL_LINE_LOOP);
 						v5.setBrightness(240);
