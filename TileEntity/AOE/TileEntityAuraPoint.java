@@ -46,6 +46,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -56,7 +57,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	private static final String NBT_TAG = "aurapoint";
 
-	private static final int NEW_CROPS_PER_TICK = 32;
+	private static final int NEW_CROPS_PER_TICK = 64;
+	private static final int CROPS_PER_TICK = 16;
 	private static final int CROP_UPDATES = 8;
 
 	private int hue;
@@ -136,7 +138,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		e.attackEntityFrom(ChromatiCraft.pylon, dmg);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURATTACK.ordinal(), this, 64, e.getEntityId());
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURATTACK.ordinal(), this, 192, e.getEntityId());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -181,18 +183,25 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	}
 
 	private void growCrops(World world, int x, int y, int z) {
-		Collection<Coordinate> bks = cache.getBlocks();
+		ArrayList<Coordinate> bks = new ArrayList(cache.getBlocks());
 		Collection<Coordinate> remove = new ArrayList();
-		int i = 0;
-		for (Coordinate c : bks) {
+		int n = Math.min(CROPS_PER_TICK, bks.size()/2);
+		for (int i = 0; i < n; i++) {
+			int index = rand.nextInt(bks.size());
+			Coordinate c = bks.get(index);
 			CropType type = this.getCropAt(world, c);
 			if (type == null) {
 				remove.add(c);
 			}
 			else {
-				for (int k = 0; k < CROP_UPDATES; k++)
-					c.getBlock(world).updateTick(world, c.xCoord, c.yCoord, c.zCoord, rand);
-				i++;
+				if (!type.isRipe(world, c.xCoord, c.yCoord, c.zCoord)) {
+					int state = type.getGrowthState(world, c.xCoord, c.yCoord, c.zCoord);
+					for (int k = 0; k < CROP_UPDATES; k++)
+						c.getBlock(world).updateTick(world, c.xCoord, c.yCoord, c.zCoord, rand);
+					if (state != type.getGrowthState(world, c.xCoord, c.yCoord, c.zCoord)) {
+						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURAGROW.ordinal(), this, 64, c.xCoord, c.yCoord, c.zCoord);
+					}
+				}
 			}
 		}
 		for (Coordinate c : remove)
@@ -201,7 +210,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		for (int k = 0; k < NEW_CROPS_PER_TICK; k++) {
 			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 64);
 			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 64);
-			int dy = rand.nextInt(1+world.getTopSolidOrLiquidBlock(x, z));
+			int dy = rand.nextInt(1+ReikaWorldHelper.getTopNonAirBlock(world, x, z));
 			Coordinate c = new Coordinate(dx, dy, dz);
 			if (cache.containsBlock(c)) {
 				k--;
@@ -214,6 +223,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 				}
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doGrowFX(int x, int y, int z) {
+		ReikaParticleHelper.BONEMEAL.spawnAroundBlock(worldObj, x, y, z, 4);
 	}
 
 	private CropType getCropAt(World world, Coordinate c) {
@@ -250,7 +264,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 			double x = ReikaRandomHelper.getRandomPlusMinus(e.posX, 1.5);
 			double z = ReikaRandomHelper.getRandomPlusMinus(e.posZ, 1.5);
 			double y = e.posY-1+rand.nextFloat()*(e.height+2);
-			ReikaParticleHelper.BONEMEAL.spawnAt(e.worldObj, x, y, z);
+			ReikaParticleHelper.MOBSPELL.spawnAt(e.worldObj, x, y, z);
 		}
 	}
 

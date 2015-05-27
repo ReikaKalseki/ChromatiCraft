@@ -453,6 +453,9 @@ public class ChromatiPackets implements IPacketHandler {
 			case AURAHEAL:
 				((TileEntityAuraPoint)tile).doHealFX(world.getEntityByID(data[0]));
 				break;
+			case AURAGROW:
+				((TileEntityAuraPoint)tile).doGrowFX(data[0], data[1], data[2]);
+				break;
 			default:
 				break;
 			}

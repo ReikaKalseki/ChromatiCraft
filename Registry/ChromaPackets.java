@@ -64,7 +64,8 @@ public enum ChromaPackets {
 	MEDISTRIBTHRESH(2),
 	HOVERWAND(1),
 	AURATTACK(1),
-	AURAHEAL(1);
+	AURAHEAL(1),
+	AURAGROW(3);
 
 	public final int numInts;
 	public final PacketTypes type;

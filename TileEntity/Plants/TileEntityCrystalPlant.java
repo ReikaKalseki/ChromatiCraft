@@ -133,4 +133,8 @@ public class TileEntityCrystalPlant extends TileEntity {
 		NBT.setInteger("growth", growthTick);
 	}
 
+	public int getGrowthState() {
+		return growthTick;
+	}
+
 }
