@@ -31,8 +31,8 @@ import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -182,7 +182,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		case OCEAN:
 			BlockArray blocks = OceanStructure.getCovers(x, y, z);
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
+				Coordinate c = blocks.getNthBlock(i);
 				int dx = xyz[0];
 				int dy = xyz[1];
 				int dz = xyz[2];
@@ -212,7 +212,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		case CAVERN:
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
-					int[] xyz = blocks.getNthBlock(i);
+					Coordinate c = blocks.getNthBlock(i);
 					int x = xyz[0];
 					int y = xyz[1];
 					int z = xyz[2];
@@ -228,7 +228,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		case BURROW:
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
-					int[] xyz = blocks.getNthBlock(i);
+					Coordinate c = blocks.getNthBlock(i);
 					int x = xyz[0]+5;
 					int y = xyz[1]+8;
 					int z = xyz[2]+2;
@@ -242,7 +242,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		case OCEAN:
 			if (blocks != null) {
 				for (int i = 0; i < blocks.getSize(); i++) {
-					int[] xyz = blocks.getNthBlock(i);
+					Coordinate c = blocks.getNthBlock(i);
 					int x = xyz[0];//-3;
 					int y = xyz[1];//-5;
 					int z = xyz[2];//-3;
@@ -384,10 +384,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		}
 		if (blocks != null) {
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
+				Coordinate c1 = blocks.getNthBlock(i);
 				if (worldObj.getBlock(xyz[0], xyz[1], xyz[2]) == ChromaBlocks.CRYSTAL.getBlockInstance()) {
-					Coordinate c = new Coordinate(xyz[0]-xCoord, xyz[1]-yCoord, xyz[2]-zCoord);
-					CrystalElement e = CrystalElement.elements[worldObj.getBlockMetadata(xyz[0], xyz[1], xyz[2])];
+					Coordinate c = new Coordinate(c1.xCoord-xCoord, c1.yCoord-yCoord, c1.zCoord-zCoord);
+					CrystalElement e = CrystalElement.elements[worldObj.getBlockMetadata(c1.xCoord, c1.yCoord, c1.zCoord)];
 					crystals.put(e, c);
 					//ReikaJavaLibrary.pConsole(c+":"+world.isRemote, e == CrystalElement.RED && x == 24 && z == 383);
 				}
@@ -402,10 +402,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case CAVERN:
 				if (blocks != null) {
 					for (int i = 0; i < blocks.getSize(); i++) {
-						int[] xyz = blocks.getNthBlock(i);
-						int x = xyz[0];
-						int y = xyz[1];
-						int z = xyz[2];
+						Coordinate c = blocks.getNthBlock(i);
+						int x = c.xCoord;
+						int y = c.yCoord;
+						int z = c.zCoord;
 						if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
 							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
 						else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
@@ -420,7 +420,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case BURROW:
 				if (blocks != null) {
 					for (int i = 0; i < blocks.getSize(); i++) {
-						int[] xyz = blocks.getNthBlock(i);
+						Coordinate c = blocks.getNthBlock(i);
 						int x = xyz[0]+5;
 						int y = xyz[1]+8;
 						int z = xyz[2]+2;
@@ -436,7 +436,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case OCEAN:
 				if (blocks != null) {
 					for (int i = 0; i < blocks.getSize(); i++) {
-						int[] xyz = blocks.getNthBlock(i);
+						Coordinate c = blocks.getNthBlock(i);
 						int x = xyz[0];//-3;
 						int y = xyz[1];//-5;
 						int z = xyz[2];//-3;

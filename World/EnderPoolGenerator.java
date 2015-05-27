@@ -60,7 +60,7 @@ public class EnderPoolGenerator extends WorldGenerator {
 		if (gen) {
 			//ReikaJavaLibrary.pConsole(blocks);
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
+				Coordinate c = blocks.getNthBlock(i);
 				if (xyz[1] <= y)
 					world.setBlock(xyz[0], xyz[1], xyz[2], id);
 				else {

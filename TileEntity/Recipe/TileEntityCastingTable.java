@@ -52,6 +52,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.BreakAction;
@@ -226,11 +227,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			BlockArray blocks = this.getStructureAccentLocations();
 
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
+				Coordinate c = blocks.getNthBlock(i);
 
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				double dd = ReikaMathLibrary.py3d(dx-x, dy-y, dz-z);
 				double dr = rand.nextDouble();
 				double px = 0.5+dr*(dx-x)+x;
@@ -269,10 +270,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			BlockArray blocks = this.getStructureRuneLocations(((PylonRecipe)activeRecipe).getRequiredAura());
 			int mod = 17-blocks.getSize();
 			if (blocks.getSize() > 0 && this.getTicksExisted()%mod == 0) {
-				int[] xyz = blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				Coordinate c = blocks.getNthBlock(this.getTicksExisted()%blocks.getSize());
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				Block b = world.getBlock(dx, dy, dz);
 				if (b == ChromaBlocks.RUNE.getBlockInstance()) {
 					int meta = world.getBlockMetadata(dx, dy, dz);

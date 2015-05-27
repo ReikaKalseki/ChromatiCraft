@@ -497,7 +497,7 @@ public class ChromaClientEventController {
 					int b = 255;
 					ReikaTextureHelper.bindTerrainTexture();
 					for (int i = 0; i < blocks.getSize(); i++) {
-						int[] xyz = blocks.getNthBlock(i);
+						Coordinate c = blocks.getNthBlock(i);
 						float dx = xyz[0]+x-(float)TileEntityRendererDispatcher.staticPlayerX;
 						float dy = xyz[1]+y-(float)TileEntityRendererDispatcher.staticPlayerY;
 						float dz = xyz[2]+z-(float)TileEntityRendererDispatcher.staticPlayerZ;
@@ -763,7 +763,7 @@ public class ChromaClientEventController {
 					int g = 255;
 					int b = 255;
 					for (int i = 0; i < blocks.getSize(); i++) {
-						int[] xyz = blocks.getNthBlock(i);
+						Coordinate c = blocks.getNthBlock(i);
 						int dx = xyz[0]-x;
 						int dy = xyz[1]-y;
 						int dz = xyz[2]-z;

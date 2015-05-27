@@ -269,7 +269,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 		//precalc:
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
+			Coordinate c = blocks.getNthBlock(i);
 			int dx = xyz[0];
 			int dy = xyz[1];
 			int dz = xyz[2];

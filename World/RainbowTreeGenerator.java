@@ -1103,7 +1103,7 @@ public class RainbowTreeGenerator {
 		blocks.addBlockCoordinate(x+9, y+17, z+5);
 
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
+			Coordinate c = blocks.getNthBlock(i);
 			int dx = xyz[0];
 			int dy = xyz[1];
 			int dz = xyz[2];

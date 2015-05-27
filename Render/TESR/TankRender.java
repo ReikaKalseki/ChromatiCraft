@@ -242,7 +242,7 @@ public class TankRender extends ChromaRenderBase {
 		double v = u*1+0.5*Math.sin(u);
 		double d = 1;
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
+			Coordinate c = blocks.getNthBlock(i);
 			int x = xyz[0];
 			int y = xyz[1];
 			int z = xyz[2];
@@ -334,7 +334,7 @@ public class TankRender extends ChromaRenderBase {
 		if (flip)
 			GL11.glFrontFace(GL11.GL_CW);
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
+			Coordinate c = blocks.getNthBlock(i);
 			int x = xyz[0];
 			int y = xyz[1];
 			int z = xyz[2];

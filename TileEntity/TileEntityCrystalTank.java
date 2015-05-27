@@ -313,7 +313,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	@Override
 	public void breakBlock() {
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
+			Coordinate c = blocks.getNthBlock(i);
 			int dx = xyz[0];
 			int dy = xyz[1];
 			int dz = xyz[2];

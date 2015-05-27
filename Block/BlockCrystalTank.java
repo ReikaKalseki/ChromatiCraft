@@ -47,6 +47,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.ConnectedTextureGlass;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
@@ -187,10 +188,10 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			BlockArray blocks = new BlockArray();
 			blocks.recursiveAddWithBounds(world, x, y, z, this, x-32, y-32, z-32, x+32, y+32, z+32);
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				Coordinate c = blocks.getNthBlock(i);
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				CrystalTankAuxTile tile = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
 				tile.setTile(con);
 				world.setBlockMetadataWithNotify(dx, dy, dz, 1, 3);
@@ -206,12 +207,12 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		TileEntityCrystalTank con = null;
 		int count = 0;
 		for (int i = 0; i < blocks.getSize(); i++) {
-			int[] xyz = blocks.getNthBlock(i);
-			int dx = xyz[0];
-			int dy = xyz[1];
-			int dz = xyz[2];
-			ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
-			if (c == ChromaTiles.TANK) {
+			Coordinate c = blocks.getNthBlock(i);
+			int dx = c.xCoord;
+			int dy = c.yCoord;
+			int dz = c.zCoord;
+			ChromaTiles ct = ChromaTiles.getTile(world, dx, dy, dz);
+			if (ct == ChromaTiles.TANK) {
 				count++;
 			}
 		}
@@ -221,10 +222,10 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				((CrystalTankAuxTile)te).removeFromTank();
 			}
 			for (int i = 0; i < blocks.getSize(); i++) {
-				int[] xyz = blocks.getNthBlock(i);
-				int dx = xyz[0];
-				int dy = xyz[1];
-				int dz = xyz[2];
+				Coordinate c = blocks.getNthBlock(i);
+				int dx = c.xCoord;
+				int dy = c.yCoord;
+				int dz = c.zCoord;
 				CrystalTankAuxTile te2 = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
 				if (te2 != null) {
 					te2.removeFromTank();

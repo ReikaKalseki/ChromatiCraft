@@ -78,7 +78,7 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			this.addAuraRequirement(e, e.isPrimary() ? 100000 : 50000);
-			this.addRune(e, runeRing.getNthBlock(i)[0], runeRing.getNthBlock(i)[1], runeRing.getNthBlock(i)[2]);
+			this.addRune(e, runeRing.getNthBlock(i).xCoord, runeRing.getNthBlock(i).yCoord, runeRing.getNthBlock(i).zCoord);
 		}
 		this.addRunes(repeater.getRunes());
 	}
