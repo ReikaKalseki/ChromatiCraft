@@ -274,7 +274,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			Coordinate c = arr.getNthBlock(k);
 			Block b = c.getBlock(arr.world);
 			if (b == b2) {
-				int meta = arr.worldc.getBlockMetadata();
+				int meta = c.getBlockMetadata(arr.world);
 				if (meta == BlockType.STONE.metadata) {
 					int dy = c.yCoord-arr.getMinY();
 					int ct = Math.max(1, dy*2-2);
