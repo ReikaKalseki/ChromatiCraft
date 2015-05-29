@@ -50,7 +50,8 @@ public enum ChromaOptions implements ConfigList {
 	RELAYRANGE("Lumen Relay Range", 16),
 	REDRAGON("Always Respawn EnderDragon", false),
 	DELEND("Delete End on Unload", false),
-	EASYFRAG("Auxiliary Fragment Acquisition", false);
+	EASYFRAG("Auxiliary Fragment Acquisition", false),
+	COPYSIZE("Duplication Wand Max Volume", 1000);
 
 	private String label;
 	private boolean defaultState;

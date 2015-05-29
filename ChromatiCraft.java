@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -537,6 +538,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		proxy.addDonatorRender();
 
 		TileEntityBiomePainter.buildBiomeList();
+		ItemDuplicationWand.loadMappings();
 		ChunkProviderChroma.triggerStructureGen();
 
 		if (ModList.THAUMCRAFT.isLoaded()) {

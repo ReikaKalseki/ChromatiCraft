@@ -57,7 +57,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	private static final String NBT_TAG = "aurapoint";
 
-	private static final int NEW_CROPS_PER_TICK = 64;
+	private static final int NEW_CROPS_PER_TICK = 256;
 	private static final int CROPS_PER_TICK = 16;
 	private static final int CROP_UPDATES = 8;
 

@@ -28,28 +28,44 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.UnCopyableBlock;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.RotaryCraft.Registry.BlockRegistry;
+import Reika.RotaryCraft.Registry.ItemRegistry;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 
 public class ItemDuplicationWand extends ItemWandBase {
+
+	public static final int MAX_SIZE = Math.min(1000, ChromaOptions.COPYSIZE.getValue());
 
 	//Do not switch to playermap; not compatible, and not persistent across loads anyways
 	private static HashMap<String, StructuredBlockArray> structures = new HashMap();
@@ -57,6 +73,8 @@ public class ItemDuplicationWand extends ItemWandBase {
 	private HashMap<String, Coordinate> centers = new HashMap();
 	private HashMap<String, Coordinate> lastClick = new HashMap();
 	private static Collection<String> lock = new ArrayList();
+
+	private static final BlockMap<ItemStack> specialReqs = new BlockMap();
 
 	private static final PlacementTicker ticker = new PlacementTicker();
 
@@ -95,12 +113,48 @@ public class ItemDuplicationWand extends ItemWandBase {
 		if (ep.capabilities.isCreativeMode)
 			return true;
 		ItemHashMap<Integer> items = blocks.getItems();
+		this.performMappings(items);
 		return ReikaInventoryHelper.inventoryContains(items, ep.inventory);
 	}
 
 	private void removeFromInventory(EntityPlayer ep, StructuredBlockArray blocks) {
 		ItemHashMap<Integer> items = blocks.getItems();
+		this.performMappings(items);
 		ReikaInventoryHelper.removeFromInventory(items, ep.inventory);
+	}
+
+	private void performMappings(ItemHashMap<Integer> items) {
+		HashMap<BlockKey, Fluid> fluids = new HashMap();
+		for (BlockKey bk : specialReqs.keySet()) {
+			ItemStack is = bk.asItemStack();
+			Integer get = items.get(is);
+			if (get != null) {
+				items.remove(is);
+				ItemStack is2 = specialReqs.get(bk);
+				items.put(is2, get);
+			}
+		}
+		for (ItemStack is : items.keySet()) {
+			Block b = Block.getBlockFromItem(is.getItem());
+			if (b instanceof BlockFluidBase || b instanceof BlockLiquid) {
+				Fluid f = FluidRegistry.lookupFluidForBlock(b);
+				if (f != null) {
+					fluids.put(new BlockKey(b, 0), f);
+				}
+			}
+		}
+		for (BlockKey bk : fluids.keySet()) {
+			Fluid f = fluids.get(bk);
+			ItemStack is = bk.asItemStack();
+			Integer get = items.get(is);
+			items.remove(is);
+			if (!ReikaFluidHelper.isInfinite(f)) {
+				ItemStack fill = ReikaFluidHelper.getFilledContainerFor(f);
+				if (fill != null) {
+					items.put(fill, get);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -147,6 +201,9 @@ public class ItemDuplicationWand extends ItemWandBase {
 							else if (!ChromaOptions.COPYTILE.getState() && world.getTileEntity(dx, dy, dz) instanceof TileEntityBase) {
 
 							}
+							else if ((b instanceof BlockFluidBase || b instanceof BlockLiquid) && !ReikaFluidHelper.isInfinite(FluidRegistry.lookupFluidForBlock(b))) {
+
+							}
 							else {
 								add.addBlockCoordinate(dx, dy, dz);
 								ct++;
@@ -155,10 +212,10 @@ public class ItemDuplicationWand extends ItemWandBase {
 					}
 				}
 			}
-			if (add.getSize() < 1000) {
+			if (add.getSize() < MAX_SIZE) {
 				Coordinate c = centers.get(s);
 				add.offset(-c.xCoord, -c.yCoord, -c.zCoord);
-				all.addAll(add, true);
+				add.copyTo(all);
 				structures.put(s, all);
 				ChromatiCraft.logger.debug("Added "+ct+" blocks to region, from "+cx+" to "+last+", for "+s+". Now has "+all.getSize()+" blocks.");
 				region.put(s, false);
@@ -201,6 +258,79 @@ public class ItemDuplicationWand extends ItemWandBase {
 		String s = ep.getCommandSenderName();
 		StructuredBlockArray a = structures.get(s);
 		return !lock.contains(s) && a != null ? (StructuredBlockArray)a.copy() : null;
+	}
+
+	public static void loadMappings() {
+		addMapping(Blocks.farmland, Blocks.dirt);
+
+		for (int i = 0; i < ReikaCropHelper.cropList.length; i++) {
+			ReikaCropHelper crop = ReikaCropHelper.cropList[i];
+			addMapping(crop.blockID, crop.getSeedItem());
+		}
+
+		for (int i = 0; i < 16; i++) {
+			addMapping(ChromaBlocks.PLANT.getBlockInstance(), i, ChromaItems.SEED.getStackOfMetadata(i));
+		}
+
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			addMapping(BlockRegistry.CANOLA.getBlockInstance(), ItemRegistry.CANOLA.getItemInstance());
+		}
+
+		addMapping(Blocks.reeds, Items.reeds);
+		addMapping(Blocks.pumpkin_stem, Items.pumpkin_seeds);
+		addMapping(Blocks.melon_stem, Items.melon_seeds);
+
+		addMapping(Blocks.monster_egg, 0, Blocks.stone);
+		addMapping(Blocks.monster_egg, 1, Blocks.cobblestone);
+		addMapping(Blocks.monster_egg, 2, Blocks.stonebrick);
+		addMapping(Blocks.monster_egg, 3, ReikaItemHelper.mossyBricks);
+		addMapping(Blocks.monster_egg, 4, ReikaItemHelper.crackBricks);
+		addMapping(Blocks.monster_egg, 5, ReikaItemHelper.circleBricks);
+
+		addMapping(Blocks.lit_redstone_ore, Blocks.redstone_ore);
+		addMapping(Blocks.unlit_redstone_torch, Blocks.redstone_torch);
+		addMapping(Blocks.unpowered_repeater, Items.repeater);
+		addMapping(Blocks.powered_repeater, Items.repeater);
+		addMapping(Blocks.unpowered_comparator, Items.comparator);
+		addMapping(Blocks.powered_comparator, Items.comparator);
+
+		addMapping(Blocks.brewing_stand, Items.brewing_stand);
+		addMapping(Blocks.cauldron, Items.cauldron);
+		addMapping(Blocks.wall_sign, Items.sign);
+		addMapping(Blocks.standing_sign, Items.sign);
+		addMapping(Blocks.wooden_door, Items.wooden_door);
+		addMapping(Blocks.iron_door, Items.iron_door);
+		addMapping(Blocks.lit_furnace, Blocks.furnace);
+		addMapping(Blocks.flower_pot, Items.flower_pot);
+		addMapping(Blocks.tripwire, Items.string);
+
+		for (int i = 0; i < 3; i++)
+			addMapping(Blocks.skull, i, new ItemStack(Items.skull, 1, i));
+
+	}
+
+	private static void addMapping(Block b, int m, Block i) {
+		addMapping(b, m, new ItemStack(i));
+	}
+
+	private static void addMapping(Block b, Block i) {
+		addMapping(b, 0, new ItemStack(i));
+	}
+
+	private static void addMapping(Block b, int m, Item i) {
+		addMapping(b, m, new ItemStack(i));
+	}
+
+	private static void addMapping(Block b, Item i) {
+		addMapping(b, 0, new ItemStack(i));
+	}
+
+	private static void addMapping(Block b, ItemStack is) {
+		addMapping(b, is);
+	}
+
+	private static void addMapping(Block b, int m, ItemStack is) {
+		specialReqs.put(b, m, is);
 	}
 
 	public static class PlacementTicker implements TickHandler {

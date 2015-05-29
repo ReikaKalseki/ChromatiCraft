@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -129,6 +130,12 @@ public class BlockChromaPortal extends Block {
 			if (ticks == 0)
 				this.onFirstTick();
 			ticks++;
+
+			if (DragonAPICore.debugtest) {
+				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord).place();
+				DragonAPICore.debugtest = false;
+			}
+
 			if (complete) {
 				if (charge < MINCHARGE || !ChunkProviderChroma.areStructuresReady()) {
 					charge++;
