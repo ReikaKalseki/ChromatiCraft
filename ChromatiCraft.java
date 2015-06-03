@@ -18,7 +18,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityList;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,9 +63,7 @@ import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
-import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
-import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
@@ -82,6 +79,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEntities;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -107,6 +105,7 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
+import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
@@ -147,7 +146,6 @@ import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -278,9 +276,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
 
 		this.setupClassFiles();
-		ChromaTiles.loadMappings();
-		ChromaBlocks.loadMappings();
-		ChromaItems.loadMappings();
 		//ChromaResearch.loadCache();
 
 		ReikaPacketHelper.registerPacketHandler(instance, packetChannel, new ChromatiPackets());
@@ -366,6 +361,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			ChromaDescriptions.loadData();
 		}
+
+		PackModificationTracker.instance.addMod(this, config);
 
 		if (!this.isLocked())
 			IntegrityChecker.instance.addMod(instance, ChromaBlocks.blockList, ChromaItems.itemList);
@@ -487,22 +484,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	private void addEntities() {
-		int id = 0;//EntityRegistry.findGlobalUniqueEntityId();
-		EntityRegistry.registerModEntity(EntityBallLightning.class, "Ball Lightning", id, this, 64, 20, true);
-		//EntityRegistry.registerGlobalEntityID(EntityBallLightning.class, "Ball Lightning", id);
-		EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, 0xbbbbbb, 0xffffff));
-
-		id = 1;//EntityRegistry.findGlobalUniqueEntityId();
-		EntityRegistry.registerModEntity(EntityAbilityFireball.class, "Ability Fireball", id, this, 64, 20, true);
-		//EntityRegistry.registerGlobalEntityID(EntityAbilityFireball.class, "Ability Fireball", id);
-
-		id = 2;//EntityRegistry.findGlobalUniqueEntityId();
-		EntityRegistry.registerModEntity(EntityChainGunShot.class, "ChainGun Shot", id, this, 64, 20, true);
-		//EntityRegistry.registerGlobalEntityID(EntityChainGunShot.class, "ChainGun Shot", id);
-
-		//id = EntityRegistry.findGlobalUniqueEntityId();
-		//EntityRegistry.registerModEntity(EntityGluon.class, "Gluon", id, ChromatiCraft.instance, 64, 20, true);
-		//EntityRegistry.registerGlobalEntityID(EntityGluon.class, "Gluon", id);
+		ReikaRegistryHelper.registerModEntities(instance, ChromaEntities.entityList);
 	}
 
 	private void addDyeCompat() {
@@ -620,8 +602,14 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private void setupClassFiles() {
 		setupLiquids();
+
 		ReikaRegistryHelper.instantiateAndRegisterBlocks(instance, ChromaBlocks.blockList, blocks);
 		ReikaRegistryHelper.instantiateAndRegisterItems(instance, ChromaItems.itemList, items);
+
+		ChromaTiles.loadMappings();
+		ChromaBlocks.loadMappings();
+		ChromaItems.loadMappings();
+
 		setupLiquidContainers();
 
 		//Block b = Blocks.mob_spawner;

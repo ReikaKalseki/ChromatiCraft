@@ -326,7 +326,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 	}
 
 	private static void addMapping(Block b, ItemStack is) {
-		addMapping(b, is);
+		addMapping(b, 0, is);
 	}
 
 	private static void addMapping(Block b, int m, ItemStack is) {
