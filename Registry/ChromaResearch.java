@@ -25,9 +25,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -44,18 +47,24 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeType;
 
 public enum ChromaResearch implements ProgressElement {
 
@@ -72,6 +81,7 @@ public enum ChromaResearch implements ProgressElement {
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
+	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -172,6 +182,7 @@ public enum ChromaResearch implements ProgressElement {
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
 	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
+	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -361,7 +372,11 @@ public enum ChromaResearch implements ProgressElement {
 		return item;
 	}
 
+	@SideOnly(Side.CLIENT)
 	private ItemStack getTabIcon() {
+		if (this == BEES) {
+			return CrystalBees.getCrystalBee().getBeeItem(Minecraft.getMinecraft().theWorld, EnumBeeType.QUEEN);
+		}
 		if (this == ENDERCRYS) {
 			return item.getStackOfMetadata(1);
 		}
@@ -387,7 +402,12 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glPopMatrix();
 			return;
 		}
-		if (this == APIRECIPES) {
+		else if (this == PACKCHANGES) {
+			ReikaTextureHelper.bindTerrainTexture();
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
+			return;
+		}
+		else if (this == APIRECIPES) {
 			ArrayList<ItemStack> ico = new ArrayList();
 			/*
 			if (ModList.THAUMCRAFT.isLoaded()) {
@@ -443,10 +463,18 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	public String getData() {
+		if (this == PACKCHANGES) {
+			return "These are changes made to the way the mod works by the creator of the pack. None of these are normal " +
+					"behavior of the mod, and any negative effects of these changes should be discussed with the pack creator, not " +
+					"the mod developer.";
+		}
 		return ChromaDescriptions.getData(this);
 	}
 
-	public String getNotes() {
+	public String getNotes(int subpage) {
+		if (this == PACKCHANGES) {
+			return PackModificationTracker.instance.getModifications(ChromatiCraft.instance).get(subpage-1).toString();
+		}
 		return ChromaDescriptions.getNotes(this);
 	}
 
@@ -640,6 +668,27 @@ public enum ChromaResearch implements ProgressElement {
 			}
 			return li;
 		}
+		if (this == BEES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			World world = FMLCommonHandler.instance().getEffectiveSide().isClient() ? Minecraft.getMinecraft().theWorld : DimensionManager.getWorld(0);
+
+			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.DRONE));
+			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.PRINCESS));
+			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.QUEEN));
+
+			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.DRONE));
+			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.PRINCESS));
+			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.QUEEN));
+
+			for (int i = 0; i < 16; i++) {
+				CrystalElement e = CrystalElement.elements[i];
+				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.DRONE));
+				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.PRINCESS));
+				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.QUEEN));
+			}
+
+			return li;
+		}
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
 			ArrayList<ItemStack> li = new ArrayList();
@@ -654,7 +703,7 @@ public enum ChromaResearch implements ProgressElement {
 			return li;
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
-			return ReikaJavaLibrary.makeListFrom(this.getTabIcon());
+			return ReikaJavaLibrary.makeListFrom(iconItem);
 		return null;
 	}
 
@@ -782,6 +831,10 @@ public enum ChromaResearch implements ProgressElement {
 			return ability.isDummiedOut();
 		if (this == APIRECIPES && RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && DragonAPICore.hasGameLoaded()) //only hide display
 			return true;
+		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
+			return true;
+		if (this == BEES)
+			return !ModList.FORESTRY.isLoaded();
 		return false;
 	}
 

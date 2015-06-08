@@ -167,7 +167,7 @@ public final class ChromaResearchManager {
 	}
 
 	public boolean playerHasFragment(EntityPlayer ep, ChromaResearch r) {
-		return r == ChromaResearch.START || this.getFragments(ep).contains(r);
+		return r == ChromaResearch.START || r == ChromaResearch.PACKCHANGES || this.getFragments(ep).contains(r);
 	}
 
 	public boolean givePlayerFragment(EntityPlayer ep, ChromaResearch r) {

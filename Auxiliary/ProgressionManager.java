@@ -83,6 +83,7 @@ public class ProgressionManager {
 		CHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()), //step in liquid chroma
 		STONES(ChromaStacks.elementUnit), //craft all elemental stones together
 		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
+		HIVE(ChromaBlocks.HIVE.getBlockInstance(), ModList.FORESTRY.isLoaded()),
 		NETHER(Blocks.portal), //go to the nether
 		END(Blocks.end_portal_frame), //go to the end
 		TWILIGHT(ModWoodList.CANOPY.getItem(), ModList.TWILIGHT.isLoaded()), //Go to the twilight forest

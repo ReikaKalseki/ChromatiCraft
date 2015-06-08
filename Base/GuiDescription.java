@@ -37,7 +37,7 @@ public abstract class GuiDescription extends GuiBookSection {
 			fontRendererObj.drawSplitString(String.format("%s", page.getData()), px, posY+descY, 242, c);
 		}
 		else {
-			fontRendererObj.drawSplitString(String.format("%s", page.getNotes()), px, posY+descY, 242, c);
+			fontRendererObj.drawSplitString(String.format("%s", page.getNotes(subpage)), px, posY+descY, 242, c);
 		}
 		if (disable) {
 			fontRendererObj.drawSplitString("This item has been disabled by your server admin or modpack creator.", px, posY+descY, 242, 0xffffff);

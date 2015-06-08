@@ -101,7 +101,8 @@ public enum Chromabilities implements Ability {
 	LEECH(null, false),
 	FLOAT(Phase.END, true),
 	SPAWNERSEE(null, true),
-	BREADCRUMB(null, true);
+	BREADCRUMB(null, true),
+	RANGEDBOOST(null, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;

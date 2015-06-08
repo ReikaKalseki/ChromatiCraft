@@ -72,6 +72,7 @@ import Reika.ChromatiCraft.GUI.Book.GuiFragmentRecovery;
 import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.GUI.Book.GuiNotes;
+import Reika.ChromatiCraft.GUI.Book.GuiPackChanges;
 import Reika.ChromatiCraft.GUI.Book.GuiPoolRecipe;
 import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
@@ -263,7 +264,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 		case ABILITYDESC:
 			return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
 		case INFO:
-			return new GuiBasicInfo(player, ChromaResearch.researchList[x]);
+			ChromaResearch r = ChromaResearch.researchList[x];
+			return r == ChromaResearch.PACKCHANGES ? new GuiPackChanges(player) : new GuiBasicInfo(player, r);
 		case STRUCTURE:
 			return new GuiStructure(player, ChromaResearch.researchList[x]);
 		case PROGRESS:

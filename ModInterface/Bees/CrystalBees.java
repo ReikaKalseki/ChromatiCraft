@@ -113,12 +113,16 @@ public class CrystalBees {
 		return beeMap.get(color);
 	}
 
-	public static BasicBee getCrystalBee() {
+	public static BeeSpecies getCrystalBee() {
 		return crystal;
 	}
 
-	public static BasicBee getPureBee() {
+	public static BeeSpecies getPureBee() {
 		return purity;
+	}
+
+	public static BeeSpecies getElementalBee(CrystalElement e) {
+		return beeMap.get(e);
 	}
 
 	private static final void addBreeding(String in1, BeeSpecies in2, CrystalElement out) {

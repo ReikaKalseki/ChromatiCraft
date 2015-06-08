@@ -51,7 +51,8 @@ public enum ChromaOptions implements ConfigList {
 	REDRAGON("Always Respawn EnderDragon", false),
 	DELEND("Delete End on Unload", false),
 	EASYFRAG("Auxiliary Fragment Acquisition", false),
-	COPYSIZE("Duplication Wand Max Volume", 1000);
+	COPYSIZE("Duplication Wand Max Volume", 1000),
+	SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false);
 
 	private String label;
 	private boolean defaultState;

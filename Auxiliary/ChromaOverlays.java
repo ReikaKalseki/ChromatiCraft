@@ -229,7 +229,8 @@ public class ChromaOverlays {
 	}
 
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aura-bar-half.png");
+		String tex = ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();

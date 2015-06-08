@@ -103,6 +103,8 @@ public class ItemChromaBook extends ItemChromaTool {
 	public static boolean hasPage(ItemStack is, ChromaResearch b) {
 		if (b == ChromaResearch.START)
 			return true;
+		if (b == ChromaResearch.PACKCHANGES)
+			return true;
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return false;
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagList.contains(new NBTTagString(b.name()));

@@ -65,7 +65,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 					TileEntity te = ei.worldObj.getTileEntity(x, y, z);
 					if (te instanceof TileEntityChroma) {
 						TileEntityChroma tc = (TileEntityChroma)te;
-						if (tc.isFullyActive()) {
+						if (tc.isFullyActive() && tc.getElement().ordinal() == dmg) {
 							ei.lifespan = Integer.MAX_VALUE;
 							NBTTagCompound tag = ei.getEntityData().getCompoundTag("chroma");
 							int tick = tag.getInteger("tick");

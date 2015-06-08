@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -108,6 +109,7 @@ import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -254,9 +256,7 @@ public class ChromaticEventManager {
 				if (y < -1024) {
 					ReikaEntityHelper.transferEntityToDimension(evt.entityLiving, 0, new ChromaTeleporter(0));
 				}
-				else {
-					evt.ammount = 0;
-				}
+				evt.ammount = 0;
 			}
 		}
 	}
@@ -303,12 +303,17 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void carryFortuneFromRangedAttack(LivingDropsEvent evt) {
+	public void applyBoostForRangedAttack(LivingDropsEvent evt) {
 		DamageSource src = evt.source;
+		ReikaJavaLibrary.pConsole(src+":"+src.isProjectile());
 		if (src.isProjectile() && src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
-			if (Chromabilities.LEECH.enabledOn(ep)) {
+			if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {
 				int looting = (int)(4*ep.getHealth()/ep.getMaxHealth());
+				ArrayList li = new ArrayList(evt.entityLiving.capturedDrops);
+				evt.entityLiving.capturedDrops.clear();
+				boolean cap = evt.entityLiving.captureDrops;
+				evt.entityLiving.captureDrops = true;
 				try {
 					Entity e = evt.entityLiving;
 					ReikaObfuscationHelper.getMethod("dropFewItems").invoke(e, true, looting);
@@ -318,8 +323,27 @@ public class ChromaticEventManager {
 						ReikaObfuscationHelper.getMethod("dropRareDrop").invoke(e, 1);
 				}
 				catch (Exception e) {
-					ChromatiCraft.logger.logError("Could not perform pylon-void monster bonus drops interaction!");
+					ChromatiCraft.logger.logError("Could not ability bonus drops!");
 					e.printStackTrace();
+				}
+				for (EntityItem ei : evt.entityLiving.capturedDrops) {
+					ItemStack is = ei.getEntityItem();
+					if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+
+					}
+					else {
+						evt.entityLiving.worldObj.spawnEntityInWorld(ei);
+					}
+				}
+				evt.entityLiving.capturedDrops.clear();
+				evt.entityLiving.captureDrops = cap;
+				evt.entityLiving.capturedDrops.addAll(li);
+				Iterator<EntityItem> it = evt.drops.iterator();
+				while (it.hasNext()) {
+					ItemStack is = it.next().getEntityItem();
+					if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+						it.remove();
+					}
 				}
 			}
 		}
