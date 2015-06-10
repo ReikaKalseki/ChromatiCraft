@@ -252,6 +252,8 @@ public enum ChromaItems implements ItemEnum {
 		case WARP:
 			String pre = meta == 1 ? "Charged " : "Inert ";
 			return pre+this.getBasicName();
+		case DIMGEN:
+			return BlockDimensionDeco.Types.list[meta].name();
 		default:
 			break;
 		}

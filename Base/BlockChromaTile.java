@@ -69,6 +69,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -165,6 +166,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	public final boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z)
 	{
 		return false;
+	}
+
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
+		if (t == ChromaTiles.WINDOW) {
+			((TileEntityTransportWindow)world.getTileEntity(x, y, z)).validateStructure();
+		}
 	}
 
 	@Override

@@ -110,6 +110,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 				dx += dir.offsetX*out*3;
 				dz += dir.offsetZ*out*3;
 			}
+			/*
 			else if (i%2 == 0 && false) {
 				dir2 = dir2.getOpposite();
 				turn = turn.getOpposite();
@@ -121,6 +122,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 				con.setLength(dir.getOpposite(), 0);
 				con.setLength(turn, step);
 			}
+			 */
 
 			con.generate(world, dx2, dy, dz2);
 		}

@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -124,7 +125,8 @@ public enum ChromaTiles {
 	DIMENSIONCORE("chroma.dimcore",		ChromaBlocks.PYLON,			TileEntityDimensionCore.class,		6, "RenderDimensionCore"),
 	AUTOMATOR("chroma.automator",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCastingAuto.class,	2, "RenderCastingAuto"),
 	DISPLAY("chroma.display",			ChromaBlocks.TILECRYSTAL,	TileEntityDisplayPoint.class,		1),
-	MEDISTRIBUTOR("chroma.medistrib",	ChromaBlocks.TILEMODELLED2,	TileEntityMEDistributor.class,		5, "RenderMEDistributor", ModList.APPENG);
+	MEDISTRIBUTOR("chroma.medistrib",	ChromaBlocks.TILEMODELLED2,	TileEntityMEDistributor.class,		5, "RenderMEDistributor", ModList.APPENG),
+	WINDOW("chroma.window",				ChromaBlocks.TILEMODELLED2, TileEntityTransportWindow.class,	6, "RenderTransportWindow");
 
 	private final Class tile;
 	private final String name;

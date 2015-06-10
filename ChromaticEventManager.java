@@ -109,7 +109,6 @@ import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -305,7 +304,6 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void applyBoostForRangedAttack(LivingDropsEvent evt) {
 		DamageSource src = evt.source;
-		ReikaJavaLibrary.pConsole(src+":"+src.isProjectile());
 		if (src.isProjectile() && src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {

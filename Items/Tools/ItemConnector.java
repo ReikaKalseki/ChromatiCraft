@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.Interfaces.Connectable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
@@ -34,7 +35,10 @@ public class ItemConnector extends ItemChromaTool {
 		if (te instanceof TileEntityRift) {
 			return this.connectRift((TileEntityRift)te, world, x, y, z, is, ep);
 		}
-		if (te instanceof Connectable) {
+		else if (te instanceof TileEntityTransportWindow) {
+			return this.connectWindow((TileEntityTransportWindow)te, world, x, y, z, is, ep);
+		}
+		else if (te instanceof Connectable) {
 			return this.tryConnection((Connectable)te, world, x, y, z, is, ep);
 		}
 		is.stackTagCompound = null;
@@ -93,6 +97,58 @@ public class ItemConnector extends ItemChromaTool {
 				rf1.reset();
 				rf2.reset();
 				boolean flag = rf1.linkTo(w2, x2, y2, z2);
+				is.stackTagCompound = null;
+			}
+		}
+		return false;
+	}
+
+	private boolean connectWindow(TileEntityTransportWindow te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+		if (is.stackTagCompound == null) {
+			is.stackTagCompound = new NBTTagCompound();
+			is.stackTagCompound.setInteger("w1x", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("w1y", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("w1z", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("w2x", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("w2y", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("w2z", Integer.MIN_VALUE);
+		}
+		if (is.stackTagCompound.getInteger("w1x") == Integer.MIN_VALUE) {
+			is.stackTagCompound.setInteger("w1x", x);
+			is.stackTagCompound.setInteger("w1y", y);
+			is.stackTagCompound.setInteger("w1z", z);
+		}
+		else {
+			is.stackTagCompound.setInteger("w2x", x);
+			is.stackTagCompound.setInteger("w2y", y);
+			is.stackTagCompound.setInteger("w2z", z);
+		}
+		int x1 = is.stackTagCompound.getInteger("w1x");
+		int y1 = is.stackTagCompound.getInteger("w1y");
+		int z1 = is.stackTagCompound.getInteger("w1z");
+		int x2 = is.stackTagCompound.getInteger("w2x");
+		int y2 = is.stackTagCompound.getInteger("w2y");
+		int z2 = is.stackTagCompound.getInteger("w2z");
+
+		if (x1 != Integer.MIN_VALUE && y1 != Integer.MIN_VALUE && z1 != Integer.MIN_VALUE) {
+			if (x1 != Integer.MIN_VALUE && y2 != Integer.MIN_VALUE && z2 != Integer.MIN_VALUE) {
+				TileEntityTransportWindow rf1 = (TileEntityTransportWindow)world.getTileEntity(x1, y1, z1);
+				TileEntityTransportWindow rf2 = (TileEntityTransportWindow)world.getTileEntity(x2, y2, z2);
+
+				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
+				if (rf1 == null) {
+					ReikaChatHelper.writeString("Tile missing at "+x1+", "+y1+", "+z1);
+					is.stackTagCompound = null;
+					return false;
+				}
+				if (rf2 == null) {
+					ReikaChatHelper.writeString("Tile missing at "+x2+", "+y2+", "+z2);
+					is.stackTagCompound = null;
+					return false;
+				}
+				//rf1.reset();
+				//rf2.reset();
+				rf1.linkTo(rf2);
 				is.stackTagCompound = null;
 			}
 		}

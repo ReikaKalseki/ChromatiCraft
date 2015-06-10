@@ -58,7 +58,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 "li.cil.oc.api.network.ManagedPeripheral"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, SneakPop, IFluidHandler, IEnergyHandler,
-IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral  {
+IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral {
 
 	private WorldLocation target;
 	private int color = 0xffffff;
