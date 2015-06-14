@@ -45,6 +45,10 @@ public class ContainerAuraPouch extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, i, 8+i*18, 142));
 
 		ItemStack tool = player.getCurrentEquippedItem();
+		if (!ChromaItems.AURAPOUCH.matchWith(tool)) {
+			ChromatiCraft.logger.logError("Opened an Aura Pouch GUI without holding an aura pouch!?");
+			return;
+		}
 		ItemAuraPouch iil = (ItemAuraPouch)tool.getItem();
 		ItemStack[] li = iil.getInventory(tool);
 		for (int i = 0; i < li.length; i++) {

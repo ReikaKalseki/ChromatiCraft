@@ -36,6 +36,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	private TileEntitySpawnerReprogrammer prog;
 	private int selectedMob;
 	private static final ArrayList<String> validMobs = new ArrayList();
+
 	static {
 		for (Object key : EntityList.stringToClassMapping.keySet()) {
 			String name = (String)key;
