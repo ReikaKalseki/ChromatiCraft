@@ -78,11 +78,6 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 		//ReikaJavaLibrary.pConsole(FabricationRecipes.recipes().getItemsFabricableWith(ElementTagCompound.getUniformTag(5000)));

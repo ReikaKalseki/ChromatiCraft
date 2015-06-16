@@ -18,6 +18,8 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class TileEntityCreativeSource extends CrystalTransmitterBase implements CrystalSource {
 
@@ -85,6 +87,8 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	public boolean canTransmitTo(CrystalReceiver te) {
 		EntityPlayer ep = this.getPlacer();
 		UUID other = te.getPlacerUUID();
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			return true;
 		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
 	}
 

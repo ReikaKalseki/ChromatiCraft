@@ -1,0 +1,474 @@
+package Reika.ChromatiCraft.ModInterface;
+
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.nodes.INode;
+import thaumcraft.api.nodes.NodeModifier;
+import thaumcraft.api.nodes.NodeType;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper.EffectType;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
+
+	private static final int DELAY = 600;
+
+	private static final Random rand = new Random();
+
+	private final INode node;
+	public final WorldLocation location;
+	private final UUID uid = UUID.randomUUID();
+	private int tick = DELAY;
+
+	private final ElementTagCompound baseVis = new ElementTagCompound();
+
+	NodeReceiverWrapper(INode n) {
+		node = n;
+		location = new WorldLocation((TileEntity)n);
+
+		AspectList al = n.getAspectsBase();
+		for (Aspect a : al.aspects.keySet()) {
+			int amt = al.getAmount(a);
+			ElementTagCompound tag = this.getTagValue(a).scale(amt);
+			baseVis.addTag(tag);
+		}
+	}
+
+	private int getCurrentValue(CrystalElement e) {
+		int val = 0;
+		AspectList al = node.getAspects();
+		for (Aspect a : al.aspects.keySet()) {
+			int amt = al.getAmount(a);
+			val += this.getTagValue(a).getValue(e)*amt;
+		}
+		return val;
+	}
+
+	private ElementTagCompound getTagValue(Aspect a) {
+		return ChromaAspectManager.instance.getElementCost(a, 1);
+	}
+
+	@Override
+	public boolean isConductingElement(CrystalElement e) {
+		return baseVis.contains(e);
+	}
+
+	@Override
+	public void cachePosition() {}
+
+	@Override
+	public void removeFromCache() {}
+
+	@Override
+	public double getDistanceSqTo(double x, double y, double z) {
+		return location.getSquareDistanceTo(x, y, z);
+	}
+
+	@Override
+	public World getWorld() {
+		return location.getWorld();
+	}
+
+	@Override
+	public int getX() {
+		return location.xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return location.yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return location.zCoord;
+	}
+
+	@Override
+	public int maxThroughput() {
+		return 50;
+	}
+
+	@Override
+	public boolean canConduct() {
+		return true;
+	}
+
+	@Override
+	public UUID getUniqueID() {
+		return uid;
+	}
+
+	@Override
+	public UUID getPlacerUUID() {
+		return null;
+	}
+
+	@Override
+	public void receiveElement(CrystalElement e, int amt) {
+		if (!this.isConductingElement(e))
+			return;
+		List<Aspect> li = ChromaAspectManager.instance.getAspects(e);
+		AspectList al = new AspectList();
+		for (Aspect a : li) {
+			if (node.getAspectsBase().aspects.containsKey(a)) {
+				al.add(a, amt/baseVis.getValue(e));
+			}
+		}
+		//ReikaJavaLibrary.pConsole(e+":"+amt+" @ "+baseVis.getValue(e)+" > "+al.aspects);
+		this.recharge(al);
+		tick = 0;
+	}
+
+	private void recharge(AspectList al) {
+		for (Aspect a : al.aspects.keySet()) {
+			int amt = al.aspects.get(a);
+			int space = node.getNodeVisBase(a)-node.getAspects().getAmount(a);
+			node.addToContainer(a, Math.min(amt, space));
+		}
+
+		if (rand.nextInt(20) == 0)
+			this.playSound("thaumcraft:runicShieldCharge", 1, 0.5F);
+
+		if (rand.nextInt(80) == 0)
+			this.healNode();
+
+		location.triggerBlockUpdate(false);
+	}
+
+	public void tick() {
+		tick++;
+
+		if (rand.nextInt(240) == 0) {
+			this.playSound("thaumcraft:zap");
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CHARGINGNODE.ordinal(), (TileEntity)node, 32);
+		}
+
+		if (rand.nextInt(1600) == 0)
+			this.healNode();
+
+		if (tick >= DELAY) {
+			ElementTagCompound req = new ElementTagCompound();
+			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
+				int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
+				//if (space > 0)
+				//	ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
+				req.addTag(this.getTagValue(a).scale(space*space));
+			}
+			req.scale(1.25F);
+			//ReikaJavaLibrary.pConsole(req);
+			boolean flag = false;
+			for (CrystalElement e : req.elementSet()) {
+				flag |= CrystalNetworker.instance.makeRequest(this, e, req.getValue(e), this.getReceiveRange());
+			}
+			if (flag) {
+				this.playSound("thaumcraft:craftstart");
+				tick = 0;
+			}
+		}
+	}
+
+	@Override
+	public void onPathBroken(CrystalElement e) {
+		this.playSound("thaumcraft:craftfail");
+		if (rand.nextInt(8) == 0)
+			this.damageNode();
+	}
+
+	private void damageNode() {
+		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.75F, 2);
+		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 1F, 1);
+		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.75F, 0.5F);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HURTNODE.ordinal(), (TileEntity)node, 32);
+
+		if (node.getNodeModifier() != null) {
+			switch(node.getNodeModifier()) {
+			case BRIGHT:
+				node.setNodeModifier(null);
+				break;
+			case PALE:
+				node.setNodeModifier(NodeModifier.FADING);
+				break;
+			case FADING:
+				this.emptyNode();
+				break;
+			}
+		}
+		else {
+			node.setNodeModifier(NodeModifier.PALE);
+		}
+
+		if (rand.nextInt(480) == 0) {
+			switch(node.getNodeType()) {
+			case PURE:
+				node.setNodeType(NodeType.NORMAL);
+				break;
+			case NORMAL:
+				node.setNodeType(NodeType.UNSTABLE);
+				break;
+			case UNSTABLE:
+				node.setNodeType(NodeType.DARK);
+				break;
+			case DARK:
+				node.setNodeType(NodeType.TAINTED);
+				break;
+			case TAINTED:
+				node.setNodeType(NodeType.HUNGRY);
+				break;
+			case HUNGRY:
+				this.destroyNode();
+				break;
+			}
+		}
+
+		if (rand.nextInt(20) == 0) {
+			AspectList al = node.getAspectsBase();
+			for (Aspect a : al.aspects.keySet()) {
+				int amt = al.getAmount(a);
+				if (amt > 1) {
+					int rem = Math.min(amt-1, (int)(rand.nextFloat()*(amt/2F)));
+					al.remove(a, rem);
+				}
+			}
+		}
+
+		location.triggerBlockUpdate(false);
+	}
+
+	private void healNode() {
+		ChromaSounds.CAST.playSoundAtBlock(location);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HEALNODE.ordinal(), (TileEntity)node, 32);
+
+		if (node.getNodeModifier() != null) {
+			switch(node.getNodeModifier()) {
+			case BRIGHT:
+				break;
+			case PALE:
+				node.setNodeModifier(null); //Tier is bright-null-pale-fading
+				break;
+			case FADING:
+				node.setNodeModifier(NodeModifier.PALE);
+				break;
+			}
+		}
+		else {
+			node.setNodeModifier(NodeModifier.BRIGHT);
+		}
+
+		if (rand.nextInt(240) == 0) {
+			switch(node.getNodeType()) {
+			case PURE:
+				break;
+			case NORMAL:
+				node.setNodeType(NodeType.PURE);
+				break;
+			case UNSTABLE:
+				node.setNodeType(NodeType.NORMAL);
+				break;
+			case DARK:
+				node.setNodeType(NodeType.UNSTABLE);
+				break;
+			case TAINTED:
+				node.setNodeType(NodeType.DARK);
+				break;
+			case HUNGRY:
+				node.setNodeType(NodeType.TAINTED);
+				break;
+			}
+		}
+
+		if (rand.nextInt(20) == 0) {
+			AspectList al = node.getAspectsBase();
+			for (Aspect a : al.aspects.keySet()) {
+				int amt = al.getAmount(a);
+				al.merge(a, (int)(amt*(1+rand.nextFloat()/2F)));
+			}
+		}
+
+		location.triggerBlockUpdate(false);
+	}
+
+	private void emptyNode() {
+		for (Aspect a : node.getAspects().aspects.keySet()) {
+			int amt = node.getAspects().getAmount(a);
+			if (amt > 1)
+				node.takeFromContainer(a, amt-1);
+		}
+
+		location.triggerBlockUpdate(false);
+	}
+
+	private void fillNode() {
+		node.setAspects(node.getAspectsBase());
+
+		location.triggerBlockUpdate(false);
+	}
+
+	private void destroyNode() {
+		this.playSound("thaumcraft:craftfail", 2, 1);
+		this.playSound("thaumcraft:craftfail", 2, 1);
+		this.playSound("thaumcraft:craftfail", 1, 0.5F);
+		World world = ((TileEntity)node).worldObj;
+		double x = location.xCoord+0.5;
+		double y = location.yCoord+0.5;
+		double z = location.zCoord+0.5;
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.DESTROYNODE.ordinal(), (TileEntity)node, 32);
+		ChromaSounds.POWERDOWN.playSound(world, x, y, z, 2, 1);
+		ChromaSounds.POWERDOWN.playSound(world, x, y, z, 2, 1);
+		EntityLightningBolt elb = new EntityLightningBolt(world, x-0.5, y, z-0.5);
+		world.addWeatherEffect(elb);
+		location.setBlock(Blocks.air);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void triggerDestroyFX(World world, int x, int y, int z) {
+		NodeReceiverWrapper wrap = new NodeReceiverWrapper((INode)world.getTileEntity(x, y, z));
+		for (int i = 0; i < 512; i++) {
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			double v = 0.125+rand.nextDouble()*0.25;
+			double rx = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			int color = a.getColor();
+			int r = ReikaColorAPI.getRed(color);
+			int g = ReikaColorAPI.getGreen(color);
+			int b = ReikaColorAPI.getBlue(color);
+			EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz).setColor(r, g, b);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		for (int k = 0; k < 16; k++) {
+			CrystalElement e = CrystalElement.elements[k];
+			if (wrap.getCurrentValue(e) > 0) {
+				for (int i = 0; i < 8; i++) {
+					double v = 0.125+rand.nextDouble()*0.25;
+					double rx = ReikaRandomHelper.getRandomPlusMinus(0, v);
+					double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
+					double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
+					EntityRuneFX fx = new EntityRuneFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz, e);
+					fx.noClip = true;
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void triggerDamageFX(World world, int x, int y, int z) {
+		ReikaThaumHelper.triggerEffect(EffectType.NODEBURST, world, x+0.5, y+0.5, z+0.5, 1F);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void triggerChargingFX(World world, int x, int y, int z) {
+		NodeReceiverWrapper wrap = new NodeReceiverWrapper((INode)world.getTileEntity(x, y, z));
+		double dx = x+0.5;
+		double dy = y+0.5;
+		double dz = z+0.5;
+		for (int i = 0; i < 8; i++) {
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.375);
+			double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.375);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.375);
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+			if (rand.nextInt(3) > 0)
+				g = -g;
+			EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setGravity(g).setColor(a.getColor());
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		for (int i = 0; i < 6; i++) {
+			float px = (float)ReikaRandomHelper.getRandomPlusMinus(dx, 0.75);
+			float py = (float)ReikaRandomHelper.getRandomPlusMinus(dy, 0.75);
+			float pz = (float)ReikaRandomHelper.getRandomPlusMinus(dz, 0.75);
+			ReikaThaumHelper.triggerEffect(EffectType.NODEBOLT, world, (float)dx, (float)dy, (float)dz, px, py, pz);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void triggerHealFX(World world, int x, int y, int z) {
+		NodeReceiverWrapper wrap = new NodeReceiverWrapper((INode)world.getTileEntity(x, y, z));
+		double dx = x+0.5;
+		double dy = y+0.5;
+		double dz = z+0.5;
+		for (double d = -1; d <= 1; d += 0.125) {
+			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
+			int color = a.getColor();
+			int r = ReikaColorAPI.getRed(color);
+			int g = ReikaColorAPI.getGreen(color);
+			int b = ReikaColorAPI.getBlue(color);
+			EntityBlurFX fx = new EntityBlurFX(world, dx, dy+d, dz).setColor(r, g, b).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private void playSound(String s) {
+		this.playSound(s, 1, 1);
+	}
+
+	private void playSound(String s, float vol, float p) {
+		ReikaSoundHelper.playSoundFromServer(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, s, vol, p, false);
+	}
+
+	@Override
+	public void onPathCompleted() {
+
+	}
+
+	@Override
+	public int getReceiveRange() {
+		return 16;
+	}
+
+	@Override
+	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
+		return null;
+	}
+	/*
+	@Override
+	public double getIncomingBeamRadius() {
+		return 0.125;
+	}
+	 */
+
+	@Override
+	public boolean existsInWorld() {
+		return false;
+	}
+
+	@Override
+	public Class getTileClass() {
+		return node.getClass();
+	}
+
+}

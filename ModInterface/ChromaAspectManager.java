@@ -11,8 +11,10 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -88,12 +90,9 @@ public class ChromaAspectManager {
 		aspects.put(color, li);
 	}
 
-	public ArrayList<Aspect> getAspects(CrystalElement color) {
-		ArrayList li = new ArrayList();
-		ArrayList l2 = aspects.get(color);
-		if (l2 != null)
-			li.addAll(l2);
-		return li;
+	public List<Aspect> getAspects(CrystalElement color) {
+		ArrayList<Aspect> li = aspects.get(color);
+		return li != null ? Collections.unmodifiableList(li) : null;
 	}
 
 	public void register() {
@@ -113,7 +112,7 @@ public class ChromaAspectManager {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack bshard = ChromaItems.SHARD.getStackOfMetadata(i+16);
 			ItemStack rune = new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i);
-			ArrayList<Aspect> li = this.getAspects(dye);
+			List<Aspect> li = this.getAspects(dye);
 			ReikaThaumHelper.addAspects(shard, Aspect.CRYSTAL, 1);
 			ReikaThaumHelper.addAspects(bshard, Aspect.CRYSTAL, 2);
 			ReikaThaumHelper.addAspects(crystal, Aspect.CRYSTAL, 20);

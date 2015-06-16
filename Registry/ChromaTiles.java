@@ -292,6 +292,20 @@ public enum ChromaTiles {
 		return false;
 	}
 
+	public boolean allowsAcceleration() {
+		switch(this) {
+		case TABLE:
+		case RITUAL:
+		case POWERTREE:
+		case PYLON:
+		case AUTOMATOR:
+		case INFUSER:
+			return false;
+		default:
+			return true;
+		}
+	}
+
 	public ItemStack getCraftedProduct() {
 		if (this == RIFT)
 			return ChromaItems.RIFT.getStackOf();

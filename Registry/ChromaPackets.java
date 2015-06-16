@@ -65,7 +65,11 @@ public enum ChromaPackets {
 	HOVERWAND(1),
 	AURATTACK(1),
 	AURAHEAL(1),
-	AURAGROW(3);
+	AURAGROW(3),
+	DESTROYNODE(),
+	HURTNODE(),
+	CHARGINGNODE(),
+	HEALNODE();
 
 	public final int numInts;
 	public final PacketTypes type;

@@ -150,11 +150,6 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		return null;
 	}
@@ -208,6 +203,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
+	}
+
+	@Override
+	public final void onPathCompleted() {
+
+	}
+
+	@Override
+	public final void onPathBroken(CrystalElement e) {
+
 	}
 
 }

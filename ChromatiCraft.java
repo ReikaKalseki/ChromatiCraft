@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
@@ -128,6 +129,8 @@ import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
+import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.BlockColorInterface;
@@ -372,6 +375,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
 			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance, Side.SERVER);
+			if (ModList.THAUMCRAFT.isLoaded())
+				TickRegistry.instance.registerTickHandler(NodeRecharger.instance, Side.SERVER);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			FMLCommonHandler.instance().bus().register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
@@ -534,6 +539,25 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.FORESTRY.isLoaded()) {
 			CrystalBees.register();
 			ApiaryAcceleration.instance.register();
+		}
+
+		if (ModList.TWILIGHT.isLoaded()) {
+			for (int i = 0; i < 16; i++) {
+				ItemStack is = ChromaItems.SHARD.getStackOfMetadata(i);
+				int rarity = CrystalElement.elements[i].isPrimary() ? 20 : 10;
+				TwilightForestLootHooks.DungeonTypes.TREE_DUNGEON.addItem(is, LootLevels.COMMON, rarity);
+				TwilightForestLootHooks.DungeonTypes.RUINS_BASEMENT.addItem(is, LootLevels.COMMON, rarity*6/5);
+			}
+
+			TwilightForestLootHooks.DungeonTypes.TREE_DUNGEON.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 8);
+			TwilightForestLootHooks.DungeonTypes.RUINS_BASEMENT.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 12);
+			TwilightForestLootHooks.DungeonTypes.HEDGE_MAZE.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 4);
+			TwilightForestLootHooks.DungeonTypes.LICH_LIBRARY.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 15);
+			TwilightForestLootHooks.DungeonTypes.LABYRINTH_VAULT.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 15);
+			TwilightForestLootHooks.DungeonTypes.LABYRINTH_END.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 8);
+			TwilightForestLootHooks.DungeonTypes.SMALL_HOLLOW.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 6);
+			TwilightForestLootHooks.DungeonTypes.MEDIUM_HOLLOW.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 8);
+			TwilightForestLootHooks.DungeonTypes.LARGE_HOLLOW.addItem(ChromaItems.FRAGMENT.getStackOf(), LootLevels.COMMON, 12);
 		}
 
 		if (ModList.BOTANIA.isLoaded()) {

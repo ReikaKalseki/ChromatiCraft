@@ -96,11 +96,6 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 16;
 	}

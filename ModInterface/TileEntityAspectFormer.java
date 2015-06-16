@@ -127,11 +127,6 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 16;
 	}

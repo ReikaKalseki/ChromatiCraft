@@ -9,11 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public interface CrystalReceiver extends CrystalNetworkTile {
+public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver {
 
 	public void receiveElement(CrystalElement e, int amt);
 
@@ -21,7 +19,7 @@ public interface CrystalReceiver extends CrystalNetworkTile {
 
 	public int getReceiveRange();
 
-	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e);
+	public void onPathCompleted();
 
 	//public void markSource(WorldLocation loc);
 

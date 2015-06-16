@@ -20,6 +20,8 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.IScribeTools;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.nodes.INode;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -29,6 +31,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -46,8 +49,10 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -165,6 +170,24 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				((TileEntityCrystalGlow)tile).rotate();
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
+
+		if (ModList.THAUMCRAFT.isLoaded() && tile instanceof INode) {
+			if (!world.isRemote) {
+				NodeRecharger.instance.addNode((INode)tile);
+				ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
+				for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
+					int color = asp.getColor();
+					int rd = ReikaColorAPI.getRed(color);
+					int gn = ReikaColorAPI.getGreen(color);
+					int bl = ReikaColorAPI.getBlue(color);
+					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, rd, gn, bl, 8, 2);
+				}
+				for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
+					((INode)tile).takeFromContainer(asp, 1);
+				}
+			}
+		}
+
 		return false;
 	}
 

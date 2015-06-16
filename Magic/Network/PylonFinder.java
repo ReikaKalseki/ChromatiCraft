@@ -19,12 +19,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
@@ -95,7 +97,8 @@ public class PylonFinder {
 		if (this.isComplete()) {
 			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
 			//ReikaJavaLibrary.pConsole(flow.checkLineOfSight()+":"+flow);
-			this.addValidPath(flow.asPath());
+			if (!(target instanceof WrapperTile))
+				this.addValidPath(flow.asPath());
 			return flow;
 		}
 		return null;
@@ -111,7 +114,7 @@ public class PylonFinder {
 	}
 
 	private boolean isSourceConnected(CrystalSource s) {
-		return !net.getNearbyReceivers(s, element).isEmpty();
+		return target instanceof WrapperTile || !net.getNearbyReceivers(s, element).isEmpty();
 	}
 
 	private CrystalPath checkExistingPaths() {
@@ -158,7 +161,7 @@ public class PylonFinder {
 		}
 		for (int i = 0; i < p.nodes.size(); i++) {
 			WorldLocation loc = p.nodes.get(i);
-			CrystalNetworkTile te = (CrystalNetworkTile)loc.getTileEntity();
+			TileEntity te = loc.getTileEntity();
 			if (te instanceof CrystalRepeater) {
 				CrystalRepeater tile = (CrystalRepeater)te;
 				tile.setSignalDepth(p.element, p.nodes.size()-1-i);
@@ -215,12 +218,10 @@ public class PylonFinder {
 		 */
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
-		//ReikaJavaLibrary.pConsole(li, element == CrystalElement.BLACK);
 		for (CrystalTransmitter te : li) {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				CrystalLink l = net.getLink(loc2, loc);
-				//ReikaJavaLibrary.pConsole(l.hasLineOfSight()+":"+l, loc.yCoord == 80);
 				if (te.needsLineOfSight() && !l.hasLineOfSight()) {
 					l.recalculateLOS();
 					if (!l.hasLineOfSight())

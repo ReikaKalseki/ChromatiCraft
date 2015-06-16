@@ -327,11 +327,6 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 32;
 	}

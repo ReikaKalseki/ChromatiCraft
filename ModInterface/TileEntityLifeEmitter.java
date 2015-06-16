@@ -29,11 +29,6 @@ public class TileEntityLifeEmitter extends CrystalReceiverBase {
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 0;
 	}

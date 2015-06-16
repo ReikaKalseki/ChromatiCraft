@@ -229,7 +229,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalFlow p = it.next();
 
 				if (toBreak.contains(p)) {
-					p.receiver.onPathBroken(p.element);
+					p.receiver.onPathBroken(p.element); //sight
 					p.resetTiles();
 					it.remove();
 				}
@@ -243,6 +243,7 @@ public class CrystalNetworker implements TickHandler {
 								p.resetTiles();
 								it.remove();
 								CrystalNetworkLogger.logFlowSatisfy(p);
+								p.receiver.onPathCompleted();
 							}
 						}
 					}

@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -115,6 +116,8 @@ public class ChromatiPackets implements IPacketHandler {
 		try {
 			PacketTypes packetType = packet.getType();
 			switch(packetType) {
+			case FULLSOUND:
+				break;
 			case SOUND:
 				control = inputStream.readInt();
 				ChromaSounds s = ChromaSounds.soundList[control];
@@ -455,6 +458,18 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case AURAGROW:
 				((TileEntityAuraPoint)tile).doGrowFX(data[0], data[1], data[2]);
+				break;
+			case DESTROYNODE:
+				NodeReceiverWrapper.triggerDestroyFX(world, x, y, z);
+				break;
+			case HURTNODE:
+				NodeReceiverWrapper.triggerDamageFX(world, x, y, z);
+				break;
+			case CHARGINGNODE:
+				NodeReceiverWrapper.triggerChargingFX(world, x, y, z);
+				break;
+			case HEALNODE:
+				NodeReceiverWrapper.triggerHealFX(world, x, y, z);
 				break;
 			default:
 				break;

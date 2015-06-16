@@ -78,11 +78,6 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 0;
 	}

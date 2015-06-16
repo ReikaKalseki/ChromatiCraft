@@ -90,9 +90,4 @@ public class TileEntityRelaySource extends CrystalReceiverBase {
 
 	}
 
-	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
 }

@@ -25,4 +25,6 @@ public interface EnergyBeamRenderer {
 
 	public void clearTargets(boolean unload);
 
+	//public double getOutgoingBeamRadius();
+
 }

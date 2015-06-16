@@ -24,11 +24,6 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
-
-	}
-
-	@Override
 	public int getReceiveRange() {
 		return 24;
 	}
@@ -82,6 +77,16 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	@Override
 	public void setSignalDepth(CrystalElement e, int d) {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onPathCompleted() {
+
+	}
+
+	@Override
+	public void onPathBroken(CrystalElement e) {
 
 	}
 

@@ -17,15 +17,16 @@ public class CrystalTarget {
 
 	public final WorldLocation location;
 	public final CrystalElement color;
+	//public final double endWidth;
 	public final double offsetX;
 	public final double offsetY;
 	public final double offsetZ;
 
-	public CrystalTarget(WorldLocation target, CrystalElement color) {
-		this(target, color, 0, 0, 0);
+	public CrystalTarget(WorldLocation target, CrystalElement color/*, double w*/) {
+		this(target, color, 0, 0, 0/*, w*/);
 	}
 
-	public CrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz) {
+	public CrystalTarget(WorldLocation target, CrystalElement color, double dx, double dy, double dz/*, double w*/) {
 		if (target == null)
 			throw new IllegalArgumentException("Cannot supply null target!");
 		if (color == null)
@@ -35,6 +36,7 @@ public class CrystalTarget {
 		offsetX = dx;
 		offsetY = dy;
 		offsetZ = dz;
+		//endWidth = w;
 	}
 
 	public void writeToNBT(String name, NBTTagCompound NBT) {
@@ -45,6 +47,7 @@ public class CrystalTarget {
 		tag.setDouble("dx", offsetX);
 		tag.setDouble("dy", offsetY);
 		tag.setDouble("dz", offsetZ);
+		//tag.setDouble("width", endWidth);
 		location.writeToNBT("loc", tag);
 		NBT.setTag(name, tag);
 	}
@@ -60,21 +63,22 @@ public class CrystalTarget {
 		double dx = tag.getDouble("dx");
 		double dy = tag.getDouble("dy");
 		double dz = tag.getDouble("dz");
-		return loc != null && e != null ? new CrystalTarget(loc, e, dx, dy, dz) : null;
+		double w = tag.getDouble("width");
+		return loc != null && e != null ? new CrystalTarget(loc, e, dx, dy, dz/*, w*/) : null;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CrystalTarget) {
 			CrystalTarget t = (CrystalTarget)o;
-			return t.location.equals(location) && t.color == color;
+			return t.location.equals(location) && t.color == color; //ignore render width
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return location.hashCode()+color.ordinal();
+		return location.hashCode()+color.ordinal(); //ignore render width
 	}
 
 	@Override

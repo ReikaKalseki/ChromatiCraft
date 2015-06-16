@@ -31,6 +31,11 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
+	public final boolean allowTickAcceleration() {
+		return this.getTile().allowsAcceleration();
+	}
+
+	@Override
 	public final boolean canUpdate() {
 		return !ChromatiCraft.instance.isLocked();
 	}

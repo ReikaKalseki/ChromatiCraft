@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
@@ -91,6 +92,22 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 	public final UUID getPlacerUUID() {
 		EntityPlayer ep = this.getPlacer();
 		return ep != null ? ep.getUniqueID() : null;
+	}
+
+	public double getIncomingBeamRadius() {
+		return 0.35;
+	}
+
+	public double getOutgoingBeamRadius() {
+		return 0.35;
+	}
+
+	public void onPathCompleted() {
+
+	}
+
+	public void onPathBroken(CrystalElement e) {
+
 	}
 
 }

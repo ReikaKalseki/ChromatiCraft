@@ -29,12 +29,6 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
-import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -68,12 +62,11 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		blacklistTile("mrtjp.projectred.integration.Repeater", ModList.PROJRED, BlacklistReason.BUGS);
 		blacklistTile("mrtjp.projectred.integration.StateCell", ModList.PROJRED, BlacklistReason.BUGS);
 
-		blacklistTile(TileEntityCastingTable.class);
-		blacklistTile(TileEntityCastingAuto.class);
-		blacklistTile(TileEntityRitualTable.class);
-		blacklistTile(TileEntityAuraInfuser.class);
-		blacklistTile(TileEntityCrystalPylon.class);
-		blacklistTile(TileEntityPowerTree.class);
+		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
+			ChromaTiles c = ChromaTiles.TEList[i];
+			if (!c.allowsAcceleration())
+				blacklistTile(c.getTEClass());
+		}
 	}
 
 	public static void blacklistTile(Class<? extends TileEntity> cl) {
