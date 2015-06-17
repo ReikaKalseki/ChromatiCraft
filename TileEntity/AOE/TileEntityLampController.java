@@ -30,8 +30,8 @@ import cofh.api.energy.IEnergyHandler;
 
 public class TileEntityLampController extends TileEntityChromaticBase implements LocationCached, GuiController, SimpleShaftPowerReceiver {
 
-	private static final MultiMap<Integer, LightSource> map = new MultiMap();
-	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap();
+	private static final MultiMap<Integer, LightSource> map = new MultiMap(new MultiMap.HashSetFactory());
+	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(new MultiMap.HashSetFactory());
 
 	public static final int MAXRANGE = 64;
 	public static final int MAXCHANNEL = 999;

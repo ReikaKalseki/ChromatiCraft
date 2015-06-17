@@ -1,6 +1,6 @@
 package Reika.ChromatiCraft.ModInterface;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
 
@@ -138,14 +138,14 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 	public void receiveElement(CrystalElement e, int amt) {
 		if (!this.isConductingElement(e))
 			return;
-		List<Aspect> li = ChromaAspectManager.instance.getAspects(e);
+		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
 		AspectList al = new AspectList();
 		for (Aspect a : li) {
 			if (node.getAspectsBase().aspects.containsKey(a)) {
-				al.add(a, amt/baseVis.getValue(e));
+				al.add(a, (int)Math.ceil((double)amt/baseVis.getValue(e)));
 			}
 		}
-		//ReikaJavaLibrary.pConsole(e+":"+amt+" @ "+baseVis.getValue(e)+" > "+al.aspects);
+		//ReikaJavaLibrary.pConsole(e+":"+amt+" @ "+baseVis.getValue(e)+" > "+ReikaThaumHelper.aspectsToString(al));
 		this.recharge(al);
 		tick = 0;
 	}
@@ -181,8 +181,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			ElementTagCompound req = new ElementTagCompound();
 			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
 				int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
-				//if (space > 0)
-				//	ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
+				if (space > 0)
+					ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
 				req.addTag(this.getTagValue(a).scale(space*space));
 			}
 			req.scale(1.25F);
@@ -396,20 +396,24 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		double dz = z+0.5;
 		for (int i = 0; i < 8; i++) {
 			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
-			double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.375);
-			double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.375);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.375);
-			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
-			if (rand.nextInt(3) > 0)
-				g = -g;
-			EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setGravity(g).setColor(a.getColor());
+			double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.125);
+			double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.125);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.125);
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0.015625
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0.015625
+			float g = 0;//(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+			//if (rand.nextInt(3) > 0)
+			//	g = -g;
+			EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz, vx, vy, vz).setGravity(g).setColor(a.getColor());
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 		for (int i = 0; i < 6; i++) {
-			float px = (float)ReikaRandomHelper.getRandomPlusMinus(dx, 0.75);
-			float py = (float)ReikaRandomHelper.getRandomPlusMinus(dy, 0.75);
-			float pz = (float)ReikaRandomHelper.getRandomPlusMinus(dz, 0.75);
+			double r = rand.nextInt(32) == 0 ? 2.5 : rand.nextInt(8) == 0 ? 1.25 : 0.75;
+			float px = (float)ReikaRandomHelper.getRandomPlusMinus(dx, r);
+			float py = (float)ReikaRandomHelper.getRandomPlusMinus(dy, r);
+			float pz = (float)ReikaRandomHelper.getRandomPlusMinus(dz, r);
 			ReikaThaumHelper.triggerEffect(EffectType.NODEBOLT, world, (float)dx, (float)dy, (float)dz, px, py, pz);
 		}
 	}

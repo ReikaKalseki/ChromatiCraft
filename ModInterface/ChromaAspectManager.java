@@ -12,8 +12,6 @@ package Reika.ChromatiCraft.ModInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -27,33 +25,75 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.ReversibleMultiMap;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 public class ChromaAspectManager {
 
-	private final EnumMap<CrystalElement, ArrayList<Aspect>> aspects = new EnumMap(CrystalElement.class);
-	private final HashMap<Aspect, ElementTagCompound> costs = new HashMap();
+	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsColor = new ReversibleMultiMap(new MultiMap.HashSetFactory());
+	private final ReversibleMultiMap<CrystalElement, Aspect> aspectsThematic = new ReversibleMultiMap(new MultiMap.HashSetFactory());
+
+	//private final HashMap<Aspect, ElementTagCompound> costs = new HashMap();
 
 	public static final ChromaAspectManager instance = new ChromaAspectManager();
 
 	private ChromaAspectManager() {
+		/*
 		this.addAspect(CrystalElement.BLACK, Aspect.MAGIC, Aspect.DARKNESS);
-		this.addAspect(CrystalElement.BLUE, Aspect.SENSES, Aspect.LIGHT);
-		this.addAspect(CrystalElement.BROWN, Aspect.HUNGER, Aspect.METAL);
-		this.addAspect(CrystalElement.CYAN, Aspect.WATER);
-		this.addAspect(CrystalElement.GRAY, Aspect.EXCHANGE);
+		this.addAspect(CrystalElement.RED, Aspect.ARMOR);
 		this.addAspect(CrystalElement.GREEN, Aspect.POISON, Aspect.EARTH);
-		this.addAspect(CrystalElement.LIGHTBLUE, Aspect.MOTION);
+		this.addAspect(CrystalElement.BROWN, Aspect.HUNGER, Aspect.METAL);
+		this.addAspect(CrystalElement.BLUE, Aspect.SENSES, Aspect.LIGHT);
+		this.addAspect(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.CRAFT, Aspect.TOOL);
+		this.addAspect(CrystalElement.CYAN, Aspect.WATER);
 		this.addAspect(CrystalElement.LIGHTGRAY, Aspect.TRAP, Aspect.ENTROPY);
+		this.addAspect(CrystalElement.GRAY, Aspect.EXCHANGE);
+		this.addAspect(CrystalElement.PINK, Aspect.WEAPON, Aspect.BEAST);
 		this.addAspect(CrystalElement.LIME, Aspect.FLIGHT, Aspect.TRAVEL);
+		this.addAspect(CrystalElement.YELLOW, Aspect.MINE, Aspect.ENERGY);
+		this.addAspect(CrystalElement.LIGHTBLUE, Aspect.MOTION);
 		this.addAspect(CrystalElement.MAGENTA, Aspect.HEAL, Aspect.LIFE);
 		this.addAspect(CrystalElement.ORANGE, Aspect.FIRE);
-		this.addAspect(CrystalElement.PINK, Aspect.WEAPON, Aspect.BEAST);
-		this.addAspect(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.CRAFT, Aspect.TOOL);
-		this.addAspect(CrystalElement.RED, Aspect.ARMOR);
 		this.addAspect(CrystalElement.WHITE, Aspect.VOID, Aspect.AIR, Aspect.ORDER);
-		this.addAspect(CrystalElement.YELLOW, Aspect.MINE, Aspect.ENERGY);
+		 */
 
+
+		this.addAspectColor(CrystalElement.BLACK, Aspect.DARKNESS);
+		this.addAspectColor(CrystalElement.RED, Aspect.LIFE, Aspect.HUNGER, Aspect.HEAL);
+		this.addAspectColor(CrystalElement.GREEN, Aspect.PLANT, Aspect.POISON, Aspect.EARTH);
+		this.addAspectColor(CrystalElement.BROWN, Aspect.BEAST, Aspect.TREE);
+		this.addAspectColor(CrystalElement.BLUE, Aspect.WATER, Aspect.TOOL);
+		this.addAspectColor(CrystalElement.PURPLE, Aspect.MAGIC, Aspect.TAINT, Aspect.ELDRITCH);
+		this.addAspectColor(CrystalElement.CYAN, Aspect.ARMOR, Aspect.SENSES);
+		this.addAspectColor(CrystalElement.LIGHTGRAY, Aspect.VOID, Aspect.SOUL, Aspect.METAL);
+		this.addAspectColor(CrystalElement.GRAY, Aspect.ENTROPY);
+		this.addAspectColor(CrystalElement.PINK, Aspect.MIND);
+		this.addAspectColor(CrystalElement.LIME, Aspect.SLIME);
+		this.addAspectColor(CrystalElement.YELLOW, Aspect.CROP, Aspect.LIGHT, Aspect.AIR, Aspect.GREED);
+		this.addAspectColor(CrystalElement.LIGHTBLUE, Aspect.CRYSTAL, Aspect.MECHANISM, Aspect.MOTION);
+		this.addAspectColor(CrystalElement.MAGENTA, Aspect.FLESH);
+		this.addAspectColor(CrystalElement.ORANGE, Aspect.FIRE);
+		this.addAspectColor(CrystalElement.WHITE, Aspect.ORDER, Aspect.COLD, Aspect.FLIGHT, Aspect.WEATHER);
+
+		this.addAspectTheme(CrystalElement.BLACK, Aspect.MAGIC);
+		this.addAspectTheme(CrystalElement.RED, Aspect.ARMOR);
+		this.addAspectTheme(CrystalElement.GREEN, Aspect.EARTH);
+		this.addAspectTheme(CrystalElement.BROWN, Aspect.METAL, Aspect.MINE);
+		this.addAspectTheme(CrystalElement.BLUE, Aspect.LIGHT);
+		this.addAspectTheme(CrystalElement.PURPLE, Aspect.AURA);
+		this.addAspectTheme(CrystalElement.CYAN, Aspect.WATER);
+		this.addAspectTheme(CrystalElement.LIGHTGRAY, Aspect.ENTROPY, Aspect.TRAP);
+		this.addAspectTheme(CrystalElement.GRAY, Aspect.EXCHANGE);
+		this.addAspectTheme(CrystalElement.LIME, Aspect.MOTION, Aspect.TRAVEL, Aspect.FLIGHT);
+		this.addAspectTheme(CrystalElement.YELLOW, Aspect.ENERGY);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspectTheme(CrystalElement.LIGHTBLUE, Aspect.getAspect("tempus"));
+		this.addAspectTheme(CrystalElement.MAGENTA, Aspect.LIFE, Aspect.HEAL);
+		this.addAspectTheme(CrystalElement.ORANGE, Aspect.FIRE);
+		this.addAspectTheme(CrystalElement.WHITE, Aspect.ORDER, Aspect.AIR);
+
+		/*
 		this.addAspectCost(Aspect.ORDER, CrystalElement.WHITE);
 		this.addAspectCost(Aspect.FIRE, CrystalElement.ORANGE);
 		this.addAspectCost(Aspect.ENERGY, CrystalElement.YELLOW);
@@ -72,8 +112,23 @@ public class ChromaAspectManager {
 		this.addAspectCost(Aspect.WATER, CrystalElement.CYAN);
 		this.addAspectCost(Aspect.ENTROPY, CrystalElement.BLACK);
 		this.addAspectCost(Aspect.AIR, CrystalElement.WHITE);
+		 */
 	}
 
+	private void addAspectColor(CrystalElement e, Aspect... as) {
+		for (int i = 0; i < as.length; i++) {
+			Aspect a = as[i];
+			aspectsColor.addValue(e, a);
+		}
+	}
+
+	private void addAspectTheme(CrystalElement e, Aspect... as) {
+		for (int i = 0; i < as.length; i++) {
+			Aspect a = as[i];
+			aspectsThematic.addValue(e, a);
+		}
+	}
+	/*
 	private void addAspectCost(Aspect a, CrystalElement e) {
 		ElementTagCompound tag = costs.get(a);
 		if (tag == null) {
@@ -82,17 +137,33 @@ public class ChromaAspectManager {
 		}
 		tag.setTag(e, 1);
 	}
-
+	/*
 	private void addAspect(CrystalElement color, Aspect... asps) {
 		ArrayList li = new ArrayList();
 		for (int i = 0; i < asps.length; i++)
 			li.add(asps[i]);
 		aspects.put(color, li);
 	}
+	 */
 
-	public List<Aspect> getAspects(CrystalElement color) {
-		ArrayList<Aspect> li = aspects.get(color);
-		return li != null ? Collections.unmodifiableList(li) : null;
+	public Collection<Aspect> getAspects(CrystalElement color) {
+		return this.getAspects(color, true);
+	}
+
+	public Collection<Aspect> getAspects(CrystalElement color, boolean theme) {
+		ReversibleMultiMap<CrystalElement, Aspect> map = theme ? aspectsThematic : aspectsColor;
+		Collection<Aspect> li = map.getForward(color);
+		return li != null ? Collections.unmodifiableCollection(li) : null;
+	}
+
+	public Collection<CrystalElement> getColorsForAspect(Aspect a) {
+		return this.getColorsForAspect(a, true);
+	}
+
+	public Collection<CrystalElement> getColorsForAspect(Aspect a, boolean theme) {
+		ReversibleMultiMap<CrystalElement, Aspect> map = theme ? aspectsThematic : aspectsColor;
+		Collection<CrystalElement> li = map.getBackward(a);
+		return li != null ? Collections.unmodifiableCollection(li) : null;
 	}
 
 	public void register() {
@@ -112,7 +183,9 @@ public class ChromaAspectManager {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack bshard = ChromaItems.SHARD.getStackOfMetadata(i+16);
 			ItemStack rune = new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i);
-			List<Aspect> li = this.getAspects(dye);
+			List<Aspect> li = new ArrayList();
+			li.addAll(aspectsColor.getForward(dye));
+			li.addAll(aspectsThematic.getForward(dye));
 			ReikaThaumHelper.addAspects(shard, Aspect.CRYSTAL, 1);
 			ReikaThaumHelper.addAspects(bshard, Aspect.CRYSTAL, 2);
 			ReikaThaumHelper.addAspects(crystal, Aspect.CRYSTAL, 20);
@@ -210,8 +283,8 @@ public class ChromaAspectManager {
 	}
 
 	private void recursiveCount(Aspect a, ElementTagCompound tag, int depth, float depthcost) {
-		ElementTagCompound cost = costs.get(a);
-		if (cost == null) {
+		Collection<CrystalElement> li = aspectsThematic.getBackward(a);
+		if (li == null) {
 			Aspect[] parents = a.getComponents();
 			if (parents != null) {
 				for (int i = 0; i < parents.length; i++)
@@ -219,10 +292,10 @@ public class ChromaAspectManager {
 			}
 		}
 		else {
-			cost = cost.copy();
-			if (depthcost > 0)
-				cost.scale((1+depth)*depthcost);
-			tag.addTag(cost);
+			int amt = depthcost > 0 ? (int)((1+depth)*depthcost) : 1;
+			for (CrystalElement e : li) {
+				tag.addValueToColor(e, amt);
+			}
 		}
 	}
 

@@ -37,7 +37,7 @@ public class PylonFinder {
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
 	private final Collection<WorldLocation> blacklist = new HashSet();
-	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap();
+	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap(new MultiMap.HashSetFactory());
 
 	private final CrystalNetworker net;
 	private static final RayTracer tracer;

@@ -58,9 +58,9 @@ public class CrystalNetworker implements TickHandler {
 
 	private final TileEntityCache<CrystalNetworkTile> tiles = new TileEntityCache();
 	private final EnumMap<CrystalElement, TileEntityCache<TileEntityCrystalPylon>> pylons = new EnumMap(CrystalElement.class);
-	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap();
+	private final MultiMap<Integer, CrystalFlow> flows = new MultiMap(new MultiMap.HashSetFactory());
 	private final HashMap<UUID, WorldLocation> verifier = new HashMap();
-	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap().setNullEmpty();
+	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(new MultiMap.HashSetFactory()).setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
 	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();

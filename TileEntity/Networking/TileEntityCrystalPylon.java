@@ -554,7 +554,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public AspectList getAspects() {
 		AspectList as = new AspectList();
 		as.add(Aspect.AURA, 400);
-		List<Aspect> li = ChromaAspectManager.instance.getAspects(this.getColor());
+		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(this.getColor(), true);
 		for (Aspect a : li) {
 			as.add(a, 400);
 		}

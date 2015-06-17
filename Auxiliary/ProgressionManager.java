@@ -62,7 +62,7 @@ public class ProgressionManager {
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
 
-	private final MultiMap<String, ProgressStage> playerMap = new MultiMap();
+	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(new MultiMap.HashSetFactory());
 
 	private final EnumMap<CrystalElement, ColorDiscovery> colorDiscoveries = new EnumMap(CrystalElement.class);
 
