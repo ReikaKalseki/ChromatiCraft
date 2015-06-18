@@ -46,7 +46,8 @@ public class CrystalNetworkLogger {
 	public static enum FlowFail {
 		SIGHT("Line of Sight"),
 		ENERGY("Insufficient Energy or Disabled Transmitter"),
-		TILE("Missing Network Tile");
+		TILE("Missing Network Tile"),
+		FULL("Target is full");
 
 		public final String text;
 

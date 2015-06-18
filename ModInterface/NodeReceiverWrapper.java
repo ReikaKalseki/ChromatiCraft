@@ -1,5 +1,15 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
@@ -26,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -42,6 +53,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 
 	private static final int DELAY = 600;
+
+	private static final int NEW_ASPECT_COST = 240000;
+
+	private static final float LOSS_FACTOR = 0.6F;
 
 	private static final Random rand = new Random();
 
@@ -135,32 +150,47 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public void receiveElement(CrystalElement e, int amt) {
+	public int receiveElement(CrystalElement e, int amt) {
 		if (!this.isConductingElement(e))
-			return;
+			return 0;
 		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
 		AspectList al = new AspectList();
 		for (Aspect a : li) {
 			if (node.getAspectsBase().aspects.containsKey(a)) {
-				al.add(a, (int)Math.ceil((double)amt/baseVis.getValue(e)));
+				al.add(a, (int)Math.ceil(amt*LOSS_FACTOR/baseVis.getValue(e)));
 			}
 		}
 		//ReikaJavaLibrary.pConsole(e+":"+amt+" @ "+baseVis.getValue(e)+" > "+ReikaThaumHelper.aspectsToString(al));
+		//ReikaJavaLibrary.pConsole(ReikaThaumHelper.aspectsToString(node.getAspectsBase()));
 		this.recharge(al);
 		tick = 0;
+		return this.isFull(e) ? 0 : amt;
+	}
+
+	private boolean isFull(CrystalElement e) {
+		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(e, true);
+		for (Aspect a : li) {
+			if (!this.isFull(a))
+				return false;
+		}
+		return true;
+	}
+
+	private boolean isFull(Aspect a) {
+		return node.getAspects().getAmount(a) >= node.getAspectsBase().getAmount(a);
 	}
 
 	private void recharge(AspectList al) {
 		for (Aspect a : al.aspects.keySet()) {
 			int amt = al.aspects.get(a);
-			int space = node.getNodeVisBase(a)-node.getAspects().getAmount(a);
+			int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
 			node.addToContainer(a, Math.min(amt, space));
 		}
 
 		if (rand.nextInt(20) == 0)
 			this.playSound("thaumcraft:runicShieldCharge", 1, 0.5F);
 
-		if (rand.nextInt(80) == 0)
+		if (rand.nextInt(240) == 0)
 			this.healNode();
 
 		location.triggerBlockUpdate(false);
@@ -181,12 +211,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			ElementTagCompound req = new ElementTagCompound();
 			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
 				int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
-				if (space > 0)
-					ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
+				//if (space > 0)
+				//	ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));
 				req.addTag(this.getTagValue(a).scale(space*space));
 			}
-			req.scale(1.25F);
-			//ReikaJavaLibrary.pConsole(req);
+			req.scale(1.25F/LOSS_FACTOR);
 			boolean flag = false;
 			for (CrystalElement e : req.elementSet()) {
 				flag |= CrystalNetworker.instance.makeRequest(this, e, req.getValue(e), this.getReceiveRange());
@@ -196,6 +225,36 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 				tick = 0;
 			}
 		}
+
+		if (rand.nextInt(32000) == 0) {
+			ArrayList<Aspect> li = Aspect.getPrimalAspects();
+			AspectList al = node.getAspectsBase();
+			for (Aspect a : li) {
+				if (!al.aspects.containsKey(a)) {
+					if (this.tryToAddAspect(a, al))
+						break;
+				}
+			}
+			location.triggerBlockUpdate(false);
+		}
+	}
+
+	private boolean tryToAddAspect(Aspect a, AspectList base) {
+		ElementTagCompound tag = this.getTagValue(a);
+		boolean flag = true;
+		for (CrystalElement e : tag.elementSet()) {
+			flag &= CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true);
+		}
+		if (flag) {
+			base.add(a, 1);
+			node.addToContainer(a, 1);
+			baseVis.addTag(this.getTagValue(a));
+			this.playSound("thaumcraft:hhon");
+			this.playSound("thaumcraft:hhoff");
+			ReikaPacketHelper.sendStringPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.NEWASPECTNODE.ordinal(), (TileEntity)node, 32, a.getName().toLowerCase());
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -211,21 +270,23 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.75F, 0.5F);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HURTNODE.ordinal(), (TileEntity)node, 32);
 
-		if (node.getNodeModifier() != null) {
-			switch(node.getNodeModifier()) {
-			case BRIGHT:
-				node.setNodeModifier(null);
-				break;
-			case PALE:
-				node.setNodeModifier(NodeModifier.FADING);
-				break;
-			case FADING:
-				this.emptyNode();
-				break;
+		if (rand.nextInt(60) == 0) {
+			if (node.getNodeModifier() != null) {
+				switch(node.getNodeModifier()) {
+				case BRIGHT:
+					node.setNodeModifier(null);
+					break;
+				case PALE:
+					node.setNodeModifier(NodeModifier.FADING);
+					break;
+				case FADING:
+					this.emptyNode();
+					break;
+				}
 			}
-		}
-		else {
-			node.setNodeModifier(NodeModifier.PALE);
+			else {
+				node.setNodeModifier(NodeModifier.PALE);
+			}
 		}
 
 		if (rand.nextInt(480) == 0) {
@@ -251,14 +312,12 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			}
 		}
 
-		if (rand.nextInt(20) == 0) {
-			AspectList al = node.getAspectsBase();
-			for (Aspect a : al.aspects.keySet()) {
-				int amt = al.getAmount(a);
-				if (amt > 1) {
-					int rem = Math.min(amt-1, (int)(rand.nextFloat()*(amt/2F)));
-					al.remove(a, rem);
-				}
+		AspectList al = node.getAspectsBase();
+		for (Aspect a : al.aspects.keySet()) {
+			int amt = al.getAmount(a);
+			if (amt > 1) {
+				int rem = Math.min(amt-1, (int)(rand.nextFloat()*(amt/2F)));
+				al.remove(a, rem);
 			}
 		}
 
@@ -269,20 +328,22 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		ChromaSounds.CAST.playSoundAtBlock(location);
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.HEALNODE.ordinal(), (TileEntity)node, 32);
 
-		if (node.getNodeModifier() != null) {
-			switch(node.getNodeModifier()) {
-			case BRIGHT:
-				break;
-			case PALE:
-				node.setNodeModifier(null); //Tier is bright-null-pale-fading
-				break;
-			case FADING:
-				node.setNodeModifier(NodeModifier.PALE);
-				break;
+		if (rand.nextInt(60) == 0) {
+			if (node.getNodeModifier() != null) {
+				switch(node.getNodeModifier()) {
+				case BRIGHT:
+					break;
+				case PALE:
+					node.setNodeModifier(null); //Tier is bright-null-pale-fading
+					break;
+				case FADING:
+					node.setNodeModifier(NodeModifier.PALE);
+					break;
+				}
 			}
-		}
-		else {
-			node.setNodeModifier(NodeModifier.BRIGHT);
+			else {
+				node.setNodeModifier(NodeModifier.BRIGHT);
+			}
 		}
 
 		if (rand.nextInt(240) == 0) {
@@ -307,12 +368,12 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			}
 		}
 
-		if (rand.nextInt(20) == 0) {
-			AspectList al = node.getAspectsBase();
-			for (Aspect a : al.aspects.keySet()) {
-				int amt = al.getAmount(a);
-				al.merge(a, (int)(amt*(1+rand.nextFloat()/2F)));
-			}
+		AspectList al = node.getAspectsBase();
+		for (Aspect a : al.aspects.keySet()) {
+			int amt = al.getAmount(a);
+			int newamt = Math.min(720, Math.max(amt+1, (int)(amt+rand.nextDouble()*Math.sqrt(amt))));//(int)(amt*(1+rand.nextFloat()/5F));
+			al.merge(a, newamt);
+			//ReikaJavaLibrary.pConsole(a.getName()+" from "+amt+" to "+newamt);
 		}
 
 		location.triggerBlockUpdate(false);
@@ -345,9 +406,45 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.DESTROYNODE.ordinal(), (TileEntity)node, 32);
 		ChromaSounds.POWERDOWN.playSound(world, x, y, z, 2, 1);
 		ChromaSounds.POWERDOWN.playSound(world, x, y, z, 2, 1);
-		EntityLightningBolt elb = new EntityLightningBolt(world, x-0.5, y, z-0.5);
+		EntityLightningBolt elb = new EntityLightningBolt(world, x-0.5, y, z-0.5); //already has +0.5
 		world.addWeatherEffect(elb);
 		location.setBlock(Blocks.air);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void triggerNewAspectFX(World world, int x, int y, int z, Aspect a) {
+		double dx = x+0.5;
+		double dy = y+0.5;
+		double dz = z+0.5;
+		for (int i = 0; i < 16; i++) {
+			float fx = (float)ReikaRandomHelper.getRandomPlusMinus(dx, 4);
+			float fy = (float)ReikaRandomHelper.getRandomPlusMinus(dy, 4);
+			float fz = (float)ReikaRandomHelper.getRandomPlusMinus(dz, 4);
+			ReikaThaumHelper.triggerEffect(EffectType.NODEBOLT, world, (float)dx, (float)dy, (float)dz, fx, fy, fz);
+		}
+
+		int color = a.getColor();
+		int r = ReikaColorAPI.getRed(color);
+		int g = ReikaColorAPI.getGreen(color);
+		int b = ReikaColorAPI.getBlue(color);
+
+		for (int i = 0; i < 64; i++) {
+			float gv = (float)ReikaRandomHelper.getRandomPlusMinus(0.25, 0.125);
+			if (rand.nextInt(3) > 0)
+				gv = -gv;
+			double v = 0.125+rand.nextDouble()*0.0625;
+
+			double va = rand.nextDouble()*360;
+			double vx = v*Math.cos(Math.toDegrees(va));
+			double vz = v*Math.sin(Math.toDegrees(va));
+			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vx, 0, vz).setColor(r, g, b).setGravity(gv).setScale(2).setRapidExpand();
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		EntityCenterBlurFX fx = new EntityCenterBlurFX(world, x+0.5, y+0.5, z+0.5).setColor(a.getColor()).setScale(20);
+		fx.noClip = true;
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -402,10 +499,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0.015625
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125); //0.015625
-			float g = 0;//(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
-			//if (rand.nextInt(3) > 0)
-			//	g = -g;
-			EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz, vx, vy, vz).setGravity(g).setColor(a.getColor());
+			EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz, vx, vy, vz).setColor(a.getColor());
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -473,6 +567,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 	@Override
 	public Class getTileClass() {
 		return node.getClass();
+	}
+
+	@Override
+	public String toString() {
+		return ReikaThaumHelper.aspectsToString(node.getAspectsBase())+" @ "+location;
 	}
 
 }

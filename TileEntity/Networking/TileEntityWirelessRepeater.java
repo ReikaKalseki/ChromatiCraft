@@ -19,8 +19,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 public class TileEntityWirelessRepeater extends CrystalTransmitterBase implements CrystalRepeater {
 
 	@Override
-	public void receiveElement(CrystalElement e, int amt) {
-
+	public int receiveElement(CrystalElement e, int amt) {
+		return 1;
 	}
 
 	@Override

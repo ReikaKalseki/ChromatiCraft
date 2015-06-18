@@ -212,6 +212,16 @@ public class CrystalNetworker implements TickHandler {
 		return false;
 	}
 
+	public boolean findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
+		CrystalPath p = new PylonFinder(e, r).findPylonWith(amount);
+		if (p != null) {
+			if (consume)
+				p.transmitter.drain(e, amount);
+			return true;
+		}
+		return false;
+	}
+
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
 		Collection<CrystalFlow> li = flows.get(world.provider.dimensionId);
 		for (CrystalFlow f : li) {
@@ -237,13 +247,19 @@ public class CrystalNetworker implements TickHandler {
 					if (p.transmitter.canConduct() && p.canTransmit()) {
 						int amt = p.drain();
 						if (amt > 0) {
-							p.receiver.receiveElement(p.element, amt);
+							int add = p.receiver.receiveElement(p.element, amt);
 							p.transmitter.drain(p.element, amt);
 							if (p.isComplete()) {
 								p.resetTiles();
 								it.remove();
 								CrystalNetworkLogger.logFlowSatisfy(p);
 								p.receiver.onPathCompleted();
+							}
+							else if (add <= 0) {
+								CrystalNetworkLogger.logFlowBreak(p, FlowFail.FULL);
+								//p.receiver.onPathBroken(p.element);
+								p.resetTiles();
+								it.remove();
 							}
 						}
 					}

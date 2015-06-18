@@ -69,6 +69,7 @@ public enum ChromaPackets {
 	DESTROYNODE(),
 	HURTNODE(),
 	CHARGINGNODE(),
+	NEWASPECTNODE(17),
 	HEALNODE();
 
 	public final int numInts;

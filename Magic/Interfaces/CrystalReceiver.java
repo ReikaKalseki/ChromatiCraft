@@ -13,7 +13,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver {
 
-	public void receiveElement(CrystalElement e, int amt);
+	/** Returns the amount successfully added. */
+	public int receiveElement(CrystalElement e, int amt);
 
 	public void onPathBroken(CrystalElement e);
 

@@ -37,8 +37,11 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.CRYSTAL, 4);
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.ENERGY, 4);
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.TRAVEL, 4);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.ACCELERATOR, Aspect.getAspect("tempus"), 8);
 
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.ARMOR, 12);
+		this.addAspect(ChromaTiles.GUARDIAN, Aspect.AURA, 6);
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.LIGHT, 4);
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.CRYSTAL, 4);
 
@@ -121,6 +124,64 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.TANK, Aspect.CRYSTAL, 6);
 		this.addAspect(ChromaTiles.TANK, Aspect.WATER, 12);
 		this.addAspect(ChromaTiles.TANK, Aspect.VOID, 8);
+
+		this.addAspect(ChromaTiles.MEDISTRIBUTOR, Aspect.MECHANISM, 4);
+		this.addAspect(ChromaTiles.MEDISTRIBUTOR, Aspect.MIND, 4);
+
+		this.addAspect(ChromaTiles.TICKER, Aspect.TOOL, 4);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.TICKER, Aspect.getAspect("tempus"), 8);
+
+		this.addAspect(ChromaTiles.STAND, Aspect.TOOL, 4);
+		this.addAspect(ChromaTiles.STAND, Aspect.CRAFT, 8);
+
+		this.addAspect(ChromaTiles.TABLE, Aspect.CRAFT, 12);
+		this.addAspect(ChromaTiles.TABLE, Aspect.CRYSTAL, 6);
+
+		this.addAspect(ChromaTiles.AUTOMATOR, Aspect.CRAFT, 12);
+		this.addAspect(ChromaTiles.AUTOMATOR, Aspect.CRYSTAL, 6);
+		this.addAspect(ChromaTiles.AUTOMATOR, Aspect.MECHANISM, 8);
+		this.addAspect(ChromaTiles.AUTOMATOR, Aspect.SOUL, 8);
+
+		this.addAspect(ChromaTiles.RITUAL, Aspect.CRAFT, 4);
+		this.addAspect(ChromaTiles.RITUAL, Aspect.MAGIC, 8);
+		this.addAspect(ChromaTiles.RITUAL, Aspect.MAN, 6);
+		this.addAspect(ChromaTiles.RITUAL, Aspect.SOUL, 4);
+
+		this.addAspect(ChromaTiles.REPROGRAMMER, Aspect.BEAST, 6);
+		this.addAspect(ChromaTiles.REPROGRAMMER, Aspect.EXCHANGE, 6);
+
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.AURA, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.MAGIC, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.ARMOR, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.WEAPON, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.SENSES, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.ENERGY, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.CRYSTAL, 12);
+		this.addAspect(ChromaTiles.AURAPOINT, Aspect.CROP, 12);
+
+		this.addAspect(ChromaTiles.DIMENSIONCORE, Aspect.CRYSTAL, 8);
+		this.addAspect(ChromaTiles.DIMENSIONCORE, Aspect.MAGIC, 8);
+
+		this.addAspect(ChromaTiles.LASER, Aspect.CRYSTAL, 8);
+		this.addAspect(ChromaTiles.LASER, Aspect.AURA, 8);
+		this.addAspect(ChromaTiles.LASER, Aspect.LIGHT, 8);
+
+		this.addAspect(ChromaTiles.FENCE, Aspect.CRYSTAL, 6);
+		this.addAspect(ChromaTiles.FENCE, Aspect.ARMOR, 4);
+		this.addAspect(ChromaTiles.FENCE, Aspect.TRAP, 8);
+
+		this.addAspect(ChromaTiles.LAMPCONTROL, Aspect.CRYSTAL, 4);
+		this.addAspect(ChromaTiles.LAMPCONTROL, Aspect.LIGHT, 8);
+		this.addAspect(ChromaTiles.LAMPCONTROL, Aspect.AURA, 6);
+
+		this.addAspect(ChromaTiles.CHARGER, Aspect.ENERGY, 12);
+		this.addAspect(ChromaTiles.CHARGER, Aspect.CRYSTAL, 8);
+
+		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.CRYSTAL, 8);
+		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MAGIC, 8);
+		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.TRAP, 8);
+		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MIND, 8);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

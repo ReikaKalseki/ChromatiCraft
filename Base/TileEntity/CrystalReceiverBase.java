@@ -116,10 +116,12 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	@Override
-	public final void receiveElement(CrystalElement e, int amt) {
+	public final int receiveElement(CrystalElement e, int amt) {
+		int add = Math.min(amt, this.getMaxStorage(e)-amt);
 		energy.addValueToColor(e, amt);
 		this.clamp(e);
 		receiveCooldown = this.getCooldownLength();
+		return add;
 	}
 
 	public final int getEnergy(CrystalElement e) {

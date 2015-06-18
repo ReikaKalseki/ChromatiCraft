@@ -28,6 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
@@ -470,6 +471,9 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case HEALNODE:
 				NodeReceiverWrapper.triggerHealFX(world, x, y, z);
+				break;
+			case NEWASPECTNODE:
+				NodeReceiverWrapper.triggerNewAspectFX(world, x, y, z, Aspect.getAspect(stringdata));
 				break;
 			default:
 				break;

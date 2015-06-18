@@ -66,33 +66,42 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylon() {
+		return this.findPylonWith(0);
+	}
+
+	CrystalPath findPylonWith(int thresh) {
 		invalid = false;
-		CrystalPath p = this.checkExistingPaths();
+		CrystalPath p = this.checkExistingPaths(thresh);
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
 		if (p != null)
 			return p;
 		if (!this.anyConnectedSources())
 			return null;
 
-		this.findFrom(target);
+		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			CrystalPath path = new CrystalPath(net, element, nodes);
-			this.addValidPath(path);
+			if (!(target instanceof WrapperTile))
+				this.addValidPath(path);
 			return path;
 		}
 		return null;
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru) {
+		return this.findPylon(amount, maxthru, 0);
+	}
+
+	CrystalFlow findPylon(int amount, int maxthru, int thresh) {
 		invalid = false;
-		CrystalPath p = this.checkExistingPaths();
+		CrystalPath p = this.checkExistingPaths(thresh);
 		if (p != null)
 			return new CrystalFlow(net, p, target, amount, maxthru);
 		if (!this.anyConnectedSources())
 			return null;
 
-		this.findFrom(target);
+		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
 			CrystalFlow flow = new CrystalFlow(net, target, element, amount, nodes, maxthru);
@@ -117,7 +126,7 @@ public class PylonFinder {
 		return target instanceof WrapperTile || !net.getNearbyReceivers(s, element).isEmpty();
 	}
 
-	private CrystalPath checkExistingPaths() {
+	private CrystalPath checkExistingPaths(int thresh) {
 		EnumMap<CrystalElement, ArrayList<CrystalPath>> map = paths.get(getLocation(target));
 		if (map != null) {
 			ArrayList<CrystalPath> c = map.get(element);
@@ -197,7 +206,7 @@ public class PylonFinder {
 		return nodes.size() >= 2 && nodes.getLast().getTileEntity() instanceof CrystalSource;
 	}
 
-	private void findFrom(CrystalReceiver r) {
+	private void findFrom(CrystalReceiver r, int thresh) {
 		if (invalid)
 			return;
 		WorldLocation loc = getLocation(r);
@@ -222,22 +231,24 @@ public class PylonFinder {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				CrystalLink l = net.getLink(loc2, loc);
-				if (te.needsLineOfSight() && !l.hasLineOfSight()) {
-					l.recalculateLOS();
-					if (!l.hasLineOfSight())
-						continue;
-				}
-				if (te != target && te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target)) {
-					net.addLink(l, true);
-					nodes.add(loc2);
-					return;
-				}
-				else if (te instanceof CrystalRepeater) {
-					net.addLink(l, true);
-					Collection<WorldLocation> others = new ArrayList(li);
-					others.remove(te);
-					duplicates.put(loc2, others);
-					this.findFrom((CrystalRepeater)te);
+				if (te != target) {
+					if (te.needsLineOfSight() && !l.hasLineOfSight()) {
+						l.recalculateLOS();
+						if (!l.hasLineOfSight())
+							continue;
+					}
+					if (te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target) && ((CrystalSource)te).getEnergy(element) >= thresh) {
+						net.addLink(l, true);
+						nodes.add(loc2);
+						return;
+					}
+					else if (te instanceof CrystalRepeater) {
+						net.addLink(l, true);
+						Collection<WorldLocation> others = new ArrayList(li);
+						others.remove(te);
+						duplicates.put(loc2, others);
+						this.findFrom((CrystalRepeater)te, thresh);
+					}
 				}
 			}
 		}

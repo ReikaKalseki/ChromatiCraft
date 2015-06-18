@@ -145,8 +145,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public void receiveElement(CrystalElement e, int amt) {
-
+	public final int receiveElement(CrystalElement e, int amt) {
+		return 1;
 	}
 
 	@Override
