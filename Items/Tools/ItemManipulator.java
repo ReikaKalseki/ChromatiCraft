@@ -56,6 +56,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -172,18 +173,20 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded() && tile instanceof INode) {
-			if (!world.isRemote) {
-				NodeRecharger.instance.addNode((INode)tile);
-				ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
-				for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
-					int color = asp.getColor();
-					int rd = ReikaColorAPI.getRed(color);
-					int gn = ReikaColorAPI.getGreen(color);
-					int bl = ReikaColorAPI.getBlue(color);
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, rd, gn, bl, 8, 2);
-				}
-				for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
-					((INode)tile).takeFromContainer(asp, 1);
+			if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
+				if (!world.isRemote) {
+					NodeRecharger.instance.addNode((INode)tile);
+					ReikaSoundHelper.playSoundFromServer(world, x+0.5, y+0.5, z+0.5, "thaumcraft:runicShieldEffect", 1, 1, false);
+					for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
+						int color = asp.getColor();
+						int rd = ReikaColorAPI.getRed(color);
+						int gn = ReikaColorAPI.getGreen(color);
+						int bl = ReikaColorAPI.getBlue(color);
+						ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), tile, rd, gn, bl, 8, 2);
+					}
+					for (Aspect asp : ((INode)tile).getAspects().aspects.keySet()) {
+						((INode)tile).takeFromContainer(asp, 1);
+					}
 				}
 			}
 		}
