@@ -52,7 +52,8 @@ public enum ChromaOptions implements ConfigList {
 	DELEND("Delete End on Unload", false),
 	EASYFRAG("Auxiliary Fragment Acquisition", false),
 	COPYSIZE("Duplication Wand Max Volume", 1000),
-	SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false);
+	SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false),
+	STRUCTDIFFICULTY("Dimension Structure Difficulty", 3);
 
 	private String label;
 	private boolean defaultState;
@@ -172,6 +173,11 @@ public enum ChromaOptions implements ConfigList {
 	public static int getEnderForestWeight() {
 		int base = ENDERWEIGHT.getValue();
 		return Math.max(2, base);
+	}
+
+	public static int getStructureDifficulty() {
+		int base = STRUCTDIFFICULTY.getValue();
+		return Math.min(3, Math.max(1, base));
 	}
 
 }

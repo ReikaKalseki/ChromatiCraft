@@ -84,6 +84,7 @@ import Reika.ChromatiCraft.Registry.ChromaEntities;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ChromaResearchDebugCommand;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -597,6 +598,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			ChromaTiles m = ChromaTiles.TEList[i];
 			TimeTorchHelper.blacklistTileEntity(m.getTEClass());
 		}
+
+		ChromaResearch.loadPostCache();
 
 		this.finishTiming();
 	}

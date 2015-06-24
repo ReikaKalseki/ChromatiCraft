@@ -25,6 +25,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 public class StructureCalculator implements Runnable {
 
 	private final Random rand = new Random();
+	//private final Random seededRand;
 	private final int maxAttempts;
 
 	StructureCalculator() {
@@ -33,6 +34,9 @@ public class StructureCalculator implements Runnable {
 
 	StructureCalculator(int max) {
 		maxAttempts = max;
+
+		//Would base off world seed, but is loaded "outside" a vMC world and as such cannot reference it; make it PC-specific instead
+		//seededRand = new Random(new File("c:").getTotalSpace() ^ System.getProperty("os.name").hashCode());
 	}
 
 	@Override

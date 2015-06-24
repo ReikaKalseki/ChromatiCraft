@@ -48,6 +48,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
@@ -55,6 +56,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -69,6 +71,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Registry.ItemElementCalculator;
+import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
@@ -84,6 +87,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -108,6 +112,20 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@ModDependent(ModList.PNEUMATICRAFT)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void hideStructures(InventoryTrackEvent evt) {
+		if (evt.getTileEntity() instanceof TileEntityLootChest) {
+			evt.setCanceled(true);
+		}
+		else if (evt.getTileEntity() instanceof TileEntityStructControl) {
+			evt.setCanceled(true);
+		}
+		else if (ReikaInventoryHelper.checkForItem(ChromaItems.FRAGMENT.getItemInstance(), evt.getInventory())) {
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

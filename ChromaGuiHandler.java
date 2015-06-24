@@ -109,6 +109,9 @@ import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
 import Reika.DragonAPI.Interfaces.GuiController;
 import cpw.mods.fml.common.network.IGuiHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.relauncher.Side;
 
 public class ChromaGuiHandler implements IGuiHandler {
 
@@ -181,6 +184,7 @@ public class ChromaGuiHandler implements IGuiHandler {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
 		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {

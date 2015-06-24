@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock.TileEntity
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -157,6 +158,10 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 	public int getWeightValue() {
 		return this.getFeatureRating()*100+this.getDifficultyRating();
+	}
+
+	public final boolean canGenerate() {
+		return this.getDifficultyRating() <= 2+ChromaOptions.getStructureDifficulty();
 	}
 
 	@Override

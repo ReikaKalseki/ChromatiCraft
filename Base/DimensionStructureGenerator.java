@@ -23,6 +23,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -126,8 +128,12 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileEntityDimensionCore) {
-			((TileEntityDimensionCore)te).setStructure(new StructurePair(structureType, genColor));
+			((TileEntityDimensionCore)te).setStructure(new StructurePair(structureType, this.getCoreColor(world)));
 		}
+	}
+
+	private CrystalElement getCoreColor(World world) {
+		return CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];//genColor;
 	}
 
 	public final void placeCore(int x, int y, int z) {
@@ -151,7 +157,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		TDMAZE(ThreeDMazeGenerator.class),
 		ALTAR(AltarGenerator.class),
 		SHIFTMAZE(ShiftMazeGenerator.class),
-		LOCKS(LocksGenerator.class);
+		LOCKS(LocksGenerator.class),
+		MUSIC(MusicPuzzleGenerator.class),
+		NONEUCLID(NonEuclideanGenerator.class);
 
 		private final Class generatorClass;
 		private DimensionStructureGenerator generator;

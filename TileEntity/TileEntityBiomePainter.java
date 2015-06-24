@@ -72,6 +72,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, int x, int y, int z) {
 		double px = x+0.0625+rand.nextDouble()*0.875;
 		double py = y+0.0625+rand.nextDouble()*0.875;

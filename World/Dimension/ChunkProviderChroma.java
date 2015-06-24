@@ -56,6 +56,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	/** RNG. */
 	private Random rand;
+	private long overWorldSeed;
 	private NoiseGeneratorOctaves noiseGen1;
 	private NoiseGeneratorOctaves noiseGen2;
 	private NoiseGeneratorOctaves noiseGen3;
@@ -136,6 +137,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		worldObj = world;
 		chunkManager = new ChromaChunkManager(world);
 		worldType = world.getWorldInfo().getTerrainType();
+		overWorldSeed = world.getSeed();
 		rand = new Random(System.currentTimeMillis()); //make independent of world seed
 		noiseGen1 = new NoiseGeneratorOctaves(rand, 16); //16
 		noiseGen2 = new NoiseGeneratorOctaves(rand, 16); //16

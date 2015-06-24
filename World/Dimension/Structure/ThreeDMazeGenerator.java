@@ -17,6 +17,7 @@ import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.LootRoom;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TDMazeEntrance;
@@ -38,9 +39,9 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	private Coordinate step;
 	private ForgeDirection nextDir;
 
-	private static final int MAX_SIZE_X = 32;
-	private static final int MAX_SIZE_Y = 16;
-	private static final int MAX_SIZE_Z = 32;
+	private static final int MAX_SIZE_X = getWidth();
+	private static final int MAX_SIZE_Y = getHeight();
+	private static final int MAX_SIZE_Z = getWidth();
 
 	private int minX;
 	private int maxX;
@@ -50,6 +51,30 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	private int maxZ;
 
 	private int partSize;
+
+	private static int getWidth() {
+		switch(ChromaOptions.getStructureDifficulty()) {
+		case 1:
+		case 2:
+			return 16;
+		case 3:
+			return 32;
+		default:
+			return 32;
+		}
+	}
+
+	private static int getHeight() {
+		switch(ChromaOptions.getStructureDifficulty()) {
+		case 1:
+			return 8;
+		case 2:
+		case 3:
+			return 16;
+		default:
+			return 16;
+		}
+	}
 
 	@Override
 	public void calculate(int x, int z, CrystalElement e, Random rand) {

@@ -14,6 +14,7 @@ import java.util.Random;
 
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
 public class CrystalMusicManager {
@@ -21,26 +22,27 @@ public class CrystalMusicManager {
 	public static final CrystalMusicManager instance = new CrystalMusicManager();
 
 	private final EnumMap<CrystalElement, MusicKey> baseKeys = new EnumMap(CrystalElement.class);
+	private final MultiMap<MusicKey, CrystalElement> sourceElements = new MultiMap(new MultiMap.HashSetFactory());
 
 	private static final Random rand = new Random();
 
 	private CrystalMusicManager() {
-		baseKeys.put(CrystalElement.BLACK, MusicKey.C4);
-		baseKeys.put(CrystalElement.BROWN, MusicKey.D4);
-		baseKeys.put(CrystalElement.BLUE, MusicKey.E4);
-		baseKeys.put(CrystalElement.GREEN, MusicKey.F4);
-		baseKeys.put(CrystalElement.RED, MusicKey.G4);
-		baseKeys.put(CrystalElement.PURPLE, MusicKey.A4);
-		baseKeys.put(CrystalElement.MAGENTA, MusicKey.B4);
-		baseKeys.put(CrystalElement.CYAN, MusicKey.A4);
-		baseKeys.put(CrystalElement.LIGHTGRAY, MusicKey.D5);
-		baseKeys.put(CrystalElement.GRAY, MusicKey.C5);
-		baseKeys.put(CrystalElement.LIME, MusicKey.E5);
-		baseKeys.put(CrystalElement.PINK, MusicKey.F5);
-		baseKeys.put(CrystalElement.YELLOW, MusicKey.G5);
-		baseKeys.put(CrystalElement.LIGHTBLUE, MusicKey.A5);
-		baseKeys.put(CrystalElement.ORANGE, MusicKey.E4);
-		baseKeys.put(CrystalElement.WHITE, MusicKey.C6);
+		this.addTonic(CrystalElement.BLACK, MusicKey.C4);
+		this.addTonic(CrystalElement.BROWN, MusicKey.D4);
+		this.addTonic(CrystalElement.BLUE, MusicKey.E4);
+		this.addTonic(CrystalElement.GREEN, MusicKey.F4);
+		this.addTonic(CrystalElement.RED, MusicKey.G4);
+		this.addTonic(CrystalElement.PURPLE, MusicKey.A4);
+		this.addTonic(CrystalElement.MAGENTA, MusicKey.B4);
+		this.addTonic(CrystalElement.CYAN, MusicKey.A4);
+		this.addTonic(CrystalElement.LIGHTGRAY, MusicKey.D5);
+		this.addTonic(CrystalElement.GRAY, MusicKey.C5);
+		this.addTonic(CrystalElement.LIME, MusicKey.E5);
+		this.addTonic(CrystalElement.PINK, MusicKey.F5);
+		this.addTonic(CrystalElement.YELLOW, MusicKey.G5);
+		this.addTonic(CrystalElement.LIGHTBLUE, MusicKey.A5);
+		this.addTonic(CrystalElement.ORANGE, MusicKey.E4);
+		this.addTonic(CrystalElement.WHITE, MusicKey.C6);
 
 		/*
 		baseKeys.put(CrystalElement.BLACK, MusicKey.C4);
@@ -61,6 +63,15 @@ public class CrystalMusicManager {
 		baseKeys.put(CrystalElement.WHITE, MusicKey.C6);
 
 		 */
+	}
+
+	private void addTonic(CrystalElement e, MusicKey m) {
+		baseKeys.put(e, m);
+
+		sourceElements.addValue(m, e);
+		sourceElements.addValue(this.isMinorKey(e) ? m.getMinorThird() : m.getMajorThird(), e);
+		sourceElements.addValue(m.getFifth(), e);
+		sourceElements.addValue(m.getOctave(), e);
 	}
 
 	public int getBasePitch(CrystalElement e) {

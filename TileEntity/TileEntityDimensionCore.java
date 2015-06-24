@@ -161,6 +161,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
 			}
 			break;
+		case MUSIC:
+			break;
+		case NONEUCLID:
+			break;
 		}
 	}
 

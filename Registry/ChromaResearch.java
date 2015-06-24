@@ -26,7 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.opengl.GL11;
 
@@ -61,7 +60,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
@@ -670,7 +669,7 @@ public enum ChromaResearch implements ProgressElement {
 		}
 		if (this == BEES) {
 			ArrayList<ItemStack> li = new ArrayList();
-			World world = FMLCommonHandler.instance().getEffectiveSide().isClient() ? Minecraft.getMinecraft().theWorld : DimensionManager.getWorld(0);
+			World world = ReikaWorldHelper.getBasicReferenceWorld();
 
 			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.DRONE));
 			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.PRINCESS));
@@ -855,10 +854,20 @@ public enum ChromaResearch implements ProgressElement {
 					parents.add(r);
 				else
 					nonParents.add(r);
+			}
+			ChromaResearchManager.instance.register(r);
+		}
+	}
+
+	public static void loadPostCache() {
+		for (int i = 0; i < researchList.length; i++) {
+			ChromaResearch r = researchList[i];
+			if (!r.isDummiedOut()) {
 				Collection<ItemStack> c = r.getItemStacks();
 				if (c != null) {
 					for (ItemStack is : c) {
-						itemMap.put(is, r);
+						if (is != null && is.getItem() != null)
+							itemMap.put(is, r);
 					}
 				}
 				Collection<CastingRecipe> crc = r.getCraftingRecipes();
@@ -866,7 +875,6 @@ public enum ChromaResearch implements ProgressElement {
 					cr.setFragment(r);
 				}
 			}
-			ChromaResearchManager.instance.register(r);
 		}
 	}
 

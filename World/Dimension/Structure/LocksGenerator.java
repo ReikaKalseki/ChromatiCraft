@@ -133,8 +133,10 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	private void genMaps(Random rand, ForgeDirection dir) {
 		for (int i = 0; i < BlockLockKey.LockChannel.lockList.length; i++) {
 			LockLevel l = this.genNewLockLevel(i, rand);
-			l.setDirection(dir);
-			genOrder.add(l);
+			if (l.canGenerate()) {
+				l.setDirection(dir);
+				genOrder.add(l);
+			}
 		}
 		Collections.shuffle(genOrder);
 		Collections.sort(genOrder);
