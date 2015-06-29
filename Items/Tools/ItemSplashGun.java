@@ -14,12 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public class ItemVacuumGun extends ItemChromaTool {
+public class ItemSplashGun extends ItemChromaTool {
 
-	public ItemVacuumGun(int index) {
+	public ItemSplashGun(int index) {
 		super(index);
 	}
 
@@ -27,7 +27,7 @@ public class ItemVacuumGun extends ItemChromaTool {
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 
 		if (!world.isRemote) {
-			EntityVacuum e = new EntityVacuum(world, ep);
+			EntitySplashGunShot e = new EntitySplashGunShot(world, ep);
 			Vec3 vec = ep.getLookVec();
 			e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 			world.spawnEntityInWorld(e);

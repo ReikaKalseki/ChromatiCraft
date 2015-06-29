@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
+import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
@@ -148,6 +149,7 @@ public enum ChromaBlocks implements BlockEnum {
 	LOCKKEY(BlockLockKey.class,					ItemBlockLockKey.class,			"chroma.lockkey"),
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog"),
+	GLOWSAPLING(BlockLightedSapling.class,										"chroma.glowsapling"),
 	HOVER(BlockHoverBlock.class,				ItemBlockHover.class,			"chroma.hover");
 
 	private Class blockClass;
@@ -321,7 +323,9 @@ public enum ChromaBlocks implements BlockEnum {
 		case RELAY:
 			return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
 		case DIMGEN:
-			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.Types.list[meta].name().toLowerCase());
+			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase());
+		case DIMGENTILE:
+			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase());
 		case LOCKKEY:
 		case HOVER:
 			return this.getBasicName();
@@ -344,6 +348,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case LOCKFREEZE:
 		case GLOWLOG:
 		case GLOWLEAF:
+		case GLOWSAPLING:
 		case HOVER:
 			return false;
 		default:
@@ -375,7 +380,7 @@ public enum ChromaBlocks implements BlockEnum {
 		case STRUCTSHIELD:
 			return BlockStructureShield.BlockType.list.length;
 		case DIMGEN:
-			return BlockDimensionDeco.Types.list.length;
+			return BlockDimensionDeco.DimDecoTypes.list.length;
 		case LOCKKEY:
 			return BlockLockKey.LockChannel.lockList.length;
 		case HOVER:

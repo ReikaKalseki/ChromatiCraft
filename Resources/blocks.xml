@@ -42,4 +42,10 @@
 	<path>
 		Imbued with the energy of motion, travel path accelerates your ability to traverse the ground, often to surpising velocities. Just don't try crouching while you do so, as you might tumble uncontrollably.
 	</path>
+	<portal>
+		All this talk of a special world brimming with crystal energy is rather pointless without a way to actually GET there. Fortunately, you feel you just might have enough knowledge to rift space enough to venture into the unknown.
+	</portal>
+	<heatlamp>
+		When faced with the need to bring something to a precise temperature - most annoyingly, that metal fermentation box - your options are somewhat limited. Fire and lava, while they heat things, are often much too hot - only a fool would try using lava to gently warm yeast for composting - and ice and snow are frigidly cold. What would be most ideal would be some gentle heater you could affix directly to a block.
+	</heatlamp>
 </blocks>

@@ -27,9 +27,10 @@ import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
-public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger {
+public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable {
 
 	public BlockCrystalPylon(Material mat) {
 		super(mat);
@@ -107,6 +108,11 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		boolean pylon = c == ChromaTiles.PYLON && ((TileEntityCrystalPylon)world.getTileEntity(x, y, z)).canConduct();
 		return pylon ? new ProgressStage[]{ProgressStage.PYLON} : null;
+	}
+
+	@Override
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON;
 	}
 
 }

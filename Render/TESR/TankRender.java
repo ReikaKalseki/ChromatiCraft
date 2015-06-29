@@ -92,8 +92,10 @@ public class TankRender extends ChromaRenderBase {
 		int last = lastp != null ? lastp.intValue() : -1;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			Coordinate dat = blocks.getRandomBlock();
-			colors.put(Arrays.asList((float)dat.xCoord, (float)dat.yCoord, (float)dat.zCoord), et);
-			lastptick.put(loc, te.getTicksExisted());
+			if (dat != null) {
+				colors.put(Arrays.asList((float)dat.xCoord, (float)dat.yCoord, (float)dat.zCoord), et);
+				lastptick.put(loc, te.getTicksExisted());
+			}
 		}
 		if (!colors.isEmpty()) {
 			GL11.glPushMatrix();

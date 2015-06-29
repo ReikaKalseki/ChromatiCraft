@@ -47,13 +47,13 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 		return true;
 	}
 
-	private static enum TreeGen {
+	public static enum TreeGen {
 
 		OAK(),
 		TALL(),
 		BALL();
 
-		private static final TreeGen[] genList = values();
+		public static final TreeGen[] genList = values();
 
 		public boolean generate(World world, int x, int y, int z, Random rand) {
 			int h = rand.nextInt(4);

@@ -20,6 +20,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
@@ -29,11 +30,11 @@ public class BlockDimensionDeco extends Block {
 
 	private static final IIcon[][] icons = new IIcon[2][16];
 
-	public static enum Types {
+	public static enum DimDecoTypes implements DecoType {
 		MIASMA(),
 		FLOATSTONE();
 
-		public static Types[] list = values();
+		public static DimDecoTypes[] list = values();
 
 		public ItemStack getItem() {
 			return new ItemStack(ChromaBlocks.DIMGEN.getBlockInstance(), 1, this.ordinal());
@@ -91,6 +92,11 @@ public class BlockDimensionDeco extends Block {
 	}
 
 	@Override
+	public int damageDropped(int meta) {
+		return meta;
+	}
+
+	@Override
 	public final boolean canRenderInPass(int pass) {
 		DimensionDecoRenderer.renderPass = pass;
 		return pass <= 1;
@@ -99,7 +105,7 @@ public class BlockDimensionDeco extends Block {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
-		return Types.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
+		return DimDecoTypes.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
 	}
 
 

@@ -46,6 +46,8 @@ import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
+import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
+import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
@@ -475,7 +477,11 @@ public class ChromatiPackets implements IPacketHandler {
 			case NEWASPECTNODE:
 				NodeReceiverWrapper.triggerNewAspectFX(world, x, y, z, Aspect.getAspect(stringdata));
 				break;
-			default:
+			case SPLASHGUNEND:
+				EntitySplashGunShot.doDamagingParticles(data[0]);
+				break;
+			case VACUUMGUNEND:
+				EntityVacuum.doDestroyParticles(data[0]);
 				break;
 			}
 		}

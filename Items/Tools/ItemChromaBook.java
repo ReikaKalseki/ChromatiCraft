@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -48,12 +49,14 @@ public class ItemChromaBook extends ItemChromaTool {
 			list.appendTag(new NBTTagString(r.name()));
 		}
 		is.stackTagCompound.setTag("pages", list);
+		is.stackTagCompound.setBoolean("creative", true);
 		li.add(is);
 	}
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (ep.isSneaking()) {
+			if (!this.isCreative(is))
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, 0, 0, 0);
 		}
 		else {
@@ -63,6 +66,20 @@ public class ItemChromaBook extends ItemChromaTool {
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKNAV.ordinal(), world, 0, 0, 0);
 		}
 		return is;
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		if (this.isCreative(is)) {
+			li.add("Creative Spawned");
+		}
+		else {
+			li.add(String.format("Has %d of %d pages.", this.getNumberPages(is), ChromaResearch.getAllNonParents().size()));
+		}
+	}
+
+	private static boolean isCreative(ItemStack is) {
+		return ChromaItems.HELP.matchWith(is) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("creative");
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -101,6 +118,8 @@ public class ItemChromaBook extends ItemChromaTool {
 	}
 
 	public static boolean hasPage(ItemStack is, ChromaResearch b) {
+		if (isCreative(is))
+			return true;
 		if (b == ChromaResearch.START)
 			return true;
 		if (b == ChromaResearch.PACKCHANGES)
@@ -113,7 +132,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	@Override
 	public int getItemSpriteIndex(ItemStack is) {
 		int base = super.getItemSpriteIndex(is);
-		return this.hasAllPages(is) ? base+1 : base;
+		return this.isCreative(is) || this.hasAllPages(is) ? base+1 : base;
 	}
 
 	private static boolean hasAllPages(ItemStack is) {

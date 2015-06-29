@@ -47,8 +47,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityChainGunShot extends EntityFireball {
 
-	public static final int MAX_IMPACTS = 4;
-
 	private int impacts = Math.max(2, Math.min(12, rand.nextInt(6)+rand.nextInt(6))); //roughly normal distribution
 
 	private EntityPlayer firingPlayer;
@@ -148,6 +146,7 @@ public class EntityChainGunShot extends EntityFireball {
 					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.CHAINGUNHURT.ordinal(), pt, e.getEntityId());
 					int dmg = firingPlayer.isPotionActive(Potion.damageBoost) ? 20 : 10;
 					e.attackEntityFrom(DamageSource.causePlayerDamage(firingPlayer).setProjectile(), dmg);
+					e.hurtResistantTime = 0;
 				}
 			}
 			else if (mov != null && mov.typeOfHit == MovingObjectType.BLOCK && immunityTicks == 0) {

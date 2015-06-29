@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -52,6 +53,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -148,7 +150,6 @@ public enum ChromaResearch implements ProgressElement {
 	TRANSITION(			ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
 	INVLINK(			ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
 	PENDANT(			ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
-	VACUUMGUN(			ChromaItems.VACUUMGUN, 		ResearchLevel.MULTICRAFT),
 	LENS(				ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
 	STORAGE(			ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
 	LINKTOOL(			ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
@@ -167,6 +168,8 @@ public enum ChromaResearch implements ProgressElement {
 	BULKMOVER(			ChromaItems.BULKMOVER,		ResearchLevel.RUNECRAFT),
 	CHAINGUN(			ChromaItems.CHAINGUN,		ResearchLevel.MULTICRAFT),
 	HOVER(				ChromaItems.HOVERWAND,		ResearchLevel.PYLONCRAFT),
+	SPLASH(				ChromaItems.SPLASHGUN,		ResearchLevel.MULTICRAFT),
+	VACUUM(				ChromaItems.VACUUMGUN,		ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -237,6 +240,7 @@ public enum ChromaResearch implements ProgressElement {
 	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
 	private static final HashMap<String, ChromaResearch> byName = new HashMap();
+	private static final IdentityHashMap<Object, ChromaResearch> duplicateChecker = new IdentityHashMap();
 
 	private ChromaResearch() {
 		this("");
@@ -843,6 +847,21 @@ public enum ChromaResearch implements ProgressElement {
 		return "Something new to investigate";//"A new item to investigate";
 	}
 
+	private Object getIDObject() {
+		if (machine != null)
+			return machine;
+		else if (block != null)
+			return block;
+		else if (item != null)
+			return item;
+		else if (ability != null)
+			return ability;
+		else if (struct != null)
+			return struct;
+		else
+			return this.ordinal(); //will never conflict
+	}
+
 	static {
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
@@ -855,6 +874,10 @@ public enum ChromaResearch implements ProgressElement {
 				else
 					nonParents.add(r);
 			}
+			ChromaResearch pre = duplicateChecker.get(r.getIDObject());
+			if (pre != null)
+				throw new RegistrationException(ChromatiCraft.instance, "Two research fragments have the same block/item/ability/etc: "+r+" & "+pre);
+			duplicateChecker.put(r.getIDObject(), r);
 			ChromaResearchManager.instance.register(r);
 		}
 	}

@@ -60,4 +60,25 @@
 	<oresilk>
 		You have mechanisms to process ore and increase your rate of return, from half a dozen ways of doubling it to ways of increasing that output even further, but this is rather unhelpful if the ore blocks themselves are unobtainable to you and the ore taunts you by dropping its contents instead. You could of course put Silk Touch on your tool, but enchanting is a random and often frustrating endeavor; a better idea would be to make the tool itself carve ore cleanly from the ground.
 	</oresilk>
+	<bulkmover>
+		You often find yourself scrambling to load many items into a chest that feeds into a machine. The amount of work involved is tedious and frustrating, and a way to expedite the process would be most convenient. The item mover can do just that; it can move large quantities - up to ten thousand - of any one item at a time from one inventory (or digital storage system) to another.
+	</bulkmover>
+	<chaingun>
+		Swords and arrows are useful to a point, but they quickly become insufficient if the target creatures are spread over too large an area. Fortunately, the chain gun can fire a projectile that bounces between multiple creatures, even across significant distances.
+	</chaingun>
+	<splash>
+		For groups of tightly packed mobs, the usual strategy is to wildly flail a sword around you, but this is both rather amateur and ineffective. A weapon that dealt splash damage would be ideal...
+	</splash>
+	<vacuum>
+		Though purely utilitarian ways of killing hostile mobs get the job done, they lack a certain entertainment value. With that in mind, you devised a weapon that creates a rift in the fabric of space, pulling all the creatures into it from a substantial radius. Even better, it seems to rip the blocks out of the ground as well.
+	</vacuum>
+	<endercrys>
+		You recall needing eight of those mysterious pulsing crystals from the eldritch island, but attempting to interact with them blew up in your face...literally. You need a more delicate method of picking them up and storing them.
+	</endercrys>
+	<hover>
+		Water buckets, as a method of breaking fall damage, are somewhat effective, but they require agile reflexes. As a way of climbing a wall, they are slow. Perhaps some sort of magical buffer would do a better job...
+	</hover>
+	<growth>
+		Crops take forever to grow. Sure, wheat and that plant with the oily black seeds seem to grow fast enough, but things like sugar cane take hours, and those crops you got to (somehow) drop mob drops and bits of ore take so long you wonder if farming them is even worth the time. You know that Kijani energy forms the basis of natural things, including plants; perhaps a blast of that may expedite the process.
+	</growth>
 </tools>

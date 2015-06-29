@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
+import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -115,7 +116,8 @@ public enum ChromaItems implements ItemEnum {
 	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
 	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class),
 	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class),
-	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class);
+	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class),
+	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
 	;
 
 	private final int index;
@@ -253,7 +255,7 @@ public enum ChromaItems implements ItemEnum {
 			String pre = meta == 1 ? "Charged " : "Inert ";
 			return pre+this.getBasicName();
 		case DIMGEN:
-			return BlockDimensionDeco.Types.list[meta].name();
+			return BlockDimensionDeco.DimDecoTypes.list[meta].name();
 		default:
 			break;
 		}
@@ -335,7 +337,7 @@ public enum ChromaItems implements ItemEnum {
 		case ORESILK:
 			return 180;
 		case DIMGEN:
-			return BlockDimensionDeco.Types.list.length;
+			return BlockDimensionDeco.DimDecoTypes.list.length;
 		default:
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

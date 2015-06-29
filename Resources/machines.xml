@@ -308,22 +308,22 @@
 			
 		</note>
 	</automator>
-	<name>
+	<biomepainter>
 		<desc>
-			
+			Too often you find yourself in need of tweaking the climate around you, often because some task you are working on requires specific temperatures or humidities (those bees you were working on proved particularly inflexible). It is not too much of a stretch to imagine that you might be able to use crystal energy to accomplish that task, and on top of that make it as easy as painting on a canvas.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
-	<name>
+	</biomepainter>
+	<medistributor>
 		<desc>
-			
+			That digitial storage system of yours is unmatched in its convenience, except for one thing. Though it has a special device for pumping out items, and another for using internal item buffers to control a redstone signal, doing this with multiple items quickly becomes infeasible. To that end, you have designed an assembly that can function as several of these in parallel, allowing you to always maintain certain item levels in the system.
 		</desc>
 		<note>
 			
 		</note>
-	</name>
+	</medistributor>
 	<name>
 		<desc>
 			

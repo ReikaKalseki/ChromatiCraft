@@ -53,6 +53,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
+		this.syncAllData(false);
 	}
 
 	public int getViscosity() {

@@ -70,7 +70,9 @@ public enum ChromaPackets {
 	HURTNODE(),
 	CHARGINGNODE(),
 	NEWASPECTNODE(17),
-	HEALNODE();
+	HEALNODE(),
+	SPLASHGUNEND(1),
+	VACUUMGUNEND(1);
 
 	public final int numInts;
 	public final PacketTypes type;

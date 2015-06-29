@@ -11,18 +11,25 @@ package Reika.ChromatiCraft.Block.Dimension;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,17 +38,17 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	private static final IIcon[][] icons = new IIcon[2][16];
 
-	public static enum Types {
+	public static enum DimDecoTileTypes implements DecoType {
 		FIREJET();
 
-		public static Types[] list = values();
+		public static DimDecoTileTypes[] list = values();
 
 		public ItemStack getItem() {
 			return new ItemStack(ChromaBlocks.DIMGENTILE.getBlockInstance(), 1, this.ordinal());
 		}
 
 		public boolean hasBlockRender() {
-			return true;
+			return false;
 		}
 
 		public IIcon getOverlay() {
@@ -67,12 +74,22 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	public void updateTick(World world, int x, int y, int z, Random rand) {
 		DimensionDecoTile te = (DimensionDecoTile)world.getTileEntity(x, y, z);
 		te.activate();
-		world.scheduleBlockUpdate(x, y, z, this, this.tickRate(world)+rand.nextInt(1200));
+		world.scheduleBlockUpdate(x, y, z, this, this.tickRate(world)+rand.nextInt(1+this.tickRate(world)));
+	}
+
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z) {
+		world.scheduleBlockUpdate(x, y, z, this, 1);
+	}
+
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block id) {
+		world.scheduleBlockUpdate(x, y, z, this, 1);
 	}
 
 	@Override
 	public int tickRate(World world) {
-		return 800;
+		return 400;
 	}
 
 	@Override
@@ -91,7 +108,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
-		return Types.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
+		return DimDecoTileTypes.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
 	}
 
 	public static class DimensionDecoTile extends TileEntity {
@@ -106,6 +123,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 		public void activate() {
 			tick = 100+rand.nextInt(1200);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "fire.ignite");
 		}
 
 		@Override
@@ -113,13 +132,13 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			if (tick > 0) {
 				int meta = this.getBlockMetadata();
 
-				switch(Types.list[meta]) {
+				switch(DimDecoTileTypes.list[meta]) {
 				case FIREJET:
 					break;
 				}
 
 				if (worldObj.isRemote)
-					this.spawnParticles(Types.list[meta]);
+					this.spawnParticles(DimDecoTileTypes.list[meta]);
 
 				tick--;
 			}
@@ -127,7 +146,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void spawnParticles(Types t) {
+		private void spawnParticles(DimDecoTileTypes t) {
 			switch(t) {
 			case FIREJET: {
 				if (worldObj.rand.nextBoolean()) {
@@ -141,6 +160,31 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 				break;
 			}
 			}
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+			NBT.setInteger("tick", tick);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+			tick = NBT.getInteger("tick");
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
 		}
 
 	}

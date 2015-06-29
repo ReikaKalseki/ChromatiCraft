@@ -42,6 +42,11 @@ public class EntitySparkleFX extends EntityFX {
 		return this;
 	}
 
+	public EntitySparkleFX setGravity(float g) {
+		particleGravity = g;
+		return this;
+	}
+
 	public EntitySparkleFX setColor(int color) {
 		particleRed = ReikaColorAPI.getRed(color)/255F;
 		particleGreen = ReikaColorAPI.getGreen(color)/255F;
