@@ -275,7 +275,9 @@ public final class ChromaResearchManager {
 		Collection<ChromaResearch> c = new HashSet();
 		NBTTagList li = this.getNBTFragments(ep);
 		for (Object o : li.tagList) {
-			c.add(ChromaResearch.valueOf(((NBTTagString)o).func_150285_a_()));
+			ChromaResearch r = ChromaResearch.getByName(((NBTTagString)o).func_150285_a_());
+			if (r != null) //may be null if a key is removed
+				c.add(r);
 		}
 		return c;
 	}

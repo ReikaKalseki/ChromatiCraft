@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
@@ -482,6 +483,9 @@ public class ChromatiPackets implements IPacketHandler {
 				break;
 			case VACUUMGUNEND:
 				EntityVacuum.doDestroyParticles(data[0]);
+				break;
+			case RFSEND:
+				((TileEntityRFDistributor)tile).sendRFToClient(data[0], data[1], data[2], data[3]);
 				break;
 			}
 		}

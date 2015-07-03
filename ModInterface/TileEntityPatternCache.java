@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -28,6 +29,7 @@ import appeng.api.util.AECableType;
 
 import com.google.common.collect.ImmutableSet;
 
+@Strippable(value={"appeng.api.networking.IGridHost", "appeng.api.networking.crafting.ICraftingProvider", "appeng.api.networking.crafting.ICraftingRequester"})
 public class TileEntityPatternCache extends InventoriedChromaticBase implements IGridHost, ICraftingProvider, ICraftingRequester {
 
 	public static final int SIZE = 72;

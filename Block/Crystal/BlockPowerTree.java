@@ -76,17 +76,13 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 	}
 
 	private TileEntityPowerTree getTile(World world, int x, int y, int z) {
-		ForgeDirection dir = TileEntityPowerTree.getDirection(this.getColor(world, x, y, z));
-		for (int i = 1; i < 32; i++) {
-			int dx = x+dir.offsetX*i;
-			int dy = y+dir.offsetY*i;
-			int dz = z+dir.offsetZ*i;
-			ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
-			if (c == ChromaTiles.POWERTREE) {
-				return (TileEntityPowerTree)world.getTileEntity(dx, dy, dz);
-			}
-			else if (world.getBlock(dx, dy, dz) != this)
-				return null;
+		TileEntityPowerTreeAux te = (TileEntityPowerTreeAux)world.getTileEntity(x, y, z);
+		int dx = te.originX;
+		int dy = te.originY;
+		int dz = te.originZ;
+		ChromaTiles c = ChromaTiles.getTile(world, dx, dy, dz);
+		if (c == ChromaTiles.POWERTREE) {
+			return (TileEntityPowerTree)world.getTileEntity(dx, dy, dz);
 		}
 		return null;
 	}

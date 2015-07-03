@@ -33,9 +33,9 @@
 	<dimension>
 		A fiery nightmare. An eldritch island ruled by a giant dragon. This world you have come to call your home is far from the only one in existence, but each of the others is alien and hostile. While they have proved bountiful with resources you no doubt need, they are inhospitable and useless aside from their raw materials. Another world must be the key, a world where the different colors of crystal energy flow naturally, unbounded by the corrupting influence of other forces. Maybe there will be secrets here, too.
 	</dimension>
-	<name>
-		
-	</name>
+	<usingrunes>
+		Some of the many recipes you can perform on the casting table require using runes. Keeping a shorthand list of all the runes you need to place is likely to be useful.
+	</usingrunes>
 	<name>
 		
 	</name>

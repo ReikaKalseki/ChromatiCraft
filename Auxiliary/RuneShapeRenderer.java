@@ -46,6 +46,11 @@ public class RuneShapeRenderer {
 	}
 
 	public void render(RuneViewer s, int midx, int midy) {
+		int y = s.getMinY()+(int)((System.currentTimeMillis()/5000)%s.getSizeY());
+		this.render(s, midx, midy, y);
+	}
+
+	public void render(RuneViewer s, int midx, int midy, int y) {
 		Map<Coordinate, CrystalElement> map = s.getRunes();
 		GL11.glPushMatrix();
 
@@ -75,7 +80,6 @@ public class RuneShapeRenderer {
 		int w = 16;
 		int dx = midx-w/2;
 		int dy = midy-w/2;
-		int y = s.getMinY()+(int)((System.currentTimeMillis()/5000)%s.getSizeY());
 		v5.startDrawingQuads();
 		for (int x = -5; x <= 5; x++) {
 			for (int z = -5; z <= 5; z++) {

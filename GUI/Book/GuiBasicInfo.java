@@ -11,22 +11,35 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.ChromatiCraft.Auxiliary.RuneShapeRenderer;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Magic.RuneShape;
+import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -37,18 +50,84 @@ public class GuiBasicInfo extends GuiBookSection {
 
 	private Collection<PylonParticle> particles = new ArrayList();
 
+	private RuneViewer view;
+	private int modifier;
+
 	public GuiBasicInfo(EntityPlayer ep, ChromaResearch r) {
 		super(ep, r, 256, 220, false);
+
+		if (r == ChromaResearch.USINGRUNES) {
+			view = this.getAllVisibleRunes();
+		}
+	}
+
+	private RuneViewer getAllVisibleRunes() {
+		Map<Coordinate, CrystalElement> data = new HashMap();
+		Collection<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipes();
+		for (CastingRecipe cr : li) {
+			if (cr instanceof TempleCastingRecipe) {
+				ChromaResearch r = cr.getFragment();
+				if (r == null || ChromaResearchManager.instance.playerHasFragment(player, r)) {
+					TempleCastingRecipe t = (TempleCastingRecipe)cr;
+					Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
+					data.putAll(map);
+				}
+			}
+		}
+		RuneShape rs = new RuneShape(data);
+		return rs.getView();
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		String file = "Textures/GUIs/Handbook/buttons.png";
+
+		if (page == ChromaResearch.USINGRUNES && subpage == 1 && view.getSizeY() > 1) {
+			buttonList.add(new CustomSoundImagedGuiButton(3, j+230, k+75, 12, 10, 100, 6, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(2, j+230, k+85, 12, 10, 112, 6, file, ChromatiCraft.class, this));
+		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if (System.currentTimeMillis()-buttoncooldown >= 50) {
+			if (button.id == 2 && modifier > 0) {
+				modifier--;
+			}
+			else if (button.id == 3) {
+				if (modifier < view.getSizeY()-1)
+					modifier++;
+			}
+			else {
+				modifier = 0;
+			}
+		}
+		//renderq = 22.5F;
+		super.actionPerformed(button);
+		this.initGui();
 	}
 
 	@Override
 	protected int getMaxSubpage() {
-		return page == ChromaResearch.ELEMENTS ? CrystalElement.elements.length : 0;
+		if (this.isElementPage())
+			return CrystalElement.elements.length;
+		else if (page == ChromaResearch.USINGRUNES)
+			return 1;
+		return 0;
 	}
 
 	@Override
 	protected PageType getGuiLayout() {
-		return this.isElementPage() ? PageType.ELEMENT : PageType.PLAIN;
+		if (this.isElementPage())
+			return PageType.ELEMENT;
+		else if (page == ChromaResearch.USINGRUNES && subpage == 1)
+			return PageType.RUNES;
+		return PageType.PLAIN;
 	}
 
 	@Override
@@ -71,6 +150,13 @@ public class GuiBasicInfo extends GuiBookSection {
 		else if (page == ChromaResearch.PYLONS) {
 			this.renderPylon(posX, posY);
 		}
+		else if (page == ChromaResearch.USINGRUNES && subpage == 1) {
+			this.renderRunes(posX, posY);
+		}
+	}
+
+	private void renderRunes(int posX, int posY) {
+		RuneShapeRenderer.instance.render(view, posX+xSize/2, posY+ySize/2+8, modifier+view.getMinY());
 	}
 
 	private void renderPylon(int posX, int posY) {

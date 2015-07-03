@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
@@ -159,7 +160,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		SHIFTMAZE(ShiftMazeGenerator.class),
 		LOCKS(LocksGenerator.class),
 		MUSIC(MusicPuzzleGenerator.class),
-		NONEUCLID(NonEuclideanGenerator.class);
+		NONEUCLID(NonEuclideanGenerator.class),
+		GOL(GOLGenerator.class);
 
 		private final Class generatorClass;
 		private DimensionStructureGenerator generator;

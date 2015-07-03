@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.Particle;
 
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -29,6 +30,7 @@ public class EntityBlurFX extends EntityFX {
 	private float cyclescale;
 	private boolean noSlow = false;
 	private boolean rapidExpand = false;
+	private AxisAlignedBB bounds = null;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -90,6 +92,11 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public final EntityBlurFX bound(AxisAlignedBB box) {
+		bounds = box;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -122,6 +129,18 @@ public class EntityBlurFX extends EntityFX {
 			particleRed = e.getRed()/255F;
 			particleGreen = e.getGreen()/255F;
 			particleBlue = e.getBlue()/255F;
+		}
+
+		if (bounds != null) {
+			if ((posX <= bounds.minX && motionX < 0) || (posX >= bounds.maxX && motionX > 0)) {
+				motionX = -motionX;
+			}
+			if ((posY <= bounds.minY && motionY < 0) || (posY >= bounds.maxY && motionY > 0)) {
+				motionY = -motionY;
+			}
+			if ((posZ <= bounds.minZ && motionZ < 0) || (posZ >= bounds.maxZ && motionZ > 0)) {
+				motionZ = -motionZ;
+			}
 		}
 	}
 

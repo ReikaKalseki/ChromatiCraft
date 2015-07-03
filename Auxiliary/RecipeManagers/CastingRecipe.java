@@ -25,6 +25,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
@@ -40,6 +41,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -248,6 +250,7 @@ public class CastingRecipe {
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		protected static final BlockArray runeRing = new BlockArray();
+		private static final HashMap<Coordinate, CrystalElement> allRunes = new HashMap();
 
 		static {
 			runeRing.addBlockCoordinate(-2, -1, -2);
@@ -293,8 +296,19 @@ public class CastingRecipe {
 		}
 
 		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
+			this.verifyRune(color, rx, ry, rz);
 			runes.addRune(color, rx, ry, rz);
 			return this;
+		}
+
+		private void verifyRune(CrystalElement color, int x, int y, int z) {
+			Coordinate c = new Coordinate(x, y, z);
+			CrystalElement e = allRunes.get(c);
+			if (e != null) {
+				if (e != color)
+					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+e+" & "+color);
+			}
+			allRunes.put(c, color);
 		}
 
 		protected CastingRecipe addRunes(RuneViewer view) {
@@ -331,6 +345,10 @@ public class CastingRecipe {
 				tag.addValueToColor(e, 1);
 			}
 			return tag;
+		}
+
+		public static RuneViewer getAllRegisteredRunes() {
+			return new RuneShape(allRunes).getView();
 		}
 
 	}

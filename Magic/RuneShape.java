@@ -30,6 +30,12 @@ public class RuneShape {
 
 	}
 
+	public RuneShape(Map<Coordinate, CrystalElement> map) {
+		for (Coordinate c : map.keySet()) {
+			this.addRune(map.get(c), c.xCoord, c.yCoord, c.zCoord);
+		}
+	}
+
 	public void addRune(CrystalElement e, int x, int y, int z) {
 		runes.put(new Coordinate(x, y, z), e);
 		blocks.addBlockCoordinate(x, y, z);

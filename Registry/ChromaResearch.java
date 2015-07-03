@@ -63,6 +63,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModRegistry.PowerTypes;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
@@ -80,6 +81,7 @@ public enum ChromaResearch implements ProgressElement {
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
+	USINGRUNES("Crafting With Runes",	ChromaBlocks.RUNE.getStackOfMetadata(1),				ResearchLevel.RUNECRAFT, 	ProgressStage.RUNEUSE),
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
@@ -124,6 +126,8 @@ public enum ChromaResearch implements ProgressElement {
 	FARMER(			ChromaTiles.FARMER,			ResearchLevel.PYLONCRAFT),
 	AUTO(			ChromaTiles.AUTOMATOR,		ResearchLevel.ENDGAME),
 	MEDISTRIB(		ChromaTiles.MEDISTRIBUTOR,	ResearchLevel.MULTICRAFT),
+	WINDOW(			ChromaTiles.WINDOW,			ResearchLevel.MULTICRAFT),
+	RFDISTRIB(		ChromaTiles.RFDISTRIBUTOR,	ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -169,7 +173,7 @@ public enum ChromaResearch implements ProgressElement {
 	CHAINGUN(			ChromaItems.CHAINGUN,		ResearchLevel.MULTICRAFT),
 	HOVER(				ChromaItems.HOVERWAND,		ResearchLevel.PYLONCRAFT),
 	SPLASH(				ChromaItems.SPLASHGUN,		ResearchLevel.MULTICRAFT),
-	VACUUM(				ChromaItems.VACUUMGUN,		ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
+	VACUUMGUN(			ChromaItems.VACUUMGUN,		ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -838,6 +842,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == BEES)
 			return !ModList.FORESTRY.isLoaded();
+		if (this == RFDISTRIB)
+			return !PowerTypes.RF.exists();
 		return false;
 	}
 

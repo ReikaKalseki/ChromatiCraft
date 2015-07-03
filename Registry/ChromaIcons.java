@@ -55,7 +55,9 @@ public enum ChromaIcons {
 	ROSES("roses"),
 	BASICFADE("basicfade"),
 	BASICFADE_FAST("basicfade_f"),
-	FRAME("frame");
+	FRAME("frame"),
+	//PINWHEEL("pinwheel"),
+	LATTICE("lattice");
 
 	private IIcon icon;
 	private final String iconName;

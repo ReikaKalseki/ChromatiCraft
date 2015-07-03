@@ -42,6 +42,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
+	private static final EnumMap<CrystalElement, Integer> yOffsets = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, ArrayList<Coordinate>> locations = new EnumMap(CrystalElement.class);
 	private static final ArrayList<Integer> directions = new ArrayList();
 
@@ -57,22 +58,22 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public static final int POWER = 3;
 
 	static {
-		origins.put(CrystalElement.WHITE, new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
-		origins.put(CrystalElement.BLACK, new BlockVector(ForgeDirection.NORTH, 1, -9, -2));
-		origins.put(CrystalElement.RED, new BlockVector(ForgeDirection.EAST, 2, -9, 0));
-		origins.put(CrystalElement.GREEN, new BlockVector(ForgeDirection.SOUTH, 0, -5, 1));
-		origins.put(CrystalElement.BROWN, new BlockVector(ForgeDirection.WEST, -1, -7, -1));
-		origins.put(CrystalElement.BLUE, new BlockVector(ForgeDirection.EAST, 2, -3, 0));
-		origins.put(CrystalElement.PURPLE, new BlockVector(ForgeDirection.EAST, 2, -5, 0));
-		origins.put(CrystalElement.CYAN, new BlockVector(ForgeDirection.SOUTH, 0, -3, 1));
-		origins.put(CrystalElement.LIGHTGRAY, new BlockVector(ForgeDirection.NORTH, 1, -5, -2));
-		origins.put(CrystalElement.GRAY, new BlockVector(ForgeDirection.NORTH, 1, -7, -2));
-		origins.put(CrystalElement.PINK, new BlockVector(ForgeDirection.WEST, -1, -5, -1));
-		origins.put(CrystalElement.LIME, new BlockVector(ForgeDirection.SOUTH, 0, -7, 1));
-		origins.put(CrystalElement.YELLOW, new BlockVector(ForgeDirection.SOUTH, 0, -9, 1));
-		origins.put(CrystalElement.LIGHTBLUE, new BlockVector(ForgeDirection.WEST, -1, -3, -1));
-		origins.put(CrystalElement.MAGENTA, new BlockVector(ForgeDirection.EAST, 2, -7, 0));
-		origins.put(CrystalElement.ORANGE, new BlockVector(ForgeDirection.WEST, -1, -9, -1));
+		addOrigin(CrystalElement.WHITE, new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
+		addOrigin(CrystalElement.BLACK, new BlockVector(ForgeDirection.NORTH, 1, -9, -2));
+		addOrigin(CrystalElement.RED, new BlockVector(ForgeDirection.EAST, 2, -9, 0));
+		addOrigin(CrystalElement.GREEN, new BlockVector(ForgeDirection.SOUTH, 0, -5, 1));
+		addOrigin(CrystalElement.BROWN, new BlockVector(ForgeDirection.WEST, -1, -7, -1));
+		addOrigin(CrystalElement.BLUE, new BlockVector(ForgeDirection.EAST, 2, -3, 0));
+		addOrigin(CrystalElement.PURPLE, new BlockVector(ForgeDirection.EAST, 2, -5, 0));
+		addOrigin(CrystalElement.CYAN, new BlockVector(ForgeDirection.SOUTH, 0, -3, 1));
+		addOrigin(CrystalElement.LIGHTGRAY, new BlockVector(ForgeDirection.NORTH, 1, -5, -2));
+		addOrigin(CrystalElement.GRAY, new BlockVector(ForgeDirection.NORTH, 1, -7, -2));
+		addOrigin(CrystalElement.PINK, new BlockVector(ForgeDirection.WEST, -1, -5, -1));
+		addOrigin(CrystalElement.LIME, new BlockVector(ForgeDirection.SOUTH, 0, -7, 1));
+		addOrigin(CrystalElement.YELLOW, new BlockVector(ForgeDirection.SOUTH, 0, -9, 1));
+		addOrigin(CrystalElement.LIGHTBLUE, new BlockVector(ForgeDirection.WEST, -1, -3, -1));
+		addOrigin(CrystalElement.MAGENTA, new BlockVector(ForgeDirection.EAST, 2, -7, 0));
+		addOrigin(CrystalElement.ORANGE, new BlockVector(ForgeDirection.WEST, -1, -9, -1));
 
 		directions.add(0);
 		directions.add(0);
@@ -189,6 +190,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		}
 	}
 
+	private static void addOrigin(CrystalElement e, BlockVector vec) {
+		origins.put(e, vec);
+		yOffsets.put(e, vec.yCoord);
+	}
+
 	private static void addLeaf(CrystalElement e, int x, int y, int z) {
 		ArrayList<Coordinate> li = locations.get(e);
 		if (li == null) {
@@ -202,12 +208,16 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		return origins.get(e).direction;
 	}
 
+	public static int getYOffset(CrystalElement e) {
+		return yOffsets.get(e);
+	}
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (hasMultiblock && !world.isRemote && this.canConduct()) {
-			if (rand.nextInt(150) == 0)
+		if (!world.isRemote && this.canConduct()) {
+			if (rand.nextInt(150) == 0 || true)
 				this.grow();
 
 			if (rand.nextInt(100) == 0) {
@@ -231,7 +241,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	public void validateStructure() {
 		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord);
-		boolean flag = f.matchInWorld();
+		boolean flag = true;//f.matchInWorld();
 		if (!flag && hasMultiblock) {
 			this.onBreakMultiblock();
 		}

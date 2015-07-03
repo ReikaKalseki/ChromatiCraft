@@ -60,6 +60,8 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
@@ -150,7 +152,9 @@ public enum ChromaBlocks implements BlockEnum {
 	GLOWLEAF(BlockLightedLeaf.class,											"chroma.glowleaf"),
 	GLOWLOG(BlockLightedLog.class,												"chroma.glowlog"),
 	GLOWSAPLING(BlockLightedSapling.class,										"chroma.glowsapling"),
-	HOVER(BlockHoverBlock.class,				ItemBlockHover.class,			"chroma.hover");
+	HOVER(BlockHoverBlock.class,				ItemBlockHover.class,			"chroma.hover"),
+	GOL(BlockGOLTile.class,														"chroma.gol"),
+	GOLCONTROL(BlockGOLController.class,										"chroma.golcontrol");
 
 	private Class blockClass;
 	private String blockName;
@@ -350,6 +354,8 @@ public enum ChromaBlocks implements BlockEnum {
 		case GLOWLEAF:
 		case GLOWSAPLING:
 		case HOVER:
+		case GOL:
+		case GOLCONTROL:
 			return false;
 		default:
 			return true;

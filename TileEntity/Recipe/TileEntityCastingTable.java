@@ -130,7 +130,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
+		//ChromaStructures.getCastingLevelOne(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
 			this.addXP(3434);

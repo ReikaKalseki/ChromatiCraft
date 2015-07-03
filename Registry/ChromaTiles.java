@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -126,7 +127,8 @@ public enum ChromaTiles {
 	AUTOMATOR("chroma.automator",		ChromaBlocks.TILECRYSTALNONCUBE, TileEntityCastingAuto.class,	2, "RenderCastingAuto"),
 	DISPLAY("chroma.display",			ChromaBlocks.TILECRYSTAL,	TileEntityDisplayPoint.class,		1),
 	MEDISTRIBUTOR("chroma.medistrib",	ChromaBlocks.TILEMODELLED2,	TileEntityMEDistributor.class,		5, "RenderMEDistributor", ModList.APPENG),
-	WINDOW("chroma.window",				ChromaBlocks.TILEMODELLED2, TileEntityTransportWindow.class,	6, "RenderTransportWindow");
+	WINDOW("chroma.window",				ChromaBlocks.TILEMODELLED2, TileEntityTransportWindow.class,	6, "RenderTransportWindow"),
+	RFDISTRIBUTOR("chroma.rfdistrib",	ChromaBlocks.TILEMODELLED2, TileEntityRFDistributor.class,		7, "RenderRFDistributor");
 
 	private final Class tile;
 	private final String name;
@@ -199,6 +201,7 @@ public enum ChromaTiles {
 		case AURAPOINT:
 		case AUTOMATOR:
 		case MEDISTRIBUTOR:
+		case RFDISTRIBUTOR:
 			//case TANK:
 			//case ITEMRIFT:
 			return true;
