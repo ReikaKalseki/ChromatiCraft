@@ -48,7 +48,6 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
@@ -315,7 +314,7 @@ public class ChromatiPackets implements IPacketHandler {
 			case SHARDBOOST: {
 				Entity e = world.getEntityByID(data[0]);
 				if (e instanceof EntityItem) {
-					ItemCrystalShard.spawnEffects((EntityItem)e);
+					ChromaFX.doShardBoostingFX((EntityItem)e);
 				}
 				break;
 			}/*

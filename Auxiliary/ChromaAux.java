@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -144,7 +145,7 @@ public class ChromaAux {
 	}
 
 	public static void spawnInteractionBallLightning(World world, int x, int y, int z, CrystalElement e) {
-		if (!world.isRemote) {
+		if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState()) {
 			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 16);
 			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 16);
 			double dy = world.getTopSolidOrLiquidBlock(dx, dz)+ReikaRandomHelper.getSafeRandomInt(8);//ReikaRandomHelper.getRandomPlusMinus(y+0.5, 16);

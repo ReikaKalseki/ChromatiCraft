@@ -43,6 +43,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	public static final int MAXCAPACITY = 1000000000;
 
 	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", MAXCAPACITY);
+	private int scheduledUpdate = 0;
+	public static final int MAX_UPDATE_RATE = 4;
 
 	private final BlockArray blocks = new BlockArray();
 	private int size = 1;
@@ -53,7 +55,6 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		//ReikaJavaLibrary.pConsole(this.getCapacity()/1000+":"+tank);
-		this.syncAllData(false);
 	}
 
 	public int getViscosity() {
@@ -71,14 +72,25 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		this.initCoords(world, x, y, z);
-		this.update();
+		this.doUpdate();
+		if (scheduledUpdate > 0) {
+			scheduledUpdate--;
+			if (scheduledUpdate == 0)
+				this.doUpdate();
+		}
 	}
 
-	private void update() {
+	private void doUpdate() {
 		fluidType = tank.getActualFluid();
 		for (int i = 0; i < blocks.getSize(); i++) {
 			Coordinate c = blocks.getNthBlock(i);
-			worldObj.markBlockForUpdate(c.xCoord, c.yCoord, c.zCoord);
+			c.triggerBlockUpdate(worldObj, false);
+		}
+	}
+
+	private void scheduleUpdate() {
+		if (scheduledUpdate == 0) {
+			scheduledUpdate = MAX_UPDATE_RATE;
 		}
 	}
 
@@ -305,7 +317,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	@Override
 	public void onTankChangeFluidType(String tank, Fluid from, Fluid to) {
-		this.update();
+		this.scheduleUpdate();
 	}
 
 	public boolean isEmpty() {

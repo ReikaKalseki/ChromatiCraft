@@ -125,6 +125,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
+import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
@@ -156,7 +157,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 
-@Mod( modid = "ChromatiCraft", name="ChromatiCraft", version="Alpha", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
+@Mod( modid = "ChromatiCraft", name="ChromatiCraft", certificateFingerprint = "@GET_FINGERPRINT@", dependencies="required-after:DragonAPI")
 
 public class ChromatiCraft extends DragonAPIMod {
 	public static final String packetChannel = "ChromaData";
@@ -323,6 +324,8 @@ public class ChromatiCraft extends DragonAPIMod {
 			proxy.addArmorRenders();
 			proxy.registerRenderers();
 		}
+
+		ItemStackRepository.instance.registerClass(this, ChromaStacks.class);
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);

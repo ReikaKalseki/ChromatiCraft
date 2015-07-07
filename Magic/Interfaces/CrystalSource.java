@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
+import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalSource extends CrystalTransmitter, LumenTile {
@@ -20,5 +21,9 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 	public int getSourcePriority();
 
 	public boolean canTransmitTo(CrystalReceiver te);
+
+	public void onUsedBy(EntityPlayer ep, CrystalElement e);
+
+	public boolean playerCanUse(EntityPlayer ep);
 
 }

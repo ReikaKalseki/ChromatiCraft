@@ -92,4 +92,14 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
 	}
 
+	@Override
+	public void onUsedBy(EntityPlayer ep, CrystalElement e) {
+
+	}
+
+	@Override
+	public boolean playerCanUse(EntityPlayer ep) {
+		return ep.capabilities.isCreativeMode;
+	}
+
 }

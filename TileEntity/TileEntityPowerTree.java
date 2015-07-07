@@ -15,25 +15,31 @@ import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -217,7 +223,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.updateEntity(world, x, y, z, meta);
 
 		if (!world.isRemote && this.canConduct()) {
-			if (rand.nextInt(150) == 0 || true)
+			if (rand.nextInt(150) == 0)
 				this.grow();
 
 			if (rand.nextInt(100) == 0) {
@@ -241,7 +247,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	public void validateStructure() {
 		FilledBlockArray f = ChromaStructures.getTreeStructure(worldObj, xCoord, yCoord, zCoord);
-		boolean flag = true;//f.matchInWorld();
+		boolean flag = f.matchInWorld();
 		if (!flag && hasMultiblock) {
 			this.onBreakMultiblock();
 		}
@@ -526,6 +532,38 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public boolean canTransmitTo(CrystalReceiver te) {
 		return !(te instanceof TileEntityPowerTree);
+	}
+
+	@Override
+	public void onUsedBy(EntityPlayer ep, CrystalElement e) {
+		World world = worldObj;
+		Coordinate c = locations.get(e).get(rand.nextInt(locations.get(e).size()));
+		c = c.offset(xCoord, yCoord, zCoord);
+		int x = c.xCoord;
+		int y = c.yCoord;
+		int z = c.zCoord;
+		int r = e.getRed();
+		int g = e.getGreen();
+		int b = e.getBlue();
+		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), world, x, y, z, r, g, b, 32, 8);
+		int mod = (int)(world.getTotalWorldTime()%16);
+		if (mod == 0) {
+			ChromaSounds.DING.playSoundAtBlock(world, x, y, z, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e));
+		}
+		else if (mod == 4) {
+			ChromaSounds.DING.playSoundAtBlock(world, x, y, z, 1, (float)CrystalMusicManager.instance.getThird(e));
+		}
+		else if (mod == 8) {
+			ChromaSounds.DING.playSoundAtBlock(world, x, y, z, 1, (float)CrystalMusicManager.instance.getFifth(e));
+		}
+		else if (mod == 12) {
+			ChromaSounds.DING.playSoundAtBlock(world, x, y, z, 1, (float)CrystalMusicManager.instance.getOctave(e));
+		}
+	}
+
+	@Override
+	public boolean playerCanUse(EntityPlayer ep) {
+		return true;
 	}
 
 }

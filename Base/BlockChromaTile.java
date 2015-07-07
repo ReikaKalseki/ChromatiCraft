@@ -85,6 +85,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.LegacyWailaHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
@@ -430,6 +431,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		if (LegacyWailaHelper.cacheAndReturn(acc))
+			return currenttip;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		te.syncAllData(false);
 		if (te instanceof TileEntityRift) {

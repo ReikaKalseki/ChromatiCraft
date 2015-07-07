@@ -55,6 +55,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
@@ -112,6 +113,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
@@ -140,6 +142,13 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void killBallLightning(EntityJoinWorldEvent evt) {
+		if (evt.entity instanceof EntityBallLightning && !ChromaOptions.BALLLIGHTNING.getState()) {
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent
@@ -231,6 +240,11 @@ public class ChromaticEventManager {
 				e.setDead();
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void unloadChunkLightnings(ChunkEvent.Unload evt) {
+		ReikaChunkHelper.clearEntities(evt.getChunk(), new ReikaEntityHelper.ClassEntitySelector(EntityBallLightning.class));
 	}
 
 	@SubscribeEvent

@@ -26,7 +26,9 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
+import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -190,6 +192,29 @@ public class ChromaFX {
 			EntityRelayPathFX fx = new EntityRelayPathFX(e, li.get(0), li.get(1));
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			li.remove(0);
+		}
+	}
+
+	public static void doShardBoostingFX(EntityItem ei) {
+		CrystalElement e = CrystalElement.elements[ei.getEntityItem().getItemDamage()];
+		double rx = ReikaRandomHelper.getRandomPlusMinus(ei.posX, 0.5);
+		double ry = ei.posY;//ReikaRandomHelper.getRandomPlusMinus(ei.posY+1, 0.5);
+		double rz = ReikaRandomHelper.getRandomPlusMinus(ei.posZ, 0.5);
+		//ReikaParticleHelper.REDSTONE.spawnAt(ei.worldObj, rx, ry, rz, e.getRed(), e.getGreen(), e.getBlue());
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(ei.worldObj, rx, ry, rz, 0, vy, 0, e));
+	}
+
+	public static void spawnShardBoostedEffects(EntityItem ei) {
+		for (int i = 0; i < 16; i++) {
+			double rx = ei.posX;
+			double ry = ei.posY;
+			double rz = ei.posZ;
+			CrystalElement e = CrystalElement.elements[ei.getEntityItem().getItemDamage()];
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityFlareFX(e, ei.worldObj, rx, ry, rz, vx, vy, vz));
 		}
 	}
 

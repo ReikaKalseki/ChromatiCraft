@@ -844,6 +844,8 @@ public enum ChromaResearch implements ProgressElement {
 			return !ModList.FORESTRY.isLoaded();
 		if (this == RFDISTRIB)
 			return !PowerTypes.RF.exists();
+		if (this == BALLLIGHTNING)
+			return !ChromaOptions.BALLLIGHTNING.getState();
 		return false;
 	}
 

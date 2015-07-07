@@ -30,6 +30,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
@@ -86,13 +87,10 @@ public class RainbowForestDecorator extends BiomeDecorator {
 			int x = chunk_X + randomGenerator.nextInt(16)+8;
 			int z = chunk_Z + randomGenerator.nextInt(16)+8;
 			int y = currentWorld.getTopSolidOrLiquidBlock(x, z);
-			Block b = currentWorld.getBlock(x, y, z);
-			if (!(b instanceof BlockLiquid || b instanceof BlockFluidBase)) {
-				if (ReikaWorldHelper.softBlocks(currentWorld, x, y, z)) {
-					if (y < 128 && randomGenerator.nextInt(1+(128-y)/16) > 0)
-						if (ChromaBlocks.DYEFLOWER.getBlockInstance().canBlockStay(currentWorld, x, y, z))
-							currentWorld.setBlock(x, y, z, ChromaBlocks.DYEFLOWER.getBlockInstance(), randomGenerator.nextInt(16), 3);
-				}
+			if (this.canGenerateFlower(x, y, z)) {
+				if (y < 128 && randomGenerator.nextInt(1+(128-y)/16) > 0)
+					if (ChromaBlocks.DYEFLOWER.getBlockInstance().canBlockStay(currentWorld, x, y, z))
+						currentWorld.setBlock(x, y, z, ChromaBlocks.DYEFLOWER.getBlockInstance(), randomGenerator.nextInt(16), 3);
 			}
 		}
 	}
@@ -101,13 +99,20 @@ public class RainbowForestDecorator extends BiomeDecorator {
 		int x = chunk_X + randomGenerator.nextInt(16)+8;
 		int z = chunk_Z + randomGenerator.nextInt(16)+8;
 		int y = currentWorld.getTopSolidOrLiquidBlock(x, z);
-		if (ReikaWorldHelper.softBlocks(currentWorld, x, y, z)) {
+		if (this.canGenerateFlower(x, y, z)) {
 			Block id = ThaumItemHelper.BlockEntry.ETHEREAL.getBlock();
 			int meta = ThaumItemHelper.BlockEntry.ETHEREAL.metadata;
 			currentWorld.setBlock(x, y, z, id, meta, 3);
 			currentWorld.func_147451_t(x, y, z);
 			currentWorld.func_147479_m(x, y, z);
 		}
+	}
+
+	private boolean canGenerateFlower(int x, int y, int z) {
+		Block b = currentWorld.getBlock(x, y, z);
+		if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
+			return false;
+		return ReikaPlantHelper.FLOWER.canPlantAt(currentWorld, x, y, z) && ReikaWorldHelper.softBlocks(currentWorld, x, y, z);
 	}
 
 	private void auxDeco(BiomeGenBase biome) {

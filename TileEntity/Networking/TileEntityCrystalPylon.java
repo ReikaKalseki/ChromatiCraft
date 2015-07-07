@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import thaumcraft.api.aspects.Aspect;
@@ -64,9 +65,11 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -80,7 +83,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
-public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, INode, IWandable {
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, INode, IWandable, ChunkLoadingTile {
 
 	private boolean hasMultiblock = false;
 	private boolean enhanced = false;
@@ -91,6 +94,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private int energy = MAX_ENERGY;
 	private int energyStep = 1;
 	private long lastWorldTick;
+	private boolean forceLoad;
 
 	public static final int RANGE = 48;
 
@@ -153,6 +157,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		PylonGenerator.instance.cachePylon(this);
+		if (forceLoad)
+			ChunkManager.instance.loadChunks(this);
 		if (ModList.THAUMCRAFT.isLoaded() && nodeCache != null) {
 			ArrayList li = new ArrayList();
 			li.add(world.provider.dimensionId);
@@ -160,6 +166,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			li.add(y);
 			li.add(z);
 			nodeCache.put(this.getId(), li);
+		}
+	}
+
+	private void forceLoading() {
+		if (!forceLoad) {
+			if (ChromaOptions.PYLONLOAD.getState()) {
+				forceLoad = true;
+				ChunkManager.instance.loadChunks(this);
+			}
 		}
 	}
 
@@ -222,7 +237,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnLightning(world, x, y, z);
 			}
 
-			if (!world.isRemote && energy >= this.getCapacity()/2 && rand.nextInt(24000) == 0 && this.isChunkLoaded()) {
+			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(24000) == 0 && this.isChunkLoaded()) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 		}
@@ -494,6 +509,20 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBT.setBoolean("load", forceLoad);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		forceLoad = NBT.getBoolean("load");
+	}
+
+	@Override
 	public int getSendRange() {
 		return RANGE;
 	}
@@ -746,6 +775,39 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@SideOnly(Side.CLIENT)
 	public final double getMaxRenderDistanceSquared() {
 		return 65536D;
+	}
+
+	@Override
+	public void breakBlock() {
+		this.unload();
+	}
+
+	private void unload() {
+		ChunkManager.instance.unloadChunks(this);
+	}
+
+	@Override
+	public Collection<ChunkCoordIntPair> getChunksToLoad() {
+		return ChunkManager.getChunkSquare(xCoord, zCoord, 1); //load a 3x3 to ensure power crystals
+	}
+
+	@Override
+	protected final void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		if (!world.isRemote) {
+			if (invalid) {
+				this.unload();
+			}
+		}
+	}
+
+	@Override
+	public void onUsedBy(EntityPlayer ep, CrystalElement e) {
+		this.forceLoading();
+	}
+
+	@Override
+	public boolean playerCanUse(EntityPlayer ep) {
+		return true;
 	}
 
 }

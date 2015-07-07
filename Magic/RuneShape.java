@@ -20,11 +20,11 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
-public class RuneShape {
+public final class RuneShape {
 
 	/** Coords are relative to the BlockArray origin! */
-	private HashMap<Coordinate, CrystalElement> runes = new HashMap();
-	private BlockArray blocks = new BlockArray();
+	private final HashMap<Coordinate, CrystalElement> runes = new HashMap();
+	private final BlockArray blocks = new BlockArray();
 
 	public RuneShape() {
 
@@ -114,6 +114,10 @@ public class RuneShape {
 		return runes.toString();
 	}
 
+	public boolean isEmpty() {
+		return runes.isEmpty();
+	}
+
 	public RuneViewer getView() {
 		return new RuneViewer(this);
 	}
@@ -140,7 +144,7 @@ public class RuneShape {
 
 	}
 
-	public static class RuneViewer {
+	public static final class RuneViewer {
 
 		private final RuneShape shape;
 
@@ -186,6 +190,10 @@ public class RuneShape {
 
 		public int getMaxZ() {
 			return shape.getMaxZ();
+		}
+
+		public boolean isEmpty() {
+			return shape.isEmpty();
 		}
 	}
 }

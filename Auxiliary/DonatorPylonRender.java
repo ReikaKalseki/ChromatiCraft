@@ -44,4 +44,9 @@ public class DonatorPylonRender implements PlayerRenderObj {
 		GL11.glPopMatrix();
 	}
 
+	@Override
+	public int getRenderPriority() {
+		return Integer.MAX_VALUE;
+	}
+
 }

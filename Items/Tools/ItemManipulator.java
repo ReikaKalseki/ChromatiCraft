@@ -247,7 +247,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			drain = energy;
 			add = drain/4;
 		}
-		if (te.canConduct() && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+		if (te.canConduct() && te.playerCanUse(player) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+			te.onUsedBy(player, e);
 			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
 				te.drain(e, drain);
 			PlayerElementBuffer.instance.checkUpgrade(player, true);

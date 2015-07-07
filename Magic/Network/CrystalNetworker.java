@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -166,8 +167,9 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
+		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
 		try {
-			CrystalPath p = new PylonFinder(e, r).findPylon();
+			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
 			return p != null && p.canTransmit();
 		}
 		catch (ConcurrentModificationException ex) {
@@ -178,8 +180,9 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
+		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
 		try {
-			CrystalPath p = new PylonFinder(e, r).findPylon();
+			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
 			return p != null && p.canTransmit() ? p.transmitter : null;
 		}
 		catch (ConcurrentModificationException ex) {
@@ -202,18 +205,21 @@ public class CrystalNetworker implements TickHandler {
 			return false;
 		if (this.hasFlowTo(r, e, world))
 			return false;
-		CrystalFlow p = new PylonFinder(e, r).findPylon(amount, maxthru);
+		EntityPlayer ep = world.func_152378_a(r.getPlacerUUID());
+		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
 		if (p != null) {
 			flows.addValue(world.provider.dimensionId, p);
+			p.transmitter.onUsedBy(ep, e);
 			return true;
 		}
 		return false;
 	}
 
 	public boolean findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
-		CrystalPath p = new PylonFinder(e, r).findPylonWith(amount);
+		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
+		CrystalPath p = new PylonFinder(e, r, ep).findPylonWith(amount);
 		if (p != null) {
 			if (consume)
 				p.transmitter.drain(e, amount);

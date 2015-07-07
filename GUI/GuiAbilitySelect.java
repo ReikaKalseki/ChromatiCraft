@@ -19,8 +19,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -51,8 +53,12 @@ public class GuiAbilitySelect extends GuiScreen {
 		int sep = 22;
 		int w = 50;
 		int step = w+sep;
-		if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_SPACE)
+		if (key == Keyboard.KEY_ESCAPE || (ChromaOptions.KEYBINDABILITY.getState() && key == ChromaClient.key_ability.getKeyCode())) {
+			player.closeScreen();
+		}
+		else if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_SPACE) {
 			this.selectAbility();
+		}
 		else if (key == Keyboard.KEY_RIGHT || key == Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode()) {
 			this.scrollRight(step);
 		}

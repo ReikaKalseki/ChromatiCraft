@@ -165,6 +165,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			break;
 		case NONEUCLID:
 			break;
+		case GOL:
+			break;
 		}
 	}
 
@@ -218,6 +220,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void createBeamLine(World world, int x, int y, int z, Coordinate c, CrystalElement e) {
 		double dx = c.xCoord-x;
 		double dy = c.yCoord-y;

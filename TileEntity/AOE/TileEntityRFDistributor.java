@@ -35,7 +35,6 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 	private final HashSet<WorldLocation> storages = new HashSet();
 	private final HashSet<WorldLocation> inputs = new HashSet();
 
-	@SideOnly(Side.CLIENT)
 	private final HashMap<WorldLocation, Integer> particleCooldowns = new HashMap();
 
 	private final StepTimer cacheTimer = new StepTimer(40);
@@ -208,12 +207,28 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 			for (int k = -r; k <= r; k++) {
 				for (int j = -r2; j <= 0; j++) {
 					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
-					if (te != this && (te instanceof IEnergyReceiver || te instanceof IEnergyHandler)) {
+					if (this.isValidTarget(te)) {
 						this.addStorage(new WorldLocation(te), (IEnergyReceiver)te);
 					}
 				}
 			}
 		}
+	}
+
+	private boolean isValidTarget(TileEntity te) {
+		if (te == this)
+			return false;
+		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
+			String s = te.getClass().getName().toLowerCase();
+			if (s.contains("conduit") || s.contains("duct") || s.contains("cable") || s.contains("pipepower")) {
+				return false;
+			}
+			if (s.contains("tesseract") || s.contains("hypercube")) { //SOE
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override

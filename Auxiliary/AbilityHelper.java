@@ -221,8 +221,8 @@ public class AbilityHelper {
 		LossCache c = lossCache.remove(evt.player);
 		if (c != null) {
 			c.applyToPlayer(evt.player);
+			Chromabilities.DEATHPROOF.setToPlayer(evt.player, true);
 		}
-		Chromabilities.DEATHPROOF.setToPlayer(evt.player, true);
 	}
 
 	private static class LossCache {

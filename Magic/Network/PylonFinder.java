@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -45,6 +46,7 @@ public class PylonFinder {
 	//private final int stepRange;
 	private final CrystalReceiver target;
 	private final CrystalElement element;
+	private final EntityPlayer user;
 
 	private int steps = 0;
 	private int stepsThisTick = 0;
@@ -57,12 +59,13 @@ public class PylonFinder {
 
 	//private final HashMap<ChunkCoordIntPair, ChunkCopy> chunkCache = new HashMap();
 
-	PylonFinder(CrystalElement e, CrystalReceiver r) {
+	PylonFinder(CrystalElement e, CrystalReceiver r, EntityPlayer ep) {
 		element = e;
 		target = r;
 		//stepRange = r;
 		net = CrystalNetworker.instance;
 		blacklist.add(this.getLocation(r));
+		user = ep;
 	}
 
 	CrystalPath findPylon() {
@@ -237,7 +240,8 @@ public class PylonFinder {
 						if (!l.hasLineOfSight())
 							continue;
 					}
-					if (te instanceof CrystalSource && ((CrystalSource)te).canTransmitTo(target) && ((CrystalSource)te).getEnergy(element) >= thresh) {
+
+					if (te instanceof CrystalSource && this.isConnectableSource((CrystalSource)te, thresh)) {
 						net.addLink(l, true);
 						nodes.add(loc2);
 						return;
@@ -257,6 +261,10 @@ public class PylonFinder {
 			blacklist.add(loc);
 			duplicates.remove(loc);
 		}
+	}
+
+	private boolean isConnectableSource(CrystalSource te, int thresh) {
+		return te.canTransmitTo(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user));
 	}
 
 	/*

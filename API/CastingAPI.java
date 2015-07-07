@@ -188,20 +188,24 @@ public class CastingAPI {
 			loaded = false;
 
 			cast = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe");
-			instCast = cast.getConstructor(ItemStack.class, IRecipe.class);
+			instCast = cast.getDeclaredConstructor(ItemStack.class, IRecipe.class);
+			instCast.setAccessible(true);
 
 			temple = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$TempleCastingRecipe");
-			instTemple = temple.getConstructor(ItemStack.class, IRecipe.class);
+			instTemple = temple.getDeclaredConstructor(ItemStack.class, IRecipe.class);
+			instTemple.setAccessible(true);
 			rune = temple.getDeclaredMethod("addRune", CrystalElementProxy.class, int.class, int.class, int.class);
 			rune.setAccessible(true);
 
 			multi = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$MultiBlockCastingRecipe");
-			instMulti = multi.getConstructor(ItemStack.class, ItemStack.class);
+			instMulti = multi.getDeclaredConstructor(ItemStack.class, ItemStack.class);
+			instMulti.setAccessible(true);
 			aux = multi.getDeclaredMethod("addAuxItem", ItemStack.class, int.class, int.class);
 			aux.setAccessible(true);
 
 			pylon = Class.forName("Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe$PylonRecipe");
-			instPylon = pylon.getConstructor(ItemStack.class, ItemStack.class);
+			instPylon = pylon.getDeclaredConstructor(ItemStack.class, ItemStack.class);
+			instPylon.setAccessible(true);
 			aura = pylon.getDeclaredMethod("addAuraRequirement", CrystalElementProxy.class, int.class);
 			aura.setAccessible(true);
 

@@ -122,6 +122,10 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		}
 	}
 
+	public static int getColor(CrystalElement e, int berries) {
+		return ReikaColorAPI.mixColors(e.getColor(), 0xffffff, berries/(float)TileEntityChroma.BERRY_SATURATION);
+	}
+
 	@Override
 	public Fluid getFluid() {
 		return FluidRegistry.getFluid("chroma");
@@ -135,11 +139,13 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 	public static class TileEntityChroma extends TileEntity {
 
+		public static final int BERRY_SATURATION = 24;
+
 		private int berryCount;
 		private CrystalElement element;
 
 		public int activate(CrystalElement e, int amt) {
-			int add = Math.min(24-berryCount, amt);
+			int add = Math.min(BERRY_SATURATION-berryCount, amt);
 			if (add > 0) {
 				if (e == element || element == null) {
 					berryCount += add;
@@ -170,7 +176,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		}
 
 		public int getColor() {
-			return element != null ? ReikaColorAPI.mixColors(element.getColor(), 0xffffff, berryCount/24F) : 0xffffff;
+			return element != null ? BlockActiveChroma.getColor(element, berryCount) : 0xffffff;
 		}
 
 		public CrystalElement getElement() {
@@ -217,7 +223,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		}
 
 		public boolean isFullyActive() {
-			return berryCount == 24 && element != null;
+			return berryCount == BERRY_SATURATION && element != null;
 		}
 
 		public void clear() {
