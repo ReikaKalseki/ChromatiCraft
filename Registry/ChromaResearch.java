@@ -63,6 +63,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -85,6 +86,7 @@ public enum ChromaResearch implements ProgressElement {
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
+	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.ENDGAME,		ProgressStage.CTM),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -412,6 +414,16 @@ public enum ChromaResearch implements ProgressElement {
 		else if (this == PACKCHANGES) {
 			ReikaTextureHelper.bindTerrainTexture();
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
+			return;
+		}
+		else if (this == NODENET) {
+			ItemStack is = ThaumItemHelper.BlockEntry.NODEPLACER.getItem();
+			GL11.glPushMatrix();
+			double s = 2;
+			GL11.glTranslated(x-8, y-6, 0);
+			GL11.glScaled(s, s, 1);
+			ReikaGuiAPI.instance.drawItemStack(ri, is, 0, 0);
+			GL11.glPopMatrix();
 			return;
 		}
 		else if (this == APIRECIPES) {
@@ -846,6 +858,8 @@ public enum ChromaResearch implements ProgressElement {
 			return !PowerTypes.RF.exists();
 		if (this == BALLLIGHTNING)
 			return !ChromaOptions.BALLLIGHTNING.getState();
+		if (this == NODENET)
+			return !ModList.THAUMCRAFT.isLoaded();
 		return false;
 	}
 

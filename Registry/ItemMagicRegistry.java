@@ -33,7 +33,6 @@ public class ItemMagicRegistry {
 	private final HashBiMap<KeyedItemStack, ElementTagCompound> data = HashBiMap.create();
 
 	private ItemMagicRegistry() {
-		OreDictionary.initVanillaEntries();
 		this.addElement("stone", CrystalElement.RED, 1);
 		this.addElement("stone", CrystalElement.BROWN, 2);
 		this.addElement("cobblestone", CrystalElement.BROWN, 1);
