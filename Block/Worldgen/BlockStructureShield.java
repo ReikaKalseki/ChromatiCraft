@@ -20,13 +20,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 
-@Strippable(value={"pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry"})
-public class BlockStructureShield extends Block implements SemiUnbreakable, IBlockTrackEntry {
+@Injectable(value={"pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry"})
+public class BlockStructureShield extends Block implements SemiUnbreakable {
 
 	public static enum BlockType {
 		CLOAK("Cloak"),
@@ -145,25 +146,25 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, IBlo
 		return meta >= 8 && !BlockType.list[meta%8].isMineable();
 	}
 
-	@Override
+	@ModDependent(ModList.PNEUMATICRAFT)
 	public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block) {
 		return false;
 	}
 
-	@Override
+	@ModDependent(ModList.PNEUMATICRAFT)
 	public boolean shouldBeUpdatedFromServer() {
 		return false;
 	}
 
-	@Override
+	@ModDependent(ModList.PNEUMATICRAFT)
 	public int spamThreshold() {
 		return 0;
 	}
 
-	@Override
+	@ModDependent(ModList.PNEUMATICRAFT)
 	public void addInformation(World world, int x, int y, int z, List<String> infoList) {}
 
-	@Override
+	@ModDependent(ModList.PNEUMATICRAFT)
 	public String getEntryName() {
 		return "";
 	}
