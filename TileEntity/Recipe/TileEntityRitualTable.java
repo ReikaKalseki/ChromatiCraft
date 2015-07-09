@@ -85,7 +85,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			this.requestEnergyDifference(tag);
 		}
 
-		EntityPlayer ep = world.getPlayerEntityByName(placer);
+		EntityPlayer ep = placer != null && !placer.isEmpty() ? world.getPlayerEntityByName(placer) : null;
 		if (ep == null) {
 			tickNoPlayer++;
 			if (tickNoPlayer > 200) { //make something bad happen

@@ -98,21 +98,18 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 			return 0;
 		}
 
-		private void removeItems(MESystemReader net, ItemStack is) {
+		private long removeItems(MESystemReader net, ItemStack is) {
 			switch(this) {
 			case EXACT:
-				net.removeItem(is, false);
-				break;
+				return net.removeItem(is, false);
 			case FUZZY:
-				net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, false);
-				break;
+				return net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, false);
 			case FUZZYORE:
-				net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, true);
-				break;
+				return net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, true);
 			case FUZZYNBT:
-				net.removeItemFuzzyIgnoreNBT(is, false, FuzzyMode.IGNORE_ALL, true);
-				break;
+				return net.removeItemFuzzyIgnoreNBT(is, false, FuzzyMode.IGNORE_ALL, true);
 			}
+			return 0;
 		}
 
 		public MatchMode next() {
@@ -202,9 +199,12 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
-		ReikaInventoryHelper.addToIInv(is, ii);
-		mode.removeItems(network, is);
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
+		int rem = (int)mode.removeItems(network, is);
+		if (rem > 0) {
+			is.stackSize = Math.min(rem, is.stackSize);
+			ReikaInventoryHelper.addToIInv(is, ii);
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
+		}
 	}
 
 	@Override

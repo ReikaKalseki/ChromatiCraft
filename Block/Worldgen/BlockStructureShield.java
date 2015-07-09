@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Worldgen;
 
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -20,13 +19,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Interfaces.SemiUnbreakable;
 
-@Strippable(value={"pneumaticCraft.api.client.pneumaticHelmet.IBlockTrackEntry"})
-public class BlockStructureShield extends Block implements SemiUnbreakable, IBlockTrackEntry {
+public class BlockStructureShield extends Block implements SemiUnbreakable {
 
 	public static enum BlockType {
 		CLOAK("Cloak"),
@@ -143,29 +139,6 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, IBlo
 	@Override
 	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
 		return meta >= 8 && !BlockType.list[meta%8].isMineable();
-	}
-
-	@Override
-	public boolean shouldTrackWithThisEntry(IBlockAccess world, int x, int y, int z, Block block) {
-		return false;
-	}
-
-	@Override
-	public boolean shouldBeUpdatedFromServer() {
-		return false;
-	}
-
-	@Override
-	public int spamThreshold() {
-		return 0;
-	}
-
-	@Override
-	public void addInformation(World world, int x, int y, int z, List<String> infoList) {}
-
-	@Override
-	public String getEntryName() {
-		return "";
 	}
 
 }

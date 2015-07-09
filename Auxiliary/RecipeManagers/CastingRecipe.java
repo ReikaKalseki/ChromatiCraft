@@ -249,7 +249,7 @@ public class CastingRecipe {
 
 	public static class TempleCastingRecipe extends CastingRecipe {
 
-		protected static final BlockArray runeRing = new BlockArray();
+		private static final BlockArray runeRing = new BlockArray();
 		private static final HashMap<Coordinate, CrystalElement> allRunes = new HashMap();
 
 		static {
@@ -287,15 +287,20 @@ public class CastingRecipe {
 			return runes.matchAt(world, x, y, z, 0, 0, 0);
 		}
 
-		protected CastingRecipe addRune(int color, int rx, int ry, int rz) {
+		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
+			Coordinate c = runeRing.getNthBlock(e.ordinal());
+			return this.addRune(e, c.xCoord, c.yCoord, c.zCoord);
+		}
+
+		protected TempleCastingRecipe addRune(int color, int rx, int ry, int rz) {
 			return this.addRune(CrystalElement.elements[color], rx, ry, rz);
 		}
 
-		protected CastingRecipe addRune(CrystalElementProxy color, int rx, int ry, int rz) {
+		protected TempleCastingRecipe addRune(CrystalElementProxy color, int rx, int ry, int rz) {
 			return this.addRune(CrystalElement.getFromAPI(color), rx, ry, rz);
 		}
 
-		protected CastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
+		protected TempleCastingRecipe addRune(CrystalElement color, int rx, int ry, int rz) {
 			this.verifyRune(color, rx, ry, rz);
 			runes.addRune(color, rx, ry, rz);
 			return this;

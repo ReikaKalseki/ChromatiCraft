@@ -58,6 +58,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	public BlockDimensionDecoTile(Material mat) {
 		super(mat);
+		this.setResistance(50000);
+		this.setBlockUnbreakable();
 	}
 
 	@Override

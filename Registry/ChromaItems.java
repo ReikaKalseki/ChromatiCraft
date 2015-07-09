@@ -255,7 +255,7 @@ public enum ChromaItems implements ItemEnum {
 			String pre = meta == 1 ? "Charged " : "Inert ";
 			return pre+this.getBasicName();
 		case DIMGEN:
-			return BlockDimensionDeco.DimDecoTypes.list[meta].name();
+			return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
 		default:
 			break;
 		}

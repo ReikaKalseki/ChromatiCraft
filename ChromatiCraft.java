@@ -568,8 +568,16 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		if (ModList.BOTANIA.isLoaded()) {
-			BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
-			BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
+			try {
+				BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
+				BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
+			}
+			catch (IncompatibleClassChangeError e) {
+				logger.logError("Could not add Gendustry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
+			catch (Exception e) {
+				logger.logError("Could not add Gendustry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
 		}
 
 		if (ModList.ROTARYCRAFT.isLoaded()) {

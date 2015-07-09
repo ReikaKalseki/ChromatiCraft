@@ -42,6 +42,10 @@ public class ChromaNames {
 		"chromacraft.ocean", "chromacraft.placeholder6", "chromacraft.placeholder7", "chromacraft.endcrystal", "chromacraft.spacedust"
 	};
 
+	public static final String[] dimGenNames = {
+		"chromaitem.dimgen.miasma", "chromaitem.dimgen.floatstone"
+	};
+
 	public static final String[] storageNames = {
 		"Nula", "Daya", "Divi", "Sami", "Vier", "Lima", "Aru"
 	};
