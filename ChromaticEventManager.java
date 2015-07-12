@@ -147,6 +147,13 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void stopEndCountingEndAsDeath(net.minecraftforge.event.entity.player.PlayerEvent.Clone evt) {
+		if (!evt.wasDeath) {
+			PlayerElementBuffer.instance.copyTo(evt.original, evt.entityPlayer);
+		}
+	}
+
+	@SubscribeEvent
 	public void preventDimLoading(ForceChunkEvent evt) {
 		if (evt.ticket.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			ChromaDimensionTicker.instance.scheduleTicketUnload(evt.ticket);

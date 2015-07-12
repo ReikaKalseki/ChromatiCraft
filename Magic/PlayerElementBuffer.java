@@ -213,6 +213,11 @@ public class PlayerElementBuffer {
 		return sum;
 	}
 
+	public void copyTo(EntityPlayer from, EntityPlayer to) {
+		NBTTagCompound data = this.getTag(from);
+		to.getEntityData().setTag(NBT_TAG, data);
+	}
+
 	public static class PlayerEnergyCommand extends DragonCommandBase {
 
 		@Override
