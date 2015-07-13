@@ -39,7 +39,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.RecipeHandlers.ThermalRecipeHelper;
 import Reika.RotaryCraft.API.BlockColorInterface;
-import Reika.RotaryCraft.API.GrinderAPI;
+import Reika.RotaryCraft.API.RecipeInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -92,9 +92,9 @@ public class ChromaRecipes {
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, color.getColor());
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, color.getColor());
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
-				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
-				GrinderAPI.addRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
-				GrinderAPI.addRecipe(shard, ChromaStacks.crystalPowder);
+				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
+				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
+				RecipeInterface.grinder.addAPIRecipe(shard, ChromaStacks.crystalPowder);
 			}
 		}
 
