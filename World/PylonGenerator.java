@@ -212,7 +212,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private boolean canGenerateIn(World world) {
+	public boolean canGenerateIn(World world) {
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return ChromaOptions.FLATGEN.getState();
 		if (world.provider.dimensionId == 0)

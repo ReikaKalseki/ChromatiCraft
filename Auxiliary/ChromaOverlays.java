@@ -110,7 +110,8 @@ public class ChromaOverlays {
 				this.renderTransitionHUD(ep, evt.resolution, is);
 			}
 			this.renderAbilityStatus(ep, gsc);
-			this.renderPylonAura(ep, gsc);
+			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
+				this.renderPylonAura(ep, gsc);
 			this.renderProgressOverlays(ep, gsc);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
