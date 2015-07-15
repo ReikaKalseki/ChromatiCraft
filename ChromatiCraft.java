@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
+import Reika.ChromatiCraft.Auxiliary.CrystalPlantHandler;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
@@ -134,6 +135,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
+import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.ReservoirAPI;
@@ -448,8 +450,6 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ReikaJavaLibrary.initClass(ChromaLuaMethods.class);
 
-		//ModCropList.addCustomCropType(new CrystalPlantHandler());
-
 		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
 		//ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);
 
@@ -527,6 +527,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		proxy.addDonatorRender();
+
+		ModCropList.addCustomCropType(new CrystalPlantHandler());
 
 		TileEntityBiomePainter.buildBiomeList();
 		ItemDuplicationWand.loadMappings();
