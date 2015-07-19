@@ -55,7 +55,7 @@ public abstract class CrystalTypeBlock extends Block {
 		ding(world, x, y, z, CrystalElement.elements[world.getBlockMetadata(x, y, z)]);
 	}
 
-	protected static void ding(World world, int x, int y, int z, CrystalElement e, float pitch) {
+	public static void ding(World world, int x, int y, int z, CrystalElement e, float pitch) {
 		ChromaSounds.DING.playSoundAtBlock(world, x, y, z, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.2), pitch);
 	}
 

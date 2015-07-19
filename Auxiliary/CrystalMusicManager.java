@@ -9,7 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Random;
 
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -22,6 +25,7 @@ public class CrystalMusicManager {
 	public static final CrystalMusicManager instance = new CrystalMusicManager();
 
 	private final EnumMap<CrystalElement, MusicKey> baseKeys = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, ArrayList<MusicKey>> allKeys = new EnumMap(CrystalElement.class);
 	private final MultiMap<MusicKey, CrystalElement> sourceElements = new MultiMap(new MultiMap.HashSetFactory());
 
 	private static final Random rand = new Random();
@@ -68,6 +72,13 @@ public class CrystalMusicManager {
 	private void addTonic(CrystalElement e, MusicKey m) {
 		baseKeys.put(e, m);
 
+		ArrayList<MusicKey> li = new ArrayList();
+		li.add(m);
+		li.add(this.isMinorKey(e) ? m.getMinorThird() : m.getMajorThird());
+		li.add(m.getFifth());
+		li.add(m.getOctave());
+		allKeys.put(e, li);
+
 		sourceElements.addValue(m, e);
 		sourceElements.addValue(this.isMinorKey(e) ? m.getMinorThird() : m.getMajorThird(), e);
 		sourceElements.addValue(m.getFifth(), e);
@@ -101,10 +112,13 @@ public class CrystalMusicManager {
 	}
 
 	public float getRandomScaledDing(CrystalElement e) {
+		int n = rand.nextInt(4);
+		return this.getScaledDing(e, n);
+	}
+
+	public float getScaledDing(CrystalElement e, int n) {
 		MusicKey key = baseKeys.get(e);
 		double base = this.getDingPitchScale(e);
-		int n = rand.nextInt(4);
-		//ReikaJavaLibrary.pConsole(key+":"+key.getMajorThird()+":"+key.getFifth());
 		switch(n) {
 		case 0:
 			;//base *= 1;
@@ -126,6 +140,10 @@ public class CrystalMusicManager {
 		if (e == CrystalElement.CYAN || e == CrystalElement.ORANGE)
 			return true;
 		return CrystalPotionController.isBadPotion(e);
+	}
+
+	public List<MusicKey> getKeys(CrystalElement e) {
+		return Collections.unmodifiableList(allKeys.get(e));
 	}
 
 }

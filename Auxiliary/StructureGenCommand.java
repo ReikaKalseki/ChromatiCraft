@@ -44,7 +44,7 @@ public class StructureGenCommand extends DragonCommandBase {
 				for (int i = 0; i < DimensionStructureGenerator.DimensionStructureType.types.length; i++) {
 					DimensionStructureType type = DimensionStructureType.types[i];
 					if (ReikaArrayHelper.arrayContains(args, type.name(), true)) {
-						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+"...");
+						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" @ "+type.getGenerator().getCentralBlockCoords()+"...");
 						type.getGenerator().generateAll(ep.worldObj);
 						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" complete.");
 					}

@@ -65,6 +65,10 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicTrigger;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
@@ -154,7 +158,11 @@ public enum ChromaBlocks implements BlockEnum {
 	GLOWSAPLING(BlockLightedSapling.class,										"chroma.glowsapling"),
 	HOVER(BlockHoverBlock.class,				ItemBlockHover.class,			"chroma.hover"),
 	GOL(BlockGOLTile.class,														"chroma.gol"),
-	GOLCONTROL(BlockGOLController.class,										"chroma.golcontrol");
+	GOLCONTROL(BlockGOLController.class,										"chroma.golcontrol"),
+	MUSICMEMORY(BlockMusicMemory.class,											"chroma.musicmem"),
+	MUSICTRIGGER(BlockMusicTrigger.class,										"chroma.musictrigger"),
+	SHIFTKEY(BlockShiftKey.class,				ItemBlockMultiType.class,		"chroma.shiftkey"),
+	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock");
 
 	private Class blockClass;
 	private String blockName;
@@ -356,6 +364,10 @@ public enum ChromaBlocks implements BlockEnum {
 		case HOVER:
 		case GOL:
 		case GOLCONTROL:
+		case MUSICMEMORY:
+		case MUSICTRIGGER:
+		case SHIFTLOCK:
+		case SHIFTKEY:
 			return false;
 		default:
 			return true;

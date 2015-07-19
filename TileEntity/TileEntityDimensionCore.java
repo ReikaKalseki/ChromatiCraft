@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.PlayerBreakHook;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -329,6 +330,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	public boolean breakByPlayer(EntityPlayer ep) {
 		if (ep.capabilities.isCreativeMode)
 			return true;
+		if (ReikaPlayerAPI.isFake(ep))
+			return false;
+		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 12)
+			return false;
 		if (structure != null) {
 			if (structure.hasPlayerCompleted(ep)) {
 				return false;

@@ -25,7 +25,15 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
+		this.generatePuzzles(rand);
+	}
 
+	private void generatePuzzles(Random rand) {
+		for (int i = 0; i < LENGTH; i++) {
+			MusicPuzzle m = new MusicPuzzle(this, Math.max(3, 3+(i-3)));
+			m.initialize(rand);
+			puzzles.add(m);
+		}
 	}
 
 	@Override

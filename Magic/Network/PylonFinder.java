@@ -286,13 +286,13 @@ public class PylonFinder {
 	}
 
 	public static boolean lineOfSight(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
-		RayTracer ray = tracer.setOrigins(x1, y1, z1, x2, y2, z2);
-		return ray.isClearLineOfSight(world);
+		tracer.setOrigins(x1, y1, z1, x2, y2, z2);
+		tracer.offset(0.5, 0.5, 0.5);
+		return tracer.isClearLineOfSight(world);
 	}
 
 	static {
 		tracer = new RayTracer(0, 0, 0, 0, 0, 0);
-		tracer.setInternalOffsets(0.5, 0.5, 0.5);
 		tracer.softBlocksOnly = true;
 		tracer.addTransparentBlock(Blocks.glass);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);

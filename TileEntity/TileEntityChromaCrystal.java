@@ -15,6 +15,10 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 
 public class TileEntityChromaCrystal extends TileEntityChromaticBase {
 
+	private int omega;
+	private int torque;
+	private long power;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.CRYSTAL;
@@ -29,5 +33,4 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase {
 	protected void animateWithTick(World world, int x, int y, int z) {
 
 	}
-
 }

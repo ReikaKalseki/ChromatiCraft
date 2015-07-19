@@ -41,18 +41,12 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 	public static final int RANGE = 64;
 
-	@SideOnly(Side.CLIENT)
 	public double angX = rand.nextInt(360);
-	@SideOnly(Side.CLIENT)
 	public double angY = rand.nextInt(360);
-	@SideOnly(Side.CLIENT)
 	public double angZ = rand.nextInt(360);
 
-	@SideOnly(Side.CLIENT)
 	public double rvX;
-	@SideOnly(Side.CLIENT)
 	public double rvY;
-	@SideOnly(Side.CLIENT)
 	public double rvZ;
 
 	public BiomeGenBase getNaturalBiomeAt(int dx, int dz) {

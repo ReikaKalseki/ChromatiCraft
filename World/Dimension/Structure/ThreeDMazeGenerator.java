@@ -80,7 +80,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
 
 		int y = 75;
-		//this.generateFrom(rand.nextInt(MAX_SIZE), rand.nextInt(MAX_SIZE), rand.nextInt(6), 5, x, y, z, e, rand);
+
 		partSize = 4;
 		minX = x-partSize*MAX_SIZE_X/2;
 		maxX = x+partSize*MAX_SIZE_X/2;
@@ -88,15 +88,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		maxZ = z+partSize*MAX_SIZE_Z/2;
 		maxY = y;
 		minY = y-partSize*MAX_SIZE_Y;
-		/*
-		for (int i = 0; i < MAX_SIZE; i++) {
-			for (int j = 0; j < MAX_SIZE; j++) {
-				for (int k = 0; k < MAX_SIZE; k++) {
-					coordCacheInverse.add(new Coordinate(i, j, k));
-				}
-			}
-		}
-		 */
+
 		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, e, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
@@ -106,7 +98,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		int mz = z+partSize*MAX_SIZE_Z/2+partSize/2;
 		int by = y-partSize*(MAX_SIZE_Y+1)+partSize/2;
 		new LootRoom(this, rand).generate(world, mx, by, mz);
-		// Need a way to connect to the surface
+
 		this.addDynamicStructure(new TDMazeEntrance(this, y+1), mx, mz);
 	}
 
@@ -131,7 +123,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 					}
 					if (i%4 == 0 && j%2 == 0 && k%4 == 0)
 						p.setLighted();
-					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X && j != MAX_SIZE_Y && k != MAX_SIZE_Z && rand.nextInt(20) == 0) {
+					if (i != 0 && j != 0 && k != 0 && i != MAX_SIZE_X-1 && j != MAX_SIZE_Y-1 && k != MAX_SIZE_Z-1 && rand.nextInt(20) == 0) {
 						p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
 						if (rand.nextInt(20) == 0) {
 							p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
@@ -289,7 +281,6 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-
 	private boolean isFull() {
 		return coordCache.size() >= MAX_SIZE_X*MAX_SIZE_Y*MAX_SIZE_Z;
 	}
@@ -332,7 +323,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 			if (li.isEmpty()) {
 				for (int i = 0; i < 6; i++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-					//ReikaJavaLibrary.pConsole(dir+": LAST="+(dir == last)+"| CANMOVE="+!this.canMove(x, y, z, dir)+"| HAS="+this.hasCellFrom(x, y, z, dir));
+					//ReikaJavaLibrary.pConsole(dir+": LAST="+(dir == last)+"| CANMOVE="+this.canMove(x, y, z, dir)+"| HAS="+this.hasCellFrom(x, y, z, dir));
 				}
 				//ReikaJavaLibrary.pConsole("UNVISIT="+this.hasUnvisitedNeighbors(x, y, z));
 				//ReikaJavaLibrary.pConsole("Had no paths yet has an unvisited neighbor?!!");
