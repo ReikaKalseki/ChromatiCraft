@@ -13,6 +13,7 @@ import java.util.Random;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController.GOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile.GOLTile;
@@ -79,6 +80,11 @@ public class GOLGenerator extends DimensionStructureGenerator {
 			}
 		}
 
+	}
+
+	@Override
+	public StructureData createDataStorage() {
+		return null;
 	}
 
 }

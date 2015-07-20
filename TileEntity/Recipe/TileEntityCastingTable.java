@@ -844,4 +844,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		return set;
 	}
 
+	public boolean hasRecipeBeenUsed(CastingRecipe cr) {
+		return this.getCompletedRecipes().contains(cr);
+	}
+
 }

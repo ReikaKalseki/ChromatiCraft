@@ -1,13 +1,8 @@
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock.TileEntityShiftLock;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 public class MazeLock extends StructurePiece {
 
@@ -19,7 +14,7 @@ public class MazeLock extends StructurePiece {
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 
 	}
-
+	/*
 	private static void setGate(ChunkSplicedGenerationCache world, int x, int y, int z) {
 		world.setTileEntity(x, y, z, ChromaBlocks.SHIFTLOCK.getBlockInstance(), 1, new GateCallback());
 	}
@@ -52,6 +47,6 @@ public class MazeLock extends StructurePiece {
 			}
 		}
 
-	}
+	}*/
 
 }

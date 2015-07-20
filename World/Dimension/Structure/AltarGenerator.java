@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarCenter;
@@ -81,6 +82,11 @@ public class AltarGenerator extends DimensionStructureGenerator {
 	@Override
 	protected int getCenterZOffset() {
 		return 0;
+	}
+
+	@Override
+	public StructureData createDataStorage() {
+		return null;
 	}
 
 }

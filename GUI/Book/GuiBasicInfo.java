@@ -57,8 +57,27 @@ public class GuiBasicInfo extends GuiBookSection {
 		super(ep, r, 256, 220, false);
 
 		if (r == ChromaResearch.USINGRUNES) {
-			view = this.getAllVisibleRunes();
+			view = this.getAllUsedRunes();
 		}
+	}
+
+	private RuneViewer getAllUsedRunes() {
+		Map<Coordinate, CrystalElement> data = new HashMap();
+		Collection<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipes();
+		for (CastingRecipe cr : li) {
+			if (cr instanceof TempleCastingRecipe) {
+				ChromaResearch r = cr.getFragment();
+				if (r == null || ChromaResearchManager.instance.playerHasFragment(player, r)) {
+					TempleCastingRecipe t = (TempleCastingRecipe)cr;
+					if (ChromaResearchManager.instance.playerHasUsedRecipe(player, cr)) {
+						Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
+						data.putAll(map);
+					}
+				}
+			}
+		}
+		RuneShape rs = new RuneShape(data);
+		return rs.getView();
 	}
 
 	private RuneViewer getAllVisibleRunes() {

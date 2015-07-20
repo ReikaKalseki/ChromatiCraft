@@ -12,9 +12,11 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.MusicStructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 
 public class MusicPuzzleGenerator extends DimensionStructureGenerator {
@@ -49,6 +51,11 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		puzzles.clear();
+	}
+
+	@Override
+	public StructureData createDataStorage() {
+		return new MusicStructureData(this);
 	}
 
 }

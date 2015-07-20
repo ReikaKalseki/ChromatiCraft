@@ -22,12 +22,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.DragonAPI.Command.DragonCommandBase;
@@ -256,11 +258,9 @@ public final class ChromaResearchManager {
 		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
 			this.givePlayerFragment(ep, r);
 		}
-		/*
 		for (CastingRecipe r : RecipesCastingTable.instance.getAllRecipes()) {
 			this.givePlayerRecipe(ep, r);
 		}
-		 */
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
@@ -345,6 +345,40 @@ public final class ChromaResearchManager {
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
 		}
+	}
+
+	public boolean playerHasUsedRecipe(EntityPlayer ep, CastingRecipe cr) {
+		return this.getPlayerRecipes(ep).contains(cr.getIDCode());
+	}
+
+	public boolean givePlayerRecipe(EntityPlayer ep, CastingRecipe cr) {
+		if (!this.playerHasUsedRecipe(ep, cr)) {
+			this.getNBTRecipes(ep).appendTag(new NBTTagInt(cr.getIDCode()));
+			if (ep instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			return true;
+		}
+		return false;
+	}
+
+	private Collection<Integer> getPlayerRecipes(EntityPlayer ep) {
+		HashSet<Integer> c = new HashSet();
+		NBTTagList li = this.getNBTRecipes(ep);
+		for (Object o : li.tagList) {
+			int s = ((NBTTagInt)o).func_150287_d();
+			c.add(s);
+		}
+		return c;
+	}
+
+	private NBTTagList getNBTRecipes(EntityPlayer ep) {
+		String key = "recipes";
+		NBTTagCompound tag = this.getNBT(ep);
+		if (!tag.hasKey(key))
+			tag.setTag(key, new NBTTagList());
+		NBTTagList li = tag.getTagList(key, NBTTypes.INT.ID);
+		tag.setTag(key, li);
+		return li;
 	}
 
 	/** The part that must be completed before getting a given research available */

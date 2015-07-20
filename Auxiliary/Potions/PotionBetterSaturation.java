@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.Auxiliary.Potions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ModInteract.ItemHandlers.HungerOverhaulHandler;
 
 public class PotionBetterSaturation extends Potion {
 
@@ -23,9 +25,13 @@ public class PotionBetterSaturation extends Potion {
 	public void performEffect(EntityLivingBase e, int level) {
 		if (!e.worldObj.isRemote && e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
-			if (level > 0 || ep.getFoodStats().getFoodLevel() < 17)
+			if (level > 0 || ep.getFoodStats().getFoodLevel() < this.getMaxBaseFoodLevel())
 				ep.getFoodStats().addStats(level + 1, 1.0F);
 		}
+	}
+
+	private int getMaxBaseFoodLevel() {
+		return ModList.HUNGEROVERHAUL.isLoaded() ? HungerOverhaulHandler.getInstance().regenHungerValue : 17;
 	}
 
 	@Override

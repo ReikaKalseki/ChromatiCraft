@@ -15,6 +15,7 @@ import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
@@ -173,5 +174,10 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		catch (Exception e) {
 			throw new RegistrationException(ChromatiCraft.instance, "Could not instantiate lock level "+i+"!");
 		}
+	}
+
+	@Override
+	public StructureData createDataStorage() {
+		return null;
 	}
 }

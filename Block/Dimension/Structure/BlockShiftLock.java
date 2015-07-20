@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -29,10 +26,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.LocationCached;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -139,20 +137,12 @@ public class BlockShiftLock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
-		((TileEntityShiftLock)world.getTileEntity(x, y, z)).breakBlock();
 		super.breakBlock(world, x, y, z, b, meta);
 	}
 
-	public static class TileEntityShiftLock extends TileEntity implements LocationCached {
+	public static class TileEntityShiftLock extends TileEntity {
 
 		private boolean isOpen;
-		private int channel;
-		private static Collection<WorldLocation> cache = new HashSet();
-		private boolean ticked = false;
-
-		private void cache() {
-			cache.add(new WorldLocation(this));
-		}
 
 		private void open() {
 			isOpen = true;
@@ -168,16 +158,7 @@ public class BlockShiftLock extends BlockContainer {
 
 		@Override
 		public boolean canUpdate() {
-			return true;
-		}
-
-		@Override
-		public void updateEntity() {
-			if (!ticked) {
-				this.cache();
-				this.close();
-				ticked = true;
-			}
+			return false;
 		}
 
 		@Override
@@ -185,7 +166,6 @@ public class BlockShiftLock extends BlockContainer {
 			super.writeToNBT(NBT);
 
 			NBT.setBoolean("open", isOpen);
-			NBT.setInteger("room", channel);
 		}
 
 		@Override
@@ -193,7 +173,6 @@ public class BlockShiftLock extends BlockContainer {
 			super.readFromNBT(NBT);
 
 			isOpen = NBT.getBoolean("open");
-			channel = NBT.getInteger("room");
 		}
 
 		@Override
@@ -232,17 +211,12 @@ public class BlockShiftLock extends BlockContainer {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
-		@Override
-		public void breakBlock() {
-			cache.remove(new WorldLocation(this));
-		}
-
 		public int getChannel() {
-			return channel;
+			return this.getBlockMetadata();
 		}
 
 		private void recalcGate() {
-			this.updateState(gateCodes[channel] == 0);
+			this.updateState(gateCodes[this.getChannel()] == 0);
 		}
 
 		public void recalc() {
@@ -250,10 +224,6 @@ public class BlockShiftLock extends BlockContainer {
 				this.recalcColors();
 			else if (this.getBlockMetadata() == 1)
 				this.recalcGate();
-		}
-
-		public void setChannel(int ch) {
-			channel = ch;
 		}
 	}
 
@@ -276,13 +246,14 @@ public class BlockShiftLock extends BlockContainer {
 	}
 
 	private static void updateTiles(World world) {
-		for (WorldLocation loc : TileEntityShiftLock.cache) {
-			TileEntityShiftLock te = (TileEntityShiftLock)world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
-			if (te == null) {
-				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
-				continue;
+		for (Coordinate loc : ((ShiftMazeGenerator)DimensionStructureType.SHIFTMAZE.getGenerator()).getLocks()) {
+			TileEntity te = loc.getTileEntity(world);
+			if (te instanceof TileEntityShiftLock) {
+				((TileEntityShiftLock)te).recalc();
 			}
-			te.recalc();
+			else {
+				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
+			}
 		}
 	}
 

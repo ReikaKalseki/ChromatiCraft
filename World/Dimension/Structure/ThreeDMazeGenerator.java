@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -375,6 +376,11 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		nextDir = null;
 		//step.clear();
 		//nextTemp.clear();
+	}
+
+	@Override
+	public StructureData createDataStorage() {
+		return null;
 	}
 
 }

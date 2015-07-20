@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze;
 
+import java.awt.Point;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -16,33 +18,39 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
+import Reika.DragonAPI.Instantiable.Data.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class MazePiece extends StructurePiece {
 
-	private boolean[] connections = new boolean[6];
+	private int[] connections = new int[6];
 
 	public final int size;
 
-	public MazePiece(DimensionStructureGenerator g, int size) {
+	private final Point position;
+
+	public MazePiece(DimensionStructureGenerator g, int size, Point pos) {
 		super(g);
 		this.size = size;
+		position = pos;
 	}
 
-	public MazePiece connect(ForgeDirection dir) {
-		connections[dir.ordinal()] = true;
+	public MazePiece connect(ForgeDirection dir, boolean open) {
+		connections[dir.ordinal()] = open ? 2 : 1;
 		return this;
 	}
 
 	public MazePiece disconnect(ForgeDirection dir) {
-		connections[dir.ordinal()] = false;
+		connections[dir.ordinal()] = 0;
 		return this;
 	}
 
-	public static MazePiece omni(DimensionStructureGenerator g, int size) {
-		MazePiece tp = new MazePiece(g, size);
+	public static MazePiece omni(DimensionStructureGenerator g, int size, Point pos) {
+		MazePiece tp = new MazePiece(g, size, pos);
 		for (int i = 0; i < 6; i++)
-			tp.connect(ForgeDirection.VALID_DIRECTIONS[i]);
+			tp.connect(ForgeDirection.VALID_DIRECTIONS[i], true);
 		return tp;
 	}
 
@@ -58,17 +66,33 @@ public class MazePiece extends StructurePiece {
 					boolean c3 = k == size && j != 0 && i != 0 && i != size;
 					boolean c4 = i == 0 && j != 0 && k != 0 && k != size;
 					boolean c5 = i == size && j != 0 && k != 0 && k != size;
-					boolean tunnel2 = connections[2] && c2;
-					boolean tunnel3 = connections[3] && c3;
-					boolean tunnel4 = connections[4] && c4;
-					boolean tunnel5 = connections[5] && c5;
-					boolean tunnel = tunnel2 || tunnel3 || tunnel4 || tunnel5;
-					boolean fill = !tunnel && (i == 0 || i == size || j == 0 || k == 0 || k == size);
-					Block b = fill ? ChromaBlocks.STRUCTSHIELD.getBlockInstance() : Blocks.air;
-					int meta = fill ? BlockType.STONE.metadata : 0;
+					int tunnel2 = c2 ? connections[2] : 0;
+					int tunnel3 = c3 ? connections[3] : 0;
+					int tunnel4 = c4 ? connections[4] : 0;
+					int tunnel5 = c5 ? connections[5] : 0;
+					int tunnel = ReikaMathLibrary.multiMax(tunnel2, tunnel3, tunnel4, tunnel5);
+					boolean edge = i == 0 || i == size || j == 0 || k == 0 || k == size;
+					BlockKey bk = this.getTunnelType(tunnel);
+					Block b = edge ? bk.blockID : Blocks.air;
+					int meta = edge ? bk.metadata : 0;
+					if (bk.blockID == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
+						((ShiftMazeGenerator)parent).cacheLock(position, dx, dy, dz);
+					}
 					world.setBlock(dx, dy, dz, b, meta);
 				}
 			}
+		}
+	}
+
+	private BlockKey getTunnelType(int idx) {
+		switch(idx) {
+		case 0:
+		default:
+			return new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		case 1:
+			return new BlockKey(ChromaBlocks.SHIFTLOCK.getBlockInstance());
+		case 2:
+			return new BlockKey(Blocks.air);
 		}
 	}
 

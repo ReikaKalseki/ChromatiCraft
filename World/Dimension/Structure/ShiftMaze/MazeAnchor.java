@@ -54,22 +54,18 @@ public class MazeAnchor extends StructurePiece {
 		int h = 3;
 		for (int j = 0; j <= h; j++) {
 			int in = j+4;
-
-			if (j == h) {
-				int dx = x-partSize/2+8;//+partSize*3/2;
-				int dz = z-partSize/2+8;//+partSize*3/2;
-				world.setBlock(dx, y+j+1, dz, ChromaBlocks.SHIFTKEY.getBlockInstance(), genMetadata);
-			}
-			else {
-				for (int i = in; i <= partSize-in; i++) {
-					for (int k = in; k <= partSize-in; k++) {
-						int dx = x+i-partSize/2+2;//+partSize*3/2;
-						int dz = z+k-partSize/2+2;//+partSize*3/2;
-						world.setBlock(dx, y+j+1, dz, pyramidBlock);
-					}
+			for (int i = in; i <= partSize-in; i++) {
+				for (int k = in; k <= partSize-in; k++) {
+					int dx = x+i-partSize/2+2;//+partSize*3/2;
+					int dz = z+k-partSize/2+2;//+partSize*3/2;
+					world.setBlock(dx, y+j+1, dz, pyramidBlock);
 				}
 			}
 		}
+
+		int dx = x-partSize/2+8;//+partSize*3/2;
+		int dz = z-partSize/2+8;//+partSize*3/2;
+		world.setBlock(dx, y+1, dz, ChromaBlocks.SHIFTKEY.getBlockInstance(), genMetadata);
 	}
 
 	static {

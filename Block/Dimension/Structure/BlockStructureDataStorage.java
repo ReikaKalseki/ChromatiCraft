@@ -9,16 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
-import java.util.List;
-
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator.MazePath;
 
 public class BlockStructureDataStorage extends BlockContainer {
 
@@ -33,35 +30,24 @@ public class BlockStructureDataStorage extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-
+		((TileEntityStructureDataStorage)world.getTileEntity(x, y, z)).onRightClick(ep, s);
 		return true;
 	}
 
 	public static class TileEntityStructureDataStorage extends TileEntity {
 
-		private List<MazePath> paths;
+		private StructureData data;
 
 		public void loadData(DimensionStructureGenerator gen) {
-			switch(this.getType()) {
-			case SHIFTMAZE:
-				paths = ((ShiftMazeGenerator)gen).getPaths();
-				break;
-			case MUSIC:
-				break;
-			}
+			data = gen.createDataStorage();
+			if (data != null)
+				data.load();
 		}
 
-		public StructureType getType() {
-			return StructureType.list[this.getBlockMetadata()];
+		protected void onRightClick(EntityPlayer ep, int s) {
+			data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s);
 		}
 
-	}
-
-	public static enum StructureType {
-		SHIFTMAZE(),
-		MUSIC();
-
-		private static final StructureType[] list = values();
 	}
 
 }

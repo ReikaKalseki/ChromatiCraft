@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
@@ -92,6 +93,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			}
 		}
 	}
+
+	public abstract StructureData createDataStorage();
 
 	public final void clear() {
 		world.clear();

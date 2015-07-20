@@ -187,7 +187,7 @@ public class CastingRecipe {
 	}
 
 	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-		//ChromaResearchManager.instance.givePlayerRecipe(ep, this);
+		ChromaResearchManager.instance.givePlayerRecipe(ep, this);
 		te.giveRecipe(ep, this);
 	}
 
@@ -245,6 +245,15 @@ public class CastingRecipe {
 	/** Return zero to make all over-threshold yield zero XP */
 	public float getPenaltyMultiplier() {
 		return 1;
+	}
+
+	public final int getIDCode() {
+		int flag = this.getClass().getName().hashCode();
+		flag = flag ^ out.getItem().getClass().getName().hashCode();
+		flag = flag ^ Math.max(out.stackSize, this.getNumberProduced());
+		flag = flag ^ out.getItemDamage();
+		flag = flag ^ (out.stackTagCompound != null ? out.stackTagCompound.hashCode() : 0);
+		return flag;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe {

@@ -420,4 +420,9 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 	public int getPlantMetadata(IBlockAccess world, int x, int y, int z) {
 		return world.getBlockMetadata(x, y, z);
 	}
+
+	@Override
+	protected ItemStack getWailaDisguise(int meta) {
+		return new ItemStack(Blocks.air);
+	}
 }

@@ -18,11 +18,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -32,7 +30,6 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTieredResource;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -55,11 +52,13 @@ public abstract class BlockChromaTiered extends BlockTieredResource implements I
 		return this.getProgressStage(world, x, y, z).isPlayerAtStage(ep);
 	}
 
+	protected abstract ItemStack getWailaDisguise(int meta);
+
 	@Override
 	@ModDependent(ModList.WAILA)
 	public final ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler cfg) {
 		MovingObjectPosition mov = acc.getPosition();
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ) ? null : new ItemStack(Blocks.air);
+		return this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ) ? null : this.getWailaDisguise(acc.getMetadata());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -70,32 +69,37 @@ public abstract class BlockChromaTiered extends BlockTieredResource implements I
 	@Override
 	@ModDependent(ModList.WAILA)
 	public final List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
-		World world = acc.getWorld();
+		/*
 		MovingObjectPosition mov = acc.getPosition();
-		if (mov != null) {
-			int x = mov.blockX;
-			int y = mov.blockY;
-			int z = mov.blockZ;
-			currenttip.add(EnumChatFormatting.WHITE+this.getPickBlock(mov, world, x, y, z).getDisplayName());
+		if (this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ))
+			return currenttip;
+		else {
+			for (int i = 0; i < currenttip.size(); i++) {
+
+			}
 		}
+		 */
 		return currenttip;
 	}
 
 	@Override
 	@ModDependent(ModList.WAILA)
 	public final List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
-
 		return currenttip;
 	}
 
 	@Override
 	@ModDependent(ModList.WAILA)
 	public final List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		/*
 		MovingObjectPosition mov = acc.getPosition();
-		String s1 = EnumChatFormatting.ITALIC.toString();
-		String s2 = EnumChatFormatting.BLUE.toString();
-		String s = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ) ? "Minecraft" : "ChromatiCraft";
-		currenttip.add(s2+s1+s);
+		if (this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ))
+			return currenttip;
+		else {
+			for (int i = 0; i < currenttip.size(); i++) {
+
+			}
+		}*/
 		return currenttip;
 	}
 

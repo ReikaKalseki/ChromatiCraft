@@ -115,4 +115,9 @@ public class CrystalPlantHandler implements CustomCropHandler {
 		return true;
 	}
 
+	@Override
+	public boolean neverDropsSecondSeed() {
+		return false;
+	}
+
 }

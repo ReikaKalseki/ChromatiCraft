@@ -27,9 +27,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -366,12 +364,13 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	@ModDependent(ModList.WAILA)
 	public ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler cfg) {
-		return new ItemStack(this);
+		return null;//new ItemStack(this);
 	}
 
 	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		/*
 		World world = acc.getWorld();
 		MovingObjectPosition mov = acc.getPosition();
 		if (mov != null) {
@@ -380,6 +379,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			int z = mov.blockZ;
 			currenttip.add(EnumChatFormatting.WHITE+this.getPickBlock(mov, world, x, y, z).getDisplayName());
 		}
+		 */
 		return currenttip;
 	}
 
@@ -409,9 +409,10 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaTail(ItemStack is, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		/*
 		String s1 = EnumChatFormatting.ITALIC.toString();
 		String s2 = EnumChatFormatting.BLUE.toString();
-		currenttip.add(s2+s1+"ChromatiCraft");
+		currenttip.add(s2+s1+"ChromatiCraft");*/
 		return currenttip;
 	}
 

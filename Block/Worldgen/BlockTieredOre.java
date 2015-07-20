@@ -260,6 +260,11 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 	}
 
+	@Override
+	protected ItemStack getWailaDisguise(int meta) {
+		return new ItemStack(TieredOres.list[meta].genBlock);
+	}
+
 
 
 }
