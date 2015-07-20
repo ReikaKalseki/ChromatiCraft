@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class MazePiece extends StructurePiece {
@@ -76,7 +77,8 @@ public class MazePiece extends StructurePiece {
 					Block b = edge ? bk.blockID : Blocks.air;
 					int meta = edge ? bk.metadata : 0;
 					if (bk.blockID == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
-						((ShiftMazeGenerator)parent).cacheLock(position, dx, dy, dz);
+						ForgeDirection dir = ReikaDirectionHelper.getSideOfBox(i, j, k, false, size);
+						((ShiftMazeGenerator)parent).cacheLock(position, dir, dx, dy, dz);
 					}
 					world.setBlock(dx, dy, dz, b, meta);
 				}
@@ -90,9 +92,9 @@ public class MazePiece extends StructurePiece {
 		default:
 			return new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 		case 1:
-			return new BlockKey(ChromaBlocks.SHIFTLOCK.getBlockInstance());
+			return new BlockKey(ChromaBlocks.SHIFTLOCK.getBlockInstance(), 0);
 		case 2:
-			return new BlockKey(Blocks.air);
+			return new BlockKey(Blocks.air, 0);
 		}
 	}
 

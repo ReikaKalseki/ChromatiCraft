@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,10 +23,10 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
-import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData.MazePath;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeAnchor;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.PointDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
@@ -49,10 +48,11 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	private static final int ANCHORS = 6;
 
-	private LinkedList<Point>[] paths = new LinkedList[ANCHORS+1];
+	private PathPre[] path = new PathPre[ANCHORS+1];
 	private LinkedList<ForgeDirection>[] pathCache = new LinkedList[ANCHORS+1];
 	private HashSet<Point> coordCache[] = new HashSet[ANCHORS+1];
 	private MultiMap<Point, ForgeDirection>[] locationCache = new MultiMap[ANCHORS+1];
+	private MazePath[] solutions = new MazePath[ANCHORS+1];
 
 	private Point step;
 	private ForgeDirection nextDir;
@@ -62,8 +62,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	public static final int MAX_SIZE_X = getWidth();
 	public static final int MAX_SIZE_Z = getWidth();
 
-	private final HashSet<Coordinate> locks = new HashSet();
-	//private final MultiMap<Integer, Coordinate> locks = new MultiMap(new MultiMap.HashSetFactory());
+	private final MultiMap<PointDirection, Coordinate> locks = new MultiMap();
 
 	private static final ArrayList<ForgeDirection> dirs = ReikaJavaLibrary.makeListFrom(ForgeDirection.EAST, ForgeDirection.WEST, ForgeDirection.NORTH, ForgeDirection.SOUTH);
 
@@ -91,7 +90,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		for (int i = 0; i < ANCHORS+1; i++) {
 			pathCache[i] = new LinkedList();
 			coordCache[i] = new HashSet();
-			locationCache[i] = new MultiMap();
+			locationCache[i] = new MultiMap(new MultiMap.HashSetFactory());
 			destination = i == ANCHORS ? exit : endPoints.get(i);
 			this.generatePathFrom(i, entry.x, entry.y, e, rand);
 			this.cutExit(i);
@@ -162,6 +161,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		while (!this.isFull(layer)) {
 			this.stepPath(layer, step.x, step.y, rand, nextDir);
 		}
+		solutions[layer] = new MazePath(path[layer], locationCache[layer]);
 	}
 
 	private ForgeDirection getEntryDirectionFrom(Point p) {
@@ -206,7 +206,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			nextDir = dir.getOpposite();
 		}*/
 		else if (p.equals(destination)) {
-			paths[layer] = this.getCurrentPath(layer);
+			path[layer] = this.getCurrentPath(layer);
 			dir = pathCache[layer].removeLast();
 			step.translate(-dir.offsetX, -dir.offsetZ);
 			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; destination; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
@@ -220,7 +220,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 					coordCache[layer].add(dp);
 				}
 			}
-			paths[layer] = this.getCurrentPath(layer);
+			path[layer] = this.getCurrentPath(layer);
 			dir = pathCache[layer].removeLast();
 			step.translate(-dir.offsetX, -dir.offsetZ);
 			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; anchor; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
@@ -247,7 +247,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private LinkedList<Point> getCurrentPath(int layer) {
+	private PathPre getCurrentPath(int layer) {
 		Point pt = entry;
 		LinkedList<Point> li = new LinkedList();
 		li.add(pt);
@@ -255,7 +255,9 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			pt = new Point(pt.x+dir.offsetX, pt.y+dir.offsetZ);
 			li.add(pt);
 		}
-		return li;
+		ArrayList<ForgeDirection> dir = new ArrayList(pathCache[layer]);
+		dir.add(this.getExitDirectionTo(destination));
+		return new PathPre(li, dir);
 	}
 
 	private boolean isFull(int layer) {
@@ -289,11 +291,22 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	}
 
 	private ForgeDirection getSuccessfulPathDirection(int x, int z, int layer) {
+		Point pt = new Point(x, z);
 		for (int i = 0; i < layer; i++) {
-			Point pt = paths[i].get(i);
-			Collection<ForgeDirection> c = locationCache[i].get(pt);
-			if (!c.isEmpty()) {
-				return ReikaJavaLibrary.getRandomCollectionEntry(c);
+			if (solutions[i].hasPoint(pt)) {
+				return solutions[i].getDirection(pt);
+			}
+			else {
+				for (int d = 1; d <= 2; d++) {
+					for (ForgeDirection dir : dirs) {
+						int dx = x+dir.offsetX*d;
+						int dz = z+dir.offsetZ*d;
+						Point dp = new Point(dx, dz);
+						if (solutions[i].hasPoint(dp)) {
+							return solutions[i].getDirection(dp);
+						}
+					}
+				}
 			}
 		}
 		return null;
@@ -407,10 +420,11 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 		copyLength = 0;
 
-		paths = new LinkedList[ANCHORS+1];
+		path = new PathPre[ANCHORS+1];
 		pathCache = new LinkedList[ANCHORS+1];
 		coordCache = new HashSet[ANCHORS+1];
 		locationCache = new MultiMap[ANCHORS+1];
+		solutions = new MazePath[ANCHORS+1];
 
 		step = null;
 		nextDir = null;
@@ -420,22 +434,66 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		locks.clear();
 	}
 
-	@Deprecated
 	public ArrayList<MazePath> getPaths() {
-		return null;
+		return ReikaJavaLibrary.makeListFromArray(solutions);
 	}
 
-	public void cacheLock(/*int channel, */int x, int y, int z) {
-		locks.add/*Value*/(/*channel, */new Coordinate(x, y, z));
+	public void cacheLock(Point pt, ForgeDirection dir, int x, int y, int z) {
+		locks.addValue(new PointDirection(pt, dir), new Coordinate(x, y, z));
 	}
 
-	public Collection<Coordinate> getLocks(/*int channel*/) {
-		return Collections.unmodifiableCollection(locks);//locks.get(channel);
+	public Collection<Coordinate> getLocks(int x, int z, ForgeDirection dir) {
+		return locks.get(new PointDirection(x, z, dir));
 	}
 
 	@Override
 	public StructureData createDataStorage() {
 		return new ShiftMazeData(this);
+	}
+
+	private static class PathPre {
+
+		private final LinkedList<Point> points;
+		private final ArrayList<ForgeDirection> dirs;
+
+		private PathPre(LinkedList<Point> path, ArrayList<ForgeDirection> dir) {
+			points = path;
+			dirs = dir;
+		}
+
+	}
+
+	public static class MazePath {
+
+		private final LinkedList<Point> solution;
+		private final HashMap<Point, ForgeDirection> directions;
+		private final MultiMap<Point, ForgeDirection> connections;
+
+		private MazePath(PathPre path, MultiMap<Point, ForgeDirection> con) {
+			solution = path.points;
+			connections = con;
+			directions = new HashMap();
+
+			int i = 0;
+			for (Point p : solution) {
+				ForgeDirection dir = path.dirs.get(i);
+				directions.put(p, dir);
+				i++;
+			}
+		}
+
+		public boolean hasPoint(Point pt) {
+			return directions.containsKey(pt);
+		}
+
+		public ForgeDirection getDirection(Point pt) {
+			return directions.get(pt);
+		}
+
+		public boolean isPositionOpen(int x, int z, ForgeDirection dir) {
+			return connections.get(new Point(x, z)).contains(dir);
+		}
+
 	}
 
 }

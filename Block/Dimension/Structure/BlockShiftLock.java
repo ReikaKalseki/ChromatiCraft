@@ -10,36 +10,18 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
-import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class BlockShiftLock extends BlockContainer {
-
-	private static int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
-	private static int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];
+public class BlockShiftLock extends Block {
 
 	private IIcon[] icons = new IIcon[2];
 
@@ -64,13 +46,7 @@ public class BlockShiftLock extends BlockContainer {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[0];
-	}
-
-	@Override
-	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
-		TileEntity te = iba.getTileEntity(x, y, z);
-		return te instanceof TileEntityShiftLock && ((TileEntityShiftLock)te).isOpen ? icons[1] : icons[0];
+		return icons[meta];
 	}
 
 	@Override
@@ -79,7 +55,6 @@ public class BlockShiftLock extends BlockContainer {
 		if (is != null && ReikaItemHelper.matchStackWithBlock(is, this))
 			return false;
 		if (ep.capabilities.isCreativeMode) {
-			TileEntityShiftLock te = (TileEntityShiftLock)world.getTileEntity(x, y, z);
 			/*
 			if (ChromaItems.SHARD.matchWith(is)) {
 				te.addColor(CrystalElement.elements[is.getItemDamage()%16]);
@@ -91,7 +66,6 @@ public class BlockShiftLock extends BlockContainer {
 				world.setBlockMetadataWithNotify(x, y, z, 1, 3);
 			}
 			 */
-			te.recalc();
 		}
 		world.markBlockForUpdate(x, y, z);
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
@@ -115,164 +89,12 @@ public class BlockShiftLock extends BlockContainer {
 
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		return te instanceof TileEntityShiftLock && ((TileEntityShiftLock)te).isOpen ? null : ReikaAABBHelper.getBlockAABB(x, y, z);
-	}
-
-	/*
-	@Override
-	public int getRenderColor(int meta) {
-		return ReikaColorAPI.mixColors(CrystalElement.elements[meta].getColor(), 0xffffff, 0.8F);
-	}
-
-	@Override
-	public int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
-		return this.getRenderColor(iba.getBlockMetadata(x, y, z));
-	}
-	 */
-	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
-		return new TileEntityShiftLock();
+		return world.getBlockMetadata(x, y, z) == 1 ? null : ReikaAABBHelper.getBlockAABB(x, y, z);
 	}
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
 		super.breakBlock(world, x, y, z, b, meta);
-	}
-
-	public static class TileEntityShiftLock extends TileEntity {
-
-		private boolean isOpen;
-
-		private void open() {
-			isOpen = true;
-			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
-			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
-		}
-
-		private void close() {
-			isOpen = false;
-			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
-			ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, Blocks.stone, 2, 1);
-		}
-
-		@Override
-		public boolean canUpdate() {
-			return false;
-		}
-
-		@Override
-		public void writeToNBT(NBTTagCompound NBT) {
-			super.writeToNBT(NBT);
-
-			NBT.setBoolean("open", isOpen);
-		}
-
-		@Override
-		public void readFromNBT(NBTTagCompound NBT) {
-			super.readFromNBT(NBT);
-
-			isOpen = NBT.getBoolean("open");
-		}
-
-		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
-
-		private void recalcColors() {
-			boolean flag = true;
-			/*
-			for (CrystalElement e : colors) {
-				if (keyCodes[channel][e.ordinal()] <= 0) {
-					flag = false;
-					break;
-				}
-			}*/
-			this.updateState(flag);
-		}
-
-		private void updateState(boolean flag) {
-			if (flag != isOpen) {
-				if (flag)
-					this.open();
-				else
-					this.close();
-			}
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
-
-		public int getChannel() {
-			return this.getBlockMetadata();
-		}
-
-		private void recalcGate() {
-			this.updateState(gateCodes[this.getChannel()] == 0);
-		}
-
-		public void recalc() {
-			if (this.getBlockMetadata() == 0)
-				this.recalcColors();
-			else if (this.getBlockMetadata() == 1)
-				this.recalcGate();
-		}
-	}
-
-	public static boolean isOpen(CrystalElement e, int structIndex) {
-		return keyCodes[structIndex][e.ordinal()] > 0;
-	}
-
-	public static void openColor(CrystalElement e, World world, int structIndex) {
-		//ReikaJavaLibrary.pConsole("add "+e+" @ "+structIndex);
-		keyCodes[structIndex][e.ordinal()]++;
-		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		updateTiles(world);
-	}
-
-	public static void closeColor(CrystalElement e, World world, int structIndex) {
-		//ReikaJavaLibrary.pConsole("remove "+e+" @ "+structIndex);
-		keyCodes[structIndex][e.ordinal()]--;
-		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		updateTiles(world);
-	}
-
-	private static void updateTiles(World world) {
-		for (Coordinate loc : ((ShiftMazeGenerator)DimensionStructureType.SHIFTMAZE.getGenerator()).getLocks()) {
-			TileEntity te = loc.getTileEntity(world);
-			if (te instanceof TileEntityShiftLock) {
-				((TileEntityShiftLock)te).recalc();
-			}
-			else {
-				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
-			}
-		}
-	}
-
-	public static void markOpenGate(World world, int structIndex) {
-		gateCodes[structIndex]--;
-		updateTiles(world);
-	}
-
-	public static void markClosedGate(World world, int structIndex) {
-		gateCodes[structIndex]++;
-		updateTiles(world);
-	}
-
-	public static void resetCaches(LocksGenerator g) {
-		int n = BlockLockKey.LockChannel.lockList.length;
-		keyCodes = new int[n][16];
-		for (int i = 0; i < n; i++) {
-			gateCodes[i] = g.getNumberGates(i);
-		}
 	}
 
 }
