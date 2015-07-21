@@ -17,14 +17,17 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
+import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeAnchor;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.PointDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -142,6 +145,63 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 				}
 			}
 		}
+
+		//if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+		//	this.print(x, y, z);
+		//}
+	}
+
+	private void print(int x, int y, int z) {
+		ReikaJavaLibrary.pConsole("================================================================================================");
+
+		for (int n = 0; n <= ANCHORS; n++) {
+
+			world.clear();
+			for (int i = 0; i < MAX_SIZE_X; i++) {
+				for (int k = 0; k < MAX_SIZE_Z; k++) {
+					Point pt = new Point(i, k);
+					if (!anchorRadii.containsKey(pt)) {
+						MazePiece p = new MazePiece(this, partSize, pt);
+						for (ForgeDirection dir : dirs) {
+							if (locationCache[n].get(pt).contains(dir))
+								p.connect(dir, true);
+						}
+						int dx = x+i*partSize;
+						int dz = z+k*partSize;
+
+						p.generate(world, dx, y, dz);
+					}
+				}
+			}
+
+			ReikaJavaLibrary.pConsole("------------------------------------------------------------------------------------");
+			int r = MAX_SIZE_X*partSize;
+			char[][] data = new char[r][r];
+			for (int i = 0; i < r; i++) {
+				for (int k = 0; k < r; k++) {
+					int dx = x+i;
+					int dz = z+k;
+					BlockKey bk = world.getBlock(dx, y+1, dz); //+1 to not be floor
+					char c = '?';
+					if (bk != null) {
+						if (bk.blockID == Blocks.air) {
+							c = ' ';
+						}
+						else if (bk.blockID == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+							c = '#';
+						}
+					}
+					data[i][k] = c;
+				}
+			}
+			for (int i = 0; i < r; i++) {
+				String s = new String(data[i]);
+				ReikaJavaLibrary.pConsole(s);
+			}
+			ReikaJavaLibrary.pConsole("------------------------------------------------------------------------------------");
+		}
+
+		ReikaJavaLibrary.pConsole("================================================================================================");
 	}
 
 	private int getConnection(Point pt, ForgeDirection dir) {

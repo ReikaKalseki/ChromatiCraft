@@ -48,6 +48,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import pneumaticCraft.api.client.pneumaticHelmet.BlockTrackEvent;
 import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -63,6 +64,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -112,6 +114,14 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@ModDependent(ModList.PNEUMATICRAFT)
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void hideStructures(BlockTrackEvent evt) {
+		if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+			evt.setCanceled(true);
+		}
 	}
 
 	@ModDependent(ModList.PNEUMATICRAFT)

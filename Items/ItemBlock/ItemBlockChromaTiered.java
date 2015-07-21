@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Base.BlockTieredResource;
-import Reika.DragonAPI.Instantiable.Data.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
