@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.PointDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class ShiftMazeGenerator extends DimensionStructureGenerator {
@@ -256,7 +257,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			li.add(pt);
 		}
 		ArrayList<ForgeDirection> dir = new ArrayList(pathCache[layer]);
-		dir.add(this.getExitDirectionTo(destination));
+		dir.add(ReikaDirectionHelper.getDirectionBetween(li.getLast(), destination));
 		return new PathPre(li, dir);
 	}
 
@@ -265,7 +266,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	}
 
 	private ForgeDirection getMovementDirection(int layer, int x, int z, Random rand) {
-		if (copyLength > 0 || rand.nextInt(4) == 0) {
+		if (copyLength > 0 || rand.nextInt(4) > 0) {
 			ForgeDirection dir = this.getSuccessfulPathDirection(x, z, layer);
 			if (dir != null) {
 				if (copyLength > 0) {
@@ -273,6 +274,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 				}
 				else {
 					copyLength = 4+rand.nextInt(9);
+					copyLength += 8;
 					copyLength *= 5;
 				}
 				return dir;
@@ -297,13 +299,14 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 				return solutions[i].getDirection(pt);
 			}
 			else {
-				for (int d = 1; d <= 2; d++) {
+				int r = 4;
+				for (int d = 1; d <= r; d++) {
 					for (ForgeDirection dir : dirs) {
 						int dx = x+dir.offsetX*d;
 						int dz = z+dir.offsetZ*d;
 						Point dp = new Point(dx, dz);
-						if (solutions[i].hasPoint(dp)) {
-							return solutions[i].getDirection(dp);
+						if (solutions[i].hasPoint(dp) || dp.equals(destination) || (anchorRadii.containsKey(dp) && anchorRadii.get(dp).equals(destination))) {
+							return dir;
 						}
 					}
 				}
