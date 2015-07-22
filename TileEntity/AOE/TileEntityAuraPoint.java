@@ -38,7 +38,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FastBlockCache;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.CropType;
+import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;

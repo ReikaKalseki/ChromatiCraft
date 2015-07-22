@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraInfuser_Old2;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 
 public class RenderInfuser2_Old extends ChromaRenderBase {
 

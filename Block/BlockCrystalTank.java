@@ -46,7 +46,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Interfaces.ConnectedTextureGlass;
+import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockCrystalTank extends Block implements IWailaDataProvider, ConnectedTextureGlass {

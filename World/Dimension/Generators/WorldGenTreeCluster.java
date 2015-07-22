@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import Reika.DragonAPI.Interfaces.TreeType;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;

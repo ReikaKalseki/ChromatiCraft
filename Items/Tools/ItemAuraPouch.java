@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
-import Reika.DragonAPI.Interfaces.ActivatedInventoryItem;
+import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 
 public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryItem {

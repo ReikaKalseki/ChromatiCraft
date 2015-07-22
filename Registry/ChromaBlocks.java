@@ -99,7 +99,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
-import Reika.DragonAPI.Interfaces.BlockEnum;
+import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
 public enum ChromaBlocks implements BlockEnum {

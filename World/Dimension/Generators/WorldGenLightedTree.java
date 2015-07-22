@@ -19,7 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Interfaces.TreeType;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 

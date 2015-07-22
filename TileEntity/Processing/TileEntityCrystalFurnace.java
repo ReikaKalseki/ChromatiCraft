@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Interfaces.XPProducer;
+import Reika.DragonAPI.Interfaces.TileEntity.XPProducer;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 

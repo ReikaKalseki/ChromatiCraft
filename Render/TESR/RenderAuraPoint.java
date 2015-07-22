@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Render.GlowKnot;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public class RenderAuraPoint extends RenderLocusPoint {

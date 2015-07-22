@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class RenderCrystalFence extends ChromaRenderBase {

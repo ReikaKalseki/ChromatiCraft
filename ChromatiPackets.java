@@ -85,7 +85,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Interfaces.IPacketHandler;
+import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -98,7 +98,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ChromatiPackets implements IPacketHandler {
+public class ChromatiPackets implements PacketHandler {
 
 	protected ChromaPackets pack;
 

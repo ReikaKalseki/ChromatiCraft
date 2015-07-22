@@ -64,7 +64,7 @@ import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
-import Reika.DragonAPI.Interfaces.ItemEnum;
+import Reika.DragonAPI.Interfaces.Registry.ItemEnum;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;

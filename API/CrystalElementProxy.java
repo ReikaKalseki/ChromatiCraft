@@ -14,7 +14,7 @@ package Reika.ChromatiCraft.API;
 public enum CrystalElementProxy {
 
 	BLACK("Kuro", 0x191919), //Magic
-	RED("Karmir", 0xFF0000), //Endurance
+	RED("Karmir", 0xFF0000), //Endurance/Durability
 	GREEN("Kijani", 0x007F0E), //Nature
 	BROWN("Ruskea", 0x724528), //Mineral
 	BLUE("Nila", 0x0026FF), //Light

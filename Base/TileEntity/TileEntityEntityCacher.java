@@ -19,7 +19,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.DragonAPI.Instantiable.StepTimer;
-import Reika.DragonAPI.Interfaces.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 
 public abstract class TileEntityEntityCacher extends CrystalReceiverBase implements BreakAction {
 

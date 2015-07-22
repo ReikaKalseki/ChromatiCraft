@@ -24,8 +24,8 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
 public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {

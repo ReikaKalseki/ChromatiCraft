@@ -18,8 +18,8 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
-import Reika.DragonAPI.Interfaces.IndexedItemSprites;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.Item.IndexedItemSprites;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class RenderCrystalCharger extends ChromaRenderBase {

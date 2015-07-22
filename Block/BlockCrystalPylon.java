@@ -27,7 +27,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Interfaces.SemiUnbreakable;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTrigger, SemiUnbreakable {

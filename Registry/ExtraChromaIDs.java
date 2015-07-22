@@ -15,7 +15,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.IDRegistry;
+import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 
 public enum ExtraChromaIDs implements IDRegistry {
 

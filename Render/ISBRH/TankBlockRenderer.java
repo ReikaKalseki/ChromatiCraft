@@ -21,7 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.ConnectedTextureGlass;
+import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 

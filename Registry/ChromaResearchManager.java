@@ -27,11 +27,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.ResearchFetcher;
+import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -45,7 +48,7 @@ import com.google.common.collect.HashBiMap;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public final class ChromaResearchManager {
+public final class ChromaResearchManager implements ResearchRegistry {
 
 	/** For hard links */
 	private final SequenceMap<ChromaResearch> data = new SequenceMap();
@@ -64,6 +67,8 @@ public final class ChromaResearchManager {
 	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
 
 	private ChromaResearchManager() {
+		ResearchFetcher.researchManager = this;
+
 		priority.addValue(ResearchLevel.ENTRY, new ChromaResearchTarget(ChromaResearch.FRAGMENT, -1)); //get fragment first, always
 
 		priority.addValue(ResearchLevel.RUNECRAFT, new ChromaResearchTarget(ChromaResearch.CRAFTING, 10));
@@ -535,6 +540,58 @@ public final class ChromaResearchManager {
 
 	public int getID(ProgressElement e) {
 		return progressIDs.inverse().get(e);
+	}
+
+	@Override
+	public boolean playerHasResearch(EntityPlayer ep, String key) {
+		ChromaResearch r = ChromaResearch.getByName(key.toUpperCase());
+		if (r == null) {
+			ChromatiCraft.logger.logError("A mod tried to fetch the state of an invalid research '"+key+"'!");
+			Thread.dumpStack();
+			return false;
+		}
+		return this.playerHasFragment(ep, r);
+	}
+
+	@Override
+	public boolean lexiconHasFragment(ItemStack book, String key) {
+		ChromaResearch r = ChromaResearch.getByName(key.toUpperCase());
+		if (r == null) {
+			ChromatiCraft.logger.logError("A mod tried to fetch the state of an invalid research '"+key+"'!");
+			Thread.dumpStack();
+			return false;
+		}
+		return ItemChromaBook.hasPage(book, r);
+	}
+
+	@Override
+	public HashSet<String> getAllResearches() {
+		HashSet<String> c = new HashSet();
+		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+			c.add(r.name());
+		}
+		return c;
+	}
+
+	@Override
+	public HashSet<String> getPrerequisites(String key) {
+		ChromaResearch r = ChromaResearch.getByName(key.toUpperCase());
+		if (r == null) {
+			ChromatiCraft.logger.logError("A mod tried to fetch the state of an invalid research '"+key+"'!");
+			Thread.dumpStack();
+			return null;
+		}
+		Collection<ChromaResearch> c = this.getPreReqsFor(r);
+		HashSet<String> h = new HashSet();
+		for (ChromaResearch req : c) {
+			h.add(req.name());
+		}
+		return h;
+	}
+
+	@Override
+	public String getResearchLevelForPlayer(EntityPlayer ep) {
+		return this.getPlayerResearchLevel(ep).name();
 	}
 
 }

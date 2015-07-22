@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.DragonAPI.Interfaces.ToolSprite;
+import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 
 public class ItemMultiTool extends ItemChromaTool implements ToolSprite {
 

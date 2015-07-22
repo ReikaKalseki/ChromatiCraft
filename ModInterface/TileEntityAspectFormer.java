@@ -24,7 +24,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
-import Reika.DragonAPI.Interfaces.GuiController;
+import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import com.google.common.base.Strings;

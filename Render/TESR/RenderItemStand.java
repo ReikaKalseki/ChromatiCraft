@@ -23,7 +23,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemStand;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 public class RenderItemStand extends ChromaRenderBase {

@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Models.ModelMEDistributor;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 
 public class RenderMEDistributor extends ChromaRenderBase {
 

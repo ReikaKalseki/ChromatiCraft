@@ -15,7 +15,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.DragonAPI.Interfaces.EntityEnum;
+import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 
 public enum ChromaEntities implements EntityEnum {
 

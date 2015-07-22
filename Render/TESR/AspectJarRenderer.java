@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar.JarTilt;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 

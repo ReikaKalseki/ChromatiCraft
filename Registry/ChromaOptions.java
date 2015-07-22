@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.Registry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.DragonAPI.Interfaces.ConfigList;
+import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
+import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
+import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 
 
-public enum ChromaOptions implements ConfigList {
+public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),

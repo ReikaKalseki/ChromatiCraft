@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import net.minecraft.block.Block;
@@ -28,6 +29,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.FakePlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.ResearchFetcher;
+import Reika.ChromatiCraft.API.ResearchFetcher.ProgressRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -55,7 +59,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProgressionManager {
+public class ProgressionManager implements ProgressRegistry {
 
 	public static final ProgressionManager instance = new ProgressionManager();
 
@@ -181,6 +185,8 @@ public class ProgressionManager {
 	}
 
 	private ProgressionManager() {
+		ResearchFetcher.progressManager = this;
+
 		this.load();
 
 		for (int i = 0; i < 16; i++) {
@@ -342,13 +348,19 @@ public class ProgressionManager {
 			ChromatiCraft.logger.logError("Tried to give progress '"+s+"' to null player???");
 			return false;
 		}
+		if (!this.canStepPlayerTo(ep, s))
+			return false;
+		this.setPlayerStage(ep, s, true);
+		return true;
+	}
+
+	private boolean canStepPlayerTo(EntityPlayer ep, ProgressStage s) {
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
 		if (this.isPlayerAtStage(ep, s))
 			return false;
 		if (!this.playerHasPrerequisites(ep, s))
 			return false;
-		this.setPlayerStage(ep, s, true);
 		return true;
 	}
 
@@ -568,6 +580,64 @@ public class ProgressionManager {
 			if (r != null)
 				ChromaResearchManager.instance.givePlayerFragment(ep, r);
 		}
+	}
+
+	@Override
+	public boolean playerHasResearch(EntityPlayer ep, String key) {
+		try {
+			ProgressStage p = ProgressStage.valueOf(key.toUpperCase());
+			return p.isPlayerAtStage(ep);
+		}
+		catch (IllegalArgumentException e) {
+			ChromatiCraft.logger.logError("A mod tried to fetch an invalid progress stage '"+key+"'!");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public HashSet<String> getAllResearches() {
+		HashSet<String> c = new HashSet();
+		for (int i = 0; i < ProgressStage.list.length; i++) {
+			c.add(ProgressStage.list[i].name());
+		}
+		return c;
+	}
+
+	@Override
+	public HashSet<String> getPrerequisites(String key) {
+		try {
+			ProgressStage p = ProgressStage.valueOf(key.toUpperCase());
+			Collection<ProgressStage> c = this.getPrereqs(p);
+			HashSet<String> h = new HashSet();
+			for (ProgressStage req : c) {
+				h.add(req.name());
+			}
+			return h;
+		}
+		catch (IllegalArgumentException e) {
+			ChromatiCraft.logger.logError("A mod tried to fetch the state of an invalid progress stage '"+key+"'!");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public boolean canPlayerStepTo(EntityPlayer ep, String key) {
+		try {
+			ProgressStage p = ProgressStage.valueOf(key.toUpperCase());
+			return this.canStepPlayerTo(ep, p);
+		}
+		catch (IllegalArgumentException e) {
+			ChromatiCraft.logger.logError("A mod tried to fetch the state of an invalid progress stage '"+key+"'!");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public boolean playerDiscoveredElement(EntityPlayer ep, CrystalElementProxy e) {
+		return this.hasPlayerDiscoveredColor(ep, CrystalElement.getFromAPI(e));
 	}
 
 }

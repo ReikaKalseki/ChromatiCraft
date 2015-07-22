@@ -107,7 +107,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
-import Reika.DragonAPI.Interfaces.GuiController;
+import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

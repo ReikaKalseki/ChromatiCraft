@@ -20,7 +20,7 @@ import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
-import Reika.DragonAPI.Interfaces.Connectable;
+import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
 public class ItemConnector extends ItemChromaTool {

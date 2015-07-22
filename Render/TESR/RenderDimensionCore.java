@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import Reika.ChromatiCraft.Base.RenderLocusPoint;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
-import Reika.DragonAPI.Interfaces.RenderFetcher;
+import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 
 public class RenderDimensionCore extends RenderLocusPoint {
 

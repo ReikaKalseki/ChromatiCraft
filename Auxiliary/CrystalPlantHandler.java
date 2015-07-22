@@ -21,7 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.CustomCropHandler;
-import Reika.DragonAPI.Interfaces.ModEntry;
+import Reika.DragonAPI.Interfaces.Registry.ModEntry;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class CrystalPlantHandler implements CustomCropHandler {

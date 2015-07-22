@@ -22,7 +22,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
-import Reika.DragonAPI.Interfaces.ToolSprite;
+import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
