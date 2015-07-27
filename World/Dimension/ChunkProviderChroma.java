@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +31,7 @@ import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
@@ -182,6 +184,14 @@ public class ChunkProviderChroma implements IChunkProvider {
 			d = Math.min(d, dd);
 		}
 		return d;
+	}
+
+	public EnumMap<CrystalElement, ChunkCoordIntPair> getStructures() {
+		EnumMap<CrystalElement, ChunkCoordIntPair> map = new EnumMap(CrystalElement.class);
+		for (StructurePair s : structures) {
+			map.put(s.color, s.generator.getGenerator().getCentralLocation());
+		}
+		return map;
 	}
 
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)

@@ -80,6 +80,11 @@ public class ChromaOverlays {
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
+	private static final int PING_LENGTH = 512;
+	private final EnumMap<CrystalElement, Integer> pings = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, Integer> pingAng = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
+
 	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
 
 	private ChromaOverlays() {
@@ -113,6 +118,7 @@ public class ChromaOverlays {
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
 				this.renderPylonAura(ep, gsc);
 			this.renderProgressOverlays(ep, gsc);
+			this.renderPingOverlays(ep, gsc);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			this.renderCustomCrosshair(evt);
@@ -120,6 +126,92 @@ public class ChromaOverlays {
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
 		}
+	}
+
+	private void renderPingOverlays(EntityPlayer ep, int gsc) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		HashMap<CrystalElement, Integer> map = new HashMap();
+		int i = 0;
+		int k = 0;
+
+		int fade = 64;
+		int fin = 16;
+
+		for (int c = 0; c < 16; c++) {
+			CrystalElement e = CrystalElement.elements[c];
+			Integer tick = pings.get(e);
+			if (tick != null) {
+				float alpha = tick >= (PING_LENGTH-fin) ? (PING_LENGTH-tick)/(float)fin : tick < fade ? tick/(float)fade : 1;
+				GL11.glColor4f(alpha, alpha, alpha, alpha);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				BlendMode.ADDITIVEDARK.apply();
+
+				FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
+
+				int x = 0;//Minecraft.getMinecraft().displayWidth/gsc;
+				int y = 0;//Minecraft.getMinecraft().displayHeight/gsc;
+
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				ReikaTextureHelper.bindTerrainTexture();
+
+				int s = 32;
+				int d = 40;
+
+				int dx = x+k*d;
+				int dy = y+i*d;
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, e.getGlowRune(), s, s);
+
+				BlendMode.DEFAULT.apply();
+
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+				double ang = pingAng.get(e);
+
+				double r = 24;
+				int ox = dx+s/2;
+				int oy = dy+s/2;
+				double ax = r*Math.cos(Math.toRadians(ang));
+				double ay = r*Math.sin(Math.toRadians(ang));
+
+				Tessellator.instance.startDrawing(GL11.GL_LINE_STRIP);
+				Tessellator.instance.setColorOpaque_I(0xffffff);
+				Tessellator.instance.addVertex(ox, oy, 0);
+				Tessellator.instance.addVertex(ox+ax, oy+ay, 0);
+				Tessellator.instance.draw();
+
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+				String sg = String.valueOf(pingDist.get(e));
+				int sw = fr.getStringWidth(sg);
+				fr.drawStringWithShadow(sg, dx+s-sw, dy+s-fr.FONT_HEIGHT, ReikaColorAPI.GStoHex((int)(alpha*255)));
+
+				if (tick > 1) {
+					map.put(e, tick-1);
+					map.put(e, 128);
+				}
+				else {
+					pingDist.remove(e);
+					pingAng.remove(e);
+				}
+
+				i++;
+				if (i >= 4) {
+					i = 0;
+					k++;
+				}
+			}
+		}
+		GL11.glPopAttrib();
+		pings.clear();
+		pings.putAll(map);
+	}
+
+	public void addPingOverlay(CrystalElement e, int dist, int ang) {
+		pings.put(e, PING_LENGTH);
+		pingDist.put(e, dist);
+		pingAng.put(e, ang);
 	}
 
 	private void renderProgressOverlays(EntityPlayer ep, int gsc) {

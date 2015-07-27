@@ -337,7 +337,7 @@ public class ChromaticEventManager {
 		if (src.isProjectile() && src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {
-				int looting = (int)(4*ep.getHealth()/ep.getMaxHealth());
+				int looting = (int)(12*ep.getHealth()/ep.getMaxHealth());
 				ArrayList li = new ArrayList(evt.entityLiving.capturedDrops);
 				evt.entityLiving.capturedDrops.clear();
 				boolean cap = evt.entityLiving.captureDrops;

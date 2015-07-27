@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemBlockLumenRelay extends ItemBlock {
 
@@ -49,6 +50,8 @@ public class ItemBlockLumenRelay extends ItemBlock {
 
 	@Override
 	public boolean onItemUse(ItemStack stack, EntityPlayer ep, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+		if (ReikaPlayerAPI.isFake(ep))
+			return false;
 		return ((BlockLumenRelay)field_150939_a).canPlaceOn(world, x, y, z, side) && super.onItemUse(stack, ep, world, x, y, z, side, hitX, hitY, hitZ);
 	}
 

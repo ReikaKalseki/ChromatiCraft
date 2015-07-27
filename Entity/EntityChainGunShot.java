@@ -34,6 +34,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -144,7 +145,7 @@ public class EntityChainGunShot extends EntityFireball {
 						this.destroy();
 					PacketTarget pt = new PacketTarget.RadiusTarget(this, 48);
 					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.CHAINGUNHURT.ordinal(), pt, e.getEntityId());
-					int dmg = firingPlayer.isPotionActive(Potion.damageBoost) ? 20 : 10;
+					int dmg = firingPlayer.isPotionActive(Potion.damageBoost) || Chromabilities.RANGEDBOOST.enabledOn(firingPlayer) ? 20 : 10;
 					e.attackEntityFrom(DamageSource.causePlayerDamage(firingPlayer).setProjectile(), dmg);
 					e.hurtResistantTime = 0;
 				}

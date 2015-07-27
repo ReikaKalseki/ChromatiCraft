@@ -14,8 +14,8 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class DecoratorEnderForest extends BiomeDecorator {
 
@@ -40,18 +40,18 @@ public class DecoratorEnderForest extends BiomeDecorator {
 
 		int arg;
 		switch(ChromaOptions.ENDERPOOLS.getValue()) {
-		case 1:
-			arg = 12;
-			break;
-		case 2:
-			arg = 6;
-			break;
-		case 3:
-			arg = 3;
-			break;
-		default:
-			arg = 6;
-			break;
+			case 1:
+				arg = 12;
+				break;
+			case 2:
+				arg = 6;
+				break;
+			case 3:
+				arg = 3;
+				break;
+			default:
+				arg = 6;
+				break;
 		}
 		if (randomGenerator.nextInt(arg) == 0)
 			gen.generate(currentWorld, randomGenerator, j, currentWorld.getTopSolidOrLiquidBlock(j, k), k);
@@ -62,7 +62,7 @@ public class DecoratorEnderForest extends BiomeDecorator {
 	{
 		if (currentWorld != null)
 		{
-			ReikaJavaLibrary.pConsole("Already decorating!!");
+			ChromatiCraft.logger.logError("Already decorating!!");
 		}
 		else
 		{

@@ -77,12 +77,16 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimension(World world) {
-		((WorldProviderChroma)world.provider).getChunkGenerator().clearCaches();
+		getChunkProvider(world).clearCaches();
 		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
 		if (dim.exists() && dim.isDirectory()) {
 			ReikaFileReader.deleteFolderWithContents(dim, 100);
 		}
+	}
+
+	public static ChunkProviderChroma getChunkProvider(World world) {
+		return ((WorldProviderChroma)world.provider).getChunkGenerator();
 	}
 
 }

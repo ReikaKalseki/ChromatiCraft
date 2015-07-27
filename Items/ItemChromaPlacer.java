@@ -40,6 +40,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -90,6 +91,8 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.HEATLILY)
 			return false;
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
+			return false;
+		if (!m.allowFakePlacer() && ReikaPlayerAPI.isFake(ep))
 			return false;
 		else {
 			if (!ep.capabilities.isCreativeMode)

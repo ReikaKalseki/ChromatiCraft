@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.RotaryCraft.API.ItemFetcher;
 
 public class BlockTieredOre extends BlockChromaTiered {
@@ -78,6 +79,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 		public boolean generate(World world, int x, int z, Random r) {
 			int y = this.ordinal() >= NETHER1.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
+			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+				y = r.nextInt(200);
 			int n = genBlock == Blocks.netherrack ? 16 : 8;
 			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), n, genBlock).generate(world, r, x, y, z);
 		}
@@ -115,71 +118,71 @@ public class BlockTieredOre extends BlockChromaTiered {
 		if (ItemFetcher.isPlayerHoldingBedrockPick(player))
 			fortune = 5;
 		switch(TieredOres.list[world.getBlockMetadata(x, y, z)]) {
-		case INFUSED:
-			n = Math.min(16, 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.chromaDust.copy());
-			break;
-		case STONES:
-			n = Math.min(4, 1+fortune/2);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
-			break;
-		case BINDING:
-			n = Math.min(8, 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.bindingCrystal.copy());
-			break;
-		case FOCAL:
-			n = Math.min(32, 1+rand.nextInt(8)*(1+rand.nextInt(1+fortune*2)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.focusDust.copy());
-			break;
-		case TELEPORT:
-			n = Math.min(64, 1+rand.nextInt(1+fortune)+fortune*fortune);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.enderDust.copy());
-			break;
-		case WATERY:
-			n = Math.min(64, 1+rand.nextInt(6)+rand.nextInt(1+6*fortune));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.waterDust.copy());
-			break;
-		case FIRAXITE:
-			n = Math.min(64, 1+rand.nextInt(12)+fortune*8);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.firaxite.copy());
-			break;
-		case PLACEHOLDER7:
-			n = Math.min(64, (1+fortune)*(1+4*rand.nextInt(5)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold4Dust.copy());
-			break;
-		case PLACEHOLDER8:
-			n = Math.min(64, (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold5Dust.copy());
-			break;
-		case NETHER1:
-			n = 1+rand.nextInt(6)*(1+fortune/2);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold6Dust.copy());
-			break;
-		case NETHER2:
-			n = 1+rand.nextInt(1+fortune*fortune);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.placehold7Dust.copy());
-			break;
-		case END:
-			n = 1+fortune*4;
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.resocrystal.copy());
-			break;
-		case END2:
-			n = 1+fortune+2*rand.nextInt(1+fortune);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.spaceDust.copy());
-			break;
+			case INFUSED:
+				n = Math.min(16, 1+rand.nextInt(5)*(1+rand.nextInt(1+fortune)));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.chromaDust.copy());
+				break;
+			case STONES:
+				n = Math.min(4, 1+fortune/2);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaItems.ELEMENTAL.getStackOfMetadata(rand.nextInt(16)));
+				break;
+			case BINDING:
+				n = Math.min(8, 1+rand.nextInt(3)*(1+rand.nextInt(1+fortune/2)));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.bindingCrystal.copy());
+				break;
+			case FOCAL:
+				n = Math.min(32, 1+rand.nextInt(8)*(1+rand.nextInt(1+fortune*2)));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.focusDust.copy());
+				break;
+			case TELEPORT:
+				n = Math.min(64, 1+rand.nextInt(1+fortune)+fortune*fortune);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.enderDust.copy());
+				break;
+			case WATERY:
+				n = Math.min(64, 1+rand.nextInt(6)+rand.nextInt(1+6*fortune));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.waterDust.copy());
+				break;
+			case FIRAXITE:
+				n = Math.min(64, 1+rand.nextInt(12)+fortune*8);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.firaxite.copy());
+				break;
+			case PLACEHOLDER7:
+				n = Math.min(64, (1+fortune)*(1+4*rand.nextInt(5)));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.placehold4Dust.copy());
+				break;
+			case PLACEHOLDER8:
+				n = Math.min(64, (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8)));
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.placehold5Dust.copy());
+				break;
+			case NETHER1:
+				n = 1+rand.nextInt(6)*(1+fortune/2);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.placehold6Dust.copy());
+				break;
+			case NETHER2:
+				n = 1+rand.nextInt(1+fortune*fortune);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.placehold7Dust.copy());
+				break;
+			case END:
+				n = 1+fortune*4;
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.resocrystal.copy());
+				break;
+			case END2:
+				n = 1+fortune+2*rand.nextInt(1+fortune);
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.spaceDust.copy());
+				break;
 		}
 		return li;
 	}
@@ -249,14 +252,14 @@ public class BlockTieredOre extends BlockChromaTiered {
 		if (b.isOpaqueCube())
 			return false;
 		switch(dir) {
-		case EAST:
-		case WEST:
-		case SOUTH:
-		case NORTH:
-		case UP:
-		case DOWN:
-		default:
-			return true;
+			case EAST:
+			case WEST:
+			case SOUTH:
+			case NORTH:
+			case UP:
+			case DOWN:
+			default:
+				return true;
 		}
 	}
 

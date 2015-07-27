@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -112,7 +113,7 @@ public class EntitySplashGunShot extends EntityFireball {
 	}
 
 	private void attack(EntityLivingBase e) {
-		float dmg = firingPlayer.isPotionActive(Potion.damageBoost) ? 20 : 10;
+		float dmg = firingPlayer.isPotionActive(Potion.damageBoost) || Chromabilities.RANGEDBOOST.enabledOn(firingPlayer) ? 20 : 10;
 		if (e instanceof EntityPlayer)
 			dmg *= 1.2F;
 		if (e == firingPlayer)

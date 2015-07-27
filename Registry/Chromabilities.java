@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -42,35 +44,48 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -102,7 +117,8 @@ public enum Chromabilities implements Ability {
 	FLOAT(Phase.END, true),
 	SPAWNERSEE(null, true),
 	BREADCRUMB(null, true),
-	RANGEDBOOST(null, false);
+	RANGEDBOOST(null, false),
+	DIMPING(null, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -198,7 +214,7 @@ public enum Chromabilities implements Ability {
 			return AbilityHelper.instance.getUsageElementsFor(c);
 		}
 
-		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF || c == BREADCRUMB || c == SPAWNERSEE || c == REACH)
+		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF || c == BREADCRUMB || c == SPAWNERSEE || c == REACH || c == RANGEDBOOST)
 			return AbilityHelper.instance.getUsageElementsFor(c);
 
 		return null;
@@ -206,70 +222,73 @@ public enum Chromabilities implements Ability {
 
 	public void apply(EntityPlayer ep) {
 		switch(this) {
-		case MAGNET:
-			this.attractItemsAndXP(ep, 24, AbilityHelper.instance.isMagnetNoClip(ep));
-			break;
-		case SHIELD:
-			this.stopArrows(ep);
-			break;
-		case COMMUNICATE:
-			this.deAggroMobs(ep);
-			break;
-		case FLOAT:
-			this.waterRun(ep);
-			break;
-		default:
-			break;
+			case MAGNET:
+				this.attractItemsAndXP(ep, 24, AbilityHelper.instance.isMagnetNoClip(ep));
+				break;
+			case SHIELD:
+				this.stopArrows(ep);
+				break;
+			case COMMUNICATE:
+				this.deAggroMobs(ep);
+				break;
+			case FLOAT:
+				this.waterRun(ep);
+				break;
+			default:
+				break;
 		}
 	}
 
 	public void trigger(EntityPlayer ep, int data) {
 		switch(this) {
-		case REACH:
-			this.setReachDistance(ep, this.enabledOn(ep) ? MAX_REACH : -1); //use data?
-			break;
-		case SONIC:
-			this.destroyBlocksAround(ep, data);
-			break;
-		case SHIFT:
-			if (this.enabledOn(ep)) {
-				AbilityHelper.instance.startDrawingBoxes(ep);
-				AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
-			}
-			else {
-				AbilityHelper.instance.stopDrawingBoxes(ep);
-				AbilityHelper.instance.shifts.remove(ep);
-			}
-			break;
-		case HEAL:
-			this.healPlayer(ep, data);
-			break;
-		case FIREBALL:
-			this.launchFireball(ep, data);
-			break;
-		case HEALTH:
-			this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
-			break;
-		case LIGHTNING:
-			this.spawnLightning(ep, data);
-			break;
-		case LIFEPOINT:
-			this.convertBufferToLP(ep, data);
-			break;
-		case HOTBAR:
-			addInvPage(ep);
-			break;
-		case SHOCKWAVE:
-			causeShockwave(ep);
-			break;
-		case TELEPORT:
-			teleportPlayerMenu(ep);
-			break;
-		case BREADCRUMB:
-			AbilityHelper.instance.setPathLength(ep, this.enabledOn(ep) ? ReikaMathLibrary.intpow2(2, data) : 0);
-			break;
-		default:
-			break;
+			case REACH:
+				this.setReachDistance(ep, this.enabledOn(ep) ? MAX_REACH : -1); //use data?
+				break;
+			case SONIC:
+				this.destroyBlocksAround(ep, data);
+				break;
+			case SHIFT:
+				if (this.enabledOn(ep)) {
+					AbilityHelper.instance.startDrawingBoxes(ep);
+					AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
+				}
+				else {
+					AbilityHelper.instance.stopDrawingBoxes(ep);
+					AbilityHelper.instance.shifts.remove(ep);
+				}
+				break;
+			case HEAL:
+				this.healPlayer(ep, data);
+				break;
+			case FIREBALL:
+				this.launchFireball(ep, data);
+				break;
+			case HEALTH:
+				this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
+				break;
+			case LIGHTNING:
+				this.spawnLightning(ep, data);
+				break;
+			case LIFEPOINT:
+				this.convertBufferToLP(ep, data);
+				break;
+			case HOTBAR:
+				addInvPage(ep);
+				break;
+			case SHOCKWAVE:
+				causeShockwave(ep);
+				break;
+			case TELEPORT:
+				teleportPlayerMenu(ep);
+				break;
+			case BREADCRUMB:
+				AbilityHelper.instance.setPathLength(ep, this.enabledOn(ep) ? ReikaMathLibrary.intpow2(2, data) : 0);
+				break;
+			case DIMPING:
+				doDimensionPing(ep);
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -311,16 +330,17 @@ public enum Chromabilities implements Ability {
 
 	public boolean isPureEventDriven() {
 		switch(this) {
-		case SONIC:
-		case HEAL:
-		case FIREBALL:
-		case LIGHTNING:
-		case HOTBAR:
-		case SHOCKWAVE:
-		case TELEPORT:
-			return true;
-		default:
-			return false;
+			case SONIC:
+			case HEAL:
+			case FIREBALL:
+			case LIGHTNING:
+			case HOTBAR:
+			case SHOCKWAVE:
+			case TELEPORT:
+			case DIMPING:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -442,6 +462,32 @@ public enum Chromabilities implements Ability {
 			this.setPlayerMaxHealth(ep, 0);
 		else if (this == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, false);
+	}
+
+	private static void doDimensionPing(EntityPlayer ep) {
+		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			int x = MathHelper.floor_double(ep.posX);
+			int z = MathHelper.floor_double(ep.posZ);
+
+			EnumMap<CrystalElement, ChunkCoordIntPair> map = ChromaDimensionManager.getChunkProvider(ep.worldObj).getStructures();
+			for (CrystalElement e : map.keySet()) {
+				ChunkCoordIntPair loc = map.get(e);
+				int px = loc.chunkXPos<<4;
+				int pz = loc.chunkZPos<<4;
+				double dx = px-x;
+				double dz = pz-z;
+				double dist = ReikaMathLibrary.py3d(dx, 0, dz);
+				double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
+				double factor = Math.pow(dist, 1.6);
+				factor = factor/20000D;
+				int delay = (int)factor;
+				ScheduledSoundEvent evt = new DimensionPingEvent(e, ep, dist, ang);
+				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
+			}
+		}
+		else {
+			ChromaSounds.ERROR.playSound(ep);
+		}
 	}
 
 	private static void waterRun(EntityPlayer ep) {
@@ -662,6 +708,7 @@ public enum Chromabilities implements Ability {
 		int z = MathHelper.floor_double(ep.posZ);
 		int r = power;
 		if (!ep.worldObj.isRemote) {
+			ItemHashMap<Integer> drops = new ItemHashMap();
 			for (int i = -r; i <= r; i++) {
 				for (int j = -r; j <= r; j++) {
 					for (int k = -r; k <= r; k++) {
@@ -676,7 +723,21 @@ public enum Chromabilities implements Ability {
 									continue;
 								}
 								if (power > b.blockResistance/12F) {
-									b.dropBlockAsItem(ep.worldObj, dx, dy, dz, meta, 0);
+									ArrayList<ItemStack> li = b.getDrops(ep.worldObj, dx, dy, dz, meta, 0);
+									if (b instanceof BlockTieredResource) {
+										BlockTieredResource bt = (BlockTieredResource)b;
+										li.clear();
+										if (bt.isPlayerSufficientTier(ep.worldObj, dx, dy, dz, ep))
+											li.addAll(bt.getHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
+										else
+											li.addAll(bt.getNoHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
+									}
+									ForgeEventFactory.fireBlockHarvesting(li, ep.worldObj, b, dx, dy, dz, meta, 0, 1, false, ep);
+									for (ItemStack is : li) {
+										Integer get = drops.get(is);
+										int val = get == null ? 0 : get.intValue();
+										drops.put(is, val+is.stackSize);
+									}
 									b.removedByPlayer(ep.worldObj, ep, dx, dy, dz, true);
 									ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
 									ep.worldObj.setBlockToAir(dx, dy, dz);
@@ -686,6 +747,27 @@ public enum Chromabilities implements Ability {
 					}
 				}
 			}
+			for (ItemStack is : drops.keySet()) {
+				int amt = drops.get(is);
+				int max = is.getMaxStackSize();
+				while (amt > 0) {
+					int drop = Math.min(max, amt);
+					amt -= drop;
+					DecimalPosition pos = ReikaRandomHelper.getRandomSphericalPosition(x+0.5, y+0.5, z+0.5, r);
+					ReikaJavaLibrary.pConsole(drop+" of "+is+" @ "+pos);
+					ReikaItemHelper.dropItem(ep.worldObj, pos.xCoord, pos.yCoord, pos.zCoord, ReikaItemHelper.getSizedItemStack(is, drop));
+				}
+			}
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x+1, y+1, z+1).expand(r, r, r);
+			List<EntityXPOrb> li = ep.worldObj.getEntitiesWithinAABB(EntityXPOrb.class, box);
+			int amt = 0;
+			for (EntityXPOrb e : li) {
+				if (e.getDistance(x+0.5, y+0.5, z+0.5) <= r+0.5) {
+					amt += e.xpValue;
+					e.setDead();
+				}
+			}
+			ReikaWorldHelper.splitAndSpawnXP(ep.worldObj, x+0.5, y+0.5, z+0.5, amt);
 		}
 		ep.playSound("random.explode", power/6F, 2-power/6F);
 	}
@@ -812,24 +894,24 @@ public enum Chromabilities implements Ability {
 
 	public int getMaxPower() {
 		switch(this) {
-		case SONIC:
-			return 12;
-		case SHIFT:
-			return 24;
-		case HEAL:
-			return 4;
-		case FIREBALL:
-			return 8;
-		case HEALTH:
-			return 40;
-		case LIGHTNING:
-			return 2;
-		case MAGNET:
-			return 1;
-		case BREADCRUMB:
-			return 12;
-		default:
-			return 0;
+			case SONIC:
+				return 12;
+			case SHIFT:
+				return 24;
+			case HEAL:
+				return 4;
+			case FIREBALL:
+				return 8;
+			case HEALTH:
+				return 40;
+			case LIGHTNING:
+				return 2;
+			case MAGNET:
+				return 1;
+			case BREADCRUMB:
+				return 12;
+			default:
+				return 0;
 		}
 	}
 

@@ -212,6 +212,8 @@ public enum ChromaResearch implements ProgressElement {
 	FLOAT(			Chromabilities.FLOAT),
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE),
 	BREADCRUMB(		Chromabilities.BREADCRUMB),
+	RANGEBOOST(		Chromabilities.RANGEDBOOST),
+	DIMPING(		Chromabilities.DIMPING),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -745,11 +747,11 @@ public enum ChromaResearch implements ProgressElement {
 
 	public boolean isVanillaRecipe() {
 		switch(this) {
-		case CASTTABLE:
-		case WAND:
-			return true;
-		default:
-			return false;
+			case CASTTABLE:
+			case WAND:
+				return true;
+			default:
+				return false;
 		}
 	}
 

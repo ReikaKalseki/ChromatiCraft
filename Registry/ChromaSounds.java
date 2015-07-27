@@ -19,7 +19,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public enum ChromaSounds implements SoundEnum {
 
@@ -138,7 +137,7 @@ public enum ChromaSounds implements SoundEnum {
 			if (soundList[i].name().equals(name))
 				return soundList[i];
 		}
-		ReikaJavaLibrary.pConsole("\""+name+"\" does not correspond to a registered sound!");
+		ChromatiCraft.logger.logError("\""+name+"\" does not correspond to a registered sound!");
 		return null;
 	}
 

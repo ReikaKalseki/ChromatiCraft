@@ -70,6 +70,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -162,7 +163,8 @@ public enum ChromaBlocks implements BlockEnum {
 	MUSICMEMORY(BlockMusicMemory.class,											"chroma.musicmem"),
 	MUSICTRIGGER(BlockMusicTrigger.class,										"chroma.musictrigger"),
 	SHIFTKEY(BlockShiftKey.class,				ItemBlockMultiType.class,		"chroma.shiftkey"),
-	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock");
+	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock"),
+	TELEPORT(BlockTeleport.class,												"chroma.teleportblock");
 
 	private Class blockClass;
 	private String blockName;
@@ -195,32 +197,32 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this.isCrystal())
 			return ChromatiCraft.crystalMat;
 		switch(this) {
-		case TILEPLANT:
-		case TIEREDPLANT:
-			return Material.plants;
-		case CHROMA:
-			//case ACTIVECHROMA:
-		case ENDER:
-			return Material.water;
-		case TILECRYSTAL:
-		case TILECRYSTALNONCUBE:
-		case PYLON:
-			//case FIBER:
-		case POWERTREE:
-		case RELAY:
-			return ChromatiCraft.crystalMat;
-		case TNT:
-			return Material.tnt;
-		case PORTAL:
-			return Material.portal;
-		case GLOWLOG:
-			return Material.wood;
-		case GLOWLEAF:
-			return Material.leaves;
-		case HOVER:
-			return ChromatiCraft.airMat;
-		default:
-			return Material.rock;
+			case TILEPLANT:
+			case TIEREDPLANT:
+				return Material.plants;
+			case CHROMA:
+				//case ACTIVECHROMA:
+			case ENDER:
+				return Material.water;
+			case TILECRYSTAL:
+			case TILECRYSTALNONCUBE:
+			case PYLON:
+				//case FIBER:
+			case POWERTREE:
+			case RELAY:
+				return ChromatiCraft.crystalMat;
+			case TNT:
+				return Material.tnt;
+			case PORTAL:
+				return Material.portal;
+			case GLOWLOG:
+				return Material.wood;
+			case GLOWLEAF:
+				return Material.leaves;
+			case HOVER:
+				return ChromatiCraft.airMat;
+			default:
+				return Material.rock;
 		}
 	}
 
@@ -234,15 +236,15 @@ public enum ChromaBlocks implements BlockEnum {
 
 	public boolean isDye() {
 		switch(this) {
-		case DYE:
-		case DYELEAF:
-		case DECAY:
-		case DYESAPLING:
-		case DYEFLOWER:
-		case DYEGRASS:
-			return true;
-		default:
-			return false;
+			case DYE:
+			case DYELEAF:
+			case DECAY:
+			case DYESAPLING:
+			case DYEFLOWER:
+			case DYEGRASS:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -313,64 +315,66 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this.isCrystal() || this.isDye())
 			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 		switch(this) {
-		case RUNE:
-		case PLANT: //"Crystal Bloom"
-		case LAMPBLOCK:
-		case POWERTREE:
-		case VOIDRIFT:
-			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
-		case HIVE:
-			return meta == 0 ? "Crystal Hive" : "Pure Hive";
-		case PYLON:
-			return this.getBasicName();
-		case PYLONSTRUCT:
-			return StatCollector.translateToLocal("chromablock.pylon."+meta);
-		case TIEREDORE:
-		case TIEREDPLANT:
-			return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
-		case PATH:
-			return PathType.list[meta].name+" "+this.getBasicName();
-		case STRUCTSHIELD:
-			return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
-		case RELAY:
-			return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
-		case DIMGEN:
-			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase());
-		case DIMGENTILE:
-			return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase());
-		case LOCKKEY:
-		case HOVER:
-			return this.getBasicName();
-		default:
-			return "";
+			case RUNE:
+			case PLANT: //"Crystal Bloom"
+			case LAMPBLOCK:
+			case POWERTREE:
+			case VOIDRIFT:
+				return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
+			case HIVE:
+				return meta == 0 ? "Crystal Hive" : "Pure Hive";
+			case PYLON:
+				return this.getBasicName();
+			case PYLONSTRUCT:
+				return StatCollector.translateToLocal("chromablock.pylon."+meta);
+			case TIEREDORE:
+			case TIEREDPLANT:
+				return StatCollector.translateToLocal(this.getBasicName()+"."+meta);
+			case PATH:
+				return PathType.list[meta].name+" "+this.getBasicName();
+			case STRUCTSHIELD:
+				return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
+			case RELAY:
+				return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
+			case DIMGEN:
+				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase());
+			case DIMGENTILE:
+				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase());
+			case LOCKKEY:
+			case HOVER:
+				return this.getBasicName();
+			default:
+				return "";
 		}
 	}
 
 	@Override
 	public boolean hasMultiValuedName() {
 		switch(this) {
-		case TANK:
-		case TNT:
-		case FENCE:
-		case LOOTCHEST:
-		case HEATLAMP:
-		case COLORLOCK:
-		case LOCKKEY:
-		case LOCKFENCE:
-		case LOCKFREEZE:
-		case GLOWLOG:
-		case GLOWLEAF:
-		case GLOWSAPLING:
-		case HOVER:
-		case GOL:
-		case GOLCONTROL:
-		case MUSICMEMORY:
-		case MUSICTRIGGER:
-		case SHIFTLOCK:
-		case SHIFTKEY:
-			return false;
-		default:
-			return true;
+			case TANK:
+			case TNT:
+			case FENCE:
+			case LOOTCHEST:
+			case HEATLAMP:
+			case PORTAL:
+			case COLORLOCK:
+			case LOCKKEY:
+			case LOCKFENCE:
+			case LOCKFREEZE:
+			case GLOWLOG:
+			case GLOWLEAF:
+			case GLOWSAPLING:
+			case HOVER:
+			case GOL:
+			case GOLCONTROL:
+			case MUSICMEMORY:
+			case MUSICTRIGGER:
+			case SHIFTLOCK:
+			case SHIFTKEY:
+			case TELEPORT:
+				return false;
+			default:
+				return true;
 		}
 	}
 
@@ -383,28 +387,28 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this.isCrystal() || this.isDye())
 			return CrystalElement.elements.length;
 		switch(this) {
-		case RUNE:
-		case PLANT:
-		case VOIDRIFT:
-			return 16;
-		case HIVE:
-			return 2;
-		case PYLON:
-			return 2;
-		case PYLONSTRUCT:
-			return 16;
-		case PATH:
-			return BlockPath.PathType.list.length;
-		case STRUCTSHIELD:
-			return BlockStructureShield.BlockType.list.length;
-		case DIMGEN:
-			return BlockDimensionDeco.DimDecoTypes.list.length;
-		case LOCKKEY:
-			return BlockLockKey.LockChannel.lockList.length;
-		case HOVER:
-			return BlockHoverBlock.HoverType.list.length;
-		default:
-			return 1;
+			case RUNE:
+			case PLANT:
+			case VOIDRIFT:
+				return 16;
+			case HIVE:
+				return 2;
+			case PYLON:
+				return 2;
+			case PYLONSTRUCT:
+				return 16;
+			case PATH:
+				return BlockPath.PathType.list.length;
+			case STRUCTSHIELD:
+				return BlockStructureShield.BlockType.list.length;
+			case DIMGEN:
+				return BlockDimensionDeco.DimDecoTypes.list.length;
+			case LOCKKEY:
+				return BlockLockKey.LockChannel.lockList.length;
+			case HOVER:
+				return BlockHoverBlock.HoverType.list.length;
+			default:
+				return 1;
 		}
 	}
 

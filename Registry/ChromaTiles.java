@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -181,32 +182,32 @@ public enum ChromaTiles {
 
 	public boolean renderInPass1() {
 		switch(this) {
-		case ACCELERATOR:
-		case RIFT:
-		case PYLON:
-		case REPEATER:
-		case COMPOUND:
-		case LASER:
-		case BEACON:
-		case FENCE:
-		case STAND:
-		case RELAYSOURCE:
-		case ASPECT:
-		case LAMP:
-		case POWERTREE:
-		case LAMPCONTROL:
-		case STRUCTCONTROL:
-		case CHROMAFLOWER:
-		case DIMENSIONCORE:
-		case AURAPOINT:
-		case AUTOMATOR:
-		case MEDISTRIBUTOR:
-		case RFDISTRIBUTOR:
-			//case TANK:
-			//case ITEMRIFT:
-			return true;
-		default:
-			return false;
+			case ACCELERATOR:
+			case RIFT:
+			case PYLON:
+			case REPEATER:
+			case COMPOUND:
+			case LASER:
+			case BEACON:
+			case FENCE:
+			case STAND:
+			case RELAYSOURCE:
+			case ASPECT:
+			case LAMP:
+			case POWERTREE:
+			case LAMPCONTROL:
+			case STRUCTCONTROL:
+			case CHROMAFLOWER:
+			case DIMENSIONCORE:
+			case AURAPOINT:
+			case AUTOMATOR:
+			case MEDISTRIBUTOR:
+			case RFDISTRIBUTOR:
+				//case TANK:
+				//case ITEMRIFT:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -297,15 +298,15 @@ public enum ChromaTiles {
 
 	public boolean allowsAcceleration() {
 		switch(this) {
-		case TABLE:
-		case RITUAL:
-		case POWERTREE:
-		case PYLON:
-		case AUTOMATOR:
-		case INFUSER:
-			return false;
-		default:
-			return true;
+			case TABLE:
+			case RITUAL:
+			case POWERTREE:
+			case PYLON:
+			case AUTOMATOR:
+			case INFUSER:
+				return false;
+			default:
+				return true;
 		}
 	}
 
@@ -329,10 +330,10 @@ public enum ChromaTiles {
 
 	public boolean canBeVertical() {
 		switch(this) {
-		case LASER:
-			return true;
-		default:
-			return false;
+			case LASER:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -346,12 +347,12 @@ public enum ChromaTiles {
 
 	public double getMinX(TileEntityChromaticBase te) {
 		switch(this) {
-		case CHARGER:
-			return 0.125;
-		case ASPECTJAR:
-			return 0.1875;
-		default:
-			return 0;
+			case CHARGER:
+				return 0.125;
+			case ASPECTJAR:
+				return 0.1875;
+			default:
+				return 0;
 		}
 	}
 
@@ -361,61 +362,61 @@ public enum ChromaTiles {
 
 	public double getMinZ(TileEntityChromaticBase te) {
 		switch(this) {
-		case CHARGER:
-			return 0.125;
-		case ASPECTJAR:
-			return 0.1875;
-		default:
-			return 0;
+			case CHARGER:
+				return 0.125;
+			case ASPECTJAR:
+				return 0.1875;
+			default:
+				return 0;
 		}
 	}
 
 	public double getMaxX(TileEntityChromaticBase te) {
 		switch(this) {
-		case CHARGER:
-			return 0.875;
-		case ASPECTJAR:
-			return 0.8125;
-		default:
-			return 1;
+			case CHARGER:
+				return 0.875;
+			case ASPECTJAR:
+				return 0.8125;
+			default:
+				return 1;
 		}
 	}
 
 	public double getMaxY(TileEntityChromaticBase te) {
 		switch(this) {
-		case RELAYSOURCE:
-			return 0.625;
-		case INFUSER:
-			return 0.5;
-		case ASPECTJAR:
-			return 0.875;
-		default:
-			return 1;
+			case RELAYSOURCE:
+				return 0.625;
+			case INFUSER:
+				return 0.5;
+			case ASPECTJAR:
+				return 0.875;
+			default:
+				return 1;
 		}
 	}
 
 	public double getMaxZ(TileEntityChromaticBase te) {
 		switch(this) {
-		case CHARGER:
-			return 0.875;
-		case ASPECTJAR:
-			return 0.8125;
-		default:
-			return 1;
+			case CHARGER:
+				return 0.875;
+			case ASPECTJAR:
+				return 0.8125;
+			default:
+				return 1;
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	public int getRenderOffset() {
 		switch(this) {
-		case LASER:
-		case REPEATER:
-		case COMPOUND:
-			return 0;
-		case CHARGER:
-			return 29;
-		default:
-			return 21;
+			case LASER:
+			case REPEATER:
+			case COMPOUND:
+				return 0;
+			case CHARGER:
+				return 29;
+			default:
+				return 21;
 		}
 	}
 
@@ -448,6 +449,20 @@ public enum ChromaTiles {
 
 	public boolean isConfigDisabled() {
 		return false;
+	}
+
+	public boolean allowFakePlacer() {
+		if (this.isCrystalNetworkTile())
+			return false;
+		if (this == TABLE || this == RITUAL || this == STAND || this == AUTOMATOR)
+			return false;
+		if (this == AURAPOINT || this == DIMENSIONCORE)
+			return false;
+		return true;
+	}
+
+	public boolean isCrystalNetworkTile() {
+		return CrystalNetworkTile.class.isAssignableFrom(tile);
 	}
 
 }
