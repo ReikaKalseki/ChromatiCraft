@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -81,6 +82,9 @@ public class ChromaOverlays {
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
 
 	private static final int PING_LENGTH = 512;
+	private static final int FADEIN = 16;
+	private static final int FADEOUT = 64;
+
 	private final EnumMap<CrystalElement, Integer> pings = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> pingAng = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
@@ -134,14 +138,13 @@ public class ChromaOverlays {
 		int i = 0;
 		int k = 0;
 
-		int fade = 64;
-		int fin = 16;
+		boolean renderCircle = false;
 
 		for (int c = 0; c < 16; c++) {
 			CrystalElement e = CrystalElement.elements[c];
 			Integer tick = pings.get(e);
 			if (tick != null) {
-				float alpha = tick >= (PING_LENGTH-fin) ? (PING_LENGTH-tick)/(float)fin : tick < fade ? tick/(float)fade : 1;
+				float alpha = tick >= (PING_LENGTH-FADEIN) ? (PING_LENGTH-tick)/(float)FADEIN : tick < FADEOUT ? tick/(float)FADEOUT : 1;
 				GL11.glColor4f(alpha, alpha, alpha, alpha);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_BLEND);
@@ -150,46 +153,76 @@ public class ChromaOverlays {
 
 				FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
 
-				int x = 0;//Minecraft.getMinecraft().displayWidth/gsc;
-				int y = 0;//Minecraft.getMinecraft().displayHeight/gsc;
+				int w = Minecraft.getMinecraft().displayWidth/gsc;
+				int h = Minecraft.getMinecraft().displayHeight/gsc;
+
+				int x = w/2;
+				int y = h/2/*-12*/; //crosshair misalign is confusing
+
+				double r = h/2*0.875;
+
+				int s = 16;
+				int d = 40;
+
+				if (!renderCircle) {
+					Tessellator v5 = Tessellator.instance;
+					v5.startDrawing(GL11.GL_LINE_STRIP);
+					v5.setColorOpaque_I(0xffffff);
+					for (int a = 0; a <= 360; a += 5) {
+						double ax = r*Math.cos(Math.toRadians(a));
+						double ay = r*Math.sin(Math.toRadians(a));
+						v5.addVertex(x+ax, y+ay, 0);
+						if (a%15 == 0) {
+							double dr = r*0.95;
+							double dax = dr*Math.cos(Math.toRadians(a));
+							double day = dr*Math.sin(Math.toRadians(a));
+							v5.addVertex(x+dax, y+day, 0);
+							v5.addVertex(x+ax, y+ay, 0);
+						}
+					}
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINE_STRIP);
+					v5.setColorOpaque_I(0xffffff);
+					for (int a = 0; a <= 360; a += 5) {
+						double ax = r*0.0625*Math.cos(Math.toRadians(a));
+						double ay = r*0.0625*Math.sin(Math.toRadians(a));
+						v5.addVertex(x+ax, y+ay, 0);
+						if (a%15 == 0) {
+							double dr = r*0.0625*1.25;
+							double dax = dr*Math.cos(Math.toRadians(a));
+							double day = dr*Math.sin(Math.toRadians(a));
+							v5.addVertex(x+dax, y+day, 0);
+							v5.addVertex(x+ax, y+ay, 0);
+						}
+					}
+					v5.draw();
+					renderCircle = true;
+				}
 
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				ReikaTextureHelper.bindTerrainTexture();
 
-				int s = 32;
-				int d = 40;
+				double ang = pingAng.get(e);
+				double dist = pingDist.get(e);
 
-				int dx = x+k*d;
-				int dy = y+i*d;
+				double dr = MathHelper.clamp_double(r*Math.pow(dist, 1.5)/1000000D, 5, r);
+
+				double ax = dr*Math.cos(Math.toRadians(ang))-s/2;
+				double ay = dr*Math.sin(Math.toRadians(ang))-s/2;
+
+				int dx = x+(int)ax;
+				int dy = y+(int)ay;
+
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, e.getGlowRune(), s, s);
 
 				BlendMode.DEFAULT.apply();
 
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-				double ang = pingAng.get(e);
-
-				double r = 24;
 				int ox = dx+s/2;
 				int oy = dy+s/2;
-				double ax = r*Math.cos(Math.toRadians(ang));
-				double ay = r*Math.sin(Math.toRadians(ang));
-
-				Tessellator.instance.startDrawing(GL11.GL_LINE_STRIP);
-				Tessellator.instance.setColorOpaque_I(0xffffff);
-				Tessellator.instance.addVertex(ox, oy, 0);
-				Tessellator.instance.addVertex(ox+ax, oy+ay, 0);
-				Tessellator.instance.draw();
-
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-				String sg = String.valueOf(pingDist.get(e));
-				int sw = fr.getStringWidth(sg);
-				fr.drawStringWithShadow(sg, dx+s-sw, dy+s-fr.FONT_HEIGHT, ReikaColorAPI.GStoHex((int)(alpha*255)));
 
 				if (tick > 1) {
 					map.put(e, tick-1);
-					map.put(e, 128);
 				}
 				else {
 					pingDist.remove(e);
@@ -212,6 +245,11 @@ public class ChromaOverlays {
 		pings.put(e, PING_LENGTH);
 		pingDist.put(e, dist);
 		pingAng.put(e, ang);
+
+		if (true) { //refresh all others
+			for (CrystalElement key : pings.keySet())
+				pings.put(key, Math.max(pings.get(key), PING_LENGTH-FADEIN));
+		}
 	}
 
 	private void renderProgressOverlays(EntityPlayer ep, int gsc) {

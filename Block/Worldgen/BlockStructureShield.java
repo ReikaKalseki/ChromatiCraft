@@ -65,7 +65,7 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 		}
 	}
 
-	private static final IIcon[] icons = new IIcon[BlockType.list.length];
+	protected final IIcon[] icons = new IIcon[BlockType.list.length];
 
 	public BlockStructureShield(Material mat) {
 		super(mat);

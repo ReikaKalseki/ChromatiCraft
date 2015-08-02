@@ -480,7 +480,7 @@ public enum Chromabilities implements Ability {
 				double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
 				double factor = Math.pow(dist, 1.6);
 				factor = factor/20000D;
-				int delay = (int)factor;
+				int delay = Math.max(1, (int)factor);
 				ScheduledSoundEvent evt = new DimensionPingEvent(e, ep, dist, ang);
 				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
 			}

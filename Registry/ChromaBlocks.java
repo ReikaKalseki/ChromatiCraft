@@ -69,6 +69,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
@@ -164,7 +165,8 @@ public enum ChromaBlocks implements BlockEnum {
 	MUSICTRIGGER(BlockMusicTrigger.class,										"chroma.musictrigger"),
 	SHIFTKEY(BlockShiftKey.class,				ItemBlockMultiType.class,		"chroma.shiftkey"),
 	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock"),
-	TELEPORT(BlockTeleport.class,												"chroma.teleportblock");
+	TELEPORT(BlockTeleport.class,												"chroma.teleportblock"),
+	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield");
 
 	private Class blockClass;
 	private String blockName;
@@ -333,6 +335,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case PATH:
 				return PathType.list[meta].name+" "+this.getBasicName();
 			case STRUCTSHIELD:
+			case SPECIALSHIELD:
 				return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
 			case RELAY:
 				return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();

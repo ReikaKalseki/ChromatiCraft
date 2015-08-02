@@ -40,7 +40,7 @@ public class ItemBlockStructShield extends ItemBlock {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
-		return ChromaBlocks.STRUCTSHIELD.getMultiValuedName(is.getItemDamage());
+		return ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
 	}
 
 }

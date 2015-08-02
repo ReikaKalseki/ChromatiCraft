@@ -38,10 +38,10 @@ public class GuardianStoneManager {
 
 	}
 
-	public boolean canPlayerOverrideProtections(EntityPlayerMP ep) {
+	public boolean canPlayerOverrideProtections(EntityPlayer ep) {
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
-		return ReikaPlayerAPI.isReika(ep) || ReikaPlayerAPI.isAdmin(ep);
+		return ReikaPlayerAPI.isReika(ep) || (ep instanceof EntityPlayerMP && ReikaPlayerAPI.isAdmin((EntityPlayerMP)ep));
 	}
 
 	public ProtectionZone addZone(World world, int x, int y, int z, EntityPlayer ep, int r) {
@@ -91,7 +91,7 @@ public class GuardianStoneManager {
 		}
 	}
 
-	public boolean doesPlayerHavePermissions(World world, int x, int y, int z, EntityPlayerMP ep) {
+	public boolean doesPlayerHavePermissions(World world, int x, int y, int z, EntityPlayer ep) {
 		if (this.canPlayerOverrideProtections(ep))
 			return true;
 		for (int i = 0; i < zones.size(); i++) {
@@ -124,7 +124,7 @@ public class GuardianStoneManager {
 		int y = event.y;
 		int z = event.z;
 		if (!world.isRemote) {
-			if (!this.doesPlayerHavePermissions(world, x, y, z, (EntityPlayerMP)ep))
+			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
 				event.setCanceled(true);
 		}
 	}
@@ -142,7 +142,7 @@ public class GuardianStoneManager {
 		int y = event.y;
 		int z = event.z;
 		if (!world.isRemote) {
-			if (!this.doesPlayerHavePermissions(world, x, y, z, (EntityPlayerMP)ep))
+			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
 				event.setCanceled(true);
 		}
 	}

@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
@@ -105,6 +106,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final DimensionDecoRenderer dimgen = new DimensionDecoRenderer();
 	private static final GlowTreeRenderer glowtree = new GlowTreeRenderer();
 	private static final ColorLockRenderer colorlock = new ColorLockRenderer();
+	private static final SpecialShieldRenderer specialshield = new SpecialShieldRenderer();
 	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -236,6 +238,9 @@ public class ChromaClient extends ChromaCommon {
 
 		colorLockRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(colorLockRender, colorlock);
+
+		specialShieldRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(specialShieldRender, specialshield);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

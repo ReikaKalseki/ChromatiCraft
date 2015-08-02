@@ -25,6 +25,7 @@ public class ChromaCommon {
 	public static int dimgenRender;
 	public static int glowTreeRender;
 	public static int colorLockRender;
+	public static int specialShieldRender;
 
 	public static int oreRender;
 	public static int plantRender;
