@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -463,8 +464,8 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	@Override
-	public TickType getType() {
-		return TickType.SERVER;
+	public EnumSet<TickType> getType() {
+		return EnumSet.of(TickType.SERVER);
 	}
 
 	@Override

@@ -35,11 +35,6 @@ public class BlockCrystalLamp extends CrystalBlock {
 	}
 
 	@Override
-	public final int damageDropped(int meta) {
-		return meta;
-	}
-
-	@Override
 	public final int quantityDropped(Random r) {
 		return 1;
 	}

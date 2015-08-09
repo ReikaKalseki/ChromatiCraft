@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -29,6 +30,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -49,6 +51,12 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	private final BlockArray blocks = new BlockArray();
 	private int size = 1;
 	private Fluid fluidType;
+
+	//Render only-------
+	public HashMap<List<Float>, CrystalElement> runes = new HashMap();
+	public int ptick = -1;
+	public int lastptick = -1;
+	//------------------
 
 	public static final int FACTOR = 4000;
 

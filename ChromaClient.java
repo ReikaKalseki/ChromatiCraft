@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
+import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
@@ -39,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.AltarItemRenderer;
 import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.PortalItemRenderer;
@@ -54,15 +56,16 @@ import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
+import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
@@ -106,7 +109,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final DimensionDecoRenderer dimgen = new DimensionDecoRenderer();
 	private static final GlowTreeRenderer glowtree = new GlowTreeRenderer();
 	private static final ColorLockRenderer colorlock = new ColorLockRenderer();
-	private static final SpecialShieldRenderer specialshield = new SpecialShieldRenderer();
+	private SpecialShieldRenderer specialshield;
 	//private static FiberRenderer fiber;
 
 	private static final TieredOreRenderer ore = new TieredOreRenderer();
@@ -198,10 +201,12 @@ public class ChromaClient extends ChromaCommon {
 				ClientRegistry.bindTileEntitySpecialRenderer(m.getTEClass(), render);
 			}
 		}
+
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLootChest.class, new RenderLootChest());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPortal.class, new RenderCrystalPortal());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVoidRift.class, new RenderVoidRift());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityColoredAltar.class, new RenderColoredAltar());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
@@ -240,6 +245,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerBlockHandler(colorLockRender, colorlock);
 
 		specialShieldRender = RenderingRegistry.getNextAvailableRenderId();
+		specialshield = new SpecialShieldRenderer();
 		RenderingRegistry.registerBlockHandler(specialShieldRender, specialshield);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
@@ -264,6 +270,7 @@ public class ChromaClient extends ChromaCommon {
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
 
 		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ChromaBlocks.PORTAL.getBlockInstance()), new PortalItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ChromaBlocks.COLORALTAR.getBlockInstance()), new AltarItemRenderer());
 	}
 
 

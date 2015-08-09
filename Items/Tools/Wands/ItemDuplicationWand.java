@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
@@ -61,7 +62,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Registry.BlockRegistry;
 import Reika.RotaryCraft.Registry.ItemRegistry;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.relauncher.Side;
 
 public class ItemDuplicationWand extends ItemWandBase {
 
@@ -83,7 +83,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 		this.addEnergyCost(CrystalElement.BLACK, 4);
 		this.addEnergyCost(CrystalElement.PURPLE, 2);
 		this.addEnergyCost(CrystalElement.LIGHTBLUE, 4);
-		TickRegistry.instance.registerTickHandler(ticker, Side.SERVER);
+		TickRegistry.instance.registerTickHandler(ticker);
 	}
 
 	@Override
@@ -366,8 +366,8 @@ public class ItemDuplicationWand extends ItemWandBase {
 		}
 
 		@Override
-		public TickType getType() {
-			return TickType.WORLD;
+		public EnumSet<TickType> getType() {
+			return EnumSet.of(TickType.WORLD);
 		}
 
 		@Override

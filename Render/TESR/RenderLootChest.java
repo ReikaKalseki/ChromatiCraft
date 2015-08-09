@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -47,46 +48,47 @@ public class RenderLootChest extends ChromaRenderBase {
 
 		GL11.glPushMatrix();
 		switch(meta%8) {
-		case 2:
-			rot = 180;
-			GL11.glTranslated(2, 0, 1);
-			break;
-		case 0:
-			rot = -90;
-			GL11.glTranslated(1, 0, 0);
-			break;
-		case 1:
-			rot = 90;
-			GL11.glTranslated(1, 0, 2);
-			break;
-		case 3:
-			rot = 0;
-			GL11.glTranslated(0, 0, 1);
-			break;
+			case 2:
+				rot = 180;
+				GL11.glTranslated(2, 0, 1);
+				break;
+			case 0:
+				rot = -90;
+				GL11.glTranslated(1, 0, 0);
+				break;
+			case 1:
+				rot = 90;
+				GL11.glTranslated(1, 0, 2);
+				break;
+			case 3:
+				rot = 0;
+				GL11.glTranslated(0, 0, 1);
+				break;
 		}
 
 		GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
 		model.chestLid.rotateAngleX = -(f1*(float)Math.PI/2.0F);
-		this.renderModel(te, model);
+		if (MinecraftForgeClient.getRenderPass() == 0)
+			this.renderModel(te, model);
 		GL11.glPopMatrix();
 
 		if (meta >= 8) {
 			GL11.glPushMatrix();
 			switch(meta%8) {
-			case 2:
-				GL11.glTranslated(1, 0, -1);
-				break;
-			case 0:
-				GL11.glTranslated(1, 0, 2);
-				GL11.glRotated(180, 0, 1, 0);
-				break;
-			case 1:
-				GL11.glTranslated(2, 0, 3);
-				GL11.glRotated(180, 0, 1, 0);
-				break;
-			case 3:
-				GL11.glTranslated(0, 0, 0);
-				break;
+				case 2:
+					GL11.glTranslated(1, 0, -1);
+					break;
+				case 0:
+					GL11.glTranslated(1, 0, 2);
+					GL11.glRotated(180, 0, 1, 0);
+					break;
+				case 1:
+					GL11.glTranslated(2, 0, 3);
+					GL11.glRotated(180, 0, 1, 0);
+					break;
+				case 3:
+					GL11.glTranslated(0, 0, 0);
+					break;
 			}
 			GL11.glTranslated(1/256D, 0, -1/256D);
 			ReikaRenderHelper.renderEnchantedModel(te, model, null, rot);

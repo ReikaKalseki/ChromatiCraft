@@ -34,11 +34,6 @@ public class BlockSuperCrystal extends CrystalBlock {
 		return Item.getItemFromBlock(this);
 	}
 
-	@Override
-	public final int damageDropped(int meta) {
-		return meta;
-	}
-
 	/*
 	@SideOnly(Side.CLIENT)
 	@Override

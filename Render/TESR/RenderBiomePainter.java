@@ -52,19 +52,20 @@ public class RenderBiomePainter extends ChromaRenderBase {
 		//double ang = te.getTicksExisted()+par8;
 
 		if (te.isInWorld()) {
-			te.angX += te.rvX;
-			te.angY += te.rvY;
-			te.angZ += te.rvZ;
+			te.rotation.angX += te.rotation.rvX;
+			te.rotation.angY += te.rotation.rvY;
+			te.rotation.angZ += te.rotation.rvZ;
 
 			double v = 0.375;
-			te.rvX = v*(1+0.5*Math.sin(Math.toRadians(te.getTicksExisted()+par8)))*(1+0.5*Math.cos(Math.toRadians(90+te.getTicksExisted()+par8)));
-			te.rvY = v*(1+0.25*Math.sin(Math.toRadians(2*(te.getTicksExisted()+par8))))*(1+0.5*Math.cos(Math.toRadians(te.getTicksExisted()+par8)));
-			te.rvZ = v*(1+0.5*Math.sin(Math.toRadians(90+te.getTicksExisted()+par8)))*(1+0.25*Math.cos(Math.toRadians(2*(te.getTicksExisted()+par8))));
+			double t = te.getTicksExisted()+par8;
+			te.rotation.rvX = v*(1+0.5*Math.sin(Math.toRadians(t)))*(1+0.5*Math.cos(Math.toRadians(90+t)));
+			te.rotation.rvY = v*(1+0.25*Math.sin(Math.toRadians(2*(t))))*(1+0.5*Math.cos(Math.toRadians(t)));
+			te.rotation.rvZ = v*(1+0.5*Math.sin(Math.toRadians(90+t)))*(1+0.25*Math.cos(Math.toRadians(2*(t))));
 
 			GL11.glTranslated(d, d, d);
-			GL11.glRotated(te.angX, 1, 0, 0);
-			GL11.glRotated(te.angY, 0, 1, 0);
-			GL11.glRotated(te.angZ, 0, 0, 1);
+			GL11.glRotated(te.rotation.angX, 1, 0, 0);
+			GL11.glRotated(te.rotation.angY, 0, 1, 0);
+			GL11.glRotated(te.rotation.angZ, 0, 0, 1);
 			GL11.glTranslated(-d, -d, -d);
 		}
 		GL11.glTranslated(0, -0.25, 0);
@@ -98,30 +99,30 @@ public class RenderBiomePainter extends ChromaRenderBase {
 
 		GL11.glPushMatrix();
 		switch(axis) {
-		case 0:
-		case 3:
-			GL11.glTranslated(0, dy, 0);
-			GL11.glRotated(rx, 1, 0, 0);
-			GL11.glRotated(ry, 0, 1, 0);
-			GL11.glRotated(rz, 0, 0, 1);
-			movingFrame.renderAll(te, null);
-			break;
-		case 1:
-		case 4:
-			GL11.glTranslated(dy, 0, 0);
-			GL11.glRotated(rx, 1, 0, 0);
-			GL11.glRotated(ry, 0, 1, 0);
-			GL11.glRotated(rz, 0, 0, 1);
-			movingFrame.renderAll(te, null);
-			break;
-		case 2:
-		case 5:
-			GL11.glTranslated(0, 0, dy);
-			GL11.glRotated(rx, 1, 0, 0);
-			GL11.glRotated(ry, 0, 1, 0);
-			GL11.glRotated(rz, 0, 0, 1);
-			movingFrame.renderAll(te, null);
-			break;
+			case 0:
+			case 3:
+				GL11.glTranslated(0, dy, 0);
+				GL11.glRotated(rx, 1, 0, 0);
+				GL11.glRotated(ry, 0, 1, 0);
+				GL11.glRotated(rz, 0, 0, 1);
+				movingFrame.renderAll(te, null);
+				break;
+			case 1:
+			case 4:
+				GL11.glTranslated(dy, 0, 0);
+				GL11.glRotated(rx, 1, 0, 0);
+				GL11.glRotated(ry, 0, 1, 0);
+				GL11.glRotated(rz, 0, 0, 1);
+				movingFrame.renderAll(te, null);
+				break;
+			case 2:
+			case 5:
+				GL11.glTranslated(0, 0, dy);
+				GL11.glRotated(rx, 1, 0, 0);
+				GL11.glRotated(ry, 0, 1, 0);
+				GL11.glRotated(rz, 0, 0, 1);
+				movingFrame.renderAll(te, null);
+				break;
 		}
 		GL11.glPopMatrix();
 

@@ -54,6 +54,8 @@ public enum CrystalElement {
 	private final int rgb;
 	private final EnumChatFormatting chat;
 
+	private final float[] hsb;
+
 	private static final Random rand = new Random();
 
 	public static final CrystalElement[] elements = values();
@@ -64,6 +66,8 @@ public enum CrystalElement {
 		displayName = n;
 		this.rgb = 0xff000000 | rgb;
 		chat = c;
+
+		hsb = Color.RGBtoHSB(this.getRed(), this.getGreen(), this.getBlue(), null);
 	}
 
 	public String getEnglishName() {
@@ -74,16 +78,28 @@ public enum CrystalElement {
 		return rgb;
 	}
 
+	public int getHue() {
+		return (int)(hsb[0]*360F);
+	}
+
+	public int getSaturation() {
+		return (int)(hsb[1]*255F);
+	}
+
+	public int getValue() {
+		return (int)(hsb[2]*255F);
+	}
+
 	public int getRed() {
-		return (this.getColor() >> 16) & 255;
+		return ReikaColorAPI.getRed(this.getColor());
 	}
 
 	public int getGreen() {
-		return (this.getColor() >> 8) & 255;
+		return ReikaColorAPI.getGreen(this.getColor());
 	}
 
 	public int getBlue() {
-		return this.getColor() & 255;
+		return ReikaColorAPI.getBlue(this.getColor());
 	}
 
 	public Color getJavaColor() {
@@ -92,27 +108,27 @@ public enum CrystalElement {
 
 	public int getLevel() {
 		switch(this) {
-		case BLACK:
-		case BLUE:
-		case BROWN:
-		case GREEN:
-		case RED:
-		case WHITE:
-		case YELLOW:
-			return 0;
-		case CYAN:
-		case LIGHTBLUE:
-		case GRAY:
-		case LIME:
-		case ORANGE:
-		case PURPLE:
-		case PINK:
-			return 1;
-		case LIGHTGRAY:
-		case MAGENTA:
-			return 2;
-		default:
-			return -1;
+			case BLACK:
+			case BLUE:
+			case BROWN:
+			case GREEN:
+			case RED:
+			case WHITE:
+			case YELLOW:
+				return 0;
+			case CYAN:
+			case LIGHTBLUE:
+			case GRAY:
+			case LIME:
+			case ORANGE:
+			case PURPLE:
+			case PINK:
+				return 1;
+			case LIGHTGRAY:
+			case MAGENTA:
+				return 2;
+			default:
+				return -1;
 		}
 	}
 

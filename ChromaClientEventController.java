@@ -85,6 +85,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
@@ -114,6 +115,12 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void overrideMusic(PlayMusicEvent evt) {
+		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			evt.setCanceled(true);
 	}
 
 	@ModDependent(ModList.PNEUMATICRAFT)

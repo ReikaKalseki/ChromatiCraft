@@ -26,6 +26,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
@@ -65,7 +66,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			for (Structures s : structs) {
 				if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 					if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
-						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+						ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 					}
 				}
 			}
@@ -76,92 +77,92 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		int x = cx + r.nextInt(16);
 		int z = cz + r.nextInt(16);
 		switch(s) {
-		case CAVERN: {
-			int y = 10+r.nextInt(40);
-			int tries = 0;
-			while (tries < 10 && !this.isValidCavernLocation(world, x, y, z, ChromaStructures.getCavernStructure(world, x, y, z))) {
-				y = 10+r.nextInt(40);
-				x = cx + r.nextInt(16);
-				z = cz + r.nextInt(16);
-				tries++;
-			}
-			FilledBlockArray struct = ChromaStructures.getCavernStructure(world, x, y, z);
-			if (this.isValidCavernLocation(world, x, y, z, struct)) {
-				struct.place();
-				//generate tunnel
-				for (int i = 7; i < 18; i++) {
-					int dx = x+i;
-					Block b = world.getBlock(dx, y, z);
-					Block b2 = world.getBlock(dx, y-1, z);
-					if (b.isAir(world, dx, y, z) && b2.isAir(world, dx, y-1, z)) {
-						break;
-					}
-					else {
-						world.setBlock(dx, y, z, Blocks.air);
-						world.setBlock(dx, y-1, z, Blocks.air);
-						//ReikaJavaLibrary.pConsole("Digging tunnel @ depth "+i);
-					}
+			case CAVERN: {
+				int y = 10+r.nextInt(40);
+				int tries = 0;
+				while (tries < 10 && !this.isValidCavernLocation(world, x, y, z, ChromaStructures.getCavernStructure(world, x, y, z))) {
+					y = 10+r.nextInt(40);
+					x = cx + r.nextInt(16);
+					z = cz + r.nextInt(16);
+					tries++;
 				}
-				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-				world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
-				te.generate(s, CrystalElement.WHITE);
-				this.populateChests(s, struct, r);
-				return true;
-			}
-			return false;
-		}
-		case BURROW: {
-			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
-			CrystalElement e = CrystalElement.randomElement();
-			FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z, e);
-			if (this.isValidBurrowLocation(world, x, y, z, arr)) {
-				arr.place();
-				this.convertDirtToGrass(arr);
-				//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
-				//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
-				world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
-				TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
-				te.generate(s, e);
-				this.populateChests(s, arr, r);
-				return true;
-			}
-			return false;
-		}
-		case OCEAN: {
-			int d = 3;
-			int y = world.getTopSolidOrLiquidBlock(x, z)-d;
-			Block b = world.getBlock(x, y+d, z);
-			int tries = 0;
-			while (b != Blocks.water && b != Blocks.flowing_water && tries < 10) {
-				x = cx + r.nextInt(16);
-				z = cz + r.nextInt(16);
-				b = world.getBlock(x, y+d, z);
-				tries++;
-			}
-			if (b == Blocks.water || b == Blocks.flowing_water) {
-				//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
-				//while (b == Blocks.water || b == Blocks.flowing_water && y > 0) {
-				//	y--;
-				//	b = world.getBlock(x, y, z);
-				//}
-				FilledBlockArray struct = ChromaStructures.getOceanStructure(world, x, y, z);
-				if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
+				FilledBlockArray struct = ChromaStructures.getCavernStructure(world, x, y, z);
+				if (this.isValidCavernLocation(world, x, y, z, struct)) {
 					struct.place();
+					//generate tunnel
+					for (int i = 7; i < 18; i++) {
+						int dx = x+i;
+						Block b = world.getBlock(dx, y, z);
+						Block b2 = world.getBlock(dx, y-1, z);
+						if (b.isAir(world, dx, y, z) && b2.isAir(world, dx, y-1, z)) {
+							break;
+						}
+						else {
+							world.setBlock(dx, y, z, Blocks.air);
+							world.setBlock(dx, y-1, z, Blocks.air);
+							//ReikaJavaLibrary.pConsole("Digging tunnel @ depth "+i);
+						}
+					}
+					//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
 					world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
 					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 					te.generate(s, CrystalElement.WHITE);
 					this.populateChests(s, struct, r);
-					this.programSpawners(s, struct, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
-					this.mossify(s, struct, r);
-					this.generatePit(world, x, y, z);
 					return true;
 				}
+				return false;
 			}
-			return false;
-		}
-		default:
-			return false;
+			case BURROW: {
+				int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+				CrystalElement e = CrystalElement.randomElement();
+				FilledBlockArray arr = ChromaStructures.getBurrowStructure(world, x, y, z, e);
+				if (this.isValidBurrowLocation(world, x, y, z, arr)) {
+					arr.place();
+					this.convertDirtToGrass(arr);
+					//world.setBlockMetadataWithNotify(x-7, y-5, z-2, 5, 3); //that chest that never points right
+					//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+x+","+y+","+z);
+					world.setBlock(x-5, y-8, z-2, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+					TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x-5, y-8, z-2);
+					te.generate(s, e);
+					this.populateChests(s, arr, r);
+					return true;
+				}
+				return false;
+			}
+			case OCEAN: {
+				int d = 3;
+				int y = world.getTopSolidOrLiquidBlock(x, z)-d;
+				Block b = world.getBlock(x, y+d, z);
+				int tries = 0;
+				while (b != Blocks.water && b != Blocks.flowing_water && tries < 10) {
+					x = cx + r.nextInt(16);
+					z = cz + r.nextInt(16);
+					b = world.getBlock(x, y+d, z);
+					tries++;
+				}
+				if (b == Blocks.water || b == Blocks.flowing_water) {
+					//ReikaJavaLibrary.pConsole("Attempting gen @ "+x+", "+y+", "+z);
+					//while (b == Blocks.water || b == Blocks.flowing_water && y > 0) {
+					//	y--;
+					//	b = world.getBlock(x, y, z);
+					//}
+					FilledBlockArray struct = ChromaStructures.getOceanStructure(world, x, y, z);
+					if (y > 0 && this.isValidOceanLocation(world, x, y, z, struct)) {
+						struct.place();
+						world.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
+						te.generate(s, CrystalElement.WHITE);
+						this.populateChests(s, struct, r);
+						this.programSpawners(s, struct, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
+						this.mossify(s, struct, r);
+						this.generatePit(world, x, y, z);
+						return true;
+					}
+				}
+				return false;
+			}
+			default:
+				return false;
 		}
 	}
 
@@ -300,17 +301,17 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	private void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
 		String s = null;
 		switch (struct) {
-		case CAVERN:
-			s = ChestGenHooks.DUNGEON_CHEST;
-			break;
-		case BURROW:
-			s = ChestGenHooks.BONUS_CHEST;
-			break;
-		case OCEAN:
-			s = ChestGenHooks.PYRAMID_JUNGLE_CHEST;
-			break;
-		default:
-			break;
+			case CAVERN:
+				s = ChestGenHooks.DUNGEON_CHEST;
+				break;
+			case BURROW:
+				s = ChestGenHooks.BONUS_CHEST;
+				break;
+			case OCEAN:
+				s = ChestGenHooks.PYRAMID_JUNGLE_CHEST;
+				break;
+			default:
+				break;
 		}
 		if (s == null)
 			return;
@@ -477,14 +478,14 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (this.isVoidWorld(world, x, z))
 			return false;
 		switch(s) {
-		case OCEAN:
-			return r.nextInt(32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
-		case CAVERN:
-			return r.nextInt(64) == 0;
-		case BURROW:
-			return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
-		default:
-			return false;
+			case OCEAN:
+				return r.nextInt(32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
+			case CAVERN:
+				return r.nextInt(64) == 0;
+			case BURROW:
+				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
+			default:
+				return false;
 		}
 	}
 

@@ -36,8 +36,6 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntity tile, ChromaModelBase model, Object... args) {
-		if (MinecraftForgeClient.getRenderPass() != 0 && tile.hasWorldObj())
-			return;
 		GL11.glPushMatrix();
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 		GL11.glTranslatef(0.5F, -1.5F, -0.5F);

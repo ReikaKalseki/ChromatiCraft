@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import net.minecraft.block.Block;
@@ -9,10 +18,15 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Rendering.EdgeDetectionRenderer;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 
 public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
+
+	private final EdgeDetectionRenderer edge = new EdgeDetectionRenderer(ChromaBlocks.SPECIALSHIELD.getBlockInstance()).setIcons(BlockSpecialShield.edgeIcons);
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {
@@ -67,7 +81,6 @@ public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
 
 		v5.setBrightness(240);
 		v5.setColorOpaque_F(255, 255, 255);
-
 		IIcon ico = b.getIcon(world, x, y, z, 0);
 		rb.renderFaceYNeg(b, x, y, z, ico);
 
@@ -85,6 +98,14 @@ public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
 
 		ico = b.getIcon(world, x, y, z, 5);
 		rb.renderFaceXPos(b, x, y, z, ico);
+
+		if (meta%8 <= 1) {
+			v5.addTranslation(x, y, z);
+			v5.setColorOpaque_I(0xffffff);
+			v5.setBrightness(240);
+			edge.renderBlock(world, x, y, z, rb);
+			v5.addTranslation(-x, -y, -z);
+		}
 
 		return true;
 	}

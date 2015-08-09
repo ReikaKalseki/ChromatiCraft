@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -116,8 +117,8 @@ public class NodeRecharger implements TickHandler {
 	}
 
 	@Override
-	public TickType getType() {
-		return TickType.WORLD;
+	public EnumSet<TickType> getType() {
+		return EnumSet.of(TickType.WORLD);
 	}
 
 	@Override

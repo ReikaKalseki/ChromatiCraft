@@ -17,11 +17,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TileEntityTeleport;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class ItemConnector extends ItemChromaTool {
 
@@ -41,6 +47,38 @@ public class ItemConnector extends ItemChromaTool {
 		else if (te instanceof Connectable) {
 			return this.tryConnection((Connectable)te, world, x, y, z, is, ep);
 		}
+
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
+			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("noneuclid")) {
+
+				int dx = is.stackTagCompound.getInteger("r1x");
+				int dy = is.stackTagCompound.getInteger("r1y");
+				int dz = is.stackTagCompound.getInteger("r1z");
+				int face = is.stackTagCompound.getInteger("facing");
+
+				TileEntity tile = world.getTileEntity(dx, dy, dz);
+				if (tile instanceof TileEntityTeleport) {
+					((TileEntityTeleport)tile).facing = ForgeDirection.VALID_DIRECTIONS[face].getOpposite();
+					((TileEntityTeleport)tile).destination = new BlockVector(x-dx, y+1-dy, z-dz, ForgeDirection.VALID_DIRECTIONS[s].getOpposite());
+					ReikaJavaLibrary.pConsole(((TileEntityTeleport)tile).destination);
+				}
+
+				is.stackTagCompound = null;
+				return true;
+			}
+			else if (te instanceof TileEntityTeleport) {
+				if (is.stackTagCompound == null)
+					is.stackTagCompound = new NBTTagCompound();
+				is.stackTagCompound.setInteger("r1x", x);
+				is.stackTagCompound.setInteger("r1y", y);
+				is.stackTagCompound.setInteger("r1z", z);
+				is.stackTagCompound.setInteger("facing", s);
+				is.stackTagCompound.setBoolean("noneuclid", true);
+				ReikaJavaLibrary.pConsole(is.stackTagCompound);
+				return true;
+			}
+		}
+
 		is.stackTagCompound = null;
 		return false;
 	}

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft;
 
 import java.util.Collection;
+import java.util.EnumSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
@@ -58,8 +59,8 @@ public class ChromabilityHandler implements TickHandler {
 	}
 
 	@Override
-	public TickType getType() {
-		return TickType.PLAYER;
+	public EnumSet<TickType> getType() {
+		return EnumSet.of(TickType.PLAYER);
 	}
 
 	@Override

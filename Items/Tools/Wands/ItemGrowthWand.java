@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.TreeMap;
@@ -32,7 +33,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.relauncher.Side;
 
 public class ItemGrowthWand extends ItemWandBase {
 
@@ -44,7 +44,7 @@ public class ItemGrowthWand extends ItemWandBase {
 		this.addEnergyCost(CrystalElement.BLACK, 2);
 		this.addEnergyCost(CrystalElement.PURPLE, 10);
 		this.addEnergyCost(CrystalElement.GREEN, 40);
-		TickRegistry.instance.registerTickHandler(ticker, Side.SERVER);
+		TickRegistry.instance.registerTickHandler(ticker);
 	}
 
 	@Override
@@ -90,8 +90,8 @@ public class ItemGrowthWand extends ItemWandBase {
 		}
 
 		@Override
-		public TickType getType() {
-			return TickType.WORLD;
+		public EnumSet<TickType> getType() {
+			return EnumSet.of(TickType.WORLD);
 		}
 
 		@Override

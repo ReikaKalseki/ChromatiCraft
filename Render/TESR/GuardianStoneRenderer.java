@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -23,11 +26,75 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.DragonAPI.Instantiable.Orbit;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuardianStoneRenderer extends ChromaRenderBase {
+
+	private static final ArrayList<ParticleOrbit> orbits = new ArrayList();
+	private static final Random rand = new Random();
+
+	private static class ParticleOrbit {
+
+		private final Orbit orbit;
+		private final int color;
+
+		private ParticleOrbit(Orbit o, int c) {
+			orbit = o;
+			color = c;
+		}
+
+	}
+
+	static {
+		int a = 0;
+		int b = 120;
+		double r = 0.4;
+
+		addParticle(r, 0.5, 0, 0, 0, 0);
+		addParticle(r, 0.6, 45, 60, 180, 90);
+		addParticle(r, 0.4, 90, 40, 20, 270);
+		addParticle(r, 0.6, 135, 120, 220, 30);
+		addParticle(r, 0.7, 180, 330, 60, 120);
+		addParticle(r, 0.4, 225, 90, 60, 240);
+		addParticle(r, 0.6, 270, 260, 0, 0);
+		addParticle(r, 0.5, 315, 100, 120, 100);
+
+		addParticle(r, 0.5, 0, 40, 30, 20);
+		addParticle(r, 0.6, 45, 120, 160, 40);
+		addParticle(r, 0.4, 90, 90, 20, 120);
+		addParticle(r, 0.6, 135, 320, 120, 30);
+		addParticle(r, 0.7, 180, 170, 60, 240);
+		addParticle(r, 0.4, 225, 40, 90, 60);
+		addParticle(r, 0.6, 270, 110, 0, 90);
+		addParticle(r, 0.5, 315, 60, 0, 30);
+
+		addParticle(r, 0.5, 0, 80, 90, 340);
+		addParticle(r, 0.6, 45, 240, 220, 320);
+		addParticle(r, 0.4, 90, 180, 80, 240);
+		addParticle(r, 0.6, 135, 80, 180, 330);
+		addParticle(r, 0.7, 180, 20, 120, 120);
+		addParticle(r, 0.4, 225, 80, 150, 300);
+		addParticle(r, 0.6, 270, 220, 60, 270);
+		addParticle(r, 0.5, 315, 120, 60, 330);
+
+		addParticle(r, 0.5, 0, 80, 180, 320);
+		addParticle(r, 0.6, 45, 240, 80, 280);
+		addParticle(r, 0.4, 90, 180, 160, 120);
+		addParticle(r, 0.6, 135, 80, 0, 300);
+		addParticle(r, 0.7, 180, 20, 240, 240);
+		addParticle(r, 0.4, 225, 80, 300, 240);
+		addParticle(r, 0.6, 270, 220, 120, 90);
+		addParticle(r, 0.5, 315, 120, 120, 300);
+	}
+
+	private static void addParticle(double r, double e, double theta, double i, double raan, double arg) {
+		orbits.add(new ParticleOrbit(new Orbit(r, e, theta, i, raan, arg), ReikaColorAPI.RGBtoHex(rand.nextInt(255), 120, 255)));
+	}
 
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
@@ -123,78 +190,37 @@ public class GuardianStoneRenderer extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glTranslated(0.5, 0.5, 0.5);
 		double theta = (System.currentTimeMillis()/20D)%360;
-		int a = 0;
-		int b = 120;
-		double r = 0.4;
-		this.renderOrbitingParticle(r, 0.5, theta+0, 0, 0, 0, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+45, 60, 180, 90, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+90, 40, 20, 270, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+135, 120, 220, 30, a, b, 255);
-		this.renderOrbitingParticle(r, 0.7, theta+180, 330, 60, 120, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+225, 90, 60, 240, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+270, 260, 0, 0, a, b, 255);
-		this.renderOrbitingParticle(r, 0.5, theta+315, 100, 120, 100, a, b, 255);
-
-		this.renderOrbitingParticle(r, 0.5, theta+0, 40, 30, 20, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+45, 120, 160, 40, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+90, 90, 20, 120, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+135, 320, 120, 30, a, b, 255);
-		this.renderOrbitingParticle(r, 0.7, theta+180, 170, 60, 240, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+225, 40, 90, 60, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+270, 110, 0, 90, a, b, 255);
-		this.renderOrbitingParticle(r, 0.5, theta+315, 60, 0, 30, a, b, 255);
-
-		this.renderOrbitingParticle(r, 0.5, theta+0, 80, 90, 340, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+45, 240, 220, 320, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+90, 180, 80, 240, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+135, 80, 180, 330, a, b, 255);
-		this.renderOrbitingParticle(r, 0.7, theta+180, 20, 120, 120, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+225, 80, 150, 300, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+270, 220, 60, 270, a, b, 255);
-		this.renderOrbitingParticle(r, 0.5, theta+315, 120, 60, 330, a, b, 255);
-
-		this.renderOrbitingParticle(r, 0.5, theta+0, 80, 180, 320, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+45, 240, 80, 280, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+90, 180, 160, 120, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+135, 80, 0, 300, a, b, 255);
-		this.renderOrbitingParticle(r, 0.7, theta+180, 20, 240, 240, a, b, 255);
-		this.renderOrbitingParticle(r, 0.4, theta+225, 80, 300, 240, a, b, 255);
-		this.renderOrbitingParticle(r, 0.6, theta+270, 220, 120, 90, a, b, 255);
-		this.renderOrbitingParticle(r, 0.5, theta+315, 120, 120, 300, a, b, 255);
+		for (ParticleOrbit p : orbits) {
+			this.renderOrbitingParticle(p, theta);
+		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private void renderOrbitingParticle(double a, double e, double theta, double i, double raan, double arg, int r, int g, int b) {
-		r = (int)(128+128*Math.sin(Math.toRadians(theta)));
-		i = Math.toRadians(i);
-		arg = Math.toRadians(arg);
-		raan = Math.toRadians(raan);
+	private void renderOrbitingParticle(ParticleOrbit p, double dtheta) {
+		//r = (int)(128+128*Math.sin(Math.toRadians(theta)));
 		Tessellator v5 = Tessellator.instance;
 		//v5.startDrawing(GL11.GL_LINE_LOOP);
 		//v5.setColorOpaque(r, g, b);
 		//for (theta = 0; theta < 360; theta += 5) {
-		double dd = a * (1 - e*e) / (1 + e * Math.cos(Math.toRadians(theta)));
-		double x = dd * (Math.cos(raan) * Math.cos(Math.toRadians(theta) + arg) - Math.sin(raan) * Math.sin(Math.toRadians(theta)+arg)*Math.cos(i));
-		double y = dd * (Math.sin(raan) * Math.cos(Math.toRadians(theta)+arg) + Math.cos(raan) * Math.sin(Math.toRadians(theta)+arg)) * Math.cos(i);
-		double z = dd * Math.sin(Math.toRadians(theta)+arg) * Math.sin(i);
+		DecimalPosition pos = p.orbit.getPosition(0, 0, 0, dtheta);
 		//GL11.glPointSize(3F);
 		RenderManager rm = RenderManager.instance;
 		GL11.glRotatef(rm.playerViewY, 0.0F, 1.0F, 0.0F);
 		GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		double d = 0.008;
 		v5.startDrawingQuads();
-		v5.setColorRGBA(r, g, b, 255);
-		v5.addVertex(x-d, y-d, z);
-		v5.addVertex(x+d, y-d, z);
-		v5.addVertex(x+d, y+d, z);
-		v5.addVertex(x-d, y+d, z);
+		v5.setColorRGBA_I(p.color, 255);
+		v5.addVertex(pos.xCoord-d, pos.yCoord-d, pos.zCoord);
+		v5.addVertex(pos.xCoord+d, pos.yCoord-d, pos.zCoord);
+		v5.addVertex(pos.xCoord+d, pos.yCoord+d, pos.zCoord);
+		v5.addVertex(pos.xCoord-d, pos.yCoord+d, pos.zCoord);
 
 		d = 0.005;
-		v5.setColorRGBA(r, g, b, 255);
-		v5.addVertex(x-d, y-d, z);
-		v5.addVertex(x+d, y-d, z);
-		v5.addVertex(x+d, y+d, z);
-		v5.addVertex(x-d, y+d, z);
+		v5.setColorRGBA_I(ReikaColorAPI.mixColors(0xffffff, p.color, 0.25F), 255);
+		v5.addVertex(pos.xCoord-d, pos.yCoord-d, pos.zCoord);
+		v5.addVertex(pos.xCoord+d, pos.yCoord-d, pos.zCoord);
+		v5.addVertex(pos.xCoord+d, pos.yCoord+d, pos.zCoord);
+		v5.addVertex(pos.xCoord-d, pos.yCoord+d, pos.zCoord);
 		//}
 		v5.draw();
 		GL11.glRotatef(-rm.playerViewX, 1.0F, 0.0F, 0.0F);

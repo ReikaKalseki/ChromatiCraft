@@ -45,10 +45,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class TankRender extends ChromaRenderBase {
 
-	private HashMap<WorldLocation, HashMap<List<Float>, CrystalElement>> runes = new HashMap();
-	private HashMap<WorldLocation, Integer> ptick = new HashMap();
-	private HashMap<WorldLocation, Integer> lastptick = new HashMap();
-
 	@Override
 	public String getImageFileName(RenderFetcher te) {
 		return null;
@@ -78,23 +74,22 @@ public class TankRender extends ChromaRenderBase {
 
 	private void renderRunes(TileEntityCrystalTank te, double par2, double par4, double par6, float par8) {
 		WorldLocation loc = new WorldLocation(te);
-		ptick.put(loc, te.getTicksExisted());
+		te.ptick = te.getTicksExisted();
 		BlockArray blocks = te.getBlocks();
 		int d = Math.max(5, 100-blocks.getSize()/2);
 		int tick = te.getTicksExisted()/d;
-		HashMap<List<Float>, CrystalElement> colors = runes.get(loc);
+		HashMap<List<Float>, CrystalElement> colors = te.runes;
 		if (colors == null) {
 			colors = new HashMap();
-			runes.put(loc, colors);
+			te.runes = colors;
 		}
 		CrystalElement et = getRune(tick, te.getFluid());
-		Integer lastp = lastptick.get(loc);
-		int last = lastp != null ? lastp.intValue() : -1;
+		int last = te.lastptick;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			Coordinate dat = blocks.getRandomBlock();
 			if (dat != null) {
 				colors.put(Arrays.asList((float)dat.xCoord, (float)dat.yCoord, (float)dat.zCoord), et);
-				lastptick.put(loc, te.getTicksExisted());
+				te.lastptick = te.getTicksExisted();
 			}
 		}
 		if (!colors.isEmpty()) {
@@ -484,26 +479,26 @@ public class TankRender extends ChromaRenderBase {
 		float f = 1;
 		float sub = 0;
 		switch(dir) {
-		case DOWN:
-			sub = 0.4F;
-			break;
-		case EAST:
-			sub = 0.5F;
-			break;
-		case NORTH:
-			sub = 0.65F;
-			break;
-		case SOUTH:
-			sub = 0.65F;
-			break;
-		case UP:
-			sub = 0F;
-			break;
-		case WEST:
-			sub = 0.5F;
-			break;
-		default:
-			break;
+			case DOWN:
+				sub = 0.4F;
+				break;
+			case EAST:
+				sub = 0.5F;
+				break;
+			case NORTH:
+				sub = 0.65F;
+				break;
+			case SOUTH:
+				sub = 0.65F;
+				break;
+			case UP:
+				sub = 0F;
+				break;
+			case WEST:
+				sub = 0.5F;
+				break;
+			default:
+				break;
 		}
 		float osub = sub;
 		sub *= (16-brightness)/4F;

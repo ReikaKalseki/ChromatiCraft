@@ -1,5 +1,15 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.HashMap;
 import java.util.List;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -15,10 +25,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S19PacketEntityHeadLook;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -28,10 +42,10 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -86,12 +100,6 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (debug) {
-			this.getTileEntity(world, x, y, z).facing = ReikaPlayerAPI.getDirectionFromPlayerLook(ep, false);
-			this.getTileEntity(world, x, y, z).destination = new BlockVector(-346-x, 4-y, 778-z, ForgeDirection.EAST);
-			ReikaJavaLibrary.pConsole(((TileEntityTeleport)world.getTileEntity(x, y, z)).destination);
-			return true;
-		}
 		return false;
 	}
 
@@ -160,41 +168,42 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 		public BlockVector destination;
 		public ForgeDirection facing;
 
+		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
+
+		public boolean isActive = true;
+
 		@Override
 		public boolean canUpdate() {
 			return false;
 		}
 
 		private void teleport(Entity e) {
+			if (!isActive)
+				return;
 			if (destination == null) {
 				if (debug)
 					ChromatiCraft.logger.logError("Could not teleport "+e+"; null destination!");
 				return;
 			}
-			double dx = e.posX-xCoord;
-			double dy = e.posY-yCoord;
-			double dz = e.posZ-zCoord;
+			double dx = e.posX-xCoord-0.5;
+			double dy = e.posY-yCoord-0.5;
+			double dz = e.posZ-zCoord-0.5;
 			float yaw = this.getYaw(e);
-			if (yaw == 90) {
-				double sx = dx;
-				dx = dz;
-				dz = sx;
-			}
-			else if (yaw == 180) {
-				dx = -dx;
-				dz = -dz;
-			}
-			else if (yaw == -90) {
-				double sx = dx;
-				dx = dz;
-				dz = sx;
-			}
-			double nx = xCoord+destination.xCoord+dx;
-			double ny = yCoord+destination.yCoord+dy;
-			double nz = zCoord+destination.zCoord+dz;
+
+			Vec3 vec = Vec3.createVectorHelper(dx, dy, dz);
+			vec = ReikaVectorHelper.rotateVector(vec, 0, yaw, 0);
+
+			double nx = xCoord+0.5+destination.xCoord+vec.xCoord;
+			double ny = yCoord+0.5+destination.yCoord+vec.yCoord;
+			double nz = zCoord+0.5+destination.zCoord+vec.zCoord;
+
+			//Vec3 vvec = Vec3.createVectorHelper(e.motionX, e.motionY, e.motionZ);
+			//vvec = ReikaVectorHelper.rotateVector(vvec, 0, -yaw, 0);
+			//e.setVelocity(vvec.xCoord, vvec.yCoord, vvec.zCoord);
 			e.setVelocity(0, 0, 0);
-			if (e instanceof EntityPlayer) {
-				if (!e.worldObj.isRemote) {
+
+			if (!e.worldObj.isRemote) {
+				if (e instanceof EntityPlayer) {
 					e.rotationYaw += yaw;
 					((EntityPlayer)e).rotationYawHead += yaw;
 					((EntityPlayer)e).prevRotationYawHead += yaw;
@@ -202,19 +211,11 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 					((EntityPlayer)e).setPositionAndUpdate(nx, ny, nz);
 					byte a = (byte)(MathHelper.floor_float(((EntityPlayer)e).rotationYawHead*256.0F/360.0F));
 					((EntityPlayerMP)e).playerNetServerHandler.sendPacket(new S19PacketEntityHeadLook(e, a));
-				}/*
-				else {/
-					//e.setPosition(nx, ny, nz);
-					e.rotationYaw += yaw;
-					((EntityPlayer)e).rotationYawHead += yaw;
-					((EntityPlayer)e).prevRotationYawHead += yaw;
-					e.prevRotationYaw += yaw;
-					this.setRenderPos((EntityPlayer)e);
-				}*/
-			}
-			else {
-				if (!e.worldObj.isRemote)
+					onTeleport((EntityPlayer)e, this);
+				}
+				else {
 					e.setLocationAndAngles(nx, ny, nz, e.rotationYaw+yaw, e.rotationPitch);
+				}
 			}
 		}
 
@@ -234,6 +235,101 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 				//RenderManager.renderPosZ = RenderManager.instance.viewerPosZ = nz;
 				rm.cacheActiveRenderInfo(rm.worldObj, rm.renderEngine, Minecraft.getMinecraft().fontRenderer, ep, rm.field_147941_i, rm.options, 0);
 			}
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			if (facing != null)
+				NBT.setInteger("face", facing.ordinal());
+			if (destination != null) {
+				NBTTagCompound tag = new NBTTagCompound();
+				destination.writeToNBT(tag);
+				NBT.setTag("pos", tag);
+			}
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("face")];
+			NBTTagCompound tag = NBT.getCompoundTag("pos");
+			destination = BlockVector.readFromNBT(tag);
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
+			if (!actions.isEmpty()) {
+				Coordinate rel = new Coordinate(this).offset(-te.xCoord, -te.yCoord, -te.zCoord);
+				TeleportTriggerAction a = actions.get(rel);
+				a.trigger(this);
+			}
+		}
+
+		private void encodeAction(Coordinate rel, TeleportTriggerAction a) {
+			actions.put(rel, a);
+		}
+
+	}
+
+	private static void onTeleport(EntityPlayer ep, TileEntityTeleport te) {
+		for (TileEntity tile : ((List<TileEntity>)te.worldObj.loadedTileEntityList)) {
+			if (!tile.isInvalid() && tile instanceof TileEntityTeleport) {
+				((TileEntityTeleport)tile).onPlayerTeleported(ep, te);
+			}
+		}
+	}
+
+	private static interface TeleportTriggerAction {
+
+		void trigger(TileEntityTeleport te);
+
+	}
+
+	private static class Activate implements TeleportTriggerAction {
+
+		@Override
+		public void trigger(TileEntityTeleport te) {
+			te.isActive = true;
+		}
+
+	}
+
+	private static class Deactivate implements TeleportTriggerAction {
+
+		@Override
+		public void trigger(TileEntityTeleport te) {
+			te.isActive = false;
+		}
+
+	}
+
+	private static class Reroute implements TeleportTriggerAction {
+
+		private final BlockVector newDestination;
+
+		private Reroute(BlockVector vec) {
+			newDestination = vec;
+		}
+
+		@Override
+		public void trigger(TileEntityTeleport te) {
+			te.destination = newDestination;
 		}
 
 	}

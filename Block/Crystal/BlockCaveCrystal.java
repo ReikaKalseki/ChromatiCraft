@@ -43,11 +43,6 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 	}
 
 	@Override
-	public final int damageDropped(int meta) {
-		return meta;
-	}
-
-	@Override
 	public final int quantityDropped(Random r) {
 		return 1+r.nextInt(6)+r.nextInt(3);
 	}

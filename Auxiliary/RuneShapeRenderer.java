@@ -106,6 +106,8 @@ public class RuneShapeRenderer {
 			}
 		}
 
+		GL11.glEnable(GL11.GL_BLEND);
+
 		for (Coordinate c : map.keySet()) {
 			if (c.yCoord == y) {
 				CrystalElement e = map.get(c);

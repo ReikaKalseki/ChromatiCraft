@@ -148,6 +148,7 @@ public enum ChromaResearch implements ProgressElement {
 	GLOW(			ChromaBlocks.GLOW,			CrystalElement.RED.ordinal(),		ResearchLevel.BASICCRAFT),
 	RELAY(			ChromaBlocks.RELAY,												ResearchLevel.NETWORKING),
 	PORTAL(			ChromaBlocks.PORTAL,											ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	COLORALTAR(		ChromaBlocks.COLORALTAR,	CrystalElement.WHITE.ordinal(),		ResearchLevel.ENERGYEXPLORE),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -559,6 +560,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == PORTAL)
 			return true;
 		if (this == HEATLAMP)
+			return true;
+		if (this == COLORALTAR)
 			return true;
 		return false;
 	}

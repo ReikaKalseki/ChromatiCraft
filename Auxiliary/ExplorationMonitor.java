@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.EnumSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -66,8 +68,8 @@ public class ExplorationMonitor implements TickHandler {
 	}
 
 	@Override
-	public TickType getType() {
-		return TickType.PLAYER;
+	public EnumSet<TickType> getType() {
+		return EnumSet.of(TickType.PLAYER);
 	}
 
 	@Override

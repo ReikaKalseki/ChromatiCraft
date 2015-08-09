@@ -380,12 +380,12 @@ public class ChromatiCraft extends DragonAPIMod {
 			IntegrityChecker.instance.addMod(instance, ChromaBlocks.blockList, ChromaItems.itemList);
 
 		if (!this.isLocked()) {
-			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance, Side.SERVER);
-			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance, Side.SERVER);
-			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance, Side.SERVER);
-			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance, Side.SERVER);
+			TickRegistry.instance.registerTickHandler(ChromabilityHandler.instance);
+			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance);
+			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance);
+			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance);
 			if (ModList.THAUMCRAFT.isLoaded())
-				TickRegistry.instance.registerTickHandler(NodeRecharger.instance, Side.SERVER);
+				TickRegistry.instance.registerTickHandler(NodeRecharger.instance);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			FMLCommonHandler.instance().bus().register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);

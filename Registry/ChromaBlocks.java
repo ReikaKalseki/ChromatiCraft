@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
+import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalLamp;
@@ -166,7 +167,8 @@ public enum ChromaBlocks implements BlockEnum {
 	SHIFTKEY(BlockShiftKey.class,				ItemBlockMultiType.class,		"chroma.shiftkey"),
 	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock"),
 	TELEPORT(BlockTeleport.class,												"chroma.teleportblock"),
-	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield");
+	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield"),
+	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar");
 
 	private Class blockClass;
 	private String blockName;

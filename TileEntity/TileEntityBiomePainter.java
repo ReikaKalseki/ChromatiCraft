@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.Instantiable.CubeRotation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -41,13 +42,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 	public static final int RANGE = 64;
 
-	public double angX = rand.nextInt(360);
-	public double angY = rand.nextInt(360);
-	public double angZ = rand.nextInt(360);
-
-	public double rvX;
-	public double rvY;
-	public double rvZ;
+	public final CubeRotation rotation = new CubeRotation().randomize(rand);
 
 	public BiomeGenBase getNaturalBiomeAt(int dx, int dz) {
 		return ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, xCoord+dx-RANGE, zCoord+dz-RANGE);

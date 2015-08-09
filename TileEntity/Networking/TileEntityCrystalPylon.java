@@ -157,8 +157,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		PylonGenerator.instance.cachePylon(this);
-		if (forceLoad)
-			ChunkManager.instance.loadChunks(this);
+		if (ChromaOptions.PYLONLOAD.getState()) {
+			if (forceLoad) {
+				ChunkManager.instance.loadChunks(this);
+			}
+		}
+		else {
+			forceLoad = false;
+			ChunkManager.instance.unloadChunks(this);
+		}
+
 		if (ModList.THAUMCRAFT.isLoaded() && nodeCache != null) {
 			ArrayList li = new ArrayList();
 			li.add(world.provider.dimensionId);
@@ -651,14 +659,14 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@ModDependent(ModList.THAUMCRAFT)
 	public NodeType getNodeType() {
 		switch(color) {
-		case BLACK:
-			return NodeType.DARK;
-		case GRAY:
-			return NodeType.UNSTABLE;
-		case WHITE:
-			return NodeType.PURE;
-		default:
-			return NodeType.NORMAL;
+			case BLACK:
+				return NodeType.DARK;
+			case GRAY:
+				return NodeType.UNSTABLE;
+			case WHITE:
+				return NodeType.PURE;
+			default:
+				return NodeType.NORMAL;
 		}
 	}
 

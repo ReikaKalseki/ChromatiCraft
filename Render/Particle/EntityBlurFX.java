@@ -31,6 +31,10 @@ public class EntityBlurFX extends EntityFX {
 	private boolean noSlow = false;
 	private boolean rapidExpand = false;
 	private AxisAlignedBB bounds = null;
+	private double collideAngle;
+	private boolean colliding = false;
+
+	private int lifeFreeze;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -97,8 +101,34 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public final EntityBlurFX setColliding() {
+		return this.setColliding(rand.nextDouble()*360);
+	}
+
+	public final EntityBlurFX setColliding(double ang) {
+		noClip = false;
+		colliding = true;
+		collideAngle = ang;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
+
+		if (colliding) {
+			if (isCollidedVertically) {
+				double v = rand.nextDouble()*0.0625;
+				motionX = v*Math.sin(Math.toRadians(collideAngle));
+				motionZ = v*Math.cos(Math.toRadians(collideAngle));
+				colliding = false;
+				this.setNoSlowdown();
+				lifeFreeze = 20;
+				particleGravity *= 4;
+			}
+			if (isCollidedHorizontally) {
+
+			}
+		}
 
 		if (noSlow) {
 			double mx = motionX;
@@ -111,6 +141,11 @@ public class EntityBlurFX extends EntityFX {
 		}
 		else {
 			super.onUpdate();
+		}
+
+		if (lifeFreeze > 0) {
+			lifeFreeze--;
+			particleAge--;
 		}
 
 		if (rapidExpand)

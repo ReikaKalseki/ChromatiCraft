@@ -80,4 +80,9 @@ public abstract class CrystalTypeBlock extends Block {
 		return CrystalElement.elements[iba.getBlockMetadata(x, y, z)];
 	}
 
+	@Override
+	public final int damageDropped(int meta) {
+		return meta;
+	}
+
 }

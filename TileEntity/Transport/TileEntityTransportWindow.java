@@ -165,16 +165,16 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 
 	public ForgeDirection getFacing() {
 		switch(this.getBlockMetadata()) {
-		case 0:
-			return ForgeDirection.EAST;
-		case 1:
-			return ForgeDirection.WEST;
-		case 2:
-			return ForgeDirection.SOUTH;
-		case 3:
-			return ForgeDirection.NORTH;
-		default:
-			return ForgeDirection.UNKNOWN;
+			case 0:
+				return ForgeDirection.EAST;
+			case 1:
+				return ForgeDirection.WEST;
+			case 2:
+				return ForgeDirection.SOUTH;
+			case 3:
+				return ForgeDirection.NORTH;
+			default:
+				return ForgeDirection.UNKNOWN;
 		}
 	}
 
@@ -210,14 +210,14 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 
 	private double getTargetPhi() {
 		switch(this.getBlockMetadata()) {
-		case 0:
-			return 270;
-		case 1:
-			return 90;
-		case 2:
-			return 0;
-		case 3:
-			return 180;
+			case 0:
+				return 270;
+			case 1:
+				return 90;
+			case 2:
+				return 0;
+			case 3:
+				return 180;
 		}
 		return 0;
 	}
@@ -272,6 +272,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		acceptedFrames.add(Blocks.obsidian);
 		acceptedFrames.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
 		acceptedFrames.add(ChromaBlocks.STRUCTSHIELD.getBlockInstance());
+		acceptedFrames.add(ChromaBlocks.SPECIALSHIELD.getBlockInstance());
 	}
 
 }

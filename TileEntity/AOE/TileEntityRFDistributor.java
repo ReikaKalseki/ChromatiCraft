@@ -48,6 +48,10 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 
 	private final StepTimer cacheTimer = new StepTimer(40);
 
+	private static final HashSet<WorldLocation> distributionChain = new HashSet();
+
+	private static final HashSet<Class> blacklist = new HashSet();
+
 	@Override
 	public boolean canConnectEnergy(ForgeDirection from) {
 		return true;
@@ -77,6 +81,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 			WorldLocation loc = it.next();
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
+				if (te instanceof TileEntityRFDistributor)
+					distributionChain.add(new WorldLocation(te));
 				int give = this.tryGiveEnergy(maxReceive, simulate, (IEnergyReceiver)te);
 				if (give > 0) {
 					this.sendEnergy(give, loc, (IEnergyReceiver)te);
@@ -227,12 +233,20 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 	private boolean isValidTarget(TileEntity te) {
 		if (te == this)
 			return false;
+		Class c = te.getClass();
+		if (blacklist.contains(c))
+			return false;
+
+		if (distributionChain.contains(new WorldLocation(te)))
+			return false;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
-			String s = te.getClass().getName().toLowerCase();
+			String s = c.getName().toLowerCase();
 			if (s.contains("conduit") || s.contains("duct") || s.contains("cable") || s.contains("pipepower")) {
+				blacklist.add(c);
 				return false;
 			}
 			if (s.contains("tesseract") || s.contains("hypercube")) { //SOE
+				blacklist.add(c);
 				return false;
 			}
 			return true;

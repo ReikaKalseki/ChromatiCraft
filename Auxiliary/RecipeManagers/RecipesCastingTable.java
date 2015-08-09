@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRuneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalAltarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalGlowRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalStoneRecipe;
@@ -175,6 +176,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new StorageCrystalRecipe(ChromaItems.STORAGE.getStackOfMetadata(i+1), ChromaItems.STORAGE.getStackOfMetadata(i)));
 
 		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+
 			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i), i));
 			this.addRecipe(new RuneRecipe(new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 16, i), i+16));
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
@@ -185,17 +188,17 @@ public class RecipesCastingTable {
 			IRecipe sr = new ShapedOreRecipe(block, " S ", "SCS", " S ", 'S', "stone", 'C', shard);
 			this.addRecipe(new CrystalStoneRecipe(block, sr));
 
-			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], false));
-			this.addRecipe(new CrystalSeedRecipe(seed, CrystalElement.elements[i], true));
+			this.addRecipe(new CrystalSeedRecipe(seed, e, false));
+			this.addRecipe(new CrystalSeedRecipe(seed, e, true));
 
-			this.addRecipe(new LumenLampRecipe(ChromaBlocks.LAMPBLOCK.getStackOfMetadata(i), CrystalElement.elements[i]));
+			this.addRecipe(new LumenLampRecipe(ChromaBlocks.LAMPBLOCK.getStackOfMetadata(i), e));
 
-			this.addRecipe(new TintedLensRecipe(CrystalElement.elements[i], ChromaStacks.crystalLens));
+			this.addRecipe(new TintedLensRecipe(e, ChromaStacks.crystalLens));
 
 			sr = ReikaRecipeHelper.getShapedRecipeFor(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
 			this.addRecipe(new CrystalLampRecipe(lamp, sr));
 
-			this.addRecipe(new RelayRecipe(CrystalElement.elements[i]));
+			this.addRecipe(new RelayRecipe(e));
 
 			for (int k = 0; k < Bases.baseList.length; k++) {
 				Bases b = Bases.baseList[k];
@@ -203,6 +206,8 @@ public class RecipesCastingTable {
 				sr = ReikaRecipeHelper.getShapedRecipeFor(glow, "S", "s", 'S', shard, 's', b.ingredient);
 				this.addRecipe(new CrystalGlowRecipe(glow, sr));
 			}
+
+			this.addRecipe(new CrystalAltarRecipe(e));
 		}
 		this.addRecipe(new CompoundRelayRecipe(ChromaBlocks.RELAY.getStackOfMetadata(16), new ItemStack(Items.diamond)));
 
