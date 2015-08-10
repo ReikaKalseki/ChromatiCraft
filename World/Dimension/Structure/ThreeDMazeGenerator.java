@@ -55,52 +55,52 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 
 	private static int getWidth() {
 		switch(ChromaOptions.getStructureDifficulty()) {
-		case 1:
-		case 2:
-			return 16;
-		case 3:
-			return 32;
-		default:
-			return 32;
+			case 1:
+			case 2:
+				return 16;
+			case 3:
+				return 32;
+			default:
+				return 32;
 		}
 	}
 
 	private static int getHeight() {
 		switch(ChromaOptions.getStructureDifficulty()) {
-		case 1:
-			return 8;
-		case 2:
-		case 3:
-			return 16;
-		default:
-			return 16;
+			case 1:
+				return 8;
+			case 2:
+			case 3:
+				return 16;
+			default:
+				return 16;
 		}
 	}
 
 	@Override
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
 
-		int y = 75;
+		posY = 75;
 
 		partSize = 4;
 		minX = x-partSize*MAX_SIZE_X/2;
 		maxX = x+partSize*MAX_SIZE_X/2;
 		minZ = z-partSize*MAX_SIZE_Z/2;
 		maxZ = z+partSize*MAX_SIZE_Z/2;
-		maxY = y;
-		minY = y-partSize*MAX_SIZE_Y;
+		maxY = posY;
+		minY = posY-partSize*MAX_SIZE_Y;
 
 		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, e, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
-		this.generateBlocks(x, y, z, rand);
+		this.generateBlocks(x, posY, z, rand);
 
 		int mx = x+partSize*MAX_SIZE_X/2+partSize/2;
 		int mz = z+partSize*MAX_SIZE_Z/2+partSize/2;
-		int by = y-partSize*(MAX_SIZE_Y+1)+partSize/2;
+		int by = posY-partSize*(MAX_SIZE_Y+1)+partSize/2;
 		new LootRoom(this, rand).generate(world, mx, by, mz);
 
-		this.addDynamicStructure(new TDMazeEntrance(this, y+1), mx, mz);
+		this.addDynamicStructure(new TDMazeEntrance(this, posY+1), mx, mz);
 	}
 
 	@Override

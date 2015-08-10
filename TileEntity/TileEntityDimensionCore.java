@@ -13,20 +13,26 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -35,7 +41,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
-import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -113,11 +119,6 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (DragonAPICore.debugtest) {
-			triggered = false;
-			structure = DimensionStructureType.TDMAZE;
-		}
-
 		if (world.isRemote) {
 			if (placer != null) {
 				this.spawnConnectFX(world, x, y, z);
@@ -135,39 +136,39 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	private void doStructureCalculation(World world, int x, int y, int z) {
 		switch(structure) {
-		case ALTAR:
-			break;
-		case LOCKS:
-			break;
-		case SHIFTMAZE:
-			break;
-		case TDMAZE:
-			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-1, y+2, z-1, x+2, y+4, z+2);
-			List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, box);
-			if (!li.isEmpty()) {
-				EntityPlayer ep = li.get(0);
-				triggered = true;
-				boolean w = rand.nextBoolean();
-				int dx = w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
-				int dz = !w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
-				int dx2 = Math.abs(dx) == 1 ? dx : (int)Math.signum(dx)*(Math.abs(dx)+1);
-				int dz2 = Math.abs(dz) == 1 ? dz : (int)Math.signum(dz)*(Math.abs(dz)+1);
-				world.setBlockMetadataWithNotify(x+dx, y+2, z+dz, BlockType.CRACKS.metadata, 3);
-				world.setBlockMetadataWithNotify(x+dx, y+3, z+dz, BlockType.CRACKS.metadata, 3);
-				world.setBlockMetadataWithNotify(x-dx2, y+1, z-dz2, BlockType.CRACKS.metadata, 3);
-				world.setBlockMetadataWithNotify(x+dx, y, z+dz, BlockType.CRACKS.metadata, 3);
-				world.setBlockMetadataWithNotify(x+dx, y-1, z+dz, BlockType.CRACKS.metadata, 3);
-				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
-				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
-				ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
-			}
-			break;
-		case MUSIC:
-			break;
-		case NONEUCLID:
-			break;
-		case GOL:
-			break;
+			case ALTAR:
+				break;
+			case LOCKS:
+				break;
+			case SHIFTMAZE:
+				break;
+			case TDMAZE:
+				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-1, y+2, z-1, x+2, y+4, z+2);
+				List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, box);
+				if (!li.isEmpty()) {
+					EntityPlayer ep = li.get(0);
+					triggered = true;
+					boolean w = rand.nextBoolean();
+					int dx = w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
+					int dz = !w ? rand.nextBoolean() ? -2 : 2 : rand.nextBoolean() ? 1 : -1;
+					int dx2 = Math.abs(dx) == 1 ? dx : (int)Math.signum(dx)*(Math.abs(dx)+1);
+					int dz2 = Math.abs(dz) == 1 ? dz : (int)Math.signum(dz)*(Math.abs(dz)+1);
+					world.setBlockMetadataWithNotify(x+dx, y+2, z+dz, BlockType.CRACKS.metadata, 3);
+					world.setBlockMetadataWithNotify(x+dx, y+3, z+dz, BlockType.CRACKS.metadata, 3);
+					world.setBlockMetadataWithNotify(x-dx2, y+1, z-dz2, BlockType.CRACKS.metadata, 3);
+					world.setBlockMetadataWithNotify(x+dx, y, z+dz, BlockType.CRACKS.metadata, 3);
+					world.setBlockMetadataWithNotify(x+dx, y-1, z+dz, BlockType.CRACKS.metadata, 3);
+					ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+					ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+					ReikaSoundHelper.playBreakSound(world, x, y+3, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+				}
+				break;
+			case MUSIC:
+				break;
+			case NONEUCLID:
+				break;
+			case GOL:
+				break;
 		}
 	}
 
@@ -253,15 +254,15 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	private float getSoundPitch() {
 		float mult = 0;
 		switch(soundPitch) {
-		case 0:
-			mult = (float)CrystalMusicManager.instance.getDingPitchScale(color);
-			break;
-		case 1:
-			mult = (float)CrystalMusicManager.instance.getFifth(color);
-			break;
-		case 2:
-			mult = (float)CrystalMusicManager.instance.getOctave(color);
-			break;
+			case 0:
+				mult = (float)CrystalMusicManager.instance.getDingPitchScale(color);
+				break;
+			case 1:
+				mult = (float)CrystalMusicManager.instance.getFifth(color);
+				break;
+			case 2:
+				mult = (float)CrystalMusicManager.instance.getOctave(color);
+				break;
 		}
 		soundPitch = rand.nextBoolean() ? 0 : rand.nextInt(3);
 		return mult;
@@ -281,6 +282,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+
+		if (structure == null && !world.isRemote) {
+			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color);
+		}
 	}
 
 	@Override
@@ -300,6 +305,21 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		int s = NBT.getInteger("struct");
+		structure = s >= 0 ? DimensionStructureType.types[s] : null;
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		NBT.setInteger("struct", structure != null ? structure.ordinal() : -1);
 	}
 
 	@Override
@@ -328,11 +348,16 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	@Override
 	public boolean breakByPlayer(EntityPlayer ep) {
-		if (ep.capabilities.isCreativeMode)
+		if (worldObj.isRemote)
 			return true;
+		if (ep.capabilities.isCreativeMode) {
+			if (structure != null)
+				this.openStructure();
+			return true;
+		}
 		if (ReikaPlayerAPI.isFake(ep))
 			return false;
-		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 12)
+		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 5)
 			return false;
 		if (structure != null) {
 			if (structure.hasPlayerCompleted(ep)) {
@@ -340,9 +365,32 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			}
 			else {
 				structure.markPlayerCompleted(ep);
+
+				this.openStructure();
 			}
 		}
 		return true;
+	}
+
+	private void openStructure() {
+		DimensionStructureGenerator gen = structure.getGenerator();
+		Set<Coordinate> set = gen.getBreakableSpots();
+		for (Coordinate c2 : set) {
+			//Coordinate c2 = c.offset(-gen.getPosX(), -gen.getPosY(), -gen.getPosZ()).offset(xCoord, yCoord, zCoord);
+			Block b = c2.getBlock(worldObj);
+			BlockKey b2 = b instanceof BlockStructureShield ? new BlockKey(b, BlockType.CRACKS.metadata%8) : new BlockKey(Blocks.air);
+			c2.setBlock(worldObj, b2.blockID, b2.metadata);
+			//ReikaJavaLibrary.pConsole(new Coordinate(this)+":"+c+">"+c2+":"+c2.getBlockKey(worldObj));
+			//ReikaJavaLibrary.pConsole(new Coordinate(this)+" > "+c2+" % "+c2.getBlockKey(worldObj));
+		}
+
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord+4, yCoord, zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord-4, yCoord, zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord+4, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord, zCoord-4, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord+4, zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
+		ReikaSoundHelper.playBreakSound(worldObj, xCoord, yCoord-4, zCoord, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 2, 1);
 	}
 
 }

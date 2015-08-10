@@ -10,7 +10,10 @@
 package Reika.ChromatiCraft.Base;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,6 +33,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
@@ -43,10 +47,28 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	private ChunkCoordIntPair genCore;
 	private ChunkCoordIntPair center;
 
+	private final HashSet<Coordinate> breakable = new HashSet();
+
+	protected int posX;
+	protected int posY;
+	protected int posZ;
+
 	private final MultiMap<ChunkCoordIntPair, DynamicPieceLocation> dynamicParts = new MultiMap().setNullEmpty();
 
 	protected DimensionStructureGenerator() {
 
+	}
+
+	public final int getPosX() {
+		return posX;
+	}
+
+	public final int getPosY() {
+		return posY;
+	}
+
+	public final int getPosZ() {
+		return posZ;
 	}
 
 	public final DimensionStructureType getType() {
@@ -63,6 +85,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	public final void startCalculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
 		genColor = e;
 		genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
+		posX = chunkX;
+		posZ = chunkZ;
 		this.calculate(chunkX, chunkZ, e, rand);
 	}
 
@@ -94,12 +118,21 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		}
 	}
 
+	public Set<Coordinate> getBreakableSpots() {
+		return Collections.unmodifiableSet(breakable);
+	}
+
+	public void addBreakable(int x, int y, int z) {
+		breakable.add(new Coordinate(x, y, z));
+	}
+
 	public abstract StructureData createDataStorage();
 
 	public final void clear() {
 		world.clear();
 		dynamicParts.clear();
 		center = null;
+		breakable.clear();
 		this.clearCaches();
 	}
 
@@ -134,6 +167,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		if (te instanceof TileEntityDimensionCore) {
 			((TileEntityDimensionCore)te).setStructure(new StructurePair(structureType, this.getCoreColor(world)));
 		}
+		else {
+			ChromatiCraft.logger.logError(te+" instead of a Dimension Core at "+x+", "+y+", "+z+"!!");
+		}
 	}
 
 	private CrystalElement getCoreColor(World world) {
@@ -144,7 +180,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		world.setTileEntity(x, y, z, ChromaTiles.DIMENSIONCORE.getBlock(), ChromaTiles.DIMENSIONCORE.getBlockMetadata(), this);
 	}
 
-	public static class StructurePair {
+	public static final class StructurePair {
 
 		public final DimensionStructureType generator;
 		public final CrystalElement color;
@@ -152,6 +188,20 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		public StructurePair(DimensionStructureType gen, CrystalElement e) {
 			generator = gen;
 			color = e;
+		}
+
+		@Override
+		public int hashCode() {
+			return (color.ordinal() << 8) | generator.ordinal();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof StructurePair) {
+				StructurePair p = (StructurePair)o;
+				return p.color == color && p.generator == generator;
+			}
+			return false;
 		}
 
 	}

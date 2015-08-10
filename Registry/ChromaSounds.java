@@ -112,6 +112,10 @@ public enum ChromaSounds implements SoundEnum {
 		this.playSound(world, x+0.5, y+0.5, z+0.5, 1, 1);
 	}
 
+	public void playSoundAtBlock(TileEntity te, float vol, float pitch) {
+		this.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, vol, pitch);
+	}
+
 	public void playSoundAtBlock(TileEntity te) {
 		this.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 	}

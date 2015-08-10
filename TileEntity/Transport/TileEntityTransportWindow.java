@@ -178,6 +178,25 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		}
 	}
 
+	public void setFacing(ForgeDirection dir) {
+		switch(dir) {
+			case EAST:
+				this.setBlockMetadata(0);
+				break;
+			case WEST:
+				this.setBlockMetadata(1);
+				break;
+			case SOUTH:
+				this.setBlockMetadata(2);
+				break;
+			case NORTH:
+				this.setBlockMetadata(3);
+				break;
+			default:
+				break;
+		}
+	}
+
 	public boolean doRender() {
 		return hasStructure;
 	}

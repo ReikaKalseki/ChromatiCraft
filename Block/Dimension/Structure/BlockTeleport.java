@@ -15,7 +15,7 @@ import java.util.List;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
-import net.minecraft.block.BlockContainer;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -41,6 +41,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -51,7 +52,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
-public class BlockTeleport extends BlockContainer implements IWailaDataProvider {
+public class BlockTeleport extends Block implements IWailaDataProvider {
 
 	private static boolean debug = ReikaObfuscationHelper.isDeObfEnvironment() && DragonAPICore.isReikasComputer();
 
@@ -69,8 +70,13 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
-		return new TileEntityTeleport();
+	public TileEntity createTileEntity(World world, int meta) {
+		return meta == 0 ? new TileEntityTeleport() : null;
+	}
+
+	@Override
+	public boolean hasTileEntity(int meta) {
+		return meta == 0;
 	}
 
 	@Override
@@ -105,7 +111,13 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
-		this.getTileEntity(world, x, y, z).teleport(e);
+		if (world.isRemote)
+			return;
+		TileEntity te = this.getTileEntity(world, x, y, z);
+		if (te instanceof TileEntityTeleport)
+			((TileEntityTeleport)te).teleport(e);
+		else
+			ChromatiCraft.logger.logError("Teleport at "+x+","+y+","+z+" is null?!");
 	}
 
 	private TileEntityTeleport getTileEntity(World world, int x, int y, int z) {
@@ -114,6 +126,7 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 			return (TileEntityTeleport)world.getTileEntity(x, y, z);
 		}
 		else {
+			/*
 			switch(meta) {
 				case 1:
 					return this.getTileEntity(world, x, y+1, z);
@@ -128,6 +141,15 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 				case 6:
 					return this.getTileEntity(world, x, y, z-1); //left, NS plane
 			}
+			 */
+			StructuredBlockArray arr = new StructuredBlockArray(world);
+			arr.recursiveAddWithBounds(world, x, y, z, this, x-4, y-4, z-4, x+4, y+4, z+4);
+			int mx = arr.getMidX();
+			int my = arr.getMinY();
+			int mz = arr.getMidZ();
+			Block b = world.getBlock(mx, my, mz);
+			if (b == this)
+				return (TileEntityTeleport)world.getTileEntity(mx, my, mz);
 		}
 		return null;
 	}
@@ -168,6 +190,8 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 		public BlockVector destination;
 		public ForgeDirection facing;
 
+		private long lastActiveTick = -1;
+
 		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
 
 		public boolean isActive = true;
@@ -178,6 +202,8 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 		}
 
 		private void teleport(Entity e) {
+			if (worldObj.isRemote)
+				return;
 			if (!isActive)
 				return;
 			if (destination == null) {
@@ -185,6 +211,12 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 					ChromatiCraft.logger.logError("Could not teleport "+e+"; null destination!");
 				return;
 			}
+			long time = worldObj.getTotalWorldTime();
+			if (time <= lastActiveTick) {
+				return;
+			}
+			lastActiveTick = time;
+
 			double dx = e.posX-xCoord-0.5;
 			double dy = e.posY-yCoord-0.5;
 			double dz = e.posZ-zCoord-0.5;
@@ -202,20 +234,18 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 			//e.setVelocity(vvec.xCoord, vvec.yCoord, vvec.zCoord);
 			e.setVelocity(0, 0, 0);
 
-			if (!e.worldObj.isRemote) {
-				if (e instanceof EntityPlayer) {
-					e.rotationYaw += yaw;
-					((EntityPlayer)e).rotationYawHead += yaw;
-					((EntityPlayer)e).prevRotationYawHead += yaw;
-					e.prevRotationYaw += yaw;
-					((EntityPlayer)e).setPositionAndUpdate(nx, ny, nz);
-					byte a = (byte)(MathHelper.floor_float(((EntityPlayer)e).rotationYawHead*256.0F/360.0F));
-					((EntityPlayerMP)e).playerNetServerHandler.sendPacket(new S19PacketEntityHeadLook(e, a));
-					onTeleport((EntityPlayer)e, this);
-				}
-				else {
-					e.setLocationAndAngles(nx, ny, nz, e.rotationYaw+yaw, e.rotationPitch);
-				}
+			if (e instanceof EntityPlayer) {
+				e.rotationYaw += yaw;
+				((EntityPlayer)e).rotationYawHead += yaw;
+				((EntityPlayer)e).prevRotationYawHead += yaw;
+				e.prevRotationYaw += yaw;
+				((EntityPlayer)e).setPositionAndUpdate(nx, ny, nz);
+				byte a = (byte)(MathHelper.floor_float(((EntityPlayer)e).rotationYawHead*256.0F/360.0F));
+				((EntityPlayerMP)e).playerNetServerHandler.sendPacket(new S19PacketEntityHeadLook(e, a));
+				onTeleport((EntityPlayer)e, this);
+			}
+			else {
+				e.setLocationAndAngles(nx, ny, nz, e.rotationYaw+yaw, e.rotationPitch);
 			}
 		}
 
@@ -275,13 +305,13 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 
 		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
 			if (!actions.isEmpty()) {
-				Coordinate rel = new Coordinate(this).offset(-te.xCoord, -te.yCoord, -te.zCoord);
+				Coordinate rel = new Coordinate(this).offset(xCoord, yCoord, zCoord);
 				TeleportTriggerAction a = actions.get(rel);
-				a.trigger(this);
+				a.trigger(rel, this);
 			}
 		}
 
-		private void encodeAction(Coordinate rel, TeleportTriggerAction a) {
+		public void putAction(Coordinate rel, TeleportTriggerAction a) {
 			actions.put(rel, a);
 		}
 
@@ -295,41 +325,103 @@ public class BlockTeleport extends BlockContainer implements IWailaDataProvider 
 		}
 	}
 
-	private static interface TeleportTriggerAction {
+	public static interface TeleportTriggerAction {
 
-		void trigger(TileEntityTeleport te);
+		void trigger(Coordinate c, TileEntityTeleport te);
 
 	}
 
-	private static class Activate implements TeleportTriggerAction {
+	public static class Activate implements TeleportTriggerAction {
+
+		public static final Activate instance = new Activate();
+
+		private Activate() {
+
+		}
 
 		@Override
-		public void trigger(TileEntityTeleport te) {
+		public void trigger(Coordinate c, TileEntityTeleport te) {
 			te.isActive = true;
 		}
 
 	}
 
-	private static class Deactivate implements TeleportTriggerAction {
+	public static class Deactivate implements TeleportTriggerAction {
+
+		public static final Deactivate instance = new Deactivate();
+
+		private Deactivate() {
+
+		}
 
 		@Override
-		public void trigger(TileEntityTeleport te) {
+		public void trigger(Coordinate c, TileEntityTeleport te) {
 			te.isActive = false;
 		}
 
 	}
 
-	private static class Reroute implements TeleportTriggerAction {
+	public static class DeactivateOneOf implements TeleportTriggerAction {
+
+		public static final DeactivateOneOf instance = new DeactivateOneOf();
+
+		private DeactivateOneOf() {
+
+		}
+
+		@Override
+		public void trigger(Coordinate c, TileEntityTeleport te) {
+			te.actions.remove(c);
+			if (this.shouldDeactivate(te))
+				te.isActive = false;
+		}
+
+		private boolean shouldDeactivate(TileEntityTeleport te) {
+			for (TeleportTriggerAction a : te.actions.values()) {
+				if (a instanceof DeactivateOneOf)
+					return false;
+			}
+			return true;
+		}
+
+	}
+
+	public static class Reroute implements TeleportTriggerAction {
 
 		private final BlockVector newDestination;
 
-		private Reroute(BlockVector vec) {
+		public Reroute(BlockVector vec) {
 			newDestination = vec;
 		}
 
 		@Override
-		public void trigger(TileEntityTeleport te) {
+		public void trigger(Coordinate c, TileEntityTeleport te) {
 			te.destination = newDestination;
+		}
+
+	}
+
+	public static class RerouteIf implements TeleportTriggerAction {
+
+		private final BlockVector newDestination;
+
+		public RerouteIf(BlockVector vec) {
+			newDestination = vec;
+		}
+
+		@Override
+		public void trigger(Coordinate c, TileEntityTeleport te) {
+			te.actions.remove(c);
+			if (this.shouldReroute(te))
+				te.destination = newDestination;
+		}
+
+		private boolean shouldReroute(TileEntityTeleport te) {
+			for (TeleportTriggerAction a : te.actions.values()) {
+				if (a instanceof RerouteIf)
+					return false;
+			}
+			return true;
 		}
 
 	}

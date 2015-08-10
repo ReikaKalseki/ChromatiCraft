@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
+import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
@@ -118,6 +119,7 @@ public enum ChromaItems implements ItemEnum {
 	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class),
 	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class),
 	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
+	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
 	;
 
 	private final int index;
@@ -169,8 +171,8 @@ public enum ChromaItems implements ItemEnum {
 
 	public int getArmorType() {
 		switch(this) {
-		default:
-			return 0;
+			default:
+				return 0;
 		}
 	}
 
@@ -212,52 +214,52 @@ public enum ChromaItems implements ItemEnum {
 		if (meta == OreDictionary.WILDCARD_VALUE)
 			return this.getBasicName()+" (Any)";
 		switch(this) {
-		case PLACER:
-			return ChromaTiles.TEList[meta].getName();
-		case BUCKET:
-			//if (meta >= 2)
-			//	meta = 2;
-			return StatCollector.translateToLocal(ChromaNames.fluidNames[meta])+" "+this.getBasicName();
-		case SHARD:
-			String s = meta >= 16 ? /*EnumChatFormatting.GREEN.toString()*/"Boosted " : "";
-			return s+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
-		case POTION:
-		case PENDANT:
-		case PENDANT3:
-		case DYE:
-		case LENS:
-		case BERRY:
-		case ELEMENTAL:
-			return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
-		case CLUSTER:
-			return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
-		case TIERED:
-			return StatCollector.translateToLocal(ChromaNames.tieredNames[meta]);
-		case SEED:
-			return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
-		case MISC:
-			return StatCollector.translateToLocal(ChromaNames.miscNames[meta]);
-		case MODINTERACT:
-			return StatCollector.translateToLocal(ChromaNames.modInteractNames[meta]);
-		case ENDERCRYSTAL:
-			return this.getBasicName();
-		case CRAFTING:
-			return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
-		case STORAGE:
-			return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
-		case FRAGMENT:
-			return this.getBasicName();
-		case OREPICK:
-		case ORESILK:
-		case MULTITOOL:
-			return this.getBasicName();
-		case WARP:
-			String pre = meta == 1 ? "Charged " : "Inert ";
-			return pre+this.getBasicName();
-		case DIMGEN:
-			return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
-		default:
-			break;
+			case PLACER:
+				return ChromaTiles.TEList[meta].getName();
+			case BUCKET:
+				//if (meta >= 2)
+				//	meta = 2;
+				return StatCollector.translateToLocal(ChromaNames.fluidNames[meta])+" "+this.getBasicName();
+			case SHARD:
+				String s = meta >= 16 ? /*EnumChatFormatting.GREEN.toString()*/"Boosted " : "";
+				return s+CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
+			case POTION:
+			case PENDANT:
+			case PENDANT3:
+			case DYE:
+			case LENS:
+			case BERRY:
+			case ELEMENTAL:
+				return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
+			case CLUSTER:
+				return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
+			case TIERED:
+				return StatCollector.translateToLocal(ChromaNames.tieredNames[meta]);
+			case SEED:
+				return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
+			case MISC:
+				return StatCollector.translateToLocal(ChromaNames.miscNames[meta]);
+			case MODINTERACT:
+				return StatCollector.translateToLocal(ChromaNames.modInteractNames[meta]);
+			case ENDERCRYSTAL:
+				return this.getBasicName();
+			case CRAFTING:
+				return StatCollector.translateToLocal(ChromaNames.craftingNames[meta]);
+			case STORAGE:
+				return StatCollector.translateToLocal(ChromaNames.storageNames[meta])+" "+this.getBasicName();
+			case FRAGMENT:
+				return this.getBasicName();
+			case OREPICK:
+			case ORESILK:
+			case MULTITOOL:
+				return this.getBasicName();
+			case WARP:
+				String pre = meta == 1 ? "Charged " : "Inert ";
+				return pre+this.getBasicName();
+			case DIMGEN:
+				return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
+			default:
+				break;
 		}
 		throw new RuntimeException("Item "+name+" was called for a multi-name, but it was not registered!");
 	}
@@ -296,57 +298,57 @@ public enum ChromaItems implements ItemEnum {
 		if (!hasSubtypes)
 			return 1;
 		switch(this) {
-		case BUCKET:
-			return ChromaNames.fluidNames.length;
-		case PLACER:
-			return ChromaTiles.TEList.length;
-		case SHARD:
-			return CrystalElement.elements.length*2;
-		case PENDANT:
-		case PENDANT3:
-		case POTION:
-		case DYE:
-		case LENS:
-		case BERRY:
-		case ELEMENTAL:
-			return CrystalElement.elements.length;
-		case CLUSTER:
-			return ChromaNames.clusterNames.length;
-		case TIERED:
-			return ChromaNames.tieredNames.length;
-		case MISC:
-			return ChromaNames.miscNames.length;
-		case MODINTERACT:
-			return ChromaNames.modInteractNames.length;
-		case SEED:
-			return 16; //was 32
-		case ENDERCRYSTAL:
-			return 2;
-		case CRAFTING:
-			return ChromaNames.craftingNames.length;
-		case STORAGE:
-			return ChromaNames.storageNames.length;
-		case FRAGMENT:
-			return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
-		case WARP:
-			return 2;
-		case OREPICK:
-			return 720;
-		case MULTITOOL:
-			return 400;
-		case ORESILK:
-			return 180;
-		case DIMGEN:
-			return BlockDimensionDeco.DimDecoTypes.list.length;
-		default:
-			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
+			case BUCKET:
+				return ChromaNames.fluidNames.length;
+			case PLACER:
+				return ChromaTiles.TEList.length;
+			case SHARD:
+				return CrystalElement.elements.length*2;
+			case PENDANT:
+			case PENDANT3:
+			case POTION:
+			case DYE:
+			case LENS:
+			case BERRY:
+			case ELEMENTAL:
+				return CrystalElement.elements.length;
+			case CLUSTER:
+				return ChromaNames.clusterNames.length;
+			case TIERED:
+				return ChromaNames.tieredNames.length;
+			case MISC:
+				return ChromaNames.miscNames.length;
+			case MODINTERACT:
+				return ChromaNames.modInteractNames.length;
+			case SEED:
+				return 16; //was 32
+			case ENDERCRYSTAL:
+				return 2;
+			case CRAFTING:
+				return ChromaNames.craftingNames.length;
+			case STORAGE:
+				return ChromaNames.storageNames.length;
+			case FRAGMENT:
+				return ReikaJavaLibrary.getEnumLengthWithoutInitializing(ChromaResearch.class);
+			case WARP:
+				return 2;
+			case OREPICK:
+				return 720;
+			case MULTITOOL:
+				return 400;
+			case ORESILK:
+				return 180;
+			case DIMGEN:
+				return BlockDimensionDeco.DimDecoTypes.list.length;
+			default:
+				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}
 	}
 
 	public boolean isArmor() {
 		switch(this) {
-		default:
-			return false;
+			default:
+				return false;
 		}
 	}
 
@@ -372,10 +374,10 @@ public enum ChromaItems implements ItemEnum {
 
 	public boolean overridesRightClick(ItemStack is) {
 		switch(this) {
-		case TOOL:
-			return true;
-		default:
-			return false;
+			case TOOL:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -447,8 +449,8 @@ public enum ChromaItems implements ItemEnum {
 		if (is == null)
 			return is;
 		switch(this) {
-		default:
-			break;
+			default:
+				break;
 		}
 		return is;
 	}
@@ -495,8 +497,8 @@ public enum ChromaItems implements ItemEnum {
 		if (this.isArmor())
 			return false;
 		switch(this) {
-		default:
-			return true;
+			default:
+				return true;
 		}
 	}
 
@@ -508,12 +510,12 @@ public enum ChromaItems implements ItemEnum {
 
 	public boolean isPlacer() {
 		switch(this) {
-		case PLACER:
-		case RIFT:
-		case ENDERCRYSTAL:
-			return true;
-		default:
-			return false;
+			case PLACER:
+			case RIFT:
+			case ENDERCRYSTAL:
+				return true;
+			default:
+				return false;
 		}
 	}
 

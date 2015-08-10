@@ -88,13 +88,13 @@ public class MazePiece extends StructurePiece {
 
 	private BlockKey getTunnelType(int idx) {
 		switch(idx) {
-		case 0:
-		default:
-			return new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-		case 1:
-			return new BlockKey(ChromaBlocks.SHIFTLOCK.getBlockInstance(), 0);
-		case 2:
-			return new BlockKey(Blocks.air, 0);
+			case 0:
+			default:
+				return new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+			case 1:
+				return new BlockKey(ChromaBlocks.SHIFTLOCK.getBlockInstance(), 0);
+			case 2:
+				return new BlockKey(Blocks.air, 0);
 		}
 	}
 

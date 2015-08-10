@@ -23,7 +23,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class AltarGenerator extends DimensionStructureGenerator {
 
-	private int posY = 0;
 	private int lastPosY;
 
 	@Override

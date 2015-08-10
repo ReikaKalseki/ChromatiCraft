@@ -38,6 +38,12 @@ public class LocksLoot extends StructurePiece {
 		int mg = BlockType.GLASS.metadata;
 		int mc = BlockType.CRACKS.metadata;
 
+		this.placeCore(x+4, y+2, z-5);
+
+		for (int i = -1; i <= 1; i++)
+			for (int k = -1; k <= 1; k++)
+				parent.addBreakable(x+4+i, y, z-5+k);
+
 		world.setBlock(x+0, y+0, z-2, b, ms);
 		world.setBlock(x+0, y+0, z-3, b, ms);
 		world.setBlock(x+0, y+0, z-4, b, ms);
@@ -196,7 +202,6 @@ public class LocksLoot extends StructurePiece {
 		world.setBlock(x+4, y+1, z-7, b, ms);
 		world.setBlock(x+4, y+2, z-0, b, ml);
 		world.setBlock(x+4, y+2, z-3, b, mc);
-		this.placeCore(x+4, y+2, z-5);
 		world.setBlock(x+4, y+2, z-7, b, ml);
 		world.setBlock(x+4, y+3, z-0, b, ms);
 		world.setBlock(x+4, y+3, z-3, b, mc);

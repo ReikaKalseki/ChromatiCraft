@@ -78,8 +78,13 @@ public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
 
 		Tessellator v5 = Tessellator.instance;
 		int meta = world.getBlockMetadata(x, y, z);
+		BlockSpecialShield bs = (BlockSpecialShield)b;
 
-		v5.setBrightness(240);
+		if (bs.useNoLighting(world, x, y, z))
+			v5.setBrightness(240);
+		else
+			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
+
 		v5.setColorOpaque_F(255, 255, 255);
 		IIcon ico = b.getIcon(world, x, y, z, 0);
 		rb.renderFaceYNeg(b, x, y, z, ico);

@@ -35,6 +35,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
@@ -193,6 +194,21 @@ public class BlockLootChest extends BlockContainer {
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof TileEntityLootChest) {
 			((TileEntityLootChest)te).maxReachAccess = max;
+		}
+	}
+
+	public static int getMeta(ForgeDirection dir) {
+		switch(dir) {
+			case EAST:
+				return 1;
+			case NORTH:
+				return 2;
+			case SOUTH:
+				return 3;
+			case WEST:
+				return 0;
+			default:
+				return -1;
 		}
 	}
 

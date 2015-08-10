@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
 public class LootRoom extends StructurePiece {
@@ -40,6 +41,18 @@ public class LootRoom extends StructurePiece {
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 
 		this.placeCore(i+5, j+2, k+5);
+
+		for (int a1 = -5; a1 <= 5; a1++) {
+			for (int a2 = -5; a2 <= 5; a2++) {
+				if (Math.abs(a1) == 5 || Math.abs(a2) == 5) {
+					BlockKey bk = world.getBlock(i+5+a1, j+2, k+5+a2);
+					if (bk == null || bk.metadata != BlockType.LIGHT.metadata) {
+						parent.addBreakable(i+5+a1, j+1, k+5+a2);
+						parent.addBreakable(i+5+a1, j+2, k+5+a2);
+					}
+				}
+			}
+		}
 
 		world.setBlock(i+0, j+0, k+0, sh, ms);
 		world.setBlock(i+0, j+0, k+1, sh, ms);

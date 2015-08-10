@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
@@ -168,7 +169,8 @@ public enum ChromaBlocks implements BlockEnum {
 	SHIFTLOCK(BlockShiftLock.class,												"chroma.shiftlock"),
 	TELEPORT(BlockTeleport.class,												"chroma.teleportblock"),
 	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield"),
-	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar");
+	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar"),
+	DOOR(BlockChromaDoor.class,													"chroma.door");
 
 	private Class blockClass;
 	private String blockName;
@@ -377,6 +379,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case SHIFTLOCK:
 			case SHIFTKEY:
 			case TELEPORT:
+			case DOOR:
 				return false;
 			default:
 				return true;

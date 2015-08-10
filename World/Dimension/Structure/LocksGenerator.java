@@ -35,14 +35,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	@Override
 	public void calculate(int x, int z, CrystalElement e, Random rand) {
+
 		BlockColoredLock.resetCaches(this);
-		int y = 40;
+		posY = 40;
 
 		ForgeDirection dir = ForgeDirection.SOUTH;//ReikaDirectionHelper.getRandomDirection(false, rand);
 		this.genMaps(rand, dir);
 		int len = 4+rand.nextInt(8);
 		int radius = 6+rand.nextInt(5);
-		this.addDynamicStructure(new LocksEntrance(this, dir, radius, y+5, len), x, z);
+		this.addDynamicStructure(new LocksEntrance(this, dir, radius, posY+5, len), x, z);
 
 		int len2 = 4+rand.nextInt(6);
 		//int[] lens = new int[4];
@@ -59,14 +60,14 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		//x += (len+len2+7)*dir.offsetX;
 		//z += (len+len2+7)*dir.offsetZ;
 
-		new LockRoomConnector(this, 0, 0, 0, 0).setLength(dir, len2).setOpenCeiling().generate(world, x, y, z);
+		new LockRoomConnector(this, 0, 0, 0, 0).setLength(dir, len2).setOpenCeiling().generate(world, x, posY, z);
 
 		x += (len2+3)*dir.offsetX;
 		z += (len2+3)*dir.offsetZ;
 
-		Coordinate c = this.genRooms(x, y, z, dir, rand);
+		Coordinate c = this.genRooms(x, posY, z, dir, rand);
 
-		new LocksLoot(this).generate(world, c.xCoord-dir.offsetZ*4+dir.offsetX*7, c.yCoord, c.zCoord-dir.offsetX*4+dir.offsetZ*7);
+		new LocksLoot(this).generate(world, c.xCoord-dir.offsetZ*4+dir.offsetX*6, c.yCoord, c.zCoord-dir.offsetX*4+dir.offsetZ*6); //6 was 7
 	}
 
 	private Coordinate genRooms(int x, int y, int z, ForgeDirection dir, Random rand) {

@@ -72,14 +72,14 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	private static int getWidth() {
 		switch(ChromaOptions.getStructureDifficulty()) {
-		case 1:
-			return 16;
-		case 2:
-			return 24;
-		case 3:
-			return 32;
-		default:
-			return 32;
+			case 1:
+				return 16;
+			case 2:
+				return 24;
+			case 3:
+				return 32;
+			default:
+				return 32;
 		}
 	}
 
@@ -89,7 +89,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 		this.pickPoints(rand, ANCHORS);
 
-		int y = 200;
+		posY = 200;
 
 		for (int i = 0; i < ANCHORS+1; i++) {
 			pathCache[i] = new LinkedList();
@@ -100,8 +100,8 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			this.cutExit(i);
 		}
 
-		this.generateBlocks(x, y, z, rand);
-		this.generateAnchors(x, y, z, rand);
+		this.generateBlocks(x, posY, z, rand);
+		this.generateAnchors(x, posY, z, rand);
 	}
 
 	private void generateAnchors(int x, int y, int z, Random rand) {
@@ -445,18 +445,18 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	private Point randomEdgeCenter(Random rand) {
 		Point p = new Point(MAX_SIZE_X/2, MAX_SIZE_Z/2);
 		switch(rand.nextInt(4)) {
-		case 0:
-			p.x = MAX_SIZE_X-1;
-			break;
-		case 1:
-			p.x = 0;
-			break;
-		case 2:
-			p.y = MAX_SIZE_Z-1;
-			break;
-		case 3:
-			p.y = 0;
-			break;
+			case 0:
+				p.x = MAX_SIZE_X-1;
+				break;
+			case 1:
+				p.x = 0;
+				break;
+			case 2:
+				p.y = MAX_SIZE_Z-1;
+				break;
+			case 3:
+				p.y = 0;
+				break;
 		}
 		return p;
 	}

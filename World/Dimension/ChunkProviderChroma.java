@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -94,7 +95,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	//private final HashSet<CrystalElement> unusedColors = new HashSet();
 	//private final HashSet<DimensionStructureType> unusedTypes = new HashSet();
-	static final ArrayList<StructurePair> structures = new ArrayList();
+	static final HashSet<StructurePair> structures = new HashSet();
 	private final MonumentGenerator monument = new MonumentGenerator();
 	private boolean gennedMonument = false;
 

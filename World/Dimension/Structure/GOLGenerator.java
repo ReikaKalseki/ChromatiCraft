@@ -25,16 +25,11 @@ public class GOLGenerator extends DimensionStructureGenerator {
 
 	public static final int SIZE = 16;
 
-	protected int posX;
-	protected int posZ;
 	protected int floorY;
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
-		posX = chunkX;
-		posZ = chunkZ;
-
-		int posY = 200;
+		posY = 200;
 		floorY = posY+1;
 
 		for (int i = -SIZE; i < SIZE; i++) {
