@@ -256,7 +256,7 @@ public class ItemMagicRegistry {
 		return tag != null ? tag.copy() : null;
 	}
 
-	public Collection<ItemStack> getAllRegisteredItems() {
+	public ArrayList<ItemStack> getAllRegisteredItems() {
 		ArrayList<ItemStack> li = new ArrayList();
 		for (KeyedItemStack item : data.keySet()) {
 			li.add(item.getItemStack());

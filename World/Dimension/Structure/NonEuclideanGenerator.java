@@ -34,7 +34,6 @@ import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer1;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer2;
@@ -59,7 +58,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	private UUID door;
 
 	@Override
-	protected void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	protected void calculate(int chunkX, int chunkZ, Random rand) {
 		Block b = ChromaBlocks.SPECIALSHIELD.getBlockInstance();
 		Block b2 = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 

@@ -19,7 +19,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.LootRoom;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TDMazeEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TunnelPiece;
@@ -78,7 +77,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
-	public void calculate(int x, int z, CrystalElement e, Random rand) {
+	public void calculate(int x, int z, Random rand) {
 
 		posY = 75;
 
@@ -90,7 +89,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		maxY = posY;
 		minY = posY-partSize*MAX_SIZE_Y;
 
-		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, e, rand);
+		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
 		this.generateBlocks(x, posY, z, rand);
@@ -158,7 +157,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private void generatePathFrom(int x, int y, int z, CrystalElement e, Random rand) {
+	private void generatePathFrom(int x, int y, int z, Random rand) {
 		pathCache.addLast(ForgeDirection.DOWN);
 		//this.stepPath(x, y, z, rand, this.getMovementDirection(x, y, z, ForgeDirection.DOWN, rand));
 		step = new Coordinate(x, y, z);

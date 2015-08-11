@@ -15,7 +15,6 @@ import java.util.Random;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarCenter;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarNode;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarTunnel;
@@ -26,7 +25,7 @@ public class AltarGenerator extends DimensionStructureGenerator {
 	private int lastPosY;
 
 	@Override
-	public void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	public void calculate(int chunkX, int chunkZ, Random rand) {
 
 		posY = 10+rand.nextInt(30);
 		posY = 80;

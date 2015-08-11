@@ -15,7 +15,6 @@ import java.util.Random;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.MusicStructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 
@@ -26,7 +25,7 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 	private final ArrayList<MusicPuzzle> puzzles = new ArrayList();
 
 	@Override
-	protected void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	protected void calculate(int chunkX, int chunkZ, Random rand) {
 		this.generatePuzzles(rand);
 	}
 

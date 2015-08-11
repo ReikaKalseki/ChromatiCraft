@@ -23,7 +23,6 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeAnchor;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
@@ -84,7 +83,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	}
 
 	@Override
-	public void calculate(int x, int z, CrystalElement e, Random rand) {
+	public void calculate(int x, int z, Random rand) {
 
 
 		this.pickPoints(rand, ANCHORS);
@@ -96,7 +95,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			coordCache[i] = new HashSet();
 			locationCache[i] = new MultiMap(new MultiMap.HashSetFactory());
 			destination = i == ANCHORS ? exit : endPoints.get(i);
-			this.generatePathFrom(i, entry.x, entry.y, e, rand);
+			this.generatePathFrom(i, entry.x, entry.y, rand);
 			this.cutExit(i);
 		}
 
@@ -214,7 +213,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		return c;
 	}
 
-	private void generatePathFrom(int layer, int x, int z, CrystalElement e, Random rand) {
+	private void generatePathFrom(int layer, int x, int z, Random rand) {
 		ForgeDirection dir = this.getEntryDirectionFrom(entry);
 		pathCache[layer].addLast(dir);
 		step = new Point(x, z);

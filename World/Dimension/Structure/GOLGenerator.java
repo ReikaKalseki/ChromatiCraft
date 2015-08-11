@@ -18,7 +18,6 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController.GOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile.GOLTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 public class GOLGenerator extends DimensionStructureGenerator {
@@ -28,7 +27,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 	protected int floorY;
 
 	@Override
-	protected void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
+	protected void calculate(int chunkX, int chunkZ, Random rand) {
 		posY = 200;
 		floorY = posY+1;
 

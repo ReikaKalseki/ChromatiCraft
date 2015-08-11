@@ -43,7 +43,6 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	protected final ChunkSplicedGenerationCache world = new ChunkSplicedGenerationCache();
 	private DimensionStructureType structureType;
-	private CrystalElement genColor;
 	private ChunkCoordIntPair genCore;
 	private ChunkCoordIntPair center;
 
@@ -80,14 +79,13 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	}
 
 	/** chunk X and Z are already *16 */
-	protected abstract void calculate(int chunkX, int chunkZ, CrystalElement e, Random rand);
+	protected abstract void calculate(int chunkX, int chunkZ, Random rand);
 
-	public final void startCalculate(int chunkX, int chunkZ, CrystalElement e, Random rand) {
-		genColor = e;
+	public final void startCalculate(int chunkX, int chunkZ, Random rand) {
 		genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
 		posX = chunkX;
 		posZ = chunkZ;
-		this.calculate(chunkX, chunkZ, e, rand);
+		this.calculate(chunkX, chunkZ, rand);
 	}
 
 	public final void generateChunk(World w, ChunkCoordIntPair cp) {
@@ -136,10 +134,6 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		this.clearCaches();
 	}
 
-	public final CrystalElement getColor() {
-		return genColor;
-	}
-
 	public final ChunkCoordIntPair getLocation() {
 		return genCore;
 	}
@@ -173,7 +167,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	}
 
 	private CrystalElement getCoreColor(World world) {
-		return CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];//genColor;
+		return CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];
 	}
 
 	public final void placeCore(int x, int y, int z) {

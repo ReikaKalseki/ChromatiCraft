@@ -102,6 +102,7 @@ import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.DimensionBubble;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
@@ -389,6 +390,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			FMLCommonHandler.instance().bus().register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
+			PlayerHandler.instance.registerTracker(DimensionBubble.instance);
 		}
 
 		if (ChromaOptions.HANDBOOK.getState())

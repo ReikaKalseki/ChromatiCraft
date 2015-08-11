@@ -14,6 +14,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -32,7 +33,8 @@ public class BlockDimensionDeco extends Block {
 
 	public static enum DimDecoTypes implements DecoType {
 		MIASMA(),
-		FLOATSTONE();
+		FLOATSTONE(),
+		AQUA();
 
 		public static DimDecoTypes[] list = values();
 
@@ -46,6 +48,10 @@ public class BlockDimensionDeco extends Block {
 
 		public IIcon getOverlay() {
 			return icons[1][this.ordinal()];
+		}
+
+		public boolean requiresPickaxe() {
+			return this == FLOATSTONE;
 		}
 	}
 
@@ -100,6 +106,11 @@ public class BlockDimensionDeco extends Block {
 	public final boolean canRenderInPass(int pass) {
 		DimensionDecoRenderer.renderPass = pass;
 		return pass <= 1;
+	}
+
+	@Override
+	public boolean canHarvestBlock(EntityPlayer ep, int meta) {
+		return DimDecoTypes.list[meta].requiresPickaxe() ? super.canHarvestBlock(ep, meta) : true;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LockRoomConnector;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksLoot;
@@ -34,7 +33,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	private ArrayList<LockLevel> genOrder = new ArrayList();
 
 	@Override
-	public void calculate(int x, int z, CrystalElement e, Random rand) {
+	public void calculate(int x, int z, Random rand) {
 
 		BlockColoredLock.resetCaches(this);
 		posY = 40;

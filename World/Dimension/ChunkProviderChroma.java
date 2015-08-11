@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
@@ -49,13 +50,15 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class ChunkProviderChroma implements IChunkProvider {
 
+	/*
 	private static BumpMap[] bumpMaps = new BumpMap[16];
 
 	static {
 		for (int i = 0; i < 16; i++) {
-			//bumpMaps[i] = new BumpMap(ChromatiCraft.class, "Textures/Dimension Bump Maps/"+CrystalElement.elements[i].name().toLowerCase()+".png");
+			bumpMaps[i] = new BumpMap(ChromatiCraft.class, "Textures/Dimension Bump Maps/"+CrystalElement.elements[i].name().toLowerCase()+".png");
 		}
 	}
+	 */
 
 	/** RNG. */
 	private Random rand;
@@ -173,6 +176,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		decorators.add(new WorldGenFloatstone());
 		decorators.add(new WorldGenMoonPool());
 		decorators.add(new WorldGenFireJet());
+		decorators.add(new WorldGenMiniAltar());
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
