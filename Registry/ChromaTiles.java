@@ -136,7 +136,7 @@ public enum ChromaTiles {
 	RFDISTRIBUTOR("chroma.rfdistrib",	ChromaBlocks.TILEMODELLED2, TileEntityRFDistributor.class,		7, "RenderRFDistributor"),
 	PERSONAL("chroma.personal",			ChromaBlocks.PYLON,			TileEntityPersonalCharger.class,	7, "RenderPersonalCharger"),
 	MUSIC("chroma.music",				ChromaBlocks.TILECRYSTAL,	TileEntityCrystalMusic.class,		2, "RenderCrystalMusic"),
-	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13);
+	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG);
 
 	private final Class tile;
 	private final String name;
@@ -277,7 +277,7 @@ public enum ChromaTiles {
 		}
 		catch (IllegalAccessException e) {
 			e.printStackTrace();
-			throw new RegistrationException(ChromatiCraft.instance, "ID "+id+" and Metadata "+meta+" failed illegally accessed its TileEntity of "+TEClass);
+			throw new RegistrationException(ChromatiCraft.instance, "ID "+id+" and Metadata "+meta+" failed; illegally accessed a member its TileEntity of "+TEClass);
 		}
 	}
 

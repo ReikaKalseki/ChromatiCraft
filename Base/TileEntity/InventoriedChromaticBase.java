@@ -42,6 +42,11 @@ public abstract class InventoriedChromaticBase extends TileEntityChromaticBase i
 
 	public final void setInventorySlotContents(int par1, ItemStack is) {
 		inv[par1] = is;
+		this.onSlotSet(par1, is);
+	}
+
+	protected void onSlotSet(int slot, ItemStack is) {
+
 	}
 
 	public boolean isUseableByPlayer(EntityPlayer var1) {

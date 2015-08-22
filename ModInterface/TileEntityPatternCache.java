@@ -24,6 +24,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import appeng.api.AEApi;
 import appeng.api.implementations.ICraftingPatternItem;
+import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -33,7 +34,12 @@ import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.crafting.ICraftingProvider;
 import appeng.api.networking.crafting.ICraftingProviderHelper;
 import appeng.api.networking.events.MENetworkCraftingPatternChange;
+import appeng.api.parts.IPart;
+import appeng.api.parts.IPartHost;
 import appeng.api.util.AECableType;
+import appeng.api.util.DimensionalCoord;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 @Strippable(value={"appeng.api.networking.IGridHost", "appeng.api.networking.crafting.ICraftingProvider"})
 public class TileEntityPatternCache extends InventoriedChromaticBase implements IGridHost, ICraftingProvider {
@@ -43,9 +49,9 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 	private Object aeGridBlock;
 	private Object aeGridNode;
 
-	private TileEntityPatternCache() {
+	public TileEntityPatternCache() {
 
-		if (ModList.APPENG.isLoaded()) {
+		if (ModList.APPENG.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 			aeGridBlock = new BasicAEInterface(this, this.getTile().getCraftedProduct());
 			aeGridNode = AEApi.instance().createGridNode((IGridBlock)aeGridBlock);
 		}
@@ -53,18 +59,28 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-
+		if (ModList.APPENG.isLoaded() && !world.isRemote) {
+			if (this.getTicksExisted()%10 == 0) {
+				aeGridNode = AEApi.instance().createGridNode((IGridBlock)aeGridBlock);
+				this.updateAE();
+			}
+		}
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		if (ModList.APPENG.isLoaded())
+		if (ModList.APPENG.isLoaded() && aeGridNode != null && !world.isRemote)
 			this.updateAE();
 	}
 
 	@ModDependent(ModList.APPENG)
 	private void updateAE() {
-		((IGridNode)aeGridNode).getGrid().postEvent(new MENetworkCraftingPatternChange(this, (IGridNode)aeGridNode));
+		if (aeGridNode != null)
+			((IGridNode)aeGridNode).updateState();
+
+		IGrid grid = ((IGridNode)aeGridNode).getGrid();
+		if (grid != null)
+			grid.postEvent(new MENetworkCraftingPatternChange(this, (IGridNode)aeGridNode));
 	}
 
 	@ModDependent(ModList.APPENG)
@@ -73,8 +89,8 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 		IMachineSet set = ((IGridNode)aeGridNode).getGrid().getMachines(IGridHost.class);
 		for (IGridNode n : set) {
 			IGridHost igh = n.getMachine();
-			if (igh instanceof ICraftingMedium && igh instanceof TileEntity) {
-				if (this.isValidTarget((TileEntity)igh)) {
+			if (igh instanceof ICraftingMedium) {
+				if (this.isValidTarget(igh)) {
 					li.add((ICraftingMedium)igh);
 				}
 			}
@@ -82,15 +98,41 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 		return li;
 	}
 
-	private boolean isValidTarget(TileEntity te) {
-		for (int i = 0; i < 6; i++) {
-			ForgeDirection dir = dirs[i];
-			TileEntity tile = te.worldObj.getTileEntity(te.xCoord+dir.offsetX, te.yCoord+dir.offsetY, te.zCoord+dir.offsetZ);
-			if (tile.getClass().getSimpleName().equals("TileMolecularAssembler")) {
-				return true;
+	@ModDependent(ModList.APPENG)
+	private boolean isValidTarget(IGridHost igh) {
+		if (igh instanceof IPart) {
+			IPart ip = (IPart)igh;
+			DimensionalCoord dc = ip.getGridNode().getGridBlock().getLocation();
+			TileEntity te = dc.getWorld().getTileEntity(dc.x, dc.y, dc.z);
+			if (te instanceof IPartHost) {
+				IPartHost iph = (IPartHost)te;
+				for (int i = 0; i < 6; i++) {
+					ForgeDirection dir = dirs[i];
+					IPart p = iph.getPart(dir);
+					if (p == ip) {
+						TileEntity tile = te.worldObj.getTileEntity(te.xCoord+dir.offsetX, te.yCoord+dir.offsetY, te.zCoord+dir.offsetZ);
+						if (this.isAssemblerTile(tile)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		else if (igh instanceof TileEntity) {
+			TileEntity te = (TileEntity)igh;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = dirs[i];
+				TileEntity tile = te.worldObj.getTileEntity(te.xCoord+dir.offsetX, te.yCoord+dir.offsetY, te.zCoord+dir.offsetZ);
+				if (this.isAssemblerTile(tile)) {
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	private boolean isAssemblerTile(TileEntity te) {
+		return te.getClass().getSimpleName().equals("TileMolecularAssembler");
 	}
 
 	@Override
@@ -181,8 +223,14 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 	@Override
 	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
 		super.onInvalidateOrUnload(world, x, y, z, invalid);
-		if (ModList.APPENG.isLoaded() && aeGridNode != null)
+		if (ModList.APPENG.isLoaded() && aeGridNode != null && !world.isRemote)
 			((IGridNode)aeGridNode).destroy();
+	}
+
+	@Override
+	protected void onSlotSet(int slot, ItemStack is) {
+		if (ModList.APPENG.isLoaded() && !worldObj.isRemote)
+			this.updateAE();
 	}
 
 }

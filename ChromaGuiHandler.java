@@ -80,11 +80,14 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiMiner;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
 import Reika.ChromatiCraft.ModInterface.ContainerMEDistributor;
+import Reika.ChromatiCraft.ModInterface.ContainerPatternCache;
 import Reika.ChromatiCraft.ModInterface.ContainerRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.GuiMEDistributor;
+import Reika.ChromatiCraft.ModInterface.GuiPatternCache;
 import Reika.ChromatiCraft.ModInterface.GuiRemoteTerminal;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -136,29 +139,31 @@ public class ChromaGuiHandler implements IGuiHandler {
 				if (te instanceof TileEntitySpawnerReprogrammer)
 					return new ContainerSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 				if (te instanceof TileEntityCrystalBrewer)
-					return new ContainerCrystalBrewer(player, (TileEntityCrystalBrewer) te);
+					return new ContainerCrystalBrewer(player, (TileEntityCrystalBrewer)te);
 				if (te instanceof TileEntityCastingTable)
 					return new ContainerCastingTable(player, te);
 				if (te instanceof TileEntityCrystalCharger)
-					return new ContainerCrystalCharger(player, (TileEntityCrystalCharger) te);
+					return new ContainerCrystalCharger(player, (TileEntityCrystalCharger)te);
 				if (te instanceof TileEntityCrystalFurnace)
-					return new ContainerCrystalFurnace(player, (TileEntityCrystalFurnace) te);
+					return new ContainerCrystalFurnace(player, (TileEntityCrystalFurnace)te);
 				if (te instanceof TileEntityItemCollector)
-					return new ContainerItemCollector(player, (TileEntityItemCollector) te);
+					return new ContainerItemCollector(player, (TileEntityItemCollector)te);
 				if (te instanceof TileEntityItemFabricator)
-					return new ContainerItemFabricator(player, (TileEntityItemFabricator) te);
+					return new ContainerItemFabricator(player, (TileEntityItemFabricator)te);
 				if (te instanceof TileEntityTeleportationPump)
-					return new ContainerTelePump(player, (TileEntityTeleportationPump) te);
+					return new ContainerTelePump(player, (TileEntityTeleportationPump)te);
 				if (te instanceof TileEntityMiner)
-					return new ContainerMiner(player, (TileEntityMiner) te);
+					return new ContainerMiner(player, (TileEntityMiner)te);
 				if (te instanceof TileEntityCrystalTank)
-					return new ContainerCrystalTank(player, (TileEntityCrystalTank) te);
+					return new ContainerCrystalTank(player, (TileEntityCrystalTank)te);
 				if (te instanceof TileEntityInventoryTicker)
-					return new ContainerInventoryTicker(player, (TileEntityInventoryTicker) te);
+					return new ContainerInventoryTicker(player, (TileEntityInventoryTicker)te);
 				if (te instanceof TileEntityCastingAuto)
-					return new ContainerCastingAuto((TileEntityCastingAuto) te, player);
+					return new ContainerCastingAuto((TileEntityCastingAuto)te, player);
 				if (te instanceof TileEntityMEDistributor)
-					return new ContainerMEDistributor(player, (TileEntityMEDistributor) te);
+					return new ContainerMEDistributor(player, (TileEntityMEDistributor)te);
+				if (te instanceof TileEntityPatternCache)
+					return new ContainerPatternCache(player, (TileEntityPatternCache)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -201,45 +206,47 @@ public class ChromaGuiHandler implements IGuiHandler {
 				if (te instanceof TileEntitySpawnerReprogrammer)
 					return new GuiSpawnerProgrammer(player, (TileEntitySpawnerReprogrammer)te);
 				if (te instanceof TileEntityCrystalBrewer)
-					return new GuiCrystalBrewer(player, (TileEntityCrystalBrewer) te);
+					return new GuiCrystalBrewer(player, (TileEntityCrystalBrewer)te);
 				if (te instanceof TileEntityCastingTable)
-					return new GuiCastingTable(player, (TileEntityCastingTable) te);
+					return new GuiCastingTable(player, (TileEntityCastingTable)te);
 				if (te instanceof TileEntityCrystalCharger)
-					return new GuiCrystalCharger(player, (TileEntityCrystalCharger) te);
+					return new GuiCrystalCharger(player, (TileEntityCrystalCharger)te);
 				if (te instanceof TileEntityRitualTable)
-					return new GuiRitualTable(player, (TileEntityRitualTable) te);
+					return new GuiRitualTable(player, (TileEntityRitualTable)te);
 				if (te instanceof TileEntityCrystalFurnace)
-					return new GuiCrystalFurnace(player, (TileEntityCrystalFurnace) te);
+					return new GuiCrystalFurnace(player, (TileEntityCrystalFurnace)te);
 				if (te instanceof TileEntityItemCollector)
-					return new GuiItemCollector(player, (TileEntityItemCollector) te);
+					return new GuiItemCollector(player, (TileEntityItemCollector)te);
 				if (te instanceof TileEntityItemFabricator)
-					return new GuiItemFabricator(player, (TileEntityItemFabricator) te);
+					return new GuiItemFabricator(player, (TileEntityItemFabricator)te);
 				if (te instanceof TileEntityTeleportationPump)
-					return new GuiTelePump(player, (TileEntityTeleportationPump) te);
+					return new GuiTelePump(player, (TileEntityTeleportationPump)te);
 				if (te instanceof TileEntityAspectFormer)
-					return new GuiAspectFormer(player, (TileEntityAspectFormer) te);
+					return new GuiAspectFormer(player, (TileEntityAspectFormer)te);
 				if (te instanceof TileEntityMiner)
-					return new GuiMiner(player, (TileEntityMiner) te);
+					return new GuiMiner(player, (TileEntityMiner)te);
 				if (te instanceof TileEntityLampController)
-					return new GuiLampController(player, (TileEntityLampController) te);
+					return new GuiLampController(player, (TileEntityLampController)te);
 				if (te instanceof TileEntityRangedLamp)
-					return new GuiRangedLamp(player, (TileEntityRangedLamp) te);
+					return new GuiRangedLamp(player, (TileEntityRangedLamp)te);
 				if (te instanceof TileEntityCrystalTank)
-					return new GuiCrystalTank(player, (TileEntityCrystalTank) te);
+					return new GuiCrystalTank(player, (TileEntityCrystalTank)te);
 				if (te instanceof TileEntityEnderTNT)
-					return new GuiEnderTNT(player, (TileEntityEnderTNT) te);
+					return new GuiEnderTNT(player, (TileEntityEnderTNT)te);
 				if (te instanceof TileEntityInventoryTicker)
-					return new GuiInventoryTicker(player, (TileEntityInventoryTicker) te);
+					return new GuiInventoryTicker(player, (TileEntityInventoryTicker)te);
 				if (te instanceof TileEntityBiomePainter)
-					return new GuiBiomeChanger(player, (TileEntityBiomePainter) te);
+					return new GuiBiomeChanger(player, (TileEntityBiomePainter)te);
 				if (te instanceof TileEntityHeatLamp)
-					return new GuiHeatLamp((TileEntityHeatLamp) te, player);
+					return new GuiHeatLamp((TileEntityHeatLamp)te, player);
 				if (te instanceof TileEntityCastingAuto)
-					return new GuiCastingAuto((TileEntityCastingAuto) te, player);
+					return new GuiCastingAuto((TileEntityCastingAuto)te, player);
 				if (te instanceof TileEntityMEDistributor)
-					return new GuiMEDistributor(player, (TileEntityMEDistributor) te);
+					return new GuiMEDistributor(player, (TileEntityMEDistributor)te);
 				if (te instanceof TileEntityCrystalMusic)
-					return new GuiCrystalMusic(player, (TileEntityCrystalMusic) te);
+					return new GuiCrystalMusic(player, (TileEntityCrystalMusic)te);
+				if (te instanceof TileEntityPatternCache)
+					return new GuiPatternCache(player, (TileEntityPatternCache)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);
