@@ -53,6 +53,7 @@ public enum ChromaIcons {
 	TRIDOT("tridot-strip"),
 	PURPLESPIN("purplespin"),
 	ROSES("roses"),
+	ROSES_WHITE("roses_w"),
 	BASICFADE("basicfade"),
 	BASICFADE_FAST("basicfade_f"),
 	FRAME("frame"),

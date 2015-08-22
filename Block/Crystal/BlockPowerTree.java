@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -61,8 +62,13 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 		super(mat);
 		this.setHardness(1);
 		this.setResistance(6000);
-		this.setLightLevel(1);
 		stepSound = soundTypeGlass;
+	}
+
+	@Override
+	public final int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		CrystalElement e = CrystalElement.elements[iba.getBlockMetadata(x, y, z)];
+		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(e.getColor(), 15) : 15;
 	}
 
 	@Override

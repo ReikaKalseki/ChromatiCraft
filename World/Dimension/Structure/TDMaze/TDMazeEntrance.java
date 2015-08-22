@@ -21,13 +21,14 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
 public class TDMazeEntrance extends DynamicStructurePiece {
 
-	public TDMazeEntrance(DimensionStructureGenerator g, int y) {
-		super(g, y);
+	public TDMazeEntrance(DimensionStructureGenerator g) {
+		super(g);
 	}
 
 	@Override
 	public void generate(World world, int x, int z) {
 		int height = this.calculateHeight(world, x, z);
+		int posY = parent.getPosY();
 		int y = posY+height;
 		Block sh = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ml = BlockType.LIGHT.metadata;
@@ -336,7 +337,7 @@ public class TDMazeEntrance extends DynamicStructurePiece {
 			b = world.getBlock(x, top, z);
 			b2 = world.getBlock(x, top+1, z);
 		}
-		return top-posY;
+		return top-parent.getPosY();
 	}
 
 }

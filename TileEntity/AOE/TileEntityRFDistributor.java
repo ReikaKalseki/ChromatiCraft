@@ -142,8 +142,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 				double py = yCoord+0.5+dy/dd*d;
 				double pz = zCoord+0.5+dz/dd*d;
 				float s = (float)(1.5+ReikaMathLibrary.logbase(rf, 10)*(1D-d*d*12));
-				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(255, 0, 0).setLife(l).setScale(s).setRapidExpand();
-				EntityFX fx2 = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(255, 255, 255).setLife(l).setScale(s/2).setRapidExpand();
+				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand();
+				EntityFX fx2 = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand();
 				fx.noClip = true;
 				fx2.noClip = true;
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -208,8 +208,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 			int l = 20+rand.nextInt(60);
 			float s = 1.5F;
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(255, 0, 0).setLife(l).setScale(s).setRapidExpand().bound(box);
-			EntityFX fx2 = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(255, 255, 255).setLife(l).setScale(s/2).setRapidExpand().bound(box);
+			EntityFX fx = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().bound(box);
+			EntityFX fx2 = new EntityBlurFX(world, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().bound(box);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
@@ -233,10 +233,11 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 	private boolean isValidTarget(TileEntity te) {
 		if (te == this)
 			return false;
+		if (te == null)
+			return false;
 		Class c = te.getClass();
 		if (blacklist.contains(c))
 			return false;
-
 		if (distributionChain.contains(new WorldLocation(te)))
 			return false;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {

@@ -207,10 +207,6 @@ public class ModelMEDistributor extends ChromaModelBase
 	public void renderAll(TileEntity te, ArrayList li)
 	{
 		Shape1.render(te, f5);
-		Shape2.render(te, f5);
-		Shape2a.render(te, f5);
-		Shape2b.render(te, f5);
-		Shape2c.render(te, f5);
 		Shape3.render(te, f5);
 		Shape3a.render(te, f5);
 		Shape3b.render(te, f5);
@@ -226,6 +222,22 @@ public class ModelMEDistributor extends ChromaModelBase
 		Shape3e.render(te, f5);
 		Shape3f.render(te, f5);
 		Shape3g.render(te, f5);
+
+		boolean world = (Boolean)li.get(0);
+
+		GL11.glPushMatrix();
+		if (world) {
+
+		}
+		else {
+			GL11.glTranslated(0, 0.6, 0);
+			GL11.glScaled(1, 0.375, 1);
+		}
+		Shape2.render(te, f5);
+		Shape2a.render(te, f5);
+		Shape2b.render(te, f5);
+		Shape2c.render(te, f5);
+		GL11.glPopMatrix();
 
 		GL11.glPushMatrix();
 		GL11.glRotated(45, 0, 1, 0);

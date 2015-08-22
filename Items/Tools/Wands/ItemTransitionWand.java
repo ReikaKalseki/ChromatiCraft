@@ -37,7 +37,8 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 
 	private static HashMap<Integer, BlockReplace> breakers = new HashMap();
 
-	public static final int MAX_DEPTH = 18;
+	private static final int MAX_DEPTH = 18;
+	private static final int MAX_DEPTH_BOOST = 24;
 
 	public ItemTransitionWand(int index) {
 		super(index);
@@ -70,7 +71,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 					if (!this.setOrGetBlockBox(is, x, y, z))
 						return false;
 				}
-				int depth = mode == TransitionMode.VOLUMETRIC ? Integer.MAX_VALUE : MAX_DEPTH;
+				int depth = mode == TransitionMode.VOLUMETRIC ? Integer.MAX_VALUE : getDepth(ep);
 				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
 				br.call = this;
 				br.drops = false;
@@ -89,6 +90,10 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 			}
 		}
 		return true;
+	}
+
+	public static int getDepth(EntityPlayer ep) {
+		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
 	}
 
 	private boolean setOrGetBlockBox(ItemStack is, int x, int y, int z) {
@@ -175,14 +180,14 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				if (this.sufficientEnergy(r.player) && ReikaPlayerAPI.playerHasOrIsCreative(r.player, r.place, r.placeM)) {
 					boolean perm = world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)r.player);
 					switch(r.mode) {
-					case CONTIGUOUS:
-						return perm;
-					case AIRONLY:
-						return perm && ReikaWorldHelper.checkForAdjNonCube(world, x, y, z) != null;
-					case VOLUMETRIC:
-						return perm;
-					default:
-						return false;
+						case CONTIGUOUS:
+							return perm;
+						case AIRONLY:
+							return perm && ReikaWorldHelper.checkForAdjNonCube(world, x, y, z) != null;
+						case VOLUMETRIC:
+							return perm;
+						default:
+							return false;
 					}
 				}
 			}

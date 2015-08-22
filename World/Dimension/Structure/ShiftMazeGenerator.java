@@ -19,8 +19,8 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;

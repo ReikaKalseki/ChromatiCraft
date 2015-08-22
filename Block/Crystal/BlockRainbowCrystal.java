@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Crystal;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -26,6 +25,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -94,8 +94,8 @@ public class BlockRainbowCrystal extends BlockCrystalTileNonCube implements Crys
 		return true;
 	}
 
-	public Block getBaseBlock(ForgeDirection side) {
-		return ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+	public BlockKey getBaseBlock(IBlockAccess iba, int x, int y, int z, ForgeDirection side) {
+		return new BlockKey(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 0);
 	}
 
 	@Override

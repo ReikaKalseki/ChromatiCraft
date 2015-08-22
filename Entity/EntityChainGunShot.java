@@ -268,10 +268,7 @@ public class EntityChainGunShot extends EntityFireball {
 			float s = 0.5F+ec.rand.nextFloat()*4;
 			int l = 5+ec.rand.nextInt(75)*(1+ec.rand.nextInt(2));
 			int color = ReikaColorAPI.getModifiedHue(0x0000ff, ReikaRandomHelper.getRandomPlusMinus(240, 60));
-			int r = ReikaColorAPI.getRed(color);
-			int g = ReikaColorAPI.getGreen(color);
-			int b = ReikaColorAPI.getBlue(color);
-			EntityFX fx = new EntityBlurFX(ec.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l).setColor(r, g, b);
+			EntityFX fx = new EntityBlurFX(ec.worldObj, rx, ry, rz, vx, vy, vz).setNoSlowdown().setScale(s).setRapidExpand().setLife(l).setColor(color);
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

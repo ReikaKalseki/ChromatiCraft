@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Random;
 
@@ -178,10 +179,37 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 			int outindex = rand.nextInt(set.size());
 			CrystalElement out = set.get(outindex);
 			set.remove(outindex);
+			Collection<CrystalElement> mix = this.getConfusableColors(out);
+			for (CrystalElement e : mix)
+				set.remove(e);
 			shuffleMap.put(in, out);
 		}
 
 		mirror = new boolean[2];
+	}
+
+	/** To avoid similar-looking colors */
+	private Collection<CrystalElement> getConfusableColors(CrystalElement out) {
+		ArrayList<CrystalElement> li = new ArrayList();
+		switch(out) {
+			case WHITE:
+				li.add(CrystalElement.LIGHTGRAY);
+				break;
+			case BLACK:
+				li.add(CrystalElement.GRAY);
+				break;
+			case GRAY:
+				li.add(CrystalElement.BLACK);
+				li.add(CrystalElement.LIGHTGRAY);
+				break;
+			case LIGHTGRAY:
+				li.add(CrystalElement.GRAY);
+				li.add(CrystalElement.WHITE);
+				break;
+			default:
+				break;
+		}
+		return li;
 	}
 
 	protected static enum LockColor {

@@ -64,22 +64,22 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public static final int POWER = 3;
 
 	static {
-		addOrigin(CrystalElement.WHITE, new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
-		addOrigin(CrystalElement.BLACK, new BlockVector(ForgeDirection.NORTH, 1, -9, -2));
-		addOrigin(CrystalElement.RED, new BlockVector(ForgeDirection.EAST, 2, -9, 0));
-		addOrigin(CrystalElement.GREEN, new BlockVector(ForgeDirection.SOUTH, 0, -5, 1));
-		addOrigin(CrystalElement.BROWN, new BlockVector(ForgeDirection.WEST, -1, -7, -1));
-		addOrigin(CrystalElement.BLUE, new BlockVector(ForgeDirection.EAST, 2, -3, 0));
-		addOrigin(CrystalElement.PURPLE, new BlockVector(ForgeDirection.EAST, 2, -5, 0));
-		addOrigin(CrystalElement.CYAN, new BlockVector(ForgeDirection.SOUTH, 0, -3, 1));
+		addOrigin(CrystalElement.WHITE, 	new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
+		addOrigin(CrystalElement.BLACK, 	new BlockVector(ForgeDirection.NORTH, 1, -9, -2));
+		addOrigin(CrystalElement.RED, 		new BlockVector(ForgeDirection.EAST, 2, -9, 0));
+		addOrigin(CrystalElement.GREEN, 	new BlockVector(ForgeDirection.SOUTH, 0, -5, 1));
+		addOrigin(CrystalElement.BROWN, 	new BlockVector(ForgeDirection.WEST, -1, -7, -1));
+		addOrigin(CrystalElement.BLUE, 		new BlockVector(ForgeDirection.EAST, 2, -3, 0));
+		addOrigin(CrystalElement.PURPLE, 	new BlockVector(ForgeDirection.EAST, 2, -5, 0));
+		addOrigin(CrystalElement.CYAN, 		new BlockVector(ForgeDirection.SOUTH, 0, -3, 1));
 		addOrigin(CrystalElement.LIGHTGRAY, new BlockVector(ForgeDirection.NORTH, 1, -5, -2));
-		addOrigin(CrystalElement.GRAY, new BlockVector(ForgeDirection.NORTH, 1, -7, -2));
-		addOrigin(CrystalElement.PINK, new BlockVector(ForgeDirection.WEST, -1, -5, -1));
-		addOrigin(CrystalElement.LIME, new BlockVector(ForgeDirection.SOUTH, 0, -7, 1));
-		addOrigin(CrystalElement.YELLOW, new BlockVector(ForgeDirection.SOUTH, 0, -9, 1));
+		addOrigin(CrystalElement.GRAY, 		new BlockVector(ForgeDirection.NORTH, 1, -7, -2));
+		addOrigin(CrystalElement.PINK, 		new BlockVector(ForgeDirection.WEST, -1, -5, -1));
+		addOrigin(CrystalElement.LIME, 		new BlockVector(ForgeDirection.SOUTH, 0, -7, 1));
+		addOrigin(CrystalElement.YELLOW, 	new BlockVector(ForgeDirection.SOUTH, 0, -9, 1));
 		addOrigin(CrystalElement.LIGHTBLUE, new BlockVector(ForgeDirection.WEST, -1, -3, -1));
-		addOrigin(CrystalElement.MAGENTA, new BlockVector(ForgeDirection.EAST, 2, -7, 0));
-		addOrigin(CrystalElement.ORANGE, new BlockVector(ForgeDirection.WEST, -1, -9, -1));
+		addOrigin(CrystalElement.MAGENTA, 	new BlockVector(ForgeDirection.EAST, 2, -7, 0));
+		addOrigin(CrystalElement.ORANGE, 	new BlockVector(ForgeDirection.WEST, -1, -9, -1));
 
 		directions.add(0);
 		directions.add(0);
@@ -563,7 +563,22 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public boolean playerCanUse(EntityPlayer ep) {
-		return true;
+		return ep.getUniqueID().equals(this.getPlacerUUID());
+	}
+
+	@Override
+	public boolean allowCharging(EntityPlayer ep, CrystalElement e) {
+		return this.playerCanUse(ep);
+	}
+
+	@Override
+	public float getChargeRateMultiplier(EntityPlayer ep, CrystalElement e) {
+		return 0.85F;
+	}
+
+	@Override
+	public CrystalElement getDeliveredColor(EntityPlayer ep, World world, int clickX, int clickY, int clickZ) {
+		return CrystalElement.elements[world.getBlockMetadata(clickX, clickY, clickZ)];
 	}
 
 }

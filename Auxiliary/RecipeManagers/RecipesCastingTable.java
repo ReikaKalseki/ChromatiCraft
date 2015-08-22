@@ -86,8 +86,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampCon
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RFDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipeCrystalRepeater;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipePersonalCharger;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RelaySourceRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RitualTableRecipe;
@@ -151,9 +153,11 @@ public class RecipesCastingTable {
 	private final HashBiMap<Integer, CastingRecipe> recipeIDs;
 
 	private RecipesCastingTable() {
-
 		recipeIDs = HashBiMap.create();
+		this.loadRecipes();
+	}
 
+	private void loadRecipes() {
 		if (ChromatiCraft.instance.isLocked())
 			return;
 
@@ -193,7 +197,9 @@ public class RecipesCastingTable {
 
 			this.addRecipe(new LumenLampRecipe(ChromaBlocks.LAMPBLOCK.getStackOfMetadata(i), e));
 
-			this.addRecipe(new TintedLensRecipe(e, ChromaStacks.crystalLens));
+			this.addRecipe(new TintedLensRecipe(e, ChromaStacks.crystalLens, Items.iron_ingot, 1));
+			this.addRecipe(new TintedLensRecipe(e, ChromaStacks.crystalLens, Items.gold_ingot, 2));
+			this.addRecipe(new TintedLensRecipe(e, ChromaStacks.crystalLens, ChromaStacks.chromaIngot, 4));
 
 			sr = ReikaRecipeHelper.getShapedRecipeFor(lamp, " s ", "sss", "SSS", 's', shard, 'S', ReikaItemHelper.stoneSlab);
 			this.addRecipe(new CrystalLampRecipe(lamp, sr));
@@ -449,6 +455,12 @@ public class RecipesCastingTable {
 		is = ChromaItems.LINKTOOL.getStackOf();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "  l", " s ", "g  ", 'g', ChromaStacks.grayShard, 'l', ChromaStacks.limeShard, 's', Items.stick);
 		this.addRecipe(new LinkToolRecipe(is, sr));
+
+		this.addRecipe(new RecipePersonalCharger(ChromaTiles.PERSONAL.getCraftedProduct(), ChromaStacks.crystalStar));
+
+		is = ChromaTiles.MUSIC.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sns", "non", "sns", 's', ChromaItems.SHARD.getAnyMetaStack(), 'n', Blocks.noteblock, 'o', Items.clock);
+		this.addRecipe(new MusicRecipe(is, sr));
 	}
 
 	public void addPostLoadRecipes() {
@@ -551,6 +563,19 @@ public class RecipesCastingTable {
 			li.addAll(oli);
 		}
 		return li;
+	}
+
+	public void reload() {
+		recipes.clear();
+		recipeIDs.clear();
+		maxID = 0;
+
+		this.loadRecipes();
+		this.addPostLoadRecipes();
+
+		for (CastingRecipe c : APIrecipes) {
+			this.addRecipe(c);
+		}
 	}
 
 }

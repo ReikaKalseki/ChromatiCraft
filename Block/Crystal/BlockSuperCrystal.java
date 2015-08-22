@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Crystal;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -20,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 
 public class BlockSuperCrystal extends CrystalBlock {
 
@@ -70,8 +70,8 @@ public class BlockSuperCrystal extends CrystalBlock {
 	}
 
 	@Override
-	public Block getBaseBlock(ForgeDirection side) {
-		return Blocks.obsidian;
+	public BlockKey getBaseBlock(IBlockAccess iba, int x, int y, int z, ForgeDirection side) {
+		return new BlockKey(Blocks.obsidian);
 	}
 
 	@Override

@@ -32,6 +32,9 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 			for (int k = -r2; k <= r2; k++) {
 				double dd = i*i+k*k;
 				double c = dd > 0 ? 2*r*r2/dd/100D : 1;
+
+				c *= 0.25; //thinner
+
 				if (c >= 1 || ReikaRandomHelper.doWithChance(c)) {
 					int dx = x+i;
 					int dz = z+k;
@@ -50,7 +53,7 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(int cx, int cz) {
-		return 0.02F;
+		return 0.0025F;//0.02F;
 	}
 
 }

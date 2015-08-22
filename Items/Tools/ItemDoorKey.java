@@ -30,7 +30,7 @@ public class ItemDoorKey extends ItemChromaTool {
 					te.bindUUID(uid);
 				}
 				else if (te.canOpen(ep, uid)) {
-					te.open();
+					te.openClick();
 					if (BlockChromaDoor.consumeKey(world, x, y, z))
 						ep.setCurrentItemOrArmor(0, null);
 				}

@@ -30,7 +30,8 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class ItemBuilderWand extends ItemWandBase {
 
-	public static final int RANGE = 6;
+	private static final int RANGE = 6;
+	private static final int RANGE_BOOST = 12;
 
 	public ItemBuilderWand(int index) {
 		super(index);
@@ -40,13 +41,13 @@ public class ItemBuilderWand extends ItemWandBase {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
+	public boolean onItemUseFirst(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
 		if (!world.isRemote && this.sufficientEnergy(ep)) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
 			Block b = world.getBlock(x, y, z);
 			int m = world.getBlockMetadata(x, y, z);
 			boolean flag = false;
-			ArrayList<Coordinate> li = this.getCoordinatesFor(world, x, y, z, dir);
+			ArrayList<Coordinate> li = this.getCoordinatesFor(world, x, y, z, dir, ep);
 			Collections.sort(li, new ProximitySorter(x, y, z));
 			for (Coordinate c : li) {
 				if (!this.placeBlockAt(world, c.xCoord, c.yCoord, c.zCoord, b, m, ep))
@@ -62,7 +63,11 @@ public class ItemBuilderWand extends ItemWandBase {
 		return false;
 	}
 
-	public static ArrayList<Coordinate> getCoordinatesFor(World world, int x, int y, int z, ForgeDirection dir) {
+	public static int getRange(EntityPlayer ep) {
+		return canUseBoostedEffect(ep) ? RANGE_BOOST : RANGE;
+	}
+
+	public static ArrayList<Coordinate> getCoordinatesFor(World world, int x, int y, int z, ForgeDirection dir, EntityPlayer ep) {
 		int dx = x+dir.offsetX;
 		int dy = y+dir.offsetY;
 		int dz = z+dir.offsetZ;
@@ -73,13 +78,15 @@ public class ItemBuilderWand extends ItemWandBase {
 		Block b = world.getBlock(x, y, z);
 		int m = world.getBlockMetadata(x, y, z);
 
+		int r = getRange(ep);
+
 		BlockArray base = new BlockArray();
-		base.recursiveAddWithBoundsMetadata(world, x, y, z, b, m, x-RANGE, y-RANGE, z-RANGE, x+RANGE, y+RANGE, z+RANGE);
+		base.recursiveAddWithBoundsMetadata(world, x, y, z, b, m, x-r, y-r, z-r, x+r, y+r, z+r);
 
 		ArrayList<Coordinate> li = new ArrayList();
-		for (int i = -d1.offsetX*RANGE-d2.offsetX*RANGE; i <= d1.offsetX*RANGE+d2.offsetX*RANGE; i++) {
-			for (int j = -d1.offsetY*RANGE-d2.offsetY*RANGE; j <= d1.offsetY*RANGE+d2.offsetY*RANGE; j++) {
-				for (int k = -d1.offsetZ*RANGE-d2.offsetZ*RANGE; k <= d1.offsetZ*RANGE+d2.offsetZ*RANGE; k++) {
+		for (int i = -d1.offsetX*r-d2.offsetX*r; i <= d1.offsetX*r+d2.offsetX*r; i++) {
+			for (int j = -d1.offsetY*r-d2.offsetY*r; j <= d1.offsetY*r+d2.offsetY*r; j++) {
+				for (int k = -d1.offsetZ*r-d2.offsetZ*r; k <= d1.offsetZ*r+d2.offsetZ*r; k++) {
 					int ddx = dx+i;
 					int ddy = dy+j;
 					int ddz = dz+k;
@@ -106,10 +113,12 @@ public class ItemBuilderWand extends ItemWandBase {
 			return false;
 		}
 		world.setBlock(x, y, z, b, m, 3);
-		this.drainPlayer(ep);
-		int slot = ReikaInventoryHelper.locateInInventory(b, m, ep.inventory.mainInventory);
-		if (slot != -1) {
-			ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);
+		if (!ep.capabilities.isCreativeMode) {
+			this.drainPlayer(ep);
+			int slot = ReikaInventoryHelper.locateInInventory(b, m, ep.inventory.mainInventory);
+			if (slot != -1) {
+				ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);
+			}
 		}
 		return true;
 	}

@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -62,6 +63,7 @@ import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -90,6 +92,9 @@ public class ChromaOverlays {
 	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
 
 	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
+
+	private String structureText = null;
+	private long structureTextTick = -1;
 
 	private ChromaOverlays() {
 
@@ -123,6 +128,7 @@ public class ChromaOverlays {
 				this.renderPylonAura(ep, gsc);
 			this.renderProgressOverlays(ep, gsc);
 			this.renderPingOverlays(ep, gsc);
+			this.renderStructureText(ep, gsc);
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			this.renderCustomCrosshair(evt);
@@ -132,16 +138,35 @@ public class ChromaOverlays {
 		}
 	}
 
+	private void renderStructureText(EntityPlayer ep, int gsc) {
+		/*
+		structureText = DimensionStructureType.LOCKS.getDisplayText();
+		if (structureTextTick < ep.worldObj.getTotalWorldTime()-300)
+			structureTextTick = ep.worldObj.getTotalWorldTime();
+		 */
+		if (structureText != null) {
+			int x = Minecraft.getMinecraft().displayWidth/2/gsc;
+			int y = Minecraft.getMinecraft().displayHeight/2/gsc;
+			float frac = (ep.worldObj.getTotalWorldTime()-structureTextTick+ReikaRenderHelper.getPartialTickTime())/50F;
+			ChromaFontRenderer.FontType.GUI.renderer.drawTitleScroll(structureText, x, y, frac, 0xff888888, 0xff3090ff, 0xff000000, 0xffffffff);
+			if (frac >= 2) {
+				structureText = null;
+			}
+		}
+	}
+
 	private void renderPingOverlays(EntityPlayer ep, int gsc) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		HashMap<CrystalElement, Integer> map = new HashMap();
 		int i = 0;
 		int k = 0;
 
+
 		boolean renderCircle = false;
 
 		for (int c = 0; c < 16; c++) {
 			CrystalElement e = CrystalElement.elements[c];
+
 			Integer tick = pings.get(e);
 			if (tick != null) {
 				float alpha = tick >= (PING_LENGTH-FADEIN) ? (PING_LENGTH-tick)/(float)FADEIN : tick < FADEOUT ? tick/(float)FADEOUT : 1;
@@ -166,6 +191,8 @@ public class ChromaOverlays {
 
 				if (!renderCircle) {
 					Tessellator v5 = Tessellator.instance;
+
+					/*
 					v5.startDrawing(GL11.GL_LINE_STRIP);
 					v5.setColorOpaque_I(0xffffff);
 					for (int a = 0; a <= 360; a += 5) {
@@ -197,10 +224,24 @@ public class ChromaOverlays {
 						}
 					}
 					v5.draw();
+					 */
+
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/dimping.png");
+
+					v5.startDrawingQuads();
+					v5.setBrightness(240);
+					v5.setColorOpaque_I(0xa0a0a0);
+
+					v5.addVertexWithUV(x-r, y+r, 0, 0, 1);
+					v5.addVertexWithUV(x+r, y+r, 0, 1, 1);
+					v5.addVertexWithUV(x+r, y-r, 0, 1, 0);
+					v5.addVertexWithUV(x-r, y-r, 0, 0, 0);
+
+					v5.draw();
+
 					renderCircle = true;
 				}
 
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				ReikaTextureHelper.bindTerrainTexture();
 
 				double ang = pingAng.get(e);
@@ -250,6 +291,12 @@ public class ChromaOverlays {
 			for (CrystalElement key : pings.keySet())
 				pings.put(key, Math.max(pings.get(key), PING_LENGTH-FADEIN));
 		}
+	}
+
+	public void addStructureText(DimensionStructureType type) {
+		String s = type.getDisplayText();
+		structureText = s;
+		structureTextTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
 	}
 
 	private void renderProgressOverlays(EntityPlayer ep, int gsc) {

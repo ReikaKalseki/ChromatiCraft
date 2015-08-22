@@ -43,6 +43,7 @@ import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
@@ -69,6 +70,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -88,7 +90,10 @@ import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.SoundVolumeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
+import Reika.DragonAPI.Instantiable.IO.CustomMusic;
+import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -115,6 +120,44 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void ensureMusic(SoundVolumeEvent evt) {
+		if (evt.sound instanceof CustomMusic) {
+			CustomMusic cm = (CustomMusic)evt.sound;
+			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.toLowerCase().contains("dimension_score")) {
+				evt.volume = Math.max(0.35F, evt.volume);
+			}
+		}
+	}
+
+	/* Does not work (Sound Engine cannot handle values outside [0, 2.0])
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void crystalPitchDing(SoundPitchEvent evt) {
+		if (evt.sound instanceof EnumSound) {
+			EnumSound es = (EnumSound)evt.sound;
+			if (es.sound == ChromaSounds.DING) {
+				evt.pitch = (float)evt.unclampedPitch;
+			}
+		}
+	}
+	 */
+
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void crystalPitchDing(PlaySoundEvent17 evt) {
+		if (evt.sound instanceof EnumSound) {
+			EnumSound es = (EnumSound)evt.sound;
+			if (es.sound == ChromaSounds.DING) {
+				if (es.getPitch() > 2) {
+					evt.result = new EnumSound(ChromaSounds.DING_HI, es.posX, es.posY, es.posZ, es.volume, es.pitch/4F, es.attenuate);
+				}
+				else if (es.getPitch() < 0.5) {
+					evt.result = new EnumSound(ChromaSounds.DING_LO, es.posX, es.posY, es.posZ, es.volume, es.pitch*4F, es.attenuate);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -458,7 +501,7 @@ public class ChromaClientEventController {
 					int green = 255;
 					int blue = 255;
 
-					ArrayList<Coordinate> li = ItemBuilderWand.getCoordinatesFor(world, x, y, z, dir);
+					ArrayList<Coordinate> li = ItemBuilderWand.getCoordinatesFor(world, x, y, z, dir, Minecraft.getMinecraft().thePlayer);
 					for (Coordinate c : li) {
 						int dx = c.xCoord-x;
 						int dy = c.yCoord-y;
@@ -788,7 +831,7 @@ public class ChromaClientEventController {
 					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
 					GL11.glTranslated(p2, p4, p6);
 					BlockArray blocks = new BlockArray();
-					blocks.maxDepth = ItemExcavationWand.MAX_DEPTH-1;
+					blocks.maxDepth = ItemExcavationWand.getDepth(Minecraft.getMinecraft().thePlayer)-1;
 					blocks.recursiveAddWithMetadata(world, x, y, z, id, meta);
 					ReikaRenderHelper.prepareGeoDraw(true);
 					BlendMode.DEFAULT.apply();

@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -273,15 +272,15 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		if (rand.nextInt(60) == 0) {
 			if (node.getNodeModifier() != null) {
 				switch(node.getNodeModifier()) {
-				case BRIGHT:
-					node.setNodeModifier(null);
-					break;
-				case PALE:
-					node.setNodeModifier(NodeModifier.FADING);
-					break;
-				case FADING:
-					this.emptyNode();
-					break;
+					case BRIGHT:
+						node.setNodeModifier(null);
+						break;
+					case PALE:
+						node.setNodeModifier(NodeModifier.FADING);
+						break;
+					case FADING:
+						this.emptyNode();
+						break;
 				}
 			}
 			else {
@@ -291,24 +290,24 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 
 		if (rand.nextInt(480) == 0) {
 			switch(node.getNodeType()) {
-			case PURE:
-				node.setNodeType(NodeType.NORMAL);
-				break;
-			case NORMAL:
-				node.setNodeType(NodeType.UNSTABLE);
-				break;
-			case UNSTABLE:
-				node.setNodeType(NodeType.DARK);
-				break;
-			case DARK:
-				node.setNodeType(NodeType.TAINTED);
-				break;
-			case TAINTED:
-				node.setNodeType(NodeType.HUNGRY);
-				break;
-			case HUNGRY:
-				this.destroyNode();
-				break;
+				case PURE:
+					node.setNodeType(NodeType.NORMAL);
+					break;
+				case NORMAL:
+					node.setNodeType(NodeType.UNSTABLE);
+					break;
+				case UNSTABLE:
+					node.setNodeType(NodeType.DARK);
+					break;
+				case DARK:
+					node.setNodeType(NodeType.TAINTED);
+					break;
+				case TAINTED:
+					node.setNodeType(NodeType.HUNGRY);
+					break;
+				case HUNGRY:
+					this.destroyNode();
+					break;
 			}
 		}
 
@@ -331,14 +330,14 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		if (rand.nextInt(60) == 0) {
 			if (node.getNodeModifier() != null) {
 				switch(node.getNodeModifier()) {
-				case BRIGHT:
-					break;
-				case PALE:
-					node.setNodeModifier(null); //Tier is bright-null-pale-fading
-					break;
-				case FADING:
-					node.setNodeModifier(NodeModifier.PALE);
-					break;
+					case BRIGHT:
+						break;
+					case PALE:
+						node.setNodeModifier(null); //Tier is bright-null-pale-fading
+						break;
+					case FADING:
+						node.setNodeModifier(NodeModifier.PALE);
+						break;
 				}
 			}
 			else {
@@ -348,23 +347,23 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 
 		if (rand.nextInt(240) == 0) {
 			switch(node.getNodeType()) {
-			case PURE:
-				break;
-			case NORMAL:
-				node.setNodeType(NodeType.PURE);
-				break;
-			case UNSTABLE:
-				node.setNodeType(NodeType.NORMAL);
-				break;
-			case DARK:
-				node.setNodeType(NodeType.UNSTABLE);
-				break;
-			case TAINTED:
-				node.setNodeType(NodeType.DARK);
-				break;
-			case HUNGRY:
-				node.setNodeType(NodeType.TAINTED);
-				break;
+				case PURE:
+					break;
+				case NORMAL:
+					node.setNodeType(NodeType.PURE);
+					break;
+				case UNSTABLE:
+					node.setNodeType(NodeType.NORMAL);
+					break;
+				case DARK:
+					node.setNodeType(NodeType.UNSTABLE);
+					break;
+				case TAINTED:
+					node.setNodeType(NodeType.DARK);
+					break;
+				case HUNGRY:
+					node.setNodeType(NodeType.TAINTED);
+					break;
 			}
 		}
 
@@ -424,9 +423,6 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		}
 
 		int color = a.getColor();
-		int r = ReikaColorAPI.getRed(color);
-		int g = ReikaColorAPI.getGreen(color);
-		int b = ReikaColorAPI.getBlue(color);
 
 		for (int i = 0; i < 64; i++) {
 			float gv = (float)ReikaRandomHelper.getRandomPlusMinus(0.25, 0.125);
@@ -437,7 +433,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			double va = rand.nextDouble()*360;
 			double vx = v*Math.cos(Math.toDegrees(va));
 			double vz = v*Math.sin(Math.toDegrees(va));
-			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vx, 0, vz).setColor(r, g, b).setGravity(gv).setScale(2).setRapidExpand();
+			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vx, 0, vz).setColor(color).setGravity(gv).setScale(2).setRapidExpand();
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -457,10 +453,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 			double ry = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			double rz = ReikaRandomHelper.getRandomPlusMinus(0, v);
 			int color = a.getColor();
-			int r = ReikaColorAPI.getRed(color);
-			int g = ReikaColorAPI.getGreen(color);
-			int b = ReikaColorAPI.getBlue(color);
-			EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz).setColor(r, g, b);
+			EntityBlurFX fx = new EntityBlurFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), rx, ry, rz).setColor(color);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -521,10 +514,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 		for (double d = -1; d <= 1; d += 0.125) {
 			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(wrap.node.getAspects().aspects.keySet());
 			int color = a.getColor();
-			int r = ReikaColorAPI.getRed(color);
-			int g = ReikaColorAPI.getGreen(color);
-			int b = ReikaColorAPI.getBlue(color);
-			EntityBlurFX fx = new EntityBlurFX(world, dx, dy+d, dz).setColor(r, g, b).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
+			EntityBlurFX fx = new EntityBlurFX(world, dx, dy+d, dz).setColor(color).setScale(2.5F-2*(float)Math.abs(d)).setRapidExpand().setLife(20);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

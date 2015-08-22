@@ -21,7 +21,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
@@ -52,6 +51,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	protected int posY;
 	protected int posZ;
 
+	protected int entryX;
+	protected int entryZ;
+
+	protected Coordinate coreLocation = null;
+
 	private final MultiMap<ChunkCoordIntPair, DynamicPieceLocation> dynamicParts = new MultiMap().setNullEmpty();
 
 	protected DimensionStructureGenerator() {
@@ -68,6 +72,23 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public final int getPosZ() {
 		return posZ;
+	}
+
+	public final Coordinate getPos() {
+		return new Coordinate(posX, posY, posZ);
+	}
+
+	public final int getEntryPosX() {
+		return entryX;
+	}
+
+	public final int getEntryPosZ() {
+		return entryZ;
+	}
+
+	public void offsetEntry(int dx, int dz) {
+		entryX += dx;
+		entryZ += dz;
 	}
 
 	public final DimensionStructureType getType() {
@@ -129,8 +150,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	public final void clear() {
 		world.clear();
 		dynamicParts.clear();
-		center = null;
 		breakable.clear();
+
+		center = null;
+		coreLocation = null;
+
 		this.clearCaches();
 	}
 
@@ -172,6 +196,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public final void placeCore(int x, int y, int z) {
 		world.setTileEntity(x, y, z, ChromaTiles.DIMENSIONCORE.getBlock(), ChromaTiles.DIMENSIONCORE.getBlockMetadata(), this);
+		coreLocation = new Coordinate(x, y, z);
+	}
+
+	public boolean hasCore() {
+		return coreLocation != null;
 	}
 
 	public static final class StructurePair {
@@ -202,23 +231,25 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public static enum DimensionStructureType {
 
-		TDMAZE(ThreeDMazeGenerator.class),
-		ALTAR(AltarGenerator.class),
-		SHIFTMAZE(ShiftMazeGenerator.class),
-		LOCKS(LocksGenerator.class),
-		MUSIC(MusicPuzzleGenerator.class),
-		NONEUCLID(NonEuclideanGenerator.class),
-		GOL(GOLGenerator.class);
+		TDMAZE(ThreeDMazeGenerator.class, "Three-Dimensional Maze"),
+		ALTAR(AltarGenerator.class, ""),
+		SHIFTMAZE(ShiftMazeGenerator.class, "Shifting Maze"),
+		LOCKS(LocksGenerator.class, "Locks and Keys"),
+		MUSIC(MusicPuzzleGenerator.class, "Crystal Music"),
+		NONEUCLID(NonEuclideanGenerator.class, "Complex Spaces"),
+		GOL(GOLGenerator.class, "Cellular Automata");
 
 		private final Class generatorClass;
 		private DimensionStructureGenerator generator;
+		private final String desc;
 
 		private static final String NBT_TAG = "structuresCompleted";
 
 		public static final DimensionStructureType[] types = values();
 
-		private DimensionStructureType(Class<? extends DimensionStructureGenerator> c) {
+		private DimensionStructureType(Class<? extends DimensionStructureGenerator> c, String s) {
 			generatorClass = c;
+			desc = s;
 		}
 
 		public DimensionStructureGenerator getGenerator() {
@@ -245,6 +276,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 			NBTTagCompound dat = tag.getCompoundTag(NBT_TAG);
 			return dat.getBoolean("struct_"+this.ordinal());
+		}
+
+		public boolean isComplete() {
+			return this.getGenerator().hasCore();//this == TDMAZE || this == LOCKS || this == NONEUCLID;
+		}
+
+		public String getDisplayText() {
+			return desc;
 		}
 
 	}

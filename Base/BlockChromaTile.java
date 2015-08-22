@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
@@ -75,6 +76,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -84,7 +86,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.LegacyWailaHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
@@ -254,6 +255,11 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 					return true;
 				}
 			}
+		}
+
+		if (m == ChromaTiles.MUSIC && is != null && is.getItem() instanceof MusicDataItem) {
+			TileEntityCrystalMusic mus = (TileEntityCrystalMusic)te;
+			mus.setTrack(((MusicDataItem)is.getItem()).getMusic(is));
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {
@@ -431,7 +437,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
-		if (LegacyWailaHelper.cacheAndReturn(acc))
+		if (/*LegacyWailaHelper.cacheAndReturn(acc)*/!currenttip.isEmpty())
 			return currenttip;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		te.syncAllData(false);

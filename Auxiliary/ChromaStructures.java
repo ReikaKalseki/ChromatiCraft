@@ -40,38 +40,41 @@ public class ChromaStructures {
 		CAVERN(),
 		BURROW(),
 		OCEAN(),
-		PORTAL();
+		PORTAL(),
+		PERSONAL();
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {
 			World w = Minecraft.getMinecraft().theWorld;
 			switch(this) {
-			case PYLON:
-				return getPylonStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
-			case CASTING1:
-				return getCastingLevelOne(w, 0, 0, 0);
-			case CASTING2:
-				return getCastingLevelTwo(w, 0, 0, 0);
-			case CASTING3:
-				return getCastingLevelThree(w, 0, 0, 0);
-			case RITUAL:
-				return getRitualStructure(w, 0, 0, 0);
-			case INFUSION:
-				return getInfusionStructure(w, 0, 0, 0);
-			case TREE:
-				return getTreeStructure(w, 0, 0, 0);
-			case REPEATER:
-				return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
-			case COMPOUND:
-				return getCompoundRepeaterStructure(w, 0, 0, 0);
-			case CAVERN:
-				return getCavernStructure(w, 0, 0, 0);
-			case BURROW:
-				return getBurrowStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
-			case OCEAN:
-				return getOceanStructure(w, 0, 0, 0);
-			case PORTAL:
-				return getPortalStructure(w, 0, 0, 0);
+				case PYLON:
+					return getPylonStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
+				case CASTING1:
+					return getCastingLevelOne(w, 0, 0, 0);
+				case CASTING2:
+					return getCastingLevelTwo(w, 0, 0, 0);
+				case CASTING3:
+					return getCastingLevelThree(w, 0, 0, 0);
+				case RITUAL:
+					return getRitualStructure(w, 0, 0, 0);
+				case INFUSION:
+					return getInfusionStructure(w, 0, 0, 0);
+				case TREE:
+					return getTreeStructure(w, 0, 0, 0);
+				case REPEATER:
+					return getRepeaterStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
+				case COMPOUND:
+					return getCompoundRepeaterStructure(w, 0, 0, 0);
+				case CAVERN:
+					return getCavernStructure(w, 0, 0, 0);
+				case BURROW:
+					return getBurrowStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
+				case OCEAN:
+					return getOceanStructure(w, 0, 0, 0);
+				case PORTAL:
+					return getPortalStructure(w, 0, 0, 0);
+				case PERSONAL:
+					return getPersonalStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			}
 			return null;
 		}
@@ -82,13 +85,13 @@ public class ChromaStructures {
 
 		public boolean isNatural() {
 			switch(this) {
-			case PYLON:
-			case CAVERN:
-			case BURROW:
-			case OCEAN:
-				return true;
-			default:
-				return false;
+				case PYLON:
+				case CAVERN:
+				case BURROW:
+				case OCEAN:
+					return true;
+				default:
+					return false;
 			}
 		}
 	}
@@ -854,16 +857,16 @@ public class ChromaStructures {
 
 	public static int getChestMeta(ForgeDirection dir) {
 		switch(dir) {
-		case EAST:
-			return 1+8;
-		case WEST:
-			return 0+8;
-		case NORTH:
-			return 2+8;
-		case SOUTH:
-			return 3+8;
-		default:
-			return 0;
+			case EAST:
+				return 1+8;
+			case WEST:
+				return 0+8;
+			case NORTH:
+				return 2+8;
+			case SOUTH:
+				return 3+8;
+			default:
+				return 0;
 		}
 	}
 
@@ -1987,6 +1990,55 @@ public class ChromaStructures {
 		array.setBlock(i+14, j+8, k+14, b, 2);
 		array.setBlock(i+14, j+9, k+0, b, 5);
 		array.setBlock(i+14, j+9, k+14, b, 5);
+		return array;
+	}
+
+	public static FilledBlockArray getPersonalStructure(World world, int x, int y, int z, CrystalElement e) {
+		FilledBlockArray array = new FilledBlockArray(world);
+
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		Block r = ChromaBlocks.RUNE.getBlockInstance();
+
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				array.setBlock(x+i, y, z+k, b, 0);
+			}
+		}
+		array.setBlock(x, y, z, b, 14);
+
+		for (int i = 1; i <= 4; i++) {
+			int m = i == 4 ? 7 : 2;
+			array.setBlock(x+1, y+i, z+1, b, m);
+			array.setBlock(x-1, y+i, z+1, b, m);
+			array.setBlock(x+1, y+i, z-1, b, m);
+			array.setBlock(x-1, y+i, z-1, b, m);
+		}
+
+		array.setBlock(x+2, y, z+2, b, 12);
+		array.setBlock(x-2, y, z+2, b, 12);
+		array.setBlock(x+2, y, z-2, b, 12);
+		array.setBlock(x-2, y, z-2, b, 12);
+
+		array.setBlock(x+2, y+1, z+2, b, 2);
+		array.setBlock(x-2, y+1, z+2, b, 2);
+		array.setBlock(x+2, y+1, z-2, b, 2);
+		array.setBlock(x-2, y+1, z-2, b, 2);
+
+		array.setBlock(x+2, y+2, z+2, r, e.ordinal());
+		array.setBlock(x-2, y+2, z+2, r, e.ordinal());
+		array.setBlock(x+2, y+2, z-2, r, e.ordinal());
+		array.setBlock(x-2, y+2, z-2, r, e.ordinal());
+
+		for (int i = -1; i <= 1; i++) {
+			array.setBlock(x+2, y, z+i, b, 11);
+			array.setBlock(x-2, y, z+i, b, 11);
+
+			array.setBlock(x+i, y, z+2, b, 10);
+			array.setBlock(x+i, y, z-2, b, 10);
+		}
+
+		array.setBlock(x, y+6, z, ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
+
 		return array;
 	}
 

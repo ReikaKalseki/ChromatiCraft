@@ -74,7 +74,14 @@ public enum ChromaPackets {
 	SPLASHGUNEND(1),
 	VACUUMGUNEND(1),
 	RFSEND(4),
-	DIMPING(3);
+	DIMPING(3),
+	STRUCTUREENTRY(1),
+	CRYSTALMUS(4),
+	CRYSTALMUSERROR(),
+	MUSICNOTE(4),
+	MUSICCLEAR(),
+	MUSICCLEARCHANNEL(1),
+	MUSICDEMO();
 
 	public final int numInts;
 	public final PacketTypes type;

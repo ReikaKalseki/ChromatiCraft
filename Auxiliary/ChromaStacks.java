@@ -74,7 +74,9 @@ public class ChromaStacks {
 	public static final ItemStack resocrystal 		= ChromaItems.TIERED.getStackOfMetadata(18);
 	public static final ItemStack spaceDust 		= ChromaItems.TIERED.getStackOfMetadata(19);
 
+	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);
+	public static final ItemStack aqua				= ChromaItems.DIMGEN.getStackOfMetadata(2);
 
 	public static final ItemStack blackShard 		= ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard 			= ChromaItems.SHARD.getStackOfMetadata(1);

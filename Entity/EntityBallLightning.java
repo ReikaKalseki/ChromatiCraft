@@ -288,7 +288,7 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	private void gluonParticles(EntityBallLightning other, double dx, double dy, double dz, float frac) {
 		int c = ReikaColorAPI.mixColors(other.getRenderColor(), this.getRenderColor(), frac);
 		EntityBlurFX fx = new EntityBlurFX(worldObj, dx, dy, dz);
-		fx.setLife(5).setColor(ReikaColorAPI.getRed(c), ReikaColorAPI.getGreen(c), ReikaColorAPI.getBlue(c));
+		fx.setLife(5).setColor(c);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 

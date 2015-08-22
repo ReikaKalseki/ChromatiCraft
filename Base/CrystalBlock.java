@@ -62,6 +62,15 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	}
 
 	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		return this.isUnbreakable(world, x, y, z) ? -1 : super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+	}
+
+	protected boolean isUnbreakable(IBlockAccess iba, int x, int y, int z) {
+		return false;
+	}
+
+	@Override
 	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
 			CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
@@ -208,64 +217,64 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
 		if (CrystalPotionController.shouldBeHostile(e.worldObj)) {
 			switch(color) {
-			case ORANGE:
-				e.setFire(2);
-				break;
-			case RED:
-				e.attackEntityFrom(DamageSource.magic, 1);
-				break;
-			case PURPLE:
-				if (!e.worldObj.isRemote && rand.nextInt(5) == 0 && e instanceof EntityPlayer) {
-					EntityPlayer ep = (EntityPlayer)e;
-					if (ep.experienceLevel > 0) {
-						ep.addExperienceLevel(-1);
+				case ORANGE:
+					e.setFire(2);
+					break;
+				case RED:
+					e.attackEntityFrom(DamageSource.magic, 1);
+					break;
+				case PURPLE:
+					if (!e.worldObj.isRemote && rand.nextInt(5) == 0 && e instanceof EntityPlayer) {
+						EntityPlayer ep = (EntityPlayer)e;
+						if (ep.experienceLevel > 0) {
+							ep.addExperienceLevel(-1);
+						}
+						else {
+							ep.experienceTotal = 0;
+							ep.experience = 0;
+						}
 					}
-					else {
-						ep.experienceTotal = 0;
-						ep.experience = 0;
-					}
-				}
-				break;
-			case BROWN:
-				if (!e.isPotionActive(Potion.confusion.id))
-					e.addPotionEffect(new PotionEffect(Potion.confusion.id, (int)(dura*1.8), level, true));
-				break;
-			case LIME:
-				e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
-				break;
-			default:
-				PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
-				if (CrystalPotionController.isPotionAllowed(eff, e))
-					e.addPotionEffect(eff);
+					break;
+				case BROWN:
+					if (!e.isPotionActive(Potion.confusion.id))
+						e.addPotionEffect(new PotionEffect(Potion.confusion.id, (int)(dura*1.8), level, true));
+					break;
+				case LIME:
+					e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
+					break;
+				default:
+					PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
+					if (CrystalPotionController.isPotionAllowed(eff, e))
+						e.addPotionEffect(eff);
 			}
 		}
 		else {
 			switch(color) {
-			case BLACK:
-				if (e instanceof EntityMob) {  //clear AI
-					EntityMob m = (EntityMob)e;
-					m.setAttackTarget(null);
-					m.getNavigator().clearPathEntity();
-				}
-				break;
-			case WHITE:
-				//ReikaPotionHelper.clearPotionsExceptPerma(e);
-				ReikaPotionHelper.clearBadPotions(e);
-				break;
-			case PURPLE:
-				if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
-					EntityPlayer ep = (EntityPlayer)e;
-					e.playSound("random.orb", 1, 1);
-					ep.addExperience(1);
-				}
-				break;
-			default:
-				PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
-				if (eff != null) {
-					if (CrystalPotionController.isPotionAllowed(eff, e)) {
-						e.addPotionEffect(eff);
+				case BLACK:
+					if (e instanceof EntityMob) {  //clear AI
+						EntityMob m = (EntityMob)e;
+						m.setAttackTarget(null);
+						m.getNavigator().clearPathEntity();
 					}
-				}
+					break;
+				case WHITE:
+					//ReikaPotionHelper.clearPotionsExceptPerma(e);
+					ReikaPotionHelper.clearBadPotions(e);
+					break;
+				case PURPLE:
+					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
+						EntityPlayer ep = (EntityPlayer)e;
+						e.playSound("random.orb", 1, 1);
+						ep.addExperience(1);
+					}
+					break;
+				default:
+					PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
+					if (eff != null) {
+						if (CrystalPotionController.isPotionAllowed(eff, e)) {
+							e.addPotionEffect(eff);
+						}
+					}
 			}
 		}
 	}

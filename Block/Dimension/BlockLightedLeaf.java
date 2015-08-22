@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -26,7 +28,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -74,6 +78,21 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	public boolean canRenderInPass(int pass) {
 		GlowTreeRenderer.renderPass = pass;
 		return pass <= 1;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
+		if (r.nextInt(6) == 0) {
+			//int l = 80+rand.nextInt(200);
+			int l = 40+rand.nextInt(120);
+			float s = 1+rand.nextFloat();
+			double wind = (world.getWorldTime()%24000)/24000D*360;
+			double ang = ReikaRandomHelper.getRandomPlusMinus(10D, 5D);
+			EntityFX fx = new EntityFloatingSeedsFX(world, x+rand.nextDouble(), y+rand.nextDouble(), z+rand.nextDouble(), wind, ang).setColor(0xFFDD87)/*.setRapidExpand()*/.setLife(l).setGravity(0).setScale(s);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override

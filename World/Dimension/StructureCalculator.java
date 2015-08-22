@@ -21,12 +21,14 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class StructureCalculator implements Runnable {
 
 	private final Random rand = new Random();
 	//private final Random seededRand;
 	private final int maxAttempts;
+	private final Thread callerThread;
 
 	StructureCalculator() {
 		this(10);
@@ -34,6 +36,7 @@ public class StructureCalculator implements Runnable {
 
 	StructureCalculator(int max) {
 		maxAttempts = max;
+		callerThread = Thread.currentThread();
 
 		//Would base off world seed, but is loaded "outside" a vMC world and as such cannot reference it; make it PC-specific instead
 		//seededRand = new Random(new File("c:").getTotalSpace() ^ System.getProperty("os.name").hashCode());
@@ -42,11 +45,19 @@ public class StructureCalculator implements Runnable {
 	@Override
 	public void run() {
 		ChromatiCraft.logger.log("Initializing dimension structure generation thread...");
-		long time = System.nanoTime();
-		this.generate();
-		double el = (System.nanoTime()-time)/(10e9);
-		int n = ChunkProviderChroma.structures.size();
-		ChromatiCraft.logger.log(String.format("Dimension structure generation thread complete; %d structures generated. Elapsed time: %.9fs", n, el));
+		try {
+			long time = System.nanoTime();
+			this.generate();
+			double el = (System.nanoTime()-time)/(10e9);
+			int n = ChunkProviderChroma.structures.size();
+			ChromatiCraft.logger.log(String.format("Dimension structure generation thread complete; %d structures generated. Elapsed time: %.9fs", n, el));
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			String msg = "Dimension structure generation thread failed with "+e.getClass().getName()+".";
+			FMLCommonHandler.instance().raiseException(e, msg, true);
+			ChromatiCraft.logger.log(msg);
+		}
 		ChunkProviderChroma.finishStructureGen();
 	}
 

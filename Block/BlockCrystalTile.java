@@ -20,6 +20,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -29,6 +30,7 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -54,16 +56,35 @@ public class BlockCrystalTile extends BlockChromaTile {
 		if (c == null)
 			return li;
 		switch (c) {
-		case ACCELERATOR:
-			for (int i = 0; i < 4; i++)
-				li.add(ChromaStacks.blueShard);
-		case GUARDIAN:
-			li.add(ChromaStacks.crystalStar);
-			break;
-		default:
-			break;
+			case ACCELERATOR:
+				for (int i = 0; i < 4; i++)
+					li.add(ChromaStacks.blueShard);
+			case GUARDIAN:
+				li.add(ChromaStacks.crystalStar);
+				break;
+			default:
+				break;
 		}
 		return li;
+	}
+
+	@Override
+	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+		return ReikaAABBHelper.getSizedBlockAABB(x, y, z, this.getSize(world, x, y, z));
+	}
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		return ReikaAABBHelper.getSizedBlockAABB(x, y, z, this.getSize(world, x, y, z));
+	}
+
+	public float getSize(IBlockAccess iba, int x, int y, int z) {
+		switch (iba.getBlockMetadata(x, y, z)) {
+			case 2:
+				return 0.75F;
+			default:
+				return 1;
+		}
 	}
 
 	public boolean canHarvest(World world, EntityPlayer player, int x, int y, int z)
@@ -157,8 +178,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		switch(meta) {
-		case 0:
-			return ChromaIcons.GUARDIANOUTER.getIcon();
+			case 0:
+				return ChromaIcons.GUARDIANOUTER.getIcon();
+			case 2:
+				return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

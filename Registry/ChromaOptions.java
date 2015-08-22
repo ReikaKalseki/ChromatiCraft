@@ -57,7 +57,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false),
 	STRUCTDIFFICULTY("Dimension Structure Difficulty", 3),
 	BALLLIGHTNING("Enable Ball Lightning", true),
-	PYLONLOAD("Pylons Chunkload Selves Once Used", true);
+	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
+	RIFTLOAD("World Rifts Chunkload", false);
 
 	private String label;
 	private boolean defaultState;

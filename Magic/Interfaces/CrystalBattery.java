@@ -11,9 +11,10 @@ package Reika.ChromatiCraft.Magic.Interfaces;
 
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public interface CrystalBattery extends CrystalReceiver, CrystalSource {
+public interface CrystalBattery extends CrystalReceiver, CrystalSource, ChargingPoint {
 
 	public int getMaxStorage(CrystalElement e);
+
 	public float getFillFraction(CrystalElement e);
 
 }

@@ -1,7 +1,10 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockLog;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
@@ -80,6 +83,10 @@ public class DimensionBubble implements PlayerTracker {
 		if (b.isAir(world, x, y, z))
 			return false;
 		if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
+			return false;
+		if (b instanceof BlockLeavesBase || b instanceof BlockLog)
+			return false;
+		if (b.getMaterial() == Material.plants)
 			return false;
 		if (b.blockHardness < 0)
 			return false;

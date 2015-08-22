@@ -130,6 +130,8 @@ public enum ChromaResearch implements ProgressElement {
 	MEDISTRIB(		ChromaTiles.MEDISTRIBUTOR,	ResearchLevel.MULTICRAFT),
 	WINDOW(			ChromaTiles.WINDOW,			ResearchLevel.MULTICRAFT),
 	RFDISTRIB(		ChromaTiles.RFDISTRIBUTOR,	ResearchLevel.RUNECRAFT),
+	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
+	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -230,6 +232,7 @@ public enum ChromaResearch implements ProgressElement {
 	BURROW(			ChromaStructures.Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
 	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
 	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
 	;
 
 	private final ItemStack iconItem;

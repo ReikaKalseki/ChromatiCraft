@@ -68,14 +68,14 @@ public class ChromaAux {
 		while (i < 0)
 			i += 4;
 		switch (i) {
-		case 0:
-			return 2;
-		case 1:
-			return 1;
-		case 2:
-			return 3;
-		case 3:
-			return 0;
+			case 0:
+				return 2;
+			case 1:
+				return 1;
+			case 2:
+				return 3;
+			case 3:
+				return 0;
 		}
 		return -1;
 	}
@@ -88,14 +88,14 @@ public class ChromaAux {
 			while (i < 0)
 				i += 4;
 			switch (i) {
-			case 0:
-				return 2;
-			case 1:
-				return 1;
-			case 2:
-				return 3;
-			case 3:
-				return 0;
+				case 0:
+					return 2;
+				case 1:
+					return 1;
+				case 2:
+					return 3;
+				case 3:
+					return 0;
 			}
 		}
 		else { //Looking up/down
@@ -115,14 +115,14 @@ public class ChromaAux {
 			i += 4;
 
 		switch (i) {
-		case 0:
-			return 0;
-		case 1:
-			return 1;
-		case 2:
-			return 0;
-		case 3:
-			return 1;
+			case 0:
+				return 0;
+			case 1:
+				return 1;
+			case 2:
+				return 0;
+			case 3:
+				return 1;
 		}
 		return -1;
 	}

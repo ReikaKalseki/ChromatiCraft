@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
+import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
@@ -47,6 +48,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		TileEntity te = iba.getTileEntity(x, y, z);
 		int color = te instanceof TileEntityCrystalPylon ? ((TileEntityCrystalPylon)te).getColor().getColor() : 0xffffff;
 		color = te instanceof TileEntityDimensionCore ? ((TileEntityDimensionCore)te).getColor().getColor() : color;
+		color = te instanceof TileEntityPersonalCharger ? ((TileEntityPersonalCharger)te).getColor().getColor() : color;
 		int b = te instanceof TileEntityStructControl ? ((TileEntityStructControl)te).getBrightness() : 15;
 		return ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(color, b) : b;
 	}
@@ -57,13 +59,14 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		if (c == null)
 			return null;
 		switch(c) {
-		case PYLON:
-		case STRUCTCONTROL:
-		case AURAPOINT:
-		case DIMENSIONCORE:
-			return null;
-		default:
-			return this.getBlockAABB(x, y, z);
+			case PYLON:
+			case STRUCTCONTROL:
+			case AURAPOINT:
+			case DIMENSIONCORE:
+			case PERSONAL:
+				return null;
+			default:
+				return this.getBlockAABB(x, y, z);
 		}
 	}
 
@@ -84,21 +87,23 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		switch(meta) {
-		case 0:
-			return ChromaIcons.TRANSPARENT.getIcon();
-		case 1:
-			return ChromaIcons.REPEATER.getIcon();
-		case 2:
-			return ChromaIcons.MULTIREPEATER.getIcon();
-		case 3:
-			return ChromaIcons.TRANSPARENT.getIcon();
-		case 4:
-			return ChromaIcons.CHROMA.getIcon();
-		case 5:
-			return ChromaIcons.TRANSPARENT.getIcon();
-		case 6:
-			//return ChromaIcons.GUARDIANOUTER.getIcon();
-			return ChromaIcons.TRANSPARENT.getIcon();
+			case 0:
+				return ChromaIcons.TRANSPARENT.getIcon();
+			case 1:
+				return ChromaIcons.REPEATER.getIcon();
+			case 2:
+				return ChromaIcons.MULTIREPEATER.getIcon();
+			case 3:
+				return ChromaIcons.TRANSPARENT.getIcon();
+			case 4:
+				return ChromaIcons.CHROMA.getIcon();
+			case 5:
+				return ChromaIcons.TRANSPARENT.getIcon();
+			case 6:
+				//return ChromaIcons.GUARDIANOUTER.getIcon();
+				return ChromaIcons.TRANSPARENT.getIcon();
+			case 7:
+				return ChromaIcons.TRANSPARENT.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

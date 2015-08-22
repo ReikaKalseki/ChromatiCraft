@@ -46,9 +46,7 @@ public class RuneShapeRenderer {
 	}
 
 	public void render(RuneViewer s, int midx, int midy) {
-		if (s.isEmpty())
-			return;
-		int y = s.getMinY()+(int)((System.currentTimeMillis()/5000)%s.getSizeY());
+		int y = s.isEmpty() ? 0 : s.getMinY()+(int)((System.currentTimeMillis()/5000)%s.getSizeY());
 		this.render(s, midx, midy, y);
 	}
 

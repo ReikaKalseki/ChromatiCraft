@@ -41,7 +41,6 @@ import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -194,11 +193,8 @@ public class BlockChromaPortal extends Block {
 			double pz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 1.5);
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 			int color = CrystalElement.getBlendedColor(ticks, 40);
-			int red = ReikaColorAPI.getRed(color);
-			int green = ReikaColorAPI.getGreen(color);
-			int blue = ReikaColorAPI.getBlue(color);
 			int l = ReikaRandomHelper.getRandomPlusMinus(80, 40);
-			EntityBlurFX fx = new EntityBlurFX(worldObj, px, yCoord+1.25, pz, 0, 0, 0).setGravity(g).setLife(l).setColor(red, green, blue);
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, yCoord+1.25, pz, 0, 0, 0).setGravity(g).setLife(l).setColor(color);
 			fx.noClip = true;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

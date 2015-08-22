@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Magic.Interfaces;
 
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 
+@Deprecated //?
 public interface AuraSource {
 
 	public ElementTagCompound getAuras();

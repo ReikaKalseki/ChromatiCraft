@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
-import Reika.ChromatiCraft.GUI.GuiCastingTable;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
 import codechicken.lib.vec.Rectangle4i;
 import codechicken.nei.VisiblityData;
 import codechicken.nei.api.INEIGuiAdapter;

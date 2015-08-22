@@ -49,7 +49,6 @@ import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -230,16 +229,16 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			EntityFX fx = null;
 			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
 			switch(rand.nextInt(3)) {
-			case 0:
-				fx = new EntityCenterBlurFX(worldObj, px, py, pz).setColor(color).setGravity(g);
-				break;
-			case 1:
-				fx = new EntityLaserFX(CrystalElement.WHITE, worldObj, px, py, pz).setColor(color).setGravity(g);
-				break;
-			case 2:
-			default:
-				fx = new EntityBlurFX(worldObj, px, py, pz).setColor(ReikaColorAPI.getRed(color), ReikaColorAPI.getGreen(color), ReikaColorAPI.getBlue(color)).setGravity(g);
-				break;
+				case 0:
+					fx = new EntityCenterBlurFX(worldObj, px, py, pz).setColor(color).setGravity(g);
+					break;
+				case 1:
+					fx = new EntityLaserFX(CrystalElement.WHITE, worldObj, px, py, pz).setColor(color).setGravity(g);
+					break;
+				case 2:
+				default:
+					fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color).setGravity(g);
+					break;
 			}
 			fx.motionY = 0.03125+rand.nextDouble()*0.0625;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);

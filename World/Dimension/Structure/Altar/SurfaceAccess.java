@@ -9,12 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.Altar;
 
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
-import Reika.ChromatiCraft.Base.StructurePiece;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.ChromatiCraft.Base.DynamicStructurePiece;
 
-public class SurfaceAccess extends StructurePiece {
+public class SurfaceAccess extends DynamicStructurePiece {
 
 	public final ForgeDirection direction;
 
@@ -24,7 +24,7 @@ public class SurfaceAccess extends StructurePiece {
 	}
 
 	@Override
-	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
+	public void generate(World world, int x, int z) {
 
 	}
 

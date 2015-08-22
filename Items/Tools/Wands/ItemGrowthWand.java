@@ -50,11 +50,16 @@ public class ItemGrowthWand extends ItemWandBase {
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
 		if (this.sufficientEnergy(ep)) {
-			ticker.addLocation(ep, world, x, y, z, 4, 2, ep.isSneaking());
+			int r = this.getRange(ep);
+			ticker.addLocation(ep, world, x, y, z, r, r/2, ep.isSneaking());
 			ChromaSounds.USE.playSoundAtBlock(world, x, y, z);
 			return true;
 		}
 		return false;
+	}
+
+	private int getRange(EntityPlayer ep) {
+		return canUseBoostedEffect(ep) ? 8 : 4;
 	}
 
 	public static class GrowthTicker implements TickHandler {

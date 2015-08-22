@@ -15,9 +15,9 @@ import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.LockLevel;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
@@ -42,7 +42,9 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		this.genMaps(rand, dir);
 		int len = 4+rand.nextInt(8);
 		int radius = 6+rand.nextInt(5);
-		this.addDynamicStructure(new LocksEntrance(this, dir, radius, posY+5, len), x, z);
+		this.addDynamicStructure(new LocksEntrance(this, dir, radius, len), x, z);
+		entryX = x;
+		entryZ = z;
 
 		int len2 = 4+rand.nextInt(6);
 		//int[] lens = new int[4];
@@ -172,6 +174,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			return l;
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			throw new RegistrationException(ChromatiCraft.instance, "Could not instantiate lock level "+i+"!");
 		}
 	}

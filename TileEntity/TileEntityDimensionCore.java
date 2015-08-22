@@ -14,11 +14,13 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -46,9 +49,11 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -59,6 +64,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	private DimensionStructureType structure = null;
 	private boolean triggered = false;
 	private int soundPitch;
+
+	private HashSet<UUID> sentPlayers = new HashSet();
 
 	private static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, HashSet<CrystalElement>> beams = new EnumMap(CrystalElement.class);
@@ -128,10 +135,33 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			}
 		}
 		else {
-			if (!triggered && structure != null) {
-				this.doStructureCalculation(world, x, y, z);
+			if (structure != null) {
+				this.doScanForEntry(world, x, y, z);
+				if (!triggered) {
+					this.doStructureCalculation(world, x, y, z);
+				}
 			}
 		}
+	}
+
+	private void doScanForEntry(World world, int x, int y, int z) {
+		AxisAlignedBB box = this.getStructureEntryBox();
+		//ReikaJavaLibrary.pConsole(box);
+		for (EntityPlayerMP ep : ((List<EntityPlayerMP>)world.getEntitiesWithinAABB(EntityPlayerMP.class, box))) {
+			UUID uid = ep.getUniqueID();
+			if (!sentPlayers.contains(uid)) {
+				sentPlayers.add(uid);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTUREENTRY.ordinal(), ep, structure.ordinal());
+			}
+		}
+	}
+
+	private AxisAlignedBB getStructureEntryBox() {
+		int x = structure.getGenerator().getEntryPosX();
+		int y = structure.getGenerator().getPosY();
+		int z = structure.getGenerator().getEntryPosZ();
+		int r = 8;
+		return AxisAlignedBB.getBoundingBox(x-r, y, z-r, x+r+1, ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z)+9, z+r+1);
 	}
 
 	private void doStructureCalculation(World world, int x, int y, int z) {
@@ -243,10 +273,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			double pz = z+0.5+f*dz;
 
 			int clr = ReikaColorAPI.mixColors(color.getColor(), e.getColor(), 1-(float)f);
-			int r = ReikaColorAPI.getRed(clr);
-			int g = ReikaColorAPI.getGreen(clr);
-			int b = ReikaColorAPI.getBlue(clr);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(r, g, b);
+			EntityFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

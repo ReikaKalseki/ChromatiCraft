@@ -19,6 +19,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
@@ -62,7 +63,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 				for (int k = -r; k <= r; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					if (!(world.getBlock(dx, dy, dz) == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && world.getBlockMetadata(dx, dy, dz) >= 8)) {
+					if (this.canCutInto(world, dx, dy, dz, rand)) {
 						world.setBlock(dx, dy, dz, Blocks.air);
 						for (int d = 0; d < 6; d++) {
 							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
@@ -95,6 +96,15 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 			this.cut(rand, world, x+dir.offsetX, y, z+dir.offsetZ, w, my, dist+1, len-1, follow);
 		}
 
+	}
+
+	private boolean canCutInto(World world, int x, int y, int z, Random rand) {
+		Block b = world.getBlock(x, y, z);
+		//if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
+		//return rand.nextBoolean();
+		if (b instanceof BlockStructureShield && world.getBlockMetadata(x, y, z) >= 8)
+			return false;
+		return true;
 	}
 
 	@Override

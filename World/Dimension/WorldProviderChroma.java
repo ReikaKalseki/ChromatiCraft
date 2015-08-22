@@ -226,4 +226,9 @@ public class WorldProviderChroma extends WorldProvider {
 		return "Chroma";
 	}
 
+	@Override
+	public int getAverageGroundLevel() {
+		return super.getAverageGroundLevel()+ChunkProviderChroma.VERTICAL_OFFSET;
+	}
+
 }

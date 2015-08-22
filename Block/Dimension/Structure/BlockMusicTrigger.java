@@ -60,9 +60,11 @@ public class BlockMusicTrigger extends Block {
 					CrystalElement e = CrystalElement.elements[meta];
 					float p = CrystalMusicManager.instance.getScaledDing(e, idx);
 					CrystalTypeBlock.ding(world, x, y, z, e, p);
+					BlockMusicMemory.ping(world, x, y, z, e, idx);
 					if (world.isRemote) {
 						this.createParticle(world, x, y, z, e);
 					}
+
 				}
 			}
 		}
@@ -70,7 +72,7 @@ public class BlockMusicTrigger extends Block {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void createParticle(World world, int x, int y, int z, CrystalElement e) {
+	public static void createParticle(World world, int x, int y, int z, CrystalElement e) {
 		double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y+1, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);

@@ -113,6 +113,7 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 			//GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
 			v5.startDrawingQuads();
+			v5.setBrightness(240);
 			int color = ReikaColorAPI.getColorWithBrightnessMultiplier(tile.getRenderColor(), alpha/255F);
 			v5.setColorRGBA_I(color, alpha);
 			v5.addVertexWithUV(-1, -1, 0, u, v);

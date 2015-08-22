@@ -30,14 +30,13 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -46,6 +45,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -98,6 +98,16 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.ITEMRIFT) {
 			TileEntityItemRift ir = (TileEntityItemRift)tile;
 			ir.isEmitting = !ir.isEmitting;
+			return true;
+		}
+		if (t == ChromaTiles.WINDOW) {
+			TileEntityTransportWindow ir = (TileEntityTransportWindow)tile;
+			if (ep.isSneaking()) {
+				ir.renderBackPane = !ir.renderBackPane;
+			}
+			else {
+				ir.renderTexture = !ir.renderTexture;
+			}
 			return true;
 		}
 		//if (t == ChromaTiles.FIBERSINK) {
@@ -223,31 +233,31 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
-				ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
-				if (c == ChromaTiles.PYLON) {
-					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-					CrystalElement e = te.getColor();
-					this.chargeFromPylon(player, te, e, count);
-				}
-				else if (world.getBlock(x, y, z) == ChromaBlocks.POWERTREE.getBlockInstance()) {
-					TileEntityPowerTree te = ((TileEntityPowerTreeAux)world.getTileEntity(x, y, z)).getCenter();
-					if (te != null && this.chargeFromPylon(player, te, CrystalElement.elements[world.getBlockMetadata(x, y, z)], count)) {
 
-					}
+				Block b = world.getBlock(x, y, z);
+				TileEntity te = world.getTileEntity(x, y, z);
+
+				if (b == ChromaBlocks.POWERTREE.getBlockInstance()) {
+					te = ((TileEntityPowerTreeAux)te).getCenter();
+				}
+
+				if (te instanceof ChargingPoint) {
+					ChargingPoint cp = (ChargingPoint)te;
+					this.chargeFromPylon(player, cp, cp.getDeliveredColor(player, world, x, y, z), count);
 				}
 			}
 		}
 	}
 
-	private boolean chargeFromPylon(EntityPlayer player, CrystalSource te, CrystalElement e, int count) {
-		int add = PlayerElementBuffer.instance.getChargeSpeed(player);
+	private boolean chargeFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int count) {
+		int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
 		int drain = add*4;
 		int energy = te.getEnergy(e);
 		if (drain > energy) {
 			drain = energy;
 			add = drain/4;
 		}
-		if (te.canConduct() && te.playerCanUse(player) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+		if (te.canConduct() && te.allowCharging(player, e) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
 			te.onUsedBy(player, e);
 			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
 				te.drain(e, drain);

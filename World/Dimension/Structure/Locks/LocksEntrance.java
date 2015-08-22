@@ -27,8 +27,8 @@ public class LocksEntrance extends DynamicStructurePiece {
 	private final ForgeDirection left;
 	public final int length;
 
-	public LocksEntrance(DimensionStructureGenerator s, ForgeDirection dir, int r, int y, int len) {
-		super(s, y);
+	public LocksEntrance(DimensionStructureGenerator s, ForgeDirection dir, int r, int len) {
+		super(s);
 		radius = r;
 		facing = dir;
 		left = ReikaDirectionHelper.getLeftBy90(facing);
@@ -87,6 +87,7 @@ public class LocksEntrance extends DynamicStructurePiece {
 		int r = length+radius+3;
 		int dx = x+facing.offsetX*r;
 		int dz = z+facing.offsetZ*r;
+		int posY = parent.getPosY();
 		int d = y-posY;
 		LockRoomConnector tunnel = new LockRoomConnector(parent, 0, 0, 0, 0).setWindowed().setLength(facing.getOpposite(), length).setOpenFloor(d);
 		tunnel.generate(new ChunkSplicedGenerationCache.RelayCache(world), dx, posY+d, dz);

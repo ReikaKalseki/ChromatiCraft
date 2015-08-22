@@ -29,7 +29,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.ModInteract.CompoundAspectTank;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
@@ -114,7 +114,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {
 		ReikaSoundHelper.playBreakSound(world, x, y, z, ThaumItemHelper.BlockEntry.JAR.getBlock());
 		if (angle == null) {
-			ForgeDirection dir = ReikaPlayerAPI.getDirectionFromPlayerLook(ep, false);
+			ForgeDirection dir = ReikaEntityHelper.getDirectionFromEntityLook(ep, false);
 			angle = new JarTilt(dir, 30);
 		}
 	}

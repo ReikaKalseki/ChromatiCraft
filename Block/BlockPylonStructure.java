@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
@@ -84,58 +85,58 @@ public class BlockPylonStructure extends Block {
 		}
 		if (meta == 6) {
 			switch(s) {
-			case 0:
-				return icons[0][0];
-			case 1:
-				if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][0];
-				if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][1];
-				if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][3];
-				if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][2];
-				break;
-			case 2:
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
-					return icons[meta][1];
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
-					return icons[meta][0];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
-					return icons[meta][2];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
-					return icons[meta][3];
-				break;
-			case 3:
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
-					return icons[meta][0];
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
-					return icons[meta][1];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
-					return icons[meta][3];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
-					return icons[meta][2];
-				break;
-			case 4:
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][0];
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][1];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][3];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][2];
-				break;
-			case 5:
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][1];
-				if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][0];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
-					return icons[meta][2];
-				if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
-					return icons[meta][3];
-				break;
+				case 0:
+					return icons[0][0];
+				case 1:
+					if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][0];
+					if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][1];
+					if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][3];
+					if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][2];
+					break;
+				case 2:
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
+						return icons[meta][1];
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
+						return icons[meta][0];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
+						return icons[meta][2];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
+						return icons[meta][3];
+					break;
+				case 3:
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
+						return icons[meta][0];
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
+						return icons[meta][1];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
+						return icons[meta][3];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
+						return icons[meta][2];
+					break;
+				case 4:
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][0];
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][1];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][3];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][2];
+					break;
+				case 5:
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][1];
+					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][0];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
+						return icons[meta][2];
+					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
+						return icons[meta][3];
+					break;
 			}
 		}
 		return super.getIcon(iba, x, y, z, s);
@@ -154,14 +155,14 @@ public class BlockPylonStructure extends Block {
 	@Override
 	public int damageDropped(int meta) {
 		switch(meta) {
-		case 3:
-			return 2;
-		case 4:
-			return 1;
-		case 5:
-			return 9;
-		default:
-			return meta;
+			case 3:
+				return 2;
+			case 4:
+				return 1;
+			case 5:
+				return 9;
+			default:
+				return meta;
 		}
 	}
 
@@ -252,6 +253,11 @@ public class BlockPylonStructure extends Block {
 			((TileEntityAuraInfuser)te).validateMultiblock();
 		}
 
+		te = world.getTileEntity(mx, my+6, mz);
+		if (te instanceof TileEntityPersonalCharger) {
+			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -304,6 +310,11 @@ public class BlockPylonStructure extends Block {
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
 			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
+		}
+
+		te = world.getTileEntity(mx, my+6, mz);
+		if (te instanceof TileEntityPersonalCharger) {
+			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
 		}
 
 		for (int k = 0; k < 6; k++) {

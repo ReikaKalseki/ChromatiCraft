@@ -28,6 +28,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -40,6 +41,9 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	private final PlayerMap<Integer> cooldowns = new PlayerMap();
 	private WorldLocation target;
 	private WorldLocation source;
+
+	public boolean renderBackPane = true;
+	public boolean renderTexture = true;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -89,12 +93,16 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		//ReikaJavaLibrary.pConsole("Teleported "+ep);
 		te.cooldowns.put(ep, 60);
 		cooldowns.put(ep, 60);
+
+		/*
 		ForgeDirection dir = te.getFacing().getOpposite();
 		//ep.rotationYaw = 180-ep.rotationYaw;
 		//ep.rotationYawHead = 180-ep.rotationYawHead;
 		ep.rotationYaw = (float)te.getTargetPhi();
 		ep.rotationYawHead = ep.rotationYaw;
 		ep.setPositionAndUpdate(te.xCoord+0.5+dir.offsetX*0.9, ep.posY+te.yCoord-yCoord+0.01, te.zCoord+0.5+dir.offsetZ*0.9);
+		 */
+		ReikaEntityHelper.seamlessTeleport(ep, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord, this.getFacing().getOpposite(), te.getFacing().getOpposite());
 	}
 
 	private TileEntityTransportWindow getTarget() {
@@ -198,7 +206,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	}
 
 	public boolean doRender() {
-		return hasStructure;
+		return hasStructure && renderBackPane;
 	}
 
 	private boolean canTeleport(ForgeDirection dir, EntityPlayer ep) {
@@ -274,6 +282,9 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 			target.writeToNBT("tgt", NBT);
 		if (source != null)
 			source.writeToNBT("src", NBT);
+
+		NBT.setBoolean("back", renderBackPane);
+		NBT.setBoolean("tex", renderTexture);
 	}
 
 	@Override
@@ -284,6 +295,14 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 
 		source = WorldLocation.readFromNBT("src", NBT);
 		target = WorldLocation.readFromNBT("tgt", NBT);
+
+		renderBackPane = NBT.getBoolean("back");
+		renderTexture = NBT.getBoolean("tex");
+	}
+
+	@Override
+	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
+		return ChromaTiles.getTileFromIDandMetadata(oldBlock, oldMeta) != ChromaTiles.getTileFromIDandMetadata(newBlock, newMeta);
 	}
 
 	static {

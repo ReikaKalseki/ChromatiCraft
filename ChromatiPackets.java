@@ -32,6 +32,7 @@ import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
@@ -39,6 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
@@ -70,6 +72,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -93,6 +96,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -130,7 +134,8 @@ public class ChromatiPackets implements PacketHandler {
 					double sz = inputStream.readDouble();
 					float v = inputStream.readFloat();
 					float p = inputStream.readFloat();
-					ReikaSoundHelper.playClientSound(s, sx, sy, sz, v, p);
+					boolean att = inputStream.readBoolean();
+					ReikaSoundHelper.playClientSound(s, sx, sy, sz, v, p, att);
 					return;
 				case STRING:
 					stringdata = packet.readString();
@@ -490,6 +495,27 @@ public class ChromatiPackets implements PacketHandler {
 				case DIMPING:
 					DimensionPingEvent.addPing(data[0], data[1], data[2]);
 					break;
+				case STRUCTUREENTRY:
+					ChromaOverlays.instance.addStructureText(DimensionStructureType.types[data[0]]);
+					break;
+				case CRYSTALMUS:
+					((TileEntityCrystalMusic)tile).doParticles(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
+					break;
+				case CRYSTALMUSERROR:
+					((TileEntityCrystalMusic)tile).doErrorParticles(world, x, y, z);
+					break;
+				case MUSICCLEAR:
+					((TileEntityCrystalMusic)tile).clearMusic();
+					break;
+				case MUSICCLEARCHANNEL:
+					((TileEntityCrystalMusic)tile).clearChannel(data[0]);
+					break;
+				case MUSICNOTE:
+					((TileEntityCrystalMusic)tile).addNote(data[0], MusicKey.getByIndex(data[1]), data[2], data[3] > 0);
+					break;
+				case MUSICDEMO:
+					((TileEntityCrystalMusic)tile).loadDemo();
+					break;
 			}
 		}
 		catch (NullPointerException e) {
@@ -529,10 +555,7 @@ public class ChromatiPackets implements PacketHandler {
 			double ddy = src.posY-vec.yCoord*f;
 			double ddz = src.posZ-vec.zCoord*f;
 			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
-			int r = ReikaColorAPI.getRed(c);
-			int g = ReikaColorAPI.getGreen(c);
-			int b = ReikaColorAPI.getBlue(c);
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(r, g, b).setLife(8));
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
 		}
 		src.doBoltClient(tgt);
 		tgt.doBoltClient(src);

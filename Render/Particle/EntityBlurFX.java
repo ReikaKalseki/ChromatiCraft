@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
@@ -94,6 +95,10 @@ public class EntityBlurFX extends EntityFX {
 		particleGreen = g/255F;
 		particleBlue = b/255F;
 		return this;
+	}
+
+	public final EntityBlurFX setColor(int rgb) {
+		return this.setColor(ReikaColorAPI.getRed(rgb), ReikaColorAPI.getGreen(rgb), ReikaColorAPI.getBlue(rgb));
 	}
 
 	public final EntityBlurFX bound(AxisAlignedBB box) {

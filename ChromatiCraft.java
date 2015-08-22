@@ -59,11 +59,13 @@ import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
+import Reika.ChromatiCraft.Auxiliary.RecipeReloadCommand;
 import Reika.ChromatiCraft.Auxiliary.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -639,12 +641,13 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new PlayerEnergyCommand());
 		evt.registerServerCommand(new ChromaResearchDebugCommand());
 		evt.registerServerCommand(new StructureGenCommand());
+		evt.registerServerCommand(new RecipeReloadCommand());
 	}
 
 	@EventHandler
 	public void overrideRecipes(FMLServerStartedEvent evt) {
 		if (!this.isLocked()) {
-
+			RecipesCastingTable.instance.reload();
 		}
 	}
 

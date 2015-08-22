@@ -23,8 +23,11 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockChoiceHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockRenderHook;
 
 public class GuiStructure extends GuiBookSection {
@@ -43,9 +46,13 @@ public class GuiStructure extends GuiBookSection {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
 		}
 		render = new StructureRenderer(array);
-		if (page.name().toLowerCase().contains("pylon")) {
+		if (page == ChromaResearch.PYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
+		else if (page == ChromaResearch.MINIPYLON) {
+			render.addOverride(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getCraftedProduct());
+		}
+		render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
 	}
 
@@ -143,6 +150,9 @@ public class GuiStructure extends GuiBookSection {
 			if (ChromaBlocks.CHROMA.match(is)) {
 				is2 = ChromaItems.BUCKET.getStackOfMetadata(0);
 			}
+			else if (ChromaBlocks.RUNE.match(is)) {
+				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());
+			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
 			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
 			i++;
@@ -173,6 +183,10 @@ public class GuiStructure extends GuiBookSection {
 		render.draw3D(j, k);
 	}
 
+	private static int getElementByTick() {
+		return (int)((System.currentTimeMillis()/4000)%16);
+	}
+
 	private static class PylonRenderHook implements BlockRenderHook {
 
 		@Override
@@ -188,6 +202,15 @@ public class GuiStructure extends GuiBookSection {
 		@Override
 		public int getOffsetY() {
 			return -6;
+		}
+
+	}
+
+	private static class RuneRenderHook implements BlockChoiceHook {
+
+		@Override
+		public BlockKey getBlock(Coordinate pos, int meta) {
+			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick());
 		}
 
 	}

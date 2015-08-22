@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -27,16 +29,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S19PacketEntityHeadLook;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -44,9 +45,9 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -81,7 +82,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 
 	@Override
 	public int getRenderType() {
-		return debug ? 0 : -1;
+		return /*debug ? 0 : */-1;
 	}
 
 	@Override
@@ -101,7 +102,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 
 	@Override
 	public boolean canCollideCheck(int meta, boolean boat) {
-		return debug;
+		return false;//debug;
 	}
 
 	@Override
@@ -192,6 +193,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 
 		private long lastActiveTick = -1;
 
+		private ArrayList<TriggerCriteria> criteria = new ArrayList();
 		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
 
 		public boolean isActive = true;
@@ -211,12 +213,18 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 					ChromatiCraft.logger.logError("Could not teleport "+e+"; null destination!");
 				return;
 			}
+			if (destination.xCoord == 0 && destination.yCoord == 0 && destination.zCoord == 0) //self pos
+				return;
+			for (TriggerCriteria c : criteria) {
+				if (!c.isValid(e, this))
+					return;
+			}
 			long time = worldObj.getTotalWorldTime();
 			if (time <= lastActiveTick) {
 				return;
 			}
 			lastActiveTick = time;
-
+			/*
 			double dx = e.posX-xCoord-0.5;
 			double dy = e.posY-yCoord-0.5;
 			double dz = e.posZ-zCoord-0.5;
@@ -232,7 +240,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			//Vec3 vvec = Vec3.createVectorHelper(e.motionX, e.motionY, e.motionZ);
 			//vvec = ReikaVectorHelper.rotateVector(vvec, 0, -yaw, 0);
 			//e.setVelocity(vvec.xCoord, vvec.yCoord, vvec.zCoord);
-			e.setVelocity(0, 0, 0);
+			e.motionX = e.motionY = e.motionZ = 0;
 
 			if (e instanceof EntityPlayer) {
 				e.rotationYaw += yaw;
@@ -247,15 +255,18 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			else {
 				e.setLocationAndAngles(nx, ny, nz, e.rotationYaw+yaw, e.rotationPitch);
 			}
+			 */
+			ReikaEntityHelper.seamlessTeleport(e, xCoord, yCoord, zCoord, xCoord+destination.xCoord, yCoord+destination.yCoord, zCoord+destination.zCoord, facing, destination.direction);
+			onTeleport((EntityPlayer)e, this);
 		}
-
+		/*
 		private float getYaw(Entity e) {
 			int rel = ReikaDirectionHelper.getRelativeAngle(facing, destination.direction);
 			if (rel > 180)
 				rel = rel-360;
 			return rel;
 		}
-
+		 */
 		@SideOnly(Side.CLIENT)
 		private void setRenderPos(EntityPlayer ep) {
 			RenderManager rm = RenderManager.instance;
@@ -304,10 +315,15 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		}
 
 		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
+			//ReikaJavaLibrary.pConsole(new WorldLocation(this)+" from "+new WorldLocation(te)+" from "+actions);
 			if (!actions.isEmpty()) {
-				Coordinate rel = new Coordinate(this).offset(xCoord, yCoord, zCoord);
+				Coordinate rel = new Coordinate(te).offset(-xCoord, -yCoord, -zCoord);
 				TeleportTriggerAction a = actions.get(rel);
-				a.trigger(rel, this);
+				//ReikaJavaLibrary.pConsolenew Coordinate(this)+" from "+new Coordinate(te)+" by "+rel+" to "+a+" from "+actions);
+				if (a != null) {
+					a.trigger(rel, this);
+					ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+", triggered "+a+", remaining "+actions);
+				}
 			}
 		}
 
@@ -315,11 +331,16 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			actions.put(rel, a);
 		}
 
+		public void addCriterion(TriggerCriteria tc) {
+			criteria.add(tc);
+		}
+
 	}
 
 	private static void onTeleport(EntityPlayer ep, TileEntityTeleport te) {
-		for (TileEntity tile : ((List<TileEntity>)te.worldObj.loadedTileEntityList)) {
-			if (!tile.isInvalid() && tile instanceof TileEntityTeleport) {
+		for (Coordinate c : ((NonEuclideanGenerator)DimensionStructureType.NONEUCLID.getGenerator()).getPortalLocations()) {
+			TileEntity tile = c.getTileEntity(te.worldObj);
+			if (tile instanceof TileEntityTeleport && !tile.isInvalid()) {
 				((TileEntityTeleport)tile).onPlayerTeleported(ep, te);
 			}
 		}
@@ -420,6 +441,30 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			for (TeleportTriggerAction a : te.actions.values()) {
 				if (a instanceof RerouteIf)
 					return false;
+			}
+			return true;
+		}
+
+	}
+
+	public static interface TriggerCriteria {
+
+		public boolean isValid(Entity e, TileEntityTeleport te);
+
+	}
+
+	public static class SameFacing implements TriggerCriteria {
+
+		public static final SameFacing instance = new SameFacing();
+
+		private SameFacing() {
+
+		}
+
+		@Override
+		public boolean isValid(Entity e, TileEntityTeleport te) {
+			if (e instanceof EntityLivingBase) {
+				return ReikaEntityHelper.getDirectionFromEntityLook((EntityLivingBase)e, false) == te.facing;
 			}
 			return true;
 		}

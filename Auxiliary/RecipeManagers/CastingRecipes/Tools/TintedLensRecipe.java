@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -17,13 +18,17 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class TintedLensRecipe extends MultiBlockCastingRecipe {
 
-	public TintedLensRecipe(CrystalElement e, ItemStack main) {
-		super(ChromaItems.LENS.getStackOf(e), main);
+	public TintedLensRecipe(CrystalElement e, ItemStack main, Item in, int amt) {
+		this(e, main, new ItemStack(in), amt);
+	}
 
-		this.addAuxItem(ChromaStacks.chromaIngot, -2, -2);
-		this.addAuxItem(ChromaStacks.chromaIngot, -2, 2);
-		this.addAuxItem(ChromaStacks.chromaIngot, 2, -2);
-		this.addAuxItem(ChromaStacks.chromaIngot, 2, 2);
+	public TintedLensRecipe(CrystalElement e, ItemStack main, ItemStack in, int amt) {
+		super(ChromaItems.LENS.getCraftedMetadataProduct(amt, e.ordinal()), main);
+
+		this.addAuxItem(in, -2, -2);
+		this.addAuxItem(in, -2, 2);
+		this.addAuxItem(in, 2, -2);
+		this.addAuxItem(in, 2, 2);
 
 		this.addAuxItem(ChromaStacks.focusDust, -2, 0);
 		this.addAuxItem(ChromaStacks.focusDust, 2, 0);

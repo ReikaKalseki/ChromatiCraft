@@ -16,8 +16,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.LootRoom;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TDMazeEntrance;
@@ -54,6 +54,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 
 	private static int getWidth() {
 		switch(ChromaOptions.getStructureDifficulty()) {
+			/*
 			case 1:
 			case 2:
 				return 16;
@@ -61,11 +62,20 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 				return 32;
 			default:
 				return 32;
+			 */
+			case 1:
+				return 8;
+			case 2:
+				return 16;
+			case 3:
+			default:
+				return 24;
 		}
 	}
 
 	private static int getHeight() {
 		switch(ChromaOptions.getStructureDifficulty()) {
+			/*
 			case 1:
 				return 8;
 			case 2:
@@ -73,6 +83,14 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 				return 16;
 			default:
 				return 16;
+			 */
+			case 1:
+				return 6;
+			case 2:
+				return 8;
+			case 3:
+			default:
+				return 12;
 		}
 	}
 
@@ -96,10 +114,13 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 
 		int mx = x+partSize*MAX_SIZE_X/2+partSize/2;
 		int mz = z+partSize*MAX_SIZE_Z/2+partSize/2;
+		entryX = mx;
+		entryZ = mz;
+
 		int by = posY-partSize*(MAX_SIZE_Y+1)+partSize/2;
 		new LootRoom(this, rand).generate(world, mx, by, mz);
 
-		this.addDynamicStructure(new TDMazeEntrance(this, posY+1), mx, mz);
+		this.addDynamicStructure(new TDMazeEntrance(this), mx, mz);
 	}
 
 	@Override

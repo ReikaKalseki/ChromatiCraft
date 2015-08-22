@@ -10,14 +10,19 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.image.BufferedImage;
+import java.util.HashSet;
 
 import net.minecraftforge.client.event.GuiOpenEvent;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.IO.ReikaImageLoader;
 import Reika.DragonAPI.Instantiable.Rendering.BasicFontRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -40,7 +45,7 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 	}
 
 	@Override
-	protected float renderDefaultChar(int charIndex, boolean italic) {
+	protected float renderCharFraction(int charIndex, boolean italic, float fraction) {
 		if (type == FontType.OBFUSCATED) {
 			//charIndex = (charWidth.length+charIndex/*+(int)posX/16%16-(int)posY/16%16*/+offsets[charIndex])%charWidth.length;
 			charIndex += offsets[charIndex];
@@ -53,7 +58,7 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 			charIndex += currentString.hashCode();
 			charIndex = min+(charWidth.length+charIndex%charWidth.length)%(max-min+1);
 		}
-		return super.renderDefaultChar(charIndex, italic);
+		return super.renderCharFraction(charIndex, italic, fraction);
 	}
 
 	@Override
@@ -142,6 +147,98 @@ public class ChromaFontRenderer extends BasicFontRenderer {
 			}
 		}
 		lastReload = System.currentTimeMillis();
+	}
+
+	public void drawTitleScroll(String sg, int x, int y, float fraction, int c1, int c2, int cflash1, int cflash2) {
+		boolean over = fraction >= 1+1F/sg.length();
+		fraction = Math.min(1, fraction);
+
+		float s = 2;
+		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glScaled(s, s, s);
+
+		ChromaFontRenderer fr = ChromaFontRenderer.FontType.GUI.renderer;
+
+		float sx = x/s-fr.getStringWidth(sg)/2F;
+		float sy = y/s-fr.FONT_HEIGHT/2F;
+
+		for (int d = 2; d <= 6; d++) {
+			int fade = 0x70/d << 24;
+			int c1o = (c1 & 0xffffff) | fade;
+			int c2o = (c2 & 0xffffff) | fade;
+			int cflash1o = (cflash1 & 0xffffff) | fade;
+			int cflash2o = (c2 & 0xffffff) | fade;
+			this.drawTitleText(sg, sx+d/s, sy+d/s, fraction, over, c1o, c2o, cflash1o, cflash2o);
+		}
+
+		this.drawTitleText(sg, sx, sy, fraction, over, c1, c2, cflash1, cflash2);
+
+		GL11.glPopAttrib();
+		GL11.glPopMatrix();
+	}
+
+	private void drawTitleText(String sg, float sx, float sy, float fraction, boolean over, int c1, int c2, int cflash1, int cflash2) {
+		ChromaFontRenderer fr = ChromaFontRenderer.FontType.GUI.renderer;
+
+		/*
+		int len = sg.length();//ReikaStringParser.stripSpaces(sg).length();
+		String pre = EnumChatFormatting.BOLD.toString()+EnumChatFormatting.UNDERLINE.toString();
+		int idx = (int)(fraction*2*len);
+		if (idx >= len) {
+			String sg2 = pre+sg;
+			String clip = sg2.substring(0, sg2.length()-1);
+			this.drawString(clip, sx, sy, c1);
+			this.drawString(sg2.substring(clip.length()), sx+(int)(fr.getStringWidth(clip)/s), sy, cflash1);
+			idx -= len;
+		}
+		else {
+			c2 = c1;
+		}
+
+		this.drawString(pre+sg.substring(0, idx), sx, sy, c2);
+
+		 */
+
+		//fr.drawFractionalString(sg, sx, sy, c1, cflash1, false, fraction);
+
+		HashSet<Integer> spaces = new HashSet();
+		int o = 0;
+		for (int i = 0; i < sg.length(); i++) {
+			char c = sg.charAt(i);
+			if (c == ' ') {
+				spaces.add(i-o-1);
+				o++;
+			}
+		}
+		sg = ReikaStringParser.stripSpaces(sg);
+
+		int len = sg.length();
+		int pos1 = fraction < 0.5 ? (int)(fraction*2*len) : len;
+		int pos2 = fraction >= 0.5 ? (int)((fraction-0.5)*2*len) : 0;
+
+		for (int i = 0; i < pos1; i++) {
+			int c = i == pos1-1 && fraction < 0.5 ? cflash1 : c1;
+			float px = i == 0 ? sx : sx+fr.getStringWidth(sg.substring(0, i));
+			for (int a = i-1; a >= 0; a--) {
+				if (spaces.contains(a)) {
+					px += fr.getCharWidth(' ');
+				}
+			}
+			int ret = fr.drawStringFloatPos(String.valueOf(sg.charAt(i)), px, sy, c, false);
+		}
+
+		for (int i = 0; i < pos2; i++) {
+			int c = i == pos2-1 && !over ? cflash2 : c2;
+			float px = i == 0 ? sx : sx+fr.getStringWidth(sg.substring(0, i));
+			for (int a = i-1; a >= 0; a--) {
+				if (spaces.contains(a)) {
+					px += fr.getCharWidth(' ');
+				}
+			}
+			int ret = fr.drawStringFloatPos(String.valueOf(sg.charAt(i)), px, sy, c, false);
+		}
 	}
 
 	public static enum FontType {

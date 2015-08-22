@@ -211,11 +211,16 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
 			return uid.equals(this.uid);
 		}
 
-		public void open() {
+		public void openClick() {
+			this.open(50);
+		}
+
+		public void open(int delay) {
 			this.setStates(true);
 			ChromaSounds.ITEMSTAND.playSoundAtBlock(this, 1, 2F);
 			ChromaSounds.ITEMSTAND.playSoundAtBlock(this, 1, 1F);
-			worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, this.getBlockType(), 50);
+			if (delay > 0)
+				worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, this.getBlockType(), delay);
 		}
 
 		public void close() {
@@ -227,9 +232,17 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
 			StructuredBlockArray b = new StructuredBlockArray(worldObj);
 			b.recursiveAddWithBounds(worldObj, xCoord, yCoord, zCoord, this.getBlockType(), xCoord-8, yCoord-8, zCoord-8, xCoord+8, yCoord+8, zCoord+8);
 			for (Coordinate c : b.keySet()) {
-				if (uid.equals(((TileEntityChromaDoor)c.getTileEntity(worldObj)).uid))
+				if (matchUIDs(this, (TileEntityChromaDoor)c.getTileEntity(worldObj)))
 					c.setBlockMetadata(worldObj, open ? 1 : 0);
 			}
+		}
+
+		private static boolean matchUIDs(TileEntityChromaDoor te1, TileEntityChromaDoor te2) {
+			if (te1.uid == te2.uid)
+				return true;
+			if (te1.uid == null || te2.uid == null)
+				return false;
+			return te1.uid.equals(te2.uid);
 		}
 
 		public void bindUUID(UUID id) {

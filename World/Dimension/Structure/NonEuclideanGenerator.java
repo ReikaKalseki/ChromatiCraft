@@ -9,24 +9,31 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.Deactivate;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.DeactivateOneOf;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.RerouteIf;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.SameFacing;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TeleportTriggerAction;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TileEntityTeleport;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TriggerCriteria;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -35,16 +42,20 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
+import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer1;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer2;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer3;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer4;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer5;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer6;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
@@ -57,6 +68,8 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 	private UUID door;
 
+	private final HashSet<Coordinate> portals = new HashSet();
+
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
 		Block b = ChromaBlocks.SPECIALSHIELD.getBlockInstance();
@@ -65,8 +78,11 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		door = UUID.randomUUID();
 
 		int x = chunkX;
-		posY = 200;
+		posY = 10+rand.nextInt(80);
 		int z = chunkZ;
+
+		entryX = x+31;
+		entryZ = z+64;
 
 		//-11, 0, -12
 		layer1.generate(world, rand, x, posY, z, b, b2);
@@ -76,17 +92,20 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		layer5.generate(world, rand, x, posY, z, b, b2);
 		layer6.generate(world, rand, x, posY, z, b, b2);
 
-		this.placeWindow(x+9, posY+2, z+44, ForgeDirection.WEST, 9, 2, 52);
-		this.placeWindow(x+3, posY+2, z+52, ForgeDirection.EAST, 3, 2, 44);
+		this.generateAir(world, rand, x, posY, z);
 
+		this.addDynamicStructure(new NonEuclidEntrance(this), entryX, entryZ);
+
+		this.placeWindow(x+9, posY+2, z+44, ForgeDirection.WEST, x+3, posY+2, z+52);
+		this.placeWindow(x+3, posY+2, z+52, ForgeDirection.EAST, x+9, posY+2, z+44);
 
 		this.createPortal(x+39, posY+1, z+52, ForgeDirection.NORTH, new BlockVector(-16, 0, 8, ForgeDirection.NORTH));
 		this.createPortal(x+23, posY+1, z+62, ForgeDirection.SOUTH, new BlockVector(16, 0, -8, ForgeDirection.SOUTH));
 		this.createPortal(x+31, posY+1, z+48, ForgeDirection.NORTH, new BlockVector(-8, 0, 12, ForgeDirection.NORTH), new Coordinate(-8, 0, 14), DeactivateOneOf.instance, new Coordinate(8, 0, 4), DeactivateOneOf.instance);
 
-		RerouteIf newLoc1 = new RerouteIf(new BlockVector(-1, 0, 12, ForgeDirection.EAST));
-		RerouteIf newLoc2 = new RerouteIf(new BlockVector(-1, 0, 4, ForgeDirection.EAST));
-		RerouteIf newLoc3 = new RerouteIf(new BlockVector(-1, 0, -4, ForgeDirection.EAST));
+		RerouteIf newLoc1 = new RerouteIf(new BlockVector(-2, 0, 12, ForgeDirection.EAST));
+		RerouteIf newLoc2 = new RerouteIf(new BlockVector(-2, 0, 4, ForgeDirection.EAST));
+		RerouteIf newLoc3 = new RerouteIf(new BlockVector(-2, 0, -4, ForgeDirection.EAST));
 		this.createPortal(x+24, posY+1, z+33, ForgeDirection.WEST, new BlockVector(11, 0, 8, ForgeDirection.EAST), new Coordinate(0, 0, 0), newLoc1, new Coordinate(0, 0, 8), newLoc1, new Coordinate(0, 0, 16), newLoc1);
 		this.createPortal(x+24, posY+1, z+41, ForgeDirection.WEST, new BlockVector(11, 0, 0, ForgeDirection.EAST), new Coordinate(0, 0, -8), newLoc2, new Coordinate(0, 0, 0), newLoc2, new Coordinate(0, 0, 8), newLoc2);
 		this.createPortal(x+24, posY+1, z+49, ForgeDirection.WEST, new BlockVector(11, 0, -8, ForgeDirection.EAST), new Coordinate(0, 0, -16), newLoc3, new Coordinate(0, 0, -8), newLoc3, new Coordinate(0, 0, 0), newLoc3);
@@ -98,7 +117,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 		this.createPortal(x+10, posY+1, z+20, ForgeDirection.EAST, new BlockVector(10, 0, 25, ForgeDirection.WEST));
 		this.createPortal(x+22, posY+1, z+20, ForgeDirection.WEST, new BlockVector(-6, 0, 21, ForgeDirection.SOUTH));
-		this.createPortal(x+16, posY+1, z+34, ForgeDirection.SOUTH, new BlockVector(14, 0, -7, ForgeDirection.NORTH));
+		this.createPortal(x+16, posY+1, z+34, ForgeDirection.SOUTH, new BlockVector(14, 0, -7, ForgeDirection.NORTH), SameFacing.instance/*, new Coordinate(6, 0, -14), DeactivateOneOf.instance, new Coordinate(-6, 0, -14), DeactivateOneOf.instance*/);
 
 		this.createPortal(x+9, posY+1, z+12, ForgeDirection.SOUTH, new BlockVector(36, 0, 0, ForgeDirection.SOUTH), new Coordinate(36, 0, 0), Deactivate.instance);
 
@@ -148,6 +167,19 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		this.createBreakable(x+56, posY+3, z+17);
 	}
 
+	private void generateAir(ChunkSplicedGenerationCache world, Random rand, int x, int posY, int z) {
+		HashSet<Coordinate> set = world.getLocationsOf(new BlockKey(ChromaBlocks.SPECIALSHIELD.getBlockInstance(), BlockType.CLOAK.metadata));
+		for (Coordinate c : set) {
+			for (int i = 1; i <= 3; i++) {
+				int dx = c.xCoord;
+				int dy = c.yCoord+i;
+				int dz = c.zCoord;
+				if (!world.hasBlock(dx, dy, dz))
+					world.setBlock(dx, dy, dz, Blocks.air);
+			}
+		}
+	}
+
 	private void createBreakable(int x, int y, int z) {
 		world.setBlock(x, y, z, ChromaBlocks.SPECIALSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 		this.addBreakable(x, y, z);
@@ -155,8 +187,15 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 	private void createPortal(int x, int y, int z, ForgeDirection dir, BlockVector bv, Object... ts) {
 		PortalPlace p = new PortalPlace(dir, bv);
-		for (int i = 0; i < ts.length; i += 2) {
-			p.addAction((Coordinate)ts[i], (TeleportTriggerAction)ts[i+1]);
+		ArrayList li = ReikaJavaLibrary.makeListFrom(ts);
+		while (!li.isEmpty()) {
+			Object o = li.remove(0);
+			if (o instanceof TriggerCriteria) {
+				p.addCriteria((TriggerCriteria)o);
+			}
+			else if (o instanceof Coordinate) {
+				p.addAction((Coordinate)o, (TeleportTriggerAction)li.remove(0));
+			}
 		}
 		world.setTileEntity(x, y, z, ChromaBlocks.TELEPORT.getBlockInstance(), 0, p);
 
@@ -168,6 +207,8 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 			world.setBlock(x+d*left.offsetX, y+1, z+d*left.offsetZ, ChromaBlocks.TELEPORT.getBlockInstance(), 1);
 			world.setBlock(x+d*left.offsetX, y+2, z+d*left.offsetZ, ChromaBlocks.TELEPORT.getBlockInstance(), 1);
 		}
+
+		portals.add(new Coordinate(x, y, z));
 	}
 
 	private void placeWindow(int x, int y, int z, ForgeDirection dir, int dx, int dy, int dz) {
@@ -209,6 +250,16 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		return null;
 	}
 
+	@Override
+	protected void clearCaches() {
+		door = null;
+		portals.clear();
+	}
+
+	public Collection<Coordinate> getPortalLocations() {
+		return Collections.unmodifiableSet(portals);
+	}
+
 	private static class WindowPlace implements TileCallback {
 
 		private final ForgeDirection direction;
@@ -223,7 +274,11 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityTransportWindow) {
 				((TileEntityTransportWindow)te).setFacing(direction);
+				((TileEntityTransportWindow)te).renderBackPane = false;
+				((TileEntityTransportWindow)te).renderTexture = false;
 
+				if (other.getBlock(world) == Blocks.air)
+					other.setBlock(world, ChromaTiles.WINDOW.getBlock(), ChromaTiles.WINDOW.getBlockMetadata());
 				TileEntity te2 = other.getTileEntity(world);
 				if (te2 instanceof TileEntityTransportWindow) {
 					((TileEntityTransportWindow)te).linkTo((TileEntityTransportWindow)te2);
@@ -238,10 +293,16 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		private final BlockVector location;
 		private final ForgeDirection direction;
 		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
+		private final ArrayList<TriggerCriteria> criteria = new ArrayList();
 
 		private PortalPlace(ForgeDirection dir, BlockVector bv) {
 			location = bv;
 			direction = dir;
+		}
+
+		public PortalPlace addCriteria(TriggerCriteria o) {
+			criteria.add(o);
+			return this;
 		}
 
 		private PortalPlace addAction(Coordinate c, TeleportTriggerAction t) {
@@ -259,6 +320,10 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 				for (Coordinate c : actions.keySet()) {
 					TeleportTriggerAction t = actions.get(c);
 					tp.putAction(c, t);
+				}
+
+				for (TriggerCriteria tc : criteria) {
+					tp.addCriterion(tc);
 				}
 			}
 		}

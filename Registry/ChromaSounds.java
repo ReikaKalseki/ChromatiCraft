@@ -37,6 +37,8 @@ public enum ChromaSounds implements SoundEnum {
 	USE("use2"),
 	TRAP("slam2"),
 	DING("ding2"),
+	DING_HI("ding2_hi"),
+	DING_LO("ding2_lo"),
 	SHOCKWAVE("shockwave"),
 	BALLLIGHTNING("balllightning"),
 	ITEMSTAND("stand"),
@@ -153,5 +155,10 @@ public enum ChromaSounds implements SoundEnum {
 	@Override
 	public boolean canOverlap() {
 		return this == RIFT || this == CAST || this == USE || this == ERROR || this == INFUSE || this == DING || this == DRONE;
+	}
+
+	@Override
+	public boolean attenuate() {
+		return this != PORTAL;
 	}
 }

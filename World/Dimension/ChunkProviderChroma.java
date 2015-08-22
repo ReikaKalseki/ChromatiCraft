@@ -31,13 +31,16 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
@@ -93,6 +96,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private final ChromaChunkManager chunkManager;
 
 	private final OneWayList<ChromaWorldGenerator> decorators = new OneWayList();
+
+	public static final int VERTICAL_OFFSET = 40;
 
 	//private final HashSet<ChunkCoordIntPair> populatedChunks = new HashSet();
 
@@ -169,14 +174,15 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private void createDecorators() {
-		//decorators.add(new WorldGenMiasma());
 		decorators.add(new WorldGenFissure());
+		decorators.add(new WorldGenChromaMeteor());
 		decorators.add(new WorldGenTreeCluster());
 		decorators.add(new WorldGenLightedTree());
 		decorators.add(new WorldGenFloatstone());
 		decorators.add(new WorldGenMoonPool());
 		decorators.add(new WorldGenFireJet());
 		decorators.add(new WorldGenMiniAltar());
+		decorators.add(new WorldGenMiasma());
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
@@ -197,6 +203,14 @@ public class ChunkProviderChroma implements IChunkProvider {
 			map.put(s.color, s.generator.getGenerator().getCentralLocation());
 		}
 		return map;
+	}
+
+	public DimensionStructureType getStructureType(CrystalElement e) {
+		for (StructurePair s : structures) {
+			if (s.color == e)
+				return s.generator;
+		}
+		return null;
 	}
 
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
@@ -429,10 +443,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 		Block[] ablock = new Block[65536];
 		byte[] abyte = new byte[65536];
 		this.generateColumnData(chunkX, chunkZ, ablock);
-		int dy = 40;
-		ablock = this.shiftTerrainGen(ablock, dy);
+		ablock = this.shiftTerrainGen(ablock, VERTICAL_OFFSET);
 		biomesForGeneration = chunkManager.loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
-		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, dy);
+		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, VERTICAL_OFFSET);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
 
@@ -693,9 +706,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 	 */
 
 	public void onPopulationHook(IChunkProvider gen, IChunkProvider loader, int x, int z) {
-		this.generateExtraChromaOre(worldObj, gen, loader, x, z);
 
 		this.runDecorators(x*16, z*16);
+
+		this.generateExtraChromaOre(worldObj, gen, loader, x, z);
 
 		ChunkCoordIntPair cp = new ChunkCoordIntPair(x, z);
 		for (StructurePair s : structures) {

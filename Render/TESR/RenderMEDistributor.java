@@ -37,29 +37,29 @@ public class RenderMEDistributor extends ChromaRenderBase {
 		if (!te.isInWorld() || MinecraftForgeClient.getRenderPass() == 0) {
 			if (te.isInWorld()) {
 				switch(te.getBlockMetadata()) {
-				case 0:
-					GL11.glTranslated(0, 1, 1);
-					GL11.glRotated(180, 1, 0, 0);
-					break;
-				case 2:
-					GL11.glTranslated(0, 0, 1);
-					GL11.glRotated(-90, 1, 0, 0);
-					break;
-				case 3:
-					GL11.glTranslated(0, 1, 0);
-					GL11.glRotated(90, 1, 0, 0);
-					break;
-				case 4:
-					GL11.glTranslated(1, 0, 0);
-					GL11.glRotated(90, 0, 0, 1);
-					break;
-				case 5:
-					GL11.glTranslated(0, 1, 0);
-					GL11.glRotated(-90, 0, 0, 1);
-					break;
+					case 0:
+						GL11.glTranslated(0, 1, 1);
+						GL11.glRotated(180, 1, 0, 0);
+						break;
+					case 2:
+						GL11.glTranslated(0, 0, 1);
+						GL11.glRotated(-90, 1, 0, 0);
+						break;
+					case 3:
+						GL11.glTranslated(0, 1, 0);
+						GL11.glRotated(90, 1, 0, 0);
+						break;
+					case 4:
+						GL11.glTranslated(1, 0, 0);
+						GL11.glRotated(90, 0, 0, 1);
+						break;
+					case 5:
+						GL11.glTranslated(0, 1, 0);
+						GL11.glRotated(-90, 0, 0, 1);
+						break;
 				}
 			}
-			this.renderModel(te, model);
+			this.renderModel(te, model, te.isInWorld());
 		}
 		else {
 			this.renderFX(te);

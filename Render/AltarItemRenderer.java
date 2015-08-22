@@ -45,6 +45,10 @@ public class AltarItemRenderer implements IItemRenderer {
 		float du = 1;
 		float dv = 1;
 
+		GL11.glTranslated(-0.5, -0.0625, -0.5);
+		double s = 1.25;
+		GL11.glScaled(s, s, s);
+
 		renderTile.renderColor = CrystalElement.elements[item.getItemDamage()];
 		TileEntityRendererDispatcher.instance.renderTileEntityAt(renderTile, 0, 0, 0, 0);
 

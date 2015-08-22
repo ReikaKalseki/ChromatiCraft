@@ -152,6 +152,8 @@ public class GuardianStoneRenderer extends ChromaRenderBase {
 		Tessellator v5 = Tessellator.instance;
 		BlendMode.ADDITIVEDARK.apply();
 
+		GL11.glPushMatrix();
+
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		double s = 0.33;
 		if (te.hasWorldObj()) {
@@ -178,12 +180,7 @@ public class GuardianStoneRenderer extends ChromaRenderBase {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		BlendMode.DEFAULT.apply();
 
-		if (!te.hasWorldObj()) {
-			GL11.glScaled(1/s, 1/s, 1/s);
-			GL11.glRotated(30, 1, 0, 0);
-			GL11.glRotated(45, 0, 1, 0);
-			GL11.glTranslated(-0.5, -0.5, -0.5);
-		}
+		GL11.glPopMatrix();
 	}
 
 	private void drawMiddle(TileEntityGuardianStone te) {

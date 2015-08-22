@@ -9,7 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -18,6 +24,22 @@ public class GuiToolDescription extends GuiDescription {
 
 	public GuiToolDescription(EntityPlayer ep, ChromaResearch i) {
 		super(ep, i, 256, 220);
+	}
+
+	@Override
+	public void drawScreen(int x, int y, float f) {
+		super.drawScreen(x, y, f);
+
+		GL11.glPushMatrix();
+		double s = 4;
+		GL11.glScaled(s, s, 1);
+		ArrayList<ItemStack> li = page.getItemStacks();
+		if (!li.isEmpty()) {
+			int idx = (int)((System.currentTimeMillis()/2000)%li.size());
+			ItemStack is = li.get(idx);
+			api.drawItemStack(itemRender, is, 55, 2);
+		}
+		GL11.glPopMatrix();
 	}
 
 	@Override

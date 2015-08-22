@@ -35,6 +35,7 @@ import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
@@ -83,7 +85,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
-public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, INode, IWandable, ChunkLoadingTile {
+public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, ChargingPoint, ChunkLoadingTile, INode, IWandable {
 
 	private boolean hasMultiblock = false;
 	private boolean enhanced = false;
@@ -97,6 +99,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private boolean forceLoad;
 
 	public static final int RANGE = 48;
+
+	public static boolean TUNED_PYLONS = true;
 
 	private static final Collection<Coordinate> crystalPositions = new ArrayList();
 
@@ -237,8 +241,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				}
 			}
 
-			if (this.getTicksExisted()%72 == 0) {
-				ChromaSounds.POWER.playSoundAtBlock(this);
+			float f = this.isEnhanced() ? 1.125F : 1;
+
+			if (TileEntityCrystalPylon.TUNED_PYLONS)
+				f *= CrystalMusicManager.instance.getDingPitchScale(color);
+
+			if (this.getTicksExisted()%(int)(72/f) == 0) {
+				ChromaSounds.POWER.playSoundAtBlock(this, 1, f);
 			}
 
 			if (world.isRemote && rand.nextInt(36) == 0) {
@@ -816,6 +825,21 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public boolean playerCanUse(EntityPlayer ep) {
 		return true;
+	}
+
+	@Override
+	public boolean allowCharging(EntityPlayer ep, CrystalElement e) {
+		return this.playerCanUse(ep);
+	}
+
+	@Override
+	public float getChargeRateMultiplier(EntityPlayer ep, CrystalElement e) {
+		return 1;
+	}
+
+	@Override
+	public CrystalElement getDeliveredColor(EntityPlayer ep, World world, int clickX, int clickY, int clickZ) {
+		return color;
 	}
 
 }

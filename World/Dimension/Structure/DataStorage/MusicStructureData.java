@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 
 public class MusicStructureData extends StructureData {

@@ -61,18 +61,18 @@ public class RenderTransportWindow extends ChromaRenderBase {
 				phi -= 360;
 			double phit = 0;
 			switch(te.getBlockMetadata()) {
-			case 0:
-				phit = 270;
-				break;
-			case 1:
-				phit = 90;
-				break;
-			case 2:
-				phit = 180;
-				break;
-			case 3:
-				phit = 0;
-				break;
+				case 0:
+					phit = 270;
+					break;
+				case 1:
+					phit = 90;
+					break;
+				case 2:
+					phit = 180;
+					break;
+				case 3:
+					phit = 0;
+					break;
 			}
 			if ((ReikaMathLibrary.approxr(phi, phit, 60) || ReikaMathLibrary.approxr(phi, phit+360, 60)) && ReikaMathLibrary.approxr(theta, 80, 80))
 				this.renderTexture(te, par2, par4, par6, par8);
@@ -154,21 +154,21 @@ public class RenderTransportWindow extends ChromaRenderBase {
 		GL11.glPushMatrix();
 		int ang = 0;
 		switch(te.getBlockMetadata()) {
-		case 0:
-			ang = 270;
-			GL11.glTranslated(1, 0, 0);
-			break;
-		case 1:
-			ang = 90;
-			GL11.glTranslated(0, 0, 1);
-			break;
-		case 2:
-			ang = 180;
-			GL11.glTranslated(1, 0, 1);
-			break;
-		case 3:
-			ang = 0;
-			break;
+			case 0:
+				ang = 270;
+				GL11.glTranslated(1, 0, 0);
+				break;
+			case 1:
+				ang = 90;
+				GL11.glTranslated(0, 0, 1);
+				break;
+			case 2:
+				ang = 180;
+				GL11.glTranslated(1, 0, 1);
+				break;
+			case 3:
+				ang = 0;
+				break;
 		}
 		GL11.glRotated(ang, 0, 1, 0);
 		Tessellator v5 = Tessellator.instance;
@@ -284,7 +284,7 @@ public class RenderTransportWindow extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return "window.png";
+		return ((TileEntityTransportWindow)te).renderTexture ? "window.png" : "window_notex.png";
 	}
 
 }

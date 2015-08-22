@@ -42,7 +42,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
@@ -290,49 +289,46 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 		double pz = z;
 
 		int color = CrystalElement.getBlendedColor(this.getTicksExisted(), 40);
-		int red = ReikaColorAPI.getRed(color);
-		int green = ReikaColorAPI.getGreen(color);
-		int blue = ReikaColorAPI.getBlue(color);
 
-		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+1-particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+1;
 		px = x+1-particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x;
 		pz = z+particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+1-particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		px = x+1;
 		pz = z+1-particleX;
 		py = y+particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		pz = z+particleX;
 		py = y+1-particleY;
-		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(red, green, blue);
+		fx = new EntityBlurFX(world, px, py, pz).setScale(0.5F).setLife(40).setColor(color);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		double d = 0.05;
@@ -545,10 +541,10 @@ public class TileEntityMiner extends ChargedCrystalPowered {
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		switch(slot) {
-		case 0:
-			return ChromaItems.STORAGE.matchWith(is);
-		default:
-			return false;
+			case 0:
+				return ChromaItems.STORAGE.matchWith(is);
+			default:
+				return false;
 		}
 	}
 

@@ -10,15 +10,20 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 
 public class CrystalMusicManager {
 
@@ -89,6 +94,10 @@ public class CrystalMusicManager {
 		return baseKeys.get(e).pitch;
 	}
 
+	public double getPitchFactor(MusicKey key) {
+		return key.getRatio(MusicKey.C5);
+	}
+
 	public double getThird(CrystalElement e) {
 		MusicKey key = baseKeys.get(e);
 		double base = this.getDingPitchScale(e);
@@ -108,7 +117,7 @@ public class CrystalMusicManager {
 	}
 
 	public double getDingPitchScale(CrystalElement e) {
-		return baseKeys.get(e).getRatio(MusicKey.C5);
+		return this.getPitchFactor(baseKeys.get(e));
 	}
 
 	public float getRandomScaledDing(CrystalElement e) {
@@ -120,18 +129,18 @@ public class CrystalMusicManager {
 		MusicKey key = baseKeys.get(e);
 		double base = this.getDingPitchScale(e);
 		switch(n) {
-		case 0:
-			;//base *= 1;
-			break;
-		case 1:
-			base *= this.isMinorKey(e) ? key.getMinorThird().getRatio(key) : key.getMajorThird().getRatio(key);
-			break;
-		case 2:
-			base *= key.getFifth().getRatio(key);
-			break;
-		case 3:
-			base *= key.getOctave().getRatio(key);
-			break;
+			case 0:
+				;//base *= 1;
+				break;
+			case 1:
+				base *= this.isMinorKey(e) ? key.getMinorThird().getRatio(key) : key.getMajorThird().getRatio(key);
+				break;
+			case 2:
+				base *= key.getFifth().getRatio(key);
+				break;
+			case 3:
+				base *= key.getOctave().getRatio(key);
+				break;
 		}
 		return (float)base;
 	}
@@ -144,6 +153,66 @@ public class CrystalMusicManager {
 
 	public List<MusicKey> getKeys(CrystalElement e) {
 		return Collections.unmodifiableList(allKeys.get(e));
+	}
+
+	public KeySignature getSignature(CrystalElement e) {
+		if (this.isMinorKey(e)) {
+			return KeySignature.getByMinorTonic(baseKeys.get(e));
+		}
+		else {
+			return KeySignature.getByTonic(baseKeys.get(e));
+		}
+	}
+
+	public HashSet<CrystalElement> getFullChordMixes(KeySignature ks) {
+		HashSet<CrystalElement> set = new HashSet();
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			boolean flag = true;
+			for (MusicKey ms : this.getKeys(e)) {
+				Note n = ms.getNote();
+				if (!ks.isNoteValid(n)) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				set.add(e);
+			}
+		}
+		return set;
+	}
+
+	public HashSet<MusicKey> getValidNotesToMixWith(CrystalElement main) {
+		HashSet<MusicKey> set = new HashSet();
+		KeySignature ks = this.getSignature(main);
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			for (MusicKey ms : this.getKeys(e)) {
+				Note n = ms.getNote();
+				if (ks.isNoteValid(n)) {
+					Collection<MusicKey> keys = MusicKey.getAllOf(n);
+					for (MusicKey key : keys) {
+						if (this.canPlayKey(key))
+							set.add(key);
+					}
+				}
+			}
+		}
+		return set;
+	}
+
+	public CrystalElement getColorForKeySignature(KeySignature ks) {
+		ArrayList<CrystalElement> li = new ArrayList(this.getFullChordMixes(ks));
+		return !li.isEmpty() ? li.get(0) : null;
+	}
+
+	public Set<CrystalElement> getColorsWithKey(MusicKey key) {
+		return (Set<CrystalElement>)sourceElements.get(key);
+	}
+
+	public boolean canPlayKey(MusicKey key) {
+		return sourceElements.containsKey(key);
 	}
 
 }

@@ -26,7 +26,8 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
 
-	public static final int MAX_DEPTH = 12;
+	private static final int MAX_DEPTH = 12;
+	private static final int MAX_DEPTH_BOOST = 18;
 
 	private static HashMap<Integer, EntityPlayer> breakers = new HashMap();
 
@@ -50,11 +51,15 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	public boolean onBlockStartBreak(ItemStack itemstack, int x, int y, int z, EntityPlayer ep) {
 		World world = ep.worldObj;
 		if (!world.isRemote) {
-			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, MAX_DEPTH);
+			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
 			b.call = this;
 			breakers.put(b.hashCode(), ep);
 		}
 		return true;
+	}
+
+	public static int getDepth(EntityPlayer ep) {
+		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
 	}
 
 	@Override

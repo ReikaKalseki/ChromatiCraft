@@ -49,7 +49,7 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 		}
 
 		public boolean isTransparent(ForgeDirection side) {
-			return this == CLOAK || this == CRACK || this == GLASS || this == CRACKS;
+			return this == CRACK || this == GLASS || this == CRACKS;
 		}
 
 		public boolean isTransparentToLight() {

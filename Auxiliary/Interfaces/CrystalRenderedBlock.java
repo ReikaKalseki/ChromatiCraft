@@ -9,14 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 
 public interface CrystalRenderedBlock {
 
 	public boolean renderBase();
 
-	public Block getBaseBlock(ForgeDirection up);
+	public BlockKey getBaseBlock(IBlockAccess iba, int x, int y, int z, ForgeDirection up);
 
 	public boolean renderAllArms();
 

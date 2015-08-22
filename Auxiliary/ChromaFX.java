@@ -22,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
@@ -52,7 +52,7 @@ public class ChromaFX {
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
-	public static void createPylonChargeBeam(CrystalSource te, EntityPlayer ep, double dist, CrystalElement e) {
+	public static void createPylonChargeBeam(ChargingPoint te, EntityPlayer ep, double dist, CrystalElement e) {
 		//WorldLocation loc = new WorldLocation(ep);
 		//te.addTarget(loc, te.getColor(), ep.posX-loc.xCoord, ep.posY+ep.getEyeHeight()-loc.yCoord, ep.posZ-loc.zCoord);
 		int sx = te.getX();

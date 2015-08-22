@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
@@ -17,6 +18,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -85,7 +87,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 			v5.startDrawingQuads();
 			//v5.setBrightness(240);
 			v5.setColorRGBA_I(color, alpha);
-			this.renderBase(v5, (CrystalRenderedBlock)b);
+			this.renderBase(v5, Minecraft.getMinecraft().theWorld, 0, 0, 0, (CrystalRenderedBlock)b);
 			v5.draw();
 		}
 	}
@@ -148,7 +150,7 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		//this.renderOutline(v5);
 		if (renderPass == 0) {
 			if (((CrystalRenderedBlock)b).renderBase()) {
-				this.renderBase(v5, (CrystalRenderedBlock)b);
+				this.renderBase(v5, world, x, y, z, (CrystalRenderedBlock)b);
 			}
 		}
 
@@ -166,8 +168,9 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		return true;
 	}
 
-	private void renderBase(Tessellator v5, CrystalRenderedBlock b) {
-		IIcon ico = b.getBaseBlock(ForgeDirection.UP).getIcon(0, 0);
+	private void renderBase(Tessellator v5, IBlockAccess world, int x, int y, int z, CrystalRenderedBlock b) {
+		BlockKey bk = b.getBaseBlock(world, x, y, z, ForgeDirection.UP);
+		IIcon ico = bk.blockID.getIcon(0, bk.metadata);
 		int w = ico.getIconWidth();
 
 		v5.setColorOpaque(255, 255, 255);
@@ -190,7 +193,8 @@ public class CrystalRenderer implements ISimpleBlockRenderingHandler {
 		v5.addVertexWithUV(1, 0, 1, xu, xv);
 		v5.addVertexWithUV(0, 0, 1, u, xv);
 
-		ico = b.getBaseBlock(ForgeDirection.EAST).getIcon(0, 0);
+		bk = b.getBaseBlock(world, x, y, z, ForgeDirection.UP);
+		ico = bk.blockID.getIcon(0, bk.metadata);
 		u = ico.getMinU();
 		v = ico.getMinV();
 		xu = ico.getMaxU();

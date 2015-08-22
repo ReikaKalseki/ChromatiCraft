@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -58,6 +59,10 @@ public abstract class ItemWandBase extends ItemChromaTool {
 	@Override
 	public final int getItemEnchantability() {
 		return Items.golden_pickaxe.getItemEnchantability();
+	}
+
+	protected static boolean canUseBoostedEffect(EntityPlayer ep) {
+		return ProgressStage.DIMENSION.isPlayerAtStage(ep);
 	}
 
 }

@@ -71,6 +71,8 @@ public class BlockLockFreeze extends BlockContainer {
 	}
 
 	private void click(World world, int x, int y, int z, EntityPlayer ep) {
+		if (world.isRemote)
+			return;
 		TileEntityLockFreeze te = (TileEntityLockFreeze)world.getTileEntity(x, y, z);
 		if (te.isActive())
 			return;

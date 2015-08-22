@@ -385,6 +385,9 @@ public class LocksRoomWhite extends LockLevel {
 		world.setBlock(x+3, y+1, z+18, b, ms);
 		this.generateLock(x+3, y+1, z+24, LockColor.YELLOW);
 		this.generateGate(x+3, y+1, z+33);
+
+		this.generateRune(x+5, y, z+28, LockColor.YELLOW);
+
 		world.setBlock(x+3, y+2, z+0, b, ms);
 		world.setBlock(x+3, y+2, z+1, b, ml);
 		world.setBlock(x+3, y+2, z+6, b, ms);

@@ -42,6 +42,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class BlockColoredLock extends BlockContainer {
 
@@ -226,6 +227,8 @@ public class BlockColoredLock extends BlockContainer {
 				NBTTagInt tag = (NBTTagInt)o;
 				colors.add(CrystalElement.elements[tag.func_150287_d()]);
 			}
+
+			ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
 		}
 
 		@Override
@@ -332,9 +335,10 @@ public class BlockColoredLock extends BlockContainer {
 
 	private static void updateTiles(World world, int time) {
 		for (WorldLocation loc : TileEntityColorLock.cache) {
-			TileEntityColorLock te = (TileEntityColorLock)world.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);
+			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity();
 			if (te == null) {
 				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
+				//loc.setBlock(Blocks.brick_block);
 				continue;
 			}
 			if (time >= 0)

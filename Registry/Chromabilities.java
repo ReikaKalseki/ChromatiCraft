@@ -56,12 +56,15 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
@@ -82,6 +85,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -202,6 +206,8 @@ public enum Chromabilities implements Ability {
 	public boolean isDummiedOut() {
 		if (this == HOTBAR)
 			return true;
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			return false;
 		return dependency != null && !dependency.isLoaded();
 	}
 
@@ -250,7 +256,7 @@ public enum Chromabilities implements Ability {
 			case SHIFT:
 				if (this.enabledOn(ep)) {
 					AbilityHelper.instance.startDrawingBoxes(ep);
-					AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaPlayerAPI.getDirectionFromPlayerLook(ep, true), data));
+					AbilityHelper.instance.shifts.put(ep, new ScaledDirection(ReikaEntityHelper.getDirectionFromEntityLook(ep, true), data));
 				}
 				else {
 					AbilityHelper.instance.stopDrawingBoxes(ep);
@@ -312,6 +318,8 @@ public enum Chromabilities implements Ability {
 			use.scale(5*(1+data*4));
 		if (a == LIFEPOINT)
 			use.scale(5);
+		if (a == DIMPING)
+			use.scale(100);
 
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
@@ -469,20 +477,24 @@ public enum Chromabilities implements Ability {
 			int x = MathHelper.floor_double(ep.posX);
 			int z = MathHelper.floor_double(ep.posZ);
 
-			EnumMap<CrystalElement, ChunkCoordIntPair> map = ChromaDimensionManager.getChunkProvider(ep.worldObj).getStructures();
+			ChunkProviderChroma prov = ChromaDimensionManager.getChunkProvider(ep.worldObj);
+			EnumMap<CrystalElement, ChunkCoordIntPair> map = prov.getStructures();
 			for (CrystalElement e : map.keySet()) {
-				ChunkCoordIntPair loc = map.get(e);
-				int px = loc.chunkXPos<<4;
-				int pz = loc.chunkZPos<<4;
-				double dx = px-x;
-				double dz = pz-z;
-				double dist = ReikaMathLibrary.py3d(dx, 0, dz);
-				double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
-				double factor = Math.pow(dist, 1.6);
-				factor = factor/20000D;
-				int delay = Math.max(1, (int)factor);
-				ScheduledSoundEvent evt = new DimensionPingEvent(e, ep, dist, ang);
-				TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
+				DimensionStructureType type = prov.getStructureType(e);
+				if (type.isComplete()) {
+					ChunkCoordIntPair loc = map.get(e);
+					int px = loc.chunkXPos<<4;
+					int pz = loc.chunkZPos<<4;
+					double dx = px-x;
+					double dz = pz-z;
+					double dist = ReikaMathLibrary.py3d(dx, 0, dz);
+					double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
+					double factor = Math.pow(dist, 1.6);
+					factor = factor/20000D;
+					int delay = Math.max(1, (int)factor);
+					ScheduledSoundEvent evt = new DimensionPingEvent(e, ep, dist, ang);
+					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
+				}
 			}
 		}
 		else {

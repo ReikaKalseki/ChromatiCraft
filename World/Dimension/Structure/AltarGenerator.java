@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.StructureData;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarCenter;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarNode;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarTunnel;
