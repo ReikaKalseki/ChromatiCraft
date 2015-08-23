@@ -159,6 +159,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != PORTAL;
+		return this != GOTODIM;
 	}
 }

@@ -5,6 +5,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DynamicStructurePiece;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
@@ -42,9 +43,12 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
 			}
 
-			localmax = world.getTopSolidOrLiquidBlock(x, dz)+1;
-			h = localmax-miny;
-			dd = d;
+			localmax = world.getTopSolidOrLiquidBlock(x, dz)-1;
+			Block bb = world.getBlock(x, localmax, dz);
+			if (!(bb instanceof BlockStructureShield)) {
+				h = localmax-miny;
+				dd = d-h;
+			}
 		}
 
 		parent.offsetEntry(0, dd);
@@ -61,7 +65,7 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
 			}
 
-			dz = z+k+h+1;
+			dz = z+k+h+dd+10+1;
 			dy = maxy-2;
 			for (int i = -2; i <= 2; i++) {
 				int dx = x+i;
@@ -82,9 +86,11 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 			world.setBlock(dx, dy+1, dz, b, m1, 3);
 			world.setBlock(dx, dy+1, dz+1, b, m1, 3);
 
+			/*
 			dz = z+l+h;
 			dy = maxy+5;
 			world.setBlock(dx, dy, dz, b, BlockType.LIGHT.metadata, 3);
+			 */
 		}
 	}
 

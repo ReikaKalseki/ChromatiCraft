@@ -136,7 +136,7 @@ public class LockRoomConnector extends StructurePiece {
 						int dz = z+k;
 						boolean air = Math.abs(i) <= 1 && Math.abs(k) <= 1;
 						world.setBlock(dx, dy, dz, air ? Blocks.air : b, air ? 0 : j%8 == 2 && (i == 0 || k == 0) ? ml : ms);
-						if (air && j%8 == 5) {
+						if (air && j >= -openFloor+5 && j%8 == 5) {
 							world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta());
 						}
 					}

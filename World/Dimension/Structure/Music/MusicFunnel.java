@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Music;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 
@@ -22,6 +23,22 @@ public class MusicFunnel {
 	}
 
 	private void generateBlocks(World world, int x, int y, int z) {
+
+		for (int i = 0; i <= 14; i++) {
+			for (int k = 0; k <= 14; k++) {
+				for (int j = -5; j <= 12; j++) {
+					int dx = x+i;
+					int dy = y+j;
+					int dz = z+k;
+					Block b = world.getBlock(dx, dy, dz);
+					if (j <= 0 && b == Blocks.air)
+						world.setBlock(dx, dy, dz, Blocks.dirt);
+					else if (j > 0 && !(b instanceof BlockStructureShield))
+						world.setBlock(dx, dy, dz, Blocks.air);
+				}
+			}
+		}
+
 		world.setBlock(x+0, y+4, z+0, sh, m1, 3);
 		world.setBlock(x+0, y+4, z+1, sh, m1, 3);
 		world.setBlock(x+0, y+4, z+2, sh, m1, 3);

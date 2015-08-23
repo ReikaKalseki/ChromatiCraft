@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import appeng.api.AEApi;
 import appeng.api.implementations.ICraftingPatternItem;
@@ -49,6 +50,8 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 	private Object aeGridBlock;
 	private Object aeGridNode;
 
+	private final StepTimer updateTimer = new StepTimer(50);
+
 	public TileEntityPatternCache() {
 
 		if (ModList.APPENG.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
@@ -60,7 +63,8 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (ModList.APPENG.isLoaded() && !world.isRemote) {
-			if (this.getTicksExisted()%10 == 0) {
+			updateTimer.update();
+			if (updateTimer.checkCap()) {
 				aeGridNode = AEApi.instance().createGridNode((IGridBlock)aeGridBlock);
 				this.updateAE();
 			}
@@ -223,7 +227,7 @@ public class TileEntityPatternCache extends InventoriedChromaticBase implements 
 	@Override
 	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
 		super.onInvalidateOrUnload(world, x, y, z, invalid);
-		if (ModList.APPENG.isLoaded() && aeGridNode != null && !world.isRemote)
+		if (ModList.APPENG.isLoaded() && aeGridNode != null)
 			((IGridNode)aeGridNode).destroy();
 	}
 

@@ -235,8 +235,43 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void preventPrematureJoin(WorldEvent.Load evt) throws InterruptedException {
 		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			while (!ChunkProviderChroma.areStructuresReady())
-				Thread.sleep(100);
+			int i = 0;
+			int time = 0;
+			int d = 5; //ms
+			while (!ChunkProviderChroma.areStructuresReady()) {
+				Thread.sleep(d);
+				time += d;
+				i++;
+				if (i < 10 || (i < 20 && i%5 == 0) || (i%10 == 0)) {
+					String delay = "Total delay so far: "+time+" ms";
+					String s = "Pausing main server thread, since it tried to load the CC dimension, which is not yet ready. "+delay;
+					ChromatiCraft.logger.log(s);
+				}
+				if (i > 100) {
+					d = 2500;
+				}
+				else if (i > 75) {
+					d = 1000;
+				}
+				else if (i > 50) {
+					d = 500;
+				}
+				else if (i > 20) {
+					d = 250;
+				}
+				else if (i > 10) {
+					d = 100;
+				}
+				else if (i > 5) {
+					d = 50;
+				}
+				else if (i > 2) {
+					d = 20;
+				}
+				else {
+					d = 10;
+				}
+			}
 		}
 	}
 

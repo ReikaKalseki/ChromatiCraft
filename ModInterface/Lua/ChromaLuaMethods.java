@@ -15,5 +15,6 @@ public class ChromaLuaMethods {
 
 	private static final LuaMethod getLumens = new LuaGetLumens();
 	private static final LuaMethod isConnected = new LuaIsConnected();
+	private static final LuaMethod getTankFraction = new LuaGetTankFraction();
 
 }

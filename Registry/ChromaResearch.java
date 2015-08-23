@@ -512,6 +512,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == DEATHPROOF)
 			return false;
+		if (this == BEES)
+			return false;
 		return struct == null || !struct.isNatural();
 	}
 

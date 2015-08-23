@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -27,6 +29,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockMusicTrigger extends Block {
+
+	private static final Random rand = new Random();
 
 	private final IIcon[] icons = new IIcon[2];
 
@@ -62,7 +66,7 @@ public class BlockMusicTrigger extends Block {
 					CrystalTypeBlock.ding(world, x, y, z, e, p);
 					BlockMusicMemory.ping(world, x, y, z, e, idx);
 					if (world.isRemote) {
-						this.createParticle(world, x, y, z, e);
+						this.createParticle(world, x, y+1, z, e);
 					}
 
 				}
@@ -74,8 +78,12 @@ public class BlockMusicTrigger extends Block {
 	@SideOnly(Side.CLIENT)
 	public static void createParticle(World world, int x, int y, int z, CrystalElement e) {
 		double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y+1, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
+		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+		for (int i = 0; i < 12; i++) {
+			world.getBlock(x, y, z).randomDisplayTick(world, x, y, z, rand);
+		}
 	}
 
 	private int getIndex(int s, float a, float b, float c) { //0-3 or -1 for none

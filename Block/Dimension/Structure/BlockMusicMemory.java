@@ -14,11 +14,16 @@ import java.util.List;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -33,6 +38,8 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
 public class BlockMusicMemory extends BlockContainer {
 
+	private final IIcon[] icons = new IIcon[2];
+
 	public BlockMusicMemory(Material mat) {
 		super(mat);
 		this.setResistance(60000);
@@ -46,16 +53,28 @@ public class BlockMusicMemory extends BlockContainer {
 	}
 
 	@Override
+	public void registerBlockIcons(IIconRegister ico) {
+		icons[0] = ico.registerIcon("chromaticraft:dimstruct/musicmemory");
+		icons[1] = ico.registerIcon("chromaticraft:dimstruct/musicmemory_front");
+	}
+
+	@Override
+	public IIcon getIcon(int s, int meta) {
+		int idx = s == ForgeDirection.NORTH.ordinal() ? 1 : 0;
+		return icons[idx];
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		if (!world.isRemote) {
-			TileEntity te = world.getTileEntity(x, y, z);
-			if (te instanceof TileMusicMemory) {
-				TileMusicMemory mus = (TileMusicMemory)te;
-				if (s == mus.facing.ordinal()) {
-					mus.play();
-				}
+		//if (!world.isRemote) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof TileMusicMemory) {
+			TileMusicMemory mus = (TileMusicMemory)te;
+			if (s == mus.facing.ordinal()) {
+				mus.play();
 			}
 		}
+		//}
 		return true;
 	}
 
@@ -187,7 +206,8 @@ public class BlockMusicMemory extends BlockContainer {
 			int dy = yCoord+1;
 			int dx = e.ordinal() >= 8 ? xCoord-4 : xCoord+4;
 			int dz = zCoord+1+e.ordinal()%8;
-			BlockMusicTrigger.createParticle(worldObj, dx, dy, dz, e);
+			if (worldObj.isRemote)
+				BlockMusicTrigger.createParticle(worldObj, dx, dy, dz, e);
 		}
 
 		public void play() {
@@ -220,6 +240,20 @@ public class BlockMusicMemory extends BlockContainer {
 				int idx = ((NBTTagInt)o).func_150287_d();
 				keys.add(MusicKey.getByIndex(idx));
 			}
+		}
+
+		@Override
+		public Packet getDescriptionPacket() {
+			NBTTagCompound NBT = new NBTTagCompound();
+			this.writeToNBT(NBT);
+			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
+			return pack;
+		}
+
+		@Override
+		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
+			this.readFromNBT(p.field_148860_e);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 	}

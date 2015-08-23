@@ -26,6 +26,8 @@ public class MusicEntrance extends DynamicStructurePiece {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int m = BlockType.STONE.metadata;
 
+		funnel.generate(world, x, y, z);
+
 		for (int dy = y1; dy < y-5; dy++) {
 			for (int i = -2; i <= 2; i++) {
 				int dx = x+i+5; //not sure why +5
@@ -44,8 +46,6 @@ public class MusicEntrance extends DynamicStructurePiece {
 				}
 			}
 		}
-
-		funnel.generate(world, x, y, z);
 	}
 
 }

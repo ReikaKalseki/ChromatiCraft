@@ -7,22 +7,28 @@ import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class DimensionBubble implements PlayerTracker {
+public class DimensionJoinHandler implements PlayerTracker {
 
-	public static final DimensionBubble instance = new DimensionBubble();
+	public static final DimensionJoinHandler instance = new DimensionJoinHandler();
 
-	private DimensionBubble() {
+	private DimensionJoinHandler() {
 
 	}
 
@@ -38,7 +44,19 @@ public class DimensionBubble implements PlayerTracker {
 
 	@Override
 	public void onPlayerChangedDimension(EntityPlayer player, int dimFrom, int dimTo) {
+		if (dimTo == ExtraChromaIDs.DIMID.getValue()) {
+			if (!ProgressStage.DIMENSION.playerHasPrerequisites(player)) {
+				this.rejectPlayer(player);
+			}
+		}
+	}
 
+	private void rejectPlayer(EntityPlayer player) {
+		ReikaEntityHelper.transferEntityToDimension(player, 0, new ChromaTeleporter(0));
+		ChunkCoordinates cc = player.worldObj.getSpawnPoint();
+		player.setPositionAndUpdate(cc.posX+0.5, cc.posY+1.62, cc.posZ+0.5);
+		player.attackEntityFrom(DamageSource.magic, 1);
+		ReikaChatHelper.sendChatToPlayer(player, "You do not understand the world's magic forces to safely venture here yet.");
 	}
 
 	@Override

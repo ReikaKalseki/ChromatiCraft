@@ -11,9 +11,11 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -56,7 +58,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	protected Coordinate coreLocation = null;
 
+	private CrystalElement genColor;
+
 	private final MultiMap<ChunkCoordIntPair, DynamicPieceLocation> dynamicParts = new MultiMap().setNullEmpty();
+
+	public final UUID id = UUID.randomUUID();
 
 	protected DimensionStructureGenerator() {
 
@@ -102,7 +108,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	/** chunk X and Z are already *16 */
 	protected abstract void calculate(int chunkX, int chunkZ, Random rand);
 
-	public final void startCalculate(int chunkX, int chunkZ, Random rand) {
+	public final void startCalculate(CrystalElement e, int chunkX, int chunkZ, Random rand) {
+		genColor = e;
 		genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
 		posX = chunkX;
 		posZ = chunkZ;
@@ -169,6 +176,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return center;
 	}
 
+	public final ChunkCoordIntPair getEntryLocation() {
+		return new ChunkCoordIntPair(entryX >> 4, entryZ >> 4);
+	}
+
 	public final String getCentralBlockCoords() {
 		ChunkCoordIntPair ctr = this.getCentralLocation();
 		return String.format("%d, %d", ctr.chunkXPos*16+this.getCenterXOffset(), ctr.chunkZPos*16+this.getCenterZOffset());
@@ -183,7 +194,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileEntityDimensionCore) {
-			((TileEntityDimensionCore)te).setStructure(new StructurePair(structureType, this.getCoreColor(world)));
+			((TileEntityDimensionCore)te).setStructure(new StructurePair(this, this.getCoreColor(world)));
 		}
 		else {
 			ChromatiCraft.logger.logError(te+" instead of a Dimension Core at "+x+", "+y+", "+z+"!!");
@@ -191,7 +202,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	}
 
 	private CrystalElement getCoreColor(World world) {
-		return CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];
+		return genColor;//CrystalElement.elements[(int)((world.getSeed()%16)+16+structureType.ordinal())%16];
 	}
 
 	public final void placeCore(int x, int y, int z) {
@@ -203,19 +214,23 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return coreLocation != null;
 	}
 
+	public boolean isComplete() {
+		return this.hasCore();
+	}
+
 	public static final class StructurePair {
 
-		public final DimensionStructureType generator;
+		public final DimensionStructureGenerator generator;
 		public final CrystalElement color;
 
-		public StructurePair(DimensionStructureType gen, CrystalElement e) {
+		public StructurePair(DimensionStructureGenerator gen, CrystalElement e) {
 			generator = gen;
 			color = e;
 		}
 
 		@Override
 		public int hashCode() {
-			return (color.ordinal() << 8) | generator.ordinal();
+			return (color.ordinal() << 8) | generator.getType().ordinal();
 		}
 
 		@Override
@@ -239,19 +254,21 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		NONEUCLID(NonEuclideanGenerator.class, "Complex Spaces"),
 		GOL(GOLGenerator.class, "Cellular Automata");
 
-		private final Class generatorClass;
-		private DimensionStructureGenerator generator;
+		public final Class generatorClass;
+		//private DimensionStructureGenerator generator;
 		private final String desc;
 
 		private static final String NBT_TAG = "structuresCompleted";
 
 		public static final DimensionStructureType[] types = values();
 
+		private final HashMap<UUID, DimensionStructureGenerator> generators = new HashMap();
+
 		private DimensionStructureType(Class<? extends DimensionStructureGenerator> c, String s) {
 			generatorClass = c;
 			desc = s;
 		}
-
+		/*
 		public DimensionStructureGenerator getGenerator() {
 			if (generator == null) {
 				try {
@@ -263,6 +280,18 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 				}
 			}
 			return generator;
+		}
+		 */
+		public DimensionStructureGenerator createGenerator() {
+			try {
+				DimensionStructureGenerator generator = (DimensionStructureGenerator)generatorClass.newInstance();
+				generator.structureType = this;
+				generators.put(generator.id, generator);
+				return generator;
+			}
+			catch (Exception e) {
+				throw new RegistrationException(ChromatiCraft.instance, "Error creating a generator for structure type "+this);
+			}
 		}
 
 		public void markPlayerCompleted(EntityPlayer ep) {
@@ -277,13 +306,17 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			NBTTagCompound dat = tag.getCompoundTag(NBT_TAG);
 			return dat.getBoolean("struct_"+this.ordinal());
 		}
-
+		/*
 		public boolean isComplete() {
 			return this.getGenerator().hasCore();//this == TDMAZE || this == LOCKS || this == NONEUCLID;
 		}
-
+		 */
 		public String getDisplayText() {
 			return desc;
+		}
+
+		public DimensionStructureGenerator getGenerator(UUID uid) {
+			return generators.get(uid);
 		}
 
 	}
@@ -311,6 +344,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			relX = x;
 			relZ = z;
 		}
+
+	}
+
+	public @interface IncompleteStructure {
 
 	}
 

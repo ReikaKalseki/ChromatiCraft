@@ -42,7 +42,6 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class BlockColoredLock extends BlockContainer {
 
@@ -153,6 +152,7 @@ public class BlockColoredLock extends BlockContainer {
 		private boolean isOpen;
 		private int channel;
 		private HashSet<CrystalElement> colors = new HashSet();
+		private HashSet<CrystalElement> closedColors = new HashSet();
 		private static Collection<WorldLocation> cache = new HashSet();
 		private boolean ticked = false;
 		private int queueTick;
@@ -190,6 +190,7 @@ public class BlockColoredLock extends BlockContainer {
 			if (!ticked) {
 				this.cache();
 				this.close();
+				closedColors.addAll(colors);
 				ticked = true;
 			}
 			if (queueTick > 0) {
@@ -212,6 +213,12 @@ public class BlockColoredLock extends BlockContainer {
 				li.appendTag(new NBTTagInt(e.ordinal()));
 			}
 			NBT.setTag("colors", li);
+
+			NBTTagList li2 = new NBTTagList();
+			for (CrystalElement e : closedColors) {
+				li2.appendTag(new NBTTagInt(e.ordinal()));
+			}
+			NBT.setTag("closed_colors", li2);
 		}
 
 		@Override
@@ -228,7 +235,14 @@ public class BlockColoredLock extends BlockContainer {
 				colors.add(CrystalElement.elements[tag.func_150287_d()]);
 			}
 
-			ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
+			closedColors.clear();
+			NBTTagList li2 = NBT.getTagList("closed_colors", NBTTypes.INT.ID);
+			for (Object o : li2.tagList) {
+				NBTTagInt tag = (NBTTagInt)o;
+				closedColors.add(CrystalElement.elements[tag.func_150287_d()]);
+			}
+
+			//ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
 		}
 
 		@Override
@@ -247,11 +261,12 @@ public class BlockColoredLock extends BlockContainer {
 
 		private void recalcColors() {
 			boolean flag = true;
+			closedColors.clear();
 			if (whiteLock[channel] <= 0) {
 				for (CrystalElement e : colors) {
 					if (keyCodes[channel][e.ordinal()] <= 0) {
 						flag = false;
-						break;
+						closedColors.add(e);
 					}
 				}
 			}
@@ -275,6 +290,10 @@ public class BlockColoredLock extends BlockContainer {
 
 		public Collection<CrystalElement> getColors() {
 			return Collections.unmodifiableCollection(colors);
+		}
+
+		public Collection<CrystalElement> getClosedColors() {
+			return Collections.unmodifiableCollection(closedColors);
 		}
 
 		public int getChannel() {

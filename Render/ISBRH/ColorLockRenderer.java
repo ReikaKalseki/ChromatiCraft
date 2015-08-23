@@ -20,7 +20,6 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -86,7 +85,7 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 		TileEntityColorLock te = (TileEntityColorLock)world.getTileEntity(x, y, z);
 
 		if (!te.isHeldOpen()) {
-			Collection<CrystalElement> c = te.getColors();
+			Collection<CrystalElement> c = te.getClosedColors();
 			if (!c.isEmpty()) {
 				v5.addTranslation(x, y, z);
 				IIcon[] ico = new IIcon[]{ChromaIcons.BASICFADE.getIcon(), ChromaIcons.FRAME.getIcon()};
@@ -99,32 +98,32 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 				double sp = spc+w;
 				double o = 0.001;
 				for (CrystalElement e : c) {
-					if (!BlockColoredLock.isOpen(e, te.getChannel())) {
-						for (int i = 0; i < ico.length; i++) {
-							if (i == 0) {
-								int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.getModifiedSat(e.getColor(), 0.85F), 0.85F);
-								v5.setColorRGBA_I(clr, 192);
-								v5.setBrightness(240);
+					//if (!BlockColoredLock.isOpen(e, te.getChannel())) { does not work on servers
+					for (int i = 0; i < ico.length; i++) {
+						if (i == 0) {
+							int clr = ReikaColorAPI.getColorWithBrightnessMultiplier(ReikaColorAPI.getModifiedSat(e.getColor(), 0.85F), 0.85F);
+							v5.setColorRGBA_I(clr, 192);
+							v5.setBrightness(240);
+						}
+						else {
+							v5.setColorOpaque_I(0xffffff);
+							v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
+						}
+
+						for (int k = 0; k < 4; k++) {
+
+							float u = ico[i].getMinU();
+							float v = ico[i].getMinV();
+							float du = ico[i].getMaxU();
+							float dv = ico[i].getMaxV();
+
+							if (k == 0 || k == 3) {
+								float scr = v;
+								v = dv;
+								dv = scr;
 							}
-							else {
-								v5.setColorOpaque_I(0xffffff);
-								v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
-							}
 
-							for (int k = 0; k < 4; k++) {
-
-								float u = ico[i].getMinU();
-								float v = ico[i].getMinV();
-								float du = ico[i].getMaxU();
-								float dv = ico[i].getMaxV();
-
-								if (k == 0 || k == 3) {
-									float scr = v;
-									v = dv;
-									dv = scr;
-								}
-
-								switch(k) {
+							switch(k) {
 								case 0:
 									v5.addVertexWithUV(1+o, dx, iy, du, v);
 									v5.addVertexWithUV(1+o, dx+w, iy, u, v);
@@ -149,12 +148,12 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 									v5.addVertexWithUV(1-iy, dx+w, -o, u, dv);
 									v5.addVertexWithUV(1-iy, dx, -o, du, dv);
 									break;
-								}
 							}
 						}
-
-						dx += sp;
 					}
+
+					dx += sp;
+					//}
 				}
 				v5.addTranslation(-x, -y, -z);
 			}

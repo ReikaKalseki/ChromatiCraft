@@ -47,6 +47,9 @@ public class ChromaHelpData {
 		this.addKey(ChromaBlocks.TIEREDORE, 7, "ore7");
 		this.addKey(ChromaBlocks.TIEREDORE, 8, "ore8");
 		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore9");
+		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore10");
+		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore11");
+		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore12");
 		this.addKey(ChromaBlocks.TIEREDPLANT, 0, "plant0");
 		this.addKey(ChromaBlocks.TIEREDPLANT, 1, "plant1");
 		this.addKey(ChromaBlocks.TIEREDPLANT, 2, "plant2");
