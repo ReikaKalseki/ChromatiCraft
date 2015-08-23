@@ -31,8 +31,8 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
@@ -103,7 +103,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	//private final HashSet<CrystalElement> unusedColors = new HashSet();
 	//private final HashSet<DimensionStructureType> unusedTypes = new HashSet();
-	static final HashSet<StructurePair> structures = new HashSet();
+	static final HashSet<DimensionStructureGenerator> structures = new HashSet();
 	private final MonumentGenerator monument = new MonumentGenerator();
 	private boolean gennedMonument = false;
 
@@ -128,8 +128,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	static void regenerateStructures() {
 		generatingStructures = true;
-		for (StructurePair s : structures)
-			s.generator.getGenerator().clear();
+		for (DimensionStructureGenerator s : structures)
+			s.clear();
 		structures.clear();
 		StructureCalculator thread = new StructureCalculator();
 		new Thread(thread, "ChromatiCraft Structure Gen").start();
@@ -187,8 +187,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
 		double d = Double.POSITIVE_INFINITY;
-		for (StructurePair s : structures) {
-			ChunkCoordIntPair p = s.generator.getGenerator().getCentralLocation();
+		for (DimensionStructureGenerator s : structures) {
+			ChunkCoordIntPair p = s.getCentralLocation();
 			double dx = chunkX-p.chunkXPos;
 			double dz = chunkZ-p.chunkZPos;
 			double dd = Math.sqrt(dx*dx+dz*dz);
@@ -199,16 +199,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	public EnumMap<CrystalElement, ChunkCoordIntPair> getStructures() {
 		EnumMap<CrystalElement, ChunkCoordIntPair> map = new EnumMap(CrystalElement.class);
-		for (StructurePair s : structures) {
-			map.put(s.color, s.generator.getGenerator().getCentralLocation());
+		for (DimensionStructureGenerator s : structures) {
+			map.put(/*s.color*/s.getCoreColor(worldObj), s.getEntryLocation());
 		}
 		return map;
 	}
 
 	public DimensionStructureType getStructureType(CrystalElement e) {
-		for (StructurePair s : structures) {
-			if (s.color == e)
-				return s.generator;
+		for (DimensionStructureGenerator s : structures) {
+			if (/*s.color*/s.getCoreColor(worldObj) == e)
+				return s.getType();
 		}
 		return null;
 	}
@@ -712,9 +712,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 		this.generateExtraChromaOre(worldObj, gen, loader, x, z);
 
 		ChunkCoordIntPair cp = new ChunkCoordIntPair(x, z);
-		for (StructurePair s : structures) {
+		for (DimensionStructureGenerator s : structures) {
 			//ReikaJavaLibrary.pConsole("Generating chunk "+x+", "+z+" for a "+s.color+" "+s.generator);
-			s.generator.getGenerator().generateChunk(worldObj, cp);
+			s.generateChunk(worldObj, cp);
 		}
 		//for (int i = 0; i < 256; i++) {
 		//	worldObj.setBlock(x+8, i, z+8, Blocks.glass);

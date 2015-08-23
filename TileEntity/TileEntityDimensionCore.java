@@ -32,7 +32,6 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -116,9 +115,9 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		return beams.get(color);
 	}
 
-	public void setStructure(StructurePair p) {
-		structure = p.generator;
-		color = p.color;
+	public void setStructure(DimensionStructureType t, CrystalElement e) {
+		structure = t;
+		color = e;
 		this.syncAllData(false);
 	}
 

@@ -45,6 +45,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -315,11 +316,11 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		}
 
 		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
-			//ReikaJavaLibrary.pConsole(new WorldLocation(this)+" from "+new WorldLocation(te)+" from "+actions);
+			ReikaJavaLibrary.pConsole(new WorldLocation(this)+" from "+new WorldLocation(te)+" from "+actions);
 			if (!actions.isEmpty()) {
 				Coordinate rel = new Coordinate(te).offset(-xCoord, -yCoord, -zCoord);
 				TeleportTriggerAction a = actions.get(rel);
-				//ReikaJavaLibrary.pConsolenew Coordinate(this)+" from "+new Coordinate(te)+" by "+rel+" to "+a+" from "+actions);
+				ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+" by "+rel+" to "+a+" from "+actions);
 				if (a != null) {
 					a.trigger(rel, this);
 					ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+", triggered "+a+", remaining "+actions);
