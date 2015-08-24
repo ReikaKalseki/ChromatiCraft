@@ -425,24 +425,30 @@ public class CrystalNetworker implements TickHandler {
 
 	ArrayList<CrystalReceiver> getNearbyReceivers(CrystalTransmitter r, CrystalElement e) {
 		ArrayList<CrystalReceiver> li = new ArrayList();
-		for (WorldLocation c : tiles.keySet()) {
-			if (c.dimensionID == r.getWorld().provider.dimensionId) {
-				CrystalNetworkTile tile = tiles.get(c);
-				if (tile instanceof CrystalReceiver && r != tile) {
-					CrystalReceiver te = (CrystalReceiver)tile;
-					if (te.canConduct()) {
-						if (e == null || te.isConductingElement(e)) {
-							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
-							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
-							double send = r.getSendRange();
-							double dist = te.getReceiveRange();
-							if (d <= Math.min(dist*dist, send*send)) {
-								li.add(te);
+		try {
+			for (WorldLocation c : tiles.keySet()) {
+				if (c.dimensionID == r.getWorld().provider.dimensionId) {
+					CrystalNetworkTile tile = tiles.get(c);
+					if (tile instanceof CrystalReceiver && r != tile) {
+						CrystalReceiver te = (CrystalReceiver)tile;
+						if (te.canConduct()) {
+							if (e == null || te.isConductingElement(e)) {
+								double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
+								//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
+								double send = r.getSendRange();
+								double dist = te.getReceiveRange();
+								if (d <= Math.min(dist*dist, send*send)) {
+									li.add(te);
+								}
 							}
 						}
 					}
 				}
 			}
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
+			ChromatiCraft.logger.logError("CME when trying to pathfind on the crystal network. This indicates a deeper issue.");
 		}
 		return li;
 	}

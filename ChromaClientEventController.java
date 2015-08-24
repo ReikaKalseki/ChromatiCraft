@@ -487,7 +487,7 @@ public class ChromaClientEventController {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(receiveCanceled = true)
 	public void drawBuilderFrame(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			if (evt.currentItem != null && ChromaItems.BUILDER.matchWith(evt.currentItem)) {
@@ -560,7 +560,7 @@ public class ChromaClientEventController {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(receiveCanceled = true)
 	public void drawPlacerHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			if (evt.currentItem != null && ChromaItems.DUPLICATOR.matchWith(evt.currentItem)) {
@@ -780,7 +780,7 @@ public class ChromaClientEventController {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
 	public void reachBoostHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
@@ -823,7 +823,7 @@ public class ChromaClientEventController {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(receiveCanceled = true)
 	public void drawExcavatorHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			if (evt.currentItem != null && ChromaItems.EXCAVATOR.matchWith(evt.currentItem)) {

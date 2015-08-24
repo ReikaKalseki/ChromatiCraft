@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -54,6 +55,7 @@ import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -147,6 +149,15 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void keepReachMiningFast(net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed evt) {
+		if (evt.entityPlayer.isInWater() || !evt.entityPlayer.onGround) {
+			if (Chromabilities.REACH.enabledOn(evt.entityPlayer)) {
+				evt.newSpeed *= 5;
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void stopEndCountingEndAsDeath(net.minecraftforge.event.entity.player.PlayerEvent.Clone evt) {
 		if (!evt.wasDeath) {
 			PlayerElementBuffer.instance.copyTo(evt.original, evt.entityPlayer);
@@ -180,6 +191,26 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void floatstonePads(LivingFallEvent evt) {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void enforceMagnetism(EntityItemPickupEvent evt) {
+		if (evt.item.getEntityData().hasKey("cc_magnetized")) {
+			String s = evt.item.getEntityData().getString("cc_magnetized");
+			UUID uid = UUID.fromString(s);
+			if (!evt.entityPlayer.getUniqueID().equals(uid))
+				evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void enforceMagnetism(PlayerPickupXpEvent evt) {
+		if (evt.orb.getEntityData().hasKey("cc_magnetized")) {
+			String s = evt.orb.getEntityData().getString("cc_magnetized");
+			UUID uid = UUID.fromString(s);
+			if (!evt.entityPlayer.getUniqueID().equals(uid))
+				evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

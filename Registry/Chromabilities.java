@@ -673,6 +673,8 @@ public enum Chromabilities implements Ability {
 			ent.age--;
 			if (nc)
 				ent.noClip = true;
+			if (!ent.getEntityData().hasKey("cc_magnetized"))
+				ent.getEntityData().setString("cc_magnetized", ep.getUniqueID().toString());
 		}
 		List<EntityXPOrb> inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
 		for (EntityXPOrb ent : inbox2) {
@@ -699,6 +701,8 @@ public enum Chromabilities implements Ability {
 			ent.xpOrbAge--;
 			if (nc)
 				ent.noClip = true;
+			if (!ent.getEntityData().hasKey("cc_magnetized"))
+				ent.getEntityData().setString("cc_magnetized", ep.getUniqueID().toString());
 		}
 	}
 
