@@ -5,7 +5,7 @@
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
- * explicitrior permission from the owner.
+ * explicit, prior permission from the owner.
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
