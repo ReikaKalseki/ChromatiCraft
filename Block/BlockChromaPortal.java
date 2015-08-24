@@ -131,7 +131,7 @@ public class BlockChromaPortal extends Block {
 			ticks++;
 
 			if (DragonAPICore.debugtest) {
-				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord).place();
+				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
 				DragonAPICore.debugtest = false;
 			}
 
@@ -297,7 +297,7 @@ public class BlockChromaPortal extends Block {
 				complete = true;
 			}
 			else {
-				complete = ChromaStructures.getPortalStructure(world, x, y, z).matchInWorld();
+				complete = ChromaStructures.getPortalStructure(world, x, y, z, false).matchInWorld();
 				complete &= this.getEntities(world, x, y, z);
 			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);

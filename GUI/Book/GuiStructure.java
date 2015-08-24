@@ -9,8 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
@@ -51,6 +53,9 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.MINIPYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.PORTALSTRUCT) {
+			render.addBlockHook(Blocks.bedrock, new EnderCrystalHook());
 		}
 		render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
@@ -153,6 +158,9 @@ public class GuiStructure extends GuiBookSection {
 			else if (ChromaBlocks.RUNE.match(is)) {
 				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());
 			}
+			else if (page == ChromaResearch.PORTALSTRUCT && Block.getBlockFromItem(is.getItem()) == Blocks.bedrock) {
+				is2 = ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
+			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
 			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
 			i++;
@@ -206,11 +214,20 @@ public class GuiStructure extends GuiBookSection {
 
 	}
 
+	private static class EnderCrystalHook implements BlockChoiceHook {
+
+		@Override
+		public ItemStack getBlock(Coordinate pos, int meta) {
+			return ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
+		}
+
+	}
+
 	private static class RuneRenderHook implements BlockChoiceHook {
 
 		@Override
-		public BlockKey getBlock(Coordinate pos, int meta) {
-			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick());
+		public ItemStack getBlock(Coordinate pos, int meta) {
+			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick()).asItemStack();
 		}
 
 	}

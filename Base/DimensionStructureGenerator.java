@@ -206,33 +206,33 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 	public boolean hasCore() {
 		return coreLocation != null;
 	}
-	/*
+
 	public static final class StructurePair {
 
 		public final DimensionStructureType generator;
-		public final CrystalElement color;
+		public final int genIndex;
 
-		public StructurePair(DimensionStructureType gen, CrystalElement e) {
+		public StructurePair(DimensionStructureType gen, int e) {
 			generator = gen;
-			color = e;
+			genIndex = e;
 		}
 
 		@Override
 		public int hashCode() {
-			return (color.ordinal() << 8) | generator.ordinal();
+			return (genIndex << 8) | generator.ordinal();
 		}
 
 		@Override
 		public boolean equals(Object o) {
 			if (o instanceof StructurePair) {
 				StructurePair p = (StructurePair)o;
-				return p.color == color && p.generator == generator;
+				return p.genIndex == genIndex && p.generator == generator;
 			}
 			return false;
 		}
 
 	}
-	 */
+
 	public static enum DimensionStructureType {
 
 		TDMAZE(ThreeDMazeGenerator.class, "Three-Dimensional Maze"),

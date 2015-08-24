@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.ModInteract.Bees.BasicFlowerProvider;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Fertility;
@@ -39,8 +39,6 @@ import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleFlowers;
 import forestry.api.genetics.IEffectData;
 import forestry.api.genetics.IFlowerProvider;
-import forestry.api.genetics.IIndividual;
-import forestry.api.genetics.IPollinatable;
 
 public class CrystalBees {
 
@@ -278,27 +276,13 @@ public class CrystalBees {
 		}
 	}
 
-	public static class FlowerProviderCrystal implements IFlowerProvider {
+	public static class FlowerProviderCrystal extends BasicFlowerProvider {
 
 		public final CrystalElement color;
 
-		public FlowerProviderCrystal(CrystalElement color) {
+		private FlowerProviderCrystal(CrystalElement color) {
+			super(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal(), false);
 			this.color = color;
-		}
-
-		@Override
-		public boolean isAcceptedFlower(World world, IIndividual individual, int x, int y, int z) {
-			return world.getBlock(x, y, z) == ChromaBlocks.CRYSTAL.getBlockInstance() && world.getBlockMetadata(x, y, z) == color.ordinal();
-		}
-
-		@Override
-		public boolean isAcceptedPollinatable(World world, IPollinatable ip) {
-			return false;
-		}
-
-		@Override
-		public boolean growFlower(World world, IIndividual individual, int x, int y, int z) {
-			return false;
 		}
 
 		@Override
@@ -306,15 +290,12 @@ public class CrystalBees {
 			return color.displayName+" Crystals";
 		}
 
-		@Override
-		public ItemStack[] affectProducts(World world, IIndividual individual, int x, int y, int z, ItemStack[] products) {
-			return products;
-		}
-
+		/*
 		@Override
 		public ItemStack[] getItemStacks() {
 			return new ItemStack[]{new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, color.ordinal())};
 		}
+		 */
 
 	}
 

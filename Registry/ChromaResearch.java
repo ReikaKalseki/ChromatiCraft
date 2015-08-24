@@ -609,6 +609,12 @@ public enum ChromaResearch implements ProgressElement {
 			}
 			return li;
 		}
+		if (this == ENDERCRYS) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaItems.ENDERCRYSTAL.getStackOfMetadata(0));
+			li.add(ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1));
+			return li;
+		}
 		if (this == AUGMENT) {
 			ArrayList<ItemStack> li = new ArrayList();
 			li.add(ChromaStacks.speedUpgrade);

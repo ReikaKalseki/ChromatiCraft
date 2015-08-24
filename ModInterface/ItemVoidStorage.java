@@ -87,6 +87,11 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 	}
 
 	@Override
+	public int getBytesPerType(ItemStack is) {
+		return 1;
+	}
+
+	@Override
 	public int getTotalTypes(ItemStack cellItem) {
 		return 1;
 	}

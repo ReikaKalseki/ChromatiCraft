@@ -72,7 +72,7 @@ public class ChromaStructures {
 				case OCEAN:
 					return getOceanStructure(w, 0, 0, 0);
 				case PORTAL:
-					return getPortalStructure(w, 0, 0, 0);
+					return getPortalStructure(w, 0, 0, 0, true);
 				case PERSONAL:
 					return getPersonalStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			}
@@ -1395,7 +1395,7 @@ public class ChromaStructures {
 		return array;
 	}
 
-	public static FilledBlockArray getPortalStructure(World world, int x, int y, int z) {
+	public static FilledBlockArray getPortalStructure(World world, int x, int y, int z, boolean display) {
 		FilledBlockArray array = new FilledBlockArray(world);
 
 		int i = x-7;
@@ -1990,6 +1990,24 @@ public class ChromaStructures {
 		array.setBlock(i+14, j+8, k+14, b, 2);
 		array.setBlock(i+14, j+9, k+0, b, 5);
 		array.setBlock(i+14, j+9, k+14, b, 5);
+
+		if (display) {
+			int mx = i+7;
+			int mz = k+7;
+
+			array.setBlock(mx-5, j+4, mz-9, Blocks.bedrock);
+			array.setBlock(mx-9, j+4, mz-5, Blocks.bedrock);
+
+			array.setBlock(mx+5, j+4, mz-9, Blocks.bedrock);
+			array.setBlock(mx+9, j+4, mz-5, Blocks.bedrock);
+
+			array.setBlock(mx-5, j+4, mz+9, Blocks.bedrock);
+			array.setBlock(mx-9, j+4, mz+5, Blocks.bedrock);
+
+			array.setBlock(mx+5, j+4, mz+9, Blocks.bedrock);
+			array.setBlock(mx+9, j+4, mz+5, Blocks.bedrock);
+		}
+
 		return array;
 	}
 
