@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -32,6 +33,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
@@ -45,9 +47,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockColoredLock extends BlockContainer {
 
-	private static int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
-	private static int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];
-	private static int[] whiteLock = new int[BlockLockKey.LockChannel.lockList.length];
+	//private static int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
+	//private static int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];
+	//private static int[] whiteLock = new int[BlockLockKey.LockChannel.lockList.length];
 
 	private IIcon[] icons = new IIcon[2];
 
@@ -156,9 +158,11 @@ public class BlockColoredLock extends BlockContainer {
 		private static Collection<WorldLocation> cache = new HashSet();
 		private boolean ticked = false;
 		private int queueTick;
+		public UUID uid;
 
 		public TileEntityColorLock addColor(CrystalElement e) {
 			colors.add(e);
+			closedColors.add(e);
 			return this;
 		}
 
@@ -219,6 +223,9 @@ public class BlockColoredLock extends BlockContainer {
 				li2.appendTag(new NBTTagInt(e.ordinal()));
 			}
 			NBT.setTag("closed_colors", li2);
+
+			if (uid != null)
+				NBT.setString("uid", uid.toString());
 		}
 
 		@Override
@@ -242,6 +249,9 @@ public class BlockColoredLock extends BlockContainer {
 				closedColors.add(CrystalElement.elements[tag.func_150287_d()]);
 			}
 
+			if (NBT.hasKey("uid"))
+				uid = UUID.fromString(NBT.getString("uid"));
+
 			//ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
 		}
 
@@ -262,9 +272,10 @@ public class BlockColoredLock extends BlockContainer {
 		private void recalcColors() {
 			boolean flag = true;
 			closedColors.clear();
-			if (whiteLock[channel] <= 0) {
+			LocksGenerator g = (LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid);
+			if (g.getWhiteLock(channel) <= 0) {
 				for (CrystalElement e : colors) {
-					if (keyCodes[channel][e.ordinal()] <= 0) {
+					if (g.getColorCode(channel, e) <= 0) {
 						flag = false;
 						closedColors.add(e);
 					}
@@ -305,7 +316,8 @@ public class BlockColoredLock extends BlockContainer {
 		}
 
 		private void recalcGate() {
-			this.updateState(gateCodes[channel] == 0);
+			//ReikaJavaLibrary.pConsole(((LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid)).getGateCode(channel), channel == 0);
+			this.updateState(((LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid)).getGateCode(channel) == 0);
 		}
 
 		public void recalc() {
@@ -320,39 +332,11 @@ public class BlockColoredLock extends BlockContainer {
 		}
 	}
 
-	public static boolean isOpen(CrystalElement e, int structIndex) {
-		return keyCodes[structIndex][e.ordinal()] > 0 || whiteLock[structIndex] > 0;
-	}
-
-	public static void openColor(CrystalElement e, World world, int structIndex) {
-		//ReikaJavaLibrary.pConsole("add "+e+" @ "+structIndex);
-		if (e == CrystalElement.WHITE) {
-			whiteLock[structIndex]++;
-		}
-		else {
-			keyCodes[structIndex][e.ordinal()]++;
-		}
-		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		updateTiles(world, -1);
-	}
-
-	public static void closeColor(CrystalElement e, World world, int structIndex) {
-		//ReikaJavaLibrary.pConsole("remove "+e+" @ "+structIndex);
-		if (e == CrystalElement.WHITE) {
-			whiteLock[structIndex]--;
-		}
-		else {
-			keyCodes[structIndex][e.ordinal()]--;
-		}
-		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		updateTiles(world, -1);
-	}
-
 	public static void freezeLocks(World world, int structIndex, int time) {
 		updateTiles(world, time);
 	}
 
-	private static void updateTiles(World world, int time) {
+	public static void updateTiles(World world, int time) {
 		for (WorldLocation loc : TileEntityColorLock.cache) {
 			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity();
 			if (te == null) {
@@ -365,25 +349,6 @@ public class BlockColoredLock extends BlockContainer {
 			else
 				te.recalc();
 		}
-	}
-
-	public static void markOpenGate(World world, int structIndex) {
-		gateCodes[structIndex]--;
-		updateTiles(world, -1);
-	}
-
-	public static void markClosedGate(World world, int structIndex) {
-		gateCodes[structIndex]++;
-		updateTiles(world, -1);
-	}
-
-	public static void resetCaches(LocksGenerator g) {
-		int n = BlockLockKey.LockChannel.lockList.length;
-		keyCodes = new int[n][16];
-		for (int i = 0; i < n; i++) {
-			gateCodes[i] = g.getNumberGates(i);
-		}
-		whiteLock = new int[n];
 	}
 
 }

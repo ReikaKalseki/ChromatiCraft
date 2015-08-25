@@ -74,6 +74,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
@@ -515,6 +516,15 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case MUSICDEMO:
 					((TileEntityCrystalMusic)tile).loadDemo();
+					break;
+				case PYLONTURBOCOMPLETE:
+					((TileEntityPylonTurboCharger)tile).doCompleteParticlesClient();
+					break;
+				case PYLONTURBOEVENT:
+					((TileEntityPylonTurboCharger)tile).doEventClient(data[0]);
+					break;
+				case PYLONTURBOFAIL:
+					((TileEntityPylonTurboCharger)tile).doFailParticlesClient(data[0] > 0);
 					break;
 			}
 		}

@@ -491,8 +491,6 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		step = null;
 		nextDir = null;
 
-		MazeAnchor.clearGenCache();
-
 		locks.clear();
 	}
 

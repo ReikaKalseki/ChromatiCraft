@@ -10,11 +10,12 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Command.DragonCommandBase;
@@ -41,11 +42,15 @@ public class StructureGenCommand extends DragonCommandBase {
 						e.printStackTrace();
 					}
 				}
-				for (int i = 0; i < DimensionStructureGenerator.DimensionStructureType.types.length; i++) {
-					DimensionStructureType type = DimensionStructureType.types[i];
+				HashSet<DimensionStructureType> set = new HashSet();
+				for (StructurePair p : ChunkProviderChroma.getStructures()) {
+					DimensionStructureType type = p.generator.getType();
+					if (set.contains(type)) //only gen one of each
+						continue;
+					set.add(type);
 					if (ReikaArrayHelper.arrayContains(args, type.name(), true)) {
-						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" @ "+type.getGenerator().getCentralBlockCoords()+"...");
-						type.getGenerator().generateAll(ep.worldObj);
+						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" @ "+p.generator.getCentralBlockCoords()+"...");
+						p.generator.generateAll(ep.worldObj);
 						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" complete.");
 					}
 					else {

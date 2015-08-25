@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -19,6 +17,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
@@ -28,8 +27,16 @@ public class MazeAnchor extends StructurePiece {
 	private final int genMetadata;
 	private final BlockKey pyramidBlock;
 
-	private static final HashSet<BlockKey> used = new HashSet();
-	private static final ArrayList<BlockKey> valid = new ArrayList();
+	private static final WeightedRandom<BlockKey> blockRand = new WeightedRandom();
+
+	static {
+		blockRand.addEntry(new BlockKey(Blocks.glowstone), 30);
+		blockRand.addEntry(new BlockKey(Blocks.coal_block), 50);
+		blockRand.addEntry(new BlockKey(Blocks.quartz_block, 0), 25);
+		blockRand.addEntry(new BlockKey(Blocks.quartz_block, 1), 25);
+		blockRand.addEntry(new BlockKey(Blocks.redstone_block), 40);
+		blockRand.addEntry(new BlockKey(Blocks.lapis_block), 20);
+	}
 
 	public MazeAnchor(DimensionStructureGenerator s, int size, int meta, Random r) {
 		super(s);
@@ -39,13 +46,8 @@ public class MazeAnchor extends StructurePiece {
 		pyramidBlock = this.getRandomBlockType(s, r);
 	}
 
-	private BlockKey getRandomBlockType(DimensionStructureGenerator s, Random r) {
-		BlockKey bk = null;
-		do {
-			bk = valid.get(r.nextInt(valid.size()));
-		} while(used.contains(bk));
-		used.add(bk);
-		return bk;
+	private static BlockKey getRandomBlockType(DimensionStructureGenerator s, Random r) {
+		return blockRand.getRandomEntry();
 	}
 
 	@Override
@@ -75,27 +77,6 @@ public class MazeAnchor extends StructurePiece {
 		int dx = x-partSize/2+8;//+partSize*3/2;
 		int dz = z-partSize/2+8;//+partSize*3/2;
 		world.setBlock(dx, y+1, dz, ChromaBlocks.SHIFTKEY.getBlockInstance(), genMetadata);
-	}
-
-	static {
-		addBlock(Blocks.glowstone);
-		addBlock(Blocks.coal_block);
-		addBlock(Blocks.quartz_block, 0);
-		addBlock(Blocks.quartz_block, 1);
-		addBlock(Blocks.redstone_block);
-		addBlock(Blocks.lapis_block);
-	}
-
-	public static void clearGenCache() {
-		used.clear();
-	}
-
-	private static void addBlock(Block b) {
-		valid.add(new BlockKey(b));
-	}
-
-	private static void addBlock(Block b, int meta) {
-		valid.add(new BlockKey(b, meta));
 	}
 
 }

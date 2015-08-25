@@ -10,15 +10,21 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import java.lang.reflect.Constructor;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -32,6 +38,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomRecurse;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomSpiral;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockLockKey extends Block {
 
@@ -80,6 +87,16 @@ public class BlockLockKey extends Block {
 	}
 
 	@Override
+	public boolean hasTileEntity(int meta) {
+		return true;
+	}
+
+	@Override
+	public TileEntity createTileEntity(World world, int meta) {
+		return new TileEntityLockKey();
+	}
+
+	@Override
 	public boolean canHarvestBlock(EntityPlayer player, int meta)
 	{
 		return true;
@@ -113,7 +130,10 @@ public class BlockLockKey extends Block {
 
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
+		//this.openLocks(world, x, y, z);
+	}
 
+	private void openLocks(World world, int x, int y, int z) {
 		if (world.isRemote)
 			return;
 
@@ -130,23 +150,17 @@ public class BlockLockKey extends Block {
 			int m = world.getBlockMetadata(dx, dy, dz);
 			int ch = world.getBlockMetadata(x, y, z);
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-				BlockColoredLock.openColor(CrystalElement.elements[m], world, ch);
+				this.getGenerator(world, x, y, z).openColor(CrystalElement.elements[m], world, ch);
 				break;
 			}
 			else if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && m%8 == BlockType.CLOAK.metadata%8) {
-				BlockColoredLock.markOpenGate(world, ch);
+				this.getGenerator(world, x, y, z).markOpenGate(world, ch);
 				break;
 			}
 		}
 	}
 
-	@Override
-	public void breakBlock(World world, int x, int y, int z, Block b2, int meta2) {
-		super.breakBlock(world, x, y, z, b2, meta2);
-
-		if (world.isRemote)
-			return;
-
+	private void closeLocks(World world, int x, int y, int z, int meta2) {
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -156,15 +170,67 @@ public class BlockLockKey extends Block {
 			int m = world.getBlockMetadata(dx, dy, dz);
 			int ch = meta2;
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-				BlockColoredLock.closeColor(CrystalElement.elements[m], world, ch);
+				this.getGenerator(world, x, y, z).closeColor(CrystalElement.elements[m], world, ch);
 				break;
 			}
 			else if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && m%8 == BlockType.CLOAK.metadata%8) {
-				BlockColoredLock.markClosedGate(world, ch);
+				this.getGenerator(world, x, y, z).markClosedGate(world, ch);
 				break;
 			}
 		}
 	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block b2, int meta2) {
+		if (!world.isRemote) {
+			this.closeLocks(world, x, y, z, meta2);
+		}
+		super.breakBlock(world, x, y, z, b2, meta2);
+	}
+
+	private static LocksGenerator getGenerator(World world, int x, int y, int z) {
+		return (LocksGenerator)DimensionStructureType.LOCKS.getGenerator(((TileEntityLockKey)world.getTileEntity(x, y, z)).uid);
+	}
+
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harvest)
+	{
+		if (this.canHarvest(world, player, x, y, z))
+			this.harvestBlock(world, player, x, y, z, 0);
+		return world.setBlockToAir(x, y, z);
+	}
+
+	private boolean canHarvest(World world, EntityPlayer ep, int x, int y, int z) {
+		if (ep.capabilities.isCreativeMode)
+			return false;
+		return true;
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta)
+	{
+		if (!this.canHarvest(world, ep, x, y, z))
+			return;
+		if (world.isRemote)
+			return;
+		TileEntityLockKey te = (TileEntityLockKey)world.getTileEntity(x, y, z);
+		if (te == null)
+			return;
+		ItemStack is = new ItemStack(this, 1, meta);
+		is.stackTagCompound = new NBTTagCompound();
+		is.stackTagCompound.setString("uid", te.uid.toString());
+		ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
+	}
+
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase elb, ItemStack is) {
+		if (world.isRemote)
+			return;
+		((TileEntityLockKey)world.getTileEntity(x, y, z)).uid = UUID.fromString(is.stackTagCompound.getString("uid"));
+
+		this.openLocks(world, x, y, z);
+	}
+
 	/*
 	@Override
 	public int damageDropped(int meta) {
@@ -181,4 +247,28 @@ public class BlockLockKey extends Block {
 		return this.getRenderColor(iba.getBlockMetadata(x, y, z));
 	}
 	 */
+
+	public static class TileEntityLockKey extends TileEntity {
+
+		public UUID uid;
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			if (uid != null)
+				NBT.setString("uid", uid.toString());
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			if (NBT.hasKey("uid"))
+				uid = UUID.fromString(NBT.getString("uid"));
+
+			//ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
+		}
+
+	}
 }

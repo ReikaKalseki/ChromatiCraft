@@ -168,7 +168,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean checkConnectivity(CrystalElement e, CrystalReceiver r) {
-		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
+		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
 		try {
 			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
 			return p != null && p.canTransmit();
@@ -181,7 +181,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public CrystalSource getConnectivity(CrystalElement e, CrystalReceiver r) {
-		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
+		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
 		try {
 			CrystalPath p = new PylonFinder(e, r, ep).findPylon();
 			return p != null && p.canTransmit() ? p.transmitter : null;
@@ -206,7 +206,7 @@ public class CrystalNetworker implements TickHandler {
 			return false;
 		if (this.hasFlowTo(r, e, world))
 			return false;
-		EntityPlayer ep = world.func_152378_a(r.getPlacerUUID());
+		EntityPlayer ep = r.getPlacerUUID() != null ? world.func_152378_a(r.getPlacerUUID()) : null;
 		CrystalFlow p = new PylonFinder(e, r, ep).findPylon(amount, maxthru);
 		//ReikaJavaLibrary.pConsole(p, Side.SERVER);
 		CrystalNetworkLogger.logRequest(r, e, amount, p);
@@ -219,7 +219,7 @@ public class CrystalNetworker implements TickHandler {
 	}
 
 	public boolean findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
-		EntityPlayer ep = r.getWorld().func_152378_a(r.getPlacerUUID());
+		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
 		CrystalPath p = new PylonFinder(e, r, ep).findPylonWith(amount);
 		if (p != null) {
 			if (consume)

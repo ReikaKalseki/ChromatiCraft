@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class ItemBlockLockKey extends ItemBlockMultiType {
 
@@ -26,6 +27,8 @@ public class ItemBlockLockKey extends ItemBlockMultiType {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		li.add("Channel: "+BlockLockKey.LockChannel.lockList[is.getItemDamage()].name);
+		if (ReikaObfuscationHelper.isDeObfEnvironment())
+			li.add("UUID: "+is.stackTagCompound.getString("uid"));
 	}
 
 	@Override

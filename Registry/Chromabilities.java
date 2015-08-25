@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,13 +55,12 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
-import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -477,14 +475,11 @@ public enum Chromabilities implements Ability {
 			int x = MathHelper.floor_double(ep.posX);
 			int z = MathHelper.floor_double(ep.posZ);
 
-			ChunkProviderChroma prov = ChromaDimensionManager.getChunkProvider(ep.worldObj);
-			EnumMap<CrystalElement, ChunkCoordIntPair> map = prov.getStructures();
-			for (CrystalElement e : map.keySet()) {
-				DimensionStructureType type = prov.getStructureType(e);
-				if (type.isComplete()) {
-					ChunkCoordIntPair loc = map.get(e);
-					int px = loc.chunkXPos<<4;
-					int pz = loc.chunkZPos<<4;
+			for (StructurePair s : ChunkProviderChroma.getStructures()) {
+				if (s.generator.isComplete()) {
+					ChunkCoordIntPair loc = s.generator.getEntryLocation();
+					int px = loc.chunkXPos << 4;
+					int pz = loc.chunkZPos << 4;
 					double dx = px-x;
 					double dz = pz-z;
 					double dist = ReikaMathLibrary.py3d(dx, 0, dz);
@@ -492,7 +487,7 @@ public enum Chromabilities implements Ability {
 					double factor = Math.pow(dist, 1.6);
 					factor = factor/20000D;
 					int delay = Math.max(1, (int)factor);
-					ScheduledSoundEvent evt = new DimensionPingEvent(e, ep, dist, ang);
+					ScheduledSoundEvent evt = new DimensionPingEvent(s.color, ep, dist, ang);
 					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
 				}
 			}

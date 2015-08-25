@@ -10,10 +10,11 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
@@ -129,7 +130,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	static void regenerateStructures() {
 		generatingStructures = true;
 		for (StructurePair s : structures)
-			s.generator.getGenerator().clear();
+			s.generator.clear();
 		structures.clear();
 		StructureCalculator thread = new StructureCalculator();
 		new Thread(thread, "ChromatiCraft Structure Gen").start();
@@ -141,6 +142,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	public static boolean areStructuresReady() {
 		return !generatingStructures;
+	}
+
+	public static Set<StructurePair> getStructures() {
+		return Collections.unmodifiableSet(structures);
 	}
 
 	public ChunkProviderChroma(World world)
@@ -188,7 +193,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
 		double d = Double.POSITIVE_INFINITY;
 		for (StructurePair s : structures) {
-			ChunkCoordIntPair p = s.generator.getGenerator().getCentralLocation();
+			ChunkCoordIntPair p = s.generator.getCentralLocation();
 			double dx = chunkX-p.chunkXPos;
 			double dz = chunkZ-p.chunkZPos;
 			double dd = Math.sqrt(dx*dx+dz*dz);
@@ -197,18 +202,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return d;
 	}
 
-	public EnumMap<CrystalElement, ChunkCoordIntPair> getStructures() {
-		EnumMap<CrystalElement, ChunkCoordIntPair> map = new EnumMap(CrystalElement.class);
-		for (StructurePair s : structures) {
-			map.put(/*s.color*/s.generator.getGenerator().getCoreColor(worldObj), s.generator.getGenerator().getEntryLocation());
-		}
-		return map;
-	}
-
 	public DimensionStructureType getStructureType(CrystalElement e) {
 		for (StructurePair s : structures) {
-			if (/*s.color*/s.generator.getGenerator().getCoreColor(worldObj) == e)
-				return s.generator;
+			if (s.color == e)
+				return s.generator.getType();
 		}
 		return null;
 	}
@@ -714,7 +711,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		ChunkCoordIntPair cp = new ChunkCoordIntPair(x, z);
 		for (StructurePair s : structures) {
 			//ReikaJavaLibrary.pConsole("Generating chunk "+x+", "+z+" for a "+s.color+" "+s.generator);
-			s.generator.getGenerator().generateChunk(worldObj, cp);
+			s.generator.generateChunk(worldObj, cp);
 		}
 		//for (int i = 0; i < 256; i++) {
 		//	worldObj.setBlock(x+8, i, z+8, Blocks.glass);

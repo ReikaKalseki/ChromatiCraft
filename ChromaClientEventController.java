@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -733,6 +734,18 @@ public class ChromaClientEventController {
 					GL11.glPopMatrix();
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void stopPylonBoxHighlight(DrawBlockHighlightEvent evt) {
+		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
+			World world = Minecraft.getMinecraft().theWorld;
+			int x = evt.target.blockX;
+			int y = evt.target.blockY;
+			int z = evt.target.blockZ;
+			if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON)
+				evt.setCanceled(true);
 		}
 	}
 

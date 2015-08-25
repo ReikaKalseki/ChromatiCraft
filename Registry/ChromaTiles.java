@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
@@ -136,7 +137,8 @@ public enum ChromaTiles {
 	RFDISTRIBUTOR("chroma.rfdistrib",	ChromaBlocks.TILEMODELLED2, TileEntityRFDistributor.class,		7, "RenderRFDistributor"),
 	PERSONAL("chroma.personal",			ChromaBlocks.PYLON,			TileEntityPersonalCharger.class,	7, "RenderPersonalCharger"),
 	MUSIC("chroma.music",				ChromaBlocks.TILECRYSTAL,	TileEntityCrystalMusic.class,		2, "RenderCrystalMusic"),
-	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG);
+	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG),
+	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger");
 
 	private final Class tile;
 	private final String name;
@@ -211,6 +213,7 @@ public enum ChromaTiles {
 			case MEDISTRIBUTOR:
 			case RFDISTRIBUTOR:
 			case PERSONAL:
+			case PYLONTURBO:
 				//case TANK:
 				//case ITEMRIFT:
 				return true;
@@ -359,6 +362,8 @@ public enum ChromaTiles {
 				return 0.125;
 			case ASPECTJAR:
 				return 0.1875;
+			case WINDOW:
+				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 0 : 0.4375;
 			default:
 				return 0;
 		}
@@ -374,6 +379,8 @@ public enum ChromaTiles {
 				return 0.125;
 			case ASPECTJAR:
 				return 0.1875;
+			case WINDOW:
+				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 0 : 0.4375;
 			default:
 				return 0;
 		}
@@ -385,6 +392,8 @@ public enum ChromaTiles {
 				return 0.875;
 			case ASPECTJAR:
 				return 0.8125;
+			case WINDOW:
+				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 1 : 0.5625;
 			default:
 				return 1;
 		}
@@ -398,6 +407,8 @@ public enum ChromaTiles {
 				return 0.5;
 			case ASPECTJAR:
 				return 0.875;
+			case PYLONTURBO:
+				return 0.5;
 			default:
 				return 1;
 		}
@@ -409,6 +420,8 @@ public enum ChromaTiles {
 				return 0.875;
 			case ASPECTJAR:
 				return 0.8125;
+			case WINDOW:
+				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 1 : 0.5625;
 			default:
 				return 1;
 		}

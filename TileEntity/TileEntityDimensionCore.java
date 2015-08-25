@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -60,6 +61,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBTTile, PlayerBreakHook {
 
 	private CrystalElement color = CrystalElement.WHITE;
+	private UUID uid = null;
 	private DimensionStructureType structure = null;
 	private boolean triggered = false;
 	private int soundPitch;
@@ -115,9 +117,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		return beams.get(color);
 	}
 
-	public void setStructure(DimensionStructureType t, CrystalElement e) {
-		structure = t;
-		color = e;
+	public void setStructure(StructurePair p) {
+		structure = p.generator.getType();
+		uid = p.generator.id;
+		color = p.color;
 		this.syncAllData(false);
 	}
 
@@ -129,18 +132,26 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			if (placer != null) {
 				this.spawnConnectFX(world, x, y, z);
 			}
-			else if (structure != null) {
+			else if (this.hasStructure()) {
 				this.structureControlFX();
 			}
 		}
 		else {
-			if (structure != null) {
+			if (this.hasStructure()) {
 				this.doScanForEntry(world, x, y, z);
 				if (!triggered) {
 					this.doStructureCalculation(world, x, y, z);
 				}
 			}
 		}
+	}
+
+	private DimensionStructureGenerator getStructure() {
+		return structure != null ? structure.getGenerator(uid) : null;
+	}
+
+	public boolean hasStructure() {
+		return this.getStructure() != null;
 	}
 
 	private void doScanForEntry(World world, int x, int y, int z) {
@@ -156,9 +167,10 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	}
 
 	private AxisAlignedBB getStructureEntryBox() {
-		int x = structure.getGenerator().getEntryPosX();
-		int y = structure.getGenerator().getPosY();
-		int z = structure.getGenerator().getEntryPosZ();
+		DimensionStructureGenerator gen = this.getStructure();
+		int x = gen.getEntryPosX();
+		int y = gen.getPosY();
+		int z = gen.getEntryPosZ();
 		int r = 8;
 		return AxisAlignedBB.getBoundingBox(x-r, y, z-r, x+r+1, ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z)+9, z+r+1);
 	}
@@ -309,7 +321,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 
-		if (structure == null && !world.isRemote) {
+		if (!this.hasStructure() && !world.isRemote) {
 			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color);
 		}
 	}
@@ -339,6 +351,9 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 		int s = NBT.getInteger("struct");
 		structure = s >= 0 ? DimensionStructureType.types[s] : null;
+
+		if (NBT.hasKey("uid"))
+			uid = UUID.fromString(NBT.getString("uid"));
 	}
 
 	@Override
@@ -346,6 +361,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		super.writeToNBT(NBT);
 
 		NBT.setInteger("struct", structure != null ? structure.ordinal() : -1);
+		if (uid != null)
+			NBT.setString("uid", uid.toString());
 	}
 
 	@Override
@@ -377,7 +394,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		if (worldObj.isRemote)
 			return true;
 		if (ep.capabilities.isCreativeMode) {
-			if (structure != null)
+			if (this.hasStructure())
 				this.openStructure();
 			return true;
 		}
@@ -385,7 +402,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			return false;
 		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 5)
 			return false;
-		if (structure != null) {
+		if (this.hasStructure()) {
 			if (structure.hasPlayerCompleted(ep)) {
 				return false;
 			}
@@ -399,7 +416,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	}
 
 	private void openStructure() {
-		DimensionStructureGenerator gen = structure.getGenerator();
+		DimensionStructureGenerator gen = this.getStructure();
 		Set<Coordinate> set = gen.getBreakableSpots();
 		for (Coordinate c2 : set) {
 			//Coordinate c2 = c.offset(-gen.getPosX(), -gen.getPosY(), -gen.getPosZ()).offset(xCoord, yCoord, zCoord);

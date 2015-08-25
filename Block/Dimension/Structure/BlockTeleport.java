@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -191,6 +192,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		/** Is a relative position! */
 		public BlockVector destination;
 		public ForgeDirection facing;
+		private UUID uid;
 
 		private long lastActiveTick = -1;
 
@@ -290,6 +292,8 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 				destination.writeToNBT(tag);
 				NBT.setTag("pos", tag);
 			}
+			if (uid != null)
+				NBT.setString("uid", uid.toString());
 		}
 
 		@Override
@@ -299,6 +303,9 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("face")];
 			NBTTagCompound tag = NBT.getCompoundTag("pos");
 			destination = BlockVector.readFromNBT(tag);
+
+			if (NBT.hasKey("uid"))
+				uid = UUID.fromString(NBT.getString("uid"));
 		}
 
 		@Override
@@ -339,7 +346,7 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 	}
 
 	private static void onTeleport(EntityPlayer ep, TileEntityTeleport te) {
-		for (Coordinate c : ((NonEuclideanGenerator)DimensionStructureType.NONEUCLID.getGenerator()).getPortalLocations()) {
+		for (Coordinate c : ((NonEuclideanGenerator)DimensionStructureType.NONEUCLID.getGenerator(te.uid)).getPortalLocations()) {
 			TileEntity tile = c.getTileEntity(te.worldObj);
 			if (tile instanceof TileEntityTeleport && !tile.isInvalid()) {
 				((TileEntityTeleport)tile).onPlayerTeleported(ep, te);

@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -98,6 +99,16 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.ITEMRIFT) {
 			TileEntityItemRift ir = (TileEntityItemRift)tile;
 			ir.isEmitting = !ir.isEmitting;
+			return true;
+		}
+		if (t == ChromaTiles.PYLONTURBO) {
+			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)tile;
+			if (ProgressStage.CTM.isPlayerAtStage(ep) && te.trigger()) {
+				ChromaSounds.CAST.playSoundAtBlock(te);
+			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(te);
+			}
 			return true;
 		}
 		if (t == ChromaTiles.WINDOW) {

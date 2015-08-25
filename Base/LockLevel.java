@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -20,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.TileEntityLockKey;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -72,7 +74,7 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 	}
 
 	protected final void generateKey(int x, int y, int z) {
-		currentGenerator.setBlock(x, y, z, ChromaBlocks.LOCKKEY.getBlockInstance(), level.ordinal());
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.LOCKKEY.getBlockInstance(), level.ordinal(), new KeyPlace(parent.id));
 	}
 
 	protected final void generateTimer(int x, int y, int z) {
@@ -84,11 +86,11 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 		for (int i = 0; i < colors.length; i++) {
 			elements[i] = shuffleMap.get(colors[i]);
 		}
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet(level.ordinal(), elements));
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet(level.ordinal(), parent.id, elements));
 	}
 
 	protected final void generateGate(int x, int y, int z) {
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet(level.ordinal()));
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet(level.ordinal(), parent.id));
 	}
 
 	public final LockLevel mirrorX() {
@@ -118,10 +120,12 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 		private final CrystalElement[] colors;
 		private final int channel;
+		private final UUID uid;
 
-		public LockColorSet(int ch, CrystalElement... c) {
+		private LockColorSet(int ch, UUID id, CrystalElement... c) {
 			colors = c;
 			channel = ch;
+			uid = id;
 		}
 
 		@Override
@@ -131,6 +135,24 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 				for (CrystalElement e : colors)
 					te.addColor(e);
 				te.setChannel(channel);
+				te.uid = uid;
+			}
+		}
+
+	}
+
+	public static class KeyPlace implements TileCallback {
+
+		private final UUID uid;
+
+		private KeyPlace(UUID id) {
+			uid = id;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			if (te instanceof TileEntityLockKey) {
+				((TileEntityLockKey)te).uid = uid;
 			}
 		}
 
