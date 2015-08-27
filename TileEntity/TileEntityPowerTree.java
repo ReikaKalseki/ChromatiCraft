@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -44,6 +46,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
 
@@ -222,6 +226,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
+		if (!targets.isEmpty() && world.isRemote) {
+			this.spawnBeamParticles(world, x, y, z);
+		}
+
 		if (!world.isRemote && this.canConduct()) {
 			if (rand.nextInt(150) == 0)
 				this.grow();
@@ -233,6 +241,25 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 						this.requestEnergy(e, this.getRemainingSpace(e));
 					}
 				}
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void spawnBeamParticles(World world, int x, int y, int z) {
+		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+		if (rand.nextInt(1+p*2) == 0) {
+			for (CrystalTarget tg : targets) {
+				double dx = tg.location.xCoord+tg.offsetX-x;
+				double dy = tg.location.yCoord+tg.offsetY-y;
+				double dz = tg.location.zCoord+tg.offsetZ-z;
+				double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+				double dr = rand.nextDouble();
+				double px = dx*dr+x+0.5;
+				double py = dy*dr+y+0.5;
+				double pz = dz*dr+z+0.5;
+				EntityLaserFX fx = new EntityLaserFX(tg.color, world, px, py, pz).setScale(15);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
 	}

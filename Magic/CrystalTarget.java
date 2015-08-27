@@ -83,7 +83,7 @@ public class CrystalTarget {
 
 	@Override
 	public String toString() {
-		return color.name()+": "+location.getTileEntity();
+		return color.name()+": "+location.getTileEntity()+" {"+offsetX+","+offsetY+","+offsetZ+"}";
 	}
 
 }

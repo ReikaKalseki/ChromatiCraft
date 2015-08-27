@@ -54,12 +54,12 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 
 		private boolean isValid() {
 			switch(this) {
-			case RFSTORAGE:
-				return PowerTypes.RF.exists();
-			case SHAFTPOWER:
-				return PowerTypes.ROTARYCRAFT.exists();
-			default:
-				return true;
+				case RFSTORAGE:
+					return PowerTypes.RF.exists();
+				case SHAFTPOWER:
+					return PowerTypes.ROTARYCRAFT.exists();
+				default:
+					return true;
 			}
 		}
 	}
@@ -76,6 +76,11 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 		public LightSource(TileEntityLampController te) {
 			this(new WorldLocation(te));
 			isActive = te.isActive();
+		}
+
+		@Override
+		public int hashCode() {
+			return location.hashCode();
 		}
 
 		@Override
@@ -130,18 +135,18 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 			boolean changed = false;
 			boolean on = active;
 			switch(control) {
-			case REDSTONE:
-				on = world.isBlockIndirectlyGettingPowered(x, y, z);
-				break;
-			case MANUAL:
-				break;
-			case RFSTORAGE:
-				on = this.hasAdjacentRF();
-				break;
-			case SHAFTPOWER:
-				shaftpower &= PowerTransferHelper.checkPowerFromAllSides(this, true);
-				on = shaftpower;
-				break;
+				case REDSTONE:
+					on = world.isBlockIndirectlyGettingPowered(x, y, z);
+					break;
+				case MANUAL:
+					break;
+				case RFSTORAGE:
+					on = this.hasAdjacentRF();
+					break;
+				case SHAFTPOWER:
+					shaftpower &= PowerTransferHelper.checkPowerFromAllSides(this, true);
+					on = shaftpower;
+					break;
 			}
 			if (on != active) {
 				changed = true;

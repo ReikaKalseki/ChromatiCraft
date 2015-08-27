@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory.TileMusicMemory;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
@@ -294,7 +295,6 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityRangedLamp)tile).setChannel(data[0]);
 					break;
 				case LAMPCONTROL:
-					int mode = data[0];
 					switch(data[0]) {
 						case 0:
 							((TileEntityLampController)tile).setChannel(data[1]);
@@ -306,6 +306,7 @@ public class ChromatiPackets implements PacketHandler {
 							((TileEntityLampController)tile).toggleState();
 							break;
 					}
+					break;
 				case TNT:
 					((TileEntityEnderTNT)tile).setTarget(ep, data[0], data[1], data[2], data[3]);
 					break;
@@ -518,13 +519,16 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityCrystalMusic)tile).loadDemo();
 					break;
 				case PYLONTURBOCOMPLETE:
-					((TileEntityPylonTurboCharger)tile).doCompleteParticlesClient();
+					((TileEntityPylonTurboCharger)tile).doCompleteParticlesClient(world, x, y, z);
 					break;
 				case PYLONTURBOEVENT:
-					((TileEntityPylonTurboCharger)tile).doEventClient(data[0]);
+					((TileEntityPylonTurboCharger)tile).doEventClient(world, x, y, z, data[0], data[1]);
 					break;
 				case PYLONTURBOFAIL:
-					((TileEntityPylonTurboCharger)tile).doFailParticlesClient(data[0] > 0);
+					((TileEntityPylonTurboCharger)tile).doFailParticlesClient(world, x, y, z, data[0] > 0);
+					break;
+				case MUSICPLAY:
+					((TileMusicMemory)tile).playKeyClient(MusicKey.getByIndex(data[0]));
 					break;
 			}
 		}

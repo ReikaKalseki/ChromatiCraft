@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -29,7 +30,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile, SneakPop {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
@@ -213,6 +214,21 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public final void onPathBroken(CrystalElement e) {
 
+	}
+
+	@Override
+	public final void drop() {
+		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
+
+		ItemStack is = this.getTile().getCraftedProduct();
+		is.stackTagCompound = new NBTTagCompound();
+		this.getTagsToWriteToStack(is.stackTagCompound);
+		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
+		this.delete();
+	}
+
+	public final boolean canDrop(EntityPlayer ep) {
+		return ep.getUniqueID().equals(placerUUID);
 	}
 
 }

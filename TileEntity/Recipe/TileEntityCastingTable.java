@@ -90,14 +90,14 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		if (!this.getTier().isAtLeast(type))
 			return false;
 		switch(type) {
-		case CRAFTING:
-			return true;
-		case TEMPLE:
-			return hasStructure;
-		case MULTIBLOCK:
-			return hasStructure2;
-		case PYLON:
-			return hasPylonConnections;
+			case CRAFTING:
+				return true;
+			case TEMPLE:
+				return hasStructure;
+			case MULTIBLOCK:
+				return hasStructure2;
+			case PYLON:
+				return hasPylonConnections;
 		}
 		return false;
 	}
@@ -130,7 +130,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		//ChromaStructures.getCastingLevelOne(world, x, y-1, z).place();
+		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
 			this.addXP(3434);
@@ -337,16 +337,16 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private int getSoundLength() {
 		switch(this.getTier()) {
-		case CRAFTING:
-			return 1;
-		case TEMPLE:
-			return 1;
-		case MULTIBLOCK:
-			//return 1;
-		case PYLON:
-			return 152;
-		default:
-			return 1;
+			case CRAFTING:
+				return 1;
+			case TEMPLE:
+				return 1;
+			case MULTIBLOCK:
+				//return 1;
+			case PYLON:
+				return 152;
+			default:
+				return 1;
 		}
 	}
 
@@ -807,16 +807,16 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	public BlockArray getBlocks() {
 		switch(tier) {
-		case CRAFTING:
-			return null;
-		case TEMPLE:
-			return ChromaStructures.getCastingLevelOne(worldObj, xCoord, yCoord-1, zCoord);
-		case MULTIBLOCK:
-			return ChromaStructures.getCastingLevelTwo(worldObj, xCoord, yCoord-1, zCoord);
-		case PYLON:
-			return ChromaStructures.getCastingLevelThree(worldObj, xCoord, yCoord-1, zCoord);
-		default:
-			return null;
+			case CRAFTING:
+				return null;
+			case TEMPLE:
+				return ChromaStructures.getCastingLevelOne(worldObj, xCoord, yCoord-1, zCoord);
+			case MULTIBLOCK:
+				return ChromaStructures.getCastingLevelTwo(worldObj, xCoord, yCoord-1, zCoord);
+			case PYLON:
+				return ChromaStructures.getCastingLevelThree(worldObj, xCoord, yCoord-1, zCoord);
+			default:
+				return null;
 		}
 	}
 

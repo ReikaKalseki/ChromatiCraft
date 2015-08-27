@@ -132,6 +132,7 @@ public enum ChromaResearch implements ProgressElement {
 	RFDISTRIB(		ChromaTiles.RFDISTRIBUTOR,	ResearchLevel.RUNECRAFT),
 	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
 	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
+	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.CTM),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

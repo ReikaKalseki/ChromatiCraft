@@ -33,6 +33,7 @@ import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 import thaumcraft.api.wands.IWandable;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
@@ -60,6 +61,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -78,9 +80,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
-import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 //Make player able to manufacture in the very late game, otherwise rare worldgen
@@ -250,7 +250,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				ChromaSounds.POWER.playSoundAtBlock(this, 1, f);
 			}
 
-			if (world.isRemote && rand.nextInt(36) == 0) {
+			int n = this.isEnhanced() ? 24 : 36;
+			if (world.isRemote && rand.nextInt(n) == 0) {
 				this.spawnLightning(world, x, y, z);
 			}
 
@@ -291,9 +292,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					return;
 				}
 			}
-			if (blocks.size() > 0 && this.getTicksExisted()%875 == 0) {
-				ChromaSounds.POWERCRYS.playSoundAtBlock(this);
-			}
+			//if (blocks.size() > 0 && this.getTicksExisted()%875 == 0) {
+			//	ChromaSounds.POWERCRYS.playSoundAtBlock(this);
+			//}
 			if (blocks.size() == 8) {
 				ProgressStage.POWERCRYSTAL.stepPlayerTo(blocks.get(0).getPlacer());
 			}
@@ -402,43 +403,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	void attackEntity(EntityLivingBase e) {
 		ChromaSounds.DISCHARGE.playSoundAtBlock(this);
-		ChromaSounds.DISCHARGE.playSound(worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
-		int amt = 5;
-
-		if (e instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer)e;
-			ProgressStage.SHOCK.stepPlayerTo(ep);
-			//DO NOT UNCOMMENT, AS ALLOWS DISCOVERY OF ALL COLORS BEFORE PREREQ//ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
-			if (ModList.BLOODMAGIC.isLoaded()) {
-				int drain = 5000;
-				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {
-					amt *= 10; //counter the 90% reduction
-					drain = 50000;
-				}
-				SoulNetworkHandler.syphonFromNetwork(ep.getCommandSenderName(), drain);
-			}
-
-			if (e.ticksExisted < 600) {
-				amt = 1; //1/2 heart for first 30s
-			}
-			else if (e.ticksExisted <= 1000) {
-				amt = 1+(e.ticksExisted-600)/100; //increase by 1/2 heart every 5 seconds, up to 2.5 hearts at 50 seconds
-			}
-		}
-
-		float last = e.getHealth();
-
-		e.attackEntityFrom(ChromatiCraft.pylon, amt);
-
-		if (e.getHealth() > last-amt) {
-			if (amt > last) { //kill
-				e.setHealth(0.1F);
-				e.attackEntityFrom(ChromatiCraft.pylon, Float.MAX_VALUE);
-			}
-			else
-				e.setHealth(last-amt);
-		}
+		ChromaAux.doPylonAttack(e, 5, true);
 
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 2);
 		if (eff != null) {
@@ -503,6 +469,19 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			EntityFlareFX fx = new EntityFlareFX(color, world, rx, ry, rz);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+
+		if (this.isEnhanced()) {
+			int n = 2+(int)Math.sin(Math.toRadians(this.getTicksExisted()));
+			for (int i = 0; i < n; i++) {
+				float s = (float)ReikaRandomHelper.getRandomPlusMinus(2D, 1);
+				int l = 10+rand.nextInt(50);
+				EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextInt(360), ReikaRandomHelper.getRandomPlusMinus(0, 90));
+				fx.fadeColors(ReikaColorAPI.mixColors(color.getColor(), 0xffffff, 0.375F), color.getColor()).setScale(s).setLife(l).setRapidExpand();
+				fx.freedom *= 3;
+				fx.velocity *= 3;
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
 	}
 
 	@Override
@@ -546,7 +525,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && energy >= 5000;
+		return hasMultiblock && (energy >= 5000 || (energy > 10 && !this.getTargets().isEmpty()));
 	}
 
 	@Override
@@ -557,9 +536,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	private int getReducedThroughput(int thresh, int max) {
+		if (energy == 0)
+			return 0;
 		int sigx = energy/(thresh/12)-6;
-		int sig = (int)(max/(1+Math.pow(Math.E, -sigx)));
-		return Math.max(0, Math.min(energy-1, sig-10));
+		int sig = (int)(max/(1+Math.pow(Math.E, -sigx))); //sigmoid function
+		return Math.max(1, Math.min(energy-1, sig-10));
 	}
 
 	@Override
@@ -840,6 +821,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public CrystalElement getDeliveredColor(EntityPlayer ep, World world, int clickX, int clickY, int clickZ) {
 		return color;
+	}
+
+	public void enhance() {
+		enhanced = true;
+		this.syncAllData(true);
+	}
+
+	public void disenhance() {
+		enhanced = false;
+		energy = Math.min(energy, this.getMaxStorage(color));
+		this.syncAllData(true);
 	}
 
 }

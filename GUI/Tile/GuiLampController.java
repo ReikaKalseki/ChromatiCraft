@@ -65,14 +65,12 @@ public class GuiLampController extends GuiChromaBase {
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
 
-		if (lockout == 0) {
-			if (b.id == 0) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 1, 0);
-				control = control.next();
-			}
-			else if (b.id == 1) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 2, 0);
-			}
+		if (b.id == 0 && lockout == 0) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 1, 0);
+			control = control.next();
+		}
+		else if (b.id == 1) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.LAMPCONTROL.ordinal(), lamp, 2, 0);
 		}
 		lockout = 20;
 		this.initGui();
@@ -120,18 +118,18 @@ public class GuiLampController extends GuiChromaBase {
 		Control c = lamp.getControlType();
 		ItemStack is = null;
 		switch(c) {
-		case MANUAL:
-			break;
-		case REDSTONE:
-			is = new ItemStack(Items.redstone);
-			break;
-		case RFSTORAGE:
-			is = GameRegistry.findItemStack(ModList.THERMALEXPANSION.modLabel, "powerCoilElectrum", 1);
-			break;
-		case SHAFTPOWER:
-			is = GameRegistry.findItemStack(ModList.ROTARYCRAFT.modLabel, "rotarycraft_item_shaftcraft", 1);
-			is.setItemDamage(2);
-			break;
+			case MANUAL:
+				break;
+			case REDSTONE:
+				is = new ItemStack(Items.redstone);
+				break;
+			case RFSTORAGE:
+				is = GameRegistry.findItemStack(ModList.THERMALEXPANSION.modLabel, "powerCoilElectrum", 1);
+				break;
+			case SHAFTPOWER:
+				is = GameRegistry.findItemStack(ModList.ROTARYCRAFT.modLabel, "rotarycraft_item_shaftcraft", 1);
+				is.setItemDamage(2);
+				break;
 		}
 		if (is != null)
 			api.drawItemStack(itemRender, is, 25, 49);

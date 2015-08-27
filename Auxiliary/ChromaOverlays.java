@@ -96,15 +96,30 @@ public class ChromaOverlays {
 	private String structureText = null;
 	private long structureTextTick = -1;
 
+	private static final int WASHOUT_LENGTH = 312;
+	private static final int WASHOUT_FACTOR = 2;
+	private static final int FLASH_FADE = 4;
+	private int washout;
+	private CrystalElement washoutColor;
+
 	private ChromaOverlays() {
 
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGH) //Not highest because of Dualhotbar
+	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
 	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
 		tick++;
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		ItemStack is = ep.getCurrentEquippedItem();
+
+		if (evt.type == ElementType.HELMET) {
+			if (washout > 0) {
+				this.renderWashout(evt);
+				//evt.setCanceled(true);
+				return;
+			}
+		}
+
 		if (evt.type == ElementType.HELMET) {
 			int gsc = evt.resolution.getScaleFactor();
 			if (ChromaItems.TOOL.matchWith(is)) {
@@ -136,6 +151,41 @@ public class ChromaOverlays {
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
 		}
+	}
+
+	private void renderWashout(RenderGameOverlayEvent.Pre evt) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		BlendMode.DEFAULT.apply();
+
+		int mx = Minecraft.getMinecraft().displayWidth/evt.resolution.getScaleFactor();
+		int my = Minecraft.getMinecraft().displayHeight/evt.resolution.getScaleFactor();
+
+		Tessellator v5 = Tessellator.instance;
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+		int a = (int)(washout > WASHOUT_LENGTH-FLASH_FADE ? (255F*(WASHOUT_LENGTH-washout)/FLASH_FADE) : 255F*Math.min(1, washout/255F));
+		int c1 = ReikaColorAPI.mixColors(washoutColor.getColor(), 0xffffff, 0.5F);
+		int c = ReikaColorAPI.mixColors(0xffffff, c1, Math.min(0.95F, a/255F));
+		//ReikaJavaLibrary.pConsole(washout+" > A="+a+", cfrac = "+(a/255F)+", C="+Integer.toHexString(c));
+		v5.setColorRGBA_I(c, Math.min(255, a));
+		v5.addVertex(0, 0, 0);
+		v5.addVertex(mx, 0, 0);
+		v5.addVertex(mx, my, 0);
+		v5.addVertex(0, my, 0);
+		v5.draw();
+
+		if (!Minecraft.getMinecraft().isGamePaused()) {
+			if (washout >= WASHOUT_LENGTH-FLASH_FADE || tick%WASHOUT_FACTOR == 0)
+				washout--;
+		}
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glPopAttrib();
 	}
 
 	private void renderStructureText(EntityPlayer ep, int gsc) {
@@ -297,6 +347,11 @@ public class ChromaOverlays {
 		String s = type.getDisplayText();
 		structureText = s;
 		structureTextTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+	}
+
+	public void triggerWashout(CrystalElement e) {
+		washout = Math.max(washout, WASHOUT_LENGTH-FLASH_FADE);
+		washoutColor = e;
 	}
 
 	private void renderProgressOverlays(EntityPlayer ep, int gsc) {

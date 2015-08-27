@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -123,14 +124,21 @@ public class ChromaFX {
 	}
 
 	public static void drawEnergyTransferBeam(WorldLocation src, CrystalTarget ct, double r, byte sides, double tick) {
-		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
-		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		WorldLocation tgt = ct.location;
 		CrystalElement e = ct.color;
+		double dx = tgt.xCoord+ct.offsetX+0.5;
+		double dy = tgt.yCoord+ct.offsetY+0.5;
+		double dz = tgt.zCoord+ct.offsetZ+0.5;
+		drawEnergyTransferBeam(new DecimalPosition(src), new DecimalPosition(dx, dy, dz), e, r, sides, tick);
+	}
+
+	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, CrystalElement e, double r, byte sides, double tick) {
+		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
+		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		Tessellator v5 = Tessellator.instance;
-		double dx = tgt.xCoord-src.xCoord+ct.offsetX;
-		double dy = tgt.yCoord-src.yCoord+ct.offsetY;
-		double dz = tgt.zCoord-src.zCoord+ct.offsetZ;
+		double dx = tgt.xCoord-src.xCoord;
+		double dy = tgt.yCoord-src.yCoord;
+		double dz = tgt.zCoord-src.zCoord;
 
 		GL11.glPushMatrix();
 		double f7 = Math.sqrt(dx*dx+dz*dz);

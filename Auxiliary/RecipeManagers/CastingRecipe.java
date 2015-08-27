@@ -425,8 +425,10 @@ public class CastingRecipe {
 				}
 			}
 			ItemStack ctr = this.getMainInput();
+			//ReikaJavaLibrary.pConsole(ctr.stackTagCompound+":"+main.stackTagCompound, this instanceof RepeaterTurboRecipe);
 			if (ReikaItemHelper.matchStacks(main, ctr) && (ctr.stackTagCompound == null || ItemStack.areItemStackTagsEqual(main, ctr))) {
 				HashMap<List<Integer>, TileEntityItemStand> stands = table.getOtherStands();
+				//ReikaJavaLibrary.pConsole(stands.size(), this instanceof RepeaterTurboRecipe);
 				if (stands.size() != 24)
 					return false;
 				//ReikaJavaLibrary.pConsole(stands.keySet());
@@ -439,6 +441,7 @@ public class CastingRecipe {
 						return false;
 					}
 				}
+				//ReikaJavaLibrary.pConsole(this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord));
 				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord)) {
 					return true;
 				}

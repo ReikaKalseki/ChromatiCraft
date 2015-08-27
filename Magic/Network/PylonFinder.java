@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -103,7 +104,6 @@ public class PylonFinder {
 			return new CrystalFlow(net, p, target, amount, maxthru);
 		if (!this.anyConnectedSources())
 			return null;
-
 		this.findFrom(target, thresh);
 		//ReikaJavaLibrary.pConsole(this.toString());
 		if (this.isComplete()) {
@@ -216,6 +216,24 @@ public class PylonFinder {
 		if (nodes.contains(loc)) {
 			return;
 		}
+		if (this.isComplete()) {
+			/*
+			StringBuilder sb = new StringBuilder();
+			sb.append(nodes.size());
+			sb.append(":[");
+			int i = 0;
+			for (WorldLocation l : nodes) {
+				sb.append(i);
+				sb.append("=");
+				sb.append(l.getTileEntity());
+				sb.append(";");
+				i++;
+			}
+			sb.append("]");
+			ReikaJavaLibrary.pConsole("Returning with "+sb.toString());
+			 */
+			return;
+		}
 		steps++;
 		stepsThisTick++;
 		if (steps > 200) {
@@ -228,9 +246,16 @@ public class PylonFinder {
 			return;
 		}
 		 */
+		//ReikaJavaLibrary.pConsole("Stepped in, Receiver="+r);
 		nodes.add(loc);
 		ArrayList<CrystalTransmitter> li = net.getTransmittersTo(r, element);
+		if (ChromaOptions.SHORTPATH.getState()) {
+			Collections.sort(li, new TransmitterSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
+		}
+		//ReikaJavaLibrary.pConsole("Found "+li.size()+" for "+r+": "+li);
 		for (CrystalTransmitter te : li) {
+			if (this.isComplete())
+				return;
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				CrystalLink l = net.getLink(loc2, loc);
@@ -241,9 +266,20 @@ public class PylonFinder {
 							continue;
 					}
 
+					/*
+					ReikaJavaLibrary.pConsole("Data for "+te+":");
+					if (te instanceof CrystalSource)
+						ReikaJavaLibrary.pConsole("Source: "+(te instanceof CrystalSource)+" && "+this.isConnectableSource((CrystalSource)te, thresh));
+					else
+						ReikaJavaLibrary.pConsole("Source: false");
+
+					ReikaJavaLibrary.pConsole("Repeater: "+(te instanceof CrystalRepeater));
+					 */
+
 					if (te instanceof CrystalSource && this.isConnectableSource((CrystalSource)te, thresh)) {
 						net.addLink(l, true);
 						nodes.add(loc2);
+						//ReikaJavaLibrary.pConsole("Found source, returning: "+this.isComplete());
 						return;
 					}
 					else if (te instanceof CrystalRepeater) {

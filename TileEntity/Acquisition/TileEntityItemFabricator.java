@@ -99,6 +99,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
 		this.markDirty();
 		//ReikaJavaLibrary.pConsole(craftingTick+":"+inv[0]+">"+recipe+","+entity);
 	}
@@ -227,7 +228,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	@Override
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		double ang = Math.toRadians(e.ordinal()*22.5D);
-		double r = 1.75;
+		double r = 1.5;
 		double dx = r*Math.sin(ang);
 		double dy = 0.55;
 		double dz = r*Math.cos(ang);

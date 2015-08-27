@@ -23,8 +23,8 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRecipe {
 
-	public RepeaterTurboRecipe() {
-		super(ChromaTiles.REPEATER.getCraftedProduct(), getOutputItem());
+	public RepeaterTurboRecipe(ChromaTiles rpt) {
+		super(getOutputItem(rpt), rpt.getCraftedProduct());
 
 		this.addAuraRequirement(CrystalElement.BLACK, 25000);
 		this.addAuraRequirement(CrystalElement.WHITE, 20000);
@@ -34,8 +34,8 @@ public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRec
 		this.addAuraRequirement(CrystalElement.GRAY, 10000);
 	}
 
-	private static ItemStack getOutputItem() {
-		ItemStack is = ChromaTiles.REPEATER.getCraftedProduct();
+	private static ItemStack getOutputItem(ChromaTiles rpt) {
+		ItemStack is = rpt.getCraftedProduct();
 		is.stackTagCompound = new NBTTagCompound();
 		is.stackTagCompound.setBoolean("boosted", true);
 		return is;

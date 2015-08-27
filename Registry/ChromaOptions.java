@@ -58,7 +58,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	STRUCTDIFFICULTY("Dimension Structure Difficulty", 3),
 	BALLLIGHTNING("Enable Ball Lightning", true),
 	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
-	RIFTLOAD("World Rifts Chunkload", false);
+	RIFTLOAD("World Rifts Chunkload", false),
+	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true);
 
 	private String label;
 	private boolean defaultState;

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -274,6 +275,10 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		this.getTagsToWriteToStack(is.stackTagCompound);
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
 		this.delete();
+	}
+
+	public boolean canDrop(EntityPlayer ep) {
+		return ep.getUniqueID().equals(placerUUID);
 	}
 
 	@Override

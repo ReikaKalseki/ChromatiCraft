@@ -48,7 +48,12 @@ public enum ChromaSounds implements SoundEnum {
 	DRONE("drone2"),
 	PORTAL("portal2"),
 	ORB("orb"),
-	GOTODIM("todim");
+	GOTODIM("todim"),
+	OVERLOAD("discharge2"),
+	PYLONFLASH("pylonboost"),
+	PYLONTURBO("pylonturbo"),
+	PYLONBOOSTRITUAL("pylonboost_ritual_short"),
+	PYLONBOOSTSTART("pylonbooststart");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -118,6 +123,15 @@ public enum ChromaSounds implements SoundEnum {
 		this.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, vol, pitch);
 	}
 
+	public void playSoundAtBlockNoAttenuation(TileEntity te, float vol, float pitch) {
+		if (te.worldObj.isRemote)
+			return;
+		double x = te.xCoord+0.5;
+		double y = te.yCoord+0.5;
+		double z = te.zCoord+0.5;
+		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol*this.getModVolume(), pitch, false);
+	}
+
 	public void playSoundAtBlock(TileEntity te) {
 		this.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 	}
@@ -159,6 +173,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART;
 	}
 }

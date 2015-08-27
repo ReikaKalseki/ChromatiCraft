@@ -31,6 +31,8 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -221,9 +223,18 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	public void cancelDimNightVision(NightVisionBrightnessEvent evt) {
-		if (evt.player.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+	public void cancelBoostingNightVision(NightVisionBrightnessEvent evt) {
+		PotionEffect pot = evt.player.getActivePotionEffect(Potion.nightVision);
+		if (pot != null && pot.getAmplifier() == 4) {
 			evt.brightness = 0;
+		}
+	}
+
+	@SubscribeEvent
+	public void cancelDimNightVision(NightVisionBrightnessEvent evt) {
+		if (evt.player.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			evt.brightness = 0;
+		}
 	}
 
 	@SubscribeEvent

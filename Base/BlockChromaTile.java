@@ -145,6 +145,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 			TileEntityItemStand te = (TileEntityItemStand)world.getTileEntity(x, y, z);
 			return te.getItem() != null ? 6 : 0;
 		}
+		if (c == ChromaTiles.PYLONTURBO)
+			return 15;
 		return 0;
 	}
 

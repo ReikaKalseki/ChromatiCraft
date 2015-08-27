@@ -9,9 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
+import net.minecraft.entity.player.EntityPlayer;
 
 public interface SneakPop {
 
 	public void drop();
+
+	public boolean canDrop(EntityPlayer ep);
 
 }

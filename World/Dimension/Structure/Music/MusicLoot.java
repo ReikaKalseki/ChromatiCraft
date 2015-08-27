@@ -39,10 +39,10 @@ public class MusicLoot extends StructurePiece {
 		parent.addBreakable(x, y, z+5);
 		parent.addBreakable(x, y+1, z+5);
 
-		parent.addBreakable(x+6, y, z+4);
 		parent.addBreakable(x+6, y+1, z+4);
-		parent.addBreakable(x+6	, y, z+5);
-		parent.addBreakable(x+6, y+1, z+5);
+		parent.addBreakable(x+6, y+2, z+4);
+		parent.addBreakable(x+6	, y+1, z+5);
+		parent.addBreakable(x+6, y+2, z+5);
 	}
 
 	private void generateBlocks(ChunkSplicedGenerationCache world, int x, int y, int z) {

@@ -30,9 +30,9 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 	private final double windAngle;
 	private final double climbAngle;
 
-	private double tolerance = 1.5;
-	private double freedom = 20;
-	private double velocity = 0.75;
+	public double tolerance = 1.5;
+	public double freedom = 20;
+	public double velocity = 0.75;
 
 	public EntityFloatingSeedsFX(World world, double x, double y, double z, double windAng, double climbAng) {
 		super(world, x, y, z);
@@ -57,9 +57,6 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 				break;
 			case 3:
 				ico = ChromaIcons.CENTER.getIcon();
-				break;
-			case 4:
-				ico = ChromaIcons.ROSES_WHITE.getIcon();
 				break;
 		}
 		this.setParticleIcon(ico);

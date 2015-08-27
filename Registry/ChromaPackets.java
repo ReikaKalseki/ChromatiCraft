@@ -82,9 +82,10 @@ public enum ChromaPackets {
 	MUSICCLEAR(),
 	MUSICCLEARCHANNEL(1),
 	MUSICDEMO(),
-	PYLONTURBOEVENT(1),
+	PYLONTURBOEVENT(2),
 	PYLONTURBOCOMPLETE(),
-	PYLONTURBOFAIL(1);
+	PYLONTURBOFAIL(1),
+	MUSICPLAY(1);
 
 	public final int numInts;
 	public final PacketTypes type;

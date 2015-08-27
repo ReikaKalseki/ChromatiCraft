@@ -37,6 +37,9 @@ public class EntityBlurFX extends EntityFX {
 
 	private int lifeFreeze;
 
+	private int preColor = -1;
+	private int fadeColor = -1;
+
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
 	}
@@ -101,6 +104,12 @@ public class EntityBlurFX extends EntityFX {
 		return this.setColor(ReikaColorAPI.getRed(rgb), ReikaColorAPI.getGreen(rgb), ReikaColorAPI.getBlue(rgb));
 	}
 
+	public final EntityBlurFX fadeColors(int c1, int c2) {
+		preColor = c1;
+		fadeColor = c2;
+		return this.setColor(c1);
+	}
+
 	public final EntityBlurFX bound(AxisAlignedBB box) {
 		bounds = box;
 		return this;
@@ -151,6 +160,11 @@ public class EntityBlurFX extends EntityFX {
 		if (lifeFreeze > 0) {
 			lifeFreeze--;
 			particleAge--;
+		}
+
+		if (fadeColor != -1) {
+			int c = ReikaColorAPI.mixColors(fadeColor, preColor, particleAge/(float)particleMaxAge);
+			this.setColor(c);
 		}
 
 		if (rapidExpand)

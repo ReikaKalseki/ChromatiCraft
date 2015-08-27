@@ -103,11 +103,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 		if (t == ChromaTiles.PYLONTURBO) {
 			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)tile;
-			if (ProgressStage.CTM.isPlayerAtStage(ep) && te.trigger()) {
-				ChromaSounds.CAST.playSoundAtBlock(te);
-			}
-			else {
-				ChromaSounds.ERROR.playSoundAtBlock(te);
+			if (ProgressStage.CTM.isPlayerAtStage(ep)) {
+				te.trigger();
 			}
 			return true;
 		}
@@ -129,7 +126,15 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (t == ChromaTiles.PYLON && ep.capabilities.isCreativeMode && DragonAPICore.debugtest) {
 			TileEntityCrystalPylon cp = (TileEntityCrystalPylon)tile;
-			cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+			if (ep.isSneaking()) {
+				if (cp.isEnhanced())
+					cp.disenhance();
+				else
+					cp.enhance();
+			}
+			else {
+				cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+			}
 			return true;
 		}
 

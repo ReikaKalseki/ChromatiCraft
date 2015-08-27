@@ -27,7 +27,7 @@ public class ItemBlockLockKey extends ItemBlockMultiType {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		li.add("Channel: "+BlockLockKey.LockChannel.lockList[is.getItemDamage()].name);
-		if (ReikaObfuscationHelper.isDeObfEnvironment())
+		if (is.stackTagCompound != null && ReikaObfuscationHelper.isDeObfEnvironment())
 			li.add("UUID: "+is.stackTagCompound.getString("uid"));
 	}
 

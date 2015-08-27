@@ -110,6 +110,10 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 		this.reset();
 	}
 
+	public boolean canDrop(EntityPlayer ep) {
+		return ep.getUniqueID().equals(placerUUID);
+	}
+
 	public void passThrough() {
 		if (this.isLinked()) {
 			TileEntityRift te = this.getOther();

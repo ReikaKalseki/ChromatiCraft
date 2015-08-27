@@ -19,15 +19,21 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.ChromaGuiHandler;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -156,5 +162,45 @@ public class ChromaAux {
 	public static boolean requiresSpecialSpawnEnforcement(EntityLiving e) {
 		String name = e.getClass().getName().toLowerCase();
 		return name.contains("lycanite");
+	}
+
+	public static void doPylonAttack(EntityLivingBase e, float amt, boolean taperNew) {
+		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
+
+		if (e instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)e;
+			ProgressStage.SHOCK.stepPlayerTo(ep);
+			//DO NOT UNCOMMENT, AS ALLOWS DISCOVERY OF ALL COLORS BEFORE PREREQ//ProgressionManager.instance.setPlayerDiscoveredColor(ep, color, true);
+			if (ModList.BLOODMAGIC.isLoaded()) {
+				int drain = 5000;
+				if (BloodMagicHandler.getInstance().isPlayerWearingFullBoundArmor(ep)) {
+					amt *= 10; //counter the 90% reduction
+					drain = 50000;
+				}
+				SoulNetworkHandler.syphonFromNetwork(ep.getCommandSenderName(), drain);
+			}
+
+			if (taperNew) {
+				if (e.ticksExisted < 600) {
+					amt = 1; //1/2 heart for first 30s
+				}
+				else if (e.ticksExisted <= 1000) {
+					amt = 1+(e.ticksExisted-600)/100; //increase by 1/2 heart every 5 seconds, up to 2.5 hearts at 50 seconds
+				}
+			}
+		}
+
+		float last = e.getHealth();
+
+		e.attackEntityFrom(ChromatiCraft.pylon, amt);
+
+		if (e.getHealth() > last-amt) {
+			if (amt > last) { //kill
+				e.setHealth(0.1F);
+				e.attackEntityFrom(ChromatiCraft.pylon, Float.MAX_VALUE);
+			}
+			else
+				e.setHealth(last-amt);
+		}
 	}
 }

@@ -45,12 +45,17 @@ public class CrystalFlow extends CrystalPath {
 	protected void initialize() {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
-		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).addTarget(nodes.get(nodes.size()-2), element, 0, 0, 0);
+		WorldLocation locs = nodes.get(nodes.size()-2);
+		ImmutableTriple<Double, Double, Double> offset = ((CrystalReceiver)locs.getTileEntity()).getTargetRenderOffset(element);
+		double sx = offset != null ? offset.left : 0;
+		double sy = offset != null ? offset.middle : 0;
+		double sz = offset != null ? offset.right : 0;
+		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).addTarget(locs, element, sx, sy, sz);
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				ImmutableTriple<Double, Double, Double> offset = i == 1 ? ((CrystalReceiver)tg.getTileEntity()).getTargetRenderOffset(element) : null;
+				offset = ((CrystalReceiver)tg.getTileEntity()).getTargetRenderOffset(element);
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
@@ -61,6 +66,23 @@ public class CrystalFlow extends CrystalPath {
 				te.markSource(src);
 			}*/
 		}
+	}
+
+	private String getTiles() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(0 is receiver, size-1 is source) N=");
+		sb.append(nodes.size());
+		sb.append("[");
+		int i = 0;
+		for (WorldLocation loc : nodes) {
+			sb.append(i);
+			sb.append("=");
+			sb.append(loc.getTileEntity());
+			sb.append(";");
+			i++;
+		}
+		sb.append("]");
+		return sb.toString();
 	}
 
 	public void resetTiles() {
