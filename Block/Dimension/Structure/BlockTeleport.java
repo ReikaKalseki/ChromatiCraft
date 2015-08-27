@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -28,9 +27,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
@@ -38,6 +34,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -187,12 +184,11 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		return tag;
 	}
 
-	public static class TileEntityTeleport extends TileEntity {
+	public static class TileEntityTeleport extends StructureBlockTile {
 
 		/** Is a relative position! */
 		public BlockVector destination;
 		public ForgeDirection facing;
-		private UUID uid;
 
 		private long lastActiveTick = -1;
 
@@ -292,8 +288,6 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 				destination.writeToNBT(tag);
 				NBT.setTag("pos", tag);
 			}
-			if (uid != null)
-				NBT.setString("uid", uid.toString());
 		}
 
 		@Override
@@ -303,23 +297,6 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			facing = ForgeDirection.VALID_DIRECTIONS[NBT.getInteger("face")];
 			NBTTagCompound tag = NBT.getCompoundTag("pos");
 			destination = BlockVector.readFromNBT(tag);
-
-			if (NBT.hasKey("uid"))
-				uid = UUID.fromString(NBT.getString("uid"));
-		}
-
-		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
@@ -343,10 +320,21 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			criteria.add(tc);
 		}
 
+		@Override
+		public DimensionStructureType getType() {
+			return DimensionStructureType.NONEUCLID;
+		}
+
 	}
 
 	private static void onTeleport(EntityPlayer ep, TileEntityTeleport te) {
-		for (Coordinate c : ((NonEuclideanGenerator)DimensionStructureType.NONEUCLID.getGenerator(te.uid)).getPortalLocations()) {
+		NonEuclideanGenerator g = (NonEuclideanGenerator)te.getGenerator();
+		if (g == null) {
+			ChromatiCraft.logger.logError("Teleport block @ "+te.xCoord+", "+te.yCoord+", "+te.zCoord+" has no strucure with ID="+te.uid);
+			ChromatiCraft.logger.log("Available Structures: "+DimensionStructureType.NONEUCLID.getUUIDs());
+			return;
+		}
+		for (Coordinate c : g.getPortalLocations()) {
 			TileEntity tile = c.getTileEntity(te.worldObj);
 			if (tile instanceof TileEntityTeleport && !tile.isInvalid()) {
 				((TileEntityTeleport)tile).onPlayerTeleported(ep, te);

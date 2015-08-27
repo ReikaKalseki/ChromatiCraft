@@ -11,15 +11,17 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.LockLevel;
 import Reika.ChromatiCraft.Base.StructureData;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -29,6 +31,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksLoot;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class LocksGenerator extends DimensionStructureGenerator {
 
@@ -37,6 +40,8 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	private int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
 	private int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];
 	private int[] whiteLock = new int[BlockLockKey.LockChannel.lockList.length];
+
+	private HashSet<Coordinate> lockCache = new HashSet();
 
 	@Override
 	public void calculate(int x, int z, Random rand) {
@@ -169,6 +174,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		genOrder.clear();
+		lockCache.clear();
 		this.resetColorCaches();
 	}
 
@@ -202,12 +208,12 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	public void markOpenGate(World world, int structIndex) {
 		gateCodes[structIndex]--;
-		BlockColoredLock.updateTiles(world, -1);
+		this.updateTiles(world, -1);
 	}
 
 	public void markClosedGate(World world, int structIndex) {
 		gateCodes[structIndex]++;
-		BlockColoredLock.updateTiles(world, -1);
+		this.updateTiles(world, -1);
 	}
 
 	public boolean isOpen(CrystalElement e, int structIndex) {
@@ -223,7 +229,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			keyCodes[structIndex][e.ordinal()]++;
 		}
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		BlockColoredLock.updateTiles(world, -1);
+		this.updateTiles(world, -1);
 	}
 
 	public void closeColor(CrystalElement e, World world, int structIndex) {
@@ -235,7 +241,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			keyCodes[structIndex][e.ordinal()]--;
 		}
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		BlockColoredLock.updateTiles(world, -1);
+		this.updateTiles(world, -1);
 	}
 
 	public int getWhiteLock(int channel) {
@@ -248,5 +254,29 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	public int getGateCode(int channel) {
 		return gateCodes[channel];
+	}
+
+	public void freezeLocks(World world, int structIndex, int time) {
+		this.updateTiles(world, time);
+	}
+
+	private void updateTiles(World world, int time) {
+		for (Coordinate loc : lockCache) {
+			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity(world);
+			if (te == null) {
+				ReikaJavaLibrary.pConsole("Colored lock @ "+loc+" in DIM"+world.provider.dimensionId+" has no TileEntity!!");
+				ReikaJavaLibrary.pConsole("Present block ID: "+Block.getIdFromBlock(loc.getBlock(world)));
+				//loc.setBlock(world, Blocks.brick_block);
+				continue;
+			}
+			if (time >= 0)
+				te.queueTick(time);
+			else
+				te.recalc();
+		}
+	}
+
+	public void addLock(int x, int y, int z) {
+		lockCache.add(new Coordinate(x-6, y, z)); //why -6?
 	}
 }

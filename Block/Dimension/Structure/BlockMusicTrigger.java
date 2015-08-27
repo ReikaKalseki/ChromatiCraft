@@ -78,7 +78,7 @@ public class BlockMusicTrigger extends Block {
 	@SideOnly(Side.CLIENT)
 	public static void createParticle(World world, int x, int y, int z, CrystalElement e) {
 		double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
-		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
+		EntityRuneFX fx = new EntityRuneFX(world, x+0.5, y+0.5, z+0.5, 0, v, 0, e).setGravity(0).setScale(4).setLife(20);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
 		for (int i = 0; i < 12; i++) {

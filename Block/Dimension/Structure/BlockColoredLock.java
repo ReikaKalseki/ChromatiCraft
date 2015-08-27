@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -24,9 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -34,15 +30,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockColoredLock extends BlockContainer {
@@ -145,29 +139,22 @@ public class BlockColoredLock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
-		((TileEntityColorLock)world.getTileEntity(x, y, z)).breakBlock();
 		super.breakBlock(world, x, y, z, b, meta);
 	}
 
-	public static class TileEntityColorLock extends TileEntity implements LocationCached {
+	public static class TileEntityColorLock extends StructureBlockTile {
 
 		private boolean isOpen;
 		private int channel;
 		private HashSet<CrystalElement> colors = new HashSet();
 		private HashSet<CrystalElement> closedColors = new HashSet();
-		private static Collection<WorldLocation> cache = new HashSet();
 		private boolean ticked = false;
 		private int queueTick;
-		public UUID uid;
 
 		public TileEntityColorLock addColor(CrystalElement e) {
 			colors.add(e);
 			closedColors.add(e);
 			return this;
-		}
-
-		private void cache() {
-			cache.add(new WorldLocation(this));
 		}
 
 		private void open() {
@@ -192,7 +179,6 @@ public class BlockColoredLock extends BlockContainer {
 		@Override
 		public void updateEntity() {
 			if (!ticked) {
-				this.cache();
 				this.close();
 				closedColors.addAll(colors);
 				ticked = true;
@@ -223,9 +209,6 @@ public class BlockColoredLock extends BlockContainer {
 				li2.appendTag(new NBTTagInt(e.ordinal()));
 			}
 			NBT.setTag("closed_colors", li2);
-
-			if (uid != null)
-				NBT.setString("uid", uid.toString());
 		}
 
 		@Override
@@ -249,30 +232,13 @@ public class BlockColoredLock extends BlockContainer {
 				closedColors.add(CrystalElement.elements[tag.func_150287_d()]);
 			}
 
-			if (NBT.hasKey("uid"))
-				uid = UUID.fromString(NBT.getString("uid"));
-
 			//ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
-		}
-
-		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private void recalcColors() {
 			boolean flag = true;
 			closedColors.clear();
-			LocksGenerator g = (LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid);
+			LocksGenerator g = (LocksGenerator)this.getGenerator();
 			if (g.getWhiteLock(channel) <= 0) {
 				for (CrystalElement e : colors) {
 					if (g.getColorCode(channel, e) <= 0) {
@@ -294,11 +260,6 @@ public class BlockColoredLock extends BlockContainer {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
-		@Override
-		public void breakBlock() {
-			cache.remove(new WorldLocation(this));
-		}
-
 		public Collection<CrystalElement> getColors() {
 			return Collections.unmodifiableCollection(colors);
 		}
@@ -317,7 +278,7 @@ public class BlockColoredLock extends BlockContainer {
 
 		private void recalcGate() {
 			//ReikaJavaLibrary.pConsole(((LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid)).getGateCode(channel), channel == 0);
-			this.updateState(((LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid)).getGateCode(channel) == 0);
+			this.updateState(((LocksGenerator)this.getGenerator()).getGateCode(channel) == 0);
 		}
 
 		public void recalc() {
@@ -330,24 +291,14 @@ public class BlockColoredLock extends BlockContainer {
 		public void setChannel(int ch) {
 			channel = ch;
 		}
-	}
 
-	public static void freezeLocks(World world, int structIndex, int time) {
-		updateTiles(world, time);
-	}
+		public void queueTick(int time) {
+			queueTick = time;
+		}
 
-	public static void updateTiles(World world, int time) {
-		for (WorldLocation loc : TileEntityColorLock.cache) {
-			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity();
-			if (te == null) {
-				ReikaJavaLibrary.pConsole(loc+" has no TileEntity!!");
-				//loc.setBlock(Blocks.brick_block);
-				continue;
-			}
-			if (time >= 0)
-				te.queueTick = time;
-			else
-				te.recalc();
+		@Override
+		public DimensionStructureType getType() {
+			return DimensionStructureType.LOCKS;
 		}
 	}
 

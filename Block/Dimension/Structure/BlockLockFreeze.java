@@ -14,15 +14,15 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class BlockLockFreeze extends BlockContainer {
@@ -77,8 +77,7 @@ public class BlockLockFreeze extends BlockContainer {
 		if (te.isActive())
 			return;
 		int time = 160;
-		BlockColoredLock.freezeLocks(world, te.getChannel(), time);
-		te.setTime(time);
+		te.freeze(time);
 	}
 
 	@Override
@@ -86,12 +85,17 @@ public class BlockLockFreeze extends BlockContainer {
 		return new TileEntityLockFreeze();
 	}
 
-	public static class TileEntityLockFreeze extends TileEntity {
+	public static class TileEntityLockFreeze extends StructureBlockTile {
 
 		private int timer = 0;
 
 		public boolean isActive() {
 			return timer > 0;
+		}
+
+		private void freeze(int time) {
+			((LocksGenerator)this.getGenerator()).freezeLocks(worldObj, this.getChannel(), time);
+			this.setTime(time);
 		}
 
 		public int getChannel() {
@@ -147,17 +151,8 @@ public class BlockLockFreeze extends BlockContainer {
 		}
 
 		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		public DimensionStructureType getType() {
+			return DimensionStructureType.LOCKS;
 		}
 
 	}

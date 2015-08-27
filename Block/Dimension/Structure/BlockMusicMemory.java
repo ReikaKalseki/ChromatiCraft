@@ -19,22 +19,26 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockMusicMemory extends BlockContainer {
 
@@ -66,15 +70,15 @@ public class BlockMusicMemory extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
-		//if (!world.isRemote) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof TileMusicMemory) {
-			TileMusicMemory mus = (TileMusicMemory)te;
-			if (s == mus.facing.ordinal()) {
-				mus.play();
+		if (!world.isRemote) {
+			TileEntity te = world.getTileEntity(x, y, z);
+			if (te instanceof TileMusicMemory) {
+				TileMusicMemory mus = (TileMusicMemory)te;
+				if (s == mus.facing.ordinal()) {
+					mus.play();
+				}
 			}
 		}
-		//}
 		return true;
 	}
 
@@ -98,7 +102,7 @@ public class BlockMusicMemory extends BlockContainer {
 		}
 	}
 
-	public static class TileMusicMemory extends TileEntity {
+	public static class TileMusicMemory extends StructureBlockTile {
 
 		private int tick;
 		private int index;
@@ -193,21 +197,26 @@ public class BlockMusicMemory extends BlockContainer {
 		}
 		 */
 		private void playKey(MusicKey key) {
-			double rel = key.getRatio(MusicKey.C5);
-			ChromaSounds.DING.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord-1, 1, (float)rel);
-			ChromaSounds.DING.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord+9, 1, (float)rel);
-			for (CrystalElement e : CrystalMusicManager.instance.getColorsWithKey(key)) {
-				this.playCrystal(e);
-			}
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICPLAY.ordinal(), this, 24, key.ordinal());
 			//ReikaJavaLibrary.pConsole(key);
 		}
 
+		@SideOnly(Side.CLIENT)
+		public void playKeyClient(MusicKey key) {
+			double rel = key.getRatio(MusicKey.C5);
+			ReikaSoundHelper.playClientSound(ChromaSounds.DING, xCoord+0.5, yCoord+0.5, zCoord+0.5-1, 1, (float)rel);
+			ReikaSoundHelper.playClientSound(ChromaSounds.DING, xCoord+0.5, yCoord+0.5, zCoord+0.5+9, 1, (float)rel);
+			for (CrystalElement e : CrystalMusicManager.instance.getColorsWithKey(key)) {
+				this.playCrystal(e);
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
 		private void playCrystal(CrystalElement e) {
 			int dy = yCoord+1;
 			int dx = e.ordinal() >= 8 ? xCoord-4 : xCoord+4;
 			int dz = zCoord+1+e.ordinal()%8;
-			if (worldObj.isRemote)
-				BlockMusicTrigger.createParticle(worldObj, dx, dy, dz, e);
+			BlockMusicTrigger.createParticle(worldObj, dx, dy, dz, e);
 		}
 
 		public void play() {
@@ -243,17 +252,8 @@ public class BlockMusicMemory extends BlockContainer {
 		}
 
 		@Override
-		public Packet getDescriptionPacket() {
-			NBTTagCompound NBT = new NBTTagCompound();
-			this.writeToNBT(NBT);
-			S35PacketUpdateTileEntity pack = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, NBT);
-			return pack;
-		}
-
-		@Override
-		public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity p)  {
-			this.readFromNBT(p.field_148860_e);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		public DimensionStructureType getType() {
+			return DimensionStructureType.MUSIC;
 		}
 
 	}

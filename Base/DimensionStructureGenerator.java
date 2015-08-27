@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
@@ -327,6 +328,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			return generators.get(uid);
 		}
 
+		public Collection<UUID> getUUIDs() {
+			return Collections.unmodifiableCollection(generators.keySet());
+		}
+
 	}
 
 	public static class DynamicPieceLocation {
@@ -337,20 +342,25 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 		private DynamicPieceLocation(DynamicStructurePiece gen, int x, int z) {
 			generator = gen;
-			x = x%16;
-			z = z%16;
-			if (x < 0) {
-				x += 16;
-				if (x%16 == 0)
-					x += 16;
+			relX = ChunkSplicedGenerationCache.modAndAlign(x);
+			relZ = ChunkSplicedGenerationCache.modAndAlign(z);
+		}
+
+	}
+
+	public static final class UUIDPlace implements TileCallback {
+
+		private final UUID uid;
+
+		public UUIDPlace(UUID id) {
+			uid = id;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			if (te instanceof StructureBlockTile) {
+				((StructureBlockTile)te).uid = uid;
 			}
-			if (z < 0) {
-				z += 16;
-				if (z%16 == 0)
-					z += 16;
-			}
-			relX = x;
-			relZ = z;
 		}
 
 	}

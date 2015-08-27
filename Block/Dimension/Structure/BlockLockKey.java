@@ -26,6 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.LockLevel;
+import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -248,26 +249,11 @@ public class BlockLockKey extends Block {
 	}
 	 */
 
-	public static class TileEntityLockKey extends TileEntity {
-
-		public UUID uid;
+	public static class TileEntityLockKey extends StructureBlockTile {
 
 		@Override
-		public void writeToNBT(NBTTagCompound NBT) {
-			super.writeToNBT(NBT);
-
-			if (uid != null)
-				NBT.setString("uid", uid.toString());
-		}
-
-		@Override
-		public void readFromNBT(NBTTagCompound NBT) {
-			super.readFromNBT(NBT);
-
-			if (NBT.hasKey("uid"))
-				uid = UUID.fromString(NBT.getString("uid"));
-
-			//ReikaJavaLibrary.pConsole(colors+":"+FMLCommonHandler.instance().getEffectiveSide(), worldObj != null && this.getBlockMetadata() == 0);
+		public DimensionStructureType getType() {
+			return DimensionStructureType.LOCKS;
 		}
 
 	}
