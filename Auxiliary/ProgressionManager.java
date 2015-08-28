@@ -109,6 +109,7 @@ public class ProgressionManager implements ProgressRegistry {
 		BREAKSPAWNER(Blocks.mob_spawner),
 		KILLDRAGON(Blocks.dragon_egg),
 		KILLWITHER(Items.nether_star),
+		KILLMOB(new ItemStack(Items.skull, 1, 4)),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -245,6 +246,9 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.END);
 
 		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.NETHER);
+
+		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.KILLMOB);
+		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.KILLMOB);
 
 		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);

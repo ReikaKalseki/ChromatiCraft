@@ -33,8 +33,8 @@ public class PotionCustomRegen extends Potion {
 
 	@Override
 	public boolean isReady(int dura, int level) {
-		int d = level > 0 ? 1+(120 >> (6*level)) : 190;
-		return dura%d == 0 && (level > 0 || ReikaRandomHelper.doWithChance(10));
+		int d = level > 0 ? 1+(120 >> (6*level)) : 100;
+		return dura%d == 0 && (level > 0 || ReikaRandomHelper.doWithChance(25));
 	}
 
 }

@@ -73,6 +73,8 @@ public class GuiMachineDescription extends GuiDescription {
 
 		if (m.isPlant())
 			renderq = 22.5F;
+		if (m.isTextureFace())
+			renderq = 22.5F;
 
 		GL11.glEnable(GL11.GL_BLEND);
 
@@ -83,6 +85,9 @@ public class GuiMachineDescription extends GuiDescription {
 		int r = (int)(System.nanoTime()/20000000)%360;
 		if (m.isPlant())
 			r = -45;
+		if (m.isTextureFace())
+			r = -45;
+
 		if (m.hasRender()) {
 			double dx = x;
 			double dy = y+m.getRenderOffset();
@@ -92,7 +97,18 @@ public class GuiMachineDescription extends GuiDescription {
 			GL11.glScaled(sc, -sc, sc);
 			GL11.glRotatef(renderq, 1, 0, 0);
 			GL11.glRotatef(r, 0, 1, 0);
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(m.createTEInstanceForRender(), -0.5, 0, -0.5, 0);
+			double a = -0.5;
+			double b = -0.5;
+			if (m.needsRenderOffset()) {
+				a = b = -0.875;
+				GL11.glTranslated(0, -0.3, 0);
+			}
+			if (m == ChromaTiles.PERSONAL) {
+				double s = 0.75;
+				GL11.glScaled(s, s, s);
+				GL11.glTranslated(0, 0.5, 0);
+			}
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(m.createTEInstanceForRender(), a, 0, b, 0);
 			GL11.glPopMatrix();
 		}
 		if (m.hasBlockRender()) {

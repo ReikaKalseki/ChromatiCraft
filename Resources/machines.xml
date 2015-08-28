@@ -340,38 +340,38 @@
 
 		</note>
 	</window>
-	<name>
+	<music>
 		<desc>
-
+How many times have you banged out a tune on the different colors of crystals? With your new device, you should be able to attain even greater musical fidelity, complete with greater range, chord capability, and even - somehow - an oddly familiar melody that came pre-etched into the crystal matrix.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</music>
+	<turret>
 		<desc>
-
+			If you had an emerald for every time a creeper ambushed you right as you left your front door, you would have enough to be able to afford trading with villagers. Frustrated with this repeated occurrence, you have designed a small construct which can fire energy into nearby hostiles, ultimately killing them. Now all they need is a high-pitched voice and a polite demeanor...
+		</desc>
+		<note>
+			Requires a clear view of the sky and the target mob to function
+		</note>
+	</turret>
+	<pylonturbo>
+		<desc>
+			You knew you could turbocharge your pylons, but that little display of yours, hopping up and down around the pylon, wildly flailing your manipulator, was neither insightful, productive, nor dignified. Now, however, the pattern is more clear: You need to enhance the structure, building a ring of 8 foci - and one central one below the pylon itself - and trigger the central one with your manipulator. Surely interrupting this process - or breaking the stabilization ring afterwards - is a very bad idea.
+		</desc>
+		<note>
+			Ring: Requires a clear view of the sky and air around it to work; Center: Must be placed 8 blocks below the pylon's orb
+		</note>
+	</pylonturbo>
+	<personal>
+		<desc>
+			Flying out to each of the sixteen colors of pylon to draw energy from them to power your abilities is a massive headache. Perhaps you could try to imitate them somehow. No doubt you lack the skill - or patience - required to duplicate them exactly, but the end result, if not able to be networked, might still serve as a useful charging point, as well as a nice decoration.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
-		<desc>
-
-		</desc>
-		<note>
-
-		</note>
-	</name>
-	<name>
-		<desc>
-
-		</desc>
-		<note>
-
-		</note>
-	</name>
+	</personal>
 	<name>
 		<desc>
 

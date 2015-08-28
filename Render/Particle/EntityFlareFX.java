@@ -59,6 +59,16 @@ public class EntityFlareFX extends EntityFX {
 		return this;
 	}
 
+	public EntityFlareFX setLife(int time) {
+		particleMaxAge = time;
+		return this;
+	}
+
+	public EntityFlareFX setScale(float scale) {
+		particleScale = scale;
+		return this;
+	}
+
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{

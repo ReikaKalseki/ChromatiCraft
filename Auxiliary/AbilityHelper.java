@@ -130,6 +130,9 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
 		progressMap.addValue(Chromabilities.DIMPING, ProgressStage.DIMENSION);
+		progressMap.addValue(Chromabilities.COMMUNICATE, ProgressStage.KILLMOB);
+		progressMap.addValue(Chromabilities.RANGEDBOOST, ProgressStage.KILLMOB);
+		progressMap.addValue(Chromabilities.LEECH, ProgressStage.KILLMOB);
 
 		for (TileXRays x : TileXRays.values()) {
 			xRayMap.put(x.tileClass, x);

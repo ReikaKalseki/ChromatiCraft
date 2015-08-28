@@ -82,7 +82,8 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 			GL11.glScaled(s, s, s);
 			GL11.glTranslated(0, 0.25, 0);
 		}
-		this.renderModel(te, model);
+		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld())
+			this.renderModel(te, model);
 		GL11.glPopMatrix();
 
 		BlendMode.ADDITIVEDARK.apply();

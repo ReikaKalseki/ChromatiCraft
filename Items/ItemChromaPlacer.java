@@ -194,6 +194,13 @@ public class ItemChromaPlacer extends Item implements ISize {
 						par3List.add(item2);
 					}
 				}
+				else if (c.isRepeater()) {
+					par3List.add(item);
+					ItemStack item2 = item.copy();
+					item2.stackTagCompound = new NBTTagCompound();
+					item2.stackTagCompound.setBoolean("boosted", true);
+					par3List.add(item2);
+				}
 				else {
 					par3List.add(item);
 				}
@@ -234,6 +241,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (r == ChromaTiles.ASPECTJAR && is.stackTagCompound != null && ModList.THAUMCRAFT.isLoaded()) {
 			li.addAll(TileEntityAspectJar.parseNBT(is.stackTagCompound));
+		}
+		if (r.isRepeater() && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted")) {
+			li.add(EnumChatFormatting.GOLD+"Turbocharged");
 		}
 	}
 

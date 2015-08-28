@@ -51,9 +51,9 @@
 	<float>
 		With some special augments - those spring-loaded boots are especially helpful - you have become able to run along the ground at high speed. This would be even better were it not for those pesky lakes, rivers, and oceans that stymie your running abilities. Being able to skip across the surface would be most convenient. Just avoid angry mobs with torches and kindling...
 	</float>
-	<warploc>
+	<teleport>
 		If you had an ingot for every time you found something of value, lacked the inventory space to carry it back, and then never found again, you would have...you have no idea how many, because if you did, you would probably not have forgotten them in the first place. At any rate, if you could mark positions - and even better, somehow warp to them at will - it would be of great value.
-	</warploc>
+	</teleport>
 	<breadcrumb>
 		Caves are...not fun. Sure, they are loaded with resources, but for some reason you take ten steps into one and you are already hopelessly lost and take hours to find the way out, usually only barely managing before you run out of torches, food, tools, or all of the above. Being able to trace your path and see the way back out, or even just knowing where you have been, may - MAY - help your apparently severely underdeveloped navigational skills.
 	</breadcrumb>

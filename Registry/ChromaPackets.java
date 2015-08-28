@@ -85,7 +85,8 @@ public enum ChromaPackets {
 	PYLONTURBOEVENT(2),
 	PYLONTURBOCOMPLETE(),
 	PYLONTURBOFAIL(1),
-	MUSICPLAY(1);
+	MUSICPLAY(1),
+	TURRETATTACK(1);
 
 	public final int numInts;
 	public final PacketTypes type;

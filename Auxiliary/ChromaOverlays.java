@@ -99,6 +99,7 @@ public class ChromaOverlays {
 	private static final int WASHOUT_LENGTH = 312;
 	private static final int WASHOUT_FACTOR = 2;
 	private static final int FLASH_FADE = 4;
+	private boolean rehideGui;
 	private int washout;
 	private CrystalElement washoutColor;
 
@@ -153,6 +154,10 @@ public class ChromaOverlays {
 		}
 	}
 
+	public boolean isWashoutActive() {
+		return washout > 0;
+	}
+
 	private void renderWashout(RenderGameOverlayEvent.Pre evt) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -182,6 +187,11 @@ public class ChromaOverlays {
 		if (!Minecraft.getMinecraft().isGamePaused()) {
 			if (washout >= WASHOUT_LENGTH-FLASH_FADE || tick%WASHOUT_FACTOR == 0)
 				washout--;
+			if (washout == 0) {
+				if (rehideGui) {
+					Minecraft.getMinecraft().gameSettings.hideGUI = true;
+				}
+			}
 		}
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -350,6 +360,8 @@ public class ChromaOverlays {
 	}
 
 	public void triggerWashout(CrystalElement e) {
+		rehideGui = Minecraft.getMinecraft().gameSettings.hideGUI;
+		Minecraft.getMinecraft().gameSettings.hideGUI = false;
 		washout = Math.max(washout, WASHOUT_LENGTH-FLASH_FADE);
 		washoutColor = e;
 	}

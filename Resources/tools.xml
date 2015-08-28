@@ -19,7 +19,7 @@
 		As you have already discovered, crystallized elemental energy can be found scattered around the world, and its proximity imbues the effects of that element on yourself. However, the effect is rather less than convenient to transport in a form that bulky, so a logical next step would be to wear a small part of the crystal to allow you to benefit from its effects at any location.
 	</pendant>
 	<vacuumgun>
-		
+		Though purely utilitarian ways of killing hostile mobs get the job done, they lack a certain entertainment value. With that in mind, you devised a weapon that creates a rift in the fabric of space, pulling all the creatures into it from a substantial radius. Even better, it seems to rip the blocks out of the ground as well.
 	</vacuumgun>
 	<lens>
 		Crystal Lenses work much like their optical counterparts, focusing, tinting, and otherwise manipulating a beam of energy so that it can apply its effects more strongly over a smaller area.
@@ -69,9 +69,6 @@
 	<splash>
 		For groups of tightly packed mobs, the usual strategy is to wildly flail a sword around you, but this is both rather amateur and ineffective. A weapon that dealt splash damage would be ideal...
 	</splash>
-	<vacuum>
-		Though purely utilitarian ways of killing hostile mobs get the job done, they lack a certain entertainment value. With that in mind, you devised a weapon that creates a rift in the fabric of space, pulling all the creatures into it from a substantial radius. Even better, it seems to rip the blocks out of the ground as well.
-	</vacuum>
 	<endercrys>
 		You recall needing eight of those mysterious pulsing crystals from the eldritch island, but attempting to interact with them blew up in your face...literally. You need a more delicate method of picking them up and storing them.
 	</endercrys>

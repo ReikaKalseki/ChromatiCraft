@@ -133,6 +133,7 @@ public enum ChromaResearch implements ProgressElement {
 	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
 	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
 	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.CTM),
+	TURRET(			ChromaTiles.TURRET,			ResearchLevel.BASICCRAFT,		ProgressStage.KILLMOB),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -167,7 +168,7 @@ public enum ChromaResearch implements ProgressElement {
 	TELEPORT(			ChromaItems.TELEPORT, 		ResearchLevel.MULTICRAFT),
 	DUPLICATOR(			ChromaItems.DUPLICATOR, 	ResearchLevel.MULTICRAFT),
 	BUILDER(			ChromaItems.BUILDER, 		ResearchLevel.MULTICRAFT),
-	CAPTURE(			ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT),
+	CAPTURE(			ChromaItems.CAPTURE, 		ResearchLevel.MULTICRAFT,	ProgressStage.KILLMOB),
 	VOIDCELL(			ChromaItems.VOIDCELL, 		ResearchLevel.ENDGAME),
 	AURAPOUCH(			ChromaItems.AURAPOUCH,		ResearchLevel.MULTICRAFT),
 	MULTITOOL(			ChromaItems.MULTITOOL,		ResearchLevel.RUNECRAFT),

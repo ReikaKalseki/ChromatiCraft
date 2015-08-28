@@ -161,6 +161,7 @@ public class ChromaticEventManager {
 	public void stopEndCountingEndAsDeath(net.minecraftforge.event.entity.player.PlayerEvent.Clone evt) {
 		if (!evt.wasDeath) {
 			PlayerElementBuffer.instance.copyTo(evt.original, evt.entityPlayer);
+			Chromabilities.copyTo(evt.original, evt.entityPlayer);
 		}
 	}
 
@@ -754,6 +755,10 @@ public class ChromaticEventManager {
 			else if (ev.entityLiving instanceof EntityWither) {
 				ProgressStage.KILLWITHER.stepPlayerTo(ep);
 			}
+
+			if (ReikaEntityHelper.isHostile(ev.entityLiving)) {
+				ProgressStage.KILLMOB.stepPlayerTo(ep);
+			}
 		}
 	}
 
@@ -878,6 +883,18 @@ public class ChromaticEventManager {
 			if (!BiomeRainbowForest.isMobAllowed(e)) {
 				ev.setResult(Result.DENY);
 				e.setDead();
+			}
+			else {
+				if (e instanceof EntitySlime) { //ignore the slime chunk and /10 rules
+					EntitySlime es = (EntitySlime)e;
+					if (es.posY < 40) {
+						if (world.checkNoEntityCollision(e.boundingBox)) {
+							if (world.getCollidingBoundingBoxes(e, e.boundingBox).isEmpty() && !world.isAnyLiquid(e.boundingBox)) {
+								ev.setResult(Result.ALLOW);
+							}
+						}
+					}
+				}
 			}
 		}
 		//ReikaJavaLibrary.pConsole(b.biomeName+":"+e.getCommandSenderName()+":"+ReikaEntityHelper.isHostile(e)+":"+ev.getResult());

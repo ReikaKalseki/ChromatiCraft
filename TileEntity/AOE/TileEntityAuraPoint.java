@@ -129,7 +129,9 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 		}
 		if (flag) {
 			ChromaSounds.DISCHARGE.playSoundAtBlock(this);
-			ChromaSounds.DISCHARGE.playSound(this.getPlacer(), 0.125F, 0.75F);
+			EntityPlayer ep = this.getPlacer();
+			if (ep != null && ep.getDistance(x+0.5, y+0.5, z+0.5) < 32)
+				ChromaSounds.DISCHARGE.playSound(ep, 0.125F, 0.75F);
 		}
 	}
 

@@ -1013,4 +1013,10 @@ public enum Chromabilities implements Ability {
 		}
 
 	}
+
+	public static void copyTo(EntityPlayer from, EntityPlayer to) {
+		NBTTagCompound nbt = from.getEntityData();
+		NBTTagCompound data = nbt.getCompoundTag(NBT_TAG);
+		to.getEntityData().setTag(NBT_TAG, data);
+	}
 }

@@ -184,6 +184,8 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return;
 		energy.readFromNBT("energy", is.stackTagCompound);
 	}
 

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -95,6 +96,8 @@ public class StructureCalculator implements Runnable {
 		catch (Throwable e) {
 			e.printStackTrace();
 			String msg = "Dimension structure generation thread failed with "+e.getClass().getName()+".";
+			if (e instanceof ConcurrentModificationException)
+				msg = msg+" A CME may be a transient issue. Try restarting to see if it happens consistently.";
 			FMLCommonHandler.instance().raiseException(e, msg, true);
 			ChromatiCraft.logger.logError(msg);
 		}

@@ -57,6 +57,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	private int groundTick;
 	private int skyTick = 0;
 
+	private boolean isComplete;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.PYLONTURBO;
@@ -197,7 +199,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 					return;
 				}
 				TileEntityPylonTurboCharger tile = (TileEntityPylonTurboCharger)c.getTileEntity(world);
-				tile.ritualTick = ritualTick-1;
+				tile.ritualTick = ritualTick;
 			}
 
 			if ((RITUAL_LENGTH-ritualTick)%200 == 0) {
@@ -217,7 +219,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				jetTick--;
 			}
 
-			if (this.triggerEffect(120, 1, 0)) {
+			if (this.triggerEffect(120, 1.5, 0)) {
 				this.doEvent(world, x, y, z, EventType.FLASH);
 			}
 			if (this.triggerEffect(20, 0.25, RITUAL_LENGTH/4)) {
@@ -259,6 +261,21 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		ChromaSounds.PYLONTURBO.playSoundAtBlock(this, 2, 1);
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		te.enhance();
+
+		for (int i = 0; i < Location.list.length; i++) {
+			Coordinate c = Location.list[i].position.offset(x, y, z);
+			ChromaTiles t = ChromaTiles.getTileFromIDandMetadata(c.getBlock(world), c.getBlockMetadata(world));
+			if (t != ChromaTiles.PYLONTURBO) {
+				this.failRitual(world, x, y, z);
+				return;
+			}
+			TileEntityPylonTurboCharger tile = (TileEntityPylonTurboCharger)c.getTileEntity(world);
+			tile.ritualTick = 0;
+			tile.isComplete = true;
+			tile.syncAllData(true);
+		}
+		isComplete = true;
+
 		this.syncAllData(true);
 	}
 
@@ -279,6 +296,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			tile.ritualTick = 0;
 		}
 		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 1, 1);
+		isComplete = false;
 		ritualTick = 0;
 		revTick = 0;
 		skyTick = 0;
@@ -678,6 +696,19 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	private void startRitual(World world, int x, int y, int z) {
 		ritualTick = RITUAL_LENGTH;
 		revTick = 40;
+
+		for (int i = 0; i < Location.list.length; i++) {
+			Location loc = Location.list[i];
+			Coordinate c = loc.position.offset(x, y, z);
+			ChromaTiles t = ChromaTiles.getTileFromIDandMetadata(c.getBlock(world), c.getBlockMetadata(world));
+			if (t != ChromaTiles.PYLONTURBO) {
+				this.failRitual(world, x, y, z);
+				return;
+			}
+			TileEntityPylonTurboCharger tile = (TileEntityPylonTurboCharger)c.getTileEntity(world);
+			tile.location = loc;
+		}
+
 		this.syncAllData(true);
 	}
 
@@ -689,6 +720,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		NBT.setInteger("rvtick", revTick);
 
 		NBT.setInteger("sky", skyTick);
+
+		NBT.setBoolean("complete", isComplete);
 	}
 
 	@Override
@@ -699,19 +732,23 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		revTick = NBT.getInteger("rvtick");
 
 		skyTick = NBT.getInteger("sky");
+
+		isComplete = NBT.getBoolean("complete");
 	}
 
 	@Override
 	public void breakBlock() {
-		if (location != null) {
-			Coordinate c = location.position.negate().offset(xCoord, yCoord, zCoord);
-			TileEntity te = c.getTileEntity(worldObj);
-			if (te instanceof TileEntityPylonTurboCharger) {
-				((TileEntityPylonTurboCharger)te).failRitual(worldObj, te.xCoord, te.yCoord, te.zCoord);
+		if (isComplete || ritualTick > 0) {
+			if (location != null) {
+				Coordinate c = location.position.negate().offset(xCoord, yCoord, zCoord);
+				TileEntity te = c.getTileEntity(worldObj);
+				if (te instanceof TileEntityPylonTurboCharger) {
+					((TileEntityPylonTurboCharger)te).failRitual(worldObj, te.xCoord, te.yCoord, te.zCoord);
+				}
 			}
-		}
-		else {
-			this.failRitual(worldObj, xCoord, yCoord, zCoord);
+			else {
+				this.failRitual(worldObj, xCoord, yCoord, zCoord);
+			}
 		}
 	}
 

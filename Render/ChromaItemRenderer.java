@@ -56,7 +56,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
 		if (machine.hasRender() && !machine.hasBlockRender()) {
 			TileEntity te = machine.createTEInstanceForRender();
-			if (machine.hasNBTVariants() && item.stackTagCompound != null) {
+			if (machine.hasNBTVariants()) {
 				((NBTTile)te).setDataFromItemStackTag(item);
 			}
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, entity ? -1 : 0);

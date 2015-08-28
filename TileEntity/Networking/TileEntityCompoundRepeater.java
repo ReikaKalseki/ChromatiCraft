@@ -59,12 +59,12 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			double px = x+0.5;//rand.nextDouble();
 			double py = y+0.5;//0.25+y+rand.nextDouble();
 			double pz = z+0.5;//rand.nextDouble();
-			CrystalElement e = this.getRenderColor(); //compensate for particle delay
+			CrystalElement e = this.getParticleColor(); //compensate for particle delay
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityRuneFX(world, px, py, pz, 0, 0, 0, e).setScale(5).setFading());
 		}
 	}
 
-	public CrystalElement getRenderColor() {
+	private CrystalElement getParticleColor() {
 		return this.getRenderColorWithOffset(8);
 	}
 

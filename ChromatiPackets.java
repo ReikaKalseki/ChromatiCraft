@@ -78,6 +78,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -529,6 +530,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case MUSICPLAY:
 					((TileMusicMemory)tile).playKeyClient(MusicKey.getByIndex(data[0]));
+					break;
+				case TURRETATTACK:
+					((TileEntityLumenTurret)tile).doAttackParticles(data[0]);
 					break;
 			}
 		}

@@ -108,6 +108,12 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			v5.addVertexWithUV(-1, 1, 0, u, dv);
 			v5.draw();
 
+			if (te.isTurbocharged()) {
+				GL11.glPushMatrix();
+				this.renderHalo(te);
+				GL11.glPopMatrix();
+			}
+
 			GL11.glPopMatrix();
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			BlendMode.DEFAULT.apply();
@@ -121,45 +127,54 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 	}
 
 	private void renderHalo(TileEntityCrystalRepeater te) {
-		GL11.glAlphaFunc(GL11.GL_GEQUAL, 1/255F);
-		int c = this.getHaloRenderColor(te);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		int c = te.worldObj != null ? this.getHaloRenderColor(te) : 0xffffff;
+		if (te.worldObj == null)
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
 		Tessellator v5 = Tessellator.instance;
 
 		int step = 15;
 		double d = (System.currentTimeMillis()/50D)%360;
+		int a = te.worldObj != null ? 90 : 30;
 		int n = 0;
-		for (int i = 0; i < 90; i += step) {
+		for (int i = 0; i < a; i += step) {
 			float u = 0;//ico.getMinU();
 			float v = 0;//ico.getMinV();
 			float du = 1;//ico.getMaxU();
 			float dv = 1;//ico.getMaxV();
 
+			double z = -i/(double)step*0.01;
+			double z2 = z-0.005;
+
 			GL11.glRotated(i+d, 0, 0, 1);
 
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Turbo/sections.png");
-			double s = 1.5+0.5*Math.sin(Math.toRadians(4*d+i*2));
+			double s = te.worldObj != null ? 1.5+0.5*Math.sin(Math.toRadians(4*d+i*2)) : 1.75;
 			v5.startDrawingQuads();
 			v5.setColorOpaque_I(c);
-			v5.addVertexWithUV(-s, -s, 0, u, v);
-			v5.addVertexWithUV(s, -s, 0, du, v);
-			v5.addVertexWithUV(s, s, 0, du, dv);
-			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.addVertexWithUV(-s, -s, z, u, v);
+			v5.addVertexWithUV(s, -s, z, du, v);
+			v5.addVertexWithUV(s, s, z, du, dv);
+			v5.addVertexWithUV(-s, s, z, u, dv);
 			v5.draw();
 
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Turbo/radiate.png");
-			s = 3;//2+1*Math.sin(Math.toRadians(4*d+i*2));
-			u = (te.getTicksExisted()+n*2)%18/18F;
-			du = u+1/18F;
-			v5.startDrawingQuads();
-			v5.setColorOpaque_I(c);
-			v5.addVertexWithUV(-s, -s, 0, u, v);
-			v5.addVertexWithUV(s, -s, 0, du, v);
-			v5.addVertexWithUV(s, s, 0, du, dv);
-			v5.addVertexWithUV(-s, s, 0, u, dv);
-			v5.draw();
+			if (te.worldObj != null) {
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Turbo/radiate.png");
+				s = 3;//2+1*Math.sin(Math.toRadians(4*d+i*2));
+				u = (te.getTicksExisted()+n*2)%18/18F;
+				du = u+1/18F;
+				v5.startDrawingQuads();
+				v5.setColorOpaque_I(c);
+				v5.addVertexWithUV(-s, -s, z2, u, v);
+				v5.addVertexWithUV(s, -s, z2, du, v);
+				v5.addVertexWithUV(s, s, z2, du, dv);
+				v5.addVertexWithUV(-s, s, z2, u, dv);
+				v5.draw();
+			}
 			n++;
 		}
-		GL11.glAlphaFunc(GL11.GL_GEQUAL, 0.1F);
+		GL11.glPopAttrib();
 	}
 
 	protected int getHaloRenderColor(TileEntityCrystalRepeater te) {

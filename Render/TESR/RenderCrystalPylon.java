@@ -150,15 +150,17 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 		float dv = ico.getMaxV();
 		GL11.glRotated(-d, 0, 0, 1);
 
+		double z = -0.01;
+
 		double s = 3+1*Math.sin(Math.toRadians(d));
 		//u = 0;//(te.getTicksExisted()+n*2)%18/18F;
 		//du = u+1/18F;
 		v5.startDrawingQuads();
 		v5.setColorOpaque_I(c);
-		v5.addVertexWithUV(-s, -s, 0, u, v);
-		v5.addVertexWithUV(s, -s, 0, du, v);
-		v5.addVertexWithUV(s, s, 0, du, dv);
-		v5.addVertexWithUV(-s, s, 0, u, dv);
+		v5.addVertexWithUV(-s, -s, z, u, v);
+		v5.addVertexWithUV(s, -s, z, du, v);
+		v5.addVertexWithUV(s, s, z, du, dv);
+		v5.addVertexWithUV(-s, s, z, u, dv);
 		v5.draw();
 		/*
 

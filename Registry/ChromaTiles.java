@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -50,6 +51,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
@@ -138,7 +140,8 @@ public enum ChromaTiles {
 	PERSONAL("chroma.personal",			ChromaBlocks.PYLON,			TileEntityPersonalCharger.class,	7, "RenderPersonalCharger"),
 	MUSIC("chroma.music",				ChromaBlocks.TILECRYSTAL,	TileEntityCrystalMusic.class,		2, "RenderCrystalMusic"),
 	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG),
-	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger");
+	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger"),
+	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret");
 
 	private final Class tile;
 	private final String name;
@@ -214,6 +217,7 @@ public enum ChromaTiles {
 			case RFDISTRIBUTOR:
 			case PERSONAL:
 			case PYLONTURBO:
+			case TURRET:
 				//case TANK:
 				//case ITEMRIFT:
 				return true;
@@ -364,6 +368,8 @@ public enum ChromaTiles {
 				return 0.1875;
 			case WINDOW:
 				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 0 : 0.4375;
+			case TURRET:
+				return 0.25;
 			default:
 				return 0;
 		}
@@ -381,6 +387,8 @@ public enum ChromaTiles {
 				return 0.1875;
 			case WINDOW:
 				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 0 : 0.4375;
+			case TURRET:
+				return 0.25;
 			default:
 				return 0;
 		}
@@ -394,6 +402,8 @@ public enum ChromaTiles {
 				return 0.8125;
 			case WINDOW:
 				return ((TileEntityTransportWindow)te).getFacing().offsetX == 0 ? 1 : 0.5625;
+			case TURRET:
+				return 0.75;
 			default:
 				return 1;
 		}
@@ -409,6 +419,8 @@ public enum ChromaTiles {
 				return 0.875;
 			case PYLONTURBO:
 				return 0.5;
+			case TURRET:
+				return 0.625;
 			default:
 				return 1;
 		}
@@ -422,6 +434,8 @@ public enum ChromaTiles {
 				return 0.8125;
 			case WINDOW:
 				return ((TileEntityTransportWindow)te).getFacing().offsetZ == 0 ? 1 : 0.5625;
+			case TURRET:
+				return 0.75;
 			default:
 				return 1;
 		}
@@ -486,6 +500,18 @@ public enum ChromaTiles {
 
 	public boolean isCrystalNetworkTile() {
 		return CrystalNetworkTile.class.isAssignableFrom(tile);
+	}
+
+	public boolean isRepeater() {
+		return CrystalRepeater.class.isAssignableFrom(tile);
+	}
+
+	public boolean needsRenderOffset() {
+		return this == ChromaTiles.TURRET || this == ChromaTiles.PYLONTURBO;
+	}
+
+	public boolean isTextureFace() {
+		return this == ChromaTiles.PERSONAL || this == ChromaTiles.AUTOMATOR;
 	}
 
 }
