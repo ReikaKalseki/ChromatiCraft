@@ -53,6 +53,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		if (!world.isRemote) {
 			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
 			b.call = this;
+			b.drops = !ep.capabilities.isCreativeMode;
 			breakers.put(b.hashCode(), ep);
 		}
 		return true;

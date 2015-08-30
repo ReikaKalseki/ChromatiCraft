@@ -45,8 +45,10 @@ public class ProgressionStageCommand extends DragonCommandBase {
 			else if (stage == -3) {
 				Collection<ProgressStage> c = ProgressionManager.instance.getStagesFor(ep);
 				Collection<CrystalElement> c2 = ProgressionManager.instance.getColorsFor(ep);
+				Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);
 				ReikaChatHelper.sendChatToPlayer(ep, "Progress for "+ep.getCommandSenderName()+":\n"+c.toString());
 				ReikaChatHelper.sendChatToPlayer(ep, "Elements for "+ep.getCommandSenderName()+":\n"+c2.toString());
+				ReikaChatHelper.sendChatToPlayer(ep, "Structure Flags for "+ep.getCommandSenderName()+":\n"+c3.toString());
 			}
 			else {
 				if (ProgressionManager.instance.setPlayerStage(ep, stage, true)) {

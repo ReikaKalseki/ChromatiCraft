@@ -76,6 +76,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
@@ -533,6 +534,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case TURRETATTACK:
 					((TileEntityLumenTurret)tile).doAttackParticles(data[0]);
+					break;
+				case MONUMENTCOMPLETE:
+					((TileEntityStructControl)tile).completeMonumentClient(world, x, y, z);
+					break;
+				case MONUMENTEVENT:
+					((TileEntityStructControl)tile).triggerMonumentEventClient(world, x, y, z);
 					break;
 			}
 		}

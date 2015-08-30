@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -102,7 +103,7 @@ public class BlockMusicMemory extends BlockContainer {
 		}
 	}
 
-	public static class TileMusicMemory extends StructureBlockTile {
+	public static class TileMusicMemory extends StructureBlockTile<MusicPuzzleGenerator> {
 
 		private int tick;
 		private int index;

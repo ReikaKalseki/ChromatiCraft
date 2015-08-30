@@ -85,7 +85,7 @@ public class BlockLockFreeze extends BlockContainer {
 		return new TileEntityLockFreeze();
 	}
 
-	public static class TileEntityLockFreeze extends StructureBlockTile {
+	public static class TileEntityLockFreeze extends StructureBlockTile<LocksGenerator> {
 
 		private int timer = 0;
 
@@ -94,7 +94,7 @@ public class BlockLockFreeze extends BlockContainer {
 		}
 
 		private void freeze(int time) {
-			((LocksGenerator)this.getGenerator()).freezeLocks(worldObj, this.getChannel(), time);
+			this.getGenerator().freezeLocks(worldObj, this.getChannel(), time);
 			this.setTime(time);
 		}
 

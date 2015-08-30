@@ -13,9 +13,11 @@ import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -58,6 +60,14 @@ public class BlockSpecialShield extends BlockStructureShield {
 	public boolean useNoLighting(IBlockAccess iba, int x, int y, int z) {
 		int m = iba.getBlockMetadata(x, y, z)%8;
 		return m <= 1 || m == 7;
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		int meta = world.getBlockMetadata(x, y, z)%8;
+		if (meta <= 1)
+			return true;
+		return false;
 	}
 
 }

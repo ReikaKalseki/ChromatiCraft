@@ -317,7 +317,7 @@ public enum Chromabilities implements Ability {
 		if (a == LIFEPOINT)
 			use.scale(5);
 		if (a == DIMPING)
-			use.scale(100);
+			use.scale(250);
 
 		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();

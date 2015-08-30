@@ -9,38 +9,109 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import net.minecraft.block.Block;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.WorldGenerator;
-import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentHighlighter;
+import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentMineralBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentStructure;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 
-public class MonumentGenerator extends WorldGenerator {
+public class MonumentGenerator {
 
-	private final MonumentCenter center = new MonumentCenter();
+	private final ChunkSplicedGenerationCache world = new ChunkSplicedGenerationCache();
 
-	@Override
-	public boolean generate(World world, Random rand, int x, int y, int z) {
+	private final HashMap<Coordinate, Block> mineralBlocks = new HashMap();
 
-		ArrayList<ForgeDirection> li = new ArrayList();
+	protected int posX;
+	protected int posY;
+	protected int posZ;
 
-		for (int i = 2; i < 6; i++) {
-			if (rand.nextBoolean()) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				li.add(dir);
-			}
-		}
+	public MonumentGenerator() {
 
-		center.generate(world, rand, x, y, z, li);
+	}
 
+	public final int getPosX() {
+		return posX;
+	}
+
+	public final int getPosY() {
+		return posY;
+	}
+
+	public final int getPosZ() {
+		return posZ;
+	}
+
+	public final void startCalculate(int x, int z, Random rand) {
+		//genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
+		posX = x;
+		posZ = z;
+		posY = 120;
+
+		new MonumentStructure().generate(world, rand, x, posY, z);
+		new MonumentMineralBlocks(this).generate(world, rand, x, posY, z);
+		new MonumentHighlighter().generate(world, rand, x, posY, z);
+
+		//center.generate(world, rand, x, posY, z, li);
+		/*
 		for (ForgeDirection dir : li) {
 			MonumentTunnel mt = new MonumentTunnel(dir, 8+rand.nextInt(24));
-			mt.generate(world, rand, x+14+dir.offsetX*15, y+1, z+14+dir.offsetZ*15);
+			mt.generate(world, rand, x+14+dir.offsetX*15, posY+1, z+14+dir.offsetZ*15);
 		}
+		 */
+	}
+
+	public final void generateChunk(World w, ChunkCoordIntPair cp) {
+		world.generate(w, cp);
+
+		/*
+		Collection<DynamicPieceLocation> c = dynamicParts.get(cp);
+		if (c != null) {
+			for (DynamicPieceLocation dsp : c) {
+				int x = (cp.chunkXPos << 4)+dsp.relX;
+				int z = (cp.chunkZPos << 4)+dsp.relZ;
+				dsp.generator.generate(w, x, z);
+			}
+		}
+		 */
+	}
+
+	public final void generateAll(World w) {
+		world.generateAll(w);
+
+		/*
+		for (ChunkCoordIntPair cp : dynamicParts.keySet()) {
+			Collection<DynamicPieceLocation> c = dynamicParts.get(cp);
+			if (c != null) {
+				for (DynamicPieceLocation dsp : c) {
+					int x = (cp.chunkXPos << 4)+dsp.relX;
+					int z = (cp.chunkZPos << 4)+dsp.relZ;
+					dsp.generator.generate(w, x, z);
+				}
+			}
+		}
+		 */
+	}
 
 
-		return true;
+	public void clear() {
+		world.clear();
+		mineralBlocks.clear();
+	}
+
+	public void registerMineralBlock(int x, int y, int z, Block b) {
+		mineralBlocks.put(new Coordinate(x, y, z), b);
+	}
+
+	public Map<Coordinate, Block> getMineralBlocks() {
+		return Collections.unmodifiableMap(mineralBlocks);
 	}
 
 }

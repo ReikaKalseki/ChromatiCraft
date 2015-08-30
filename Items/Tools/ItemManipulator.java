@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -103,8 +104,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 		if (t == ChromaTiles.PYLONTURBO) {
 			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)tile;
-			if (ProgressStage.CTM.isPlayerAtStage(ep)) {
-				te.trigger();
+			if (te.trigger(ep)) {
+
 			}
 			return true;
 		}
@@ -134,6 +135,32 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			else {
 				cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+			}
+			return true;
+		}
+
+		if (t == ChromaTiles.STRUCTCONTROL && ep.capabilities.isCreativeMode && DragonAPICore.debugtest) {
+			TileEntityStructControl te = (TileEntityStructControl)tile;
+			if (ep.isSneaking()) {
+				te.setMonument();
+			}
+			else {
+
+			}
+			return true;
+		}
+		if (t == ChromaTiles.STRUCTCONTROL) {
+			if (!world.isRemote) {
+				if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
+					TileEntityStructControl te = (TileEntityStructControl)tile;
+					if (te.isMonument()) {
+						te.triggerMonument();
+						ChromaSounds.USE.playSoundAtBlock(te);
+					}
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(tile);
+				}
 			}
 			return true;
 		}

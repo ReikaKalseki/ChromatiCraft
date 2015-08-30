@@ -52,6 +52,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid.NonEuclidLayer6;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -69,6 +70,9 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	private UUID door;
 
 	private final HashSet<Coordinate> portals = new HashSet();
+
+	private final MultiMap<Coordinate, TriggerCriteria> criteria = new MultiMap();
+	private final HashMap<Coordinate, HashMap<Coordinate, TeleportTriggerAction>> actions = new HashMap();
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
@@ -110,10 +114,10 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		this.createPortal(x+24, posY+1, z+41, ForgeDirection.WEST, new BlockVector(11, 0, 0, ForgeDirection.EAST), new Coordinate(0, 0, -8), newLoc2, new Coordinate(0, 0, 0), newLoc2, new Coordinate(0, 0, 8), newLoc2);
 		this.createPortal(x+24, posY+1, z+49, ForgeDirection.WEST, new BlockVector(11, 0, -8, ForgeDirection.EAST), new Coordinate(0, 0, -16), newLoc3, new Coordinate(0, 0, -8), newLoc3, new Coordinate(0, 0, 0), newLoc3);
 
-		this.createPortal(x+9, posY+1, z+4, ForgeDirection.NORTH, new BlockVector(12, 0, 0, ForgeDirection.NORTH));
-		this.createPortal(x+21, posY+1, z+6, ForgeDirection.NORTH, new BlockVector(12, 0, -2, ForgeDirection.SOUTH));
-		this.createPortal(x+33, posY+1, z+6, ForgeDirection.SOUTH, new BlockVector(12, 0, -2, ForgeDirection.NORTH));
-		this.createPortal(x+45, posY+1, z+6, ForgeDirection.SOUTH, new BlockVector(-36, 0, 0, ForgeDirection.NORTH));
+		this.createPortal(x+9, posY+1, z+4, ForgeDirection.NORTH, new BlockVector(12, 0, 0, ForgeDirection.NORTH), SameFacing.instance);
+		this.createPortal(x+21, posY+1, z+6, ForgeDirection.NORTH, new BlockVector(12, 0, -2, ForgeDirection.SOUTH), SameFacing.instance);
+		this.createPortal(x+33, posY+1, z+6, ForgeDirection.SOUTH, new BlockVector(12, 0, -2, ForgeDirection.NORTH), SameFacing.instance);
+		this.createPortal(x+45, posY+1, z+6, ForgeDirection.SOUTH, new BlockVector(-36, 0, 0, ForgeDirection.SOUTH), SameFacing.instance);
 
 		this.createPortal(x+10, posY+1, z+20, ForgeDirection.EAST, new BlockVector(10, 0, 25, ForgeDirection.WEST));
 		this.createPortal(x+22, posY+1, z+20, ForgeDirection.WEST, new BlockVector(-6, 0, 21, ForgeDirection.SOUTH));
@@ -121,7 +125,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 		this.createPortal(x+9, posY+1, z+12, ForgeDirection.SOUTH, new BlockVector(36, 0, 0, ForgeDirection.SOUTH), new Coordinate(36, 0, 0), Deactivate.instance);
 
-		this.createPortal(x+13, posY+1, z+16, ForgeDirection.WEST, new BlockVector(8, 0, 53, ForgeDirection.WEST));
+		this.createPortal(x+13, posY+1, z+16, ForgeDirection.WEST, new BlockVector(8, 0, 37, ForgeDirection.WEST), SameFacing.instance);
 
 		this.createPortal(x+41, posY+1, z+18, ForgeDirection.NORTH, new BlockVector(-4, 0, 27, ForgeDirection.EAST));
 		this.createPortal(x+41, posY+1, z+31, ForgeDirection.SOUTH, new BlockVector(-6, 0, 10, ForgeDirection.EAST));
@@ -129,7 +133,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		this.createPortal(x+7, posY+1, z+35, ForgeDirection.EAST, new BlockVector(24, 0, 13, ForgeDirection.NORTH));
 		this.createPortal(x+18, posY+1, z+50, ForgeDirection.NORTH, new BlockVector(-4, 0, 0, ForgeDirection.NORTH));
 
-		this.createPortal(x+45, posY+1, z+10, ForgeDirection.SOUTH, new BlockVector(0, 0, 0, ForgeDirection.SOUTH), new Coordinate(0, 0, 0), Deactivate.instance); //trigger for key portal
+		this.createPortal(x+45, posY+1, z+12, ForgeDirection.SOUTH, new BlockVector(0, 0, 0, ForgeDirection.SOUTH)); //trigger for key portal
 
 
 		this.placeCore(x+53, posY+2, z+16);
@@ -186,17 +190,18 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	}
 
 	private void createPortal(int x, int y, int z, ForgeDirection dir, BlockVector bv, Object... ts) {
-		PortalPlace p = new PortalPlace(dir, bv);
+		PortalPlace p = new PortalPlace(id, dir, bv);
 		ArrayList li = ReikaJavaLibrary.makeListFrom(ts);
 		while (!li.isEmpty()) {
 			Object o = li.remove(0);
 			if (o instanceof TriggerCriteria) {
-				p.addCriteria((TriggerCriteria)o);
+				this.addCriteria(x, y, z, (TriggerCriteria)o);
 			}
 			else if (o instanceof Coordinate) {
-				p.addAction((Coordinate)o, (TeleportTriggerAction)li.remove(0));
+				this.addAction(x, y, z, (Coordinate)o, (TeleportTriggerAction)li.remove(0));
 			}
 		}
+
 		world.setTileEntity(x, y, z, ChromaBlocks.TELEPORT.getBlockInstance(), 0, p);
 
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
@@ -209,6 +214,20 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		}
 
 		portals.add(new Coordinate(x, y, z));
+	}
+
+	private void addCriteria(int x, int y, int z, TriggerCriteria c) {
+		criteria.addValue(new Coordinate(x, y, z), c);
+	}
+
+	private void addAction(int x, int y, int z, Coordinate rel, TeleportTriggerAction act) {
+		Coordinate loc = new Coordinate(x, y, z);
+		HashMap<Coordinate, TeleportTriggerAction> map = actions.get(loc);
+		if (map == null) {
+			map = new HashMap();
+			actions.put(loc, map);
+		}
+		map.put(rel, act);
 	}
 
 	private void placeWindow(int x, int y, int z, ForgeDirection dir, int dx, int dy, int dz) {
@@ -254,10 +273,27 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	protected void clearCaches() {
 		door = null;
 		portals.clear();
+		criteria.clear();
+		actions.clear();
 	}
 
 	public Collection<Coordinate> getPortalLocations() {
 		return Collections.unmodifiableSet(portals);
+	}
+
+	public HashMap<Coordinate, TeleportTriggerAction> getActions(int x, int y, int z) {
+		return actions.get(new Coordinate(x, y, z));
+	}
+
+	public void removeAction(int x, int y, int z, Coordinate rel) {
+		HashMap<Coordinate, TeleportTriggerAction> map = actions.get(new Coordinate(x, y, z));
+		if (map != null) {
+			map.remove(rel);
+		}
+	}
+
+	public Collection<TriggerCriteria> getCriteria(int x, int y, int z) {
+		return criteria.get(new Coordinate(x, y, z));
 	}
 
 	private static class WindowPlace implements TileCallback {
@@ -292,22 +328,12 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 		private final BlockVector location;
 		private final ForgeDirection direction;
-		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
-		private final ArrayList<TriggerCriteria> criteria = new ArrayList();
+		private final UUID id;
 
-		private PortalPlace(ForgeDirection dir, BlockVector bv) {
+		private PortalPlace(UUID uid, ForgeDirection dir, BlockVector bv) {
+			id = uid;
 			location = bv;
 			direction = dir;
-		}
-
-		public PortalPlace addCriteria(TriggerCriteria o) {
-			criteria.add(o);
-			return this;
-		}
-
-		private PortalPlace addAction(Coordinate c, TeleportTriggerAction t) {
-			actions.put(c, t);
-			return this;
 		}
 
 		@Override
@@ -316,15 +342,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 				TileEntityTeleport tp = (TileEntityTeleport)te;
 				tp.destination = location;
 				tp.facing = direction;
-
-				for (Coordinate c : actions.keySet()) {
-					TeleportTriggerAction t = actions.get(c);
-					tp.putAction(c, t);
-				}
-
-				for (TriggerCriteria tc : criteria) {
-					tp.addCriterion(tc);
-				}
+				tp.uid = id;
 			}
 		}
 

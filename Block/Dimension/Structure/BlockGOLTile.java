@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 
 public class BlockGOLTile extends BlockContainer {
 
@@ -109,7 +110,7 @@ public class BlockGOLTile extends BlockContainer {
 		}
 	}
 
-	public static class GOLTile extends StructureBlockTile {
+	public static class GOLTile extends StructureBlockTile<GOLGenerator> {
 
 		private boolean defaultActive;
 		private boolean isActive;

@@ -105,8 +105,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	//private final HashSet<CrystalElement> unusedColors = new HashSet();
 	//private final HashSet<DimensionStructureType> unusedTypes = new HashSet();
 	static final HashSet<StructurePair> structures = new HashSet();
-	private final MonumentGenerator monument = new MonumentGenerator();
-	private boolean gennedMonument = false;
+	static final MonumentGenerator monument = new MonumentGenerator();
 
 	private static boolean generatingStructures = false;
 
@@ -120,7 +119,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 			unusedTypes.add(DimensionStructureType.types[i]);
 		}*/
 		this.regenerateStructures();
-		gennedMonument = false;
 	}
 
 	public static void triggerStructureGen() {
@@ -132,6 +130,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		for (StructurePair s : structures)
 			s.generator.clear();
 		structures.clear();
+		monument.clear();
 		StructureCalculator thread = new StructureCalculator();
 		new Thread(thread, "ChromatiCraft Structure Gen").start();
 	}
@@ -146,6 +145,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	public static Set<StructurePair> getStructures() {
 		return Collections.unmodifiableSet(structures);
+	}
+
+	public static MonumentGenerator getMonumentGenerator() {
+		return monument;
 	}
 
 	public ChunkProviderChroma(World world)
@@ -680,14 +683,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 				wg.generate(worldObj, rand, dx, y, dz);
 			}
 		}
-
-		if (!gennedMonument && rand.nextInt(12000) == 0) {
-			int dx = x + rand.nextInt(16) + 8;
-			int dz = z + rand.nextInt(16) + 8;
-			int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
-			monument.generate(worldObj, rand, dx, y, dz);
-			gennedMonument = true;
-		}
 	}
 
 	/*
@@ -713,6 +708,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 			//ReikaJavaLibrary.pConsole("Generating chunk "+x+", "+z+" for a "+s.color+" "+s.generator);
 			s.generator.generateChunk(worldObj, cp);
 		}
+		monument.generateChunk(worldObj, cp);
 		//for (int i = 0; i < 256; i++) {
 		//	worldObj.setBlock(x+8, i, z+8, Blocks.glass);
 	}

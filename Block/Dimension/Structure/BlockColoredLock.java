@@ -142,7 +142,7 @@ public class BlockColoredLock extends BlockContainer {
 		super.breakBlock(world, x, y, z, b, meta);
 	}
 
-	public static class TileEntityColorLock extends StructureBlockTile {
+	public static class TileEntityColorLock extends StructureBlockTile<LocksGenerator> {
 
 		private boolean isOpen;
 		private int channel;
@@ -238,7 +238,7 @@ public class BlockColoredLock extends BlockContainer {
 		private void recalcColors() {
 			boolean flag = true;
 			closedColors.clear();
-			LocksGenerator g = (LocksGenerator)this.getGenerator();
+			LocksGenerator g = this.getGenerator();
 			if (g.getWhiteLock(channel) <= 0) {
 				for (CrystalElement e : colors) {
 					if (g.getColorCode(channel, e) <= 0) {
@@ -278,7 +278,7 @@ public class BlockColoredLock extends BlockContainer {
 
 		private void recalcGate() {
 			//ReikaJavaLibrary.pConsole(((LocksGenerator)DimensionStructureType.LOCKS.getGenerator(uid)).getGateCode(channel), channel == 0);
-			this.updateState(((LocksGenerator)this.getGenerator()).getGateCode(channel) == 0);
+			this.updateState(this.getGenerator().getGateCode(channel) == 0);
 		}
 
 		public void recalc() {

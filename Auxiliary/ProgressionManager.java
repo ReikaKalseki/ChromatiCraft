@@ -65,12 +65,14 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private static final String NBT_TAG = "Chroma_Progression";
 	private static final String NBT_TAG2 = "Chroma_Element_Discovery";
+	private static final String NBT_TAG3 = "Structure_Color_Completion";
 
 	private final SequenceMap<ProgressStage> progressMap = new SequenceMap();
 
 	private final MultiMap<String, ProgressStage> playerMap = new MultiMap(new MultiMap.HashSetFactory());
 
 	private final EnumMap<CrystalElement, ColorDiscovery> colorDiscoveries = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, StructureComplete> structureFlags = new EnumMap(CrystalElement.class);
 
 	private final EnumMap<ProgressStage, ChromaResearch> auxiliaryReference = new EnumMap(ProgressStage.class);
 
@@ -110,6 +112,7 @@ public class ProgressionManager implements ProgressRegistry {
 		KILLDRAGON(Blocks.dragon_egg),
 		KILLWITHER(Items.nether_star),
 		KILLMOB(new ItemStack(Items.skull, 1, 4)),
+		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -193,8 +196,11 @@ public class ProgressionManager implements ProgressRegistry {
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ColorDiscovery c = new ColorDiscovery(e);
+			StructureComplete s = new StructureComplete(e);
 			colorDiscoveries.put(e, c);
+			structureFlags.put(e, s);
 			ChromaResearchManager.instance.register(c);
+			ChromaResearchManager.instance.register(s);
 		}
 	}
 
@@ -258,7 +264,9 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
 
-		progressMap.addParent(ProgressStage.CTM,		ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.DIMENSION);
+
+		progressMap.addParent(ProgressStage.CTM,		ProgressStage.ALLCORES);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
@@ -481,6 +489,7 @@ public class ProgressionManager implements ProgressRegistry {
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false);
+			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false);
 		}
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -494,6 +503,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true);
+			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true);
 		}
 		for (int i = 0; i < RecipeType.typeList.length; i++) {
 			RecipeType r = RecipeType.typeList[i];
@@ -507,7 +517,7 @@ public class ProgressionManager implements ProgressRegistry {
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
 		boolean had = tag.getBoolean(e.name());
 		tag.setBoolean(e.name(), disc);
-		if (!had) {
+		if (had != disc) {
 			nbt.setTag(NBT_TAG2, tag);
 			if (disc)
 				this.checkPlayerColors(ep);
@@ -576,6 +586,67 @@ public class ProgressionManager implements ProgressRegistry {
 			return ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal());
 		}
 
+		@Override
+		public String toString() {
+			return "Discover_"+color.name();
+		}
+
+		@Override
+		public int hashCode() {
+			return color.ordinal();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof ColorDiscovery && ((ColorDiscovery)o).color == color;
+		}
+
+	}
+
+	public static class StructureComplete implements ProgressElement {
+
+		public final CrystalElement color;
+
+		private StructureComplete(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getTitle() {
+			return color.displayName+" Core";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public String getShortDesc() {
+			return "Another piece of the puzzle";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public ItemStack getIcon() {
+			ItemStack is = ChromaTiles.DIMENSIONCORE.getCraftedProduct();
+			is.stackTagCompound = new NBTTagCompound();
+			is.stackTagCompound.setInteger("color", color.ordinal());
+			return is;
+		}
+
+		@Override
+		public String toString() {
+			return "Structure_"+color.name();
+		}
+
+		@Override
+		public int hashCode() {
+			return color.ordinal();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof StructureComplete && ((StructureComplete)o).color == color;
+		}
+
 	}
 
 	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
@@ -642,6 +713,48 @@ public class ProgressionManager implements ProgressRegistry {
 	@Override
 	public boolean playerDiscoveredElement(EntityPlayer ep, CrystalElementProxy e) {
 		return this.hasPlayerDiscoveredColor(ep, CrystalElement.getFromAPI(e));
+	}
+
+	public boolean hasPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG3);
+		return nbt.getBoolean(e.name());
+	}
+
+	public void markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set) {
+		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
+		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG3);
+		boolean had = tag.getBoolean(e.name());
+		tag.setBoolean(e.name(), set);
+		if (had != set) {
+			nbt.setTag(NBT_TAG3, tag);
+			if (set)
+				this.checkPlayerStructures(ep);
+			if (ep instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			this.updateChunks(ep);
+			if (set)
+				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
+		}
+	}
+
+	private void checkPlayerStructures(EntityPlayer ep) {
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			if (!this.hasPlayerCompletedStructureColor(ep, CrystalElement.elements[i]))
+				return;
+		}
+		ProgressStage.ALLCORES.stepPlayerTo(ep);
+	}
+
+	public Collection<CrystalElement> getStructuresFor(EntityPlayer ep) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(NBT_TAG3);
+		Collection<CrystalElement> c = new ArrayList();
+		for (Object o : nbt.func_150296_c()) {
+			String tag = (String)o;
+			if (nbt.getBoolean(tag))
+				c.add(CrystalElement.valueOf(tag));
+		}
+		return c;
 	}
 
 }

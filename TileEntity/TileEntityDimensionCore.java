@@ -29,6 +29,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -68,27 +70,26 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	private HashSet<UUID> sentPlayers = new HashSet();
 
-	private static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
+	static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, HashSet<CrystalElement>> beams = new EnumMap(CrystalElement.class);
 
-
 	static {
-		addColor(CrystalElement.BLACK, -3, -1, -3);
-		addColor(CrystalElement.RED, 0, -2, -7);
-		addColor(CrystalElement.GREEN, 5, -2, 5);
-		addColor(CrystalElement.BROWN, 0, -1, -4);
-		addColor(CrystalElement.BLUE, -7, -2, 0);
-		addColor(CrystalElement.PURPLE, 7, -2, 0);
-		addColor(CrystalElement.CYAN, -5, -2, 5);
-		addColor(CrystalElement.LIGHTGRAY, 3, -1, -3);
-		addColor(CrystalElement.GRAY, -3, -1, 3);
-		addColor(CrystalElement.PINK, -4, -1, 0);
-		addColor(CrystalElement.LIME, 5, -2, -5);
-		addColor(CrystalElement.YELLOW, -5, -2, -5);
-		addColor(CrystalElement.LIGHTBLUE, 0, -1, 4);
-		addColor(CrystalElement.MAGENTA, 0, -2, 7);
-		addColor(CrystalElement.ORANGE, 4, -1, 0);
-		addColor(CrystalElement.WHITE, 3, -1, 3);
+		addColor(CrystalElement.BLACK, 5, 11, 18);
+		addColor(CrystalElement.RED, 8, 11, 14);
+		addColor(CrystalElement.GREEN, 14, 11, 8);
+		addColor(CrystalElement.BROWN, 18, 11, 5);
+		addColor(CrystalElement.BLUE, 24, 11, 5);
+		addColor(CrystalElement.PURPLE, 28, 11, 8);
+		addColor(CrystalElement.CYAN, 34, 11, 14);
+		addColor(CrystalElement.LIGHTGRAY, 37, 11, 18);
+		addColor(CrystalElement.GRAY, 37, 11, 24);
+		addColor(CrystalElement.PINK, 34, 11, 28);
+		addColor(CrystalElement.LIME, 28, 11, 34);
+		addColor(CrystalElement.YELLOW, 24, 11, 37);
+		addColor(CrystalElement.LIGHTBLUE, 18, 11, 37);
+		addColor(CrystalElement.MAGENTA, 14, 11, 34);
+		addColor(CrystalElement.ORANGE, 8, 11, 28);
+		addColor(CrystalElement.WHITE, 5, 11, 24);
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -110,7 +111,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	}
 
 	private static void addColor(CrystalElement e, int x, int y, int z) {
-		locations.put(e, new Coordinate(x, y, z));
+		locations.put(e, new Coordinate(x-21, y-5, z-21)); //base offset of controller is (21, 5, 21)
 	}
 
 	private Collection<CrystalElement> getColorBeams() {
@@ -221,43 +222,60 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	@SideOnly(Side.CLIENT)
 	private void spawnConnectFX(World world, int x, int y, int z) {
 		int sp = 8;
-		if ((this.getTicksExisted()/sp)%16 == color.ordinal() && this.getTicksExisted()%sp == 0) {
-			float mult = this.getSoundPitch();
-			//CrystalMusicManager.instance.getRandomScaledDing(color);
-			Collection<CrystalElement> m = this.getColorBeams();
-			//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
-			//CrystalElement e = ReikaJavaLibrary.getRandomListEntry(m);
-			boolean flag = false;
+		long tick = world.getTotalWorldTime(); //this.getTicksExisted();
+		if ((tick/sp)%16 == color.ordinal() && tick%sp == 0) {
 
-			for (CrystalElement e : m) {
-				Coordinate c = this.getOtherColor(e);
-				TileEntity te = c.getTileEntity(world);
-				if (te instanceof TileEntityDimensionCore && ((TileEntityDimensionCore)te).getColor() == e) {
-					this.createBeamLine(world, x, y, z, c, e);
-					flag = true;
-				}
-				//}
-			}
 			Coordinate cc = this.getCenter();
-			if (cc.getTileEntity(world) instanceof TileEntityStructControl) {
-				this.createBeamLine(world, x, y, z, cc, color);
-				flag = true;
-			}
+			TileEntity tile = cc.getTileEntity(world);
+			if (tile instanceof TileEntityStructControl) {
+				TileEntityStructControl ts = (TileEntityStructControl)tile;
+				if (ts.isMonument()) {
+					float mult = this.getSoundPitch();
+					//CrystalMusicManager.instance.getRandomScaledDing(color);
+					Collection<CrystalElement> m = this.getColorBeams();
+					//if (rand.nextInt(m.size() >= 8 ? 1 : 8-m.size()) == 0) {
+					//CrystalElement e = ReikaJavaLibrary.getRandomListEntry(m);
+					boolean flag = false;
 
-			if (flag) {
-				ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult);
-				ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
+					for (CrystalElement e : m) {
+						Coordinate c = this.getOtherColor(e);
+						TileEntity te = c.getTileEntity(world);
+						if (te instanceof TileEntityDimensionCore && ((TileEntityDimensionCore)te).getColor() == e) {
+							this.createBeamLine(world, x, y, z, c, e);
+							flag = true;
+						}
+						//}
+					}
+					this.createBeamLine(world, x, y, z, cc, color);
 
-				int n = 8+rand.nextInt(8);
-				for (int i = 0; i < n; i++) {
-					double px = x+rand.nextDouble();
-					double py = y+rand.nextDouble();
-					double pz = z+rand.nextDouble();
-					int l = 40;
-					float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
-					float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
-					EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ORB, x, y, z, 1, mult, false);
+					ReikaSoundHelper.playClientSound(ChromaSounds.DING, x, y, z, 0.3F, mult);
+
+					int n = 8+rand.nextInt(8);
+					for (int i = 0; i < n; i++) {
+						double px = x+rand.nextDouble();
+						double py = y+rand.nextDouble();
+						double pz = z+rand.nextDouble();
+						int l = 40;
+						float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
+						float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
+						EntityFX fx = new EntityLaserFX(color, world, px, py, pz, 0, 0, 0).setGravity(g).setScale(s);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+
+					for (int i = 0; i < n; i++) {
+						double px = x+rand.nextDouble();
+						double py = y+rand.nextDouble();
+						double pz = z+rand.nextDouble();
+						int l = 80;
+						float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.0150625);
+						float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
+						EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, 0, -90);
+						fx = (EntityFloatingSeedsFX)fx.setGravity(g).setScale(s).setLife(l).setColor(color.getColor());
+						fx.velocity *= 3;
+						fx.freedom *= 5;
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
 			}
 		}
@@ -265,11 +283,17 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	@SideOnly(Side.CLIENT)
 	private void createBeamLine(World world, int x, int y, int z, Coordinate c, CrystalElement e) {
-		double dx = c.xCoord-x;
-		double dy = c.yCoord-y;
-		double dz = c.zCoord-z;
+		createBeamLine(world, x, y, z, c.xCoord, c.yCoord, c.zCoord, color, e);
+	}
+
+	@SideOnly(Side.CLIENT)
+	static void createBeamLine(World world, int x1, int y1, int z1, int x2, int y2, int z2, CrystalElement e1, CrystalElement e2) {
+		double dx = x2-x1;
+		double dy = y2-y1;
+		double dz = z2-z1;
 		double dd = ReikaMathLibrary.py3d(dx, dy, dz);
-		for (double p = 0; p <= dd; p += 0.125) {
+		double pd = 0.25; //0.125
+		for (double p = 0; p <= dd; p += pd) {
 			double f = p/dd;
 			//double v = 0.0625;
 			//double vx = dx/dd*v;
@@ -278,12 +302,11 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			float s = 1+1.5F*(float)Math.sin(f*Math.PI);//+MathHelper.sin((this.getTicksExisted()+color.ordinal()*12)/32F);
 			//2.5F+2*rand.nextFloat()+(rand.nextFloat()*2)*(rand.nextFloat()*3);
 			int l = 20;//(int)(17*dd);
-			CrystalElement e1 = e;//rand.nextBoolean() ? e : color;
-			double px = x+0.5+f*dx;
-			double py = y+0.5+f*dy;
-			double pz = z+0.5+f*dz;
+			double px = x1+0.5+f*dx;
+			double py = y1+0.5+f*dy;
+			double pz = z1+0.5+f*dz;
 
-			int clr = ReikaColorAPI.mixColors(color.getColor(), e.getColor(), 1-(float)f);
+			int clr = ReikaColorAPI.mixColors(e1.getColor(), e2.getColor(), 1-(float)f);
 			EntityFX fx = new EntityBlurFX(world, px, py, pz).setLife(l).setNoSlowdown().setScale(s).setColor(clr);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
@@ -321,8 +344,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 
-		if (!this.hasStructure() && !world.isRemote) {
-			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color);
+		if (this.getPlacer() == null && !this.hasStructure() && !world.isRemote) {
+			ChromatiCraft.logger.logError(this+" was never given a structure!? Color = "+color+", UID="+uid);
 		}
 	}
 
@@ -403,12 +426,21 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		if (ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) > 5)
 			return false;
 		if (this.hasStructure()) {
+			/*
 			if (structure.hasPlayerCompleted(ep)) {
 				return false;
 			}
 			else {
 				structure.markPlayerCompleted(ep);
 
+				this.openStructure();
+			}
+			 */
+			if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, color)) {
+				return false;
+			}
+			else {
+				ProgressionManager.instance.markPlayerCompletedStructureColor(ep, color, true);
 				this.openStructure();
 			}
 		}

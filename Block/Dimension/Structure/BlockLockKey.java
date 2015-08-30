@@ -249,7 +249,7 @@ public class BlockLockKey extends Block {
 	}
 	 */
 
-	public static class TileEntityLockKey extends StructureBlockTile {
+	public static class TileEntityLockKey extends StructureBlockTile<LocksGenerator> {
 
 		@Override
 		public DimensionStructureType getType() {

@@ -12,8 +12,11 @@ package Reika.ChromatiCraft.TileEntity;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -24,6 +27,7 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
@@ -36,10 +40,16 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -51,10 +61,14 @@ import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -69,6 +83,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private boolean regenned = false;
 	private int trapTick = 0;
 
+	private boolean isMonument;
+	private boolean triggeredMonument;
+	private int monumentTick;
+	private int monumentCount;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.STRUCTCONTROL;
@@ -78,6 +97,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote && struct != null && world.getClosestPlayer(x+0.5, y+0.5, z+0.5, 12) != null)
 			this.spawnParticles(world, x, y, z);
+
+		if (!world.isRemote && isMonument && triggeredMonument) {
+			this.doMonumentCode(world, x, y, z);
+		}
 
 		if (!triggered && struct != null) {
 			List<EntityPlayer> li = world.playerEntities;
@@ -96,6 +119,138 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				this.resetOceanTrap();
 			}
 		}
+	}
+
+	private void doMonumentCode(World world, int x, int y, int z) {
+		if (monumentTick > 0) {
+			monumentTick--;
+			if (monumentTick == 0) {
+				this.doMonumentChecks(world, x, y, z);
+			}
+		}
+	}
+
+	private void doMonumentChecks(World world, int x, int y, int z) {
+		EntityPlayer ep = null;
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			Coordinate c = TileEntityDimensionCore.locations.get(e).offset(x, y, z);
+			ChromaTiles t = ChromaTiles.getTileFromIDandMetadata(c.getBlock(world), c.getBlockMetadata(world));
+			if (t != ChromaTiles.DIMENSIONCORE) {
+				this.endMonumentCode(world, x, y, z);
+				return;
+			}
+			TileEntityDimensionCore te = (TileEntityDimensionCore)c.getTileEntity(world);
+			if (te.getColor() != e) {
+				this.endMonumentCode(world, x, y, z);
+				return;
+			}
+			EntityPlayer own = te.getPlacer();
+			if (own != null && !ReikaPlayerAPI.isFake(own)) {
+				if (ep == null || own == ep) {
+					ep = own;
+				}
+				else {
+					this.endMonumentCode(world, x, y, z);
+					return;
+				}
+			}
+		}
+
+		if (ep == null) {
+			this.endMonumentCode(world, x, y, z);
+			return;
+		}
+
+		if (!this.doMonumentMineralChecks(world, x, y, z)) {
+			this.endMonumentCode(world, x, y, z);
+			return;
+		}
+
+		if (monumentCount < 16)
+			this.triggerMonumentEvent(world, x, y, z);
+		this.scheduleNextMonumentCheck(world, x, y, z);
+		monumentCount++;
+		if (monumentCount >= 16) {
+			this.completeMonument(world, x, y, z, ep);
+		}
+	}
+
+	private boolean doMonumentMineralChecks(World world, int x, int y, int z) {
+		MonumentGenerator gen = ChunkProviderChroma.getMonumentGenerator();
+		Map<Coordinate, Block> map = gen.getMineralBlocks();
+		for (Coordinate c : map.keySet()) {
+			Block b = c.getBlock(world);
+			if (b != map.get(c))
+				return false;
+		}
+		return true;
+	}
+
+	private void completeMonument(World world, int x, int y, int z, EntityPlayer ep) {
+		if (monumentCount == 16) {
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), this, 64);
+		}
+		else if (monumentCount == 17) {
+			monumentCount = 0;
+			monumentTick = 0;
+			world.setBlock(x, y, z, ChromaTiles.AURAPOINT.getBlock(), ChromaTiles.AURAPOINT.getBlockMetadata(), 3);
+			TileEntityAuraPoint te = (TileEntityAuraPoint)world.getTileEntity(x, y, z);
+			te.setPlacer(ep);
+			ProgressStage.CTM.stepPlayerTo(ep);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void completeMonumentClient(World world, int x, int y, int z) {
+		int n = 32+rand.nextInt(32);
+		for (int i = 0; i < n; i++) {
+			double phi = rand.nextDouble()*360;
+			double theta = ReikaRandomHelper.getRandomPlusMinus(0D, 90D);
+			double v = ReikaRandomHelper.getRandomBetween(0.125, 0.5);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(v, theta, phi);
+			int c = CrystalElement.randomElement().getColor();
+			int l = 20+rand.nextInt(20);
+			EntityFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, phi, theta).setColor(c).setScale(3).setLife(l);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			Coordinate c = TileEntityDimensionCore.locations.get(e).offset(x, y, z);
+			TileEntityDimensionCore.createBeamLine(world, x, y, z, c.xCoord, c.yCoord, c.zCoord, CrystalElement.WHITE, e);
+		}
+
+		ReikaSoundHelper.playClientSound(ChromaSounds.PYLONTURBO, xCoord+0.5, yCoord+0.5, zCoord+0.5, 1, 2F, false);
+	}
+
+	private void scheduleNextMonumentCheck(World world, int x, int y, int z) {
+		monumentTick = Math.max(4, 64-monumentCount*4);
+	}
+
+	private void triggerMonumentEvent(World world, int x, int y, int z) {
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTEVENT.ordinal(), this, 64);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void triggerMonumentEventClient(World world, int x, int y, int z) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.USE, xCoord+0.5, yCoord+0.5, zCoord+0.5, 1, 2F, false);
+
+		int n = 16+rand.nextInt(24);
+		for (int i = 0; i < n; i++) {
+			double phi = rand.nextDouble()*360;
+			double theta = rand.nextDouble()*360;
+			double v = ReikaRandomHelper.getRandomBetween(0.125, 0.5);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(v, theta, phi);
+			EntityFX fx = new EntityFlareFX(CrystalElement.elements[monumentCount], world, x+0.5, y+0.5, z+0.5, xyz[0], xyz[1], xyz[2]).setScale(4);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private void endMonumentCode(World world, int x, int y, int z) {
+		monumentCount = 0;
+		monumentTick = 50;
+		ChromaSounds.ERROR.playSoundAtBlockNoAttenuation(this, 1, 0.75F);
 	}
 
 	@Override
@@ -477,6 +632,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		NBT.setBoolean("regen", regenned);
 
 		NBT.setInteger("ttick", trapTick);
+
+		NBT.setBoolean("monument", isMonument);
+		NBT.setBoolean("monument_t", triggeredMonument);
 	}
 
 	@Override
@@ -491,6 +649,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		regenned = NBT.getBoolean("regen");
 
 		trapTick = NBT.getInteger("ttick");
+
+		isMonument = NBT.getBoolean("monument");
+		triggeredMonument = NBT.getBoolean("monument_t");
 	}
 
 	@Override
@@ -537,6 +698,20 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			default:
 				return null;
 		}
+	}
+
+	public void setMonument() {
+		isMonument = true;
+		this.syncAllData(false);
+	}
+
+	public boolean isMonument() {
+		return isMonument;
+	}
+
+	public void triggerMonument() {
+		triggeredMonument = true;
+		monumentTick = 5;
 	}
 
 	public static class LootChestWatcher {

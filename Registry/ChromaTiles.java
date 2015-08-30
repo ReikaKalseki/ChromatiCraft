@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
@@ -331,6 +332,28 @@ public enum ChromaTiles {
 		if (this == CREATIVEPYLON || this == STRUCTCONTROL)
 			return null;
 		return ChromaItems.PLACER.getStackOfMetadata(this.ordinal());
+	}
+
+	public ItemStack getCraftedNBTProduct(Object... args) {
+		ItemStack is = this.getCraftedProduct();
+		is.stackTagCompound = new NBTTagCompound();
+		for (int i = 0; i < args.length; i += 2) {
+			String s = (String)args[i];
+			Object o = args[i+1];
+			if (o instanceof String) {
+				is.stackTagCompound.setString(s, (String)o);
+			}
+			else if (o instanceof Integer) {
+				is.stackTagCompound.setInteger(s, (Integer)o);
+			}
+			else if (o instanceof Double) {
+				is.stackTagCompound.setDouble(s, (Double)o);
+			}
+			else if (o instanceof Boolean) {
+				is.stackTagCompound.setBoolean(s, (Boolean)o);
+			}
+		}
+		return is;
 	}
 
 	public boolean isAvailableInCreativeInventory() {

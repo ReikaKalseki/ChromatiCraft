@@ -135,6 +135,16 @@ public class StructureCalculator implements Runnable {
 		for (StructurePair s : ChunkProviderChroma.structures) {
 			this.tryGenerate(s, structureOriginX, structureOriginZ, structureAngleOrigin, 0);
 		}
+
+		this.generateMonument(structureOriginX, structureOriginZ);
+	}
+
+	private void generateMonument(int structureOriginX, int structureOriginZ) {
+		ChunkProviderChroma.monument.startCalculate(structureOriginX, structureOriginZ, rand);
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+			String sg = "CHROMATICRAFT: Generated the monument at "+structureOriginX+", "+structureOriginZ+".";
+			ReikaJavaLibrary.pConsole(sg);
+		}
 	}
 
 	private ArrayList<DimensionStructureType> getUsableStructures() {
@@ -183,7 +193,7 @@ public class StructureCalculator implements Runnable {
 
 	private void doGenerate(StructurePair s, int structureOriginX, int structureOriginZ, float structureAngleOrigin) {
 		float ang = structureAngleOrigin+s.color.ordinal()*22.5F;
-		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 4000);
+		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 2000); //was +/- 4000
 		int x = structureOriginX+(int)(r*MathHelper.cos(ang));
 		int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 		s.generator.startCalculate(s.color, x, z, rand);

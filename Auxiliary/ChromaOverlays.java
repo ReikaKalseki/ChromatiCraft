@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -317,6 +319,10 @@ public class ChromaOverlays {
 
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, e.getGlowRune(), s, s);
 
+				if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, e)) {
+					ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx+8, dy+10, ChromaIcons.CHECK.getIcon(), s/2, s/2);
+				}
+
 				BlendMode.DEFAULT.apply();
 
 				int ox = dx+s/2;
@@ -369,6 +375,7 @@ public class ChromaOverlays {
 	private void renderProgressOverlays(EntityPlayer ep, int gsc) {
 		HashMap<ProgressElement, Integer> map = new HashMap();
 		int dy = 0;
+		//ReikaJavaLibrary.pConsole(progressFlags.keySet());
 		for (ProgressElement p : progressFlags.keySet()) {
 			int tick = progressFlags.get(p);
 			GL11.glColor4f(1, 1, 1, 1);
@@ -965,6 +972,7 @@ public class ChromaOverlays {
 
 	public void addProgressionNote(ProgressElement p) {
 		progressFlags.put(p, 800);
+		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}
 
 	private static final class ProgressComparator implements Comparator<ProgressElement> {
@@ -985,6 +993,9 @@ public class ChromaOverlays {
 		private int getIndex(ProgressElement e) {
 			if (e instanceof ColorDiscovery) {
 				return ((ColorDiscovery)e).color.ordinal();
+			}
+			if (e instanceof StructureComplete) {
+				return 500000+((StructureComplete)e).color.ordinal();
 			}
 			else if (e instanceof ProgressStage) {
 				return 1000000+((ProgressStage)e).ordinal();

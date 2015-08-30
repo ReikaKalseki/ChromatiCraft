@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -634,21 +635,28 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 
 	}
 
-	public boolean trigger() {
+	public boolean trigger(EntityPlayer ep) {
 		World world = worldObj;
 		int x = xCoord;
 		int y = yCoord;
 		int z = zCoord;
 		if (this.checkPylon(world, x, y, z)) {
-			boolean hasAuxiliaries = this.checkForArrangement(world, x, y, z);
-			if (hasAuxiliaries) {
-				this.startRitual(world, x, y, z);
-				ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 1, 1);
-				return true;
+			if (this.canPlayerTurbocharge(world, x, y, z, ep)) {
+				boolean hasAuxiliaries = this.checkForArrangement(world, x, y, z);
+				if (hasAuxiliaries) {
+					this.startRitual(world, x, y, z);
+					ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 1, 1);
+					return true;
+				}
 			}
 		}
 		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
+	}
+
+	private boolean canPlayerTurbocharge(World world, int x, int y, int z, EntityPlayer ep) {
+		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
+		return ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, te.getColor());//ProgressStage.CTM.isPlayerAtStage(ep);
 	}
 
 	private boolean checkPylon(World world, int x, int y, int z) {

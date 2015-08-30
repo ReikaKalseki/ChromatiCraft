@@ -7,11 +7,10 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 
 
-public abstract class StructureBlockTile extends TileEntity {
+public abstract class StructureBlockTile<S> extends TileEntity {
 
 	public UUID uid;
 
@@ -49,8 +48,8 @@ public abstract class StructureBlockTile extends TileEntity {
 
 	public abstract DimensionStructureType getType();
 
-	public final DimensionStructureGenerator getGenerator() {
-		return this.getType().getGenerator(uid);
+	public final S getGenerator() {
+		return (S)this.getType().getGenerator(uid);
 	}
 
 }

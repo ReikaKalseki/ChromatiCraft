@@ -352,39 +352,39 @@
 			An undead monstrosity, though its loot proved useful.
 		</reveal>
 	</killwither>
-	<name>
+	<hive>
 		<title>
-
+			Crystal Hives
 		</title>
 		<hint>
-
+			Can bees live in the darkness of underground caves?
 		</hint>
 		<reveal>
-
+			Yes, they can, and not only that, but they take on the effect of nearby cave crystals.
 		</reveal>
-	</name>
-	<name>
+	</hive>
+	<killmob>
 		<title>
-
+			Monster Slayer
 		</title>
 		<hint>
-
+			Certain creatures prove vicious, and will need to be dealt with.
 		</hint>
 		<reveal>
-
+			Conveniently, they drop useful items when killed.
 		</reveal>
-	</name>
-	<name>
+	</killmob>
+	<allcores>
 		<title>
-
+			Dimensional Cores
 		</title>
 		<hint>
-
+			They come in various colors...what are they for?
 		</hint>
 		<reveal>
-
+			I have all sixteen...maybe these are for that monument I need to repair...
 		</reveal>
-	</name>
+	</allcores>
 	<name>
 		<title>
 

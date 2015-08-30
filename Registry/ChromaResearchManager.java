@@ -417,28 +417,28 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 		public boolean canProgressTo(EntityPlayer ep) {
 			switch(this) {
-			case ENTRY:
-				return true;
-			case CHARGESELF:
-				return ProgressStage.CHARGE.isPlayerAtStage(ep);
-			case RAWEXPLORE:
-				return ProgressStage.CRYSTALS.isPlayerAtStage(ep);
-			case ENERGYEXPLORE:
-				return ProgressStage.PYLON.isPlayerAtStage(ep);
-			case BASICCRAFT:
-				return ProgressStage.CRYSTALS.isPlayerAtStage(ep); //for now
-			case RUNECRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
-			case MULTICRAFT:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
-			case PYLONCRAFT:
-				return ProgressStage.REPEATER.isPlayerAtStage(ep);
-			case NETWORKING:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
-			case ENDGAME:
-				return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
-			default:
-				return false;
+				case ENTRY:
+					return true;
+				case CHARGESELF:
+					return ProgressStage.CHARGE.isPlayerAtStage(ep);
+				case RAWEXPLORE:
+					return ProgressStage.CRYSTALS.isPlayerAtStage(ep);
+				case ENERGYEXPLORE:
+					return ProgressStage.PYLON.isPlayerAtStage(ep);
+				case BASICCRAFT:
+					return ProgressStage.CRYSTALS.isPlayerAtStage(ep); //for now
+				case RUNECRAFT:
+					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.CRAFTING);
+				case MULTICRAFT:
+					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.TEMPLE);
+				case PYLONCRAFT:
+					return ProgressStage.REPEATER.isPlayerAtStage(ep);
+				case NETWORKING:
+					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
+				case ENDGAME:
+					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
+				default:
+					return false;
 			}
 		}
 

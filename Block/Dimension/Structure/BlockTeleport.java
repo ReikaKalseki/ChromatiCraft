@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,9 +43,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -184,16 +182,13 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		return tag;
 	}
 
-	public static class TileEntityTeleport extends StructureBlockTile {
+	public static class TileEntityTeleport extends StructureBlockTile<NonEuclideanGenerator> {
 
 		/** Is a relative position! */
 		public BlockVector destination;
 		public ForgeDirection facing;
 
 		private long lastActiveTick = -1;
-
-		private ArrayList<TriggerCriteria> criteria = new ArrayList();
-		private final HashMap<Coordinate, TeleportTriggerAction> actions = new HashMap();
 
 		public boolean isActive = true;
 
@@ -212,11 +207,12 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 					ChromatiCraft.logger.logError("Could not teleport "+e+"; null destination!");
 				return;
 			}
-			if (destination.xCoord == 0 && destination.yCoord == 0 && destination.zCoord == 0) //self pos
-				return;
-			for (TriggerCriteria c : criteria) {
-				if (!c.isValid(e, this))
-					return;
+			Collection<TriggerCriteria> criteria = this.getGenerator().getCriteria(xCoord, yCoord, zCoord);
+			if (criteria != null) {
+				for (TriggerCriteria c : criteria) {
+					if (!c.isValid(e, this))
+						return;
+				}
 			}
 			long time = worldObj.getTotalWorldTime();
 			if (time <= lastActiveTick) {
@@ -255,7 +251,8 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 				e.setLocationAndAngles(nx, ny, nz, e.rotationYaw+yaw, e.rotationPitch);
 			}
 			 */
-			ReikaEntityHelper.seamlessTeleport(e, xCoord, yCoord, zCoord, xCoord+destination.xCoord, yCoord+destination.yCoord, zCoord+destination.zCoord, facing, destination.direction);
+			if (!(destination.xCoord == 0 && destination.yCoord == 0 && destination.zCoord == 0)) //self pos
+				ReikaEntityHelper.seamlessTeleport(e, xCoord, yCoord, zCoord, xCoord+destination.xCoord, yCoord+destination.yCoord, zCoord+destination.zCoord, facing, destination.direction);
 			onTeleport((EntityPlayer)e, this);
 		}
 		/*
@@ -300,24 +297,17 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 		}
 
 		private void onPlayerTeleported(EntityPlayer ep, TileEntityTeleport te) {
-			ReikaJavaLibrary.pConsole(new WorldLocation(this)+" from "+new WorldLocation(te)+" from "+actions);
-			if (!actions.isEmpty()) {
+			HashMap<Coordinate, TeleportTriggerAction> actions = this.getGenerator().getActions(xCoord, yCoord, zCoord);
+			//ReikaJavaLibrary.pConsole(new WorldLocation(this)+" from "+new WorldLocation(te)+" from "+actions);
+			if (actions != null && !actions.isEmpty()) {
 				Coordinate rel = new Coordinate(te).offset(-xCoord, -yCoord, -zCoord);
 				TeleportTriggerAction a = actions.get(rel);
-				ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+" by "+rel+" to "+a+" from "+actions);
+				//ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+" by "+rel+" to "+a+" from "+actions);
 				if (a != null) {
 					a.trigger(rel, this);
-					ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+", triggered "+a+", remaining "+actions);
+					//ReikaJavaLibrary.pConsole(new Coordinate(this)+" from "+new Coordinate(te)+", triggered "+a+", remaining "+actions);
 				}
 			}
-		}
-
-		public void putAction(Coordinate rel, TeleportTriggerAction a) {
-			actions.put(rel, a);
-		}
-
-		public void addCriterion(TriggerCriteria tc) {
-			criteria.add(tc);
 		}
 
 		@Override
@@ -325,10 +315,19 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			return DimensionStructureType.NONEUCLID;
 		}
 
+		private void removeAction(Coordinate c) {
+			this.getGenerator().removeAction(xCoord, yCoord, zCoord, c);
+		}
+
+		private Collection<TeleportTriggerAction> getAllActions() {
+			HashMap<Coordinate, TeleportTriggerAction> actions = this.getGenerator().getActions(xCoord, yCoord, zCoord);
+			return actions != null ? actions.values() : null;
+		}
+
 	}
 
 	private static void onTeleport(EntityPlayer ep, TileEntityTeleport te) {
-		NonEuclideanGenerator g = (NonEuclideanGenerator)te.getGenerator();
+		NonEuclideanGenerator g = te.getGenerator();
 		if (g == null) {
 			ChromatiCraft.logger.logError("Teleport block @ "+te.xCoord+", "+te.yCoord+", "+te.zCoord+" has no strucure with ID="+te.uid);
 			ChromatiCraft.logger.log("Available Structures: "+DimensionStructureType.NONEUCLID.getUUIDs());
@@ -388,15 +387,18 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 
 		@Override
 		public void trigger(Coordinate c, TileEntityTeleport te) {
-			te.actions.remove(c);
+			te.removeAction(c);
 			if (this.shouldDeactivate(te))
 				te.isActive = false;
 		}
 
 		private boolean shouldDeactivate(TileEntityTeleport te) {
-			for (TeleportTriggerAction a : te.actions.values()) {
-				if (a instanceof DeactivateOneOf)
-					return false;
+			Collection<TeleportTriggerAction> c = te.getAllActions();
+			if (c != null) {
+				for (TeleportTriggerAction a : c) {
+					if (a instanceof DeactivateOneOf)
+						return false;
+				}
 			}
 			return true;
 		}
@@ -428,15 +430,18 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 
 		@Override
 		public void trigger(Coordinate c, TileEntityTeleport te) {
-			te.actions.remove(c);
+			te.removeAction(c);
 			if (this.shouldReroute(te))
 				te.destination = newDestination;
 		}
 
 		private boolean shouldReroute(TileEntityTeleport te) {
-			for (TeleportTriggerAction a : te.actions.values()) {
-				if (a instanceof RerouteIf)
-					return false;
+			Collection<TeleportTriggerAction> c = te.getAllActions();
+			if (c != null) {
+				for (TeleportTriggerAction a : c) {
+					if (a instanceof RerouteIf)
+						return false;
+				}
 			}
 			return true;
 		}

@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile.GOLTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 
 public class BlockGOLController extends BlockContainer {
 
@@ -71,7 +72,7 @@ public class BlockGOLController extends BlockContainer {
 		return blockIcon;
 	}
 
-	public static class GOLController extends StructureBlockTile {
+	public static class GOLController extends StructureBlockTile<GOLGenerator> {
 
 		private int minX;
 		private int maxX;

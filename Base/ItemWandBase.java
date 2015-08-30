@@ -62,7 +62,7 @@ public abstract class ItemWandBase extends ItemChromaTool {
 	}
 
 	protected static boolean canUseBoostedEffect(EntityPlayer ep) {
-		return ProgressStage.DIMENSION.isPlayerAtStage(ep);
+		return ProgressStage.CTM.isPlayerAtStage(ep);
 	}
 
 }
