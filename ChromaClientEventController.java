@@ -62,13 +62,13 @@ import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -192,7 +192,7 @@ public class ChromaClientEventController {
 	@ModDependent(ModList.PNEUMATICRAFT)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void hideStructures(BlockTrackEvent evt) {
-		if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+		if (evt.world.getBlock(evt.x, evt.y, evt.z) instanceof BlockStructureShield) {
 			evt.setCanceled(true);
 		}
 	}
