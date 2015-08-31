@@ -76,13 +76,15 @@ public class GlowKnot {
 
 			double d = 1.25;
 
+			double pz = 0.05;
+
 			v5.startDrawingQuads();
 			int a = 160;
 			v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a/255F), a);
-			v5.addVertexWithUV(-d, -d, 0, u, v);
-			v5.addVertexWithUV(d, -d, 0, du, v);
-			v5.addVertexWithUV(d, d, 0, du, dv);
-			v5.addVertexWithUV(-d, d, 0, u, dv);
+			v5.addVertexWithUV(-d, -d, pz, u, v);
+			v5.addVertexWithUV(d, -d, pz, du, v);
+			v5.addVertexWithUV(d, d, pz, du, dv);
+			v5.addVertexWithUV(-d, d, pz, u, dv);
 			v5.draw();
 
 			BlendMode.DEFAULT.apply();
