@@ -221,6 +221,7 @@ public enum ChromaResearch implements ProgressElement {
 	BREADCRUMB(		Chromabilities.BREADCRUMB),
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
 	DIMPING(		Chromabilities.DIMPING),
+	DASH(			Chromabilities.DASH),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

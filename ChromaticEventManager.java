@@ -110,6 +110,7 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
+import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -141,11 +142,92 @@ public class ChromaticEventManager {
 
 	private final Random rand = new Random();
 
-	//
-	//private final Collection<TileEntityItemCollector> collectors = new ArrayList();
-
 	private ChromaticEventManager() {
 
+	}
+	/*
+	@SubscribeEvent
+	public void triggerDoubleJump(RawKeyPressEvent evt) {
+		if (evt.key == Key.JUMP) {
+			if (!evt.player.onGround && evt.player.jumpTicks == 0) {
+				ItemStack boot = evt.player.getEquipmentInSlot(1);
+				if (boot != null && boot.stackTagCompound != null && boot.stackTagCompound.getBoolean("Chroma_Double_Jump")) {
+					if (AbilityHelper.instance.tryAndDoDoubleJump(evt.player)) {
+						ReikaJavaLibrary.pConsole("fire_"+FMLCommonHandler.instance().getEffectiveSide());
+						evt.player.fallDistance = 0;
+						evt.player.jump();
+						evt.player.velocityChanged = true;
+					}
+				}
+			}
+		}
+	}*/
+
+	@SubscribeEvent
+	public void resetDoubleJump(LivingFallEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			//ReikaJavaLibrary.pConsole("fall:"+evt.entityLiving.fallDistance, Side.SERVER);
+			AbilityHelper.instance.resetDoubleJump((EntityPlayer)evt.entityLiving);
+		}
+	}
+	/*
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void processDoubleJump(LivingJumpEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			AbilityHelper.instance.registerJumpTime((EntityPlayer)evt.entityLiving);
+		}
+	}
+	/*
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void processDoubleJump(LivingJumpEvent evt) {
+		ReikaJavaLibrary.pConsole(evt.entityLiving.worldObj.isRemote);
+		if (evt.entityLiving instanceof EntityPlayer) {
+			if (AbilityHelper.instance.isDoubleJumping((EntityPlayer)evt.entityLiving)) {
+				evt.entityLiving.fallDistance = 0;
+				evt.entityLiving.motionY = Math.max(evt.entityLiving.motionY, 0.5);
+				ReikaJavaLibrary.pConsole("jump:"+evt.entityLiving.fallDistance, Side.SERVER);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void triggerDoubleJump(JumpCheckEventClient evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			if (!evt.entityLiving.onGround && evt.jumpTick == 0) {
+				ItemStack boot = evt.entityLiving.getEquipmentInSlot(1);
+				if (boot != null && boot.stackTagCompound != null && boot.stackTagCompound.getBoolean("Chroma_Double_Jump")) {
+					if (AbilityHelper.instance.tryAndDoDoubleJump((EntityPlayer)evt.entityLiving)) {
+						ReikaJavaLibrary.pConsole("Client_fire");
+						evt.entityLiving.fallDistance = 0;
+						evt.setResult(Result.ALLOW);
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void triggerDoubleJump(JumpCheckEvent evt) {
+		if (!evt.entityPlayer.worldObj.isRemote) {
+			if (!evt.entityPlayer.onGround && KeyWatcher.instance.isKeyDown(evt.entityPlayer, Key.JUMP)) {
+				ItemStack boot = evt.entityPlayer.getEquipmentInSlot(1);
+				if (boot != null && boot.stackTagCompound != null && boot.stackTagCompound.getBoolean("Chroma_Double_Jump")) {
+					if (AbilityHelper.instance.tryAndDoDoubleJump(evt.entityPlayer)) {
+						ReikaJavaLibrary.pConsole("server_fire");
+						evt.entityPlayer.fallDistance = 0;
+						evt.setResult(Result.ALLOW);
+					}
+				}
+			}
+		}
+	}*/
+
+	@SubscribeEvent
+	public void triggerLumenDash(PlayerSprintEvent evt) {
+		if (Chromabilities.DASH.enabledOn(evt.entityPlayer) && AbilityHelper.instance.getPlayerDashCooldown(evt.entityPlayer) == 0) {
+			AbilityHelper.instance.doLumenDash(evt.entityPlayer);
+		}
 	}
 
 	@SubscribeEvent

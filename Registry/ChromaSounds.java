@@ -53,7 +53,8 @@ public enum ChromaSounds implements SoundEnum {
 	PYLONFLASH("pylonboost"),
 	PYLONTURBO("pylonturbo"),
 	PYLONBOOSTRITUAL("pylonboost_ritual_short"),
-	PYLONBOOSTSTART("pylonbooststart");
+	PYLONBOOSTSTART("pylonbooststart"),
+	DASH("dash");
 
 	public static final ChromaSounds[] soundList = values();
 

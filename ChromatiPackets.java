@@ -520,6 +520,9 @@ public class ChromatiPackets implements PacketHandler {
 				case MUSICDEMO:
 					((TileEntityCrystalMusic)tile).loadDemo();
 					break;
+				case PYLONTURBOSTART:
+					((TileEntityPylonTurboCharger)tile).doStartFXClient(world, x, y, z);
+					break;
 				case PYLONTURBOCOMPLETE:
 					((TileEntityPylonTurboCharger)tile).doCompleteParticlesClient(world, x, y, z);
 					break;
@@ -540,6 +543,11 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case MONUMENTEVENT:
 					((TileEntityStructControl)tile).triggerMonumentEventClient(world, x, y, z);
+					break;
+				case DASH:
+					ChromaFX.doDashParticles(world, (EntityPlayer)world.getEntityByID(data[0]));
+					break;
+				default:
 					break;
 			}
 		}

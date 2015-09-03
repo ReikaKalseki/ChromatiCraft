@@ -11,18 +11,21 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
@@ -34,6 +37,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -42,6 +46,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class ChromaFX {
+
+	private static final Random rand = new Random();
 
 	public static void poolRecipeParticles(EntityItem ei) {
 		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
@@ -223,6 +229,58 @@ public class ChromaFX {
 			double vy = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 			double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
 			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityFlareFX(e, ei.worldObj, rx, ry, rz, vx, vy, vz));
+		}
+	}
+
+	public static void doDashParticles(World world, EntityPlayer e) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.DASH, Minecraft.getMinecraft().thePlayer, 1, 1, false);
+		double x = e.posX;
+		double y = e.posY;
+		double z = e.posZ;
+
+		double angX = Math.cos(Math.toRadians(e.rotationYawHead+90));
+		double angZ = Math.sin(Math.toRadians(e.rotationYawHead+90));
+		double leftX = Math.cos(Math.toRadians(e.rotationYawHead));
+		double leftZ = Math.sin(Math.toRadians(e.rotationYawHead));
+
+		int n = 128;
+		double dd = 26;
+		for (int i = 0; i < n; i++) {
+			double d = rand.nextDouble()*dd;
+			double py = y-1+rand.nextDouble()*1.85;
+			double px = x+d*angX+ReikaRandomHelper.getRandomPlusMinus(0, 1.25)*Math.abs(leftX);
+			double pz = z+d*angZ+ReikaRandomHelper.getRandomPlusMinus(0, 1.25)*Math.abs(leftZ);
+
+			double v = 0.125;
+			double vx = v*angX;
+			double vz = v*angZ;
+
+			int l = 15+rand.nextInt(25);
+			float s = 1+rand.nextFloat();
+
+			//int c = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.RGBtoHex(96, 192, 255), rand.nextFloat());
+
+			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz, vx, 0, vz).setScale(s).setLife(l);//.setColor(c);
+			EntityBlurFX fx2 = new EntityBlurFX(world, px, py, pz, -vx, 0, -vz).setScale(s).setLife(l);//.setColor(c);
+
+			switch(rand.nextInt(3)) {
+				case 0:
+					fx.setColor(255, 255, 255);
+					fx2.setColor(255, 255, 255);
+					break;
+				case 1:
+					fx.setColor(96, 192, 255);
+					fx2.setColor(96, 192, 255);
+					break;
+				case 2:
+					fx.setColor(0, 255, 0);
+					fx2.setColor(0, 255, 0);
+					break;
+			}
+
+
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
 	}
 

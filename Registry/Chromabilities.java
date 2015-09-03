@@ -37,6 +37,8 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -120,7 +122,8 @@ public enum Chromabilities implements Ability {
 	SPAWNERSEE(null, true),
 	BREADCRUMB(null, true),
 	RANGEDBOOST(null, false),
-	DIMPING(null, false);
+	DIMPING(null, false),
+	DASH(Phase.END, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -237,6 +240,13 @@ public enum Chromabilities implements Ability {
 				break;
 			case FLOAT:
 				this.waterRun(ep);
+				break;
+			case DASH:
+				PotionEffect pot = ep.getActivePotionEffect(Potion.moveSpeed);
+				if (pot != null && pot.getAmplifier() == 60)
+					ep.stepHeight = 2.75F;
+				else
+					ep.stepHeight = 0.5F;
 				break;
 			default:
 				break;

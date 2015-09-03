@@ -79,6 +79,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private int tableXP;
 	private RecipeType tier = RecipeType.CRAFTING;
 
+	private boolean isEnhanced;
+
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
 
@@ -393,6 +395,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				craftingTick = activeRecipe.getDuration();
+				if (isEnhanced)
+					craftingTick = Math.max(craftingTick/4, Math.min(craftingTick, 20));
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
 					this.requestEnergyDifference(tag);
@@ -483,6 +487,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		tier = RecipeType.typeList[NBT.getInteger("tier")];
 
 		craftingTick = NBT.getInteger("craft");
+
+		isEnhanced = NBT.getBoolean("enhance");
 	}
 
 	@Override
@@ -497,6 +503,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		NBT.setInteger("xp", tableXP);
 
 		NBT.setInteger("craft", craftingTick);
+
+		NBT.setBoolean("enhance", isEnhanced);
 	}
 
 	private void craft() {
@@ -506,6 +514,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
+			NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
 			this.addXP((int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe)));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
@@ -519,8 +528,6 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 						te.syncAllData(true);
 					}
 				}
-
-				NBTin = mult.getOutputTag(inv[4].stackTagCompound);
 			}
 			for (int i = 0; i < 9; i++) {
 				if (inv[i] != null)
@@ -613,6 +620,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			if (tableXP >= tier.levelUp) {
 				this.setTier(tier.next());
 			}
+			if (tableXP > 100000) {
+				isEnhanced = true;
+			}
+			this.syncAllData(false);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}
 
@@ -747,7 +759,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int maxThroughput() {
-		return 100;
+		return isEnhanced ? 1000 : 100*(tableXP/RecipeType.MULTIBLOCK.levelUp);
 	}
 
 	@Override
@@ -846,6 +858,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	public boolean hasRecipeBeenUsed(CastingRecipe cr) {
 		return this.getCompletedRecipes().contains(cr);
+	}
+
+	@Override
+	public int getIconState() {
+		return isEnhanced ? 1 : 0;
 	}
 
 }

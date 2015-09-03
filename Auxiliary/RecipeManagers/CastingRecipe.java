@@ -256,6 +256,10 @@ public class CastingRecipe {
 		return flag;
 	}
 
+	public NBTTagCompound getOutputTag(NBTTagCompound input) {
+		return null;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		private static final BlockArray runeRing = new BlockArray();
@@ -491,10 +495,6 @@ public class CastingRecipe {
 				map.put(is, n+1);
 			}
 			return map;
-		}
-
-		public NBTTagCompound getOutputTag(NBTTagCompound input) {
-			return null;
 		}
 
 		@Override

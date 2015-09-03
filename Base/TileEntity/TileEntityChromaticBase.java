@@ -139,4 +139,8 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	public final boolean isOwnedByPlayer(EntityPlayer ep) {
 		return owners.contains(ep.getUniqueID());
 	}
+
+	public int getIconState() {
+		return 0;
+	}
 }

@@ -119,6 +119,7 @@ public class ChromaOverlays {
 			if (washout > 0) {
 				this.renderWashout(evt);
 				//evt.setCanceled(true);
+
 				return;
 			}
 		}

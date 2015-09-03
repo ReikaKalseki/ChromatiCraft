@@ -99,8 +99,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 						te.ritualTick = ritualTick;
 					}
 					if (revTick == 0) {
-						ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 2, 1);
-						ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 2, 1);
+						this.triggerStartFX(world, x, y, z);
 					}
 					ChromaSounds.ERROR.playSoundAtBlock(this, 1, 0.5F); //low buzz
 				}
@@ -341,6 +340,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		int dat = 0;
 		switch(type) {
 			case FLASH:
+				//this.rockScreen(40);
 				dat = te.getColor().ordinal();
 				//ChromaSounds.PYLONFLASH.playSoundAtBlock(this);
 				break;
@@ -351,18 +351,21 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 					ChromaSounds.INFUSE.playSoundAtBlockNoAttenuation(this.getPylon(world, x, y, z), 0.5F, 0.5F);
 				break;
 			case PARTICLEBURST:
+				//this.rockScreen(6);
 				//ChromaSounds.CAST.playSoundAtBlockNoAttenuation(this.getPylon(world, x, y, z), 1, 1);
 				break;
 			case SKY:
 				dat = skyTick;
 				break;
 			case LIGHTNING:
+				//this.rockScreen(20);
 				//ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 1, 1);
 				double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 8);
 				double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 8);
 				worldObj.addWeatherEffect(new EntityLightningBolt(world, dx, y, dz));
 				break;
 			case POTIONS:
+				//this.rockScreen(16);
 				//ChromaSounds.POWERDOWN.playSoundAtBlockNoAttenuation(this, 1, 1);
 				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-12, y-2, z-12, x+1+12, y+1+24, z+1+12);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
@@ -384,7 +387,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 
 	@SideOnly(Side.CLIENT)
 	public void doFailParticlesClient(World world, int x, int y, int z, boolean hasPylon) {
-		this.rockScreen(15);
+		this.rockScreenClient(15);
 		int n = 12;
 		int da = 360/n;
 		double r = 16;
@@ -477,7 +480,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		switch(evt) {
 			case FLASH: {
-				this.rockScreen(40);
+				this.rockScreenClient(40);
 				ReikaSoundHelper.playClientSound(ChromaSounds.PYLONFLASH, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				ChromaOverlays.instance.triggerWashout(CrystalElement.elements[data]);
 				for (int i = 0; i < 6; i++) {
@@ -499,7 +502,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 			}
 			case PARTICLEBURST: {
-				this.rockScreen(6);
+				this.rockScreenClient(6);
 				ReikaSoundHelper.playClientSound(ChromaSounds.CAST, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				for (int a = 0; a < 360; a += 2) {
 					int n = 1;//1+rand.nextInt(3);
@@ -581,11 +584,11 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 			}
 			case LIGHTNING:
-				this.rockScreen(20);
+				this.rockScreenClient(20);
 				ReikaSoundHelper.playClientSound(ChromaSounds.DISCHARGE, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				break;
 			case POTIONS:
-				this.rockScreen(16);
+				this.rockScreenClient(16);
 				ReikaSoundHelper.playClientSound(ChromaSounds.POWERDOWN, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				int r = 16;
 				int n = 16+rand.nextInt(32);
@@ -610,10 +613,32 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 		}
 	}
+	//For some reason screen rock only works if the player was recently damaged; that is the real reason for triggering this effect
+	private void triggerStartFX(World world, int x, int y, int z) {
+		for (int i = 0; i < Location.list.length; i++) {
+			Location loc = Location.list[i];
+			Coordinate c = loc.position.offset(x, y, z);
+			world.addWeatherEffect(new EntityLightningBolt(world, c.xCoord, c.yCoord, c.zCoord));
+		}
+
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-64, y-64, z-64, x+1+64, y+1+64, z+1+64);
+		List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, box);
+		for (EntityPlayer ep : li) {
+			ep.attackEntityFrom(new DamageSource("fx").setDamageBypassesArmor().setDamageIsAbsolute().setDamageAllowedInCreativeMode(), 0.00001F);
+		}
+
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOSTART.ordinal(), this, 64);
+	}
 
 	@SideOnly(Side.CLIENT)
-	private void rockScreen(int ticks) {
-		Minecraft.getMinecraft().thePlayer.hurtTime = Math.max(Minecraft.getMinecraft().thePlayer.hurtTime, ticks);
+	public void doStartFXClient(World world, int x, int y, int z) {
+		ReikaSoundHelper.playClientSound(ChromaSounds.PYLONBOOSTSTART, x+0.5, y+0.5, z+0.5, 2, 1, false); //play sound here to ensure sync
+		ReikaSoundHelper.playClientSound(ChromaSounds.PYLONBOOSTSTART, x+0.5, y+0.5, z+0.5, 2, 1, false); //play sound here to ensure sync
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void rockScreenClient(int ticks) {
+		Minecraft.getMinecraft().renderViewEntity.hurtTime = Math.max(Minecraft.getMinecraft().renderViewEntity.hurtTime, ticks);
 	}
 
 	public int getSkyTick() {
@@ -725,6 +750,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			TileEntityPylonTurboCharger tile = (TileEntityPylonTurboCharger)c.getTileEntity(world);
 			tile.location = loc;
 		}
+
+		world.getWorldInfo().setRaining(false);
 
 		this.syncAllData(true);
 	}

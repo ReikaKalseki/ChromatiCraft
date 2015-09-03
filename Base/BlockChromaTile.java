@@ -93,7 +93,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 
 	private static final Random par5Random = new Random();
 
-	private final IIcon[][] icons = new IIcon[16][6];
+	private final IIcon[][][] icons = new IIcon[16][6][2];
 
 	public BlockChromaTile(Material par2Material) {
 		super(par2Material);
@@ -115,7 +115,14 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta][s];
+		return icons[meta][s][0];
+	}
+
+	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		int meta = iba.getBlockMetadata(x, y, z);
+		TileEntityChromaticBase te = (TileEntityChromaticBase)iba.getTileEntity(x, y, z);
+		return icons[meta][s][te.getIconState()];
 	}
 
 	@Override
@@ -159,7 +166,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 				for (int k = 0; k < 6; k++) {
 					String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
 					String path = c.name().toLowerCase()+"_"+s;
-					icons[c.getBlockMetadata()][k] = ico.registerIcon("chromaticraft:tile/"+path);
+					icons[c.getBlockMetadata()][k][0] = ico.registerIcon("chromaticraft:tile/"+path);
+					icons[c.getBlockMetadata()][k][1] = ico.registerIcon("chromaticraft:tile/"+path+"_variant");
 				}
 			}
 		}

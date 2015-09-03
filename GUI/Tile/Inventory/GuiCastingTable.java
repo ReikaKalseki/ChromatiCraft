@@ -117,6 +117,10 @@ public class GuiCastingTable extends GuiChromaBase {
 			}
 			else {
 				ItemStack out = r.getOutput();
+				ItemStack ctr = tile.getStackInSlot(4);
+				if (ctr != null && ctr.stackTagCompound != null) {
+					out.stackTagCompound = r.getOutputTag(ctr.stackTagCompound);
+				}
 				api.drawItemStack(itemRender, out, 189, 12);
 				if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {
 					int mx = api.getMouseRealX();

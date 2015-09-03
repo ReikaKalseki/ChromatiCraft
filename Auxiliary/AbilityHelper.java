@@ -33,6 +33,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
@@ -63,6 +65,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -71,6 +74,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -112,6 +118,10 @@ public class AbilityHelper {
 	private final PlayerMap<PlayerPath> playerPaths = new PlayerMap();
 
 	private final HashSet<UUID> noClippingMagnet = new HashSet();
+
+	private final PlayerMap<Long> dashTime = new PlayerMap();
+
+	private final HashSet<UUID> doubleJumps = new HashSet();
 
 	public static final AbilityHelper instance = new AbilityHelper();
 
@@ -922,6 +932,57 @@ public class AbilityHelper {
 			noClippingMagnet.add(ep.getUniqueID());
 		else
 			noClippingMagnet.remove(ep.getUniqueID());
+	}
+
+	public int getPlayerDashCooldown(EntityPlayer ep) {
+		Long ret = dashTime.get(ep);
+		return ret == null ? 0 : Math.max(0, (int)(ret.longValue()+50-ep.worldObj.getTotalWorldTime()));
+	}
+
+	public void doLumenDash(EntityPlayer ep) {
+		dashTime.put(ep, ep.worldObj.getTotalWorldTime());
+		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ResetWalkSpeedEvent(ep)), 10);
+		//ReikaPlayerAPI.setPlayerWalkSpeed(ep, 5);
+		ep.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 8, 60, true));
+		ep.addPotionEffect(new PotionEffect(Potion.jump.id, 8, 2, true));
+		ep.stepHeight = 2.75F;
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DASH.ordinal(), new PacketTarget.RadiusTarget(ep, 24), ep.getEntityId());
+	}
+
+	private static class ResetWalkSpeedEvent implements ScheduledEvent {
+
+		private final EntityPlayer player;
+		//private final float walkSpeed;
+		private final float prevHeight;
+
+		private ResetWalkSpeedEvent(EntityPlayer ep) {
+			player = ep;
+			//walkSpeed = ep.capabilities.getWalkSpeed();
+			prevHeight = ep.stepHeight;
+		}
+
+		@Override
+		public void fire() {
+			//ReikaPlayerAPI.setPlayerWalkSpeed(player, walkSpeed);
+			player.stepHeight = prevHeight;
+		}
+
+	}
+
+	public boolean tryAndDoDoubleJump(EntityPlayer ep) {
+		UUID id = ep.getUniqueID();
+		if (doubleJumps.contains(id))
+			return false;
+		doubleJumps.add(id);
+		return true;
+	}
+
+	public boolean isDoubleJumping(EntityPlayer ep) {
+		return doubleJumps.contains(ep.getUniqueID());
+	}
+
+	public void resetDoubleJump(EntityPlayer ep) {
+		doubleJumps.remove(ep.getUniqueID());
 	}
 
 }
