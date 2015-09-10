@@ -90,7 +90,10 @@ public enum ChromaPackets {
 	TURRETATTACK(1),
 	MONUMENTEVENT(),
 	MONUMENTCOMPLETE(),
-	DASH(1);
+	DASH(1),
+	//MAZEDISTREQ(),
+	//MAZEDISTINFO(1);
+	;
 
 	public final int numInts;
 	public final PacketTypes type;

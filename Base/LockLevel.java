@@ -86,13 +86,11 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 		for (int i = 0; i < colors.length; i++) {
 			elements[i] = shuffleMap.get(colors[i]);
 		}
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet(level.ordinal(), parent.id, elements));
-		((LocksGenerator)parent).addLock(x, y, z);
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 0, new LockColorSet((LocksGenerator)parent, level.ordinal(), parent.id, elements));
 	}
 
 	protected final void generateGate(int x, int y, int z) {
-		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet(level.ordinal(), parent.id));
-		((LocksGenerator)parent).addLock(x, y, z);
+		currentGenerator.setTileEntity(x, y, z, ChromaBlocks.COLORLOCK.getBlockInstance(), 1, new LockColorSet((LocksGenerator)parent, level.ordinal(), parent.id));
 	}
 
 	public final LockLevel mirrorX() {
@@ -120,14 +118,16 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 	private static class LockColorSet implements TileCallback {
 
+		private final LocksGenerator generator;
 		private final CrystalElement[] colors;
 		private final int channel;
 		private final UUID uid;
 
-		private LockColorSet(int ch, UUID id, CrystalElement... c) {
+		private LockColorSet(LocksGenerator gen, int ch, UUID id, CrystalElement... c) {
 			colors = c;
 			channel = ch;
 			uid = id;
+			generator = gen;
 		}
 
 		@Override
@@ -138,6 +138,7 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 					te.addColor(e);
 				te.setChannel(channel);
 				te.uid = uid;
+				generator.addLock(x, y, z);
 			}
 		}
 

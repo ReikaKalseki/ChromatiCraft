@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentHighlighter;
@@ -22,6 +23,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentMineralBlo
 import Reika.ChromatiCraft.World.Dimension.Structure.Monument.MonumentStructure;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class MonumentGenerator {
 
@@ -53,11 +55,23 @@ public class MonumentGenerator {
 		//genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
 		posX = x;
 		posZ = z;
-		posY = 120;
+		posY = 103;
 
-		new MonumentStructure().generate(world, rand, x, posY, z);
-		new MonumentMineralBlocks(this).generate(world, rand, x, posY, z);
-		new MonumentHighlighter().generate(world, rand, x, posY, z);
+		int r = 32;
+		int r2 = 24;
+		for (int i = -r; i <= r; i++) {
+			for (int j = 0; j <= r2; j++) {
+				for (int k = -r; k <= r; k++) {
+					if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, r2, r)) {
+						world.setBlock(x+i, posY+j, z+k, Blocks.air);
+					}
+				}
+			}
+		}
+
+		new MonumentStructure().generate(world, rand, x-21, posY, z-21);
+		new MonumentMineralBlocks(this).generate(world, rand, x-21, posY, z-21);
+		new MonumentHighlighter().generate(world, rand, x-21, posY, z-21);
 
 		//center.generate(world, rand, x, posY, z, li);
 		/*

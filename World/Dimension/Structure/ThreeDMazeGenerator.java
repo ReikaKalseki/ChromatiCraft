@@ -11,10 +11,13 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -29,6 +32,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 
 	private final LinkedList<ForgeDirection> pathCache = new LinkedList();
+	private final LinkedList<Coordinate> pathLocs = new LinkedList();
 	private final HashSet<Coordinate> coordCache = new HashSet();
 	//private final HashSet<Coordinate> coordCacheInverse = new HashSet();
 	private final MultiMap<Coordinate, ForgeDirection> locationCache = new MultiMap();
@@ -38,6 +42,9 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	//private final MultiMap<Coordinate, ForgeDirection> nextTemp = new MultiMap();
 	private Coordinate step;
 	private ForgeDirection nextDir;
+
+	private int goalDistance;
+	private HashMap<Coordinate, Integer> distances = new HashMap();
 
 	private static final int MAX_SIZE_X = getWidth();
 	private static final int MAX_SIZE_Y = getHeight();
@@ -182,7 +189,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		pathCache.addLast(ForgeDirection.DOWN);
 		//this.stepPath(x, y, z, rand, this.getMovementDirection(x, y, z, ForgeDirection.DOWN, rand));
 		step = new Coordinate(x, y, z);
-		nextDir = this.getMovementDirection(x, y, z, ForgeDirection.DOWN, rand);
+		nextDir = this.getMovementDirection(x, y, z, rand);
 		while (!this.isFull()) {
 			this.stepPath(step.xCoord, step.yCoord, step.zCoord, rand, nextDir);
 			//ReikaJavaLibrary.pConsole("----------"+coordCache.size()+"/"+step+"-------------");
@@ -277,12 +284,37 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		Coordinate c = new Coordinate(x, y, z);
 		locationCache.addValue(c, dir.getOpposite());
 		coordCache.add(c);
+		pathLocs.addLast(c);
+		if (x == MAX_SIZE_X/2 && y == 0 && z == MAX_SIZE_Z/2) {
+			Iterator<Coordinate> it = pathLocs.descendingIterator();
+			int d = 0;
+			while (it.hasNext()) {
+				Coordinate loc = it.next();
+				Integer get = distances.get(loc);
+				if (get != null) {
+					d = Math.min(d, get.intValue());
+				}
+				distances.put(loc, d);
+				d++;
+			}
+			goalDistance = 0;
+		}
+		else {
+			goalDistance++;
+			Integer get = distances.get(c);
+			if (get != null) {
+				goalDistance = Math.min(goalDistance, get.intValue());
+			}
+			distances.put(c, goalDistance);
+		}
+
 		if (this.isFull()) {
 			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; is full; returning from "+dir+" from "+x+", "+y+", "+z);
+			pathLocs.removeLast();
 			return;
 		}
 		else if (this.hasUnvisitedNeighbors(x, y, z)) {
-			dir = this.getMovementDirection(x, y, z, dir, rand);
+			dir = this.getMovementDirection(x, y, z, rand);
 			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping forward "+dir+" from "+x+", "+y+", "+z);
 			locationCache.addValue(c, dir);
 			pathCache.addLast(dir);
@@ -292,6 +324,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		}
 		else {
 			dir = pathCache.removeLast();
+			pathLocs.removeLast();
 			//ReikaJavaLibrary.pConsole("Backstep has: "+coordCache.contains(new Coordinate(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ))+"|"+this.hasUnvisitedNeighbors(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ));
 			//ReikaJavaLibrary.pConsole("Current has: "+coordCache.contains(new Coordinate(x, y, z)));
 			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping backward, opposite of "+dir+", from "+x+", "+y+", "+z);
@@ -331,10 +364,10 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		return li;
 	}
 
-	private ForgeDirection getMovementDirection(int x, int y, int z, ForgeDirection last, Random rand) {
+	private ForgeDirection getMovementDirection(int x, int y, int z, Random rand) {
 		//if (rand.nextInt(3) == 0 && this.canMove(x, y, z, last) && !this.hasCellFrom(x, y, z, last)) //bias towards continuing direction
 		//	return last;
-		last = pathCache.getLast().getOpposite();
+		ForgeDirection last = pathCache.getLast().getOpposite();
 		//ReikaJavaLibrary.pConsole("Data at "+x+", "+y+", "+z+"; last is "+last);
 		ArrayList<ForgeDirection> li = ReikaJavaLibrary.makeListFromArray(ForgeDirection.VALID_DIRECTIONS);
 		int idx = rand.nextInt(li.size());
@@ -390,8 +423,11 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		pathCache.clear();
+		pathLocs.clear();
 		coordCache.clear();
 		locationCache.clear();
+		distances.clear();
+		goalDistance = 0;
 		step = null;
 		nextDir = null;
 		//step.clear();
@@ -401,6 +437,28 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	@Override
 	public StructureData createDataStorage() {
 		return null;
+	}
+
+	/** Takes the coordinate within the maze, not actual block coords! */
+	public int getDistanceToGoal(Coordinate loc) {
+		return distances.get(loc);
+	}
+
+	public boolean isLocationInMaze(double x, double y, double z) {
+		int px = MathHelper.floor_double(x);
+		int py = MathHelper.floor_double(y);
+		int pz = MathHelper.floor_double(z);
+		return px >= 0 && px < MAX_SIZE_X && py >= 0 && py < MAX_SIZE_Y && pz >= 0 && pz < MAX_SIZE_Z;
+	}
+
+	public Coordinate getCellFromBlockCoords(double x, double y, double z) {
+		if (!this.isLocationInMaze(x, y, z))
+			return null;
+		int dx = MathHelper.floor_double(x)-minX;
+		int dy = MathHelper.floor_double(y)-minY;
+		int dz = MathHelper.floor_double(z)-minZ;
+		int s = partSize;
+		return new Coordinate(dx/s, dy/s, dz/s);
 	}
 
 }

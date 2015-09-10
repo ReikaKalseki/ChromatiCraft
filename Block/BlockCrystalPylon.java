@@ -85,6 +85,11 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 	}
 
 	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		return this.getIcon(s, iba.getBlockMetadata(x, y, z));
+	}
+
+	@Override
 	public IIcon getIcon(int s, int meta) {
 		switch(meta) {
 			case 0:

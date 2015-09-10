@@ -12,26 +12,27 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
-import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeAnchor;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Comparators.PointDistanceComparator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.PointDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
@@ -47,15 +48,18 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	private Point destination;
 
-	private int copyLength;
-
 	private static final int ANCHORS = 6;
 
-	private PathPre[] path = new PathPre[ANCHORS+1];
-	private LinkedList<ForgeDirection>[] pathCache = new LinkedList[ANCHORS+1];
-	private HashSet<Point> coordCache[] = new HashSet[ANCHORS+1];
-	private MultiMap<Point, ForgeDirection>[] locationCache = new MultiMap[ANCHORS+1];
-	private MazePath[] solutions = new MazePath[ANCHORS+1];
+	private final LinkedList<Point> pathCache = new LinkedList();
+	private final HashSet<Point> coordCache = new HashSet();
+	private final MultiMap<Point, ForgeDirection> locationCache = new MultiMap();
+
+	private Path mainPath;
+	private ArrayList<Point> nodes = new ArrayList();
+	private ArrayList<Path> anchorPaths = new ArrayList();
+	private MultiMap<Point, Path> nodePaths = new MultiMap(); //point is the end point of the path
+
+	private final ArrayList<MazeState> states = new ArrayList();
 
 	private Point step;
 	private ForgeDirection nextDir;
@@ -85,22 +89,99 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	@Override
 	public void calculate(int x, int z, Random rand) {
 
-
-		this.pickPoints(rand, ANCHORS);
-
 		posY = 200;
 
-		for (int i = 0; i < ANCHORS+1; i++) {
-			pathCache[i] = new LinkedList();
-			coordCache[i] = new HashSet();
-			locationCache[i] = new MultiMap(new MultiMap.HashSetFactory());
-			destination = i == ANCHORS ? exit : endPoints.get(i);
-			this.generatePathFrom(i, entry.x, entry.y, rand);
-			this.cutExit(i);
-		}
+		this.pickPoints(rand); //start, end, and anchors
+		this.mainPathing(rand); //start -> end pathing
+		this.pickNodes(rand); //pick nodes along start -> end
+		this.anchorPathing(rand); //path from anchors to nodes
+		//this.nodePathing(rand); //path between nodes
+		//this.addMazing(rand); //add dead ends
+
+		this.cutExit();
 
 		this.generateBlocks(x, posY, z, rand);
 		this.generateAnchors(x, posY, z, rand);
+	}
+
+	private void addMazing(Random rand) {
+
+	}
+
+	private void nodePathing(Random rand) {
+		for (int i = 0; i < nodes.size(); i++) {
+			Point from = i == 0 ? entry : nodes.get(i-1);
+			Point end = nodes.get(i);
+			for (int k = 0; k < ANCHORS+1; k++) {
+				Path p = this.pathTo(from, end, rand, 10, nodePaths.get(end));
+				nodePaths.addValue(end, p);
+				for (int m = 0; m < p.points.size()-1; m++) {
+					Point pt = p.points.get(m);
+					ForgeDirection dir = p.steps.get(m);
+					locationCache.addValue(pt, dir);
+					locationCache.addValue(this.getTranslatedPoint(pt, dir), dir.getOpposite());
+				}
+			}
+			break; //remove
+		}
+	}
+
+	private void anchorPathing(Random rand) {
+		for (Point a : endPoints) { //anchors
+			ArrayList<Point> li = new ArrayList(nodes);
+			Collections.sort(li, new PointDistanceComparator(a));
+			boolean flag = false;
+			for (Point n : li) {
+				Path p = this.pathTo(n, a, rand, 50);
+				if (p instanceof FailedPath)
+					continue;
+				flag = true;
+				anchorPaths.add(p);
+				for (int m = 0; m < p.points.size()-1; m++) {
+					Point pt = p.points.get(m);
+					ForgeDirection dir = p.steps.get(m);
+					locationCache.addValue(pt, dir);
+					locationCache.addValue(this.getTranslatedPoint(pt, dir), dir.getOpposite());
+				}
+				break;
+			}
+			if (!flag) {
+				ReikaJavaLibrary.pConsole("Failed pathing from anchor "+a+" to any node!");
+			}
+		}
+	}
+
+	private Point getClosestNode(Point p) {
+		double d = Double.POSITIVE_INFINITY;
+		Point c = null;
+		for (Point n : nodes) {
+			double dd = ReikaMathLibrary.py3d(p.x-n.x, 0, p.y-n.y);
+			if (dd < d) {
+				d = dd;
+				c = n;
+			}
+		}
+		return c;
+	}
+
+	private void pickNodes(Random rand) {
+		ArrayList<Point> li = mainPath.points;
+		double d = li.size()/(double)(ANCHORS+1);
+		for (double i = d; i < li.size(); i += d) {
+			nodes.add(li.get((int)i));
+		}
+	}
+
+	private void mainPathing(Random rand) {
+		mainPath = this.pathTo(entry, exit, rand, 50);
+		if (mainPath instanceof FailedPath)
+			throw new IllegalStateException("Main pathing failed?!");
+		for (int m = 0; m < mainPath.points.size()-1; m++) {
+			Point pt = mainPath.points.get(m);
+			ForgeDirection dir = mainPath.steps.get(m);
+			locationCache.addValue(pt, dir);
+			locationCache.addValue(this.getTranslatedPoint(pt, dir), dir.getOpposite());
+		}
 	}
 
 	private void generateAnchors(int x, int y, int z, Random rand) {
@@ -114,14 +195,127 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private void cutExit(int layer) {
-		boolean end = layer == ANCHORS;
-		if (end) {
-			locationCache[layer].addValue(exit, this.getExitDirectionTo(exit));
+	private void cutExit() {
+		locationCache.addValue(exit, this.getExitDirectionTo(exit).getOpposite());
+		locationCache.addValue(entry, this.getEntryDirectionFrom(entry));
+	}
+
+	private Path pathTo(Point from, Point end, Random rand, int weight) {
+		return this.pathTo(from, end, rand, weight, null);
+	}
+
+	private Path pathTo(Point from, Point end, Random rand, int weight, Collection<Path> presets) {
+		pathCache.clear();
+		coordCache.clear();
+
+		destination = end;
+		pathCache.add(from);
+
+		step = from;
+
+		Path p = this.stepTowards(end, rand, weight, presets);
+		while (p == null) {
+			p = this.stepTowards(end, rand, weight, presets);
+		}
+		//ReikaJavaLibrary.pConsole("Pathing from "+from+" to "+end+", got N="+p.points.size()+":"+p.points);
+		return p;
+	}
+
+	private Path stepTowards(Point end, Random rand, int weight, Collection<Path> presets) {
+		coordCache.add(step);
+
+		int x = step.x;
+		int z = step.y;
+
+		if (this.hasUnvisitedNeighbors(x, z)) {
+			ForgeDirection dir = this.getMovementDirection(step.x, step.y, weight, rand);
+			//ReikaJavaLibrary.pConsole("Stepping "+dir+" from "+step+" to "+this.getTranslatedPoint(step, dir));
+			step = this.getTranslatedPoint(step, dir);
+			pathCache.addLast(step);
+			if (step.equals(end)) {
+				return new Path(pathCache);
+			}
+			else {
+				if (presets != null) {
+					for (Path p : presets) {
+						if (p.contains(step)) {
+							LinkedList<Point> li = new LinkedList(pathCache);
+							int idx = p.points.indexOf(step);
+							for (int i = idx; i < p.points.size(); i++) {
+								li.add(p.points.get(i));
+							}
+							return new Path(li);
+						}
+					}
+				}
+				return null;
+			}
 		}
 		else {
-
+			pathCache.removeLast();
+			if (pathCache.isEmpty()) {
+				//ReikaJavaLibrary.pConsole("Stepping back; path is empty. Pathing failed.");
+				return new FailedPath();
+			}
+			//ReikaJavaLibrary.pConsole("Stepping back from "+step+" to "+pathCache.getLast()+"; "+pathCache.size()+" points remaining.");
+			step = pathCache.getLast();
+			return null;
 		}
+	}
+
+	private ForgeDirection getMovementDirection(int x, int z, int weight, Random rand) {
+		Point last = pathCache.getLast();
+		Point a = anchorRadii.get(step);
+		if (a != null && a.equals(destination)) {
+			for (ForgeDirection dir : dirs) {
+				Point p = this.getTranslatedPoint(step, dir);
+				if (p.equals(destination))
+					return dir;
+			}
+			weight = 100;
+		}
+		if (weight > 0 && rand.nextInt(100) < weight) {
+			ForgeDirection close = null;
+			double dist = Double.POSITIVE_INFINITY;
+			for (ForgeDirection dir : dirs) {
+				Point p = this.getTranslatedPoint(step, dir);
+				if (p == last || !this.canMove(x, z, dir) || this.hasCellFrom(x, z, dir)) {
+
+				}
+				else {
+					double dd = ReikaMathLibrary.py3d(p.x-destination.x, 0, p.y-destination.y);
+					if (dd < dist) {
+						dist = dd;
+						close = dir;
+					}
+				}
+			}
+			if (close != null)
+				return close;
+		}
+		//ReikaJavaLibrary.pConsole("Data at "+x+", "+y+", "+z+"; last is "+last);
+		ArrayList<ForgeDirection> li = new ArrayList(dirs);
+		int idx = rand.nextInt(li.size());
+		while (this.getTranslatedPoint(step, li.get(idx)) == last || !this.canMove(x, z, li.get(idx)) || this.hasCellFrom(x, z, li.get(idx))) {
+			li.remove(idx);
+			if (li.isEmpty()) {
+				for (int i = 0; i < 4; i++) {
+					ForgeDirection dir = dirs.get(i);
+					ReikaJavaLibrary.pConsole(dir+": LAST="+(this.getTranslatedPoint(step, dir) == last)+"| CANMOVE="+this.canMove(x, z, dir)+"| HAS="+this.hasCellFrom(x, z, dir));
+				}
+				ReikaJavaLibrary.pConsole("UNVISIT="+this.hasUnvisitedNeighbors(x, z));
+				ReikaJavaLibrary.pConsole("Had no paths yet has an unvisited neighbor?!!");
+			}
+			idx = rand.nextInt(li.size());
+		}
+		if (li.isEmpty()) {
+			ReikaJavaLibrary.pConsole("Had no paths yet has an unvisited neighbor?!!");
+		}
+		return li.get(idx);
+	}
+
+	private Point getTranslatedPoint(Point p, ForgeDirection dir) {
+		return new Point(p.x+dir.offsetX, p.y+dir.offsetZ);
 	}
 
 	private void generateBlocks(int x, int y, int z, Random rand) {
@@ -130,11 +324,10 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			for (int k = 0; k < MAX_SIZE_Z; k++) {
 				Point pt = new Point(i, k);
 				if (!anchorRadii.containsKey(pt)) {
-					MazePiece p = new MazePiece(this, partSize, pt);
+					MazePiece p = new MazePiece(this, partSize, pt, nodes.contains(pt));
 					for (ForgeDirection dir : dirs) {
-						int c = this.getConnection(pt, dir);
-						if (c > 0) {
-							p.connect(dir, c == ANCHORS+1);
+						if (locationCache.get(pt).contains(dir)) {
+							p.connect(dir, true);
 						}
 					}
 					int dx = x+i*partSize;
@@ -144,84 +337,6 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 				}
 			}
 		}
-
-		//if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
-		//	this.print(x, y, z);
-		//}
-	}
-
-	private void print(int x, int y, int z) {
-		ReikaJavaLibrary.pConsole("================================================================================================");
-
-		for (int n = 0; n <= ANCHORS; n++) {
-
-			world.clear();
-			for (int i = 0; i < MAX_SIZE_X; i++) {
-				for (int k = 0; k < MAX_SIZE_Z; k++) {
-					Point pt = new Point(i, k);
-					if (!anchorRadii.containsKey(pt)) {
-						MazePiece p = new MazePiece(this, partSize, pt);
-						for (ForgeDirection dir : dirs) {
-							if (locationCache[n].get(pt).contains(dir))
-								p.connect(dir, true);
-						}
-						int dx = x+i*partSize;
-						int dz = z+k*partSize;
-
-						p.generate(world, dx, y, dz);
-					}
-				}
-			}
-
-			ReikaJavaLibrary.pConsole("------------------------------------------------------------------------------------");
-			int r = MAX_SIZE_X*partSize;
-			char[][] data = new char[r][r];
-			for (int i = 0; i < r; i++) {
-				for (int k = 0; k < r; k++) {
-					int dx = x+i;
-					int dz = z+k;
-					BlockKey bk = world.getBlock(dx, y+1, dz); //+1 to not be floor
-					char c = '?';
-					if (bk != null) {
-						if (bk.blockID == Blocks.air) {
-							c = ' ';
-						}
-						else if (bk.blockID == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
-							c = '#';
-						}
-					}
-					data[i][k] = c;
-				}
-			}
-			for (int i = 0; i < r; i++) {
-				String s = new String(data[i]);
-				ReikaJavaLibrary.pConsole(s);
-			}
-			ReikaJavaLibrary.pConsole("------------------------------------------------------------------------------------");
-		}
-
-		ReikaJavaLibrary.pConsole("================================================================================================");
-	}
-
-	private int getConnection(Point pt, ForgeDirection dir) {
-		int c = 0;
-		for (int i = 0; i < ANCHORS+1; i++) {
-			if (locationCache[i].get(pt).contains(dir)) {
-				c++;
-			}
-		}
-		return c;
-	}
-
-	private void generatePathFrom(int layer, int x, int z, Random rand) {
-		ForgeDirection dir = this.getEntryDirectionFrom(entry);
-		pathCache[layer].addLast(dir);
-		step = new Point(x, z);
-		nextDir = this.getMovementDirection(layer, x, z, rand);
-		while (!this.isFull(layer)) {
-			this.stepPath(layer, step.x, step.y, rand, nextDir);
-		}
-		solutions[layer] = new MazePath(path[layer], locationCache[layer]);
 	}
 
 	private ForgeDirection getEntryDirectionFrom(Point p) {
@@ -250,128 +365,8 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 			throw new IllegalStateException("No direction to "+p+"!?");
 	}
 
-	private void stepPath(int layer, int x, int z, Random rand, ForgeDirection dir) {
-		Point p = new Point(x, z);
-		locationCache[layer].addValue(p, dir.getOpposite());
-		coordCache[layer].add(p);
-		if (this.isFull(layer)) {
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; is full; returning from "+dir+" from "+x+", "+z);
-			return;
-		}/*
-		else if (endPoints.containsKey(p) && endPoints.get(p) == null) {
-			endPoints.put(p, new Path(pathCache));
-			dir = pathCache.removeLast();
-			step.translate(-dir.offsetX, -dir.offsetZ);
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; anchor; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
-			nextDir = dir.getOpposite();
-		}*/
-		else if (p.equals(destination)) {
-			path[layer] = this.getCurrentPath(layer);
-			dir = pathCache[layer].removeLast();
-			step.translate(-dir.offsetX, -dir.offsetZ);
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; destination; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
-			nextDir = dir.getOpposite();
-		}
-		else if (anchorRadii.containsKey(p) && anchorRadii.get(p).equals(destination)) {
-			Point anch = anchorRadii.get(p);
-			for (int a = -1; a <= 1; a++) {
-				for (int b = -1; b <= 1; b++) {
-					Point dp = new Point(anch.x+a, anch.y+b);
-					coordCache[layer].add(dp);
-				}
-			}
-			path[layer] = this.getCurrentPath(layer);
-			dir = pathCache[layer].removeLast();
-			step.translate(-dir.offsetX, -dir.offsetZ);
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; anchor; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
-			nextDir = dir.getOpposite();
-		}
-		else if (this.hasUnvisitedNeighbors(layer, x, z)) {
-			dir = this.getMovementDirection(layer, x, z, rand);
-			locationCache[layer].addValue(p, dir);
-			pathCache[layer].addLast(dir);
-			//this.stepPath(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, rand, dir);
-			step.translate(dir.offsetX, dir.offsetZ);
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping forward "+dir+" from "+x+", "+z+" to "+step);
-			nextDir = dir;
-		}
-		else {
-			dir = pathCache[layer].removeLast();
-			//ReikaJavaLibrary.pConsole("Backstep has: "+coordCache.contains(new Coordinate(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ))+"|"+this.hasUnvisitedNeighbors(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ));
-			//ReikaJavaLibrary.pConsole("Current has: "+coordCache.contains(new Coordinate(x, y, z)));
-			//this.stepPath(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, rand, dir);
-			step.translate(-dir.offsetX, -dir.offsetZ);
-			//ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping backward, opposite of "+dir+", from "+x+", "+z+" to "+step);
-			nextDir = dir.getOpposite();
-			//return;
-		}
-	}
-
-	private PathPre getCurrentPath(int layer) {
-		Point pt = entry;
-		LinkedList<Point> li = new LinkedList();
-		li.add(pt);
-		for (ForgeDirection dir : pathCache[layer]) {
-			pt = new Point(pt.x+dir.offsetX, pt.y+dir.offsetZ);
-			li.add(pt);
-		}
-		ArrayList<ForgeDirection> dir = new ArrayList(pathCache[layer]);
-		dir.add(ReikaDirectionHelper.getDirectionBetween(li.getLast(), destination));
-		return new PathPre(li, dir);
-	}
-
-	private boolean isFull(int layer) {
-		return coordCache[layer].size() >= MAX_SIZE_X*MAX_SIZE_Z;
-	}
-
-	private ForgeDirection getMovementDirection(int layer, int x, int z, Random rand) {
-		if (copyLength > 0 || rand.nextInt(4) > 0) {
-			ForgeDirection dir = this.getSuccessfulPathDirection(x, z, layer);
-			if (dir != null) {
-				if (copyLength > 0) {
-					copyLength--;
-				}
-				else {
-					copyLength = 4+rand.nextInt(9);
-					copyLength += 8;
-					copyLength *= 5;
-				}
-				return dir;
-			}
-		}
-		ForgeDirection last = pathCache[layer].getLast().getOpposite();
-		ArrayList<ForgeDirection> li = new ArrayList(dirs);
-		int idx = rand.nextInt(li.size());
-		ForgeDirection side = li.get(idx);
-		while (side == last || !this.canMove(x, z, side) || this.hasCellFrom(layer, x, z, side)) {
-			li.remove(idx);
-			idx = rand.nextInt(li.size());
-			side = li.get(idx);
-		}
-		return li.get(idx);
-	}
-
-	private ForgeDirection getSuccessfulPathDirection(int x, int z, int layer) {
-		Point pt = new Point(x, z);
-		for (int i = 0; i < layer; i++) {
-			if (solutions[i].hasPoint(pt)) {
-				return solutions[i].getDirection(pt);
-			}
-			else {
-				int r = 4;
-				for (int d = 1; d <= r; d++) {
-					for (ForgeDirection dir : dirs) {
-						int dx = x+dir.offsetX*d;
-						int dz = z+dir.offsetZ*d;
-						Point dp = new Point(dx, dz);
-						if (solutions[i].hasPoint(dp) || dp.equals(destination) || (anchorRadii.containsKey(dp) && anchorRadii.get(dp).equals(destination))) {
-							return dir;
-						}
-					}
-				}
-			}
-		}
-		return null;
+	private boolean isFull() {
+		return coordCache.size() >= MAX_SIZE_X*MAX_SIZE_Z;
 	}
 
 	private boolean canMove(int x, int z, ForgeDirection dir) {
@@ -380,28 +375,33 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		return dx >= 0 && dx < MAX_SIZE_X && dz >= 0 && dz < MAX_SIZE_Z;
 	}
 
-	private boolean hasCellFrom(int layer, int x, int z, ForgeDirection dir) {
+	private boolean hasCellFrom(int x, int z, ForgeDirection dir) {
 		int dx = x+dir.offsetX;
 		int dz = z+dir.offsetZ;
 		Point p = new Point(dx, dz);
-		return coordCache[layer].contains(p)/* || endPoints.get(p) != null*/;
+		if (coordCache.contains(p))
+			return true;
+		Point a = anchorRadii.get(p);
+		if (a != null && !a.equals(destination))
+			return true;
+		return false;
 	}
 
-	private boolean hasUnvisitedNeighbors(int layer, int x, int z) {
+	private boolean hasUnvisitedNeighbors(int x, int z) {
 		for (ForgeDirection dir : dirs) {
-			if (this.canMove(x, z, dir) && !this.hasCellFrom(layer, x, z, dir))
+			if (this.canMove(x, z, dir) && !this.hasCellFrom(x, z, dir))
 				return true;
 		}
 		return false;
 	}
 
-	private void pickPoints(Random rand, int n) {
+	private void pickPoints(Random rand) {
 		entry = this.randomEdgeCenter(rand);
 		do {
 			exit = this.randomEdgeCenter(rand);
 		} while (exit.equals(entry));
 
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < ANCHORS; i++) {
 			Point p = new Point(1+rand.nextInt(MAX_SIZE_X-2), 1+rand.nextInt(MAX_SIZE_Z-2));
 			while (this.anchorOverlaps(p)) {
 				p = new Point(1+rand.nextInt(MAX_SIZE_X-2), 1+rand.nextInt(MAX_SIZE_Z-2));
@@ -478,24 +478,24 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 		entry = null;
 		exit = null;
+
 		destination = null;
 
-		copyLength = 0;
+		pathCache.clear();
+		coordCache.clear();
+		locationCache.clear();
 
-		path = new PathPre[ANCHORS+1];
-		pathCache = new LinkedList[ANCHORS+1];
-		coordCache = new HashSet[ANCHORS+1];
-		locationCache = new MultiMap[ANCHORS+1];
-		solutions = new MazePath[ANCHORS+1];
+		mainPath = null;
+		nodes.clear();
+		anchorPaths.clear();
+		nodePaths.clear();
+
+		states.clear();
 
 		step = null;
 		nextDir = null;
 
 		locks.clear();
-	}
-
-	public ArrayList<MazePath> getPaths() {
-		return ReikaJavaLibrary.makeListFromArray(solutions);
 	}
 
 	public void cacheLock(Point pt, ForgeDirection dir, int x, int y, int z) {
@@ -511,47 +511,49 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		return new ShiftMazeData(this);
 	}
 
-	private static class PathPre {
+	public static class MazeState {
 
-		private final LinkedList<Point> points;
-		private final ArrayList<ForgeDirection> dirs;
+		private final MultiMap<Point, ForgeDirection> openDoors = new MultiMap(new MultiMap.HashSetFactory());
 
-		private PathPre(LinkedList<Point> path, ArrayList<ForgeDirection> dir) {
-			points = path;
-			dirs = dir;
+		private MazeState() {
+
+		}
+
+		public boolean isPositionOpen(int i, int k, ForgeDirection dir) {
+			Collection<ForgeDirection> c = openDoors.get(new Point(i, k));
+			return c != null && c.contains(dir);
 		}
 
 	}
 
-	public static class MazePath {
+	public List<MazeState> getStates() {
+		return Collections.unmodifiableList(states);
+	}
 
-		private final LinkedList<Point> solution;
-		private final HashMap<Point, ForgeDirection> directions;
-		private final MultiMap<Point, ForgeDirection> connections;
+	private static class Path {
 
-		private MazePath(PathPre path, MultiMap<Point, ForgeDirection> con) {
-			solution = path.points;
-			connections = con;
-			directions = new HashMap();
+		private final ArrayList<Point> points;
+		private final ArrayList<ForgeDirection> steps = new ArrayList();
+		private final HashSet<Point> set = new HashSet();
 
-			int i = 0;
-			for (Point p : solution) {
-				ForgeDirection dir = path.dirs.get(i);
-				directions.put(p, dir);
-				i++;
+		private Path(LinkedList<Point> li) {
+			points = new ArrayList(li);
+			for (int i = 0; i < points.size()-1; i++) {
+				steps.add(ReikaDirectionHelper.getDirectionBetween(points.get(i), points.get(i+1)));
 			}
+			set.addAll(points);
 		}
 
-		public boolean hasPoint(Point pt) {
-			return directions.containsKey(pt);
+		private boolean contains(Point p) {
+			return set.contains(p);
 		}
 
-		public ForgeDirection getDirection(Point pt) {
-			return directions.get(pt);
-		}
+	}
 
-		public boolean isPositionOpen(int x, int z, ForgeDirection dir) {
-			return connections.get(new Point(x, z)).contains(dir);
+	private static class FailedPath extends Path {
+
+		private FailedPath() {
+			super(new LinkedList());
 		}
 
 	}

@@ -78,4 +78,34 @@
 	<growth>
 		Crops take forever to grow. Sure, wheat and that plant with the oily black seeds seem to grow fast enough, but things like sugar cane take hours, and those crops you got to (somehow) drop mob drops and bits of ore take so long you wonder if farming them is even worth the time. You had a watering can which seemed to help, but it got crumpled beyond recognition the moment you tried it with that automated clicking machine. You know that Kijani energy forms the basis of natural things, including plants; perhaps a blast of that may expedite the process.
 	</growth>
+	<doorkey>
+		Doors are generally useless without keys. To that end, your ethereal door needs a key. After shift-right-clicking the key on the door, you linked the two and now using the key will open the door. Surely this key cannot open someone else's door.
+	</doorkey>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 </tools>

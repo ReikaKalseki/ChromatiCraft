@@ -16,9 +16,11 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -30,6 +32,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityItemCollector extends InventoriedRelayPowered implements LocationCached {
@@ -48,8 +51,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
 	static {
-		required.addTag(CrystalElement.LIME, 100);
-		required.addTag(CrystalElement.BLACK, 20);
+		required.addTag(CrystalElement.LIME, 25);
+		required.addTag(CrystalElement.BLACK, 5);
 	}
 
 	@Override
@@ -174,6 +177,16 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private boolean absorbItem(World world, int x, int y, int z, EntityItem ent) {
 		ItemStack is = ent.getEntityItem();
+
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = dirs[i];
+			TileEntity te = this.getAdjacentTileEntity(dir);
+			if (te instanceof IInventory) {
+				if (ReikaInventoryHelper.addToIInv(is, (IInventory)te))
+					return true;
+			}
+		}
+
 		int targetslot = this.checkForStack(is);
 		if (targetslot != -1) {
 			if (inv[targetslot] == null)
@@ -291,7 +304,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 6000;
+		return 48000;
 	}
 
 	@Override

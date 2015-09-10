@@ -116,6 +116,11 @@ public class NodeRecharger implements TickHandler {
 		return false;
 	}
 
+	public NodeReceiverWrapper getWrapper(WorldLocation loc) {
+		HashMap<WorldLocation, NodeReceiverWrapper> map = nodes.get(loc.dimensionID);
+		return map != null ? map.get(loc) : null;
+	}
+
 	@Override
 	public EnumSet<TickType> getType() {
 		return EnumSet.of(TickType.WORLD);

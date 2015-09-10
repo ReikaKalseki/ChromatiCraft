@@ -30,14 +30,18 @@ public class GuiToolDescription extends GuiDescription {
 	public void drawScreen(int x, int y, float f) {
 		super.drawScreen(x, y, f);
 
+		int posX = (width - xSize) / 2;
+		int posY = (height - ySize) / 2 - 8;
+
 		GL11.glPushMatrix();
 		double s = 4;
 		GL11.glScaled(s, s, 1);
+		GL11.glTranslated(33, 3, 0);
 		ArrayList<ItemStack> li = page.getItemStacks();
 		if (!li.isEmpty()) {
 			int idx = (int)((System.currentTimeMillis()/2000)%li.size());
 			ItemStack is = li.get(idx);
-			api.drawItemStack(itemRender, is, 55, 2);
+			api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));
 		}
 		GL11.glPopMatrix();
 	}

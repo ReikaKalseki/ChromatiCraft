@@ -132,7 +132,7 @@ public class StructureCalculator implements Runnable {
 		int structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 10000);
 		float structureAngleOrigin = rand.nextFloat()*360;
 
-		for (StructurePair s : ChunkProviderChroma.structures) {
+		for (StructurePair s : new ArrayList<StructurePair>(ChunkProviderChroma.structures)) {
 			this.tryGenerate(s, structureOriginX, structureOriginZ, structureAngleOrigin, 0);
 		}
 

@@ -29,12 +29,13 @@ public class LocksRoomSpiral extends LockLevel {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml);
-		this.generate2(world, x, y, z, b, ms, ml);
-		this.generate3(world, x, y, z, b, ms, ml);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc);
+		this.generate2(world, x, y, z, b, ms, ml, mc);
+		this.generate3(world, x, y, z, b, ms, ml, mc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+0, y+0, z+1, b, ms);
 		world.setBlock(x+0, y+0, z+2, b, ms);
 		world.setBlock(x+0, y+0, z+3, b, ms);
@@ -882,9 +883,9 @@ public class LocksRoomSpiral extends LockLevel {
 		world.setBlock(x+3, y+0, z+71, b, ms);
 		this.generateRune(x+3, y+0, z+72, LockColor.RED);
 		world.setBlock(x+3, y+0, z+73, b, ms);
-		world.setBlock(x+3, y+0, z+74, b);
+		world.setBlock(x+3, y+0, z+74, b, mc);
 		world.setBlock(x+3, y+0, z+75, b, ms);
-		world.setBlock(x+3, y+0, z+76, b);
+		world.setBlock(x+3, y+0, z+76, b, mc);
 		world.setBlock(x+3, y+0, z+77, b, ms);
 		world.setBlock(x+3, y+0, z+78, b, ms);
 		world.setBlock(x+3, y+0, z+79, b, ms);
@@ -1110,7 +1111,7 @@ public class LocksRoomSpiral extends LockLevel {
 		world.setBlock(x+4, y+0, z+72, b, ms);
 		world.setBlock(x+4, y+0, z+73, b, ms);
 		world.setBlock(x+4, y+0, z+74, b, ms);
-		world.setBlock(x+4, y+0, z+75, b);
+		world.setBlock(x+4, y+0, z+75, b, mc);
 		world.setBlock(x+4, y+0, z+76, b, ms);
 		world.setBlock(x+4, y+0, z+77, b, ms);
 		world.setBlock(x+4, y+0, z+78, b, ms);
@@ -1348,9 +1349,9 @@ public class LocksRoomSpiral extends LockLevel {
 		world.setBlock(x+5, y+0, z+71, b, ms);
 		this.generateRune(x+5, y+0, z+72, LockColor.BLUE);
 		world.setBlock(x+5, y+0, z+73, b, ms);
-		world.setBlock(x+5, y+0, z+74, b);
+		world.setBlock(x+5, y+0, z+74, b, mc);
 		world.setBlock(x+5, y+0, z+75, b, ms);
-		world.setBlock(x+5, y+0, z+76, b);
+		world.setBlock(x+5, y+0, z+76, b, mc);
 		world.setBlock(x+5, y+0, z+77, b, ms);
 		world.setBlock(x+5, y+0, z+78, b, ms);
 		world.setBlock(x+5, y+0, z+79, b, ms);
@@ -1537,7 +1538,7 @@ public class LocksRoomSpiral extends LockLevel {
 		world.setBlock(x+6, y+0, z+33, b, ms);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+6, y+0, z+34, b, ms);
 		world.setBlock(x+6, y+0, z+35, b, ms);
 		world.setBlock(x+6, y+0, z+36, b, ms);
@@ -3040,7 +3041,7 @@ public class LocksRoomSpiral extends LockLevel {
 		world.setBlock(x+5, y+1, z+56, Blocks.air);
 	}
 
-	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+5, y+1, z+58, Blocks.air);
 		world.setBlock(x+5, y+1, z+59, Blocks.air);
 		world.setBlock(x+5, y+1, z+60, Blocks.air);

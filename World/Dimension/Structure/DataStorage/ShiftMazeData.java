@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,13 +18,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator.MazePath;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator.MazeState;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class ShiftMazeData extends StructureData {
 
-	private ArrayList<MazePath> paths;
+	private List<MazeState> paths;
 	private int state = 0;
 
 	private int width;
@@ -36,7 +36,7 @@ public class ShiftMazeData extends StructureData {
 	@Override
 	public void load() {
 		ShiftMazeGenerator shf = (ShiftMazeGenerator)generator;
-		paths = shf.getPaths();
+		paths = shf.getStates();
 	}
 
 	@Override
@@ -45,9 +45,9 @@ public class ShiftMazeData extends StructureData {
 	}
 
 	private void cycle(World world) {
-		MazePath last = paths.get(state);
+		MazeState last = paths.get(state);
 		state = (state+1)%paths.size();
-		MazePath active = paths.get(state);
+		MazeState active = paths.get(state);
 		for (int i = 0; i < width; i++) {
 			for (int k = 0; k < width; k++) {
 				for (int n = 2; n < 6; n++) {

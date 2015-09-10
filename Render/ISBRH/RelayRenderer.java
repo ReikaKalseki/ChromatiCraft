@@ -45,32 +45,32 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 		v5.setColorRGBA_I(0xffffff, renderPass > 0 ? 212 : 255);
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[world.getBlockMetadata(x, y, z)];
 		switch(dir) {
-		case UP:
-			w = 0.5-b.getBlockBoundsMinX();
-			h = (b.getBlockBoundsMaxY()-b.getBlockBoundsMinY())/2;
-			break;
-		case DOWN:
-			w = 0.5-b.getBlockBoundsMinX();
-			h = (b.getBlockBoundsMaxY()-b.getBlockBoundsMinY())/2;
-			break;
-		case EAST:
-			w = 0.5-b.getBlockBoundsMinY();
-			h = (b.getBlockBoundsMaxX()-b.getBlockBoundsMinX())/2;
-			break;
-		case WEST:
-			w = 0.5-b.getBlockBoundsMinY();
-			h = (b.getBlockBoundsMaxX()-b.getBlockBoundsMinX())/2;
-			break;
-		case NORTH:
-			w = 0.5-b.getBlockBoundsMinY();
-			h = (b.getBlockBoundsMaxZ()-b.getBlockBoundsMinZ())/2;
-			break;
-		case SOUTH:
-			w = 0.5-b.getBlockBoundsMinY();
-			h = (b.getBlockBoundsMaxZ()-b.getBlockBoundsMinZ())/2;
-			break;
-		default:
-			return false;
+			case UP:
+				w = 0.5-b.getBlockBoundsMinX();
+				h = (0.625-b.getBlockBoundsMinY())/2;
+				break;
+			case DOWN:
+				w = 0.5-b.getBlockBoundsMinX();
+				h = (0.625-b.getBlockBoundsMinY())/2;
+				break;
+			case EAST:
+				w = 0.5-b.getBlockBoundsMinY();
+				h = (0.625-b.getBlockBoundsMinX())/2;
+				break;
+			case WEST:
+				w = 0.5-b.getBlockBoundsMinY();
+				h = (0.625-b.getBlockBoundsMinX())/2;
+				break;
+			case NORTH:
+				w = 0.5-b.getBlockBoundsMinY();
+				h = (0.625-b.getBlockBoundsMinZ())/2;
+				break;
+			case SOUTH:
+				w = 0.5-b.getBlockBoundsMinY();
+				h = (0.625-b.getBlockBoundsMinZ())/2;
+				break;
+			default:
+				return false;
 		}
 		this.renderDir(v5, dir, 0, 0, 0, w, h);
 		v5.setColorRGBA_I(0xffffff, 255);
@@ -95,44 +95,44 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			switch(dir) {
-			case EAST:
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
-				break;
-			case WEST:
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
-				break;
-			case NORTH:
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, dv);
-				break;
-			case SOUTH:
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, v);
-				break;
-			case DOWN:
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
-				break;
-			case UP:
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, u, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
-				v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
-				v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, u, v);
-				break;
-			default:
-				break;
+				case EAST:
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+					break;
+				case WEST:
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+					break;
+				case NORTH:
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, dv);
+					break;
+				case SOUTH:
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, v);
+					break;
+				case DOWN:
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5+w, u, dv);
+					break;
+				case UP:
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, u, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5+w, du, dv);
+					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, du, v);
+					v5.addVertexWithUV(h*face.offsetX+0.5-w, h*face.offsetY+0.5+w, h*face.offsetZ+0.5-w, u, v);
+					break;
+				default:
+					break;
 			}
 		}
 	}

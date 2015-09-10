@@ -78,6 +78,12 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 	}
 
 	@Override
+	public final boolean canHarvestBlock(EntityPlayer player, int meta)
+	{
+		return true;
+	}
+
+	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		int meta = world.getBlockMetadata(x, y, z);
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta];
@@ -101,50 +107,50 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 		float h = 0.25F;
 		float w = 0.25F;
 		switch(ForgeDirection.VALID_DIRECTIONS[iba.getBlockMetadata(x, y, z)]) {
-		case WEST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmin = 1-h;
-			break;
-		case EAST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmax = h;
-			break;
-		case NORTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmin = 1-h;
-			break;
-		case SOUTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmax = h;
-			break;
-		case UP:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymax = h;
-			break;
-		case DOWN:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 1-h;
-			break;
-		default:
-			break;
+			case WEST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmin = 1-h;
+				break;
+			case EAST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmax = h;
+				break;
+			case NORTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmin = 1-h;
+				break;
+			case SOUTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmax = h;
+				break;
+			case UP:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymax = h;
+				break;
+			case DOWN:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 1-h;
+				break;
+			default:
+				break;
 		}
 		this.setBlockBounds(xmin, ymin, zmin, xmax, ymax, zmax);
 	}
@@ -254,6 +260,7 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 	public static class TileEntityHeatLamp extends TileEntity implements GuiController {
 
 		public int temperature;
+		public static final int MAXTEMP = 615;
 
 		@Override
 		public boolean canUpdate() {
@@ -262,7 +269,7 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 
 		@Override
 		public void updateEntity() {
-			temperature = Math.max(0, Math.min(600, temperature));
+			temperature = Math.max(0, Math.min(MAXTEMP, temperature));
 			int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta].getOpposite();
 			TileEntity te = worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);

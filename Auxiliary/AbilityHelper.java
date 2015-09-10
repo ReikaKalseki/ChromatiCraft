@@ -138,6 +138,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
 		progressMap.addValue(Chromabilities.DEATHPROOF, ProgressStage.DIE);
 		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
 		progressMap.addValue(Chromabilities.DIMPING, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.COMMUNICATE, ProgressStage.KILLMOB);
@@ -369,10 +370,12 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void scrollInventories(RawKeyPressEvent evt) {
-		if (evt.key == Key.PGDN || evt.key == Key.PGUP) {
-			boolean up = evt.key == Key.PGUP;
-			this.cycleInventory(evt.player, up);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INVCYCLE.ordinal(), (EntityPlayerMP)evt.player, up ? 1 : 0);
+		if (!evt.player.worldObj.isRemote && Chromabilities.HOTBAR.enabledOn(evt.player)) {
+			if (evt.key == Key.PGDN || evt.key == Key.PGUP) {
+				boolean up = evt.key == Key.PGUP;
+				this.cycleInventory(evt.player, up);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.INVCYCLE.ordinal(), (EntityPlayerMP)evt.player, up ? 1 : 0);
+			}
 		}
 	}
 

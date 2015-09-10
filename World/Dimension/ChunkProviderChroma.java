@@ -194,11 +194,13 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
-		double d = Double.POSITIVE_INFINITY;
+		double dx = (monument.getPosX() >> 4)-chunkX;
+		double dz = (monument.getPosZ() >> 4)-chunkZ;
+		double d = Math.sqrt(dx*dx+dz*dz);
 		for (StructurePair s : structures) {
 			ChunkCoordIntPair p = s.generator.getCentralLocation();
-			double dx = chunkX-p.chunkXPos;
-			double dz = chunkZ-p.chunkZPos;
+			dx = chunkX-p.chunkXPos;
+			dz = chunkZ-p.chunkZPos;
 			double dd = Math.sqrt(dx*dx+dz*dz);
 			d = Math.min(d, dd);
 		}

@@ -197,7 +197,7 @@ public class BlockLockKey extends Block {
 	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harvest)
 	{
 		if (this.canHarvest(world, player, x, y, z))
-			this.harvestBlock(world, player, x, y, z, 0);
+			this.harvestBlock(world, player, x, y, z, world.getBlockMetadata(x, y, z));
 		return world.setBlockToAir(x, y, z);
 	}
 

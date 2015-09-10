@@ -187,7 +187,12 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 	}
 
 	private void generateParticles(World world, int x, int y, int z, CrystalElement e) {
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, 24, x, y, z, e.ordinal());
+		if (world.isRemote) {
+			this.doParticles(world, x, y, z, e);
+		}
+		else {
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALMUS.ordinal(), this, 24, x, y, z, e.ordinal());
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

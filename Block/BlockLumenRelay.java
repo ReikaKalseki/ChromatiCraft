@@ -9,8 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.List;
 import java.util.Random;
 
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -18,6 +22,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,13 +41,15 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockLumenRelay extends Block {
+@Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
+public class BlockLumenRelay extends Block implements IWailaDataProvider {
 
 	private final IIcon[][] icons = new IIcon[6][6];
 
@@ -94,53 +101,53 @@ public class BlockLumenRelay extends Block {
 		float xmax = 1;
 		float ymax = 1;
 		float zmax = 1;
-		float h = 0.625F;
+		float h = 0.875F;
 		float w = 0.125F;
 		switch(ForgeDirection.VALID_DIRECTIONS[iba.getBlockMetadata(x, y, z)]) {
-		case WEST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmin = 1-h;
-			break;
-		case EAST:
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			xmax = h;
-			break;
-		case NORTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmin = 1-h;
-			break;
-		case SOUTH:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			ymin = 0.5F-w;
-			ymax = 0.5F+w;
-			zmax = h;
-			break;
-		case UP:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymax = h;
-			break;
-		case DOWN:
-			xmin = 0.5F-w;
-			xmax = 0.5F+w;
-			zmin = 0.5F-w;
-			zmax = 0.5F+w;
-			ymin = 1-h;
-			break;
-		default:
-			break;
+			case WEST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmin = 1-h;
+				break;
+			case EAST:
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				xmax = h;
+				break;
+			case NORTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmin = 1-h;
+				break;
+			case SOUTH:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				ymin = 0.5F-w;
+				ymax = 0.5F+w;
+				zmax = h;
+				break;
+			case UP:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymax = h;
+				break;
+			case DOWN:
+				xmin = 0.5F-w;
+				xmax = 0.5F+w;
+				zmin = 0.5F-w;
+				zmax = 0.5F+w;
+				ymin = 1-h;
+				break;
+			default:
+				break;
 		}
 		this.setBlockBounds(xmin, ymin, zmin, xmax, ymax, zmax);
 	}
@@ -346,6 +353,33 @@ public class BlockLumenRelay extends Block {
 			return in;
 		}
 
+	}
+
+	@Override
+	public ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		TileEntityLumenRelay te = (TileEntityLumenRelay)acc.getTileEntity();
+		int meta = te.isMulti ? 16 : te.color.ordinal();
+		return ChromaBlocks.RELAY.getStackOfMetadata(meta);
+	}
+
+	@Override
+	public List<String> getWailaHead(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		return tip;
+	}
+
+	@Override
+	public List<String> getWailaBody(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		return tip;
+	}
+
+	@Override
+	public List<String> getWailaTail(ItemStack is, List<String> tip, IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		return tip;
+	}
+
+	@Override
+	public NBTTagCompound getNBTData(EntityPlayerMP ep, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+		return tag;
 	}
 
 }

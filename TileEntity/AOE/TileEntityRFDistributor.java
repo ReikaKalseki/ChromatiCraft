@@ -30,6 +30,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyReceiver;
@@ -242,7 +243,7 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 			return false;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 			String s = c.getName().toLowerCase();
-			if (s.contains("conduit") || s.contains("duct") || s.contains("cable") || s.contains("pipepower")) {
+			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {
 				blacklist.add(c);
 				return false;
 			}

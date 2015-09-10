@@ -37,6 +37,8 @@ public class ItemConnector extends ItemChromaTool {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float a, float b, float c) {
+		if (world.isRemote)
+			return true;
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof TileEntityRift) {
 			return this.connectRift((TileEntityRift)te, world, x, y, z, is, ep);

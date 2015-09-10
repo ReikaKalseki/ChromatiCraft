@@ -96,7 +96,7 @@ public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
 				double spc = 0.03125;
 				double w = (1D-(dx*2D)-spc*(s-1))/s;
 				double sp = spc+w;
-				double o = 0.001;
+				double o = 0.005;
 				for (CrystalElement e : c) {
 					//if (!BlockColoredLock.isOpen(e, te.getChannel())) { does not work on servers
 					for (int i = 0; i < ico.length; i++) {

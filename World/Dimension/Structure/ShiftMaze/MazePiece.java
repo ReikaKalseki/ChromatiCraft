@@ -30,11 +30,14 @@ public class MazePiece extends StructurePiece {
 
 	public final int size;
 
+	public final boolean node;
+
 	private final Point position;
 
-	public MazePiece(DimensionStructureGenerator g, int size, Point pos) {
+	public MazePiece(DimensionStructureGenerator g, int size, Point pos, boolean node) {
 		super(g);
 		this.size = size;
+		this.node = node;
 		position = pos;
 	}
 
@@ -48,8 +51,8 @@ public class MazePiece extends StructurePiece {
 		return this;
 	}
 
-	public static MazePiece omni(DimensionStructureGenerator g, int size, Point pos) {
-		MazePiece tp = new MazePiece(g, size, pos);
+	public static MazePiece omni(DimensionStructureGenerator g, int size, Point pos, boolean node) {
+		MazePiece tp = new MazePiece(g, size, pos, node);
 		for (int i = 0; i < 6; i++)
 			tp.connect(ForgeDirection.VALID_DIRECTIONS[i], true);
 		return tp;
@@ -83,6 +86,10 @@ public class MazePiece extends StructurePiece {
 					world.setBlock(dx, dy, dz, b, meta);
 				}
 			}
+		}
+
+		if (node) {
+			world.setBlock(x+size/2, y+size/2, z+size/2, Blocks.obsidian);
 		}
 	}
 

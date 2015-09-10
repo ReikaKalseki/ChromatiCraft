@@ -87,6 +87,7 @@ public enum ChromaResearch implements ProgressElement {
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
 	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.ENDGAME,		ProgressStage.CTM),
+	SELFCHARGE("Energy Internalization",ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -220,7 +221,7 @@ public enum ChromaResearch implements ProgressElement {
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE),
 	BREADCRUMB(		Chromabilities.BREADCRUMB),
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
-	DIMPING(		Chromabilities.DIMPING),
+	DIMPING(		Chromabilities.DIMPING,						ResearchLevel.ENDGAME),
 	DASH(			Chromabilities.DASH),
 
 	STRUCTUREDESC("Structures", ""),

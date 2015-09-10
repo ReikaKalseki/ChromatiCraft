@@ -29,11 +29,12 @@ public class LocksRoomBig extends LockLevel {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml);
-		this.generate2(world, x, y, z, b, ms, ml);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc);
+		this.generate2(world, x, y, z, b, ms, ml, mc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+0, y+1, z+13, b, ms);
 		world.setBlock(x+0, y+1, z+14, b, ms);
 		world.setBlock(x+0, y+1, z+15, b, ms);
@@ -103,11 +104,11 @@ public class LocksRoomBig extends LockLevel {
 		this.generateRune(x+1, y+2, z+38, LockColor.RED);
 		world.setBlock(x+1, y+2, z+39, b, ms);
 		world.setBlock(x+1, y+2, z+44, b, ms);
-		world.setBlock(x+1, y+2, z+45, b);
+		world.setBlock(x+1, y+2, z+45, b, mc);
 		world.setBlock(x+1, y+2, z+46, b, ms);
-		world.setBlock(x+1, y+2, z+47, b);
+		world.setBlock(x+1, y+2, z+47, b, mc);
 		world.setBlock(x+1, y+2, z+48, b, ms);
-		world.setBlock(x+1, y+2, z+49, b);
+		world.setBlock(x+1, y+2, z+49, b, mc);
 		world.setBlock(x+1, y+2, z+50, b, ms);
 		world.setBlock(x+1, y+3, z+13, b, ms);
 		world.setBlock(x+1, y+3, z+14, b, ms);
@@ -1536,7 +1537,7 @@ public class LocksRoomBig extends LockLevel {
 		world.setBlock(x+10, y+1, z+48, b, ms);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+10, y+1, z+49, b, ms);
 		world.setBlock(x+10, y+1, z+50, b, ms);
 		world.setBlock(x+10, y+2, z+1, b, ms);
@@ -1747,7 +1748,7 @@ public class LocksRoomBig extends LockLevel {
 		world.setBlock(x+11, y+2, z+43, b, ms);
 		world.setBlock(x+11, y+2, z+46, b, ml);
 		world.setBlock(x+11, y+2, z+47, b, ms);
-		world.setBlock(x+11, y+2, z+48, b);
+		world.setBlock(x+11, y+2, z+48, b, mc);
 		world.setBlock(x+11, y+2, z+49, b, ms);
 		world.setBlock(x+11, y+3, z+13, b, ms);
 		world.setBlock(x+11, y+3, z+14, b, ms);

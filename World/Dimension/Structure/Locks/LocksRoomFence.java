@@ -30,14 +30,15 @@ public class LocksRoomFence extends LockLevel {
 		Block fnc = ChromaBlocks.LOCKFENCE.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml, fnc);
-		this.generate2(world, x, y, z, b, ms, ml, fnc);
-		this.generate3(world, x, y, z, b, ms, ml, fnc);
-		this.generate4(world, x, y, z, b, ms, ml, fnc);
-		this.generate5(world, x, y, z, b, ms, ml, fnc);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc, fnc);
+		this.generate2(world, x, y, z, b, ms, ml, mc, fnc);
+		this.generate3(world, x, y, z, b, ms, ml, mc, fnc);
+		this.generate4(world, x, y, z, b, ms, ml, mc, fnc);
+		this.generate5(world, x, y, z, b, ms, ml, mc, fnc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, Block fnc) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc, Block fnc) {
 		world.setBlock(x+0, y+0, z+25, b, ms);
 		world.setBlock(x+0, y+0, z+26, b, ms);
 		world.setBlock(x+0, y+0, z+27, b, ms);
@@ -1387,7 +1388,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+13, y+0, z+40, b, ms);
 		world.setBlock(x+13, y+0, z+41, b, ms);
 		world.setBlock(x+13, y+0, z+42, b, ms);
-		world.setBlock(x+13, y+0, z+43, b);
+		world.setBlock(x+13, y+0, z+43, b, mc);
 		world.setBlock(x+13, y+0, z+44, b, ms);
 		world.setBlock(x+13, y+0, z+45, b, ms);
 		world.setBlock(x+13, y+1, z+1, b, ms);
@@ -1540,7 +1541,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+14, y+0, z+10, b, ms);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, Block fnc) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc, Block fnc) {
 		world.setBlock(x+14, y+0, z+11, b, ms);
 		world.setBlock(x+14, y+0, z+12, b, ms);
 		world.setBlock(x+14, y+0, z+13, b, ms);
@@ -1702,7 +1703,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+15, y+0, z+40, b, ms);
 		world.setBlock(x+15, y+0, z+41, b, ms);
 		world.setBlock(x+15, y+0, z+42, b, ms);
-		world.setBlock(x+15, y+0, z+43, b);
+		world.setBlock(x+15, y+0, z+43, b, mc);
 		world.setBlock(x+15, y+0, z+44, b, ms);
 		world.setBlock(x+15, y+0, z+45, b, ms);
 		this.generateLock(x+15, y+1, z+20, LockColor.RED);
@@ -1950,7 +1951,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+17, y+0, z+40, b, ms);
 		world.setBlock(x+17, y+0, z+41, b, ms);
 		world.setBlock(x+17, y+0, z+42, b, ms);
-		world.setBlock(x+17, y+0, z+43, b);
+		world.setBlock(x+17, y+0, z+43, b, mc);
 		world.setBlock(x+17, y+0, z+44, b, ms);
 		world.setBlock(x+17, y+0, z+45, b, ms);
 		world.setBlock(x+17, y+1, z+19, b, ms);
@@ -2204,7 +2205,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+19, y+0, z+40, b, ms);
 		world.setBlock(x+19, y+0, z+41, b, ms);
 		world.setBlock(x+19, y+0, z+42, b, ms);
-		world.setBlock(x+19, y+0, z+43, b);
+		world.setBlock(x+19, y+0, z+43, b, mc);
 		world.setBlock(x+19, y+0, z+44, b, ms);
 		world.setBlock(x+19, y+0, z+45, b, ms);
 		world.setBlock(x+19, y+1, z+1, b, ms);
@@ -3043,7 +3044,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+25, y+5, z+32, b, ms);
 	}
 
-	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, Block fnc) {
+	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc, Block fnc) {
 		world.setBlock(x+25, y+5, z+33, b, ms);
 		world.setBlock(x+25, y+5, z+35, b, ms);
 		world.setBlock(x+25, y+5, z+36, b, ms);
@@ -4546,7 +4547,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+12, y+2, z+38, Blocks.air);
 	}
 
-	private void generate4(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, Block fnc) {
+	private void generate4(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc, Block fnc) {
 		world.setBlock(x+12, y+2, z+39, Blocks.air);
 		world.setBlock(x+12, y+2, z+40, Blocks.air);
 		world.setBlock(x+12, y+2, z+42, Blocks.air);
@@ -6049,7 +6050,7 @@ public class LocksRoomFence extends LockLevel {
 		world.setBlock(x+26, y+4, z+28, Blocks.air);
 	}
 
-	private void generate5(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, Block fnc) {
+	private void generate5(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc, Block fnc) {
 		world.setBlock(x+26, y+4, z+29, Blocks.air);
 		world.setBlock(x+26, y+4, z+30, Blocks.air);
 		world.setBlock(x+26, y+4, z+31, Blocks.air);

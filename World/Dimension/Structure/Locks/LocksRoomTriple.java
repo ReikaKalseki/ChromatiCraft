@@ -29,11 +29,12 @@ public class LocksRoomTriple extends LockLevel {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml);
-		this.generate2(world, x, y, z, b, ms, ml);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc);
+		this.generate2(world, x, y, z, b, ms, ml, mc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+0, y+1, z+4, b, ms);
 		world.setBlock(x+0, y+1, z+5, b, ms);
 		world.setBlock(x+0, y+1, z+6, b, ms);
@@ -328,7 +329,7 @@ public class LocksRoomTriple extends LockLevel {
 		world.setBlock(x+4, y+1, z+26, b, ms);
 		world.setBlock(x+4, y+2, z+2, b, ms);
 		this.generateLock(x+4, y+2, z+13, LockColor.RED, LockColor.GREEN, LockColor.YELLOW);
-		world.setBlock(x+4, y+2, z+25, b);
+		world.setBlock(x+4, y+2, z+25, b, mc);
 		world.setBlock(x+4, y+2, z+26, b, ms);
 		world.setBlock(x+4, y+3, z+2, b, ms);
 		this.generateLock(x+4, y+3, z+13, LockColor.RED, LockColor.GREEN, LockColor.YELLOW);
@@ -464,7 +465,7 @@ public class LocksRoomTriple extends LockLevel {
 		world.setBlock(x+6, y+1, z+26, b, ms);
 		world.setBlock(x+6, y+2, z+1, b, ms);
 		this.generateLock(x+6, y+2, z+13, LockColor.RED, LockColor.GREEN, LockColor.YELLOW);
-		world.setBlock(x+6, y+2, z+25, b);
+		world.setBlock(x+6, y+2, z+25, b, mc);
 		world.setBlock(x+6, y+2, z+26, b, ms);
 		world.setBlock(x+6, y+3, z+1, b, ms);
 		this.generateLock(x+6, y+3, z+13, LockColor.RED, LockColor.GREEN, LockColor.YELLOW);
@@ -904,7 +905,7 @@ public class LocksRoomTriple extends LockLevel {
 		world.setBlock(x+12, y+1, z+26, b, ms);
 		world.setBlock(x+12, y+2, z+1, b, ms);
 		this.generateLock(x+12, y+2, z+13, LockColor.RED, LockColor.BLUE, LockColor.YELLOW);
-		world.setBlock(x+12, y+2, z+25, b);
+		world.setBlock(x+12, y+2, z+25, b, mc);
 		world.setBlock(x+12, y+2, z+26, b, ms);
 		world.setBlock(x+12, y+3, z+1, b, ms);
 		this.generateLock(x+12, y+3, z+13, LockColor.RED, LockColor.BLUE, LockColor.YELLOW);
@@ -1041,7 +1042,7 @@ public class LocksRoomTriple extends LockLevel {
 		world.setBlock(x+14, y+1, z+26, b, ms);
 		world.setBlock(x+14, y+2, z+2, b, ms);
 		this.generateLock(x+14, y+2, z+13, LockColor.RED, LockColor.BLUE, LockColor.YELLOW);
-		world.setBlock(x+14, y+2, z+25, b);
+		world.setBlock(x+14, y+2, z+25, b, mc);
 		world.setBlock(x+14, y+2, z+26, b, ms);
 		world.setBlock(x+14, y+3, z+2, b, ms);
 		this.generateLock(x+14, y+3, z+13, LockColor.RED, LockColor.BLUE, LockColor.YELLOW);
@@ -1538,7 +1539,7 @@ public class LocksRoomTriple extends LockLevel {
 		world.setBlock(x+5, y+3, z+6, Blocks.air);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		this.generateKey(x+12, y+1, z+7);
 		this.generateKey(x+10, y+1, z+7);
 		this.generateKey(x+8, y+1, z+7);

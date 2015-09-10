@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -136,6 +137,11 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}*/
 		if (m == ChromaTiles.AURAPOINT) {
 			((TileEntityAuraPoint)te).savePoint();
+		}
+		if (m == ChromaTiles.REPEATER || m == ChromaTiles.COMPOUND) {
+			if (!ep.isSneaking()) {
+				((TileEntityCrystalRepeater)te).findFirstValidSide();
+			}
 		}
 		if (te instanceof NBTTile && is.stackTagCompound != null) {
 			((NBTTile)te).setDataFromItemStackTag(is);

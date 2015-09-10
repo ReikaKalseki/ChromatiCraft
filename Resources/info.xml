@@ -37,8 +37,29 @@
 		Some of the many recipes you can perform on the casting table require using runes. Keeping a shorthand list of all the runes you need to place is likely to be useful.
 	</usingrunes>
 	<nodenet>
-		Scattered around the world are these odd, somewhat etheral points that radiate magical energy of various flavors. You have managed to figure out how to draw energy from them into a wand, but even though they recharge, the process is slow. Thinking back to the larger crystal repeater networks you use to channel a different kind of magical energy, you wonder if you might be able to graft the two systems together...
+		Scattered around the world are these odd, somewhat ethereal points that radiate magical energy of various flavors. You have managed to figure out how to draw energy from them into a wand, but even though they recharge, the process is slow. Thinking back to the larger crystal repeater networks you use to channel a different kind of magical energy, you wonder if you might be able to graft the two systems together...
 	</nodenet>
+	<selfcharge>
+		You noticed that by using the manipulator on certain energy sources - most notably pylons - you could drain some of their energy into yourself. However, your lack of experience with this meant you could only store small amounts. No doubt increasing that experience and collecting as much as you can will help you surmount that barrier.
+	</selfcharge>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>

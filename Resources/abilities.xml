@@ -25,7 +25,7 @@
 		You are not alone in this world; you share it with many other creatures, ranging from basic animals to beings advanced enough to try and scam you out of emeralds. However, some of these creatures seem to harbor an irrational hatred for you, attempting to kill you on sight, even if it costs them their own lives. Using the magic elements, combined with the application of a healthy amount of deception, you might be able to stave off their aggression.
 	</communicate>
 	<fireball>
-		You made the mistake of building a frame of obsidian and stepping into the fiery nightmare on the other side, where you were promptly attacked by tentacled clouds that sound like injured children. Their attacks were long-range and difficult to dodge, leading you to wonder if you can find some utility in being able to replicate that yourself. Fire and heat energy are obvious, but combined with others, like aggression, you have successfully reproduced this capability, and potentially more powerfully as well. As a bonus, screaming - either like the monsters or, as some do, expletives and references to frowned-upon activities with maternal relatives - is not required.
+		You made the mistake of building a frame of obsidian and stepping into the fiery nightmare on the other side, where you were promptly attacked by tentacled clouds that sound like injured children. Long-range and difficult to dodge, you to wonder if you can replicate the attacks yourself. Fire and heat energy are obvious, but combined with others, like aggression, you have successfully reproduced this capability, and potentially more powerfully as well. As a bonus, screaming - either like the monsters or, as some do, expletives and references to frowned-upon activities with maternal relatives - is not required.
 	</fireball>
 	<shield>
 		Perhaps the most annoying of the creatures you find yourself up against - even outdoing the kamikaze leaf bombs - are skeletons, with their ranged attack and, when in groups, their irriating tendency to imitate a gatling gun. Usefully, however, protective energy can create a field around you to deflect their assault.
@@ -66,9 +66,9 @@
 	<dimping>
 		You have heard of untold riches in the world on the other side of the crystal portal. And to be sure, you have found some. However, most of it appears to be hiding, either buried underground or otherwise invisible. Searching aimlessly in the hopes of stumbling upon them could take years; if only there was a way to triangulate their position.
 	</dimping>
-	<name>
-
-	</name>
+	<dash>
+		Flail your weapon as you may, being surrounded by mobs will often result in your death. That night, however, you had a dream. Interspersed with hallucinations of some guy named "Kluex", it finally hit you: You can probably combine time- and movement-based energies to quickly bolt out of danger, turning sprint into something rather more powerful.
+	</dash>
 	<name>
 
 	</name>

@@ -109,6 +109,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		this.validateStructure();
 	}
 
+	public boolean findFirstValidSide() {
+		for (int i = 0; i < 6; i++) {
+			facing = dirs[i];
+			this.validateStructure();
+			if (hasMultiblock)
+				return true;
+		}
+		return false;
+	}
+
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);

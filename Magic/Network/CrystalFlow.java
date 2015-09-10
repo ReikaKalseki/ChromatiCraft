@@ -11,14 +11,20 @@ package Reika.ChromatiCraft.Magic.Network;
 
 import java.util.List;
 
+import net.minecraft.tileentity.TileEntity;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
+import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 public class CrystalFlow extends CrystalPath {
 
@@ -46,7 +52,7 @@ public class CrystalFlow extends CrystalPath {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
 		WorldLocation locs = nodes.get(nodes.size()-2);
-		ImmutableTriple<Double, Double, Double> offset = ((CrystalReceiver)locs.getTileEntity()).getTargetRenderOffset(element);
+		ImmutableTriple<Double, Double, Double> offset = this.getReceiverAt(locs).getTargetRenderOffset(element);
 		double sx = offset != null ? offset.left : 0;
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
@@ -55,7 +61,7 @@ public class CrystalFlow extends CrystalPath {
 			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				offset = ((CrystalReceiver)tg.getTileEntity()).getTargetRenderOffset(element);
+				offset = this.getReceiverAt(tg).getTargetRenderOffset(element);
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
@@ -66,6 +72,20 @@ public class CrystalFlow extends CrystalPath {
 				te.markSource(src);
 			}*/
 		}
+	}
+
+	private CrystalReceiver getReceiverAt(WorldLocation loc) {
+		TileEntity te = loc.getTileEntity();
+		if (te instanceof CrystalReceiver) {
+			return (CrystalReceiver)te;
+		}
+		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
+			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
+			if (wrap != null) {
+				return wrap;
+			}
+		}
+		throw new IllegalStateException("How did a non-receiver tile get put in the network here?");
 	}
 
 	private String getTiles() {

@@ -90,4 +90,9 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 
 	}
 
+	@Override
+	public boolean checkConnectivity() {
+		return true;
+	}
+
 }

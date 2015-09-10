@@ -57,11 +57,19 @@ public class CrystalPlantHandler implements CustomCropHandler {
 
 	@Override
 	public ArrayList<ItemStack> getAdditionalDrops(World world, int x, int y, int z, Block id, int meta, int fortune) {
-		if (ModList.CHROMATICRAFT.isLoaded() && ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(0.01)) {
-			ArrayList li = new ArrayList();
-			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(world.getBlockMetadata(x, y, z));
-			li.add(shard);
-			return li;
+		if (ModList.CHROMATICRAFT.isLoaded()) {
+			if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(0.01)) {
+				ArrayList li = new ArrayList();
+				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(world.getBlockMetadata(x, y, z));
+				li.add(shard);
+				return li;
+			}
+			if (ReikaRandomHelper.doWithChance(0.04)) {
+				ArrayList li = new ArrayList();
+				ItemStack shard = ChromaItems.SEED.getStackOfMetadata(16+world.getBlockMetadata(x, y, z));
+				li.add(shard);
+				return li;
+			}
 		}
 		return null;
 	}

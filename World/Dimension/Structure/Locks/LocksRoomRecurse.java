@@ -29,12 +29,13 @@ public class LocksRoomRecurse extends LockLevel {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml);
-		this.generate2(world, x, y, z, b, ms, ml);
-		this.generate3(world, x, y, z, b, ms, ml);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc);
+		this.generate2(world, x, y, z, b, ms, ml, mc);
+		this.generate3(world, x, y, z, b, ms, ml, mc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+0, y+0, z+1, b, ms);
 		world.setBlock(x+0, y+0, z+2, b, ms);
 		world.setBlock(x+0, y+0, z+3, b, ms);
@@ -938,7 +939,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+8, y+1, z+25, b, ms);
 		world.setBlock(x+8, y+1, z+30, b, ms);
 		world.setBlock(x+8, y+2, z+23, b, ms);
-		world.setBlock(x+8, y+2, z+24, b);
+		world.setBlock(x+8, y+2, z+24, b, mc);
 		world.setBlock(x+8, y+2, z+30, b, ms);
 		world.setBlock(x+8, y+3, z+23, b, ms);
 		world.setBlock(x+8, y+3, z+24, b, ms);
@@ -1095,7 +1096,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+10, y+1, z+30, b, ms);
 		world.setBlock(x+10, y+2, z+0, b, ms);
 		world.setBlock(x+10, y+2, z+23, b, ms);
-		world.setBlock(x+10, y+2, z+24, b);
+		world.setBlock(x+10, y+2, z+24, b, mc);
 		world.setBlock(x+10, y+2, z+30, b, ms);
 		world.setBlock(x+10, y+3, z+0, b, ms);
 		world.setBlock(x+10, y+3, z+23, b, ms);
@@ -1296,7 +1297,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+12, y+2, z+21, b, ml);
 		world.setBlock(x+12, y+2, z+22, b, ms);
 		world.setBlock(x+12, y+2, z+23, b, ms);
-		world.setBlock(x+12, y+2, z+24, b);
+		world.setBlock(x+12, y+2, z+24, b, mc);
 		world.setBlock(x+12, y+2, z+30, b, ms);
 		world.setBlock(x+12, y+3, z+1, b, ms);
 		world.setBlock(x+12, y+3, z+2, b, ms);
@@ -1524,7 +1525,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+14, y+2, z+21, b, ms);
 		world.setBlock(x+14, y+2, z+22, b, ms);
 		world.setBlock(x+14, y+2, z+23, b, ms);
-		world.setBlock(x+14, y+2, z+24, b);
+		world.setBlock(x+14, y+2, z+24, b, mc);
 		world.setBlock(x+14, y+2, z+30, b, ms);
 		world.setBlock(x+14, y+3, z+1, b, ms);
 		world.setBlock(x+14, y+3, z+5, b, ms);
@@ -1537,7 +1538,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+14, y+3, z+24, b, ms);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+14, y+3, z+25, b, ms);
 		world.setBlock(x+14, y+3, z+30, b, ms);
 		world.setBlock(x+14, y+4, z+1, b, ms);
@@ -1844,7 +1845,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+17, y+2, z+20, b, ms);
 		world.setBlock(x+17, y+2, z+25, b, ms);
 		world.setBlock(x+17, y+2, z+26, b, ms);
-		world.setBlock(x+17, y+2, z+27, b);
+		world.setBlock(x+17, y+2, z+27, b, mc);
 		world.setBlock(x+17, y+2, z+28, b, ms);
 		world.setBlock(x+17, y+2, z+29, b, ms);
 		world.setBlock(x+17, y+3, z+2, b, ms);
@@ -3040,7 +3041,7 @@ public class LocksRoomRecurse extends LockLevel {
 		world.setBlock(x+13, y+2, z+8, Blocks.air);
 	}
 
-	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate3(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+13, y+2, z+10, Blocks.air);
 		world.setBlock(x+13, y+2, z+11, Blocks.air);
 		world.setBlock(x+13, y+2, z+12, Blocks.air);

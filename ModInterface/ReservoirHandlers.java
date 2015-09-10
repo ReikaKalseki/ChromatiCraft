@@ -34,6 +34,8 @@ public class ReservoirHandlers {
 
 	private static final Random rand = new Random();
 
+	public static int ACCEL_FACTOR = 2;
+
 	private static abstract class ChromaReservoirRecipeHandlerBase implements TankHandler {
 
 		@Override
@@ -76,7 +78,10 @@ public class ReservoirHandlers {
 					flag = true;
 				}
 				else if (e != null && is.getItemDamage() == e.ordinal() && ChromaItems.SHARD.matchWith(is) && dye == TileEntityChroma.BERRY_SATURATION) {
-					boolean done = ItemCrystalShard.tickShardCharging(ei, e, te.xCoord, te.yCoord, te.zCoord);
+					boolean done = false;
+					for (int i = 0; i < ACCEL_FACTOR && !done; i++) {
+						done = ItemCrystalShard.tickShardCharging(ei, e, te.xCoord, te.yCoord, te.zCoord);
+					}
 					if (!te.worldObj.isRemote && done) {
 						fs.tag = null;
 						return 200;
@@ -94,16 +99,18 @@ public class ReservoirHandlers {
 
 		@Override
 		protected int doTick(TileEntity te, FluidStack fs) {
-			if (!te.worldObj.isRemote && rand.nextInt(3) == 0) {
+			if (rand.nextInt(3) == 0) {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
 				List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (EntityItem ei : li) {
 					PoolRecipe pr = PoolRecipes.instance.getPoolRecipe(ei, li, false);
 					if (pr != null) {
 						if (ei.worldObj.isRemote) {
-							ChromaFX.poolRecipeParticles(ei);
+							for (int i = 0; i < ACCEL_FACTOR; i++) {
+								ChromaFX.poolRecipeParticles(ei);
+							}
 						}
-						else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
+						else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
 							PoolRecipes.instance.makePoolRecipe(ei, pr);
 							return 1000;
 						}

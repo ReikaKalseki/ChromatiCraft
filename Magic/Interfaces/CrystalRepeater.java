@@ -21,4 +21,6 @@ public interface CrystalRepeater extends CrystalReceiver, CrystalTransmitter {
 
 	public void setSignalDepth(CrystalElement e, int d);
 
+	public boolean checkConnectivity();
+
 }

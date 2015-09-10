@@ -30,6 +30,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 	private final Random random = new Random();
 
 	private int growthTick = 2;
+	private long lastShardTick = -1;
 
 	public boolean renderPod() {
 		return growthTick <= 1;
@@ -84,8 +85,11 @@ public class TileEntityCrystalPlant extends TileEntity {
 			int meta = this.getColor().ordinal();
 			for (int i = 0; i < num; i++)
 				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(meta+16));
-			if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(2))
+			long time = worldObj.getTotalWorldTime();
+			if (ChromaOptions.CRYSTALFARM.getState() && time-lastShardTick >= 600 && ReikaRandomHelper.doWithChance(2)) {
 				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
+				lastShardTick = time;
+			}
 		}
 		this.updateLight();
 	}

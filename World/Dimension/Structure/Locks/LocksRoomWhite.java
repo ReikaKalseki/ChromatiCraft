@@ -29,11 +29,12 @@ public class LocksRoomWhite extends LockLevel {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
 		int ms = BlockType.STONE.metadata;
 		int ml = BlockType.LIGHT.metadata;
-		this.generate1(world, x, y, z, b, ms, ml);
-		this.generate2(world, x, y, z, b, ms, ml);
+		int mc = BlockType.CLOAK.metadata;
+		this.generate1(world, x, y, z, b, ms, ml, mc);
+		this.generate2(world, x, y, z, b, ms, ml, mc);
 	}
 
-	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate1(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+0, y+0, z+2, b, ms);
 		world.setBlock(x+0, y+0, z+3, b, ms);
 		world.setBlock(x+0, y+0, z+4, b, ms);
@@ -823,8 +824,8 @@ public class LocksRoomWhite extends LockLevel {
 		world.setBlock(x+7, y+2, z+22, b, ml);
 		world.setBlock(x+7, y+2, z+23, b, ms);
 		world.setBlock(x+7, y+2, z+24, b, ms);
-		world.setBlock(x+7, y+2, z+25, b);
-		world.setBlock(x+7, y+2, z+31, b);
+		world.setBlock(x+7, y+2, z+25, b, mc);
+		world.setBlock(x+7, y+2, z+31, b, mc);
 		world.setBlock(x+7, y+2, z+32, b, ms);
 		world.setBlock(x+7, y+3, z+0, b, ms);
 		world.setBlock(x+7, y+3, z+1, b, ms);
@@ -1158,7 +1159,7 @@ public class LocksRoomWhite extends LockLevel {
 		world.setBlock(x+10, y+2, z+14, b, ms);
 		world.setBlock(x+10, y+2, z+15, b, ms);
 		world.setBlock(x+10, y+2, z+27, b, ms);
-		world.setBlock(x+10, y+2, z+28, b);
+		world.setBlock(x+10, y+2, z+28, b, mc);
 		world.setBlock(x+10, y+2, z+29, b, ms);
 		world.setBlock(x+10, y+3, z+1, b, ms);
 		world.setBlock(x+10, y+3, z+2, b, ms);
@@ -1539,7 +1540,7 @@ public class LocksRoomWhite extends LockLevel {
 		world.setBlock(x+5, y+3, z+15, Blocks.air);
 	}
 
-	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml) {
+	private void generate2(OriginBlockCache world, int x, int y, int z, Block b, int ms, int ml, int mc) {
 		world.setBlock(x+5, y+3, z+17, Blocks.air);
 		world.setBlock(x+5, y+3, z+18, Blocks.air);
 		world.setBlock(x+5, y+3, z+19, Blocks.air);

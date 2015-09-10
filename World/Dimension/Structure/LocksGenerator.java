@@ -229,6 +229,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			keyCodes[structIndex][e.ordinal()]++;
 		}
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
+		ReikaJavaLibrary.pConsole(e+":"+structIndex);
 		this.updateTiles(world, -1);
 	}
 
@@ -265,7 +266,8 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity(world);
 			if (te == null) {
 				ReikaJavaLibrary.pConsole("Colored lock @ "+loc+" in DIM"+world.provider.dimensionId+" has no TileEntity!!");
-				ReikaJavaLibrary.pConsole("Present block ID: "+Block.getIdFromBlock(loc.getBlock(world)));
+				Block b = loc.getBlock(world);
+				ReikaJavaLibrary.pConsole("Present block ID: "+Block.getIdFromBlock(b)+" = "+b.getClass());
 				//loc.setBlock(world, Blocks.brick_block);
 				continue;
 			}
@@ -277,6 +279,6 @@ public class LocksGenerator extends DimensionStructureGenerator {
 	}
 
 	public void addLock(int x, int y, int z) {
-		lockCache.add(new Coordinate(x-6, y, z)); //why -6?
+		lockCache.add(new Coordinate(x, y, z));
 	}
 }

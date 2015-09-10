@@ -61,6 +61,7 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -394,9 +395,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				if (worldObj.isRemote)
 					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
-				craftingTick = activeRecipe.getDuration();
-				if (isEnhanced)
-					craftingTick = Math.max(craftingTick/4, Math.min(craftingTick, 20));
+				this.setRecipeTickDuration(activeRecipe);
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
 					this.requestEnergyDifference(tag);
@@ -406,6 +405,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 		ChromaSounds.ERROR.playSoundAtBlock(this);
 		return false;
+	}
+
+	private void setRecipeTickDuration(CastingRecipe r) {
+		craftingTick = r.getDuration();
+		if (isEnhanced)
+			craftingTick = Math.max(craftingTick/4, Math.min(craftingTick, 20));
 	}
 
 	public boolean isReadyToCraft() {
@@ -514,7 +519,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
-			NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
+			if (inv[4] != null)
+				NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
 			this.addXP((int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe)));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
@@ -544,7 +550,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			activeRecipe = recipe;
 			recipe = this.getValidRecipe();
 			if (activeRecipe instanceof PylonRecipe && recipe == activeRecipe) {
-				craftingTick = recipe.getDuration();
+				this.setRecipeTickDuration(activeRecipe);
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				repeat = true;
 				break;
@@ -620,8 +626,13 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			if (tableXP >= tier.levelUp) {
 				this.setTier(tier.next());
 			}
-			if (tableXP > 100000) {
-				isEnhanced = true;
+			if (tableXP > 1000000) {
+				EntityPlayer ep = this.getPlacer();
+				if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+					if (ProgressStage.CTM.isPlayerAtStage(ep)) {
+						isEnhanced = true;
+					}
+				}
 			}
 			this.syncAllData(false);
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -759,7 +770,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public int maxThroughput() {
-		return isEnhanced ? 1000 : 100*(tableXP/RecipeType.MULTIBLOCK.levelUp);
+		return isEnhanced ? 1000 : Math.min(1000, Math.max(100, 100*(tableXP/RecipeType.MULTIBLOCK.levelUp-1)));
 	}
 
 	@Override

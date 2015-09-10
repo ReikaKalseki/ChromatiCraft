@@ -87,6 +87,11 @@ public class BlockCrystalTile extends BlockChromaTile {
 		}
 	}
 
+	@Override
+	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		return this.getIcon(s, iba.getBlockMetadata(x, y, z));
+	}
+
 	public boolean canHarvest(World world, EntityPlayer player, int x, int y, int z)
 	{
 		if (player.capabilities.isCreativeMode)

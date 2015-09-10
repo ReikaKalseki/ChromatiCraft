@@ -203,7 +203,7 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : blocktabs) {
 			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase());
-			desc = String.format(desc, blockData.get(h));
+			desc = String.format(desc, blockData.get(h.getBlock()));
 			addEntry(h, desc);
 		}
 
