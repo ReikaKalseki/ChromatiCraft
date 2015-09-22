@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -41,7 +42,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile {
 
 	private boolean hasStructure = false;
 	private int abilityTick = 0;
@@ -332,6 +333,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	public boolean trigger() {
 		return this.getPlacer() != null && this.triggerRitual(this.getPlacer());
+	}
+
+	@Override
+	public boolean onlyAllowOwnersToUse() {
+		return true;
 	}
 
 }

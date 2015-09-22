@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -35,7 +36,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick {
+public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile {
 
 	private InertItem item;
 

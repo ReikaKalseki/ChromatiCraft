@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -24,11 +23,14 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.FixedMaze;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.FixedMazeDoors;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazeAnchor;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.MazePiece;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeEntrance;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeLoot;
 import Reika.DragonAPI.Instantiable.Comparators.PointDistanceComparator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.PointDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -59,7 +61,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	private ArrayList<Path> anchorPaths = new ArrayList();
 	private MultiMap<Point, Path> nodePaths = new MultiMap(); //point is the end point of the path
 
-	private final ArrayList<MazeState> states = new ArrayList();
+	private MazeState[] states = new MazeState[ANCHORS+1];
 
 	private Point step;
 	private ForgeDirection nextDir;
@@ -69,7 +71,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	public static final int MAX_SIZE_X = getWidth();
 	public static final int MAX_SIZE_Z = getWidth();
 
-	private final MultiMap<PointDirection, Coordinate> locks = new MultiMap();
+	private final HashSet<Coordinate> locks = new HashSet();
 
 	private static final ArrayList<ForgeDirection> dirs = ReikaJavaLibrary.makeListFrom(ForgeDirection.EAST, ForgeDirection.WEST, ForgeDirection.NORTH, ForgeDirection.SOUTH);
 
@@ -89,19 +91,39 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	@Override
 	public void calculate(int x, int z, Random rand) {
 
-		posY = 200;
+		posY = 20+rand.nextInt(40);
 
-		this.pickPoints(rand); //start, end, and anchors
-		this.mainPathing(rand); //start -> end pathing
-		this.pickNodes(rand); //pick nodes along start -> end
-		this.anchorPathing(rand); //path from anchors to nodes
+		entryX = x+26;
+		entryZ = z+11;
+
+		for (int i = 0; i < states.length; i++) {
+			states[i] = new MazeState();
+		}
+
+		FixedMaze fixed = new FixedMaze(this, rand);
+		FixedMazeDoors doors = new FixedMazeDoors(this, ANCHORS+1, rand);
+		ShiftMazeLoot loot = new ShiftMazeLoot(this);
+
+		fixed.generate(world, x, posY, z);
+		doors.generate(world, x, posY, z);
+
+		int lx = x-((ANCHORS+1)*2+1)-10;
+
+		loot.generate(world, lx, posY, z+5);
+
+		//this.pickPoints(rand); //start, end, and anchors
+		//this.mainPathing(rand); //start -> end pathing
+		//this.pickNodes(rand); //pick nodes along start -> end
+		//this.anchorPathing(rand); //path from anchors to nodes
 		//this.nodePathing(rand); //path between nodes
 		//this.addMazing(rand); //add dead ends
 
-		this.cutExit();
+		//this.cutExit();
 
-		this.generateBlocks(x, posY, z, rand);
-		this.generateAnchors(x, posY, z, rand);
+		//this.generateBlocks(x, posY, z, rand);
+		//this.generateAnchors(x, posY, z, rand);
+
+		this.addDynamicStructure(new ShiftMazeEntrance(this), x+26, z+11);
 	}
 
 	private void addMazing(Random rand) {
@@ -122,7 +144,6 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 					locationCache.addValue(this.getTranslatedPoint(pt, dir), dir.getOpposite());
 				}
 			}
-			break; //remove
 		}
 	}
 
@@ -462,12 +483,12 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected int getCenterXOffset() {
-		return (partSize*(MAX_SIZE_X+1))/2;
+		return 0;//(partSize*(MAX_SIZE_X+1))/2;
 	}
 
 	@Override
 	protected int getCenterZOffset() {
-		return (partSize*(MAX_SIZE_Z+1))/2;
+		return 0;//(partSize*(MAX_SIZE_Z+1))/2;
 	}
 
 	@Override
@@ -490,7 +511,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		anchorPaths.clear();
 		nodePaths.clear();
 
-		states.clear();
+		states = new MazeState[ANCHORS+1];
 
 		step = null;
 		nextDir = null;
@@ -498,36 +519,39 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		locks.clear();
 	}
 
-	public void cacheLock(Point pt, ForgeDirection dir, int x, int y, int z) {
-		locks.addValue(new PointDirection(pt, dir), new Coordinate(x, y, z));
+	public void addDoorState(int x, int z, int state) {
+		states[state].openDoors.add(new Point(x, z));
 	}
 
-	public Collection<Coordinate> getLocks(int x, int z, ForgeDirection dir) {
-		return locks.get(new PointDirection(x, z, dir));
+	public void cacheLock(int x, int y, int z) {
+		locks.add(new Coordinate(x, y, z));
+	}
+
+	public Collection<Coordinate> getLocks() {
+		return Collections.unmodifiableCollection(locks);
 	}
 
 	@Override
 	public StructureData createDataStorage() {
-		return new ShiftMazeData(this);
+		return new ShiftMazeData(this, ANCHORS+1);
 	}
 
 	public static class MazeState {
 
-		private final MultiMap<Point, ForgeDirection> openDoors = new MultiMap(new MultiMap.HashSetFactory());
+		private final HashSet<Point> openDoors = new HashSet();
 
 		private MazeState() {
 
 		}
 
-		public boolean isPositionOpen(int i, int k, ForgeDirection dir) {
-			Collection<ForgeDirection> c = openDoors.get(new Point(i, k));
-			return c != null && c.contains(dir);
+		public boolean isPositionOpen(int x, int z) {
+			return openDoors.contains(new Point(x, z));
 		}
 
 	}
 
-	public List<MazeState> getStates() {
-		return Collections.unmodifiableList(states);
+	public MazeState getState(int state) {
+		return states[state];
 	}
 
 	private static class Path {

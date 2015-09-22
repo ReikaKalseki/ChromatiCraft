@@ -28,11 +28,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FastBlockCache;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
@@ -48,12 +50,26 @@ import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
 // Shoot down hostile mobs, speed crop growth, heal players
-public class TileEntityAuraPoint extends TileEntityLocusPoint {
+public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTile {
+
+	@SideOnly(Side.CLIENT)
+	public GlowKnot knot;
+
+	public TileEntityAuraPoint() {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			this.loadGlowKnot();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void loadGlowKnot() {
+		knot = new GlowKnot(0.875);
+	}
 
 	private static final String NBT_TAG = "aurapoint";
 
@@ -80,9 +96,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (world.isRemote)
-			this.updateColors();
-		else {
+		if (!world.isRemote) {
 			this.playSounds(world, x, y, z);
 			this.doAmbientEffects(world, x, y, z);
 		}
@@ -322,7 +336,14 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
-
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			if (world != null) { //tick 6x speed since using world, not render tick
+				for (int i = 0; i < 5; i++)
+					knot.update();
+			}
+			knot.update();
+		}
+		this.updateColors();
 	}
 
 	@Override

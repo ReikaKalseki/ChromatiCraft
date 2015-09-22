@@ -19,18 +19,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -61,6 +62,18 @@ public class BlockCrystalTile extends BlockChromaTile {
 					li.add(ChromaStacks.blueShard);
 			case GUARDIAN:
 				li.add(ChromaStacks.crystalStar);
+				break;
+			case DIMENSIONCORE:
+				if (ReikaRandomHelper.doWithChance(25))
+					li.add(ChromaStacks.crystalStar);
+				if (ReikaRandomHelper.doWithChance(25))
+					li.add(ChromaStacks.voidCore);
+				if (ReikaRandomHelper.doWithChance(25))
+					li.add(ChromaStacks.energyCore);
+				if (ReikaRandomHelper.doWithChance(25))
+					li.add(ChromaStacks.crystalFocus);
+				if (ReikaRandomHelper.doWithChance(50))
+					li.add(ChromaStacks.beaconDust);
 				break;
 			default:
 				break;
@@ -126,14 +139,13 @@ public class BlockCrystalTile extends BlockChromaTile {
 		}
 		else {
 			boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
-			TileEntity tile = world.getTileEntity(x, y, z);
-			if (silk) {
+			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+			if (silk || !c.needsSilkTouch()) {
 				ItemStack is = c.getCraftedProduct();
-				if (tile instanceof TileEntityAccelerator) {
-					TileEntityAccelerator te = (TileEntityAccelerator)tile;
-					if (is.stackTagCompound == null)
-						is.stackTagCompound = new NBTTagCompound();
-					is.stackTagCompound.setInteger("tier", te.getTier());
+				if (c.hasNBTVariants()) {
+					NBTTagCompound nbt = new NBTTagCompound();
+					((NBTTile)te).getTagsToWriteToStack(nbt);
+					is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
 				}
 				ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 			}

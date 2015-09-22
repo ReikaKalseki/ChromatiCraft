@@ -104,7 +104,7 @@ public class ProgressionManager implements ProgressRegistry {
 		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type
 		RAINBOWFOREST(ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
 		DIMENSION(ChromaBlocks.PORTAL.getBlockInstance()),
-		CTM(ChromaBlocks.SUPER.getStackOfMetadata(CrystalElement.YELLOW.ordinal())), //icon is a placeholder
+		CTM(ChromaTiles.AURAPOINT.getCraftedProduct()),
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
 		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
@@ -185,6 +185,10 @@ public class ProgressionManager implements ProgressRegistry {
 		@SideOnly(Side.CLIENT)
 		public ItemStack getIcon() {
 			return icon.copy();
+		}
+
+		public boolean isGatedAfter(ProgressStage p) {
+			return ProgressionManager.instance.progressMap.getRecursiveParents(this).contains(p);
 		}
 	}
 

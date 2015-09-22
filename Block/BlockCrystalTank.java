@@ -509,7 +509,11 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		return li;
 	}
 
-	public IIcon getIconForEdge(int edge) {
+	public IIcon getIconForEdge(IBlockAccess world, int x, int y, int z, int edge) {
+		return edges[edge];
+	}
+
+	public IIcon getIconForEdge(int itemMeta, int edge) {
 		return edges[edge];
 	}
 

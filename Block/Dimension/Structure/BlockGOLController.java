@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -27,7 +28,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 
 public class BlockGOLController extends BlockContainer {
 
-	private final IIcon[] icons = new IIcon[2];
+	private final IIcon[] icons = new IIcon[3];
 
 	public BlockGOLController(Material mat) {
 		super(mat);
@@ -64,12 +65,23 @@ public class BlockGOLController extends BlockContainer {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		blockIcon = ico.registerIcon("chromaticraft:dimstruct/gol_control");
+		icons[0] = ico.registerIcon("chromaticraft:dimstruct/gol_control_play");
+		icons[1] = ico.registerIcon("chromaticraft:dimstruct/gol_control_stop");
+		icons[2] = ico.registerIcon("chromaticraft:dimstruct/gol_control_end");
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return blockIcon;
+		return s <= 1 ? icons[2] : icons[0];
+	}
+
+	@Override
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te instanceof GOLController && ((GOLController)te).isActive) {
+			return icons[1];
+		}
+		return super.getIcon(world, x, y, z, s);
 	}
 
 	public static class GOLController extends StructureBlockTile<GOLGenerator> {
@@ -97,6 +109,7 @@ public class BlockGOLController extends BlockContainer {
 
 		private void activate() {
 			isActive = true;
+			//ReikaJavaLibrary.pConsole("activate");
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					Block b = worldObj.getBlock(x, floorY, z);
@@ -109,6 +122,8 @@ public class BlockGOLController extends BlockContainer {
 		}
 
 		private void reset() {
+			//ReikaJavaLibrary.pConsole("reset");
+			this.getGenerator().checkConditions(worldObj);
 			isActive = false;
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
@@ -116,9 +131,12 @@ public class BlockGOLController extends BlockContainer {
 					if (b == ChromaBlocks.GOL.getBlockInstance()) {
 						GOLTile te = (GOLTile)worldObj.getTileEntity(x, floorY, z);
 						te.reset();
+
+						worldObj.setBlockMetadataWithNotify(x, floorY+GOLGenerator.ROOM_HEIGHT, z, 2, 3);
 					}
 				}
 			}
+			this.getGenerator().clearTiles();
 		}
 
 		@Override

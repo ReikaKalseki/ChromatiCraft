@@ -60,6 +60,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
 		return this.tryDistributeEnergy(maxReceive, simulate);
 	}

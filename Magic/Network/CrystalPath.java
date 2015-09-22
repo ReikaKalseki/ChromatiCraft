@@ -33,7 +33,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 
 	protected CrystalPath(CrystalNetworker net, CrystalElement e, List<WorldLocation> li) {
 		nodes = new ArrayList(li);
-		transmitter = (CrystalSource)nodes.get(nodes.size()-1).getTileEntity();
+		transmitter = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
 		origin = nodes.get(0);
 		element = e;
 		network = net;
@@ -46,7 +46,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		for (int i = 1; i < nodes.size()-1; i++) {
 			WorldLocation loc = nodes.get(i);
 			WorldLocation prev = nodes.get(i-1);
-			CrystalNetworkTile te = (CrystalNetworkTile)loc.getTileEntity();
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(loc, true);
 			if (te instanceof CrystalRepeater)
 				loss = Math.max(loss, ((CrystalRepeater)te).getSignalDegradation());
 			links.add(network.getLink(prev, loc));
@@ -85,7 +85,7 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			if (l == null || tgt.equals(l.loc1) || tgt.equals(l.loc2)) {
 				WorldLocation src = nodes.get(i+1);
 				if (!PylonFinder.lineOfSight(src, tgt)) {
-					CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
+					CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, true);
 					if (sr.needsLineOfSight()) {
 						return false;
 					}
@@ -99,13 +99,14 @@ public class CrystalPath implements Comparable<CrystalPath> {
 		if (!transmitter.canConduct() || !transmitter.isConductingElement(element)) {
 			return false;
 		}
-		if (!((CrystalNetworkTile)origin.getTileEntity()).canConduct() || !((CrystalNetworkTile)origin.getTileEntity()).isConductingElement(element)) {
+		CrystalNetworkTile tile = PylonFinder.getNetTileAt(origin, false);
+		if (tile == null || !tile.canConduct() || !tile.isConductingElement(element)) {
 			return false;
 		}
 		for (int i = 0; i < nodes.size()-2; i++) {
 			WorldLocation tgt = nodes.get(i);
 			WorldLocation src = nodes.get(i+1);
-			CrystalTransmitter sr = (CrystalTransmitter)src.getTileEntity();
+			CrystalTransmitter sr = PylonFinder.getTransmitterAt(src, false);
 			if (sr == null || !sr.canConduct() || !sr.isConductingElement(element)) {
 				return false;
 			}

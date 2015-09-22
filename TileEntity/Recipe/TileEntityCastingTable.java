@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
@@ -68,7 +69,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -357,28 +358,50 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
-		if ((b.matchInWorld() || b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.TEMPLE)) {
-			hasStructure = true;
-			ProgressStage.MULTIBLOCK.stepPlayerTo(this.getPlacer());
-			if ((b2.matchInWorld() || b3.matchInWorld()) && this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
-				hasStructure2 = true;
-				if (b3.matchInWorld() && this.getTier().isAtLeast(RecipeType.PYLON)) {
-					hasPylonConnections = true;
-				}
-				else {
-					hasPylonConnections = false;
-				}
+		if (this.getTier().isAtLeast(RecipeType.PYLON)) {
+			if (b3.matchInWorld()) {
+				hasStructure = hasStructure2 = hasPylonConnections = true;
+			}
+			else if (b2.matchInWorld()) {
+				hasStructure = hasStructure2 = true;
+				hasPylonConnections = false;
+			}
+			else if (b.matchInWorld()) {
+				hasStructure = true;
+				hasStructure2 = hasPylonConnections = false;
 			}
 			else {
-				hasPylonConnections = false;
-				hasStructure2 = false;
+				hasStructure = hasStructure2 = hasPylonConnections = false;
 			}
 		}
-		else {
+		else if (this.getTier().isAtLeast(RecipeType.MULTIBLOCK)) {
+			if (b2.matchInWorld()) {
+				hasStructure = hasStructure2 = true;
+			}
+			else if (b.matchInWorld()) {
+				hasStructure = true;
+				hasStructure2 = false;
+			}
+			else {
+				hasStructure = hasStructure2 = false;
+			}
 			hasPylonConnections = false;
-			hasStructure = false;
-			hasStructure2 = false;
 		}
+		else if (this.getTier().isAtLeast(RecipeType.TEMPLE)) {
+			if (b.matchInWorld()) {
+				hasStructure = true;
+			}
+			else {
+				hasStructure = false;
+			}
+			hasStructure2 = hasPylonConnections = false;
+		}
+		else {
+			hasStructure = hasStructure2 = hasPylonConnections = false;
+		}
+
+		if (hasStructure)
+			ProgressStage.MULTIBLOCK.stepPlayerTo(this.getPlacer());
 
 		if (activeRecipe != null && !this.getValidRecipeTypes().contains(activeRecipe.type)) {
 			if (craftingTick > 0) {
@@ -874,6 +897,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public int getIconState() {
 		return isEnhanced ? 1 : 0;
+	}
+
+	@Override
+	public boolean onlyAllowOwnersToUse() {
+		return true;
 	}
 
 }

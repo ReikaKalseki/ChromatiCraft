@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -55,7 +56,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityPylonTurboCharger extends TileEntityChromaticBase implements BreakAction {
+public class TileEntityPylonTurboCharger extends TileEntityChromaticBase implements BreakAction, OwnedTile {
 
 	public static final int RITUAL_LENGTH = 2400;
 

@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -34,7 +35,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick {
+public class TileEntityItemStand extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile/*, HitAction*/ {
 
 	private InertItem item;
 	private Coordinate tile;
@@ -54,8 +55,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
 			if (tile != null) {
-				TileEntityCastingTable te = (TileEntityCastingTable)tile.getTileEntity(world);
-				if (te != null && te.getCraftingTick() > 0) {
+				TileEntity te = tile.getTileEntity(world);
+				if (te instanceof TileEntityCastingTable && ((TileEntityCastingTable)te).getCraftingTick() > 0) {
 					this.spawnCraftParticles(world, x, y, z);
 				}
 			}
@@ -119,8 +120,12 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		int has = inv[0] != null ? inv[0].stackSize : 0;
 		int sum = item != null ? has+item.stackSize : has;
 		boolean all = this.recentClicked() && ReikaItemHelper.matchStacks(item, inv[0]) && item != null && sum <= item.getMaxStackSize();
-		if (!all)
-			this.dropSlot();
+		/*
+		if (!all && inv[0] != null) {
+			ChromaSounds.ERROR.playSoundAtBlock(this);
+			return item;
+		}
+		 */
 		ItemStack put = item != null ? (all ? ReikaItemHelper.getSizedItemStack(item, sum) : ReikaItemHelper.getSizedItemStack(item, 1)) : null;
 		inv[0] = put;
 		this.updateItem();
@@ -134,7 +139,15 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		ChromaSounds.ITEMSTAND.playSoundAtBlock(this);
 		return item;
 	}
-
+	/*
+	@Override
+	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {
+		ChromaSounds.ITEMSTAND.playSoundAtBlock(this, 1, 0.875F);
+		this.dropSlot();
+		inv[0] = null;
+		this.updateItem();
+	}
+	 */
 	private void updateItem() {
 		item = inv[0] != null ? new InertItem(worldObj, ReikaItemHelper.getSizedItemStack(inv[0], 1)) : null;
 		if (worldObj != null) {
@@ -184,6 +197,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	public void setTable(TileEntityCastingTable te) {
 		tile = te != null ? new Coordinate(te) : null;
+	}
+
+	@Override
+	public boolean onlyAllowOwnersToUse() {
+		return true;
 	}
 
 }

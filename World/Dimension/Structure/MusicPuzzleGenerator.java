@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -69,9 +70,13 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 
 	private void generatePuzzles(Random rand) {
 		for (int i = 0; i < LENGTH; i++) {
-			MusicPuzzle m = new MusicPuzzle(this, Math.max(6, 6+(i-6)));
+			int len = this.getPuzzleLength(i);
+			MusicPuzzle m = new MusicPuzzle(this, len);
+			MelodyPrefab p = null;
 			if (usedPrefabs.size() < prefabs.size() && rand.nextInt(5) == 0) {
-				MelodyPrefab p = this.getRandomPrefab(rand);
+				p = this.getRandomPrefab(rand, len*5/2);
+			}
+			if (p != null) {
 				m.loadPrefab(p);
 				usedPrefabs.add(p);
 			}
@@ -82,11 +87,20 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private MelodyPrefab getRandomPrefab(Random rand) {
-		MelodyPrefab pre = prefabs.get(rand.nextInt(prefabs.size()));
-		while (usedPrefabs.contains(pre))
-			pre = prefabs.get(rand.nextInt(prefabs.size()));
-		return pre;
+	private int getPuzzleLength(int step) {
+		return Math.max(6, (2*ChromaOptions.getStructureDifficulty())+(step-9+ChromaOptions.getStructureDifficulty()));
+	}
+
+	private MelodyPrefab getRandomPrefab(Random rand, int maxlen) {
+		HashSet<MelodyPrefab> validPrefabs = new HashSet(prefabs);
+		validPrefabs.removeAll(usedPrefabs);
+		Iterator<MelodyPrefab> it = validPrefabs.iterator();
+		while (it.hasNext()) {
+			MelodyPrefab pre = it.next();
+			if (pre.notes.size() > maxlen)
+				it.remove();
+		}
+		return validPrefabs.isEmpty() ? null : ReikaJavaLibrary.getRandomCollectionEntry(validPrefabs);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -39,9 +40,8 @@ public class BlockShiftLock extends Block {
 	 */
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < 2; i++) {
-			icons[i] = ico.registerIcon("chromaticraft:dimstruct/shiftlock_"+i);
-		}
+		icons[0] = ico.registerIcon("chromaticraft:dimstruct/shiftlock-closed");
+		icons[1] = ico.registerIcon("chromaticraft:dimstruct/shiftlock-open");
 	}
 
 	@Override
@@ -88,6 +88,11 @@ public class BlockShiftLock extends Block {
 	}
 
 	@Override
+	public int getRenderBlockPass() {
+		return 1;
+	}
+
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return world.getBlockMetadata(x, y, z) == 1 ? null : ReikaAABBHelper.getBlockAABB(x, y, z);
 	}
@@ -95,6 +100,11 @@ public class BlockShiftLock extends Block {
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
 		super.breakBlock(world, x, y, z, b, meta);
+	}
+
+	@Override
+	public boolean shouldSideBeRendered(IBlockAccess iba, int dx, int dy, int dz, int s) {
+		return super.shouldSideBeRendered(iba, dx, dy, dz, s) && iba.getBlock(dx, dy, dz) != this;
 	}
 
 }

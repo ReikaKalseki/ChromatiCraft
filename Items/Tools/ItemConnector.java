@@ -137,6 +137,10 @@ public class ItemConnector extends ItemChromaTool {
 				rf1.reset();
 				rf2.reset();
 				boolean flag = rf1.linkTo(w2, x2, y2, z2);
+				if (flag)
+					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
+				else
+					ReikaChatHelper.sendChatToPlayer(ep, "Link failed.");
 				is.stackTagCompound = null;
 			}
 		}
@@ -189,6 +193,7 @@ public class ItemConnector extends ItemChromaTool {
 				//rf1.reset();
 				//rf2.reset();
 				rf1.linkTo(rf2);
+				ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
 				is.stackTagCompound = null;
 			}
 		}
@@ -252,6 +257,10 @@ public class ItemConnector extends ItemChromaTool {
 				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
 				if (src && tg) {
 					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);
+					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+src+" and "+tg);
+				}
+				else {
+					ReikaChatHelper.sendChatToPlayer(ep, "Link Failed.");
 				}
 				is.stackTagCompound = null;
 			}

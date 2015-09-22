@@ -36,6 +36,7 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
+import thaumcraft.api.ThaumcraftApi;
 import ttftcuts.atg.api.ATGBiomes;
 import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -56,6 +57,7 @@ import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
@@ -66,6 +68,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -240,6 +243,20 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void preload(FMLPreInitializationEvent evt) {
 		this.startTiming(LoadPhase.PRELOAD);
 		this.verifyInstallation();
+
+		config.loadSubfolderedConfigFile(evt);
+		config.initProps(evt);
+
+		logger = new ModLogger(instance, false);
+		if (DragonOptions.FILELOG.getState())
+			logger.setOutput("**_Loading_Log.log");
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			MusicLoader.instance.checkAndStartDownloads();
+		}
+
+		proxy.registerSounds();
+
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
 		FMLCommonHandler.instance().bus().register(ChromaticEventManager.instance);
@@ -248,10 +265,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);
 			MinecraftForge.EVENT_BUS.register(PylonFinderOverlay.instance);
 		}
-
-		config.loadSubfolderedConfigFile(evt);
-		config.initProps(evt);
-		proxy.registerSounds();
 
 		isLocked = this.checkForLock();
 		if (this.isLocked()) {
@@ -268,10 +281,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			ReikaJavaLibrary.pConsole("\t=====================================================================================================");
 			ReikaJavaLibrary.pConsole("");
 		}
-
-		logger = new ModLogger(instance, false);
-		if (DragonOptions.FILELOG.getState())
-			logger.setOutput("**_Loading_Log.log");
 
 		int id = ExtraChromaIDs.GROWTHID.getValue();
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionGrowthHormone.class);
@@ -467,6 +476,23 @@ public class ChromatiCraft extends DragonAPIMod {
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
 
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(1));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(2));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(7));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(8));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(10));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(11));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(12));
+
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()));
+
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];
 			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
@@ -547,6 +573,12 @@ public class ChromatiCraft extends DragonAPIMod {
 
 			new CrystalWand().setGlowing(true);
 			TieredOreCap.registerAll();
+
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.STRUCTSHIELD.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.SPECIALSHIELD.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.RUNE.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLON.getBlockInstance());
 		}
 
 		if (ModList.FORESTRY.isLoaded()) {
@@ -612,7 +644,22 @@ public class ChromatiCraft extends DragonAPIMod {
 				m.invoke(null, EntityBallLightning.class);
 			}
 			catch (Exception e) {
-				logger.logError("Could not blacklist Void Monster from MFR Safari Net!");
+				logger.logError("Could not blacklist Ball Lightning from MFR Safari Net!");
+				e.printStackTrace();
+			}
+		}
+
+		if (ModList.CARPENTER.isLoaded()) {
+			try {
+				Class c = Class.forName("com.carpentersblocks.util.registry.FeatureRegistry");
+				Field f = c.getDeclaredField("coverExceptions");
+				f.setAccessible(true);
+				List<String> li = (List<String>)f.get(null);
+				for (int i = 0; i < 16; i++)
+					li.add(ChromaBlocks.GLASS.getStackOfMetadata(i).getDisplayName());
+			}
+			catch (Exception e) {
+				logger.logError("Could not add compatibility with Carpenter's blocks!");
 				e.printStackTrace();
 			}
 		}

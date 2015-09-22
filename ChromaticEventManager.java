@@ -74,7 +74,6 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -111,6 +110,7 @@ import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -332,8 +332,8 @@ public class ChromaticEventManager {
 						evt.setCanceled(true);
 				}
 			}
-			else if (evt.block == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
-				if (evt.blockMetadata >= 8 && !BlockType.list[evt.blockMetadata%8].isMineable())
+			else if (evt.block instanceof SemiUnbreakable) {
+				if (((SemiUnbreakable)evt.block).isUnbreakable(evt.world, evt.x, evt.y, evt.z, evt.blockMetadata))
 					evt.setCanceled(true);
 			}
 		}
@@ -673,9 +673,11 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedInvincibility(LivingAttackEvent evt) {
-		if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode && evt.ammount > 0) {
-			if (TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving, evt.ammount)) {
-				evt.setCanceled(true);
+		if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode) {
+			if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
+				if (TileEntityCrystalBeacon.isPlayerInvincible((EntityPlayer)evt.entityLiving, evt.ammount)) {
+					evt.setCanceled(true);
+				}
 			}
 		}
 	}
@@ -814,10 +816,10 @@ public class ChromaticEventManager {
 				ItemStack is = inv[i];
 				if (is != null) {
 					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 3, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalBlock.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 					else if (is.getItem() instanceof ActivatedInventoryItem) {
 						this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is), is);

@@ -24,6 +24,8 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructureDataStorage;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
@@ -344,6 +346,27 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			generator = gen;
 			relX = ChunkSplicedGenerationCache.modAndAlign(x);
 			relZ = ChunkSplicedGenerationCache.modAndAlign(z);
+		}
+
+	}
+
+	public final void generateDataTile(int x, int y, int z) {
+		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this));
+	}
+
+	private static final class StructureDataCallback implements TileCallback {
+
+		private final DimensionStructureGenerator generator;
+
+		private StructureDataCallback(DimensionStructureGenerator gen) {
+			generator = gen;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			if (te instanceof TileEntityStructureDataStorage) {
+				((TileEntityStructureDataStorage)te).loadData(generator);
+			}
 		}
 
 	}

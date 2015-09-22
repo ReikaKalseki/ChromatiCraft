@@ -93,15 +93,15 @@ public class NodeRecharger implements TickHandler {
 
 	private boolean addLocation(WorldLocation loc, INode n, boolean save) {
 		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(loc.dimensionID);
-		if (!map.containsKey(loc)) {
-			NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
-			//CrystalNetworker.instance.addTile(wrap);
-			map.put(loc, wrap);
-			if (save)
-				NodeRechargeData.initNetworkData(((TileEntity)n).worldObj).setDirty(true);
-			return true;
-		}
-		return false;
+		//if (!map.containsKey(loc)) {
+		NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
+		//CrystalNetworker.instance.addTile(wrap);
+		map.put(loc, wrap);
+		if (save)
+			NodeRechargeData.initNetworkData(((TileEntity)n).worldObj).setDirty(true);
+		return true;
+		//}
+		//return false;
 	}
 
 	private boolean removeLocation(WorldLocation loc, World world, boolean save) {
@@ -117,8 +117,15 @@ public class NodeRecharger implements TickHandler {
 	}
 
 	public NodeReceiverWrapper getWrapper(WorldLocation loc) {
-		HashMap<WorldLocation, NodeReceiverWrapper> map = nodes.get(loc.dimensionID);
-		return map != null ? map.get(loc) : null;
+		HashMap<WorldLocation, NodeReceiverWrapper> map = this.getOrCreateMap(loc.dimensionID);
+		NodeReceiverWrapper wrap = map.get(loc);
+		if (wrap == null) {
+			TileEntity te = loc.getTileEntity();
+			if (te instanceof INode) {
+				this.addLocation(loc, (INode)te, true);
+			}
+		}
+		return wrap;
 	}
 
 	@Override

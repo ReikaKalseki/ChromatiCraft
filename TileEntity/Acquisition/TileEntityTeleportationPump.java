@@ -32,6 +32,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -42,7 +43,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
-public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler {
+public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile {
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
 	private HashMap<Fluid, ArrayList<Coordinate>> fluids = new HashMap();
@@ -124,24 +125,24 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
 		switch(slot) {
-		case 0:
-			return this.getStoredEnergy() == 0;
-		case 1:
-			return FluidContainerRegistry.isFilledContainer(is);
-		default:
-			return false;
+			case 0:
+				return this.getStoredEnergy() == 0;
+			case 1:
+				return FluidContainerRegistry.isFilledContainer(is);
+			default:
+				return false;
 		}
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		switch(slot) {
-		case 0:
-			return ChromaItems.STORAGE.matchWith(is);
-		case 1:
-			return is.getItem() == Items.bucket;
-		default:
-			return false;
+			case 0:
+				return ChromaItems.STORAGE.matchWith(is);
+			case 1:
+				return is.getItem() == Items.bucket;
+			default:
+				return false;
 		}
 	}
 

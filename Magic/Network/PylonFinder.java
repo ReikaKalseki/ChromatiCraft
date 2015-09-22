@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Network;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,11 +30,15 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
+import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
+import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 public class PylonFinder {
 
@@ -42,7 +47,9 @@ public class PylonFinder {
 	private final MultiMap<WorldLocation, WorldLocation> duplicates = new MultiMap(new MultiMap.HashSetFactory());
 
 	private final CrystalNetworker net;
+
 	private static final RayTracer tracer;
+	private static final SourcePrioritizer prioritizer = new SourcePrioritizer();
 
 	//private final int stepRange;
 	private final CrystalReceiver target;
@@ -173,7 +180,7 @@ public class PylonFinder {
 		}
 		for (int i = 0; i < p.nodes.size(); i++) {
 			WorldLocation loc = p.nodes.get(i);
-			TileEntity te = loc.getTileEntity();
+			CrystalNetworkTile te = this.getNetTileAt(loc, true);
 			if (te instanceof CrystalRepeater) {
 				CrystalRepeater tile = (CrystalRepeater)te;
 				tile.setSignalDepth(p.element, p.nodes.size()-1-i);
@@ -206,7 +213,7 @@ public class PylonFinder {
 	}
 
 	public boolean isComplete() {
-		return nodes.size() >= 2 && nodes.getLast().getTileEntity() instanceof CrystalSource;
+		return nodes.size() >= 2 && this.getSourceAt(nodes.getLast(), false) != null;
 	}
 
 	private void findFrom(CrystalReceiver r, int thresh) {
@@ -252,6 +259,7 @@ public class PylonFinder {
 		if (ChromaOptions.SHORTPATH.getState()) {
 			Collections.sort(li, new TransmitterSorter(r)); //basic "start with closest and work outwards" logic; A* too complex and expensive
 		}
+		Collections.sort(li, prioritizer);
 		//ReikaJavaLibrary.pConsole("Found "+li.size()+" for "+r+": "+li);
 		for (CrystalTransmitter te : li) {
 			if (this.isComplete())
@@ -308,6 +316,62 @@ public class PylonFinder {
 		suspended = true;
 	}
 	 */
+
+	static final CrystalReceiver getReceiverAt(WorldLocation loc, boolean exception) {
+		TileEntity te = loc.getTileEntity();
+		if (te instanceof CrystalReceiver) {
+			return (CrystalReceiver)te;
+		}
+		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
+			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
+			if (wrap != null) {
+				return wrap;
+			}
+		}
+		if (exception)
+			throw new IllegalStateException("How did a non-receiver tile get put in the network here?");
+		else
+			return null;
+	}
+
+	static final CrystalTransmitter getTransmitterAt(WorldLocation loc, boolean exception) {
+		TileEntity te = loc.getTileEntity();
+		if (te instanceof CrystalTransmitter) {
+			return (CrystalTransmitter)te;
+		}
+		if (exception)
+			throw new IllegalStateException("How did a non-transmitter tile get put in the network here?");
+		else
+			return null;
+	}
+
+	static final CrystalSource getSourceAt(WorldLocation loc, boolean exception) {
+		TileEntity te = loc.getTileEntity();
+		if (te instanceof CrystalSource) {
+			return (CrystalSource)te;
+		}
+		if (exception)
+			throw new IllegalStateException("How did a non-source tile get put in the network here?");
+		else
+			return null;
+	}
+
+	static final CrystalNetworkTile getNetTileAt(WorldLocation loc, boolean exception) {
+		TileEntity te = loc.getTileEntity();
+		if (te instanceof CrystalNetworkTile) {
+			return (CrystalNetworkTile)te;
+		}
+		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
+			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
+			if (wrap != null) {
+				return wrap;
+			}
+		}
+		if (exception)
+			throw new IllegalStateException("How did a non-network tile get put in the network here?");
+		else
+			return null;
+	}
 
 	static boolean lineOfSight(WorldLocation l1, WorldLocation l2) {
 		return lineOfSight(l1.getWorld(), l1.xCoord, l1.yCoord, l1.zCoord, l2.xCoord, l2.yCoord, l2.zCoord);
@@ -443,4 +507,24 @@ static class ChunkRequest {
 
 }
 	  */
+
+	private static class SourcePrioritizer implements Comparator<CrystalTransmitter> {
+
+		@Override
+		public int compare(CrystalTransmitter o1, CrystalTransmitter o2) {
+			if (o1 instanceof CrystalSource && o2 instanceof CrystalSource) {
+				return ((CrystalSource)o2).getSourcePriority()-((CrystalSource)o1).getSourcePriority();
+			}
+			else if (o1 instanceof CrystalSource) {
+				return Integer.MIN_VALUE;
+			}
+			else if (o2 instanceof CrystalSource) {
+				return Integer.MAX_VALUE;
+			}
+			else {
+				return 0;
+			}
+		}
+
+	}
 }

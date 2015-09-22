@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -32,7 +33,7 @@ import Reika.DragonAPI.ModInteract.ReikaXPFluidHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCollector extends FluidIOInventoryBase {
+public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTile {
 
 	public static final int XP_PER_CHROMA = 1; //1 xp per mB of liquid
 	private static final int XP_PER_BOTTLE = 300;

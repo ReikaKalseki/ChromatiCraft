@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemChainGun;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.Items.Tools.ItemConnector;
+import Reika.ChromatiCraft.Items.Tools.ItemCrystalCard;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
@@ -122,6 +123,7 @@ public enum ChromaItems implements ItemEnum {
 	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class),
 	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
 	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
+	CARD(31, false,			"chroma.card",			ItemCrystalCard.class),
 	;
 
 	private final int index;

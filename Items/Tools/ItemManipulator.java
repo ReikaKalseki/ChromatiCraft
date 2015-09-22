@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -102,6 +103,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			ir.isEmitting = !ir.isEmitting;
 			return true;
 		}
+		if (t == ChromaTiles.CONSOLE) {
+			TileEntityCrystalConsole tc = (TileEntityCrystalConsole)tile;
+			tc.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
+			return true;
+		}
 		if (t == ChromaTiles.PYLONTURBO) {
 			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)tile;
 			if (te.trigger(ep)) {
@@ -111,11 +117,13 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 		if (t == ChromaTiles.WINDOW) {
 			TileEntityTransportWindow ir = (TileEntityTransportWindow)tile;
-			if (ep.isSneaking()) {
-				ir.renderBackPane = !ir.renderBackPane;
-			}
-			else {
-				ir.renderTexture = !ir.renderTexture;
+			if (!ir.isUnMineable()) {
+				if (ep.isSneaking()) {
+					ir.renderBackPane = !ir.renderBackPane;
+				}
+				else {
+					ir.renderTexture = !ir.renderTexture;
+				}
 			}
 			return true;
 		}

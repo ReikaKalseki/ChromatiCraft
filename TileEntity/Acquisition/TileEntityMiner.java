@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -51,7 +52,7 @@ import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityMiner extends ChargedCrystalPowered {
+public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile {
 
 	private boolean digging = false;
 	private boolean digReady = false;

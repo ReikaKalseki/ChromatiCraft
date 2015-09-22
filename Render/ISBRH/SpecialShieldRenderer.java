@@ -87,22 +87,28 @@ public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
 
 		v5.setColorOpaque_F(255, 255, 255);
 		IIcon ico = b.getIcon(world, x, y, z, 0);
-		rb.renderFaceYNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y-1, z, 0))
+			rb.renderFaceYNeg(b, x, y, z, ico);
 
 		ico = b.getIcon(world, x, y, z, 1);
-		rb.renderFaceYPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y+1, z, 1))
+			rb.renderFaceYPos(b, x, y, z, ico);
 
 		ico = b.getIcon(world, x, y, z, 2);
-		rb.renderFaceZNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y, z-1, 2))
+			rb.renderFaceZNeg(b, x, y, z, ico);
 
 		ico = b.getIcon(world, x, y, z, 3);
-		rb.renderFaceZPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y, z+1, 3))
+			rb.renderFaceZPos(b, x, y, z, ico);
 
 		ico = b.getIcon(world, x, y, z, 4);
-		rb.renderFaceXNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x-1, y, z, 4))
+			rb.renderFaceXNeg(b, x, y, z, ico);
 
 		ico = b.getIcon(world, x, y, z, 5);
-		rb.renderFaceXPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x+1, y, z, 5))
+			rb.renderFaceXPos(b, x, y, z, ico);
 
 		if (meta%8 <= 1) {
 			v5.addTranslation(x, y, z);

@@ -11,20 +11,13 @@ package Reika.ChromatiCraft.Magic.Network;
 
 import java.util.List;
 
-import net.minecraft.tileentity.TileEntity;
-
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
-import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
-import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
-import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 public class CrystalFlow extends CrystalPath {
 
@@ -52,16 +45,16 @@ public class CrystalFlow extends CrystalPath {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
 		WorldLocation locs = nodes.get(nodes.size()-2);
-		ImmutableTriple<Double, Double, Double> offset = this.getReceiverAt(locs).getTargetRenderOffset(element);
+		ImmutableTriple<Double, Double, Double> offset = PylonFinder.getReceiverAt(locs, true).getTargetRenderOffset(element);
 		double sx = offset != null ? offset.left : 0;
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
-		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).addTarget(locs, element, sx, sy, sz);
+		PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true).addTarget(locs, element, sx, sy, sz);
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				offset = this.getReceiverAt(tg).getTargetRenderOffset(element);
+				offset = PylonFinder.getReceiverAt(tg, true).getTargetRenderOffset(element);
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
@@ -72,20 +65,6 @@ public class CrystalFlow extends CrystalPath {
 				te.markSource(src);
 			}*/
 		}
-	}
-
-	private CrystalReceiver getReceiverAt(WorldLocation loc) {
-		TileEntity te = loc.getTileEntity();
-		if (te instanceof CrystalReceiver) {
-			return (CrystalReceiver)te;
-		}
-		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(te)) {
-			NodeReceiverWrapper wrap = NodeRecharger.instance.getWrapper(loc);
-			if (wrap != null) {
-				return wrap;
-			}
-		}
-		throw new IllegalStateException("How did a non-receiver tile get put in the network here?");
 	}
 
 	private String getTiles() {
@@ -106,9 +85,9 @@ public class CrystalFlow extends CrystalPath {
 	}
 
 	public void resetTiles() {
-		((CrystalSource)nodes.get(nodes.size()-1).getTileEntity()).removeTarget(nodes.get(nodes.size()-2), element);
+		PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true).removeTarget(nodes.get(nodes.size()-2), element);
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
 				((CrystalTransmitter)te).removeTarget(tg, element);
@@ -122,7 +101,7 @@ public class CrystalFlow extends CrystalPath {
 	private int getMaxFlow() {
 		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
 		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = (CrystalNetworkTile)nodes.get(i).getTileEntity();
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			max = Math.min(max, te.maxThroughput());
 		}
 		return max;

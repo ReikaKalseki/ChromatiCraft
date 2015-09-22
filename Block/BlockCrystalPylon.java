@@ -81,7 +81,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 		else if (te instanceof TileEntityDimensionCore) {
 			return super.getPlayerRelativeBlockHardness(ep, world, x, y, z)*8;
 		}
-		return te.isPlacer(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
+		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 
 	@Override

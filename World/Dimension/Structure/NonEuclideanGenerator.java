@@ -312,6 +312,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 				((TileEntityTransportWindow)te).setFacing(direction);
 				((TileEntityTransportWindow)te).renderBackPane = false;
 				((TileEntityTransportWindow)te).renderTexture = false;
+				((TileEntityTransportWindow)te).setUnmineable(true);
 
 				if (other.getBlock(world) == Blocks.air)
 					other.setBlock(world, ChromaTiles.WINDOW.getBlock(), ChromaTiles.WINDOW.getBlockMetadata());

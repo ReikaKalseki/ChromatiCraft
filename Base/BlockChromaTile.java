@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
@@ -100,6 +101,17 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		this.setCreativeTab(null);
 		blockHardness = 5;
 		blockResistance = 40;//10;
+	}
+
+	@Override
+	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
+		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
+		if (te instanceof OwnedTile) {
+			OwnedTile o = (OwnedTile)te;
+			if (o.onlyAllowOwnersToMine() && !o.isOwnedByPlayer(ep))
+				return -1;
+		}
+		return super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 
 	@Override
@@ -447,8 +459,8 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@Override
 	@ModDependent(ModList.WAILA)
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
-		if (/*LegacyWailaHelper.cacheAndReturn(acc)*/!currenttip.isEmpty())
-			return currenttip;
+		//if (/*LegacyWailaHelper.cacheAndReturn(acc)*/!currenttip.isEmpty())
+		//	return currenttip;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)acc.getTileEntity();
 		te.syncAllData(false);
 		if (te instanceof TileEntityRift) {

@@ -14,7 +14,6 @@ import java.util.Random;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -50,22 +49,23 @@ public class GlowKnot {
 		}
 	}
 
-	public void render(double x, double y, double z, int color) {
+	public void render(double x, double y, double z, int color, boolean inworld) {
 		GL11.glDisable(GL11.GL_LIGHTING);
-		if (MinecraftForgeClient.getRenderPass() == 1) {
-			Tessellator v5 = Tessellator.instance;
-			spline.render(v5, 0.5, 0.5, 0.5, color, true, true);
+		GL11.glEnable(GL11.GL_BLEND);
+		Tessellator v5 = Tessellator.instance;
+		spline.render(v5, 0.5, 0.5, 0.5, color, inworld, true);
 
-			IIcon ico = ChromaIcons.FADE.getIcon();
-			float u = ico.getMinU();
-			float v = ico.getMinV();
-			float du = ico.getMaxU();
-			float dv = ico.getMaxV();
-			BlendMode.ADDITIVEDARK.apply();
-			ReikaTextureHelper.bindTerrainTexture();
-			GL11.glPushMatrix();
-			GL11.glTranslated(0.5, 0.5, 0.5);
+		IIcon ico = ChromaIcons.FADE.getIcon();
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+		BlendMode.ADDITIVEDARK.apply();
+		ReikaTextureHelper.bindTerrainTexture();
+		GL11.glPushMatrix();
+		GL11.glTranslated(0.5, 0.5, 0.5);
 
+		if (inworld) {
 			RenderManager rm = RenderManager.instance;
 			double dx = x-RenderManager.renderPosX;
 			double dy = y-RenderManager.renderPosY;
@@ -73,24 +73,24 @@ public class GlowKnot {
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
 			GL11.glRotated(angs[2], 0, 1, 0);
 			GL11.glRotated(90-angs[1], 1, 0, 0);
-
-			double d = 1.25;
-
-			double pz = 0.05;
-
-			v5.startDrawingQuads();
-			int a = 160;
-			v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a/255F), a);
-			v5.addVertexWithUV(-d, -d, pz, u, v);
-			v5.addVertexWithUV(d, -d, pz, du, v);
-			v5.addVertexWithUV(d, d, pz, du, dv);
-			v5.addVertexWithUV(-d, d, pz, u, dv);
-			v5.draw();
-
-			BlendMode.DEFAULT.apply();
-			GL11.glPopMatrix();
 		}
-		spline.update();
+
+		double d = 1.25;
+
+		double pz = 0.05;
+
+		v5.startDrawingQuads();
+		int a = 160;
+		v5.setColorRGBA_I(ReikaColorAPI.getColorWithBrightnessMultiplier(color, a/255F), a);
+		v5.addVertexWithUV(-d, -d, pz, u, v);
+		v5.addVertexWithUV(d, -d, pz, du, v);
+		v5.addVertexWithUV(d, d, pz, du, dv);
+		v5.addVertexWithUV(-d, d, pz, u, dv);
+		v5.draw();
+
+		BlendMode.DEFAULT.apply();
+		GL11.glPopMatrix();
+
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
@@ -135,9 +135,13 @@ public class GlowKnot {
 		}
 
 		private void move(double dr, double dt, double dp) {
-			radius += 0.025*Math.signum(dr);//Math.max(0.0125, Math.abs(dr)*0.03125*0.03125*0.03125)*Math.signum(dr);
-			theta += 0.25*Math.signum(dt);//Math.max(0.125, Math.abs(dt)*0.03125*0.03125*0.03125)*Math.signum(dt);
-			phi += 0.25*Math.signum(dp);//Math.max(0.125, Math.abs(dp)*0.03125*0.03125*0.03125)*Math.signum(dp);
+			//ReikaJavaLibrary.pConsole(this+":"+dr+":"+this.atTarget(dr, dt, dp));
+			if (Math.abs(dr) >= 0.05)
+				radius += 0.025*Math.signum(dr);//Math.max(0.0125, Math.abs(dr)*0.03125*0.03125*0.03125)*Math.signum(dr);
+			if (Math.abs(dt) >= 1)
+				theta += 0.25*Math.signum(dt);//Math.max(0.125, Math.abs(dt)*0.03125*0.03125*0.03125)*Math.signum(dt);
+			if (Math.abs(dp) >= 1)
+				phi += 0.25*Math.signum(dp);//Math.max(0.125, Math.abs(dp)*0.03125*0.03125*0.03125)*Math.signum(dp);
 		}
 
 		private boolean atTarget(double dr, double dt, double dp) {
@@ -149,6 +153,10 @@ public class GlowKnot {
 			targetTheta = rand.nextDouble()*360;
 			targetPhi = rand.nextDouble()*360;
 		}
+	}
+
+	public void update() {
+		spline.update();
 	}
 
 }

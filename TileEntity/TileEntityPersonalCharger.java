@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -30,7 +31,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint {
+public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint, OwnedTile {
 
 	private CrystalElement color = CrystalElement.WHITE;
 	private boolean hasMultiblock = false;

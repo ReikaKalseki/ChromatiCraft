@@ -81,7 +81,7 @@ public class MazePiece extends StructurePiece {
 					int meta = edge ? bk.metadata : 0;
 					if (bk.blockID == ChromaBlocks.SHIFTLOCK.getBlockInstance()) {
 						ForgeDirection dir = ReikaDirectionHelper.getSideOfBox(i, j, k, false, size);
-						((ShiftMazeGenerator)parent).cacheLock(position, dir, dx, dy, dz);
+						((ShiftMazeGenerator)parent).cacheLock(/*position, dir, */dx, dy, dz);
 					}
 					world.setBlock(dx, dy, dz, b, meta);
 				}

@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Chroma
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalAltarRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalGlassRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalGlowRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalStoneRecipe;
@@ -221,6 +222,8 @@ public class RecipesCastingTable {
 			}
 
 			this.addRecipe(new CrystalAltarRecipe(e));
+
+			this.addRecipe(new CrystalGlassRecipe(e));
 		}
 		this.addRecipe(new CompoundRelayRecipe(ChromaBlocks.RELAY.getStackOfMetadata(16), new ItemStack(Items.diamond)));
 
@@ -598,6 +601,7 @@ public class RecipesCastingTable {
 	}
 
 	public void reload() {
+		ChromatiCraft.logger.log("Reloading casting recipes.");
 		recipes.clear();
 		recipeIDs.clear();
 		maxID = 0;
@@ -608,6 +612,7 @@ public class RecipesCastingTable {
 		for (CastingRecipe c : APIrecipes) {
 			this.addRecipe(c);
 		}
+		ChromatiCraft.logger.log("Finished reloading casting recipes.");
 	}
 
 }

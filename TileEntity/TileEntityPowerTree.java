@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -49,7 +50,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery {
+public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, Integer> yOffsets = new EnumMap(CrystalElement.class);

@@ -21,11 +21,14 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+import paulscode.sound.StreamThread;
+import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
@@ -48,10 +51,20 @@ public class ChromaDimensionTicker implements TickHandler {
 
 	@SideOnly(Side.CLIENT)
 	private void registerMusic() {
-		music.add(new CustomMusic("Reika/ChromatiCraft/Sounds/dimension_score.ogg"));
+		this.addMusic("singularity");
+		this.addMusic("nightfall");
+		this.addMusic("luminescence");
+		this.addMusic("skyline");
+		this.addMusic("hologram");
+	}
 
-		for (CustomMusic s : music) {
-			DirectResourceManager.getInstance().registerCustomPath(s.path, SoundCategory.MUSIC, true);
+	@SideOnly(Side.CLIENT)
+	private void addMusic(String track) {
+		String path = MusicLoader.musicPath+track+".ogg";
+		CustomMusic mus = new CustomMusic(path);
+		if (mus.resourceExists()) {
+			music.add(mus);
+			DirectResourceManager.getInstance().registerCustomPath(mus.path, SoundCategory.MUSIC, true);
 		}
 	}
 
@@ -69,7 +82,8 @@ public class ChromaDimensionTicker implements TickHandler {
 				}
 				break;
 			case CLIENT:
-				this.playMusic();
+				if (!music.isEmpty())
+					this.playMusic();
 				break;
 			default:
 				break;
@@ -80,13 +94,19 @@ public class ChromaDimensionTicker implements TickHandler {
 	private void playMusic() {
 		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == dimID) {
 			SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
+			StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
+			if (th == null || !th.isAlive()) {
+				sh.stopSounds();
+				ReikaSoundHelper.restartStreamingSystem(sh);
+			}
 			for (CustomMusic s : music) {
+				//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
 				if (sh.isSoundPlaying(s)) {
 					return;
 				}
 			}
 			CustomMusic s = music.get(rand.nextInt(music.size()));
-			sh.playSound(s);
+			s.play(sh);
 		}
 	}
 

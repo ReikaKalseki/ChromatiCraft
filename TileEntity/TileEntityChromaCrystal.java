@@ -10,10 +10,11 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 
-public class TileEntityChromaCrystal extends TileEntityChromaticBase {
+public class TileEntityChromaCrystal extends TileEntityChromaticBase implements OwnedTile {
 
 	private int omega;
 	private int torque;

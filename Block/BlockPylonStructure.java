@@ -86,7 +86,6 @@ public class BlockPylonStructure extends Block {
 		if (meta == 6) {
 			switch(s) {
 				case 0:
-					return icons[0][0];
 				case 1:
 					if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z+1) == this)
 						return icons[meta][0];

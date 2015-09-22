@@ -18,6 +18,7 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 
 	public boolean drain(CrystalElement e, int amt);
 
+	/** Higher number = higher priority */
 	public int getSourcePriority();
 
 	public boolean canTransmitTo(CrystalReceiver te);

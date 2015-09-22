@@ -13,6 +13,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
@@ -77,11 +78,14 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimension(World world) {
+		if (world instanceof WorldServer)
+			((WorldServer)world).flush(); //Hopefully kill all I/O
 		getChunkProvider(world).clearCaches();
+		System.gc();
 		String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 		File dim = new File(path+"/DIM"+ExtraChromaIDs.DIMID.getValue());
 		if (dim.exists() && dim.isDirectory()) {
-			ReikaFileReader.deleteFolderWithContents(dim, 100);
+			boolean del = ReikaFileReader.deleteFolderWithContents(dim, 100);
 		}
 	}
 

@@ -20,6 +20,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -28,7 +29,7 @@ import Reika.DragonAPI.Instantiable.Data.Perimeter;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalFence extends TileEntityRelayPowered {
+public class TileEntityCrystalFence extends TileEntityRelayPowered implements OwnedTile {
 
 	private Perimeter fence = new Perimeter().disallowVertical();
 	private HashMap<Integer, Integer> active = new HashMap();

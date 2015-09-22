@@ -56,13 +56,15 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		attackTimer.update();
-		if (attackTimer.checkCap()) {
-			if (world.canBlockSeeTheSky(x, y+1, z))
-				this.attackEntities(world, x, y, z);
-		}
+		if (!world.isRemote) {
+			attackTimer.update();
+			if (attackTimer.checkCap()) {
+				if (world.canBlockSeeTheSky(x, y+1, z))
+					this.attackEntities(world, x, y, z);
+			}
 
-		this.decrementTicks();
+			this.decrementTicks();
+		}
 	}
 
 	private void decrementTicks() {

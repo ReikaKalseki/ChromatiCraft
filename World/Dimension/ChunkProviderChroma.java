@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalPit;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
@@ -184,6 +185,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private void createDecorators() {
 		decorators.add(new WorldGenFissure());
 		decorators.add(new WorldGenChromaMeteor());
+		decorators.add(new WorldGenCrystalPit());
 		decorators.add(new WorldGenTreeCluster());
 		decorators.add(new WorldGenLightedTree());
 		decorators.add(new WorldGenFloatstone());
@@ -724,6 +726,14 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	/**
+	 * Returns if the IChunkProvider supports saving.
+	 */
+	public boolean canSave()
+	{
+		return false;
+	}
+
+	/**
 	 * Two modes of operation: if passed true, save all Chunks in one go.  If passed false, save up to two chunks.
 	 * Return true if all chunks have been saved.
 	 */
@@ -742,14 +752,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 	 * Unloads chunks that are marked to be unloaded. This is not guaranteed to unload every such chunk.
 	 */
 	public boolean unloadQueuedChunks()
-	{
-		return false;
-	}
-
-	/**
-	 * Returns if the IChunkProvider supports saving.
-	 */
-	public boolean canSave()
 	{
 		return false;
 	}

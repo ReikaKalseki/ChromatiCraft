@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -30,7 +31,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile, SneakPop {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile, SneakPop, OwnedTile {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;

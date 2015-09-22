@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
+import Reika.ChromatiCraft.Block.BlockCrystalConsole;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
 import Reika.ChromatiCraft.Block.BlockCrystalPlant;
@@ -49,6 +50,7 @@ import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar;
+import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalLamp;
@@ -170,7 +172,9 @@ public enum ChromaBlocks implements BlockEnum {
 	TELEPORT(BlockTeleport.class,												"chroma.teleportblock"),
 	SPECIALSHIELD(BlockSpecialShield.class,		ItemBlockStructShield.class,	"chroma.specialshield"),
 	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar"),
-	DOOR(BlockChromaDoor.class,													"chroma.door");
+	DOOR(BlockChromaDoor.class,													"chroma.door"),
+	GLASS(BlockCrystalGlass.class,				ItemBlockDyeTypes.class,		"chroma.glass"),
+	CONSOLE(BlockCrystalConsole.class,											"chroma.console");
 
 	private Class blockClass;
 	private String blockName;
@@ -380,6 +384,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case SHIFTKEY:
 			case TELEPORT:
 			case DOOR:
+			case DIMDATA:
+			case CONSOLE:
 				return false;
 			default:
 				return true;

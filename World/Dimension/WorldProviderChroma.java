@@ -9,12 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -125,12 +128,6 @@ public class WorldProviderChroma extends WorldProvider {
 	}
 
 	@Override
-	public boolean canMineBlock(EntityPlayer player, int x, int y, int z)
-	{
-		return worldObj.canMineBlockBody(player, x, y, z);
-	}
-
-	@Override
 	public String getWelcomeMessage()
 	{
 		return "";
@@ -229,6 +226,22 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public int getAverageGroundLevel() {
 		return super.getAverageGroundLevel()+ChunkProviderChroma.VERTICAL_OFFSET;
+	}
+
+	@Override
+	public boolean canMineBlock(EntityPlayer player, int x, int y, int z) {
+		if (player.capabilities.isCreativeMode)
+			return true;
+		Block b = worldObj.getBlock(x, y, z);
+		if (b instanceof SemiUnbreakable) {
+			return !((SemiUnbreakable)b).isUnbreakable(worldObj, x, y, z, worldObj.getBlockMetadata(x, y, z));
+		}
+		return super.canMineBlock(player, x, y, z);
+	}
+
+	@Override
+	public ChunkCoordinates getSpawnPoint() {
+		return new ChunkCoordinates(0, 1024, 0);
 	}
 
 }

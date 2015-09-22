@@ -56,7 +56,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	@Override
 	public final Block getTileEntityBlockID() {
-		return ChromaTiles.TEList[this.getIndex()].getBlock();
+		return this.getTile().getBlock();
 	}
 
 	public final int getIndex() {
@@ -136,11 +136,19 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
 	}
 
+	public int getIconState() {
+		return 0;
+	}
+
 	public final boolean isOwnedByPlayer(EntityPlayer ep) {
 		return owners.contains(ep.getUniqueID());
 	}
 
-	public int getIconState() {
-		return 0;
+	public boolean onlyAllowOwnersToUse() {
+		return false;
+	}
+
+	public boolean onlyAllowOwnersToMine() {
+		return true;
 	}
 }

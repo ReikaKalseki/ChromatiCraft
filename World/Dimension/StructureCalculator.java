@@ -128,8 +128,8 @@ public class StructureCalculator implements Runnable {
 			}
 		}
 
-		int structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 10000);
-		int structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 10000);
+		int structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 4000); //was 10K
+		int structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 4000);
 		float structureAngleOrigin = rand.nextFloat()*360;
 
 		for (StructurePair s : new ArrayList<StructurePair>(ChunkProviderChroma.structures)) {
@@ -198,7 +198,7 @@ public class StructureCalculator implements Runnable {
 		int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 		s.generator.startCalculate(s.color, x, z, rand);
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
-			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getCentralBlockCoords();
+			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ();
 			ReikaJavaLibrary.pConsole(sg);
 		}
 	}

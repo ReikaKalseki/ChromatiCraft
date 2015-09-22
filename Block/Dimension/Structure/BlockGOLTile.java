@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -28,11 +27,13 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTy
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public class BlockGOLTile extends BlockContainer {
+public class BlockGOLTile extends Block {
 
-	private final IIcon[] icons = new IIcon[2];
+	private final IIcon[] icons = new IIcon[4];
 
 	public BlockGOLTile(Material mat) {
 		super(mat);
@@ -43,13 +44,20 @@ public class BlockGOLTile extends BlockContainer {
 
 	@Override
 	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
+		if (iba.getBlockMetadata(x, y, z) == 3)
+			return 15;
 		TileEntity te = iba.getTileEntity(x, y, z);
-		return te instanceof GOLTile && ((GOLTile)te).isActive() ? 15 : 0;
+		return te instanceof GOLTile && ((GOLTile)te).isActive() ? 15 : 6;
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta) {
-		return new GOLTile();
+	public boolean hasTileEntity(int meta) {
+		return meta < 2;
+	}
+
+	@Override
+	public TileEntity createTileEntity(World world, int meta) {
+		return meta < 2 ? new GOLTile() : null;
 	}
 
 	@Override
@@ -68,7 +76,7 @@ public class BlockGOLTile extends BlockContainer {
 	@Override
 	public void onFallenUpon(World world, int x, int y, int z, Entity e, float d) {
 		if (!world.isRemote && e instanceof EntityPlayer && d > 1)
-			this.activate(world, x, y, z);
+			this.toggle(world, x, y, z);
 	}
 
 	@Override
@@ -77,14 +85,36 @@ public class BlockGOLTile extends BlockContainer {
 	}
 
 	private void activate(World world, int x, int y, int z) {
+		if (world.getBlockMetadata(x, y, z) >= 2)
+			return;
 		GOLTile te = (GOLTile)world.getTileEntity(x, y, z);
 		te.setActive(true);
 		//te.scheduleRecalculation(5);
 	}
 
 	private void toggle(World world, int x, int y, int z) {
+		if (world.getBlockMetadata(x, y, z) >= 2)
+			return;
 		GOLTile te = (GOLTile)world.getTileEntity(x, y, z);
-		te.setActive(!te.isActive());
+		if (te.getGenerator() == null) {
+			ChromatiCraft.logger.logError("No structure for tile at "+x+", "+y+", "+z+", UID="+te.uid+"!?!");
+			return;
+		}
+		boolean flag = true;
+		if (te.isActive()) {
+			ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.click", 0.75F, 0.65F);
+			te.getGenerator().deactivateTile(world, x, y, z);
+			world.setBlockMetadataWithNotify(x, y+GOLGenerator.ROOM_HEIGHT, z, 2, 3);
+		}
+		else {
+			flag = te.getGenerator().activateTile(world, x, y, z);
+			if (flag)
+				ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.click", 0.75F, 0.75F);
+			else
+				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
+		}
+		if (flag)
+			te.setActive(!te.isActive());
 		//te.scheduleRecalculation(5);
 	}
 
@@ -92,15 +122,23 @@ public class BlockGOLTile extends BlockContainer {
 	public void registerBlockIcons(IIconRegister ico) {
 		icons[0] = ico.registerIcon("chromaticraft:dimstruct/gol_off");
 		icons[1] = ico.registerIcon("chromaticraft:dimstruct/gol_on");
+
+		icons[2] = ico.registerIcon("chromaticraft:dimstruct/gol_mem_off");
+		icons[3] = ico.registerIcon("chromaticraft:dimstruct/gol_mem_on");
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
+		if (meta >= 2)
+			return icons[meta];
 		return icons[0];
 	}
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
+		int meta = iba.getBlockMetadata(x, y, z);
+		if (meta >= 2)
+			return icons[meta];
 		TileEntity te = iba.getTileEntity(x, y, z);
 		if (te instanceof GOLTile) {
 			return ((GOLTile)te).isActive() ? icons[1] : icons[0];
@@ -136,7 +174,8 @@ public class BlockGOLTile extends BlockContainer {
 		}
 
 		public void reset() {
-			this.setActive(defaultActive);
+			this.setActive(defaultActive && false);
+			isTicking = false;
 		}
 
 		@Override
@@ -176,6 +215,9 @@ public class BlockGOLTile extends BlockContainer {
 		private void setActive(boolean ac) {
 			isActive = ac;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			if (ac) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord+GOLGenerator.ROOM_HEIGHT, zCoord, 3, 3);
+			}
 			//this.updateNeighbors();
 		}
 

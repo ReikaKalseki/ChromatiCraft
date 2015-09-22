@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
+import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -33,6 +34,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
@@ -142,7 +144,8 @@ public enum ChromaTiles {
 	MUSIC("chroma.music",				ChromaBlocks.TILECRYSTAL,	TileEntityCrystalMusic.class,		2, "RenderCrystalMusic"),
 	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG),
 	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger"),
-	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret");
+	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret"),
+	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole");
 
 	private final Class tile;
 	private final String name;
@@ -219,6 +222,7 @@ public enum ChromaTiles {
 			case PERSONAL:
 			case PYLONTURBO:
 			case TURRET:
+			case CONSOLE:
 				//case TANK:
 				//case ITEMRIFT:
 				return true;
@@ -480,7 +484,7 @@ public enum ChromaTiles {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == ChromaTiles.TANK || this == ChromaTiles.TABLE;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE;
 	}
 
 	public boolean isPlant() {
@@ -535,6 +539,12 @@ public enum ChromaTiles {
 
 	public boolean isTextureFace() {
 		return this == ChromaTiles.PERSONAL || this == ChromaTiles.AUTOMATOR;
+	}
+
+	public boolean needsSilkTouch() {
+		if (this == DIMENSIONCORE)
+			return false;
+		return block.getBlockInstance() instanceof BlockCrystalTile;
 	}
 
 }

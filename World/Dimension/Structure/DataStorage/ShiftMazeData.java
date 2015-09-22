@@ -9,12 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
@@ -24,19 +21,19 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class ShiftMazeData extends StructureData {
 
-	private List<MazeState> paths;
 	private int state = 0;
+	private final int length;
+	private final ShiftMazeGenerator shift;
 
-	private int width;
-
-	public ShiftMazeData(ShiftMazeGenerator gen) {
+	public ShiftMazeData(ShiftMazeGenerator gen, int len) {
 		super(gen);
+		length = len;
+		shift = (ShiftMazeGenerator)generator;
 	}
 
 	@Override
 	public void load() {
-		ShiftMazeGenerator shf = (ShiftMazeGenerator)generator;
-		paths = shf.getStates();
+
 	}
 
 	@Override
@@ -45,31 +42,26 @@ public class ShiftMazeData extends StructureData {
 	}
 
 	private void cycle(World world) {
-		MazeState last = paths.get(state);
-		state = (state+1)%paths.size();
-		MazeState active = paths.get(state);
-		for (int i = 0; i < width; i++) {
-			for (int k = 0; k < width; k++) {
-				for (int n = 2; n < 6; n++) {
-					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[n];
-					if (last.isPositionOpen(i, k, dir) && !active.isPositionOpen(i, k, dir)) {
-						this.toggleLock(world, i, k, dir, false);
-					}
-					else if (!last.isPositionOpen(i, k, dir) && active.isPositionOpen(i, k, dir)) {
-						this.toggleLock(world, i, k, dir, true);
-					}
-				}
+		MazeState last = shift.getState(state);
+		state = (state+1)%length;
+		MazeState active = shift.getState(state);
+		for (Coordinate c : shift.getLocks()) {
+			int x = c.xCoord;
+			int z = c.zCoord;
+			if (last.isPositionOpen(x, z) && !active.isPositionOpen(x, z)) {
+				this.toggleLock(world, c, false);
+			}
+			else if (!last.isPositionOpen(x, z) && active.isPositionOpen(x, z)) {
+				this.toggleLock(world, c, true);
 			}
 		}
 	}
 
-	private void toggleLock(World world, int i, int k, ForgeDirection dir, boolean open) {
-		for (Coordinate c : ((ShiftMazeGenerator)generator).getLocks(i, k, dir)) {
-			int meta = open ? 1 : 0;
-			c.setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), meta);
-			c.triggerBlockUpdate(world, false);
-			ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, Blocks.stone);
-		}
+	private void toggleLock(World world, Coordinate c, boolean open) {
+		int meta = open ? 1 : 0;
+		c.setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), meta);
+		c.triggerBlockUpdate(world, false);
+		ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, Blocks.stone);
 	}
 
 }

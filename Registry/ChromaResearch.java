@@ -155,6 +155,7 @@ public enum ChromaResearch implements ProgressElement {
 	PORTAL(			ChromaBlocks.PORTAL,											ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	COLORALTAR(		ChromaBlocks.COLORALTAR,	CrystalElement.WHITE.ordinal(),		ResearchLevel.ENERGYEXPLORE),
 	DOOR(			ChromaBlocks.DOOR,												ResearchLevel.BASICCRAFT),
+	GLASS(			ChromaBlocks.GLASS,			CrystalElement.BLUE.ordinal(),		ResearchLevel.BASICCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -218,7 +219,7 @@ public enum ChromaResearch implements ProgressElement {
 	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
 	LEECH(			Chromabilities.LEECH),
 	FLOAT(			Chromabilities.FLOAT),
-	SPAWNERSEE(		Chromabilities.SPAWNERSEE),
+	SPAWNERSEE(		Chromabilities.SPAWNERSEE,					ResearchLevel.ENDGAME),
 	BREADCRUMB(		Chromabilities.BREADCRUMB),
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
 	DIMPING(		Chromabilities.DIMPING,						ResearchLevel.ENDGAME),
@@ -324,6 +325,13 @@ public enum ChromaResearch implements ProgressElement {
 		iconItem = ChromaTiles.RITUAL.getCraftedProduct();
 		pageTitle = c.getDisplayName();
 		Collection<ProgressStage> p = AbilityHelper.instance.getProgressFor(c);
+		if (rl == ResearchLevel.PYLONCRAFT) {
+			for (ProgressStage ps : p) {
+				if (ps.isGatedAfter(ProgressStage.DIMENSION)) {
+					throw new RegistrationException(ChromatiCraft.instance, "Ability fragment "+c+" gated behind "+ps+" but is only level "+rl+"!");
+				}
+			}
+		}
 		progress = p.toArray(new ProgressStage[p.size()]);
 		level = rl;
 		ability = c;
@@ -575,6 +583,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == COLORALTAR)
 			return true;
 		if (this == DOOR)
+			return true;
+		if (this == GLASS)
 			return true;
 		return false;
 	}

@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
@@ -41,6 +42,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -142,6 +144,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 			if (!ep.isSneaking()) {
 				((TileEntityCrystalRepeater)te).findFirstValidSide();
 			}
+		}
+		if (m == ChromaTiles.CONSOLE) {
+			((TileEntityCrystalConsole)te).placedDir = ReikaEntityHelper.getDirectionFromEntityLook(ep, false).getOpposite();
 		}
 		if (te instanceof NBTTile && is.stackTagCompound != null) {
 			((NBTTile)te).setDataFromItemStackTag(is);

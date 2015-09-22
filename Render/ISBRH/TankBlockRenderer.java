@@ -42,8 +42,8 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 
 		boolean render5 = b.renderCentralTextureForItem(metadata);
 
-		IIcon ico = b.getIconForEdge(0);
-		IIcon ico2 = b.getIconForEdge(5);
+		IIcon ico = b.getIconForEdge(metadata, 0);
+		IIcon ico2 = b.getIconForEdge(metadata, 5);
 		float u = ico.getMinU();
 		float du = ico.getMaxU();
 		float v = ico.getMinV();
@@ -159,7 +159,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.UP.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -182,7 +182,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.DOWN.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -204,7 +204,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.EAST.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -225,7 +225,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.WEST.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -246,7 +246,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.SOUTH.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -267,7 +267,7 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 			if (block.shouldSideBeRendered(world, x, y, z, ForgeDirection.NORTH.ordinal()))
 				for (int i = 0; i < li.size(); i++) {
 					int edge = li.get(i);
-					IIcon ico = b.getIconForEdge(edge);
+					IIcon ico = b.getIconForEdge(world, x, y, z, edge);
 					float u = ico.getMinU();
 					float du = ico.getMaxU();
 					float v = ico.getMinV();
@@ -305,26 +305,26 @@ public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
 	private void setFaceBrightness(Tessellator v5, ForgeDirection dir) {
 		float f = 1;
 		switch(dir) {
-		case DOWN:
-			f = 0.4F;
-			break;
-		case EAST:
-			f = 0.5F;
-			break;
-		case NORTH:
-			f = 0.65F;
-			break;
-		case SOUTH:
-			f = 0.65F;
-			break;
-		case UP:
-			f = 1F;
-			break;
-		case WEST:
-			f = 0.5F;
-			break;
-		default:
-			break;
+			case DOWN:
+				f = 0.4F;
+				break;
+			case EAST:
+				f = 0.5F;
+				break;
+			case NORTH:
+				f = 0.65F;
+				break;
+			case SOUTH:
+				f = 0.65F;
+				break;
+			case UP:
+				f = 1F;
+				break;
+			case WEST:
+				f = 0.5F;
+				break;
+			default:
+				break;
 		}
 		v5.setColorOpaque_F(f, f, f);
 	}

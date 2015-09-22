@@ -47,12 +47,19 @@ public class GuiStructure extends GuiBookSection {
 		if (page.name().toLowerCase().contains("casting")) {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
 		}
+		if (page == ChromaResearch.TREE) {
+			array.setBlock(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
+		}
 		render = new StructureRenderer(array);
 		if (page == ChromaResearch.PYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.MINIPYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.TREE) {
+			render.addOverride(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getCraftedProduct());
+			render.addBlockHook(ChromaTiles.POWERTREE.getBlock(), new LumenTreeHook()); //Unused
 		}
 		else if (page == ChromaResearch.PORTALSTRUCT) {
 			render.addBlockHook(Blocks.bedrock, new EnderCrystalHook());
@@ -161,6 +168,9 @@ public class GuiStructure extends GuiBookSection {
 			else if (page == ChromaResearch.PORTALSTRUCT && Block.getBlockFromItem(is.getItem()) == Blocks.bedrock) {
 				is2 = ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
 			}
+			else if (page == ChromaResearch.TREE && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.PYLON.getBlockInstance()) {
+				is2 = ChromaTiles.POWERTREE.getCraftedProduct();
+			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
 			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
 			i++;
@@ -210,6 +220,15 @@ public class GuiStructure extends GuiBookSection {
 		@Override
 		public int getOffsetY() {
 			return -6;
+		}
+
+	}
+
+	private static class LumenTreeHook implements BlockChoiceHook {
+
+		@Override
+		public ItemStack getBlock(Coordinate pos, int meta) {
+			return ChromaTiles.POWERTREE.getCraftedProduct();
 		}
 
 	}

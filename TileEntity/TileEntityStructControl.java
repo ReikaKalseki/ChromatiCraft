@@ -250,6 +250,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private void endMonumentCode(World world, int x, int y, int z) {
 		monumentCount = 0;
 		monumentTick = 50;
+		triggeredMonument = false;
 		ChromaSounds.ERROR.playSoundAtBlockNoAttenuation(this, 1, 0.75F);
 	}
 

@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
@@ -66,7 +67,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"appeng.api.networking.IGridHost"})
-public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiController, IGridHost {
+public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiController, OwnedTile, IGridHost {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -270,7 +271,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	}
 
 	private boolean isRecipeReady(World world, int x, int y, int z, TileEntityCastingTable te) {
-		return te.isCrafting();
+		return te.getActiveRecipe() == recipe;
 	}
 
 	private UpdateStep prepareRecipeStep(World world, int x, int y, int z, TileEntityCastingTable te, int amt) {
@@ -402,6 +403,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 					if (rem > 0)
 						return ReikaItemHelper.getSizedItemStack(is, rem);
 				}
+				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
 			}
 			int has = ingredients.getItemCount(is);
 			if (has > 0) {
@@ -482,6 +484,11 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	@ModDependent(ModList.APPENG)
 	public void securityBreak() {
 
+	}
+
+	@Override
+	public boolean onlyAllowOwnersToUse() {
+		return true;
 	}
 
 	private static class UpdateStep {

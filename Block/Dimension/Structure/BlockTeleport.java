@@ -253,7 +253,8 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 			 */
 			if (!(destination.xCoord == 0 && destination.yCoord == 0 && destination.zCoord == 0)) //self pos
 				ReikaEntityHelper.seamlessTeleport(e, xCoord, yCoord, zCoord, xCoord+destination.xCoord, yCoord+destination.yCoord, zCoord+destination.zCoord, facing, destination.direction);
-			onTeleport((EntityPlayer)e, this);
+			if (e instanceof EntityPlayer)
+				onTeleport((EntityPlayer)e, this);
 		}
 		/*
 		private float getYaw(Entity e) {

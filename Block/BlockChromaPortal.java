@@ -23,8 +23,10 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -412,17 +414,25 @@ public class BlockChromaPortal extends Block {
 
 	public static class ChromaTeleporter extends Teleporter {
 
+		private final World world;
+
 		private ChromaTeleporter() {
 			this(ExtraChromaIDs.DIMID.getValue());
 		}
 
 		public ChromaTeleporter(int dim) {
-			super(MinecraftServer.getServer().worldServerForDimension(dim));
+			this(MinecraftServer.getServer().worldServerForDimension(dim));
+		}
+
+		private ChromaTeleporter(WorldServer world) {
+			super(world);
+			this.world = world;
 		}
 
 		@Override
 		public void placeInPortal(Entity e, double x, double y, double z, float facing) {
-			e.setLocationAndAngles(0, 1024, 0, 0, 0);
+			ChunkCoordinates p = world.getSpawnPoint();
+			e.setLocationAndAngles(p.posX, 1024, p.posZ, 0, 0);
 			this.placeInExistingPortal(e, x, y, z, facing);
 		}
 

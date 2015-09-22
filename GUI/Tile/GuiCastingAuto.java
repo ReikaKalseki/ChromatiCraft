@@ -77,7 +77,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 	}
 
 	private CastingRecipe getRecipe() {
-		return !visible.isEmpty() ? visible.get(index) : null;
+		return index >= 0 && !visible.isEmpty() ? visible.get(index) : null;
 	}
 
 	@Override
@@ -125,35 +125,35 @@ public class GuiCastingAuto extends GuiChromaBase {
 		super.actionPerformed(b);
 
 		switch(b.id) {
-		case 0:
-			if (index > 0) {
-				//subindex = 0;
-				index--;
-				number = 1;
-			}
-			break;
-		case 1:
-			if (index < visible.size()-1) {
-				//subindex = 0;
-				index++;
-				number = 1;
-			}
-			break;
+			case 0:
+				if (index > 0) {
+					//subindex = 0;
+					index--;
+					number = 1;
+				}
+				break;
+			case 1:
+				if (index < visible.size()-1) {
+					//subindex = 0;
+					index++;
+					number = 1;
+				}
+				break;
 
-		case 2:
-			if (number > 1)
-				number -= this.getIncrement();
-			if (number < 1)
-				number = 1;
-			break;
-		case 3:
-			number += this.getIncrement();
-			break;
+			case 2:
+				if (number > 1)
+					number -= this.getIncrement();
+				if (number < 1)
+					number = 1;
+				break;
+			case 3:
+				number += this.getIncrement();
+				break;
 
-		case 4:
-			if (this.getRecipe() != null)
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getIDForRecipe(this.getRecipe()), number);
-			break;
+			case 4:
+				if (this.getRecipe() != null)
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getIDForRecipe(this.getRecipe()), number);
+				break;
 		}
 	}
 
