@@ -415,7 +415,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void deleteEnd(WorldEvent.Unload evt) {
-		if (ChromaOptions.DELEND.getState()) {
+		if (ChromaOptions.DELEND.getState() && !ModList.ENDEREXPANSION.isLoaded()) {
 			if (evt.world.provider.dimensionId == 1 && !evt.world.isRemote) {
 				String path = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath().replaceAll("\\\\", "/").replaceAll("/\\./", "/");
 				File dim = new File(path+"/DIM1");
