@@ -62,6 +62,7 @@ import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.entities.monster.EntityWisp;
+import Reika.ChromatiCraft.API.Interfaces.CustomEnderDragon;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
@@ -833,7 +834,7 @@ public class ChromaticEventManager {
 	public void triggerBossProgress(LivingDeathEvent ev) {
 		if (ev.source.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)ev.source.getEntity();
-			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving.getClass().getName().equals("chylex.hee.entity.boss.EntityBossDragon")) {
+			if (ev.entityLiving instanceof EntityDragon || ev.entityLiving instanceof CustomEnderDragon) {
 				ProgressStage.KILLDRAGON.stepPlayerTo(ep);
 			}
 			else if (ev.entityLiving instanceof EntityWither) {

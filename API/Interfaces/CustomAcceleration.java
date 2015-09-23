@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.API;
+package Reika.ChromatiCraft.API.Interfaces;
 
 /** Implement this to override accelerator behavior on your TileEntity. <b>Do not use this for blacklisting.</b> Use the dedicated class for that. */
 public interface CustomAcceleration {

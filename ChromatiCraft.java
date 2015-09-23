@@ -252,13 +252,14 @@ public class ChromatiCraft extends DragonAPIMod {
 			logger.setOutput("**_Loading_Log.log");
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			MusicLoader.instance.checkAndStartDownloads();
+			MusicLoader.instance.registerAssets();
 		}
 
 		proxy.registerSounds();
 
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
+		MinecraftForge.EVENT_BUS.register(ChromaDimensionTicker.instance);
 		FMLCommonHandler.instance().bus().register(ChromaticEventManager.instance);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);

@@ -59,7 +59,6 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
-import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -93,7 +92,6 @@ import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.GameFinishedLoadingEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
@@ -129,18 +127,6 @@ public class ChromaClientEventController {
 
 	private ChromaClientEventController() {
 
-	}
-
-	@SubscribeEvent
-	public void checkMusicDownload(GameFinishedLoadingEvent evt) throws InterruptedException {
-		long time = 0;
-		long d = 100;
-		while (!MusicLoader.instance.isDownloadComplete()) {
-			if (time%5000 == 0)
-				ChromatiCraft.logger.log("Music download not yet complete. Pausing game load. Total delay: "+time+" ms.");
-			Thread.sleep(d);
-			time += d;
-		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

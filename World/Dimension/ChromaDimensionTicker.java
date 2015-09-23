@@ -22,14 +22,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import paulscode.sound.StreamThread;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -45,24 +47,16 @@ public class ChromaDimensionTicker implements TickHandler {
 	private final ArrayList<CustomMusic> music = new ArrayList();
 
 	private ChromaDimensionTicker() {
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			this.registerMusic();
+
 	}
 
+	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	private void registerMusic() {
-		this.addMusic("singularity");
-		this.addMusic("nightfall");
-		this.addMusic("luminescence");
-		this.addMusic("skyline");
-		this.addMusic("hologram");
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void addMusic(String track) {
-		String path = MusicLoader.musicPath+track+".ogg";
-		CustomMusic mus = new CustomMusic(path);
-		if (mus.resourceExists()) {
+	public void registerMusic(RemoteAssetsDownloadCompleteEvent evt) {
+		Collection<String> li = MusicLoader.instance.getMusicFiles();
+		ChromatiCraft.logger.log(li.size()+" music tracks available for the dimension: "+li);
+		for (String path : li) {
+			CustomMusic mus = new CustomMusic(path);
 			music.add(mus);
 			DirectResourceManager.getInstance().registerCustomPath(mus.path, SoundCategory.MUSIC, true);
 		}

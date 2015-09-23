@@ -38,7 +38,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.UnCopyableBlock;
+import Reika.ChromatiCraft.API.Interfaces.UnCopyableBlock;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;

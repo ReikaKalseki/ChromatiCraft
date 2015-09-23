@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.API;
+package Reika.ChromatiCraft.API.Interfaces;
 
 /** Implement this to make the duplication wand unable to copy and paste your block.
  * Implementing this is strongly recommended for blocks that form multiblock structures. */
