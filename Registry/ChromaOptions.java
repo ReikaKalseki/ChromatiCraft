@@ -59,7 +59,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	BALLLIGHTNING("Enable Ball Lightning", true),
 	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
 	RIFTLOAD("World Rifts Chunkload", false),
-	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true);
+	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
+	MUSICVOL("Dimension Music Volume", 1F);
 
 	private String label;
 	private boolean defaultState;

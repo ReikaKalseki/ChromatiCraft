@@ -59,6 +59,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper.TileXRays;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
+import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -149,9 +150,8 @@ public class ChromaClientEventController {
 	public void ensureMusic(SoundVolumeEvent evt) {
 		if (evt.sound instanceof CustomMusic) {
 			CustomMusic cm = (CustomMusic)evt.sound;
-			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.toLowerCase().contains("dimension_score")) {
-				if (evt.volume == 0)
-					evt.volume = 0.35F;
+			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.contains(MusicLoader.instance.musicPath)) {
+				evt.volume = ChromaOptions.MUSICVOL.getFloat();
 			}
 		}
 	}

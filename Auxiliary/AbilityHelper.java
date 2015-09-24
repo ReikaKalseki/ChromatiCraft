@@ -939,7 +939,7 @@ public class AbilityHelper {
 
 	public int getPlayerDashCooldown(EntityPlayer ep) {
 		Long ret = dashTime.get(ep);
-		return ret == null ? 0 : Math.max(0, (int)(ret.longValue()+50-ep.worldObj.getTotalWorldTime()));
+		return ret == null ? 0 : Math.max(0, (int)(ret.longValue()+30-ep.worldObj.getTotalWorldTime()));
 	}
 
 	public void doLumenDash(EntityPlayer ep) {

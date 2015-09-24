@@ -40,9 +40,9 @@ public class WorldProviderChroma extends WorldProvider {
 	protected void generateLightBrightnessTable()
 	{
 		super.generateLightBrightnessTable();
-		for (int i = 0; i < lightBrightnessTable.length; i++) {
-			//lightBrightnessTable[i] = Math.max(0, lightBrightnessTable[i]*4F-3);
-		}
+		//for (int i = 0; i < lightBrightnessTable.length; i++) {
+		//lightBrightnessTable[i] = Math.max(0, lightBrightnessTable[i]*4F-3);
+		//}
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public double getVoidFogYFactor()
 	{
-		return 1;
+		return 0;//1;
 	}
 
 	@Override

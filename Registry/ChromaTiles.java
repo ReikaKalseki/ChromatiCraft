@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
+import Reika.ChromatiCraft.TileEntity.TileEntityPositionRelay;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
@@ -145,7 +146,8 @@ public enum ChromaTiles {
 	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG),
 	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger"),
 	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret"),
-	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole");
+	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole"),
+	POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10);
 
 	private final Class tile;
 	private final String name;

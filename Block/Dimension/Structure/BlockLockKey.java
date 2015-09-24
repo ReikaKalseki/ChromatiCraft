@@ -10,10 +10,13 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
 import java.lang.reflect.Constructor;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,6 +33,7 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomBig;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomEntry;
@@ -39,6 +43,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomRecurse;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomSpiral;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class BlockLockKey extends Block {
@@ -127,6 +132,17 @@ public class BlockLockKey extends Block {
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
+	}
+
+	@Override
+	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
+		int n = 2+r.nextInt(2);
+		for (int i = 0; i < n; i++) {
+			int l = 10+r.nextInt(30);
+			float s = (float)ReikaRandomHelper.getRandomBetween(1, 1.5);
+			EntityFX fx = new EntitySparkleFX(world, x+r.nextDouble(), y+r.nextDouble(), z+r.nextDouble(), 0, 0, 0).setLife(l).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	@Override
@@ -226,6 +242,8 @@ public class BlockLockKey extends Block {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase elb, ItemStack is) {
 		if (world.isRemote)
+			return;
+		if (is.stackTagCompound == null)
 			return;
 		((TileEntityLockKey)world.getTileEntity(x, y, z)).uid = UUID.fromString(is.stackTagCompound.getString("uid"));
 

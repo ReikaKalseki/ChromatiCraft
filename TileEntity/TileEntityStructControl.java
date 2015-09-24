@@ -685,7 +685,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	public boolean isBreakable() {
-		return true;
+		return !isMonument;
 	}
 
 	private ProgressStage getProgressStage() {
