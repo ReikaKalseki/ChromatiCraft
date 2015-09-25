@@ -22,13 +22,16 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.DesertStructure;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -58,6 +61,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		structs.add(Structures.CAVERN);
 		structs.add(Structures.BURROW);
 		structs.add(Structures.OCEAN);
+		structs.add(Structures.DESERT);
 	}
 
 	@Override
@@ -161,9 +165,48 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				}
 				return false;
 			}
+			case DESERT: {
+				int y = world.getTopSolidOrLiquidBlock(x, z);
+
+				y -= 8;
+				Block b = world.getBlock(x, y, z);
+				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+				if (b == Blocks.sand && BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY)) {
+
+					x -= 7;
+					y -= 3;
+					z -= 7;
+
+					FilledBlockArray struct = ChromaStructures.getDesertStructure(world, x, y, z);
+					DesertStructure.getTerrain(struct, x, y, z);
+					if (this.isValidDesertLocation(world, x, y, z, struct)) {
+						struct.place();
+
+						world.setBlock(x+7, y+3, z+7, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata(), 3);
+						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
+						te.generate(s, CrystalElement.WHITE);
+						this.populateChests(s, struct, r);
+						//too dry for moss//this.mossify(s, struct, r);
+						return true;
+					}
+				}
+				return false;
+			}
 			default:
 				return false;
 		}
+	}
+
+	private boolean isValidDesertLocation(World world, int x, int y, int z, FilledBlockArray struct) {
+		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMinX(), struct.getMinZ()), BiomeDictionary.Type.SANDY))
+			return false;
+		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMinZ()), BiomeDictionary.Type.SANDY))
+			return false;
+		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMinX(), struct.getMaxZ()), BiomeDictionary.Type.SANDY))
+			return false;
+		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMaxZ()), BiomeDictionary.Type.SANDY))
+			return false;
+		return true;
 	}
 
 	private static FilledBlockArray getPitSlice(World world, int x, int y, int z) {
@@ -310,6 +353,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case OCEAN:
 				s = ChestGenHooks.PYRAMID_JUNGLE_CHEST;
 				break;
+			case DESERT:
+				s = ChestGenHooks.PYRAMID_DESERT_CHEST;
 			default:
 				break;
 		}
@@ -320,7 +365,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			Block b = c.getBlock(arr.world);
 			if (b == ChromaStructures.getChestGen()) {
 				TileEntityLootChest te = (TileEntityLootChest)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
-				int bonus = struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4 ? 4 : 0;
+				int bonus = 0;
+				if (struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4)
+					bonus = 4;
+				if (struct == Structures.DESERT && c.yCoord-arr.getMinY() < 4)
+					bonus = 2;
 				te.populateChest(s, struct, bonus, r);
 			}
 		}
@@ -484,6 +533,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				return r.nextInt(64) == 0;
 			case BURROW:
 				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
+			case DESERT:
+				return r.nextInt(128) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
 			default:
 				return false;
 		}

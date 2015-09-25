@@ -97,8 +97,9 @@ public class ProgressionManager implements ProgressRegistry {
 		TWILIGHT(ModWoodList.CANOPY.getItem(), ModList.TWILIGHT.isLoaded()), //Go to the twilight forest
 		BEDROCK(Blocks.bedrock), //Find bedrock
 		CAVERN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.metadata)), //Cavern structure
-		BURROW(Blocks.chest), //Burrow structure
+		BURROW(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.metadata)), //Burrow structure
 		OCEAN(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.metadata)), //Ocean floor structure
+		DESERTSTRUCT(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.metadata)),
 		DIE(Items.skull), //die and lose energy
 		ALLCOLORS(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 		REPEATER(ChromaTiles.REPEATER.getCraftedProduct()), //craft any repeater type

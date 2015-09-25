@@ -25,6 +25,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -74,6 +76,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
 	private int craftSoundTimer = 20000;
+
+	private EntityPlayer craftingPlayer;
 
 	public boolean hasStructure = false;
 	public boolean hasStructure2 = false;
@@ -419,6 +423,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				this.setRecipeTickDuration(activeRecipe);
+				craftingPlayer = ep;
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
 					this.requestEnergyDifference(tag);
@@ -586,6 +591,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			if (NBTin != null) {
 				ReikaNBTHelper.combineNBT(NBTin, inv[9].stackTagCompound);
 				inv[9].stackTagCompound = (NBTTagCompound)NBTin.copy();
+				inv[9].stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, inv[9].stackTagCompound);
+				MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
 			}
 			for (int i = 0; i < 6; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
@@ -602,6 +609,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			activeRecipe = null;
 			craftSoundTimer = 20000;
 			craftingTick = 0;
+			craftingPlayer = null;
 		}
 		ChromaSounds.CRAFTDONE.playSoundAtBlock(this);
 		if (worldObj.isRemote)

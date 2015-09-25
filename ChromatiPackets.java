@@ -545,7 +545,7 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityStructControl)tile).triggerMonumentEventClient(world, x, y, z);
 					break;
 				case DASH:
-					ChromaFX.doDashParticles(world, (EntityPlayer)world.getEntityByID(data[0]));
+					ChromaFX.doDashParticles(world, (EntityPlayer)world.getEntityByID(data[0]), data[0] != ep.getEntityId());
 					break;
 				default:
 					break;

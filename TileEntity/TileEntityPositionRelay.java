@@ -12,7 +12,7 @@ public class TileEntityPositionRelay extends TileEntityChromaticBase {
 
 	@Override
 	public ChromaTiles getTile() {
-		return ChromaTiles.POSLINK;
+		return null;//ChromaTiles.POSLINK;
 	}
 
 	@Override

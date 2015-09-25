@@ -54,7 +54,7 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public double getVoidFogYFactor()
 	{
-		return 0;//1;
+		return 0.0001;//1;
 	}
 
 	@Override
@@ -191,7 +191,7 @@ public class WorldProviderChroma extends WorldProvider {
 		double d = Math.sin(System.currentTimeMillis()/250000D);
 		return 128+(float)(64*d);//512;
 	}
-
+	/*
 	@Override
 	public Vec3 getFogColor(float celang, float ptick)
 	{
@@ -205,7 +205,7 @@ public class WorldProviderChroma extends WorldProvider {
 		float[] ret = super.calcSunriseSunsetColors(celang, ptick);
 		return ret;
 	}
-
+	 */
 	@Override
 	public boolean isSurfaceWorld()
 	{

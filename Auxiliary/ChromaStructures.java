@@ -40,6 +40,7 @@ public class ChromaStructures {
 		CAVERN(),
 		BURROW(),
 		OCEAN(),
+		DESERT(),
 		PORTAL(),
 		PERSONAL();
 
@@ -71,6 +72,8 @@ public class ChromaStructures {
 					return getBurrowStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 				case OCEAN:
 					return getOceanStructure(w, 0, 0, 0);
+				case DESERT:
+					return getDesertStructure(w, 0, 0, 0);
 				case PORTAL:
 					return getPortalStructure(w, 0, 0, 0, true);
 				case PERSONAL:
@@ -89,6 +92,7 @@ public class ChromaStructures {
 				case CAVERN:
 				case BURROW:
 				case OCEAN:
+				case DESERT:
 					return true;
 				default:
 					return false;
@@ -849,6 +853,10 @@ public class ChromaStructures {
 
 	public static FilledBlockArray getOceanStructure(World world, int x, int y, int z) {
 		return OceanStructure.getOceanStructure(world, x, y, z);
+	}
+
+	public static FilledBlockArray getDesertStructure(World world, int x, int y, int z) {
+		return DesertStructure.getDesertStructure(world, x, y, z);
 	}
 
 	public static Block getChestGen() {

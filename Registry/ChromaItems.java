@@ -49,6 +49,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
 import Reika.ChromatiCraft.Items.Tools.ItemMultiTool;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
+import Reika.ChromatiCraft.Items.Tools.ItemOwnerKey;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
@@ -124,6 +125,7 @@ public enum ChromaItems implements ItemEnum {
 	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
 	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
 	CARD(31, false,			"chroma.card",			ItemCrystalCard.class),
+	SHARE(30, false,		"chroma.share",			ItemOwnerKey.class),
 	;
 
 	private final int index;

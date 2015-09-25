@@ -270,6 +270,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					if ((y == yCoord || y == yCoord-1) && Math.abs(x-xCoord) <= 3 && Math.abs(z-zCoord) <= 3)
 						this.triggerOceanTrap(ep);
 					break;
+				case DESERT:
+					break;
 				default:
 					break;
 			}
@@ -318,6 +320,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return aabb.offset(2, 1, 0).expand(0.5, 0.5, 0.5);
 			case OCEAN:
 				return aabb.offset(0, 2, 0).expand(1, 1, 1);
+			case DESERT:
+				return aabb.expand(5, 3, 5);
 			default:
 				return aabb;
 		}
@@ -334,7 +338,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				world.setBlockMetadataWithNotify(x+2, y+1, z, BlockStructureShield.BlockType.CRACK.metadata, 3);
 				ReikaSoundHelper.playBreakSound(world, x+2, y+1, z, Blocks.stone);
 				if (world.isRemote)
-					ReikaRenderHelper.spawnDropParticles(world, x+2, y+1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 9);
+					ReikaRenderHelper.spawnDropParticles(world, x+2, y+1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 				break;
 			case OCEAN:
 				BlockArray blocks = OceanStructure.getCovers(x, y, z);
@@ -350,11 +354,53 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					for (int k = -r; k <= r; k++) {
 						ReikaSoundHelper.playBreakSound(world, x+i, y+1, z+k, Blocks.stone);
 						if (world.isRemote) {
-							ReikaRenderHelper.spawnDropParticles(world, x+i, y+3, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 9);
+							ReikaRenderHelper.spawnDropParticles(world, x+i, y+3, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 						}
 					}
 				}
 				ChromaSounds.TRAP.playSound(ep, 1, 1);
+				break;
+			case DESERT:
+				ReikaSoundHelper.playBreakSound(world, x, y+2, z, Blocks.stone);
+				if (world.isRemote)
+					ReikaRenderHelper.spawnDropParticles(world, x, y+2, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+
+				x -= 7;
+				z -= 7;
+				y -= 3;
+
+				world.setBlockMetadataWithNotify(x+12, y+5, z+6, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+12, y+5, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+12, y+5, z+8, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+12, y+6, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+11, y+5, z+6, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+11, y+5, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+11, y+5, z+8, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+8, y+5, z+11, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+8, y+5, z+12, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+8, y+5, z+2, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+8, y+5, z+3, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+5, z+11, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+5, z+12, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+2, y+5, z+6, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+2, y+5, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+2, y+5, z+8, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+2, y+6, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+3, y+5, z+6, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+3, y+5, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+3, y+5, z+8, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+3, y+6, z+7, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+6, y+5, z+2, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+6, y+5, z+3, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+6, y+5, z+11, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+6, y+5, z+12, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+5, z+2, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+5, z+3, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+6, z+2, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+6, z+3, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+6, z+11, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+7, y+6, z+12, BlockType.CRACK.metadata, 3);
+				world.setBlockMetadataWithNotify(x+11, y+6, z+7, BlockType.CRACK.metadata, 3);
 				break;
 			default:
 				break;
@@ -410,6 +456,20 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					}
 				}
 				break;
+			case DESERT:
+				if (blocks != null) {
+					for (int i = 0; i < blocks.getSize(); i++) {
+						Coordinate c = blocks.getNthBlock(i);
+						int x = c.xCoord-7;
+						int y = c.yCoord-3;
+						int z = c.zCoord-7;
+						if (y > yCoord && worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+							worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+						}
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -432,6 +492,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			FilledBlockArray copy = (FilledBlockArray)blocks.copy();
 			if (struct == Structures.BURROW) {
 				copy.offset(5, 8, 2);
+			}
+			if (struct == Structures.DESERT) {
+				copy.offset(-7, -3, -7);
 			}
 			copy.placeExcept(new Coordinate(this));
 			if (struct == Structures.OCEAN) {
@@ -497,6 +560,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			case OCEAN:
 				break;
+			case DESERT:
+				break;
 			default:
 				break;
 		}
@@ -524,6 +589,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case OCEAN:
 				ReikaInventoryHelper.addToIInv(ChromaStacks.oceanLoot, this);
 				break;
+			case DESERT:
+				ReikaInventoryHelper.addToIInv(ChromaStacks.desertLoot, this);
+				break;
 			default:
 				break;
 		}
@@ -539,6 +607,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 			case OCEAN:
 				blocks = ChromaStructures.getOceanStructure(world, x, y, z);
+				break;
+			case DESERT:
+				blocks = ChromaStructures.getDesertStructure(world, x, y, z);
 				break;
 			default:
 				break;
@@ -610,6 +681,22 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 						}
 					}
 					break;
+				case DESERT:
+					if (blocks != null) {
+						for (int i = 0; i < blocks.getSize(); i++) {
+							Coordinate c = blocks.getNthBlock(i);
+							int x = c.xCoord-7;
+							int y = c.yCoord-3;
+							int z = c.zCoord-7;
+							if (worldObj.getBlock(x, y, z) == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+							else if (worldObj.getBlock(x, y, z) == ChromaBlocks.LOOTCHEST.getBlockInstance()) {
+								worldObj.setBlockMetadataWithNotify(x, y, z, worldObj.getBlockMetadata(x, y, z)%8, 3);
+								ReikaSoundHelper.playBreakSound(worldObj, x, y, z, Blocks.stone);
+							}
+						}
+					}
+					break;
 				default:
 					break;
 			}
@@ -618,7 +705,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	public int getBrightness() {
-		return struct == Structures.BURROW ? 15 : 0;
+		return struct == Structures.BURROW || struct == Structures.DESERT ? 15 : 0;
 	}
 
 	@Override
@@ -696,6 +783,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				return ProgressStage.BURROW;
 			case OCEAN:
 				return ProgressStage.OCEAN;
+			case DESERT:
+				return ProgressStage.DESERTSTRUCT;
 			default:
 				return null;
 		}

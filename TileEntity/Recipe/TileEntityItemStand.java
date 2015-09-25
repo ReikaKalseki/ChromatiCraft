@@ -120,6 +120,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		int has = inv[0] != null ? inv[0].stackSize : 0;
 		int sum = item != null ? has+item.stackSize : has;
 		boolean all = this.recentClicked() && ReikaItemHelper.matchStacks(item, inv[0]) && item != null && sum <= item.getMaxStackSize();
+		if (!all)
+			this.dropSlot();
 		/*
 		if (!all && inv[0] != null) {
 			ChromaSounds.ERROR.playSoundAtBlock(this);

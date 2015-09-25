@@ -185,6 +185,7 @@ public enum ChromaResearch implements ProgressElement {
 	SPLASH(				ChromaItems.SPLASHGUN,		ResearchLevel.MULTICRAFT),
 	VACUUMGUN(			ChromaItems.VACUUMGUN,		ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	DOORKEY(			ChromaItems.KEY,			ResearchLevel.BASICCRAFT),
+	OWNERKEY(			ChromaItems.SHARE,			ResearchLevel.BASICCRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -238,6 +239,7 @@ public enum ChromaResearch implements ProgressElement {
 	CAVERN(			ChromaStructures.Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
 	BURROW(			ChromaStructures.Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
 	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	DESERT(			ChromaStructures.Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
 	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
 	;

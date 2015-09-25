@@ -232,11 +232,14 @@ public class ChromaFX {
 		}
 	}
 
-	public static void doDashParticles(World world, EntityPlayer e) {
+	public static void doDashParticles(World world, EntityPlayer e, boolean offset) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.DASH, Minecraft.getMinecraft().thePlayer, 1, 1, false);
 		double x = e.posX;
 		double y = e.posY;
 		double z = e.posZ;
+
+		if (offset)
+			y += 1.62;
 
 		double angX = Math.cos(Math.toRadians(e.rotationYawHead+90));
 		double angZ = Math.sin(Math.toRadians(e.rotationYawHead+90));

@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -67,6 +66,11 @@ public class MusicLoader {
 		private Collection<RemoteAsset> getMusicAssets() {
 			return this.getAssets();
 		}
+
+		@Override
+		public String getLocalPath() {
+			return musicPath;
+		}
 	}
 
 	private static class MusicAsset extends RemoteAsset {
@@ -78,18 +82,12 @@ public class MusicLoader {
 		}
 
 		@Override
-		public String getLocalPath() {
-			return musicPath+track+".ogg";
-		}
-
-		@Override
 		protected AssetData constructData(String line) {
 			String[] parts = line.split("\\|");
 			String path = parts[0];
 			String hash = parts[1];
 			String size = parts[2];
 			String name = path.substring(path.lastIndexOf('/')+1, path.length()-4);
-			track = name;
 			return new AssetData(this, path, name, hash, Long.parseLong(size));
 		}
 
@@ -97,16 +95,27 @@ public class MusicLoader {
 		public String getDisplayName() {
 			return "Music Track '"+track+"'";
 		}
+
+		@Override
+		public String setFilename(String line) {
+			String[] parts = line.split("\\|");
+			String path = parts[0];
+			String name = path.substring(path.lastIndexOf('/')+1, path.length()-4);
+			track = name;
+			return track;
+		}
+
+		@Override
+		public String setExtension(String line) {
+			String[] parts = line.split("\\|");
+			String path = parts[0];
+			String name = path.substring(path.lastIndexOf('/')+1, path.length()-4);
+			return path.substring(path.length()-3, path.length());
+		}
 	}
 
 	public Collection<String> getMusicFiles() {
-		Collection<String> li = new ArrayList();
-		for (RemoteAsset a : folder.getMusicAssets()) {
-			if (a.available()) {
-				li.add(a.getLocalPath());
-			}
-		}
-		return li;
+		return folder.getAvailableResources();
 	}
 
 }

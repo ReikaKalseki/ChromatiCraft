@@ -41,6 +41,10 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	@Override
 	protected final void onSetPlacer(EntityPlayer ep) {
+		this.addOwner(ep);
+	}
+
+	public final void addOwner(EntityPlayer ep) {
 		owners.add(ep.getUniqueID());
 	}
 

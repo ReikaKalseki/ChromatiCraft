@@ -260,6 +260,10 @@ public class CastingRecipe {
 		return null;
 	}
 
+	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+		return tag;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe {
 
 		private static final BlockArray runeRing = new BlockArray();
