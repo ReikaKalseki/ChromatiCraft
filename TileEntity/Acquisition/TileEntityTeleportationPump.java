@@ -42,11 +42,12 @@ import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile {
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
-	private HashMap<Fluid, ArrayList<Coordinate>> fluids = new HashMap();
+	private HashMap<Fluid, ArrayList<FluidSource>> fluids = new HashMap();
 	private HashMap<Fluid, Integer> counts = new HashMap();
 
 	private Fluid selected = null;
@@ -59,15 +60,15 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	private static final Comparator comparator = new PosComparator();
 
-	private static class PosComparator implements Comparator<Coordinate> {
+	private static class PosComparator implements Comparator<FluidSource> {
 
 		private PosComparator() {
 
 		}
 
 		@Override
-		public int compare(Coordinate o1, Coordinate o2) {
-			return o2.yCoord-o1.yCoord; //higher first
+		public int compare(FluidSource o1, FluidSource o2) {
+			return o2.location.yCoord-o1.location.yCoord; //higher first
 		}
 
 	}
@@ -183,12 +184,10 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 						int dy = scanY;
 						int dz = z+k;
 						Block b = world.getBlock(dx, dy, dz);
-						if (world.getBlockMetadata(dx, dy, dz) == 0) {
-							Fluid f = FluidRegistry.lookupFluidForBlock(b);
-							if (f != null) {
-								this.addFluidBlock(dx, dy, dz, f);
-								//ReikaJavaLibrary.pConsole(f.getName()+" @ "+dx+","+dy+","+dz, Side.SERVER, f.getName().startsWith("o"));
-							}
+						FluidStack fs = ReikaWorldHelper.getDrainableFluid(world, dx, dy, dz);
+						if (fs != null && fs.amount >= FluidContainerRegistry.BUCKET_VOLUME) {
+							this.addFluidBlock(dx, dy, dz, fs);
+							//ReikaJavaLibrary.pConsole(f.getName()+" @ "+dx+","+dy+","+dz, Side.SERVER, f.getName().startsWith("o"));
 						}
 					}
 				}
@@ -196,8 +195,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				if (scanY > 255) {
 					scanning = false;
 					fastscan = false;
-					Collection<ArrayList<Coordinate>> vals = fluids.values();
-					for (ArrayList<Coordinate> li : vals) {
+					Collection<ArrayList<FluidSource>> vals = fluids.values();
+					for (ArrayList<FluidSource> li : vals) {
 						Collections.shuffle(li);
 						Collections.sort(li, comparator);
 					}
@@ -208,15 +207,17 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		else {
 			int n = this.hasSpeed() ? 4 : 1;
 			if (selected != null) {
-				ArrayList<Coordinate> li = fluids.get(selected);
+				ArrayList<FluidSource> li = fluids.get(selected);
 				for (int i = 0; i < n; i++) {
-					if (li != null && !li.isEmpty() && this.canAddFluid(selected) && this.hasEnergy(required)) {
-						Coordinate c = li.get(0);
-						tank.addLiquid(1000, selected);
-						c.setBlock(world, Blocks.air);
-						this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
-						li.remove(0);
-						this.decrFluid(selected);
+					if (li != null && !li.isEmpty()) {
+						FluidSource src = li.get(0);
+						if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
+							tank.addLiquid(src.fluid.amount, selected);
+							src.location.setBlock(world, Blocks.air);
+							this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+							li.remove(0);
+							this.decrFluid(src.fluid.amount, selected);
+						}
 					}
 
 					Fluid f = tank.getActualFluid();
@@ -256,11 +257,11 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 	}
 
-	private void decrFluid(Fluid f) {
+	private void decrFluid(int rem, Fluid f) {
 		Integer i = counts.get(f);
 		int amt = i != null ? i.intValue() : 0;
-		if (amt > 1)
-			counts.put(f, amt-1);
+		if (amt > rem)
+			counts.put(f, amt-rem);
 		else
 			counts.remove(i);
 		//ReikaJavaLibrary.pConsole(counts.get(f));
@@ -279,15 +280,17 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return 256;
 	}
 
-	private void addFluidBlock(int x, int y, int z, Fluid f) {
-		ArrayList<Coordinate> li = fluids.get(f);
+	private void addFluidBlock(int x, int y, int z, FluidStack fs) {
+		Fluid f = fs.getFluid();
+		ArrayList<FluidSource> li = fluids.get(f);
 		if (li == null) {
 			li = new ArrayList();
 			fluids.put(f, li);
 			counts.put(f, 0);
 		}
-		li.add(new Coordinate(x, y, z));
-		counts.put(f, counts.get(f)+1);
+		li.add(new FluidSource(x, y, z, fs));
+		counts.put(f, counts.get(f)+fs.amount);
+		//ReikaJavaLibrary.pConsole("Found "+fs.amount+" of "+f.getName()+" @ "+x+", "+y+", "+z+", now have "+counts.get(f)+" mB");
 	}
 
 	public int getLiquidScaled(int a) {
@@ -298,8 +301,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return tank.getActualFluid();
 	}
 
-	private boolean canAddFluid(Fluid f) {
-		return tank.canTakeIn(1000);
+	private boolean canAddFluid(int amt, Fluid f) {
+		return tank.canTakeIn(amt);
 	}
 
 	private boolean hasSpeed() {
@@ -352,6 +355,18 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		//ReikaJavaLibrary.pConsole(counts);
+	}
+
+	private static class FluidSource {
+
+		private final Coordinate location;
+		private final FluidStack fluid;
+
+		private FluidSource(int x, int y, int z, FluidStack fs) {
+			location = new Coordinate(x, y, z);
+			fluid = fs;
+		}
+
 	}
 
 }

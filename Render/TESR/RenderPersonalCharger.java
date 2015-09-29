@@ -71,6 +71,7 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 			}
 
 			for (int i = 0; i < icons.length; i++) {
+				double z = -0.005;
 				IIcon ico = icons[i].getIcon();
 				float u = ico.getMinU();
 				float v = ico.getMinV();
@@ -91,10 +92,10 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 
 				v5.startDrawingQuads();
 				v5.setColorRGBA_I(color, alpha);
-				v5.addVertexWithUV(-1, -1, 0, u, v);
-				v5.addVertexWithUV(1, -1, 0, du, v);
-				v5.addVertexWithUV(1, 1, 0, du, dv);
-				v5.addVertexWithUV(-1, 1, 0, u, dv);
+				v5.addVertexWithUV(-1, -1, z, u, v);
+				v5.addVertexWithUV(1, -1, z, du, v);
+				v5.addVertexWithUV(1, 1, z, du, dv);
+				v5.addVertexWithUV(-1, 1, z, u, dv);
 				v5.draw();
 
 				GL11.glPopMatrix();

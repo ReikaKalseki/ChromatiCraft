@@ -59,7 +59,7 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, String tex, Object... args) {
-		if (MinecraftForgeClient.getRenderPass() != 0 && tile.isInWorld())
+		if (!tile.renderModelsInPass1() && MinecraftForgeClient.getRenderPass() != 0 && tile.isInWorld())
 			return;
 		this.bindTextureByName(tex);
 		GL11.glPushMatrix();

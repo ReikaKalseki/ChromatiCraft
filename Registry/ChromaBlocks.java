@@ -136,7 +136,7 @@ public enum ChromaBlocks implements BlockEnum {
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
 	TANK(BlockCrystalTank.class,												"crystal.tank"),
-	FENCE(BlockCrystalFence.class,												"crystal.fence"),
+	FENCE(BlockCrystalFence.class,												"crystal.fencerelay"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
 	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),

@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
@@ -546,6 +547,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case DASH:
 					ChromaFX.doDashParticles(world, (EntityPlayer)world.getEntityByID(data[0]), data[0] != ep.getEntityId());
+					break;
+				case FENCETRIGGER:
+					((TileEntityCrystalFence)tile).triggerSegment(data[0], data[1] > 0);
 					break;
 				default:
 					break;

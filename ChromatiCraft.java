@@ -397,6 +397,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance);
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance);
 			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance);
+			//TickRegistry.instance.registerTickHandler(ChunkResetter.instance);
 			if (ModList.THAUMCRAFT.isLoaded())
 				TickRegistry.instance.registerTickHandler(NodeRecharger.instance);
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);

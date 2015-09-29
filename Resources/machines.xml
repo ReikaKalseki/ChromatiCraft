@@ -124,7 +124,9 @@
 			You need some way of protecting your base from the hordes of mobs outside, and fences are rather boring. You already tried using moats (how does a spider the size of a cow swim!?) to no effect, and you tried using unshielding wires as an impromptu electric fence, an experiment that ended after you had the misfortune of touching it yourself. However, with (a large amount of) energy associated with protection and shielding, you can make a barrier that will stop creatures of all types while letting you pass unharmed, and can be built into any shape between connected nodes.
 		</desc>
 		<note>
-
+			Requires a perimeter with vertices marked by either fence emitters or relays. Right click with manipulator to calculate perimeter, shift-right-click to set output side
+			
+			Each emitter in the perimeter adds to the damage dealt to intruding entities
 		</note>
 	</fence>
 	<furnace>

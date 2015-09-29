@@ -46,6 +46,8 @@ public class ChromaDimensionTicker implements TickHandler {
 	private final Collection<Ticket> tickets = new ArrayList();
 	private final ArrayList<CustomMusic> music = new ArrayList();
 
+	private int musicCooldown;
+
 	private ChromaDimensionTicker() {
 
 	}
@@ -99,8 +101,13 @@ public class ChromaDimensionTicker implements TickHandler {
 					return;
 				}
 			}
+			if (musicCooldown > 0) {
+				musicCooldown--;
+				return;
+			}
 			CustomMusic s = music.get(rand.nextInt(music.size()));
 			s.play(sh);
+			musicCooldown = 300+rand.nextInt(900);
 		}
 	}
 

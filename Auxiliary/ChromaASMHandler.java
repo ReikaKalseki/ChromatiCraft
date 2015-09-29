@@ -21,11 +21,13 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
@@ -91,27 +93,25 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				ClassReader classReader = new ClassReader(data);
 				classReader.accept(cn, 0);
 				switch(this) {
-					case ENDPROVIDER: {
+					case ENDPROVIDER: { //THIS WORKS
+						if (ModList.ENDEREXPANSION.isLoaded())
+							break;
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
-						boolean primed = false;
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.INVOKESTATIC) {
-								MethodInsnNode min = (MethodInsnNode)ain;
-								String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_76129_c" : "sqrt_float";
-								if (min.name.equals(func)) {
-									primed = true;
-								}
-							}
-							else if (primed && ain.getOpcode() == Opcodes.FSTORE) { //add after "f2 += 100-sqrt(dx, dz)*8"
-								m.instructions.insert(ain, new VarInsnNode(Opcodes.FSTORE, 8));
-								m.instructions.insert(ain, new InsnNode(Opcodes.FCONST_0));
-								ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
-								break;
-							}
+						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_76129_c" : "sqrt_float";
+						AbstractInsnNode loc = ReikaASMHelper.getFirstMethodCall(cn, m, "net/minecraft/util/MathHelper", func, "(F)F");
+						while (loc.getOpcode() != Opcodes.FSTORE) {
+							loc = loc.getNext();
 						}
+						InsnList call = new InsnList();
+						call.add(new VarInsnNode(Opcodes.FLOAD, 23)); //+1 to all the arguments because of double_2nd somewhere lower on stack
+						call.add(new VarInsnNode(Opcodes.FLOAD, 21));
+						call.add(new VarInsnNode(Opcodes.FLOAD, 22));
+						call.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getIslandBias", "(FFF)F", false));
+						call.add(new VarInsnNode(Opcodes.FSTORE, 23));
+						m.instructions.insert(loc, call);
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
 					}
-					break;
 					case REACHDIST: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
 						m.instructions.insert(new InsnNode(Opcodes.I2F));
@@ -129,8 +129,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 							m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F", false));
 							ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						}
-					}
-					break;/*
+						break;
+					}/*
 				case CHARWIDTH: { //[I to [F
 					try {
 						Class optifine = Class.forName("optifine.OptiFineClassTransformer");
@@ -198,6 +198,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 								}
 							}
 						}
+						break;
 
 					}
 

@@ -155,4 +155,8 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	public boolean onlyAllowOwnersToMine() {
 		return true;
 	}
+
+	public boolean renderModelsInPass1() {
+		return false;
+	}
 }

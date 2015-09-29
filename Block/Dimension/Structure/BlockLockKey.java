@@ -45,6 +45,8 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLockKey extends Block {
 
@@ -135,6 +137,7 @@ public class BlockLockKey extends Block {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		int n = 2+r.nextInt(2);
 		for (int i = 0; i < n; i++) {

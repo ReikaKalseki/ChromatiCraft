@@ -20,7 +20,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
@@ -130,13 +129,13 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 	public Fluid getFluid() {
 		return FluidRegistry.getFluid("chroma");
 	}
-
+	/*
 	@Override
 	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
 		super.drain(world, x, y, z, doDrain);
 		return new FluidStack(FluidRegistry.getFluid("chroma"), 1000);
 	}
-
+	 */
 	public static class TileEntityChroma extends TileEntity {
 
 		public static final int BERRY_SATURATION = 24;

@@ -128,7 +128,8 @@ public class GuiLampController extends GuiChromaBase {
 				break;
 			case SHAFTPOWER:
 				is = GameRegistry.findItemStack(ModList.ROTARYCRAFT.modLabel, "rotarycraft_item_shaftcraft", 1);
-				is.setItemDamage(2);
+				if (is != null)
+					is.setItemDamage(2);
 				break;
 		}
 		if (is != null)

@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 
 import org.lwjgl.opengl.GL11;
 
@@ -127,9 +128,12 @@ public class GuiTelePump extends GuiChromaBase {
 			int dy = 24*(i-active);
 			ReikaLiquidRenderer.bindFluidTexture(f);
 			this.drawTexturedModelRectFromIcon(13, 35+dy, ico, 16, 16);
-			int ct = pump.getFluidCount(f);
-			String sg = String.format("%s (%.3f%sB)", f.getLocalizedName(), ReikaMathLibrary.getThousandBase(ct), ReikaEngLibrary.getSIPrefix(ct));
-			fontRendererObj.drawStringWithShadow(sg, 36, 39+dy, 0xffffff);
+
+			if (i == active) {
+				double ct = pump.getFluidCount(f)/(double)FluidContainerRegistry.BUCKET_VOLUME;
+				String sg = String.format("%s (%.3f%sB)", f.getLocalizedName(), ReikaMathLibrary.getThousandBase(ct), ReikaEngLibrary.getSIPrefix(ct));
+				fontRendererObj.drawStringWithShadow(sg, 36, 39+dy, 0xffffff);
+			}
 		}
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

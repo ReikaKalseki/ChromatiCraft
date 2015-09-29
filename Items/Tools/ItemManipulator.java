@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -38,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -60,6 +62,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -127,6 +130,35 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+
+		if (t == ChromaTiles.FENCE) {
+			TileEntityCrystalFence te = (TileEntityCrystalFence)tile;
+			if (ep.isSneaking()) {
+				te.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
+			}
+			else {
+				te.calcFence();
+				if (te.isValid()) {
+					ChromaSounds.CAST.playSoundAtBlock(te);
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(te);
+				}
+			}
+			return true;
+		}
+
+		if (tile instanceof CrystalFenceAuxTile) {
+			CrystalFenceAuxTile te = (CrystalFenceAuxTile)tile;
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+			if (ep.isSneaking()) {
+				te.setOutput(dir);
+			}
+			else {
+				te.setInput(dir);
+			}
+		}
+
 		//if (t == ChromaTiles.FIBERSINK) {
 		//	TileEntityFiberTransmitter ft = (TileEntityFiberTransmitter)tile;
 		//	ft.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
@@ -157,6 +189,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+
 		if (t == ChromaTiles.STRUCTCONTROL) {
 			if (!world.isRemote) {
 				if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
@@ -199,6 +232,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+
 		if (t == ChromaTiles.REPEATER) {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			if (ep.isSneaking()) {
@@ -225,6 +259,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+
 		if (tile instanceof TileEntityCrystalGlow) {
 			if (ep.isSneaking())
 				((TileEntityCrystalGlow)tile).toggle();
@@ -233,7 +268,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
 
-		if (ModList.THAUMCRAFT.isLoaded() && tile instanceof INode) {
+		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(tile)) {
 			if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
 				if (!world.isRemote) {
 					NodeRecharger.instance.addNode((INode)tile);

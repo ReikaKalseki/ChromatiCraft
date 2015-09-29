@@ -20,7 +20,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -56,7 +55,7 @@ public class BlockLiquidEnder extends BlockFluidClassic {
 	public Fluid getFluid() {
 		return FluidRegistry.getFluid("ender");
 	}
-
+	/*
 	@Override
 	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
 		world.setBlockToAir(x, y, z);
@@ -67,7 +66,7 @@ public class BlockLiquidEnder extends BlockFluidClassic {
 	public boolean canDrain(World world, int x, int y, int z) {
 		return true;
 	}
-
+	 */
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		if (!ChromaOptions.ENDEREFFECT.getState())

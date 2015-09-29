@@ -24,7 +24,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -76,7 +75,7 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	public Fluid getFluid() {
 		return FluidRegistry.getFluid("chroma");
 	}
-
+	/*
 	@Override
 	public FluidStack drain(World world, int x, int y, int z, boolean doDrain) {
 		world.setBlockToAir(x, y, z);
@@ -87,7 +86,7 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	public boolean canDrain(World world, int x, int y, int z) {
 		return true;
 	}
-
+	 */
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		Color c = ReikaDyeHelper.getRandomColor().getJavaColor().brighter().brighter().brighter().brighter();

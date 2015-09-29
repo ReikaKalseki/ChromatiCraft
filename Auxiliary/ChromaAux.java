@@ -195,12 +195,17 @@ public class ChromaAux {
 		e.attackEntityFrom(ChromatiCraft.pylon, amt);
 
 		if (e.getHealth() > last-amt) {
-			if (amt > last) { //kill
+			if (amt >= last) { //kill
 				e.setHealth(0.1F);
 				e.attackEntityFrom(ChromatiCraft.pylon, Float.MAX_VALUE);
 			}
 			else
 				e.setHealth(last-amt);
 		}
+	}
+
+	public static float getIslandBias(float originalBias, float dx, float dz) {
+		float dist = MathHelper.sqrt_double(dx*dx+dz*dz);
+		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn
 	}
 }

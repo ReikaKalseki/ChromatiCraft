@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlassRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
@@ -114,6 +115,7 @@ public class ChromaClient extends ChromaCommon {
 	private SpecialShieldRenderer specialshield;
 	private static final CrystalGlassRenderer glass = new CrystalGlassRenderer();
 	private static final ConsoleRenderer console = new ConsoleRenderer();
+	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
 
 	//private static FiberRenderer fiber;
 
@@ -254,6 +256,9 @@ public class ChromaClient extends ChromaCommon {
 
 		consoleRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(consoleRender, console);
+
+		fenceRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(fenceRender, fence);
 
 		specialShieldRender = RenderingRegistry.getNextAvailableRenderId();
 		specialshield = new SpecialShieldRenderer();

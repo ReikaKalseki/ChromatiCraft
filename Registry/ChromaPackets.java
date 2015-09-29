@@ -91,6 +91,7 @@ public enum ChromaPackets {
 	MONUMENTEVENT(),
 	MONUMENTCOMPLETE(),
 	DASH(1),
+	FENCETRIGGER(2),
 	//MAZEDISTREQ(),
 	//MAZEDISTINFO(1);
 	;

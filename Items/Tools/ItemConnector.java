@@ -18,13 +18,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TileEntityTeleport;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
-import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -46,8 +46,8 @@ public class ItemConnector extends ItemChromaTool {
 		else if (te instanceof TileEntityTransportWindow) {
 			return this.connectWindow((TileEntityTransportWindow)te, world, x, y, z, is, ep);
 		}
-		else if (te instanceof Connectable) {
-			return this.tryConnection((Connectable)te, world, x, y, z, is, ep);
+		else if (te instanceof Linkable) {
+			return this.tryConnection((Linkable)te, world, x, y, z, is, ep);
 		}
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
@@ -200,32 +200,32 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
-	private boolean tryConnection(Connectable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private boolean tryConnection(Linkable te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
-			is.stackTagCompound.setInteger("ex", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("ey", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("ez", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("rx", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("ry", Integer.MIN_VALUE);
-			is.stackTagCompound.setInteger("rz", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z1", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("x2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("y2", Integer.MIN_VALUE);
+			is.stackTagCompound.setInteger("z2", Integer.MIN_VALUE);
 		}
-		if (te.isEmitting()) {
-			is.stackTagCompound.setInteger("ex", x);
-			is.stackTagCompound.setInteger("ey", y);
-			is.stackTagCompound.setInteger("ez", z);
+		if (is.stackTagCompound.getInteger("x1") == Integer.MIN_VALUE) {
+			is.stackTagCompound.setInteger("x1", x);
+			is.stackTagCompound.setInteger("y1", y);
+			is.stackTagCompound.setInteger("z1", z);
 		}
 		else {
-			is.stackTagCompound.setInteger("rx", x);
-			is.stackTagCompound.setInteger("ry", y);
-			is.stackTagCompound.setInteger("rz", z);
+			is.stackTagCompound.setInteger("x2", x);
+			is.stackTagCompound.setInteger("y2", y);
+			is.stackTagCompound.setInteger("z2", z);
 		}
-		int ex = is.stackTagCompound.getInteger("ex");
-		int ey = is.stackTagCompound.getInteger("ey");
-		int ez = is.stackTagCompound.getInteger("ez");
-		int rx = is.stackTagCompound.getInteger("rx");
-		int ry = is.stackTagCompound.getInteger("ry");
-		int rz = is.stackTagCompound.getInteger("rz");
+		int ex = is.stackTagCompound.getInteger("x1");
+		int ey = is.stackTagCompound.getInteger("y1");
+		int ez = is.stackTagCompound.getInteger("z1");
+		int rx = is.stackTagCompound.getInteger("x2");
+		int ry = is.stackTagCompound.getInteger("y2");
+		int rz = is.stackTagCompound.getInteger("z2");
 
 		int dl = Math.abs(ex-rx+ey-ry+ez-rz)-1;
 
@@ -234,8 +234,8 @@ public class ItemConnector extends ItemChromaTool {
 		//if (is.stackSize >= dl || ep.capabilities.isCreativeMode) {
 		if (rx != Integer.MIN_VALUE && ry != Integer.MIN_VALUE && rz != Integer.MIN_VALUE) {
 			if (ex != Integer.MIN_VALUE && ey != Integer.MIN_VALUE && ez != Integer.MIN_VALUE) {
-				Connectable em = (Connectable)world.getTileEntity(ex, ey, ez);
-				Connectable rec = (Connectable)world.getTileEntity(rx, ry, rz);
+				Linkable em = (Linkable)world.getTileEntity(ex, ey, ez);
+				Linkable rec = (Linkable)world.getTileEntity(rx, ry, rz);
 
 				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
 				if (em == null) {
@@ -252,8 +252,8 @@ public class ItemConnector extends ItemChromaTool {
 				em.resetOther();
 				em.reset();
 				rec.reset();
-				boolean src = em.setSource(world, rx, ry, rz);
-				boolean tg = rec.setTarget(world, ex, ey, ez);
+				boolean src = em.connectTo(world, rx, ry, rz);
+				boolean tg = rec.connectTo(world, ex, ey, ez);
 				//ReikaJavaLibrary.pConsole(src+":"+tg, Side.SERVER);
 				if (src && tg) {
 					//ReikaJavaLibrary.pConsole("connected", Side.SERVER);

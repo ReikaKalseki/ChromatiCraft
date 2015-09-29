@@ -105,8 +105,10 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	private void destroy() {
-		PacketTarget pt = new PacketTarget.RadiusTarget(this, 48);
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VACUUMGUNEND.ordinal(), pt, this.getEntityId());
+		if (!worldObj.isRemote) {
+			PacketTarget pt = new PacketTarget.RadiusTarget(this, 48);
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.VACUUMGUNEND.ordinal(), pt, this.getEntityId());
+		}
 		this.setDead();
 	}
 

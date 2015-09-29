@@ -61,6 +61,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemResetWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
@@ -126,6 +127,7 @@ public enum ChromaItems implements ItemEnum {
 	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
 	CARD(31, false,			"chroma.card",			ItemCrystalCard.class),
 	SHARE(30, false,		"chroma.share",			ItemOwnerKey.class),
+	RESET(42, false,		"chroma.reset",			ItemResetWand.class),
 	;
 
 	private final int index;
