@@ -100,11 +100,15 @@ public class RenderCrystalFence extends ChromaRenderBase {
 				//v5.addVertex(c2.xCoord+0.5-te.xCoord, 255-te.yCoord, c2.zCoord+0.5-te.zCoord);
 				//v5.addVertex(c2.xCoord+0.5-te.xCoord, 000-te.yCoord, c2.zCoord+0.5-te.zCoord);
 				//v5.draw();
-				if (a > MIN_ALPHA || ap > MIN_ALPHA || an > MIN_ALPHA) {
+
+				if (a > MIN_ALPHA || ap > MIN_ALPHA || an > MIN_ALPHA) {
 					if (a <= MIN_ALPHA)
 						a = MIN_ALPHA;
-					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/hex-5.png");				}				else {
-					a = MIN_ALPHA;					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/hex-7.png");
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/hex-5.png");
+				}
+				else {
+					a = MIN_ALPHA;
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/hex-7.png");
 				}
 
 				a = Math.min(a, 255);
