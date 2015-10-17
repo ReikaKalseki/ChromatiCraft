@@ -16,10 +16,13 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 
 public class TieredWorldGenerator implements RetroactiveGenerator {
 
@@ -38,7 +41,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 		chunkX *= 16;
 		chunkZ *= 16;
 
-		if (!skipPlants && this.generateIn(world)) {
+		if (!skipPlants && this.generateIn(world, false)) {
 
 			for (int i = 0; i < TieredPlants.list.length; i++) {
 				TieredPlants p = TieredPlants.list[i];
@@ -57,7 +60,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 			}
 		}
 
-		if (!skipOres && this.generateIn(world)) {
+		if (!skipOres && this.generateIn(world, true)) {
 			for (int i = 0; i < TieredOres.list.length; i++) {
 				TieredOres p = TieredOres.list[i];
 				boolean flag = false;
@@ -77,10 +80,15 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 
 	}
 
-	private boolean generateIn(World world) {
+	private boolean generateIn(World world, boolean ore) {
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			return true;
-		return world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState() && !world.provider.hasNoSky;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (ore ? !MystPages.Pages.ORES.existsInWorld(world) : !MystPages.Pages.PLANTS.existsInWorld(world)) {
+				return false;
+			}
+		}
+		return (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState()) && !world.provider.hasNoSky;
 	}
 
 	@Override

@@ -141,7 +141,7 @@ public class StructureCalculator implements Runnable {
 
 	private void generateMonument(int structureOriginX, int structureOriginZ) {
 		ChunkProviderChroma.monument.startCalculate(structureOriginX, structureOriginZ, rand);
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
 			String sg = "CHROMATICRAFT: Generated the monument at "+structureOriginX+", "+structureOriginZ+".";
 			ReikaJavaLibrary.pConsole(sg);
 		}
@@ -197,7 +197,7 @@ public class StructureCalculator implements Runnable {
 		int x = structureOriginX+(int)(r*MathHelper.cos(ang));
 		int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
 		s.generator.startCalculate(s.color, x, z, rand);
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) {
+		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
 			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ();
 			ReikaJavaLibrary.pConsole(sg);
 		}

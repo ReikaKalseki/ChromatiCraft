@@ -31,10 +31,10 @@ public class MonumentStructure {
 
 	private void doGenerate(ChunkSplicedGenerationCache world, int i, int j, int k) {
 
-		world.setBlock(i + 16, j + 0, k + 4, sh, mc);
-		world.setBlock(i + 4, j + 0, k + 26, sh, mc);
-		world.setBlock(i + 26, j + 0, k + 38, sh, mc);
-		world.setBlock(i + 38, j + 0, k + 16, sh, mc);
+		world.setBlock(i + 16, j + 0, k + 4, sh, ms);
+		world.setBlock(i + 4, j + 0, k + 26, sh, ms);
+		world.setBlock(i + 26, j + 0, k + 38, sh, ms);
+		world.setBlock(i + 38, j + 0, k + 16, sh, ms);
 
 		world.setBlock(i + 21, j + 0, k + 19, sh, mc);
 		world.setBlock(i + 21, j + 0, k + 20, sh, mc);

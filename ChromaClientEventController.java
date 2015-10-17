@@ -17,12 +17,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.EntityLiving;
@@ -69,6 +71,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -105,10 +108,12 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -123,6 +128,7 @@ public class ChromaClientEventController {
 	public static final ChromaClientEventController instance = new ChromaClientEventController();
 
 	protected static final Random rand = new Random();
+	protected static final RenderItem itemRender = new RenderItem();
 
 	private boolean editedSlimeModel = false;
 
@@ -968,8 +974,21 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
+	public void renderVoidCell(RenderItemInSlotEvent evt) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			ItemStack is = evt.getItem();
+			if (ChromaItems.VOIDCELL.matchWith(is)) {
+				ItemStack store = ItemVoidStorage.getStoredItem(is);
+				if (store != null) {
+					ReikaGuiAPI.instance.drawItemStack(itemRender, ReikaItemHelper.getSizedItemStack(store, 1), evt.slotX, evt.slotY);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void renderItemTags(RenderItemInSlotEvent evt) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+		if (GuiScreen.isCtrlKeyDown()) {
 			if (evt.hasItem() && evt.isHovered()) {
 				if (ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
 					ItemStack is = evt.getItem();

@@ -39,12 +39,14 @@ import Reika.ChromatiCraft.API.Event.PylonGenerationEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Aura.BaseAura;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -53,6 +55,7 @@ import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -213,8 +216,11 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	}
 
 	public boolean canGenerateIn(World world) {
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
-			return ChromaOptions.FLATGEN.getState();
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			return MystPages.Pages.PYLONS.existsInWorld(world);
+		}
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
+			return false;
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
@@ -225,7 +231,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
-		return ChromaOptions.MYSTGEN.getState();
+		return ChromaOptions.NONWORLDGEN.getState();
 	}
 
 	private boolean canGenerateAt(World world, int x, int y, int z) {

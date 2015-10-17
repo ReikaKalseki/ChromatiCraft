@@ -20,9 +20,9 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 
-public class TileEntityHeatLily extends TileEntityChromaticBase implements EffectPlant, BreakAction {
+public class TileEntityHeatLily extends TileEntityChromaticBase implements EffectPlant, LocationCached {
 
 	private StepTimer timer = new StepTimer(100);
 

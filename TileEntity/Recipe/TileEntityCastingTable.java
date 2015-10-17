@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -39,6 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -591,9 +593,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			if (NBTin != null) {
 				ReikaNBTHelper.combineNBT(NBTin, inv[9].stackTagCompound);
 				inv[9].stackTagCompound = (NBTTagCompound)NBTin.copy();
-				inv[9].stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, inv[9].stackTagCompound);
-				MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
 			}
+			inv[9].stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, inv[9].stackTagCompound);
+			MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
 			for (int i = 0; i < 6; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
 				if (te instanceof IInventory) {
@@ -790,7 +792,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
+	public void onPathBroken(CrystalFlow p, FlowFail f) {
 		//this.killCrafting();
 	}
 

@@ -23,8 +23,8 @@ import buildcraft.api.transport.IPipeTile.PipeType;
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public abstract class FluidIOChromaticBase extends TileEntityChromaticBase implements IFluidHandler, IPipeConnection {
 
-	protected HybridTank output = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase()+"out"), this.getCapacity());
-	protected HybridTank input = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase()+"in"), this.getCapacity());
+	protected final HybridTank output = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase()+"out"), this.getCapacity());
+	protected final HybridTank input = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase()+"in"), this.getCapacity());
 
 	public abstract int getCapacity();
 

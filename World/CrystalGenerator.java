@@ -20,12 +20,15 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 
 public class CrystalGenerator implements RetroactiveGenerator {
 
@@ -116,8 +119,18 @@ public class CrystalGenerator implements RetroactiveGenerator {
 			return 0;
 		if (world.provider.dimensionId == 1)
 			return 0;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (!MystPages.Pages.CRYSTALS.existsInWorld(world)) {
+				return 0;
+			}
+		}
 		if (world.provider.isHellWorld)
 			return ChromaOptions.NETHER.getState() ? 0.25F : 0;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (MystPages.Pages.DENSE.existsInWorld(world)) {
+				return 1.75F;
+			}
+		}
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		if (world.provider.dimensionId == ReikaTwilightHelper.getDimensionID())
 			return 2F;

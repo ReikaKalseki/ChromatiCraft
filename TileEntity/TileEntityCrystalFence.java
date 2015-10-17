@@ -211,7 +211,8 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 	public void triggerSegment(int i, boolean fadeColor) {
 		if (worldObj.isRemote) {
 			active.put(i, FADE_START+FADE_LENGTH);
-			colorFade[i] = fadeColor;
+			if (colorFade.length > i)
+				colorFade[i] = fadeColor;
 		}
 		else {
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.FENCETRIGGER.ordinal(), this, 64, i, fadeColor ? 1 : 0);

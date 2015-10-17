@@ -30,6 +30,7 @@ import appeng.api.storage.ICellRegistry;
 import appeng.api.storage.IMEInventoryHandler;
 import appeng.api.storage.StorageChannel;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
 
 @Strippable(value = "appeng.api.implementations.items.IStorageCell")
 public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
@@ -86,7 +87,7 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 		return 1;
 	}
 
-	@Override
+	//@Override
 	public int getBytesPerType(ItemStack is) {
 		return 1;
 	}
@@ -128,11 +129,30 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 
 			li.add(String.format("%s of %s item bytes used.", usedBytes, cellInv.getTotalBytes()));
 			li.add(String.format("%s of %s item types used.", cellInv.getStoredItemTypes(), cellInv.getTotalItemTypes()));
-			if (usedBytes > 0L)
+			if (usedBytes > 0L) {
 				li.add(String.format("contains %s items.", cellInv.getStoredItemCount()));
+
+				IItemList<IAEItemStack> items = cellInv.getAvailableItems(StorageChannel.ITEMS.createList());
+				li.add(String.format("Stores %s.", items.getFirstItem().getItemStack().getDisplayName()));
+			}
 		}
 		else {
 			li.add("Kind of useless without an ME system to add it to.");
+		}
+	}
+
+	@ModDependent(ModList.APPENG)
+	public static ItemStack getStoredItem(ItemStack is) {
+		if (ModList.APPENG.isLoaded()) {
+			ICellRegistry icr = AEApi.instance().registries().cell();
+			IMEInventoryHandler inv = icr.getCellInventory(is, null, StorageChannel.ITEMS);
+			ICellInventoryHandler icih = (ICellInventoryHandler)inv;
+			ICellInventory cellInv = icih.getCellInv();
+			IItemList<IAEItemStack> items = cellInv.getAvailableItems(StorageChannel.ITEMS.createList());
+			return items.isEmpty() ? null : items.getFirstItem().getItemStack(); //first since one type per cell
+		}
+		else {
+			return null;
 		}
 	}
 

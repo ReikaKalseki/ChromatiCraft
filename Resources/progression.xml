@@ -220,6 +220,17 @@
 			True stories, it seems. If only they warned of the danger...
 		</reveal>
 	</ocean>
+	<desertstruct>
+		<title>
+			Sandy Burrows
+		</title>
+		<hint>
+			Aside from the rare (and explosive) pyramids, do deserts hold other secrets?
+		</hint>
+		<reveal>
+			They do indeed, and their riches eclipse most others.
+		</reveal>
+	</desertstruct>
 	<die>
 		<title>
 			Painful Loss
@@ -385,17 +396,17 @@
 			I have all sixteen...maybe these are for that monument I need to repair...
 		</reveal>
 	</allcores>
-	<name>
+	<turbocharge>
 		<title>
-
+			Pylon Turbocharging
 		</title>
 		<hint>
-
+			This should be possible...if somewhat violent.
 		</hint>
 		<reveal>
-
+			More so than expected, but also far more valuable.
 		</reveal>
-	</name>
+	</turbocharge>
 	<name>
 		<title>
 

@@ -25,6 +25,8 @@ public class BlockStructureDataStorage extends BlockContainer {
 
 	public BlockStructureDataStorage(Material mat) {
 		super(mat);
+		this.setResistance(60000);
+		this.setBlockUnbreakable();
 	}
 
 	@Override

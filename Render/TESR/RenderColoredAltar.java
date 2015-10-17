@@ -103,13 +103,24 @@ public class RenderColoredAltar extends ChromaRenderBase {
 	private void renderFloatingCubes(TileEntityColoredAltar te, CrystalElement e, double par2, double par4, double par6, float ptick) {
 		ArrayList<Orbit> li = orbits.get(e);
 		double dtheta = te.getRenderTick()*4;
-		for (int i = 0; i < li.size(); i++) {
+
+		float pdist = (float)Minecraft.getMinecraft().thePlayer.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5);
+
+		int n = li.size()/(1+Minecraft.getMinecraft().gameSettings.particleSetting);
+		for (int i = 0; i < Math.min(n, li.size()); i++) {
 			Orbit o = li.get(i);
 			CubeRotation cb = te.cubeRotations[i];
 
-			for (double d = -24; d <= 0; d += 4) {
+			double dn = 4D*(1+Minecraft.getMinecraft().gameSettings.particleSetting/2D);
+			if (pdist > 8) {
+				dn = Math.min(12D, dn*2);
+			}
+			if (pdist > 16) {
+				dn = Math.min(16D, dn*2);
+			}
+			for (double d = -24; d <= 0; d += dn) {
 				DecimalPosition pos = o.getPosition(0.5, 1.25, 0.5, dtheta+d);
-				this.renderCubeAtPos(te, e, pos.xCoord, pos.yCoord, pos.zCoord, cb.angX, cb.angY, cb.angZ, ptick, d);
+				this.renderCubeAtPos(te, e, pos.xCoord, pos.yCoord, pos.zCoord, cb.angX, cb.angY, cb.angZ, ptick, d, pdist);
 			}
 
 			double v = 0.375;
@@ -124,7 +135,7 @@ public class RenderColoredAltar extends ChromaRenderBase {
 		}
 	}
 
-	private void renderCubeAtPos(TileEntityColoredAltar te, CrystalElement e, double x, double y, double z, double r1, double r2, double r3, float ptick, double f) {
+	private void renderCubeAtPos(TileEntityColoredAltar te, CrystalElement e, double x, double y, double z, double r1, double r2, double r3, float ptick, double f, float pdist) {
 		GL11.glPushMatrix();
 
 		Tessellator v5 = Tessellator.instance;
@@ -145,7 +156,7 @@ public class RenderColoredAltar extends ChromaRenderBase {
 
 		float p = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		if (f == 0) {
-			float w = Math.max(0.125F, 2F-0.125F*(float)Minecraft.getMinecraft().thePlayer.getDistance(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5));
+			float w = Math.max(0.125F, 2F-0.125F*pdist);
 			GL11.glLineWidth(w);
 		}
 

@@ -62,8 +62,8 @@ public class ItemMagicRegistry {
 		this.addElement("ingotGold", CrystalElement.PURPLE, 2);
 		this.addElement(Items.coal, CrystalElement.YELLOW, 4);
 		this.addElement(Items.coal, CrystalElement.ORANGE, 4);
-		this.addElement("dustRedstone", CrystalElement.YELLOW, 2);
-		this.addElement("dustRedstone", CrystalElement.LIME, 2);
+		this.addElement("redstone", CrystalElement.YELLOW, 2);
+		this.addElement("redstone", CrystalElement.LIME, 2);
 		this.addElement("dustGlowstone", CrystalElement.BLUE, 4);
 		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.BROWN, 3);
 		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.WHITE, 2);

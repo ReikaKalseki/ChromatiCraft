@@ -109,10 +109,18 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 				return ChromaIcons.TRANSPARENT.getIcon();
 			case 7:
 				return ChromaIcons.TRANSPARENT.getIcon();
+			case 8:
+				return ChromaIcons.BROADCAST.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}
-
+	/*
+	@Override
+	public int colorMultiplier(IBlockAccess iba, int x, int y, int z) {
+		TileEntityBase te = (TileEntityBase)iba.getTileEntity(x, y, z);
+		return te instanceof TileEntityCrystalBroadcaster ? ((TileEntityCrystalBroadcaster)te).getActiveColor().getColor() : 0xffffff;
+	}
+	 */
 	@Override
 	public ProgressStage[] getTriggers(EntityPlayer ep, World world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
@@ -122,7 +130,13 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 
 	@Override
 	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
-		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON;
+		TileEntityBase te = (TileEntityBase)world.getTileEntity(x, y, z);
+		if (te instanceof NaturalCrystalSource)
+			return true;
+		else if (te instanceof TileEntityStructControl) {
+			return !((TileEntityStructControl)te).isBreakable();
+		}
+		return false;
 	}
 
 }

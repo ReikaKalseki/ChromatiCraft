@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -39,6 +40,8 @@ public class EntityBlurFX extends EntityFX {
 
 	private int preColor = -1;
 	private int fadeColor = -1;
+
+	private Coordinate destination;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -126,6 +129,16 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setCyclingColor(float scale) {
+		cyclescale = scale;
+		return this;
+	}
+
+	public EntityBlurFX markDestination(int x, int y, int z) {
+		destination = new Coordinate(x, y, z);
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -141,6 +154,13 @@ public class EntityBlurFX extends EntityFX {
 			}
 			if (isCollidedHorizontally) {
 
+			}
+		}
+
+		if (destination != null) {
+			Coordinate c = new Coordinate(this);
+			if (c.equals(destination)) {
+				this.setDead();
 			}
 		}
 
@@ -223,11 +243,6 @@ public class EntityBlurFX extends EntityFX {
 	public int getFXLayer()
 	{
 		return 2;
-	}
-
-	public EntityBlurFX setCyclingColor(float scale) {
-		cyclescale = scale;
-		return this;
 	}
 
 }

@@ -19,7 +19,9 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -46,7 +48,7 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityPersonalCharger te = (TileEntityPersonalCharger)tile;
 
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			//GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -65,13 +67,13 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 
 			ChromaIcons[] icons = ACTIVE_ICONS;
 
-			if (!te.canConduct()) {
+			if (!te.canConduct() && !StructureRenderer.isRenderingTiles()) {
 				s = 0.5;
 				icons = INACTIVE_ICONS;
 			}
 
 			for (int i = 0; i < icons.length; i++) {
-				double z = -0.005;
+				double z = -0.005*i;
 				IIcon ico = icons[i].getIcon();
 				float u = ico.getMinU();
 				float v = ico.getMinV();
@@ -81,14 +83,24 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 				boolean last = i == icons.length-1;
 				double s1 = last ? s*0.75 : s;
 				GL11.glScaled(s1, s1, s1);
-				RenderManager rm = RenderManager.instance;
-				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+				if (StructureRenderer.isRenderingTiles()) {
+					GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);
+					GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+				}
+				else {
+					RenderManager rm = RenderManager.instance;
+					GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+					GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+				}
 
 				int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 				//ReikaJavaLibrary.pConsole(te.getEnergy());
 
 				int color = last ? 0xffffff : te.getRenderColor();
+
+				if (!last && StructureRenderer.isRenderingTiles()) {
+					color = CrystalElement.elements[(int)((System.currentTimeMillis()/4000)%16)].getColor();
+				}
 
 				v5.startDrawingQuads();
 				v5.setColorRGBA_I(color, alpha);

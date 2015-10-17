@@ -60,9 +60,9 @@ public class ContainerMEDistributor extends CoreContainer {
 			if (mouse == 0) {
 				tile.setMapping(idx, ReikaItemHelper.getSizedItemStack(held, 1));
 			}
-			else if (mouse == 1) {
-				tile.toggleFuzzy(idx%tile.NSLOTS);
-			}
+			//else if (mouse == 1) {
+			//	tile.toggleFuzzy(idx%tile.NSLOTS);
+			//}
 			//this.detectAndSendChanges();
 			return held;
 		}

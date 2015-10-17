@@ -16,7 +16,6 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -29,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -45,7 +45,7 @@ public class CrystalWand extends WandRod {
 
 	public CrystalWand() {
 		super("CRYSTALWAND", 6000, ChromaStacks.crystalWand, 18, null, null);
-		this.setTexture(new ResourceLocation("custom_path", "Reika/ChromatiCraft/Textures/Wands/crystalwand.png"));
+		this.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/crystalwand.png"));
 	}
 
 	@Override

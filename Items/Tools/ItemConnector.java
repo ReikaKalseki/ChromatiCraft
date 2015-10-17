@@ -134,6 +134,11 @@ public class ItemConnector extends ItemChromaTool {
 					is.stackTagCompound = null;
 					return false;
 				}
+				else if (rf1 == rf2) {
+					ReikaChatHelper.writeString("Cannot link a rift to itself!");
+					is.stackTagCompound = null;
+					return false;
+				}
 				rf1.reset();
 				rf2.reset();
 				boolean flag = rf1.linkTo(w2, x2, y2, z2);
@@ -187,6 +192,11 @@ public class ItemConnector extends ItemChromaTool {
 				}
 				if (rf2 == null) {
 					ReikaChatHelper.writeString("Tile missing at "+x2+", "+y2+", "+z2);
+					is.stackTagCompound = null;
+					return false;
+				}
+				else if (rf1 == rf2) {
+					ReikaChatHelper.writeString("Cannot link a window to itself!");
 					is.stackTagCompound = null;
 					return false;
 				}
@@ -245,6 +255,11 @@ public class ItemConnector extends ItemChromaTool {
 				}
 				if (rec == null) {
 					ReikaChatHelper.writeString("Tile missing at "+rx+", "+ry+", "+rz);
+					is.stackTagCompound = null;
+					return false;
+				}
+				else if (rec == em) {
+					ReikaChatHelper.writeString("Cannot link a tile to itself!");
 					is.stackTagCompound = null;
 					return false;
 				}

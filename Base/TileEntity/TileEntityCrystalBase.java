@@ -14,9 +14,11 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
-import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
@@ -102,11 +104,15 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 		return 0.35;
 	}
 
-	public void onPathCompleted() {
+	public void onPathCompleted(CrystalFlow p) {
 
 	}
 
-	public void onPathBroken(CrystalElement e) {
+	public void onPathBroken(CrystalFlow p, FlowFail f) {
+
+	}
+
+	public void onPathConnected(CrystalPath p) {
 
 	}
 

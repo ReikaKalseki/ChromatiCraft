@@ -13,18 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CrystalTransmitterBase extends TileEntityCrystalBase implements CrystalTransmitter {
 
@@ -52,7 +48,8 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!targets.isEmpty() && world.isRemote) {
-			this.spawnBeamParticles(world, x, y, z);
+			//this.spawnBeamParticles(world, x, y, z);
+			ChromaFX.drawLeyLineParticles(world, x, y, z, targets);
 		}
 	}
 
@@ -61,7 +58,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 		super.onFirstTick(world, x, y, z);
 		targets.clear();
 	}
-
+	/*
 	@SideOnly(Side.CLIENT)
 	private void spawnBeamParticles(World world, int x, int y, int z) {
 		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
@@ -80,7 +77,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 			}
 		}
 	}
-
+	 */
 	private void onTargetChanged() {
 		renderAlpha = 512;
 		this.syncAllData(true);
@@ -151,7 +148,7 @@ public abstract class CrystalTransmitterBase extends TileEntityCrystalBase imple
 	}
 
 	@Override
-	public final AxisAlignedBB getRenderBoundingBox() {
+	public AxisAlignedBB getRenderBoundingBox() {
 		return !targets.isEmpty() ? INFINITE_EXTENT_AABB : super.getRenderBoundingBox();
 	}
 

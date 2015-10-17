@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -23,16 +24,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
@@ -45,6 +51,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import com.bioxx.tfc.api.Enums.EnumItemReach;
@@ -64,6 +72,23 @@ public class ItemChromaPlacer extends Item implements ISize {
 		this.setMaxDamage(0);
 		maxStackSize = 64;
 		this.setCreativeTab(ChromatiCraft.instance.isLocked() ? null : ChromatiCraft.tabChroma);
+	}
+
+	@Override
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean select) {
+		if (select && !world.isRemote) {
+			if (ChromaTiles.TEList[is.getItemDamage()].isRepeater()) {
+				if (world.getTotalWorldTime()%40 == 0) {
+					int r = 64;
+					int x = MathHelper.floor_double(e.posX);
+					int y = MathHelper.floor_double(e.posY);
+					int z = MathHelper.floor_double(e.posZ);
+					for (CrystalNetworkTile te : CrystalNetworker.instance.getNearTilesOfType(world, x, y, z, TileEntityCrystalRepeater.class, r)) {
+						((TileEntityCrystalRepeater)te).triggerConnectionRender();
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -255,6 +280,23 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (r.isRepeater() && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted")) {
 			li.add(EnumChatFormatting.GOLD+"Turbocharged");
+		}
+		if (is.stackTagCompound != null && r.isLumenTile()) {
+			ElementTagCompound tag = ElementTagCompound.createFromNBT(is.stackTagCompound.getCompoundTag("energy"));
+			StringBuilder sb = new StringBuilder();
+			sb.append("{");
+			for (int i = 0; i < 16; i++) {
+				CrystalElement e = CrystalElement.elements[i];
+				int amt = tag.getValue(e);
+				String val = String.format("%d%s", Math.round(ReikaMathLibrary.getThousandBase(amt)), ReikaEngLibrary.getSIPrefix(amt));
+				String s = e.getChatColorString()+val+EnumChatFormatting.RESET.toString();
+				sb.append(s);
+				if (i < 15) {
+					sb.append("/");
+				}
+			}
+			sb.append("}");
+			li.add(sb.toString());
 		}
 	}
 

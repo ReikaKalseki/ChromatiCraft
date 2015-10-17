@@ -9,24 +9,35 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import java.util.HashSet;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
@@ -36,7 +47,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 
 		ChromaTiles c = te.getTile();
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1 && te.canConduct()) {
+		if (tile.hasWorldObj() && ((MinecraftForgeClient.getRenderPass() == 1 && te.canConduct()) || StructureRenderer.isRenderingTiles())) {
 			//TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			IIcon ico = ChromaIcons.SPARKLE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
@@ -54,11 +65,20 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 
 			Tessellator v5 = Tessellator.instance;
 			GL11.glTranslated(0.5, 0.5, 0.5);
+
+			this.renderPlayerConnectivityLine(te, par8);
+
 			double s = 0.75;
 			GL11.glScaled(s, s, s);
-			RenderManager rm = RenderManager.instance;
-			GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-			GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			if (StructureRenderer.isRenderingTiles()) {
+				GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);
+				GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+			}
+			else {
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			}
 
 			v5.startDrawingQuads();
 			v5.addVertexWithUV(-1, -1, 0, u, v);
@@ -123,6 +143,72 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				ReikaRenderHelper.enableEntityLighting();
 			RenderHelper.enableStandardItemLighting();
 			//GL11.glEnable(GL11.GL_LIGHTING);
+		}
+	}
+
+	private void renderConnectivityLines(TileEntityCrystalRepeater te, float par8) {
+		int a = te.getConnectionRenderAlpha();
+		if (a != 0) {
+			HashSet<WorldLocation> c = te.getRenderedConnectableTiles();
+			//ReikaJavaLibrary.pConsole(c);
+			if (c != null) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glEnable(GL11.GL_LINE_STIPPLE);
+				GL11.glLineWidth(6);
+				GL11.glLineStipple(24, (short)0xAAAA);
+				BlendMode.DEFAULT.apply();
+
+				Tessellator v5 = Tessellator.instance;
+				v5.startDrawing(GL11.GL_LINES);
+
+				v5.setColorRGBA_I(0xffffff, a);
+
+				for (WorldLocation loc : c) {
+					if (loc.xCoord+loc.yCoord+loc.zCoord > te.xCoord+te.yCoord+te.zCoord) { //hack to ensure 1-way rendering
+						v5.addVertex(0, 0, 0);
+						v5.addVertex(loc.xCoord-te.xCoord, loc.yCoord-te.yCoord, loc.zCoord-te.zCoord);
+					}
+				}
+
+				v5.draw();
+
+				GL11.glPopAttrib();
+			}
+		}
+	}
+
+	private void renderPlayerConnectivityLine(TileEntityCrystalRepeater te, float par8) {
+		int a = te.getConnectionRenderAlpha();
+		if (a != 0) {
+			//ReikaJavaLibrary.pConsole(c);
+			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlockClient(4.5, false);
+			if (mov != null && mov.typeOfHit == MovingObjectType.BLOCK) {
+				ForgeDirection dir = mov.sideHit >= 0 ? ForgeDirection.VALID_DIRECTIONS[mov.sideHit] : ForgeDirection.UNKNOWN;
+				int x = mov.blockX+dir.offsetX;
+				int y = mov.blockY+dir.offsetY;
+				int z = mov.blockZ+dir.offsetZ;
+				if (ReikaMathLibrary.py3d(x-te.xCoord, y-te.yCoord, z-te.zCoord) <= te.getSendRange()) {
+					if (PylonFinder.lineOfSight(Minecraft.getMinecraft().theWorld, te.xCoord, te.yCoord, te.zCoord, x, y, z)) {
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glEnable(GL11.GL_LINE_STIPPLE);
+						GL11.glLineWidth(6);
+						GL11.glLineStipple(24, (short)0xAAAA);
+						BlendMode.DEFAULT.apply();
+
+						Tessellator v5 = Tessellator.instance;
+						v5.startDrawing(GL11.GL_LINES);
+
+						v5.setColorRGBA_I(0xffffff, a);
+
+						v5.addVertex(0, 0, 0);
+						v5.addVertex(x-te.xCoord, y-te.yCoord, z-te.zCoord);
+
+						v5.draw();
+
+						GL11.glPopAttrib();
+					}
+				}
+			}
 		}
 	}
 

@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -257,6 +258,11 @@ public class BlockPylonStructure extends Block {
 			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
 		}
 
+		te = world.getTileEntity(mx, my+5, mz);
+		if (te instanceof TileEntityCloakingTower) {
+			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -314,6 +320,16 @@ public class BlockPylonStructure extends Block {
 		te = world.getTileEntity(mx, my+6, mz);
 		if (te instanceof TileEntityPersonalCharger) {
 			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
+		}
+
+		te = world.getTileEntity(mx, my+6, mz);
+		if (te instanceof TileEntityPersonalCharger) {
+			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
+		}
+
+		te = world.getTileEntity(mx, my+5, mz);
+		if (te instanceof TileEntityCloakingTower) {
+			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
 		}
 
 		for (int k = 0; k < 6; k++) {

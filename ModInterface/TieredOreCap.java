@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
@@ -23,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -34,7 +34,7 @@ public class TieredOreCap extends WandCap {
 	public static void registerAll() {
 		for (TieredOres t : items.keySet()) {
 			WandCap cap = new TieredOreCap(t);
-			cap.setTexture(new ResourceLocation("custom_path", "Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
+			cap.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
 		}
 	}
 

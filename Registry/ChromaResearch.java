@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -77,6 +78,7 @@ public enum ChromaResearch implements ProgressElement {
 	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
+	STRUCTURES("Structures",			ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
@@ -84,10 +86,12 @@ public enum ChromaResearch implements ProgressElement {
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 	USINGRUNES("Crafting With Runes",	ChromaBlocks.RUNE.getStackOfMetadata(1),				ResearchLevel.RUNECRAFT, 	ProgressStage.RUNEUSE),
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	DIMENSION2("A Volatile World",		ChromaBlocks.GLOWSAPLING.getStackOf(),					ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
 	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.ENDGAME,		ProgressStage.CTM),
 	SELFCHARGE("Energy Internalization",ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
+	MYSTPAGE("World Authoring",			new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -135,6 +139,8 @@ public enum ChromaResearch implements ProgressElement {
 	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
 	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.CTM),
 	TURRET(			ChromaTiles.TURRET,			ResearchLevel.BASICCRAFT,		ProgressStage.KILLMOB),
+	BROADCAST(		ChromaTiles.BROADCAST,		ResearchLevel.NETWORKING),
+	CLOAKING(		ChromaTiles.CLOAKING,		ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -242,6 +248,8 @@ public enum ChromaResearch implements ProgressElement {
 	DESERT(			ChromaStructures.Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
 	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
+	BROADCASTER(	ChromaStructures.Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	CLOAKTOWER(		ChromaStructures.Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
 	;
 
 	private final ItemStack iconItem;
@@ -896,6 +904,8 @@ public enum ChromaResearch implements ProgressElement {
 			return !ChromaOptions.BALLLIGHTNING.getState();
 		if (this == NODENET)
 			return !ModList.THAUMCRAFT.isLoaded();
+		if (this == MYSTPAGE)
+			return !ModList.MYSTCRAFT.isLoaded();
 		return false;
 	}
 

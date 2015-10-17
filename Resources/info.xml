@@ -6,6 +6,9 @@
 	<crystals>
 		Crystal energy, if it reaches a critical density, seems to coalesce and crystallize, forming interesting structures that radiate an aura related to the crystal. Aside from their obvious utility as a source of mild effect boosts, their stored crystal energy is clearly going to be invaluable. One wonders how they handle the corrupting influence of the Nether...
 	</crystals>
+	<structures>
+		You appear to not be the first to attempt to investigate these magic forces. Scattered around the world you find a plethora of constructions - shrines, burrows, even large temples - left by those who came before you. Maybe their knowledge, if reacquired, could prove useful.
+	</structures>
 	<pylons>
 		At points where the energy field seems to be the strongest, you tend to find dark stone structures adorned with sparkling aura and topped with a beacon that visibly and audibly radiates raw power. Unfiltered and uncontained, they seem too powerful and unstable - a lesson you quickly learned - to be easily used, but you suspect that later on they will be a key component of your research.
 	</pylons>
@@ -42,12 +45,12 @@
 	<selfcharge>
 		You noticed that by using the manipulator on certain energy sources - most notably pylons - you could drain some of their energy into yourself. However, your lack of experience with this meant you could only store small amounts. No doubt increasing that experience and collecting as much as you can will help you surmount that barrier.
 	</selfcharge>
-	<name>
-		
-	</name>
-	<name>
-		
-	</name>
+	<dimension2>
+		Having been to this strange other world, one thing in particular stands out to you: Its volatility. Like the proverbial cat in a famous and usually misunderstood experiment, it, until observed, exists in some sort of undefined state, and as such lacks persistence from one visit to the next. Like many other things, that is a double-edged sword; Infinite resource replenishment, but anything you leave there will not be there for your return.
+	</dimension2>
+	<mystpage>
+		You have found a way to create worlds of your own by scribbling random symbols into a book. Bound only by the limits of your own avarice, you have created worlds with airborne veins of diamond ore, with oceans of rare fluids, and with fields of valuable blocks, plants, and items. Perhaps other symbols exist for things like pylons and those buried crystals.
+	</mystpage>
 	<name>
 		
 	</name>

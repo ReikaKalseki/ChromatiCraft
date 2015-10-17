@@ -88,7 +88,16 @@ public class BlockColoredAltar extends CrystalTypeBlock {
 		//Have particles (blur) spill over the rim, use some more to make a pulsing glow effect in the middle, and then make some laser ones lazily float up
 		@SideOnly(Side.CLIENT)
 		private void renderParticles(CrystalElement e) {
+			int ps = Minecraft.getMinecraft().gameSettings.particleSetting;
 			int n = 2;
+			switch(ps) {
+				case 1:
+					n = 1;
+					break;
+				case 2:
+					n = rand.nextInt(2);
+					break;
+			}
 			for (int i = 0; i < n; i++) {
 				double r = ReikaRandomHelper.getRandomPlusMinus(0.55, 0.05);
 				double ang = rand.nextDouble()*360;;//(ticks*8+i*360/n)%360

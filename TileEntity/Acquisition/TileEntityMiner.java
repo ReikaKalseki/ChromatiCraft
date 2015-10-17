@@ -16,6 +16,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -25,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
@@ -33,17 +35,23 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
+import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -52,7 +60,7 @@ import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile {
+public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile, ChunkLoadingTile {
 
 	private boolean digging = false;
 	private boolean digReady = false;
@@ -69,6 +77,10 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 	private double particleVY;
 
 	public int progress;
+
+	private boolean dropFlag = false;
+
+	private boolean chunkloaded;
 
 	private static int TICKSTEP = 2048;
 	private int index;
@@ -113,87 +125,113 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
-		digging = digReady = false;
+		digging = digReady = dropFlag = false;
 		readY = 0;
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
-			int n = this.hasSpeed() ? 4 : 1;
-			for (int k = 0; k < n; k++) {
-				if (digging && !coords.isEmpty()) {
-					if (this.hasEnergy(required)) {
-						Coordinate c = coords.get(index);
-						int dx = c.xCoord;
-						int dy = c.yCoord;
-						int dz = c.zCoord;
-						Block id = this.parseBlock(world.getBlock(dx, dy, dz));
-						int meta2 = world.getBlockMetadata(dx, dy, dz);
-						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-						this.removeFound(world, dx, dy, dz, id, meta2);
-						if (id instanceof SpecialOreBlock) {
-							this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
-						}
-						else if (ReikaBlockHelper.isOre(id, meta2)) {
-							//ores.addBlockCoordinate(dx, dy, dz);
-							this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
-						}
-						else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-							this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
-						}
-						else if (id instanceof MinerBlock) {
-							this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
-						}
-						this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
-						index++;
-						if (index >= coords.size()) {
-							digging = false;
-							digReady = false;
-							coords.clear();
-							found.clear();
-						}
-					}
-				}
-				else if (!digReady) {
-					for (int i = 0; i < TICKSTEP; i++) {
-						int dx = x+readX;
-						int dy = readY;
-						int dz = z+readZ;
-						ReikaWorldHelper.forceGenAndPopulate(world, dx, dy, dz, meta);
-						Block id = this.parseBlock(world.getBlock(dx, dy, dz));
-						int meta2 = world.getBlockMetadata(dx, dy, dz);
-						//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
-						boolean add = false;
-						if (ReikaBlockHelper.isOre(id, meta2)) {
-							//ores.addBlockCoordinate(dx, dy, dz);
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (id instanceof MinerBlock && ((MinerBlock)id).isMineable(meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						else if (this.shouldMine(id, meta2)) {
-							add = coords.add(new Coordinate(dx, dy, dz));
-						}
-						if (add)
-							this.addFound(world, dx, dy, dz, id, meta2);
-						this.updateReadPosition();
-						if (readY >= worldObj.getActualHeight()) {
-							digReady = true;
-							readX = 0;
-							readY = 0;
-							readZ = 0;
-						}
-					}
+			if (dropFlag) {
+				if (this.getTicksExisted()%20 == 0) {
+					this.doDropWarning(world, x, y, z);
 				}
 			}
-			progress = readY;
+			else {
+				int n = this.hasSpeed() ? 4 : 1;
+				for (int k = 0; k < n; k++) {
+					if (digging && !coords.isEmpty()) {
+						//this.prepareChunkloading();
+						if (this.hasEnergy(required)) {
+							Coordinate c = coords.get(index);
+							int dx = c.xCoord;
+							int dy = c.yCoord;
+							int dz = c.zCoord;
+							Block id = this.parseBlock(world.getBlock(dx, dy, dz));
+							int meta2 = world.getBlockMetadata(dx, dy, dz);
+							//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+							this.removeFound(world, dx, dy, dz, id, meta2);
+							if (id instanceof SpecialOreBlock) {
+								this.dropSpecialOreBlock(world, x, y, z, dx, dy, dz, (SpecialOreBlock)id, meta2);
+							}
+							else if (ReikaBlockHelper.isOre(id, meta2)) {
+								//ores.addBlockCoordinate(dx, dy, dz);
+								this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
+							}
+							else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
+								this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
+							}
+							else if (id instanceof MinerBlock) {
+								this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
+							}
+							this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+							index++;
+							if (index >= coords.size()) {
+								this.finishDigging();
+							}
+						}
+					}
+					else if (!digReady) {
+						this.prepareChunkloading();
+						for (int i = 0; i < TICKSTEP; i++) {
+							int dx = x+readX;
+							int dy = readY;
+							int dz = z+readZ;
+							ReikaWorldHelper.forceGenAndPopulate(world, dx, dy, dz, meta);
+							Block id = this.parseBlock(world.getBlock(dx, dy, dz));
+							int meta2 = world.getBlockMetadata(dx, dy, dz);
+							//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);
+							boolean add = false;
+							if (ReikaBlockHelper.isOre(id, meta2)) {
+								//ores.addBlockCoordinate(dx, dy, dz);
+								add = coords.add(new Coordinate(dx, dy, dz));
+							}
+							else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
+								add = coords.add(new Coordinate(dx, dy, dz));
+							}
+							else if (id instanceof MinerBlock && ((MinerBlock)id).isMineable(meta2)) {
+								add = coords.add(new Coordinate(dx, dy, dz));
+							}
+							else if (this.shouldMine(id, meta2)) {
+								add = coords.add(new Coordinate(dx, dy, dz));
+							}
+							if (add)
+								this.addFound(world, dx, dy, dz, id, meta2);
+							this.updateReadPosition();
+							if (readY >= worldObj.getActualHeight()) {
+								this.prepareDigging();
+							}
+						}
+					}
+				}
+				progress = readY;
+			}
 		}
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
+	}
+
+	private void prepareChunkloading() {
+		if (!chunkloaded) {
+			chunkloaded = true;
+			ChunkManager.instance.loadChunks(this);
+		}
+	}
+
+	private void prepareDigging() {
+		digReady = true;
+		readX = 0;
+		readY = 0;
+		readZ = 0;
+		ChunkManager.instance.unloadChunks(this);
+	}
+
+	private void finishDigging() {
+		digging = false;
+		digReady = false;
+		coords.clear();
+		found.clear();
+		//ChunkManager.instance.unloadChunks(this);
 	}
 
 	private Block parseBlock(Block b) {
@@ -414,8 +452,30 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 						flag = false;
 				}
 			}
-			if (flag)
+			if (flag) {
 				ReikaItemHelper.dropItem(world, x+0.5, y+1.5, z+0.5, is);
+				dropFlag = true;
+				this.doDropWarning(world, x, y, z);
+			}
+		}
+	}
+
+	private void doDropWarning(World world, int x, int y, int z) {
+		ChromaSounds.ERROR.playSoundAtBlock(this);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MINERJAM.ordinal(), this, 32);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doWarningParticles(World world, int x, int y, int z) {
+		int n = 2+rand.nextInt(6);
+		for (int i = 0; i < n; i++) {
+			double rx = x+rand.nextDouble();
+			double ry = y+rand.nextDouble();
+			double rz = z+rand.nextDouble();
+			int l = 10+rand.nextInt(20);
+			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+			EntityFX fx = new EntityCenterBlurFX(world, rx, ry, rz).setGravity(g).setLife(l);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -443,6 +503,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 	public boolean triggerDigging() {
 		if (this.isReady()) {
 			digging = true;
+			dropFlag = false;
 			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;
 		}
@@ -494,6 +555,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 		digReady = NBT.getBoolean("dig2");
 		index = NBT.getInteger("index");
 
+		dropFlag = NBT.getBoolean("dropped");
+
 		NBTTagList li = NBT.getTagList("count", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound tag = (NBTTagCompound)o;
@@ -522,6 +585,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 			li.appendTag(tag);
 		}
 		NBT.setTag("count", li);
+
+		NBT.setBoolean("dropped", dropFlag);
 	}
 
 	@Override
@@ -547,6 +612,16 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile 
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public void breakBlock() {
+		ChunkManager.instance.unloadChunks(this);
+	}
+
+	@Override
+	public Collection<ChunkCoordIntPair> getChunksToLoad() {
+		return ChunkManager.getChunkSquare(xCoord, zCoord, range);
 	}
 
 }

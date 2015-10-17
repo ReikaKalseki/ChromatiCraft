@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -49,7 +50,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"thaumcraft.api.crafting.IInfusionStabiliser"})
-public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRenderedBlock, IInfusionStabiliser {
+public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRenderedBlock, IInfusionStabiliser, SemiUnbreakable {
 
 	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
@@ -63,10 +64,10 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
-		return this.isUnbreakable(world, x, y, z) ? -1 : super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
+		return this.isUnbreakable(world, x, y, z, world.getBlockMetadata(x, y, z)) ? -1 : super.getPlayerRelativeBlockHardness(ep, world, x, y, z);
 	}
 
-	protected boolean isUnbreakable(IBlockAccess iba, int x, int y, int z) {
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
 		return false;
 	}
 
@@ -259,7 +260,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 					break;
 				case WHITE:
 					//ReikaPotionHelper.clearPotionsExceptPerma(e);
-					ReikaPotionHelper.clearBadPotions(e);
+					ReikaPotionHelper.clearBadPotions(e, level > 0 ? null : CrystalPotionController.ignoredBadPotionsForLevelZero());
 					break;
 				case PURPLE:
 					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {

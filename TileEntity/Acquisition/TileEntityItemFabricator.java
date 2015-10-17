@@ -244,4 +244,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		return craftingTick > 0 && recipe != null ? recipe.energy.copy() : null;
 	}
 
+	@Override
+	public double getMaxRenderDistanceSquared() {
+		return super.getMaxRenderDistanceSquared()*4;
+	}
+
 }

@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
@@ -36,6 +37,7 @@ import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 public class GuiProgressStages extends GuiScrollingPage {
 
@@ -132,8 +134,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 	private void renderTree(int posX, int posY) {
 		locations.clear();
-		this.renderElements(posX, posY);
 		this.renderLines(posX, posY);
+		this.renderElements(posX, posY);
 	}
 
 	private void renderLines(int posX, int posY) {
@@ -151,12 +153,21 @@ public class GuiProgressStages extends GuiScrollingPage {
 			Point pt2 = renderPositions.get(par);
 			int x1 = dx+pt.getX()+elementWidth/2;
 			int y1 = dy+pt.getY();
+			/*
 			if (this.elementOnScreen(p, posX, posY, x1, y1)) {
 				int x2 = dx+pt2.getX()+elementWidth/2;
 				int y2 = dy+pt2.getY()+elementHeight;
 				if (this.elementOnScreen(par, posX, posY, x2, y2)) {
 					api.drawLine(x1, y1, x2, y2, 0xffffff);
 				}
+			}
+			 */
+			int x2 = dx+pt2.getX()+elementWidth/2;
+			int y2 = dy+pt2.getY()+elementHeight;
+
+			ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(x1, x2, y1, y2, posX+8, posY+26, posX+xSize-8, posY+ySize/2+6);
+			if (ps != null) {
+				api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, 0xffffff);
 			}
 		}
 	}

@@ -296,7 +296,7 @@
 	</aspectjar>
 	<farmer>
 		<desc>
-			Harvesting crops is somewhat of a hassle. Doing it manually is extremely slow and ineffective, and those fans you used, while they work, are loud and tend to send items flying. Channelling nature and energy elements is likely to provide a superior solution.
+			Harvesting crops is somewhat of a hassle. Doing it manually is extremely slow and ineffective, and those fans you used, while they work, are loud and tend to send items flying. Channelling nature-based energy is likely to provide a superior solution.
 		</desc>
 		<note>
 
@@ -374,14 +374,14 @@
 
 		</note>
 	</personal>
-	<name>
+	<cloaking>
 		<desc>
-
+			Rather inconveniently, you have found yourself largely confined to your base during the night, as it is your only defence against the waves of mobs, which lock onto you the moment you step outside. And this is not counting the time a horde of zombies, detecting the light of your constructions, made a beeline to you and destroyed most of the structure that stood in their way. After much frustration, it hit you: A cloaking device, which makes you undetectable unless at point-blank range. Pleasantly, it even smells of raspberries.
 		</desc>
 		<note>
-
+			Requires the tower structure around it to focus its energy and function correctly
 		</note>
-	</name>
+	</cloaking>
 	<name>
 		<desc>
 

@@ -59,7 +59,7 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 			li.add(ChromaBlocks.GLOWSAPLING.getStackOf());
 		}
 		else if (rand.nextInt(1+(1+fortune)/2) > 0) {
-			li.add(new ItemStack(Items.glowstone_dust, 1+rand.nextInt(1+fortune), 1));
+			li.add(new ItemStack(Items.glowstone_dust, 1+rand.nextInt(1+fortune), 0));
 		}
 		return li;
 	}

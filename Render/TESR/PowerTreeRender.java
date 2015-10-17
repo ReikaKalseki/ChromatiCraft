@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -36,7 +37,7 @@ public class PowerTreeRender extends ChromaRenderBase {
 		TileEntityPowerTree te = (TileEntityPowerTree)tile;
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
-		if (!te.isInWorld() || MinecraftForgeClient.getRenderPass() == 1) {
+		if (!te.isInWorld() || MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles()) {
 			double o = 0.005;
 			double x = -o;
 			double y = -o;

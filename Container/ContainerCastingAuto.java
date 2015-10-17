@@ -35,13 +35,19 @@ public class ContainerCastingAuto extends CoreContainer {
 
 		tile = te;
 
-		this.addSlotToContainer(new Slot(inventory, 0, 8, 8));
+		this.addSlotToContainer(new Slot(inventory, 0, 8, 34));
 
+		/*
 		for (var6 = 0; var6 < 3; ++var6)
 			for (var7 = 0; var7 < 9; ++var7)
 				this.addSlotToContainer(new Slot(player.inventory, var7 + var6 * 9 + 9, 8 + var7 * 18, 112 + var6 * 18));
 		for (var6 = 0; var6 < 9; ++var6)
 			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 170));
+		 */
+
+		for (var6 = 0; var6 < 9; ++var6)
+			for (var7 = 0; var7 < 4; ++var7)
+				this.addSlotToContainer(new Slot(player.inventory, var6 + var7 * 9, 146 + var7 * 18, 57 + var6 * 18));
 
 		//inventory.setInventorySlotContents(0, te.getCurrentRecipeOutput());
 

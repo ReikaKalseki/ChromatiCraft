@@ -73,7 +73,7 @@ public class FixedMazeDoors extends StructurePiece {
 
 		parent.generateDataTile(x+24, y+5, z+11);
 
-		for (int i = 0; i < ids.length*2+1; i++) {
+		for (int i = 0; i < ids.length*2; i++) {
 			for (int d = -1; d <= 1; d++) {
 				if (i%2 == 1) {
 					this.generateDoor(world, x-1-i, y+1, z+9+d, i/2);

@@ -9,7 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,8 +27,10 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 
 public class CrystalPotionController {
 
-	private static HashMap<CrystalElement, Potion> map = new HashMap();
-	private static HashMap<CrystalElement, Potion> nethermap = new HashMap();
+	private static final HashMap<CrystalElement, Potion> map = new HashMap();
+	private static final HashMap<CrystalElement, Potion> nethermap = new HashMap();
+
+	private static final HashSet<Integer> ignoredPotions = new HashSet();
 
 	static {
 		addColorPotion(CrystalElement.BLUE, Potion.nightVision);
@@ -178,5 +183,13 @@ public class CrystalPotionController {
 		if (color == CrystalElement.RED)
 			return "Direct Damage";
 		return StatCollector.translateToLocal(nethermap.get(color).getName());
+	}
+
+	public static Set<Integer> ignoredBadPotionsForLevelZero() {
+		return Collections.unmodifiableSet(ignoredPotions);
+	}
+
+	public static void addIgnoredPotion(Potion p) {
+		ignoredPotions.add(p.id);
 	}
 }

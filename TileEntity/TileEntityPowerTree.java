@@ -15,13 +15,13 @@ import java.util.Collections;
 import java.util.EnumMap;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -34,7 +34,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -47,8 +46,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile {
 
@@ -228,7 +225,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.updateEntity(world, x, y, z, meta);
 
 		if (!targets.isEmpty() && world.isRemote) {
-			this.spawnBeamParticles(world, x, y, z);
+			//this.spawnBeamParticles(world, x, y, z);
+			ChromaFX.drawLeyLineParticles(world, x, y, z, targets);
 		}
 
 		if (!world.isRemote && this.canConduct()) {
@@ -245,7 +243,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			}
 		}
 	}
-
+	/*
 	@SideOnly(Side.CLIENT)
 	private void spawnBeamParticles(World world, int x, int y, int z) {
 		int p = Minecraft.getMinecraft().gameSettings.particleSetting;
@@ -264,7 +262,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			}
 		}
 	}
-
+	 */
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
@@ -558,8 +556,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public boolean canTransmitTo(CrystalReceiver te) {
+	public boolean canSupply(CrystalReceiver te) {
 		return !(te instanceof TileEntityPowerTree);
+	}
+
+	@Override
+	public boolean canTransmitTo(CrystalReceiver te) {
+		return true;
 	}
 
 	@Override

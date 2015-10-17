@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -33,7 +34,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 		super.renderTileEntityAt(tile, par2, par4, par6, par8);
 		TileEntityCrystalPylon te = (TileEntityCrystalPylon)tile;
 
-		if (tile.hasWorldObj() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
 			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
 			float u = ico.getMinU();
@@ -60,18 +61,28 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 				if (!te.getTargets().isEmpty()) {
 					s += 1;
 				}
-				if (!te.canConduct()) {
+				if (!te.canConduct() && !StructureRenderer.isRenderingTiles()) {
 					s = 0.75;
 				}
 				GL11.glScaled(s, s, s);
-				RenderManager rm = RenderManager.instance;
-				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
-				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+				if (StructureRenderer.isRenderingTiles()) {
+					GL11.glRotated(-StructureRenderer.getRenderRY(), 0, 1, 0);
+					GL11.glRotated(-StructureRenderer.getRenderRX(), 1, 0, 0);
+				}
+				else {
+					RenderManager rm = RenderManager.instance;
+					GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+					GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+				}
 
 				int alpha = 255;//te.getEnergy()*255/te.MAX_ENERGY;
 				//ReikaJavaLibrary.pConsole(te.getEnergy());
 
 				int color = te.getRenderColor();
+
+				if (StructureRenderer.isRenderingTiles()) {
+					color = CrystalElement.elements[(int)((System.currentTimeMillis()/4000)%16)].getColor();
+				}
 
 				v5.startDrawingQuads();
 				v5.setColorRGBA_I(color, alpha);

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
@@ -19,6 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.OneSlotMachine;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -27,6 +29,8 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	private float angle;
 
 	public static final int CAPACITY = 120000;
+
+	private boolean[] toggle = ReikaArrayHelper.getTrueArray(16);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -37,13 +41,15 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 		if (this.hasItem()) {
 			for (CrystalElement e : energy.elementSet()) {
-				int max = this.getMaxTransfer(e);
-				int amt = this.getEnergy(e);
-				ItemStorageCrystal cry = this.item();
-				int put = Math.min(max, Math.min(amt, cry.getSpace(e, inv[0])));
-				if (put > 0) {
-					cry.addEnergy(inv[0], e, put);
-					this.drainEnergy(e, put);
+				if (this.isToggled(e)) {
+					int max = this.getMaxTransfer(e);
+					int amt = this.getEnergy(e);
+					ItemStorageCrystal cry = this.item();
+					int put = Math.min(max, Math.min(amt, cry.getSpace(e, inv[0])));
+					if (put > 0) {
+						cry.addEnergy(inv[0], e, put);
+						this.drainEnergy(e, put);
+					}
 				}
 			}
 		}
@@ -69,10 +75,12 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	private void checkAndRequest() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			int capacity = this.getMaxStorage(e);
-			int space = capacity-this.getEnergy(e);
-			if (space > 0) {
-				this.requestEnergy(e, space);
+			if (this.isToggled(e)) {
+				int capacity = this.getMaxStorage(e);
+				int space = capacity-this.getEnergy(e);
+				if (space > 0) {
+					this.requestEnergy(e, space);
+				}
 			}
 		}
 	}
@@ -100,12 +108,12 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		switch(slot) {
-		case 0:
-			return ChromaItems.STORAGE.matchWith(is);
-		case 1:
-			return ReikaItemHelper.matchStacks(is, ChromaStacks.speedUpgrade);
-		default:
-			return false;
+			case 0:
+				return ChromaItems.STORAGE.matchWith(is);
+			case 1:
+				return ReikaItemHelper.matchStacks(is, ChromaStacks.speedUpgrade);
+			default:
+				return false;
 		}
 	}
 
@@ -156,6 +164,29 @@ public class TileEntityCrystalCharger extends InventoriedCrystalReceiver impleme
 
 	public boolean hasItem() {
 		return inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0]);
+	}
+
+	public boolean isToggled(CrystalElement e) {
+		return toggle[e.ordinal()];
+	}
+
+	public void toggle(CrystalElement e) {
+		toggle[e.ordinal()] = !toggle[e.ordinal()];
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		if (NBT.hasKey("toggle"))
+			toggle = ReikaArrayHelper.booleanFromBitflags(NBT.getInteger("toggle"), 16);
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("toggle", ReikaArrayHelper.booleanToBitflags(toggle));
 	}
 
 }

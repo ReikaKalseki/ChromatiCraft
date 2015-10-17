@@ -26,6 +26,7 @@ public enum ChromaIcons {
 	FLARE("flare"),
 	REPEATER("repeater"),
 	MULTIREPEATER("multirepeater"),
+	BROADCAST("broadcaster"),
 	SPINFLARE("rotating flare_pulse"),
 	LASER("laser_2"),
 	LASEREND("laser_end_2"),
@@ -59,7 +60,10 @@ public enum ChromaIcons {
 	BASICFADE_FAST("basicfade_f"),
 	FRAME("frame"),
 	//PINWHEEL("pinwheel"),
-	LATTICE("lattice");
+	LATTICE("lattice"),
+	REGIONS("regions"),
+	CAUSTICS("caustics"),
+	CAUSTICS_GENTLE("caustics-g");
 
 	private IIcon icon;
 	private final String iconName;

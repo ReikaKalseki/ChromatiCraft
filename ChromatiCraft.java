@@ -77,6 +77,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
@@ -147,7 +148,12 @@ import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.BlockColorInterface;
 import Reika.RotaryCraft.API.ReservoirAPI;
 import Reika.VoidMonster.API.DimensionAPI;
+
+import com.chocolate.chocolateQuest.API.RegisterChestItem;
+import com.chocolate.chocolateQuest.API.WeightedItemStack;
+
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -466,14 +472,18 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 
+		if (ModList.MYSTCRAFT.isLoaded()) {
+			MystPages.registerPages();
+		}
+
 		ReikaJavaLibrary.initClass(ChromaLuaMethods.class);
 
 		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
 		//ReikaEEHelper.blacklistRegistry(ChromaItems.itemList);
 
 		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.FORESTRY, "Access to crystal bees which have valuable genetics");
-		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation");
-		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and mod interaction");
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.TWILIGHT, "Dense crystal generation and other worldgen hooks");
+		SuggestedModsTracker.instance.addSuggestedMod(instance, ModList.THAUMCRAFT, "High crystal aspect values and extensive mod interaction");
 
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
@@ -610,16 +620,34 @@ public class ChromatiCraft extends DragonAPIMod {
 			TwilightForestLootHooks.DungeonTypes.TREE_DUNGEON.addItem(ChromaBlocks.GLOWSAPLING.getStackOf(), LootLevels.ULTRARARE, 2);
 		}
 
+		if (Loader.isModLoaded("chocolateQuest")) {
+			try {
+				RegisterChestItem.treasureList.add(new WeightedItemStack(ChromaItems.FRAGMENT.getStackOf(), 40));
+
+				for (int i = 0; i < 16; i++) {
+					ItemStack is = ChromaItems.SHARD.getStackOfMetadata(i);
+					int wt = CrystalElement.elements[i].isPrimary() ? 50 : 25;
+					RegisterChestItem.mineralList.add(new WeightedItemStack(is, wt));
+				}
+			}
+			catch (IncompatibleClassChangeError e) {
+				logger.logError("Could not add ChocolateQuest integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
+			catch (Exception e) {
+				logger.logError("Could not add ChocolateQuest integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
+		}
+
 		if (ModList.BOTANIA.isLoaded()) {
 			try {
 				BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
 				BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
 			}
 			catch (IncompatibleClassChangeError e) {
-				logger.logError("Could not add Gendustry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+				logger.logError("Could not add Botania integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 			catch (Exception e) {
-				logger.logError("Could not add Gendustry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+				logger.logError("Could not add Botania integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 		}
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -607,6 +608,38 @@ public class CastingRecipe {
 		public boolean isMoreThan(RecipeType r) {
 			return this.ordinal() > r.ordinal();
 		}
+	}
+
+	public static class RecipeComparator implements Comparator<CastingRecipe> {
+
+		@Override
+		public int compare(CastingRecipe o1, CastingRecipe o2) {
+			return this.getIndex(o1)-this.getIndex(o2);
+		}
+
+		private int getIndex(CastingRecipe r) {
+			int flags = 0;
+
+			if (r.fragment != null) {
+				flags += 1000000*r.fragment.level.ordinal();
+				flags += 10000*r.fragment.ordinal();
+			}
+			flags += 1000*r.type.ordinal();
+			flags += 100*r.getOutput().getItemDamage();
+			flags += 1*r.getNumberProduced();
+
+			return flags;
+		}
+
+	}
+
+	public static class RecipeNameComparator implements Comparator<CastingRecipe> {
+
+		@Override
+		public int compare(CastingRecipe o1, CastingRecipe o2) {
+			return o1.getOutput().getDisplayName().compareToIgnoreCase(o2.getOutput().getDisplayName());
+		}
+
 	}
 
 }

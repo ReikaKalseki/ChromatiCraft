@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -65,6 +66,7 @@ public class CrystalNetworker implements TickHandler {
 	private final MultiMap<WorldChunk, CrystalLink> losCache = new MultiMap(new MultiMap.HashSetFactory()).setNullEmpty();
 	private final PluralMap<CrystalLink> links = new PluralMap(2);
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
+	private final ArrayList<NotifiedNetworkTile> notifyCache = new ArrayList();
 	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();
 
 	private CrystalNetworker() {
@@ -246,7 +248,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalFlow p = it.next();
 
 				if (toBreak.contains(p)) {
-					p.receiver.onPathBroken(p.element); //sight
+					p.receiver.onPathBroken(p, FlowFail.SIGHT); //sight
 					p.resetTiles();
 					it.remove();
 				}
@@ -260,7 +262,7 @@ public class CrystalNetworker implements TickHandler {
 								p.resetTiles();
 								it.remove();
 								CrystalNetworkLogger.logFlowSatisfy(p);
-								p.receiver.onPathCompleted();
+								p.receiver.onPathCompleted(p);
 							}
 							else if (add <= 0) {
 								CrystalNetworkLogger.logFlowBreak(p, FlowFail.FULL);
@@ -272,7 +274,7 @@ public class CrystalNetworker implements TickHandler {
 					}
 					else {
 						CrystalNetworkLogger.logFlowBreak(p, FlowFail.ENERGY);
-						p.receiver.onPathBroken(p.element);
+						p.receiver.onPathBroken(p, FlowFail.ENERGY);
 						p.resetTiles();
 						it.remove();
 					}
@@ -310,6 +312,14 @@ public class CrystalNetworker implements TickHandler {
 				this.addPylon((TileEntityCrystalPylon)te);
 			}
 			this.verifyTileAt(te, loc);
+
+			for (NotifiedNetworkTile tile : notifyCache) {
+				tile.onTileNetworkTopologyChange(te, false);
+			}
+
+			if (te instanceof NotifiedNetworkTile) {
+				notifyCache.add((NotifiedNetworkTile)te);
+			}
 
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
 		}
@@ -364,6 +374,14 @@ public class CrystalNetworker implements TickHandler {
 
 	public void removeTile(CrystalNetworkTile te) {
 		tiles.remove(PylonFinder.getLocation(te));
+
+		if (te instanceof NotifiedNetworkTile) {
+			notifyCache.remove(te);
+		}
+		for (NotifiedNetworkTile tile : notifyCache) {
+			tile.onTileNetworkTopologyChange(te, true);
+		}
+
 		if (te instanceof TileEntityCrystalPylon) {
 			TileEntityCrystalPylon tile = (TileEntityCrystalPylon)te;
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(tile.getColor());
@@ -377,7 +395,7 @@ public class CrystalNetworker implements TickHandler {
 			if (p.contains(te)) {
 				CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
 				p.resetTiles();
-				p.receiver.onPathBroken(p.element);
+				p.receiver.onPathBroken(p, FlowFail.TILE);
 				it.remove();
 			}
 		}
@@ -392,7 +410,7 @@ public class CrystalNetworker implements TickHandler {
 			CrystalFlow p = it.next();
 			if (p.contains(te)) {
 				CrystalNetworkLogger.logFlowBreak(p, FlowFail.TILE);
-				p.receiver.onPathBroken(p.element);
+				p.receiver.onPathBroken(p, FlowFail.TILE);
 				p.resetTiles();
 				it.remove();
 			}
@@ -406,7 +424,7 @@ public class CrystalNetworker implements TickHandler {
 				CrystalNetworkTile tile = tiles.get(c);
 				if (tile instanceof CrystalTransmitter && r != tile) {
 					CrystalTransmitter te = (CrystalTransmitter)tile;
-					if (te.canConduct()) {
+					if (te.canConduct() && te.canTransmitTo(r)) {
 						if (e == null || te.isConductingElement(e)) {
 							double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
 							//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
@@ -431,7 +449,7 @@ public class CrystalNetworker implements TickHandler {
 					CrystalNetworkTile tile = tiles.get(c);
 					if (tile instanceof CrystalReceiver && r != tile) {
 						CrystalReceiver te = (CrystalReceiver)tile;
-						if (te.canConduct()) {
+						if (te.canConduct() && r.canTransmitTo(te)) {
 							if (e == null || te.isConductingElement(e)) {
 								double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
 								//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
@@ -467,6 +485,65 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		return li;
+	}
+
+	public CrystalNetworkTile getNearestTileOfType(CrystalNetworkTile te, Class<? extends CrystalNetworkTile> type, int range) {
+		CrystalNetworkTile ret = null;
+		double dist = Double.POSITIVE_INFINITY;
+		HashSet<WorldLocation> rem = new HashSet();
+		for (WorldLocation c : tiles.keySet()) {
+			CrystalNetworkTile tile = tiles.get(c);
+			if (tile == null) {
+				ChromatiCraft.logger.logError("Null tile at "+c+" but still cached?!");
+				//c.setBlock(Blocks.brick_block);
+				rem.add(c);
+			}
+			else if (tile == te) {
+
+			}
+			else if (te.getWorld().provider.dimensionId == c.dimensionID) {
+				if (type.isAssignableFrom(tile.getClass())) {
+					double d = tile.getDistanceSqTo(te.getX(), te.getY(), te.getZ());
+					if (d <= range*range && d < dist) {
+						dist = d;
+						ret = tile;
+					}
+				}
+			}
+		}
+		for (WorldLocation loc : rem) {
+			tiles.remove(loc);
+		}
+		return ret;
+	}
+
+	public Collection<CrystalNetworkTile> getNearTilesOfType(CrystalNetworkTile te, Class<? extends CrystalNetworkTile> type, int range) {
+		return this.getNearTilesOfType(te.getWorld(), te.getX(), te.getY(), te.getZ(), type, range);
+	}
+
+	public Collection<CrystalNetworkTile> getNearTilesOfType(World world, int x, int y, int z, Class<? extends CrystalNetworkTile> type, int range) {
+		Collection<CrystalNetworkTile> ret = new ArrayList();
+		HashSet<WorldLocation> rem = new HashSet();
+		for (WorldLocation c : tiles.keySet()) {
+			CrystalNetworkTile tile = tiles.get(c);
+			if (tile == null) {
+				ChromatiCraft.logger.logError("Null tile at "+c+" but still cached?!");
+				//c.setBlock(Blocks.brick_block);
+				rem.add(c);
+			}
+			else if (world.provider.dimensionId == c.dimensionID) {
+				if (type.isAssignableFrom(tile.getClass())) {
+					double d = tile.getDistanceSqTo(x, y, z);
+					if (d <= range*range) {
+						ret.add(tile);
+					}
+				}
+			}
+		}
+		for (WorldLocation loc : rem) {
+			tiles.remove(loc);
+		}
+		return ret;
 	}
 
 	@Override

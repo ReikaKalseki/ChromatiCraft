@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -20,6 +22,7 @@ import org.lwjgl.input.Mouse;
 
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -31,6 +34,8 @@ import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockChoiceHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockRenderHook;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.EntityRender;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 
 public class GuiStructure extends GuiBookSection {
 
@@ -50,6 +55,18 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.TREE) {
 			array.setBlock(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
 		}
+		if (page == ChromaResearch.INFUSION) {
+			array.setBlock(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getBlock(), ChromaTiles.INFUSER.getBlockMetadata());
+		}
+		if (page == ChromaResearch.MINIPYLON) {
+			array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
+		}
+		if (page == ChromaResearch.PYLON) {
+			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
+		}
+		if (page == ChromaResearch.CLOAKTOWER) {
+			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
+		}
 		render = new StructureRenderer(array);
 		if (page == ChromaResearch.PYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
@@ -57,15 +74,31 @@ public class GuiStructure extends GuiBookSection {
 		else if (page == ChromaResearch.MINIPYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getCraftedProduct());
 		}
+		else if (page == ChromaResearch.CLOAKTOWER) {
+			render.addOverride(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getCraftedProduct());
+		}
 		else if (page == ChromaResearch.TREE) {
 			render.addOverride(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getCraftedProduct());
 			render.addBlockHook(ChromaTiles.POWERTREE.getBlock(), new LumenTreeHook()); //Unused
 		}
 		else if (page == ChromaResearch.PORTALSTRUCT) {
 			render.addBlockHook(Blocks.bedrock, new EnderCrystalHook());
+
+			render.addEntityRender(-5, -1, -9, createCrystalRender());
+			render.addEntityRender(-9, -1, -5, createCrystalRender());
+			render.addEntityRender(5, -1, -9, createCrystalRender());
+			render.addEntityRender(9, -1, -5, createCrystalRender());
+			render.addEntityRender(-5, -1, 9, createCrystalRender());
+			render.addEntityRender(-9, -1, 5, createCrystalRender());
+			render.addEntityRender(5, -1, 9, createCrystalRender());
+			render.addEntityRender(9, -1, 5, createCrystalRender());
 		}
 		render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
+	}
+
+	private static EntityRender createCrystalRender() {
+		return new EntityRender(new EntityChromaEnderCrystal(Minecraft.getMinecraft().theWorld), ReikaEntityHelper.getEntityRenderer(EntityEnderCrystal.class));
 	}
 
 	@Override
@@ -136,7 +169,7 @@ public class GuiStructure extends GuiBookSection {
 
 		switch(mode) {
 			case 0:
-				this.draw3d(j, k);
+				this.draw3d(j, k, f);
 				break;
 			case 1:
 				this.drawSlice(j, k);
@@ -171,13 +204,16 @@ public class GuiStructure extends GuiBookSection {
 			else if (page == ChromaResearch.TREE && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.PYLON.getBlockInstance()) {
 				is2 = ChromaTiles.POWERTREE.getCraftedProduct();
 			}
+			else if (page == ChromaResearch.CLOAKTOWER && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.TILEMODELLED2.getBlockInstance()) {
+				is2 = ChromaTiles.CLOAKING.getCraftedProduct();
+			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
 			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);
 			i++;
 		}
 	}
 
-	private void draw3d(int j, int k) {
+	private void draw3d(int j, int k, float ptick) {
 		if (Mouse.isButtonDown(0) && tick > 2) {
 			render.rotate(0.25*Mouse.getDY(), 0.25*Mouse.getDX(), 0);
 		}
@@ -198,7 +234,7 @@ public class GuiStructure extends GuiBookSection {
 			render.rotate(0.75, 0, 0);
 		}
 
-		render.draw3D(j, k);
+		render.draw3D(j, k, ptick);
 	}
 
 	private static int getElementByTick() {

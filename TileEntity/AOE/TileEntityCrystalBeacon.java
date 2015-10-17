@@ -82,7 +82,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		for (WorldLocation loc : cache) {
 			if (Math.abs(ep.posY-loc.yCoord) <= 8 && loc.getDistanceTo(ep) <= MAXRANGE) {
 				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity();
-				return te.isPlacer(ep) && te.prevent(dmg);
+				if (te.isPlacer(ep) && te.prevent(dmg))
+					return true;
 			}
 		}
 		return false;

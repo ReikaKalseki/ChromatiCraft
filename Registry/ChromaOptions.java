@@ -36,7 +36,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	BROKENPYLON("Generate Some Pylons as Broken", false),
 	DYNAMICHANDBOOK("Reload Handbook Data on Open", false),
 	FLATGEN("Run Worldgen in Superflat Worlds", false),
-	MYSTGEN("Generate Pylons in MystCraft Worlds", false),
+	NONWORLDGEN("Generate Pylons in Non-Overworld", false),
 	HANDBOOK("Spawn with CC Lexicon", true),
 	CHESTGEN("Chest Generation Tier", 4),
 	ENDERTNT("Enable Ender TNT", true),

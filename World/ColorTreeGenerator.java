@@ -19,11 +19,13 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBiomeHandler;
 
 public class ColorTreeGenerator implements RetroactiveGenerator {
@@ -41,7 +43,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 		chunkX *= 16;
 		chunkZ *= 16;
 		BiomeGenBase biome = world.getBiomeGenForCoords(chunkX, chunkZ);
-		int trees = this.getTreeCount(biome);
+		int trees = this.getTreeCount(world, biome);
 		if (trees > 0) {
 			int x = chunkX+r.nextInt(16);
 			int z = chunkZ+r.nextInt(16);
@@ -71,7 +73,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 		return world.provider.dimensionId == ReikaTwilightHelper.getDimensionID() ? 16 : 32;
 	}
 
-	public static int getTreeCount(BiomeGenBase biome) {
+	public static int getTreeCount(World world, BiomeGenBase biome) {
 		if (ModList.THAUMCRAFT.isLoaded() && biome.biomeID == ThaumBiomeHandler.getInstance().taintBiomeID)
 			return 0;
 
@@ -91,31 +93,37 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 		if (biome == BiomeGenBase.swampland)
 			trees += 3;
 
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (MystPages.Pages.DENSE.existsInWorld(world)) {
+				trees *= 2;
+			}
+		}
+
 		if (trees > 0)
 			return trees;
 
 		BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(biome);
 		for (int i = 0; i < types.length; i++) {
 			if (types[i] == BiomeDictionary.Type.FOREST) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forest), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.forest), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.MOUNTAIN) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.extremeHills), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.extremeHills), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.JUNGLE) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.jungle), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.jungle), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.HILLS) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.forestHills), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.forestHills), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.SNOWY) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.icePlains), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.icePlains), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.PLAINS) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.plains), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.plains), "max");
 			}
 			if (types[i] == BiomeDictionary.Type.SWAMP) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(BiomeGenBase.swampland), "max");
+				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.swampland), "max");
 			}
 		}
 		return trees;
@@ -130,6 +138,11 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
 			return false;
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (!MystPages.Pages.TREES.existsInWorld(world)) {
+				return false;
+			}
+		}
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		BiomeDecorator dec = biome.theBiomeDecorator;
 		if (biome == BiomeGenBase.ocean || biome == BiomeGenBase.frozenOcean)

@@ -133,7 +133,7 @@ public class GuiBasicInfo extends GuiBookSection {
 
 	@Override
 	protected int getMaxSubpage() {
-		if (this.isElementPage())
+		if (page == ChromaResearch.ELEMENTS)
 			return CrystalElement.elements.length;
 		else if (page == ChromaResearch.USINGRUNES)
 			return 1;

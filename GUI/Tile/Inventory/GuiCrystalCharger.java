@@ -9,14 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuiCrystalCharger extends GuiChromaBase {
 
@@ -27,6 +34,29 @@ public class GuiCrystalCharger extends GuiChromaBase {
 
 		tile = te;
 		ySize = 191;
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			int dx = i%8 >= 4 ? 22 : 0;
+			int x = j+6+18*(i%8)+dx-1;
+			int y = k+17+40*(i/8)-1;
+			ImagedGuiButton b = new CustomSoundImagedGuiButton(i, x, y, 18, 36, 0, 0, "Textures/buttons.png", ChromatiCraft.class, this);
+			b.invisible = true;
+			buttonList.add(b);
+		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		if (b.id >= 0 && b.id < 16)
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.CHARGERTOGGLE.ordinal(), tile, b.id);
 	}
 
 	@Override
@@ -49,6 +79,11 @@ public class GuiCrystalCharger extends GuiChromaBase {
 				String s = String.format("%s: %d/%d", e.displayName, level, max);
 				api.drawTooltipAt(fontRendererObj, s, mx-32, my);
 			}
+
+			int c = tile.isToggled(e) ? 0x00ff00 : 0xff0000;
+			BlendMode.ADDITIVEDARK.apply();
+			api.drawRectFrame(x1-j-1, y1-k-1, 18, 36, c);
+			BlendMode.DEFAULT.apply();
 		}
 	}
 

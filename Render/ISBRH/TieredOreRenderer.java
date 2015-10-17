@@ -303,48 +303,60 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		}
 		 */
 		if (world == null || b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal())) {
-			if (world != null)
+			if (world != null) {
 				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y+1, z));
+				Tessellator.instance.setColorOpaque_F(1F, 1F, 1F);
+			}
 			Tessellator.instance.setNormal(0, 1, 0);
 			v5.render();
 		}
 
 		v5.invertY();
 		if (world == null || b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal())) {
-			if (world != null)
-				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y-1, z)*0.5));
+			if (world != null) {
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y-1, z));
+				Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
+			}
 			Tessellator.instance.setNormal(0, -1, 0);
 			v5.render();
 		}
 
 		v5.rotateYtoX();
 		if (world == null || b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal())) {
-			if (world != null)
-				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x-1, y, z)*0.8));
+			if (world != null) {
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x-1, y, z));
+				Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+			}
 			Tessellator.instance.setNormal(-1, 0, 0);
 			v5.render();
 		}
 
 		v5.invertX();
 		if (world == null || b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal())) {
-			if (world != null)
-				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x+1, y, z)*0.8));
+			if (world != null) {
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x+1, y, z));
+				Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+			}
 			Tessellator.instance.setNormal(1, 0, 0);
 			v5.render();
 		}
 
 		v5.rotateXtoZ();
 		if (world == null || b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal())) {
-			if (world != null)
-				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z+1)*0.7));
+			if (world != null) {
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z+1));
+				Tessellator.instance.setColorOpaque_F(0.7F, 0.7F, 0.7F);
+			}
 			Tessellator.instance.setNormal(0, 0, -1);
 			v5.render();
 		}
 
 		v5.invertZ();
 		if (world == null || b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal())) {
-			if (world != null)
-				Tessellator.instance.setBrightness((int)(b.getMixedBrightnessForBlock(world, x, y, z-1)*0.7));
+			if (world != null) {
+				Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z-1));
+				Tessellator.instance.setColorOpaque_F(0.7F, 0.7F, 0.7F);
+			}
 			Tessellator.instance.setNormal(0, 0, 1);
 			v5.render();
 		}

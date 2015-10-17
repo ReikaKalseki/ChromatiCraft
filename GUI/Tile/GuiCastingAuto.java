@@ -11,26 +11,33 @@ package Reika.ChromatiCraft.GUI.Tile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeComparator;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
+import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiCastingAuto extends GuiChromaBase {
 
@@ -56,7 +63,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 	public GuiCastingAuto(TileEntityCastingAuto te, EntityPlayer ep) {
 		super(new ContainerCastingAuto(te, ep), ep, te);
-		ySize = 194;
+		xSize = 224;
+		ySize = 227;
 
 		tile = te;
 
@@ -87,13 +95,13 @@ public class GuiCastingAuto extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		String tex = "Textures/GUIs/buttons.png";
-		buttonList.add(new CustomSoundImagedGuiButton(0, j+xSize/2-40, k+20, 80, 10, 100, 16, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(1, j+xSize/2-40, k+60, 80, 10, 100, 26, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 74, 10, 100, 36, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, j+144, k+42, 74, 10, 100, 46, tex, ChromatiCraft.class, this));
 
-		buttonList.add(new CustomSoundImagedGuiButton(3, j+xSize/2-80, k+35, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(2, j+xSize/2-80, k+45, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(3, j+40, k+32, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(2, j+40, k+42, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 
-		buttonList.add(new CustomSoundImagedGuiButton(4, j+xSize/2+55, k+45, 10, 10, 90, 6, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(4, j+28, k+37, 10, 10, 90, 66, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -117,6 +125,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 			}
 		}
 
+		Collections.sort(visible, new RecipeComparator());
+
 		index = Math.min(index, visible.size()-1);
 	}
 
@@ -126,18 +136,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 		switch(b.id) {
 			case 0:
-				if (index > 0) {
-					//subindex = 0;
-					index--;
-					number = 1;
-				}
+				this.prevRecipe(GuiScreen.isCtrlKeyDown(), Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
 				break;
 			case 1:
-				if (index < visible.size()-1) {
-					//subindex = 0;
-					index++;
-					number = 1;
-				}
+				this.nextRecipe(GuiScreen.isCtrlKeyDown(), Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
 				break;
 
 			case 2:
@@ -157,14 +159,59 @@ public class GuiCastingAuto extends GuiChromaBase {
 		}
 	}
 
+	private void prevRecipe(boolean newItem, boolean newType) {
+		CastingRecipe cr = this.getRecipe();
+		ItemStack cur = null;
+		if (cr != null) {
+			cur = cr.getOutput();
+		}
+		if (index > 0) {
+			do {
+				//subindex = 0;
+				index--;
+				number = 1;
+			} while(index > 0 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
+		}
+	}
+
+	private void nextRecipe(boolean newItem, boolean newType) {
+		CastingRecipe cr = this.getRecipe();
+		ItemStack cur = null;
+		if (cr != null) {
+			cur = cr.getOutput();
+		}
+		if (index < visible.size()-1) {
+			//subindex = 0;
+			do {
+				index++;
+				number = 1;
+			} while(index < visible.size()-1 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
+		}
+	}
+
+	private boolean matchRecipe(ItemStack cur, CastingRecipe r, boolean newType) {
+		if (newType) {
+			if (cur.getItem() instanceof ItemPendant) {
+				return r.getOutput().getItem() instanceof ItemPendant;
+			}
+		}
+		return (newType ? cur.getItem() == this.getRecipe().getOutput().getItem() : ReikaItemHelper.matchStacks(cur, this.getRecipe().getOutput()));
+	}
+
 	private int getIncrement() {
-		return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 16 : 1;
+		return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 64 : GuiScreen.isCtrlKeyDown() ? 16 : 1;
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3)
 	{
 		super.drawGuiContainerBackgroundLayer(par1, par2, par3);
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+		CastingRecipe cr = this.getRecipe();
+		if (cr != null) {
+			ChromaBookData.drawCompressedCastingRecipe(fontRendererObj, itemRender, cr, j, k);
+		}
 	}
 
 	@Override
@@ -177,10 +224,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 			//r.drawTabIcon(itemRender, 21, 33);
 			//fontRendererObj.drawSplitString(r.getTitle(), 40, 36, 120, 0xffffff);
 
-			fontRendererObj.drawSplitString(cr.getOutput().getDisplayName(), 24, 36, 130, 0xffffff);
+			fontRendererObj.drawString(cr.getOutput().getDisplayName(), 10, 18, 0xffffff);
 
-			api.drawItemStack(itemRender, cr.getOutput(), 80, 75);
-			fontRendererObj.drawString(String.format("x%d = %d", number, number*cr.getOutput().stackSize), 102, 79, 0xffffff);
+			fontRendererObj.drawString(String.format("x%d = %d", number, number*cr.getOutput().stackSize), 74, 38, 0xffffff);
+			api.drawItemStack(itemRender, cr.getOutput(), 52, 34);
 
 			/*
 			ItemHashMap<Integer> map = cr.getItemCounts();
@@ -204,7 +251,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "automator2";
+		return "automator3";
 	}
 
 }

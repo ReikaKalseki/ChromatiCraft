@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
@@ -30,12 +31,15 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -96,6 +100,44 @@ public class ChromaFX {
 		//te.removeTarget(loc, te.getColor(), ep.posX-loc.xCoord, ep.posY+ep.getEyeHeight()-loc.yCoord, ep.posZ-loc.zCoord);
 	}
 
+	public static int getBlendedColorFromElementList(List<CrystalElement> li, double tick, double cycleModulus) {
+		if (li.isEmpty())
+			return 0;
+		int f1 = (int)(tick/cycleModulus);
+		f1 = (f1+li.size())%li.size();
+		int c1 = li.get(f1%li.size()).getColor();
+		int c2 = li.get((f1+1)%li.size()).getColor();
+		float f = (float)(tick%cycleModulus/cycleModulus);
+		return ReikaColorAPI.mixColors(c1, c2, 1-f);
+	}
+
+	public static void drawLeyLineParticles(World world, int x, int y, int z, Collection<CrystalTarget> li) {
+		if (!li.isEmpty()) {
+			double t = (System.currentTimeMillis()/600D)%360+2; //+2 to compensate for particle delay
+			t /= 30D;
+
+			MultiMap<DecimalPosition, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+
+			for (DecimalPosition pos : map.keySet()) {
+				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
+				int clr = getBlendedColorFromElementList(lc, t, 0.125);
+				int p = Minecraft.getMinecraft().gameSettings.particleSetting;
+				if (rand.nextInt(1+p*2) == 0) {
+					double dx = pos.xCoord-x-0.5;
+					double dy = pos.yCoord-y-0.5;
+					double dz = pos.zCoord-z-0.5;
+					double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+					double dr = rand.nextDouble();
+					double px = dx*dr+x+0.5;
+					double py = dy*dr+y+0.5;
+					double pz = dz*dr+z+0.5;
+					EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(15).setColor(clr);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
+		}
+	}
+
 	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li) {
 		if (!li.isEmpty()) {
 			double t = (System.currentTimeMillis()/600D)%360;
@@ -117,8 +159,12 @@ public class ChromaFX {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
 
-			for (CrystalTarget ct : li) {
-				drawEnergyTransferBeam(src, ct, r, sides, tick);
+			MultiMap<DecimalPosition, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+
+			for (DecimalPosition pos : map.keySet()) {
+				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
+				int clr = getBlendedColorFromElementList(lc, tick, 0.125);
+				drawEnergyTransferBeam(src, pos, clr, r, sides, tick);
 			}
 
 			//BlendMode.DEFAULT.apply();
@@ -129,16 +175,11 @@ public class ChromaFX {
 		}
 	}
 
-	public static void drawEnergyTransferBeam(WorldLocation src, CrystalTarget ct, double r, byte sides, double tick) {
-		WorldLocation tgt = ct.location;
-		CrystalElement e = ct.color;
-		double dx = tgt.xCoord+ct.offsetX+0.5;
-		double dy = tgt.yCoord+ct.offsetY+0.5;
-		double dz = tgt.zCoord+ct.offsetZ+0.5;
-		drawEnergyTransferBeam(new DecimalPosition(src), new DecimalPosition(dx, dy, dz), e, r, sides, tick);
+	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r, byte sides, double tick) {
+		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r, sides, tick);
 	}
 
-	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, CrystalElement e, double r, byte sides, double tick) {
+	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r, byte sides, double tick) {
 		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
 		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		Tessellator v5 = Tessellator.instance;
@@ -155,7 +196,8 @@ public class ChromaFX {
 		GL11.glRotated(ang2, 1, 0, 0);
 
 		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-		v5.setColorOpaque_I(e.getColor());
+		v5.setColorOpaque_I(color);
+		v5.setBrightness(240);
 		for (int i = 0; i <= sides; i++) {
 			double f11 = r*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
 			double f12 = r*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;

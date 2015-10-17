@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -285,6 +286,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			tile.syncAllData(true);
 		}
 		isComplete = true;
+
+		ProgressStage.TURBOCHARGE.stepPlayerTo(this.getPlacer());
 
 		this.syncAllData(true);
 	}

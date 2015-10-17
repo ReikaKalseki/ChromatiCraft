@@ -436,13 +436,14 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				this.openStructure();
 			}
 			 */
-			if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, color)) {
-				return false;
-			}
-			else {
-				ProgressionManager.instance.markPlayerCompletedStructureColor(ep, color, true);
-				this.openStructure();
-			}
+
+			//if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, color)) {
+			//	return false;
+			//}
+			//else {
+			ProgressionManager.instance.markPlayerCompletedStructureColor(ep, color, true);
+			this.openStructure();
+			//}
 		}
 		return true;
 	}

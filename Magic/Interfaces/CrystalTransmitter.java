@@ -14,4 +14,6 @@ public interface CrystalTransmitter extends CrystalNetworkTile, EnergyBeamRender
 	public int getSendRange();
 
 	public boolean needsLineOfSight();
+
+	public boolean canTransmitTo(CrystalReceiver r);
 }

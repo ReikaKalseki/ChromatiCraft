@@ -33,6 +33,7 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -663,10 +664,11 @@ public class ChromaOverlays {
 				GL11.glEnable(GL11.GL_BLEND);
 
 				Tessellator v5 = Tessellator.instance;
-				int r = 12;
+				int ar = 12;
+				int r = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? ar*2 : ar;
 				int rb = r;
-				int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-r-8;
-				int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-r-8;
+				int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
+				int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
 
 				int n = tag.tagCount();
 				int i = 0;

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic.Interfaces;
 
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver {
@@ -16,11 +18,11 @@ public interface CrystalReceiver extends CrystalNetworkTile, EnergyBeamReceiver 
 	/** Returns the amount successfully added. */
 	public int receiveElement(CrystalElement e, int amt);
 
-	public void onPathBroken(CrystalElement e);
+	public void onPathBroken(CrystalFlow p, FlowFail f);
 
 	public int getReceiveRange();
 
-	public void onPathCompleted();
+	public void onPathCompleted(CrystalFlow p);
 
 	//public void markSource(WorldLocation loc);
 

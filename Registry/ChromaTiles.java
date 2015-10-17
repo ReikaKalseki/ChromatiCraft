@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
@@ -33,6 +34,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
@@ -62,6 +64,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
@@ -145,7 +148,9 @@ public enum ChromaTiles {
 	PATTERNS("chroma.patterns",			ChromaBlocks.TILEENTITY,	TileEntityPatternCache.class,		13, ModList.APPENG),
 	PYLONTURBO("chroma.turbo", 			ChromaBlocks.TILEMODELLED2,	TileEntityPylonTurboCharger.class,	8, "RenderPylonTurboCharger"),
 	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret"),
-	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole");
+	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole"),
+	BROADCAST("chroma.broadcast",		ChromaBlocks.PYLON,			TileEntityCrystalBroadcaster.class,	8, "RenderCrystalBroadcast"),
+	CLOAKING("chroma.tower",			ChromaBlocks.TILEMODELLED2, TileEntityCloakingTower.class,		10, "RenderCloakingTower");
 	//POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10);
 
 	private final Class tile;
@@ -224,6 +229,8 @@ public enum ChromaTiles {
 			case PYLONTURBO:
 			case TURRET:
 			case CONSOLE:
+			case BROADCAST:
+			case CLOAKING:
 				//case TANK:
 				//case ITEMRIFT:
 				return true;
@@ -305,8 +312,8 @@ public enum ChromaTiles {
 	}
 
 	public static void loadMappings() {
-		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
-			ChromaTiles r = ChromaTiles.TEList[i];
+		for (int i = 0; i < TEList.length; i++) {
+			ChromaTiles r = TEList[i];
 			Block id = r.getBlock();
 			int meta = r.getBlockMetadata();
 			chromaMappings.put(id, meta, r);
@@ -325,6 +332,7 @@ public enum ChromaTiles {
 			case PYLON:
 			case AUTOMATOR:
 			case INFUSER:
+			case AURAPOINT:
 				return false;
 			default:
 				return true;
@@ -475,9 +483,12 @@ public enum ChromaTiles {
 			case LASER:
 			case REPEATER:
 			case COMPOUND:
+			case BROADCAST:
 				return 0;
 			case CHARGER:
 				return 29;
+			case CLOAKING:
+				return 27;
 			default:
 				return 21;
 		}
@@ -535,17 +546,21 @@ public enum ChromaTiles {
 	}
 
 	public boolean needsRenderOffset() {
-		return this == ChromaTiles.TURRET || this == ChromaTiles.PYLONTURBO;
+		return this == TURRET || this == PYLONTURBO;
 	}
 
 	public boolean isTextureFace() {
-		return this == ChromaTiles.PERSONAL || this == ChromaTiles.AUTOMATOR;
+		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING;
 	}
 
 	public boolean needsSilkTouch() {
 		if (this == DIMENSIONCORE)
 			return false;
 		return block.getBlockInstance() instanceof BlockCrystalTile;
+	}
+
+	public boolean isLumenTile() {
+		return LumenTile.class.isAssignableFrom(tile);
 	}
 
 }

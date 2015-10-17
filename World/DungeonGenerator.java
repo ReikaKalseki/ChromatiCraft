@@ -28,17 +28,19 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.DesertStructure;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -46,6 +48,7 @@ import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 
@@ -70,7 +73,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			for (Structures s : structs) {
 				if (this.isGennableChunk(world, chunkX*16, chunkZ*16, random, s)) {
 					if (this.tryGenerate(world, chunkX*16, chunkZ*16, random, s)) {
-						ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
+						//ChromatiCraft.logger.log("Successful generation of "+s.name()+" at "+chunkX*16+", "+chunkZ*16);
 					}
 				}
 			}
@@ -171,7 +174,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				y -= 8;
 				Block b = world.getBlock(x, y, z);
 				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-				if (b == Blocks.sand && BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY)) {
+				if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY)) {
 
 					x -= 7;
 					y -= 3;
@@ -541,6 +544,13 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean canGenerateIn(World world) {
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+			if (!MystPages.Pages.STRUCTURES.existsInWorld(world)) {
+				return false;
+			}
+		}
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
+			return false;
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)
@@ -549,8 +559,6 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
-			return false;//ChromaOptions.FLATGEN.getState();
 		return true;
 	}
 

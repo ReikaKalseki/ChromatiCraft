@@ -308,7 +308,7 @@ public class PylonFinder {
 	}
 
 	private boolean isConnectableSource(CrystalSource te, int thresh) {
-		return te.canTransmitTo(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user));
+		return te.canSupply(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user));
 	}
 
 	/*

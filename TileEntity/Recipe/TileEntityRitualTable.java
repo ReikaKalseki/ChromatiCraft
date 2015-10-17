@@ -23,10 +23,12 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -48,10 +50,13 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	private int abilityTick = 0;
 	private Ability ability;
 	private int abilitySoundTick = 2000;
+
 	private int tickNoPlayer = 0;
+	private int tickPlayerOut = 0;
+	private boolean playerSteppedIn = false;
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
+	public void onPathBroken(CrystalFlow p, FlowFail f) {
 		//this.killRitual();
 	}
 
@@ -89,15 +94,31 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		EntityPlayer ep = placer != null && !placer.isEmpty() ? world.getPlayerEntityByName(placer) : null;
 		if (ep == null) {
 			tickNoPlayer++;
-			if (tickNoPlayer > 200) { //make something bad happen
-				abilitySoundTick = 20000;
-				abilityTick = 0;
+			if (tickNoPlayer > 200) {
+				this.terminateRitual();
 			}
 			return;
 		}
 		tickNoPlayer = 0;
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 2, 0).expand(0, 1, 0);
-		boolean canTick = energy.containsAtLeast(tag) && ep.boundingBox.intersectsWith(box);
+
+		boolean nrg = energy.containsAtLeast(tag);
+		boolean inbox = ep.boundingBox.intersectsWith(box);
+
+		if (nrg) {
+			if (inbox) {
+				playerSteppedIn = true;
+				tickPlayerOut = 0;
+			}
+			else {
+				tickPlayerOut++;
+				if (tickPlayerOut > 50) {
+					this.terminateRitual();
+				}
+			}
+		}
+
+		boolean canTick = nrg && inbox;
 		//ReikaJavaLibrary.pConsole(abilityTick+":"+inbox+" from "+ep.boundingBox+" & "+box, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(energy+"/"+tag, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(box.maxX > ep.boundingBox.minX && box.minX < ep.boundingBox.maxX ? (box.maxY > ep.boundingBox.minY && box.minY < ep.boundingBox.maxY ? box.maxZ > ep.boundingBox.minZ && box.minZ < ep.boundingBox.maxZ : false) : false);
@@ -139,6 +160,13 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			this.giveAbility(ep);
 			energy.subtract(tag);
 		}
+	}
+
+	private void terminateRitual() {//make something bad happen
+		abilitySoundTick = 20000;
+		abilityTick = 0;
+		tickPlayerOut = 0;
+		playerSteppedIn = false;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -234,6 +262,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 			this.requestEnergyDifference(tag);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
+			playerSteppedIn = false;
 			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;
 		}

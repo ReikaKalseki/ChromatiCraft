@@ -99,15 +99,17 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 		GL11.glRotated(rm.playerViewY, 0, 0, 1);
 		GL11.glTranslated(-d, -d, -d);
 			 */
-			double d = 0.5;
-			GL11.glTranslated(d, d, d);
+			if (tile.isInWorld()) {
+				double d = 0.5;
+				GL11.glTranslated(d, d, d);
 
-			double dx = tile.xCoord+0.5-RenderManager.renderPosX;
-			double dy = tile.yCoord+0.5-RenderManager.renderPosY;
-			double dz = tile.zCoord+0.5-RenderManager.renderPosZ;
-			double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
-			GL11.glTranslated(-d, -d, -d);
-			GL11.glRotated(angs[2], 0, 0, 1);
+				double dx = tile.xCoord+0.5-RenderManager.renderPosX;
+				double dy = tile.yCoord+0.5-RenderManager.renderPosY;
+				double dz = tile.zCoord+0.5-RenderManager.renderPosZ;
+				double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
+				GL11.glTranslated(-d, -d, -d);
+				GL11.glRotated(angs[2], 0, 0, 1);
+			}
 
 
 			//GL11.glMatrixMode(GL11.GL_MODELVIEW);

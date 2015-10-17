@@ -17,12 +17,12 @@ import java.util.TreeMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -39,7 +39,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import com.google.common.collect.TreeMultimap;
 
@@ -219,7 +218,7 @@ public class GuiNavigation extends GuiScrollingPage {
 	}
 
 	private static boolean craftMode() {
-		return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ^ craftMode;
+		return GuiScreen.isCtrlKeyDown() ^ craftMode;
 	}
 
 	private class Section/* implements Comparable<Section>*/ {
@@ -381,22 +380,22 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		public ChromaGuis getGuiType() {
 			switch(destination.getParent()) {
-			case MACHINEDESC:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.MACHINEDESC;
-			case RESOURCEDESC:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
-			case TOOLDESC:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.TOOLDESC;
-			case BLOCKS:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
-			case ABILITYDESC:
-				return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
-			case INTRO:
-				return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.INFO;
-			case STRUCTUREDESC:
-				return ChromaGuis.STRUCTURE;
-			default:
-				return null;
+				case MACHINEDESC:
+					return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.MACHINEDESC;
+				case RESOURCEDESC:
+					return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
+				case TOOLDESC:
+					return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.TOOLDESC;
+				case BLOCKS:
+					return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.BASICDESC;
+				case ABILITYDESC:
+					return craftMode() ? ChromaGuis.RITUAL : ChromaGuis.ABILITYDESC;
+				case INTRO:
+					return craftMode() && destination.isCraftable() ? destination.getCraftingType() : ChromaGuis.INFO;
+				case STRUCTUREDESC:
+					return ChromaGuis.STRUCTURE;
+				default:
+					return null;
 			}
 		}
 

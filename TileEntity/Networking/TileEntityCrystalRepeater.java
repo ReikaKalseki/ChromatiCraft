@@ -9,27 +9,44 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.HashSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile, SneakPop, OwnedTile {
 
@@ -37,6 +54,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	protected boolean hasMultiblock;
 	private int depth = -1;
 	private boolean isTurbo = false;
+
+	protected int connectionRenderTick = 0;
+
+	private HashSet<WorldLocation> connectableTiles;
 
 	public static final int RANGE = 32;
 
@@ -48,6 +69,13 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
+
+		if (connectionRenderTick > 0) {
+			connectionRenderTick--;
+			if (connectionRenderTick == 0) {
+				connectableTiles = null;
+			}
+		}
 	}
 
 	@Override
@@ -73,7 +101,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public final boolean canConduct() {
+	public boolean canConduct() {
 		return hasMultiblock;
 	}
 
@@ -218,12 +246,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public final void onPathCompleted() {
+	public final void onPathCompleted(CrystalFlow p) {
 
 	}
 
 	@Override
-	public final void onPathBroken(CrystalElement e) {
+	public final void onPathBroken(CrystalFlow p, FlowFail f) {
 
 	}
 
@@ -240,6 +268,74 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public final boolean canDrop(EntityPlayer ep) {
 		return ep.getUniqueID().equals(placerUUID);
+	}
+
+	@Override
+	public boolean canTransmitTo(CrystalReceiver r) {
+		return true;
+	}
+
+	public void triggerConnectionRender() {
+		if (worldObj.isRemote) {
+			connectionRenderTick = 100;
+			//connectableTiles = this.getConnectableTilesForRender();
+		}
+		else {
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.REPEATERCONN.ordinal(), this, 128);
+		}
+	}
+
+	public int getConnectionRenderAlpha() {
+		return connectionRenderTick > 0 ? (connectionRenderTick > 10 ? 255 : 25*connectionRenderTick) : 0;
+	}
+
+	public HashSet<WorldLocation> getRenderedConnectableTiles() {
+		return connectableTiles;
+	}
+
+	@SideOnly(Side.CLIENT)
+	/** Does not use the crystal network since is clientside. */
+	private final HashSet<WorldLocation> getConnectableTilesForRender() {
+		HashSet<WorldLocation> c = new HashSet();
+		int r = Math.max(this.getReceiveRange(), this.getSendRange());
+		for (int i = -r; i <= r; i++) {
+			for (int j = -r; j <= r; j++) {
+				for (int k = -r; k <= r; k++) {
+					boolean flag = false;
+					TileEntity te = worldObj.getTileEntity(xCoord+i, yCoord+j, zCoord+k);
+					if (te instanceof CrystalReceiver && ((CrystalNetworkTile)te).canConduct() && this.canTransmitTo((CrystalReceiver)te)) {
+						flag = true;
+					}
+					if (te instanceof CrystalTransmitter && ((CrystalNetworkTile)te).canConduct() && ((CrystalTransmitter)te).canTransmitTo(this)) {
+						flag = true;
+					}
+					if (flag) {
+						if (this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= r*r) {
+							if (!this.needsLineOfSight() || (PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord))) {
+								c.add(new WorldLocation(te));
+							}
+						}
+					}
+				}
+			}
+		}
+		return c;
+	}
+
+	@Override
+	public final AxisAlignedBB getRenderBoundingBox() {
+		AxisAlignedBB def = super.getRenderBoundingBox();
+		if (def == INFINITE_EXTENT_AABB)
+			return def;
+		if (connectionRenderTick > 0) {
+			return INFINITE_EXTENT_AABB;
+		}
+		else if (isTurbo) {
+			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(2, 2, 2);
+		}
+		else {
+			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(0.5, 0.5, 0.5);
+		}
 	}
 
 }

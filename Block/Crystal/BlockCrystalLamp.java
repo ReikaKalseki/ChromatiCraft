@@ -15,6 +15,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -68,16 +69,20 @@ public class BlockCrystalLamp extends CrystalBlock {
 
 	@Override
 	public BlockKey getBaseBlock(IBlockAccess iba, int x, int y, int z, ForgeDirection side) {
-		if (this.isUnbreakable(iba, x, y, z))
+		if (this.unMineable(iba, x, y, z))
 			return new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 1);
 		return side.offsetY == 0 ? new BlockKey(Blocks.stone, 0) : new BlockKey(Blocks.double_stone_slab, 0);
 	}
 
 	@Override
-	protected boolean isUnbreakable(IBlockAccess iba, int x, int y, int z) {
-		if (iba.getBlock(x, y-1, z) == ChromaBlocks.MUSICTRIGGER.getBlockInstance())
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return this.unMineable(world, x, y, z);
+	}
+
+	private boolean unMineable(IBlockAccess world, int x, int y, int z) {
+		if (world.getBlock(x, y-1, z) == ChromaBlocks.MUSICTRIGGER.getBlockInstance())
 			return true;
-		return iba.getBlock(x, y-1, z) instanceof BlockStructureShield && iba.getBlockMetadata(x, y-1, z) >= 8;
+		return world.getBlock(x, y-1, z) instanceof BlockStructureShield && world.getBlockMetadata(x, y-1, z) >= 8;
 	}
 
 	@Override

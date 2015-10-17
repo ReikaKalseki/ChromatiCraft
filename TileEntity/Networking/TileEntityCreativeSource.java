@@ -85,6 +85,11 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 
 	@Override
 	public boolean canTransmitTo(CrystalReceiver te) {
+		return true;
+	}
+
+	@Override
+	public boolean canSupply(CrystalReceiver te) {
 		EntityPlayer ep = this.getPlacer();
 		UUID other = te.getPlacerUUID();
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())

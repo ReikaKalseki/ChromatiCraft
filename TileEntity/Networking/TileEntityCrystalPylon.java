@@ -162,7 +162,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		super.onFirstTick(world, x, y, z);
 		PylonGenerator.instance.cachePylon(this);
 		if (ChromaOptions.PYLONLOAD.getState()) {
-			if (forceLoad) {
+			if (forceLoad && this.getEnergy(color) < this.getMaxStorage(color)) {
 				ChunkManager.instance.loadChunks(this);
 			}
 		}
@@ -750,6 +750,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public int getSourcePriority() {
 		return 0;
+	}
+
+	@Override
+	public boolean canSupply(CrystalReceiver te) {
+		return true;
 	}
 
 	@Override

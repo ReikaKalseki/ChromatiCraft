@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
@@ -82,8 +83,10 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
@@ -460,6 +463,9 @@ public class ChromatiPackets implements PacketHandler {
 				case MEDISTRIBTHRESH:
 					((TileEntityMEDistributor)tile).setThreshold(data[0], data[1]);
 					break;
+				case MEDISTRIBFUZZY:
+					((TileEntityMEDistributor)tile).toggleFuzzy(data[0]);
+					break;
 				case HOVERWAND: {
 					ItemFlightWand.setMode(ep.getCurrentEquippedItem(), HoverType.list[data[0]]);
 					break;
@@ -551,7 +557,14 @@ public class ChromatiPackets implements PacketHandler {
 				case FENCETRIGGER:
 					((TileEntityCrystalFence)tile).triggerSegment(data[0], data[1] > 0);
 					break;
-				default:
+				case MINERJAM:
+					((TileEntityMiner)tile).doWarningParticles(world, x, y, z);
+					break;
+				case REPEATERCONN:
+					((TileEntityCrystalRepeater)tile).triggerConnectionRender();
+					break;
+				case CHARGERTOGGLE:
+					((TileEntityCrystalCharger)tile).toggle(CrystalElement.elements[data[0]]);
 					break;
 			}
 		}

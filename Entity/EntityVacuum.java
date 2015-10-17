@@ -201,6 +201,8 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 	private boolean canMove(Block b, World world, int x, int y, int z) {
 		if (b.blockHardness < 0)
 			return false;
+		if (b.getPlayerRelativeBlockHardness(firingPlayer, world, x, y, z) < 0)
+			return false;
 		if (b.isAir(world, x, y, z))
 			return false;
 		if (b instanceof SemiUnbreakable)

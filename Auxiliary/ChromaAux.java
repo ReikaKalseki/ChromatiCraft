@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
+import java.util.Collection;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +23,7 @@ import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -29,6 +31,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -207,5 +211,14 @@ public class ChromaAux {
 	public static float getIslandBias(float originalBias, float dx, float dz) {
 		float dist = MathHelper.sqrt_double(dx*dx+dz*dz);
 		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn
+	}
+
+	public static MultiMap<DecimalPosition, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
+		MultiMap<DecimalPosition, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
+		for (CrystalTarget t : c) {
+			DecimalPosition loc = new DecimalPosition(t.location).offset(t.offsetX, t.offsetY, t.offsetZ);
+			map.addValue(loc, t.color);
+		}
+		return map;
 	}
 }

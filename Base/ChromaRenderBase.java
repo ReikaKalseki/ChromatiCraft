@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Base.TileEntityRenderBase;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
 
 public abstract class ChromaRenderBase extends TileEntityRenderBase implements TextureFetcher {
@@ -59,7 +60,7 @@ public abstract class ChromaRenderBase extends TileEntityRenderBase implements T
 	}
 
 	protected final void renderModel(TileEntityChromaticBase tile, ChromaModelBase model, String tex, Object... args) {
-		if (!tile.renderModelsInPass1() && MinecraftForgeClient.getRenderPass() != 0 && tile.isInWorld())
+		if (!tile.renderModelsInPass1() && (MinecraftForgeClient.getRenderPass() != 0 && !StructureRenderer.isRenderingTiles()) && tile.isInWorld())
 			return;
 		this.bindTextureByName(tex);
 		GL11.glPushMatrix();

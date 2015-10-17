@@ -92,6 +92,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
@@ -110,6 +111,7 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
+import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
@@ -673,6 +675,22 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void nonHostileMobs(MobTargetingEvent.Pre evt) {
+		if (Chromabilities.COMMUNICATE.enabledOn(evt.player)) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void cloakPlayers(MobTargetingEvent.Pre evt) {
+		if (TileEntityCloakingTower.isPlayerCloaked(evt.player)) {
+			if (evt.player.getDistanceSq(evt.x, evt.y, evt.z) >= 4) {
+				evt.setResult(Result.DENY);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedInvincibility(LivingAttackEvent evt) {
 		if (evt.entityLiving instanceof EntityPlayer && !((EntityPlayer)evt.entityLiving).capabilities.isCreativeMode) {
 			if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
@@ -685,8 +703,10 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void lampSpawnLimits(CheckSpawn evt) {
-		if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.z)) {
-			evt.setResult(Result.DENY);
+		if (ReikaEntityHelper.isHostile(evt.entityLiving)) {
+			if (TileEntityChromaLamp.findLampFromXYZ(evt.world, evt.x, evt.z)) {
+				evt.setResult(Result.DENY);
+			}
 		}
 	}
 
@@ -975,7 +995,8 @@ public class ChromaticEventManager {
 					if (es.posY < 40) {
 						if (world.checkNoEntityCollision(e.boundingBox)) {
 							if (world.getCollidingBoundingBoxes(e, e.boundingBox).isEmpty() && !world.isAnyLiquid(e.boundingBox)) {
-								ev.setResult(Result.ALLOW);
+								if (ev.getResult() != Result.DENY)
+									ev.setResult(Result.ALLOW);
 							}
 						}
 					}

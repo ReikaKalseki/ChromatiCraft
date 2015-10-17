@@ -49,8 +49,6 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 
 	private final StepTimer cacheTimer = new StepTimer(40);
 
-	private static final HashSet<WorldLocation> distributionChain = new HashSet();
-
 	private static final HashSet<Class> blacklist = new HashSet();
 
 	@Override
@@ -84,8 +82,6 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 			WorldLocation loc = it.next();
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
-				if (te instanceof TileEntityRFDistributor)
-					distributionChain.add(new WorldLocation(te));
 				int give = this.tryGiveEnergy(maxReceive, simulate, (IEnergyReceiver)te);
 				if (give > 0) {
 					this.sendEnergy(give, loc, (IEnergyReceiver)te);
@@ -145,8 +141,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 				double py = yCoord+0.5+dy/dd*d;
 				double pz = zCoord+0.5+dz/dd*d;
 				float s = (float)(1.5+ReikaMathLibrary.logbase(rf, 10)*(1D-d*d*12));
-				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand();
-				EntityFX fx2 = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand();
+				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xff0000).setLife(l).setScale(s).setRapidExpand().markDestination(x, y, z);
+				EntityFX fx2 = new EntityBlurFX(worldObj, px, py, pz, vx, vy, vz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand().markDestination(x, y, z);
 				fx.noClip = true;
 				fx2.noClip = true;
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -241,8 +237,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 		Class c = te.getClass();
 		if (blacklist.contains(c))
 			return false;
-		if (distributionChain.contains(new WorldLocation(te)))
-			return false;
+		if (te instanceof TileEntityRFDistributor)
+			return te.yCoord < yCoord;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 			String s = c.getName().toLowerCase();
 			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {

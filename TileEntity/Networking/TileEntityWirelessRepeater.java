@@ -11,8 +11,11 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -81,18 +84,23 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public void onPathCompleted() {
+	public void onPathCompleted(CrystalFlow p) {
 
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
+	public void onPathBroken(CrystalFlow p, FlowFail f) {
 
 	}
 
 	@Override
 	public boolean checkConnectivity() {
 		return true;
+	}
+
+	@Override
+	public boolean canTransmitTo(CrystalReceiver r) {
+		return !(r instanceof CrystalRepeater);
 	}
 
 }

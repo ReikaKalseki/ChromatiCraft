@@ -109,6 +109,7 @@ public class ProgressionManager implements ProgressRegistry {
 		STORAGE(ChromaItems.STORAGE.getStackOf()),
 		BALLLIGHTNING(ChromaStacks.auraDust),
 		POWERCRYSTAL(ChromaTiles.CRYSTAL.getCraftedProduct()),
+		TURBOCHARGE(ChromaTiles.PYLONTURBO.getCraftedProduct()),
 		BREAKSPAWNER(Blocks.mob_spawner),
 		KILLDRAGON(Blocks.dragon_egg),
 		KILLWITHER(Items.nether_star),
@@ -260,6 +261,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.KILLMOB);
 		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.KILLMOB);
+
+		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.DIMENSION);
 
 		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);

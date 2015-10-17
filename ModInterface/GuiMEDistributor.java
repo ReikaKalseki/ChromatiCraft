@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -17,6 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import cpw.mods.fml.relauncher.Side;
@@ -57,6 +59,23 @@ public class GuiMEDistributor extends GuiChromaBase
 			texts[i].setFocused(false);
 			texts[i].setMaxStringLength(6);
 			texts[i].setText(String.valueOf(med.getThreshold(i)));
+		}
+
+		String tex = "Textures/GUIs/buttons.png";
+
+		for (int i = 0; i < med.NSLOTS; i++) {
+			int x = j+94+16*(i*2/med.NSLOTS);
+			int y = k+19+20*(i%(med.NSLOTS/2));
+			buttonList.add(new ImagedGuiButton(i, x, y, 10, 10, 90, 6, tex, ChromatiCraft.class));
+		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+
+		if (b.id < med.NSLOTS) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBFUZZY.ordinal(), med, b.id);
 		}
 	}
 

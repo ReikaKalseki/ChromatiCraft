@@ -62,6 +62,7 @@ public enum ChromaPackets {
 	CHAINGUNEND(1),
 	METRANSFER(2),
 	MEDISTRIBTHRESH(2),
+	MEDISTRIBFUZZY(1),
 	HOVERWAND(1),
 	AURATTACK(1),
 	AURAHEAL(1),
@@ -94,6 +95,9 @@ public enum ChromaPackets {
 	FENCETRIGGER(2),
 	//MAZEDISTREQ(),
 	//MAZEDISTINFO(1);
+	MINERJAM(),
+	REPEATERCONN(),
+	CHARGERTOGGLE(1),
 	;
 
 	public final int numInts;

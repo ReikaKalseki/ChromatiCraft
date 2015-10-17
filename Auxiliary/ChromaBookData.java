@@ -100,6 +100,8 @@ public class ChromaBookData {
 				gui.drawItemStackWithTooltip(ri, fr, out, dx, dy);
 			}
 		}
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 3) {
 			ElementTagCompound tag = ((PylonRecipe)c).getRequiredAura();
 			int max = tag.getMaximumValue();
@@ -118,6 +120,74 @@ public class ChromaBookData {
 				int y = posY+26+h2;
 				gui.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
 				gui.drawRect(x, y1+dy, x+w, y, e.getColor());
+			}
+		}
+	}
+
+	public static void drawCompressedCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int posX, int posY) {
+		GL11.glDisable(GL11.GL_LIGHTING);
+
+		ItemStack[] arr = c.getArrayForDisplay();
+		for (int i = 0; i < 9; i++) {
+			ItemStack in = arr[i];
+			if (in != null) {
+				int x = 47;
+				int y = 96;
+				int dx = x+posX+i%3*18;
+				int dy = y+posY+i/3*18;
+				//FontRenderer fr2 = in.getDisplayName().contains(FontType.OBFUSCATED.id) ? FontType.OBFUSCATED.renderer : fr;
+				gui.drawItemStackWithTooltip(ri, fr, in, dx, dy);
+			}
+		}
+
+		GL11.glColor4f(1, 1, 1, 1);
+
+		if (c instanceof MultiBlockCastingRecipe) {
+			Map<List<Integer>, ItemStack> items = ((MultiBlockCastingRecipe)c).getAuxItems();
+			for (List<Integer> key : items.keySet()) {
+				int i = key.get(0);
+				int k = key.get(1);
+				int sx = i == 0 ? 0 : i < 0 ? -1 : 1;
+				int sy = k == 0 ? 0 : k < 0 ? -1 : 1;
+				int tx = Math.abs(i) == 2 ? 37 : 57;
+				int ty = Math.abs(k) == 2 ? 37 : 57;
+				int dx = posX+65+sx*tx;
+				int dy = posY+114+sy*ty;
+				ItemStack out = items.get(key).copy();
+				if (out.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+					List<ItemStack> dmg = ReikaItemHelper.getAllMetadataPermutations(out.getItem());
+					if (System.currentTimeMillis()%1000 == 0) {
+						for (int f = 0; f < permuOffset.length; f++) {
+							for (int g = 0; g < permuOffset[f].length; g++) {
+								permuOffset[f][g] = ReikaRandomHelper.getRandomPlusMinus(0, 16);
+							}
+						}
+					}
+					out = dmg.get((int)((System.currentTimeMillis()/1000+permuOffset[i/2+2][k/2+2])%dmg.size()));
+				}
+				gui.drawItemStackWithTooltip(ri, fr, out, dx, dy);
+			}
+		}
+
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		if (c instanceof PylonRecipe) {
+			ElementTagCompound tag = ((PylonRecipe)c).getRequiredAura();
+			int max = tag.getMaximumValue();
+			for (CrystalElement e : tag.elementSet()) {
+				int color = e.getColor();
+				//int dx = posX+24*e.ordinal();
+				//int dy = posY+20;
+
+				int energy = (int)((System.currentTimeMillis())%max);
+				int w = 3;
+				int h2 = 30;
+				int x = posX+7+(e.ordinal()/4)*(h2+4);
+				int ht = Math.min(h2, energy*h2/tag.getValue(e)); //prevent gui overflow
+				int y = posY+193+(e.ordinal()%4)*7;
+				int y1 = posY+26+h2;
+				gui.drawRect(x, y, x+h2, y+w, e.getJavaColor().darker().darker().getRGB());
+				gui.drawRect(x, y, x+ht, y+w, e.getColor());
 			}
 		}
 	}

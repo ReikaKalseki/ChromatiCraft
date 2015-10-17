@@ -127,7 +127,7 @@ public class GuiAbilitySelect extends GuiScreen {
 		if (move != 0) {
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUISEL, player, 1, 1);
 		}
-		boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+		boolean ctrl = GuiScreen.isCtrlKeyDown() || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		if (move > 0) {
 			if (ability != null && ctrl) {
 				if (data < Chromabilities.maxPower(player, ability) && Chromabilities.playerHasAbility(player, ability))

@@ -28,10 +28,15 @@ import thaumcraft.api.nodes.INode;
 import thaumcraft.api.nodes.NodeModifier;
 import thaumcraft.api.nodes.NodeType;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
+import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -49,7 +54,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper.EffectType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
+public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile {
 
 	private static final int DELAY = 600;
 
@@ -257,7 +262,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public void onPathBroken(CrystalElement e) {
+	public void onPathBroken(CrystalFlow p, FlowFail f) {
 		this.playSound("thaumcraft:craftfail");
 		if (rand.nextInt(8) == 0)
 			this.damageNode();
@@ -529,7 +534,17 @@ public final class NodeReceiverWrapper implements CrystalReceiver, WrapperTile {
 	}
 
 	@Override
-	public void onPathCompleted() {
+	public void onPathCompleted(CrystalFlow p) {
+
+	}
+
+	@Override
+	public void onPathConnected(CrystalPath p) {
+		ChromaSounds.CAST.playSoundAtBlock(this.getWorld(), this.getX(), this.getY(), this.getZ(), 1, 0.65F);
+	}
+
+	@Override
+	public void onTileNetworkTopologyChange(CrystalNetworkTile te, boolean remove) {
 
 	}
 

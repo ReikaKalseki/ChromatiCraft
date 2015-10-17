@@ -22,7 +22,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
 
-	public CompoundRepeaterRecipe(ItemStack out, ItemStack main) {
+	public CompoundRepeaterRecipe(ItemStack out, ItemStack main, RecipeCrystalRepeater repeater) {
 		super(out, main);
 
 		this.addAuxItem(ChromaStacks.beaconDust, -4, -4);
@@ -51,6 +51,8 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe implements E
 		this.addAuxItem(ChromaStacks.focusDust, 2, 2);
 		this.addAuxItem(ChromaStacks.focusDust, -2, -2);
 		this.addAuxItem(ChromaStacks.focusDust, -2, 2);
+
+		this.addRunes(repeater.getRunes());
 	}
 
 	@Override
