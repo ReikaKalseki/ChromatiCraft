@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
+import mekanism.api.MekanismAPI;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -47,23 +48,25 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.ChromaLock;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
-import Reika.ChromatiCraft.Auxiliary.ChromaResearchCommand;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalMaterial;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.NetworkLoggerCommand;
 import Reika.ChromatiCraft.Auxiliary.CrystalPlantHandler;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
-import Reika.ChromatiCraft.Auxiliary.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
-import Reika.ChromatiCraft.Auxiliary.ProgressionStageCommand;
+import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
-import Reika.ChromatiCraft.Auxiliary.RecipeReloadCommand;
-import Reika.ChromatiCraft.Auxiliary.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Command.ChromaResearchCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.ChromabilityCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.ProgressionStageCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
@@ -125,12 +128,14 @@ import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
+import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
@@ -249,6 +254,15 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void preload(FMLPreInitializationEvent evt) {
 		this.startTiming(LoadPhase.PRELOAD);
 		this.verifyInstallation();
+
+		if (ReikaJVMParser.getJavaVersion(0) >= 8) {
+			String arg = "-XX:+UseG1GC";
+			if (!ReikaJVMParser.isArgumentPresent(arg)) {
+				String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes.";
+				msg += "\nNote that you may have to remove other GC arguments, such as '-XX:+UseConcMarkSweepGC', which is commonly auto-specified by launchers.";
+				throw new InstallationException(this, msg);
+			}
+		}
 
 		config.loadSubfolderedConfigFile(evt);
 		config.initProps(evt);
@@ -409,6 +423,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			MinecraftForge.EVENT_BUS.register(AbilityHelper.instance);
 			FMLCommonHandler.instance().bus().register(AbilityHelper.instance);
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
+			PlayerHandler.instance.registerTracker(PylonCacheLoader.instance);
 			PlayerHandler.instance.registerTracker(DimensionJoinHandler.instance);
 		}
 
@@ -593,8 +608,51 @@ public class ChromatiCraft extends DragonAPIMod {
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLON.getBlockInstance());
 		}
 
+		if (ModList.MEKANISM.isLoaded()) {
+			for (int i = 0; i < 16; i++) {
+				try {
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.PYLON.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.SPECIALSHIELD.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.POWERTREE.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.PORTAL.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.CONSOLE.getBlockInstance(), i);
+
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.COLORLOCK.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.DIMDATA.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.LOCKFREEZE.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.LOCKKEY.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.GOL.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.GOLCONTROL.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.MUSICMEMORY.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.COLORLOCK.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.SHIFTKEY.getBlockInstance(), i);
+					MekanismAPI.addBoxBlacklist(ChromaBlocks.SHIFTLOCK.getBlockInstance(), i);
+				}
+				catch (Exception e) {
+					logger.logError("Unable to blacklist tiles from Mekanism box");
+					e.printStackTrace();
+				}
+				catch (LinkageError e) {
+					logger.logError("Unable to blacklist tiles from Mekanism box");
+					e.printStackTrace();
+				}
+			}
+		}
+
 		if (ModList.FORESTRY.isLoaded()) {
-			CrystalBees.register();
+			try {
+				CrystalBees.register();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				logger.logError("Could not add Forestry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
+			catch (LinkageError e) {
+				e.printStackTrace();
+				logger.logError("Could not add Forestry integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
+			}
 			ApiaryAcceleration.instance.register();
 		}
 
@@ -631,9 +689,11 @@ public class ChromatiCraft extends DragonAPIMod {
 				}
 			}
 			catch (IncompatibleClassChangeError e) {
+				e.printStackTrace();
 				logger.logError("Could not add ChocolateQuest integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				logger.logError("Could not add ChocolateQuest integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 		}
@@ -643,10 +703,12 @@ public class ChromatiCraft extends DragonAPIMod {
 				BotaniaAPI.blackListItemFromLoonium(ChromaItems.FRAGMENT.getItemInstance());
 				BotaniaAPI.blackListItemFromLoonium(ChromaItems.SHARD.getItemInstance());
 			}
-			catch (IncompatibleClassChangeError e) {
+			catch (LinkageError e) {
+				e.printStackTrace();
 				logger.logError("Could not add Botania integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				logger.logError("Could not add Botania integration. Check your versions; if you are up-to-date with both mods, notify Reika.");
 			}
 		}
@@ -694,6 +756,23 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 
+		if (ModList.ENDERIO.isLoaded()) {
+			try {
+				Class c = Class.forName("crazypants.enderio.config.Config");
+				Field f = c.getField("travelStaffBlinkBlackList");
+				String[] arr = (String[])f.get(null);
+				String[] next = new String[arr.length+2];
+				System.arraycopy(arr, 0, next, 0, arr.length);
+				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
+				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
+				f.set(null, next);
+			}
+			catch (Exception e) {
+				logger.logError("Could not add EnderIO travelling staff blacklisting!");
+				e.printStackTrace();
+			}
+		}
+
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
 			ChromaTiles m = ChromaTiles.TEList[i];
 			TimeTorchHelper.blacklistTileEntity(m.getTEClass());
@@ -719,6 +798,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ChromaResearchDebugCommand());
 		evt.registerServerCommand(new StructureGenCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
+		evt.registerServerCommand(new PylonCacheCommand());
 	}
 
 	@EventHandler

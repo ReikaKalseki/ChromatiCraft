@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -119,9 +120,9 @@ public class ItemBlockChromaTiered extends ItemBlock implements TieredItem {
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack is) {
+	public final String getItemStackDisplayName(ItemStack is) {
 		String name = ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && DragonAPICore.hasGameLoaded()) {
 			name = this.getDisguiseName(is, name);
 			//name = ModList.NEI.isLoaded() && DragonAPICore.hasGameLoaded() ? ObfuscatedNameHandler.registerName(name, is) : name;
 		}

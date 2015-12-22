@@ -16,7 +16,6 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Random;
 
-import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
@@ -92,6 +91,9 @@ public class StructureCalculator implements Runnable {
 			double el = (System.nanoTime()-time)/(10e9);
 			int n = ChunkProviderChroma.structures.size();
 			ChromatiCraft.logger.log(String.format("Dimension structure generation thread complete; %d structures generated. Elapsed time: %.9fs", n, el));
+			if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
+				ChromatiCraft.logger.log("Generated Structures: "+ChunkProviderChroma.structures);
+			}
 		}
 		catch (Throwable e) {
 			e.printStackTrace();
@@ -192,10 +194,10 @@ public class StructureCalculator implements Runnable {
 	}
 
 	private void doGenerate(StructurePair s, int structureOriginX, int structureOriginZ, float structureAngleOrigin) {
-		float ang = structureAngleOrigin+s.color.ordinal()*22.5F;
-		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 2000); //was +/- 4000
-		int x = structureOriginX+(int)(r*MathHelper.cos(ang));
-		int z = structureOriginZ+(int)(r*MathHelper.sin(ang));
+		double ang = Math.toRadians(structureAngleOrigin+s.color.ordinal()*22.5);
+		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 3000); //was +/- 4000, then 2000
+		int x = structureOriginX+(int)(r*Math.cos(ang));
+		int z = structureOriginZ+(int)(r*Math.sin(ang));
 		s.generator.startCalculate(s.color, x, z, rand);
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
 			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ();

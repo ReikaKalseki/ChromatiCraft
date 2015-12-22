@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
@@ -55,7 +56,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 	private boolean centeredMouse = false;
 
 	public GuiCastingRecipe(EntityPlayer ep, ArrayList<CastingRecipe> out, int offset, boolean nei) {
-		super(ep, null, 256, 220, nei);
+		super(ChromaGuis.RECIPE, ep, null, 256, 220, nei);
 		recipes = new ArrayList(out);
 		index = offset;
 	}
@@ -137,14 +138,14 @@ public class GuiCastingRecipe extends GuiBookSection {
 	@Override
 	protected PageType getGuiLayout() {
 		switch(subpage) {
-		case 0:
-			return PageType.CAST;
-		case 1:
-			return PageType.RUNES;
-		case 2:
-			return PageType.MULTICAST;
-		case 3:
-			return PageType.PYLONCAST;
+			case 0:
+				return PageType.CAST;
+			case 1:
+				return PageType.RUNES;
+			case 2:
+				return PageType.MULTICAST;
+			case 3:
+				return PageType.PYLONCAST;
 		}
 		return PageType.PLAIN;
 	}

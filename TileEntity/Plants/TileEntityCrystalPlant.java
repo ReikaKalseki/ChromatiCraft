@@ -127,6 +127,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 	{
 		super.readFromNBT(NBT);
 		growthTick = NBT.getInteger("growth");
+		lastShardTick = NBT.getLong("shard");
 	}
 
 	@Override
@@ -135,6 +136,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 		super.writeToNBT(NBT);
 
 		NBT.setInteger("growth", growthTick);
+		NBT.setLong("shard", lastShardTick);
 	}
 
 	public int getGrowthState() {

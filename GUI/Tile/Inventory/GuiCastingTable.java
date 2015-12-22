@@ -19,6 +19,7 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -153,12 +154,15 @@ public class GuiCastingTable extends GuiChromaBase {
 					int energy = tile.getEnergy(e);
 					int w = 4;
 					int x = 183+e.ordinal()%4*w*2;
-					int h = energy*35/tag.getValue(e);
-					int dy = Math.max(35-h, 0); //prevent gui overflow
+					int h = 35;
+					//int h = energy*35/tag.getValue(e);
+					//int dy = Math.max(35-h, 0); //prevent gui overflow
 					int y1 = 35+e.ordinal()/4*40;
-					int y = 70+e.ordinal()/4*40;
-					this.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
-					this.drawRect(x, y1+dy, x+w, y, e.getColor());
+					//int y = 70+e.ordinal()/4*40;
+					//this.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
+					//this.drawRect(x, y1+dy, x+w, y, e.getColor());
+
+					ChromaFX.drawFillBar(e, x, y1, w, h, energy/(float)tag.getValue(e));
 				}
 			}
 		}

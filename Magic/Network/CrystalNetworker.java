@@ -17,9 +17,11 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -30,16 +32,20 @@ import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -68,6 +74,8 @@ public class CrystalNetworker implements TickHandler {
 	private final HashSet<CrystalFlow> toBreak = new HashSet();
 	private final ArrayList<NotifiedNetworkTile> notifyCache = new ArrayList();
 	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();
+
+	private static final Random rand = new Random();
 
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
@@ -131,6 +139,7 @@ public class CrystalNetworker implements TickHandler {
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		PylonFinder.stopAllSearches();
 		int dim = evt.world.provider.dimensionId;
+		ChromatiCraft.logger.debug("Unloading dimension "+dim+", clearing crystal network.");
 		try {
 			this.clear(dim);
 			for (WorldLocation c : tiles.keySet()) {
@@ -322,6 +331,9 @@ public class CrystalNetworker implements TickHandler {
 			}
 
 			WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true);
+			if (te instanceof TileEntityCrystalPylon) {
+				PylonLocationData.initNetworkData(te.getWorld()).setDirty(true);
+			}
 		}
 	}
 
@@ -400,7 +412,10 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		PylonFinder.removePathsWithTile(te);
-		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(false); //true?
+		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true); //was false
+		if (te instanceof TileEntityCrystalPylon) {
+			PylonLocationData.initNetworkData(te.getWorld()).setDirty(true);
+		}
 	}
 
 	public void breakPaths(CrystalNetworkTile te) {
@@ -561,6 +576,38 @@ public class CrystalNetworker implements TickHandler {
 		return "Crystal Networker";
 	}
 
+	public static class PylonLocationData extends WorldSavedData {
+
+		private static final String IDENTIFIER = PylonGenerator.NBT_TAG;
+
+		public PylonLocationData() {
+			super(IDENTIFIER);
+		}
+
+		public PylonLocationData(String s) {
+			super(s);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			PylonGenerator.instance.loadPylonLocations(NBT);
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			PylonGenerator.instance.savePylonLocations(NBT);
+		}
+
+		private static PylonLocationData initNetworkData(World world) {
+			PylonLocationData data = (PylonLocationData)world.loadItemData(PylonLocationData.class, IDENTIFIER);
+			if (data == null) {
+				data = new PylonLocationData();
+				world.setItemData(IDENTIFIER, data);
+			}
+			return data;
+		}
+	}
+
 	public static class WorldCrystalNetworkData extends WorldSavedData {
 
 		private static final String IDENTIFIER = NBT_TAG;
@@ -645,6 +692,62 @@ public class CrystalNetworker implements TickHandler {
 			return hasLOS;
 		}
 
+	}
+
+	public void overloadColorConnectedTo(CrystalTransmitter te, CrystalElement color, int num, boolean recursive) {
+		ArrayList<CrystalReceiver> li = this.getAllColorConnectedTo(te, color, recursive);
+		if (li.isEmpty())
+			return;
+		WeightedRandom<CrystalNetworkTile> w = new WeightedRandom();
+		for (CrystalReceiver r : li) {
+			if (r instanceof NaturalCrystalSource)
+				continue;
+			double wt = 1;
+			if (r instanceof CrystalFuse) {
+				wt = ((CrystalFuse)r).getFailureWeight(color);
+			}
+			w.addEntry(r, wt*10);
+		}
+		for (int i = 0; i < num; i++) {
+			CrystalNetworkTile tile = w.getRandomEntry();
+			if (tile instanceof CrystalFuse) {
+				((CrystalFuse)tile).overload(color);
+			}
+			else {
+				double x = tile.getX()+0.5;
+				double y = tile.getY()+0.5;
+				double z = tile.getZ()+0.5;
+				tile.getWorld().setBlock(tile.getX(), tile.getY(), tile.getZ(), Blocks.air);
+				tile.getWorld().createExplosion(null, x, y, z, 1.5F+rand.nextFloat()*1.5F, true);
+			}
+		}
+	}
+
+	public ArrayList<CrystalReceiver> getAllColorConnectedTo(CrystalTransmitter te, CrystalElement color, boolean recursive) {
+		return this.getAllColorConnectedTo(te, color, recursive, new HashSet());
+	}
+
+	private ArrayList<CrystalReceiver> getAllColorConnectedTo(CrystalTransmitter te, CrystalElement color, boolean recursive, HashSet<WorldLocation> locs) {
+		ArrayList<CrystalReceiver> li = this.getNearbyReceivers(te, color);
+		if (recursive) {
+			for (CrystalReceiver r : li) {
+				WorldLocation loc = new WorldLocation(r.getWorld(), r.getX(), r.getY(), r.getZ());
+				if (!locs.contains(loc)) {
+					locs.add(loc);
+					if (r instanceof CrystalTransmitter) {
+						ArrayList<CrystalReceiver> li2 = this.getAllColorConnectedTo((CrystalTransmitter)r, color, recursive, locs);
+						for (CrystalReceiver r2 : li2) {
+							WorldLocation loc2 = new WorldLocation(r.getWorld(), r.getX(), r.getY(), r.getZ());
+							if (!locs.contains(loc2)) {
+								locs.add(loc2);
+								li.add(r2);
+							}
+						}
+					}
+				}
+			}
+		}
+		return li;
 	}
 
 }

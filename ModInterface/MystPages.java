@@ -17,10 +17,16 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
 
+import com.xcompwiz.mystcraft.api.hook.WordAPI;
+import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
 import com.xcompwiz.mystcraft.api.word.DrawableWord;
-import com.xcompwiz.mystcraft.symbol.IAgeSymbol;
-import com.xcompwiz.mystcraft.world.IAgeController;
+import com.xcompwiz.mystcraft.api.world.AgeDirector;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class MystPages {
@@ -28,7 +34,9 @@ public class MystPages {
 	public static void registerPages() {
 		for (int i = 0; i < Symbols.list.length; i++) {
 			Symbols p = Symbols.list[i];
-			ReikaMystcraftHelper.getAPI().getWordAPI().registerWord(p.getID(), p.word);
+			WordAPI api = ReikaMystcraftHelper.getAPI(APISegment.WORD, 1);
+			if (api != null)
+				api.registerWord(p.getID(), p.word);
 		}
 
 		for (int i = 0; i < Pages.list.length; i++) {
@@ -90,7 +98,7 @@ public class MystPages {
 		 */
 
 		@Override
-		public void registerLogic(IAgeController age, long seed) {
+		public void registerLogic(AgeDirector age, long seed) {
 
 		}
 
@@ -137,11 +145,19 @@ public class MystPages {
 		private static final Symbols[] list = values();
 
 		private Symbols(String s) {
+
+			word = new DrawableWord();
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+				this.setTex(word);
+			}
+			word.addDrawComponent(this.ordinal(), 0);
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void setTex(DrawableWord word) {
 			//texture = "Textures/MystPage/"+s+".png";
 			String texture = "Reika/ChromatiCraft/Textures/mystpages.png";
-
-			word = new DrawableWord().setImageSource(DirectResourceManager.getResource(texture));
-			word.addDrawComponent(this.ordinal(), 0);
+			word.setImageSource(DirectResourceManager.getResource(texture));
 		}
 
 		public String getID() {

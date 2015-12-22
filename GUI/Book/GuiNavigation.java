@@ -9,7 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -37,10 +38,9 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-
-import com.google.common.collect.TreeMultimap;
 
 public class GuiNavigation extends GuiScrollingPage {
 
@@ -52,7 +52,7 @@ public class GuiNavigation extends GuiScrollingPage {
 	private static PluralMap<String> tooltips = new PluralMap(2);
 
 	public GuiNavigation(EntityPlayer ep) {
-		super(ep, 256, 220, 242, 206);
+		super(ChromaGuis.BOOKNAV, ep, 256, 220, 242, 206);
 
 		Section z = null;
 		for (int i = 0; i < ChromaResearch.researchList.length; i++) {
@@ -100,17 +100,17 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		if (craftMode) {
-			buttonList.add(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 95, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 4, file, ChromatiCraft.class, this));
+			this.addAuxButton(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 95, file, ChromatiCraft.class, this), "Items");
+			this.addAuxButton(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 4, file, ChromatiCraft.class, this), "Recipes");
 		}
 		else {
-			buttonList.add(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class, this));
+			this.addAuxButton(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class, this), "Recipes");
+			this.addAuxButton(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class, this), "Items");
 		}
 
-		buttonList.add(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(4, j+xSize, k+80, 22, 39, 42, 168, file, ChromatiCraft.class, this));
+		this.addAuxButton(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this), "Progress");
+		this.addAuxButton(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class, this), "Recovery");
+		this.addAuxButton(new CustomSoundImagedGuiButton(4, j+xSize, k+80, 22, 39, 42, 168, file, ChromatiCraft.class, this), "Notebook");
 	}
 
 	@Override
@@ -193,7 +193,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		for (Section z : sections.values()) {
 			int dx = x+4;
 			int n = z.allOneLevel() ? 10 : 4;
-			int c = 0xffffff;
+			int c = ReikaColorAPI.GStoHex(15+z.hoverTime*12);
 			int ddx = dx+z.getWidth(n);
 			int ddy = dy+z.getHeight(n);
 
@@ -208,7 +208,7 @@ public class GuiNavigation extends GuiScrollingPage {
 			api.drawLine(dx_, ddy_, ddx_, ddy_, c);
 			if (dx >= leftX && dx <= leftX+paneWidth-fontRendererObj.getStringWidth(z.title))
 				if (dy >= topY && dy <= topY+paneHeight-fontRendererObj.FONT_HEIGHT/2)
-					fontRendererObj.drawString(z.title, dx+2, dy-fontRendererObj.FONT_HEIGHT, 0xffffff);
+					fontRendererObj.drawString(z.title, dx+2, dy-fontRendererObj.FONT_HEIGHT, ReikaColorAPI.mixColors(c, 0xffffff, 0.675F));
 			z.drawElements(dx, dy+fontRendererObj.FONT_HEIGHT+2, n);
 			dy += z.getHeight(n)+SectionSpacing;
 			if (dy >= paneHeight && Minecraft.getMinecraft().gameSettings.guiScale == 0) //causes errors on other gui scales
@@ -223,8 +223,10 @@ public class GuiNavigation extends GuiScrollingPage {
 
 	private class Section/* implements Comparable<Section>*/ {
 
-		private final TreeMultimap<ResearchLevel, SectionElement> elements = TreeMultimap.create();
+		private final TreeMap<ResearchLevel, SectionCategory> elements = new TreeMap();
 		public final String title;
+
+		private int hoverTime;
 
 		private static final int elementWidth = 24;
 		private static final int sectionSpacing = 64;
@@ -244,7 +246,12 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 
 		public void addElement(SectionElement e) {
-			elements.put(e.research(), e);
+			SectionCategory s = elements.get(e.research());
+			if (s == null) {
+				s = new SectionCategory(e.research());
+				elements.put(e.research(), s);
+			}
+			s.addElement(e);
 		}
 
 		public int getHeight(int cols) {
@@ -259,31 +266,46 @@ public class GuiNavigation extends GuiScrollingPage {
 		public int getWidth(int cols) {
 			int sum = 0;
 			for (ResearchLevel rl : elements.keySet()) {
-				sum += this.getSubsectionWidth(cols, elements.get(rl));
+				sum += this.getSubsectionWidth(cols, elements.get(rl), true);
 				sum += sectionSpacing;
 			}
 			sum -= sectionSpacing;
-			return sum+margin+Minecraft.getMinecraft().fontRenderer.getStringWidth(elements.keySet().last().getDisplayName())-elementWidth-margin;
+			return sum+margin+Minecraft.getMinecraft().fontRenderer.getStringWidth(elements.lastKey().getDisplayName())-elementWidth-margin;
 		}
 
-		public int getSubSectionHeight(int cols, Collection<SectionElement> se) {
+		public int getSubSectionHeight(int cols, SectionCategory se) {
 			int num = 1+(se.size()-1)/cols;
 			return num*elementWidth+(num-1)*spacing+margin-1;
 		}
 
-		public int getSubsectionWidth(int cols, Collection<SectionElement> se) {
+		public int getSubsectionWidth(int cols, SectionCategory se, boolean wTitle) {
 			int num = se.size() >= cols ? cols : se.size()%cols;
-			return num*elementWidth+(num-1)*spacing+margin-1;
+			int w = num*elementWidth+(num-1)*spacing+margin-1;
+			if (wTitle)
+				w = Math.max(w, Minecraft.getMinecraft().fontRenderer.getStringWidth(se.level.getDisplayName())-sectionSpacing+24);
+			return w;
+		}
+
+		private void increaseHover() {
+			if (hoverTime < 20)
+				hoverTime++;
+		}
+
+		private void decreaseHover() {
+			if (hoverTime > 0 && GuiNavigation.this.getGuiTick()%2 == 0)
+				hoverTime--;
 		}
 
 		private void drawElements(int x, int y, int cols) {
 			int dox = 0;
+			boolean hovered = false;
 			for (ResearchLevel rl : elements.keySet()) {
-				Collection<SectionElement> se = elements.get(rl);
-				int c = 0xffffff;
+				SectionCategory se = elements.get(rl);
+				int c = ReikaColorAPI.GStoHex(15+se.hoverTime*12);//ReikaColorAPI.GStoHex(15+hoverTime*12);
+				//c = ReikaColorAPI.mixColors(c, 0x22aaff, 1-se.hoverTime/20F);
 				int dx2 = x+dox+4;
 				int dy2 =  y+4;
-				int ddx2 = dx2+this.getSubsectionWidth(cols, se);
+				int ddx2 = dx2+this.getSubsectionWidth(cols, se, false);
 				int ddy2 = dy2+this.getSubSectionHeight(cols, se);
 
 				int dx2_ = MathHelper.clamp_int(dx2, leftX+2, leftX+paneWidth+10);
@@ -298,41 +320,21 @@ public class GuiNavigation extends GuiScrollingPage {
 				String title = rl.getDisplayName();
 				if (dx2 >= leftX && dx2 <= leftX+paneWidth-fr.getStringWidth(title)) {
 					if (dy2 >= topY && dy2 <= topY+paneHeight-fr.FONT_HEIGHT/2) {
+						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 						GL11.glDisable(GL11.GL_LIGHTING);
-						fr.drawString(title, dx2, y-5, 0xffffff);
-						GL11.glEnable(GL11.GL_LIGHTING);
+						GL11.glColor4f(1, 1, 1, 1);
+						fr.drawString(title, dx2, y-5, ReikaColorAPI.mixColors(c, 0xffffff, 0.75F));
+						GL11.glPopAttrib();
 					}
 				}
-				int i = 0;
-				for (SectionElement e : se) {
-					int dx = x+margin+(i%cols)*(elementWidth+spacing)+dox;
-					int dy = y+margin+(i/cols)*(elementWidth+spacing);
-					GL11.glPushMatrix();
-					double s = elementWidth/16D;
-					GL11.glScaled(s, s, 1);
-					int ix = (int)Math.round(dx/s);
-					int iy = (int)Math.round(dy/s);
-					if (dx >= leftX && dx <= leftX+paneWidth-elementWidth) {
-						if (dy >= topY && dy <= topY+paneHeight-elementWidth) {
-							e.draw(ix, iy);
-							int mx = dx;
-							int mmx = mx+elementWidth;
-							int my = dy;
-							int mmy = my+elementWidth;
-							if (api.isMouseInBox(mx, mmx, my, mmy)) {
-								tooltips.put(e.getName(), api.getMouseRealX(), api.getMouseRealY());
-								int w = (int)Math.round(elementWidth/s);
-								int mxs = (int)Math.round(mx/s);
-								int mys = (int)Math.round(my/s);
-								api.drawRectFrame(mxs, mys, w, w, 0xffffff);
-								locations.addRegionByWH(mx, my, elementWidth, elementWidth, e);
-							}
-						}
-					}
-					GL11.glPopMatrix();
-					i++;
-				}
-				dox += this.getSubsectionWidth(cols, se)+sectionSpacing;
+				hovered |= se.renderElements(x, y, cols, dox);
+				dox += Math.max(this.getSubsectionWidth(cols, se, true)+sectionSpacing, 0*24+0*Minecraft.getMinecraft().fontRenderer.getStringWidth(se.level.getDisplayName()));
+			}
+			if (hovered) {
+				this.increaseHover();
+			}
+			else {
+				this.decreaseHover();
 			}
 		}
 		/*
@@ -343,18 +345,112 @@ public class GuiNavigation extends GuiScrollingPage {
 
 	}
 
+	private class SectionCategory {
+
+		private final ArrayList<SectionElement> elements = new ArrayList();
+		private final ResearchLevel level;
+
+		private int hoverTime = 0;
+
+		private SectionCategory(ResearchLevel r) {
+			level = r;
+		}
+
+		private void addElement(SectionElement e) {
+			elements.add(e);
+			Collections.sort(elements);
+		}
+
+		private boolean renderElements(int x, int y, int cols, int dox) {
+			boolean hovered = false;
+			int i = 0;
+			for (SectionElement e : elements) {
+				int dx = x+Section.margin+(i%cols)*(Section.elementWidth+Section.spacing)+dox;
+				int dy = y+Section.margin+(i/cols)*(Section.elementWidth+Section.spacing);
+				GL11.glPushMatrix();
+				double s = Section.elementWidth/16D;
+				GL11.glScaled(s, s, 1);
+				int ix = (int)Math.round(dx/s);
+				int iy = (int)Math.round(dy/s);
+				if (dx >= leftX && dx <= leftX+paneWidth-Section.elementWidth) {
+					if (dy >= topY && dy <= topY+paneHeight-Section.elementWidth) {
+						e.draw(ix, iy);
+						int mx = dx;
+						int mmx = mx+Section.elementWidth;
+						int my = dy;
+						int mmy = my+Section.elementWidth;
+						if (api.isMouseInBox(mx, mmx, my, mmy)) {
+							e.increaseHover();
+							tooltips.put(e.getName(), api.getMouseRealX(), api.getMouseRealY());
+							locations.addRegionByWH(mx, my, Section.elementWidth, Section.elementWidth, e);
+							hovered = true;
+						}
+						else {
+							e.decreaseHover();
+						}
+						if (e.hoverTime > 0) {
+							int w = (int)Math.round(Section.elementWidth/s);
+							int mxs = (int)Math.round(mx/s);
+							int mys = (int)Math.round(my/s);
+							api.drawRectFrame(mxs, mys, w, w, ReikaColorAPI.GStoHex(15+e.hoverTime*12));
+						}
+					}
+				}
+				GL11.glPopMatrix();
+				i++;
+			}
+			if (hovered) {
+				this.increaseHover();
+			}
+			else {
+				this.decreaseHover();
+			}
+			return hovered;
+		}
+
+		private int size() {
+			return elements.size();
+		}
+
+		private void increaseHover() {
+			if (hoverTime < 20)
+				hoverTime++;
+		}
+
+		private void decreaseHover() {
+			if (hoverTime > 0 && GuiNavigation.this.getGuiTick()%3 > 0)
+				hoverTime--;
+		}
+
+	}
+
 	private static class SectionElement implements Comparable<SectionElement> {
 
+		private int hoverTime = 0;
 		private final ChromaResearch destination;
 
 		private SectionElement(ChromaResearch b) {
 			destination = b;
 		}
 
+		private void increaseHover() {
+			if (hoverTime < 20)
+				hoverTime++;
+		}
+
+		private void decreaseHover() {
+			if (hoverTime > 0)
+				hoverTime--;
+		}
+
 		public void draw(int ex, int ey) {
-			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
-			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			float f = 0.2F+hoverTime/25F;
 			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glEnable(GL11.GL_BLEND);
+			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
+
+			GL11.glEnable(GL11.GL_BLEND);
 			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -376,6 +472,7 @@ public class GuiNavigation extends GuiScrollingPage {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glPopMatrix();
 			}
+			GL11.glPopAttrib();
 		}
 
 		public ChromaGuis getGuiType() {

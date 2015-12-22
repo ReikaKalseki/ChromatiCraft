@@ -18,6 +18,9 @@
 	<start>
 		This world is stange, confusing, and unknown. You have no idea what drives or forms it, something you will need to learn before you can possibly begin to exploit it and bend the forces to your needs. Fortunately for you, you have a notebook of sorts, though you will need to populate it with information you collect as you explore and experiment.
 	</start>
+	<lexicon>
+		Seeing as you are learning this as you go along, you will be required to piece together your understanding from various fragments of information; rarely will one item or event hold all of the information you need. In particular, various notes, though incomplete on their own, might become more complete when assembled together. Also, for some reason, sneaking when navigating the book accelerates the process.
+	</lexicon>
 	<crafting>
 		At first, the casting table seemed identical to a wooden worktable, but you soon realized that in that form it can only make the most basic of items. In all likelihood, you will need to build a structure around the table to help focus the energy and allow you to advance your crafting. Additionally, the directionality to the recipes is likely important; one can only hope that the logical mapping of upwards to North has been chosen.
 	</crafting>
@@ -31,7 +34,7 @@
 		Pylons transmit energy in concentrated beams, which you have come to call ley lines (no relation to the similarly named phenomena those with poor reasoning skills attribute to extraterrestrial construction projects and spontaneous combustion of people). These beams have a maximum range, and additionally are blocked by anything even remotely opaque.
 	</leylines>
 	<turbo>
-		With your ever-larger crystal network and your increasing load on your pylons, even a full ring of power crystals is insufficient to keep your energy flowing. Similarly, you outstripped the throughput of your repeaters long ago, and they are becoming an increasingly tight bottleneck on your network. If you can somehow enhance the power of the pylons and repeaters, it would be most convenient.
+		With your ever-larger crystal network and your increasing load on your pylons, even a full ring of power crystals is insufficient to keep your energy flowing. Similarly, you outstripped the throughput of your repeaters long ago, and they are becoming an increasingly tight bottleneck on your network. If you can somehow enhance the power of the pylons and repeaters, it would be most convenient. Such an event would likely be very energetic, so isolation from the rest of the network could be a good idea.
 	</turbo>
 	<dimension>
 		A fiery nightmare. An eldritch island ruled by a giant dragon. This world you have come to call your home is far from the only one in existence, but each of the others is alien and hostile. While they have proved bountiful with resources you no doubt need, they are inhospitable and useless aside from their raw materials. Another world must be the key, a world where the different colors of crystal energy flow naturally, unbounded by the corrupting influence of other forces. Maybe there will be secrets here, too.

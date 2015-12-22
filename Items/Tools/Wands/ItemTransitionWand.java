@@ -27,6 +27,7 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -171,9 +172,14 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+		BlockReplace r = breakers.get(b.hashCode());
+		if (id.getPlayerRelativeBlockHardness(r.player, world, x, y, z) < 0)
+			return false;
+		if (id instanceof SemiUnbreakable)
+			if (((SemiUnbreakable)id).isUnbreakable(world, x, y, z, meta))
+				return false;
 		if (world.getTileEntity(x, y, z) != null)
 			return false;
-		BlockReplace r = breakers.get(b.hashCode());
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {

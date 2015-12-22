@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Items.Tools;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
@@ -43,16 +44,23 @@ public class ItemPendant extends ItemCrystalBasic {
 		int level = this.isEnhanced() ? 2 : 0;
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer) e;
-			CrystalElement color = CrystalElement.elements[is.getItemDamage()];
-			if (color != CrystalElement.PURPLE) {
-				int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
-				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
-				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID()))
-					CrystalBlock.applyEffectFromColor(dura, level, ep, color);
+			if (this.shouldApplyInDimension(world, is.getItem())) {
+				CrystalElement color = CrystalElement.elements[is.getItemDamage()];
+				if (color != CrystalElement.PURPLE) {
+					int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
+					PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
+					if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
+						CrystalBlock.applyEffectFromColor(dura, level, ep, color);
+					}
+				}
+				if (ChromaOptions.NOPARTICLES.getState())
+					ReikaEntityHelper.setNoPotionParticles(ep);
 			}
-			if (ChromaOptions.NOPARTICLES.getState())
-				ReikaEntityHelper.setNoPotionParticles(ep);
 		}
+	}
+
+	private boolean shouldApplyInDimension(World world, Item i) {
+		return CrystalPotionController.shouldBeHostile(world) ? (i != ChromaItems.PENDANT3.getItemInstance() || ChromaOptions.NETHERPENDANT.getState()) : true;
 	}
 
 	public boolean isEnhanced() {

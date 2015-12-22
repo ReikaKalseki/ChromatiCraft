@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -54,7 +55,7 @@ public class GuiBasicInfo extends GuiBookSection {
 	private int modifier;
 
 	public GuiBasicInfo(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220, false);
+		super(ChromaGuis.INFO, ep, r, 256, 220, false);
 
 		if (r == ChromaResearch.USINGRUNES) {
 			view = this.getAllUsedRunes();

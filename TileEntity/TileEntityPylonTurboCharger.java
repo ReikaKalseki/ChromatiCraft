@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -70,6 +71,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	private int skyTick = 0;
 
 	private boolean isComplete;
+
+	private EntityPlayer turboPlayer;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -287,7 +290,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		}
 		isComplete = true;
 
-		ProgressStage.TURBOCHARGE.stepPlayerTo(this.getPlacer());
+		ProgressStage.TURBOCHARGE.stepPlayerTo(turboPlayer);
 
 		this.syncAllData(true);
 	}
@@ -297,6 +300,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		if (te != null) {
 			te.disenhance();
 			te.drain(te.getColor(), te.getEnergy(te.getColor())*4/5);
+			te.enhancing = false;
 		}
 		this.doFailParticles(te != null);
 		for (int i = 0; i < Location.list.length; i++) {
@@ -315,6 +319,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		skyTick = 0;
 		jetTick = 0;
 		groundTick = 0;
+		turboPlayer = null;
 		worldObj.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+8.5, z+0.5));
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y+8, z).expand(24, 16, 24);
 		List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
@@ -347,6 +352,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				//this.rockScreen(40);
 				dat = te.getColor().ordinal();
 				//ChromaSounds.PYLONFLASH.playSoundAtBlock(this);
+				CrystalNetworker.instance.overloadColorConnectedTo(te, te.getColor(), 1+rand.nextInt(1), true);
 				break;
 			case BEAM:
 				break;
@@ -382,7 +388,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 		}
 
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOEVENT.ordinal(), this, 64, type.ordinal(), dat);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOEVENT.ordinal(), this, 128, type.ordinal(), dat);
 	}
 
 	private void doFailParticles(boolean hasPylon) {
@@ -682,7 +688,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			if (this.canPlayerTurbocharge(world, x, y, z, ep)) {
 				boolean hasAuxiliaries = this.checkForArrangement(world, x, y, z);
 				if (hasAuxiliaries) {
-					this.startRitual(world, x, y, z);
+					this.startRitual(world, x, y, z, ep);
 					ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 1, 1);
 					return true;
 				}
@@ -739,9 +745,12 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		return false;
 	}
 
-	private void startRitual(World world, int x, int y, int z) {
+	private void startRitual(World world, int x, int y, int z, EntityPlayer ep) {
 		ritualTick = RITUAL_LENGTH;
 		revTick = 40;
+		turboPlayer = ep;
+
+		this.getPylon(world, x, y, z).enhancing = true;
 
 		for (int i = 0; i < Location.list.length; i++) {
 			Location loc = Location.list[i];

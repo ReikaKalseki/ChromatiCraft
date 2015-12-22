@@ -9,9 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import mcp.mobius.waila.api.IWailaConfigHandler;
+import mcp.mobius.waila.api.IWailaDataAccessor;
+import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -19,6 +23,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +36,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -38,7 +46,8 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 
 
-public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
+@Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
+public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, IWailaDataProvider {
 
 	private final IIcon[] icons = new IIcon[2];
 
@@ -57,7 +66,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
-		return ((TileEntityChromaDoor)world.getTileEntity(x, y, z)).isOwner(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
+		TileEntityChromaDoor te = (TileEntityChromaDoor)world.getTileEntity(x, y, z);
+		return (!te.isOwned() || te.isOwner(ep)) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override
@@ -202,6 +212,60 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
 		return true;
 	}
 
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final ItemStack getWailaStack(IWailaDataAccessor acc, IWailaConfigHandler cfg) {
+		return null;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaHead(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		/*
+		MovingObjectPosition mov = acc.getPosition();
+		if (this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ))
+			return currenttip;
+		else {
+			for (int i = 0; i < currenttip.size(); i++) {
+
+			}
+		}
+		 */
+		return currenttip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		TileEntityChromaDoor te = (TileEntityChromaDoor)acc.getTileEntity();
+		if (te.uid != null)
+			currenttip.add("ID: "+te.uid);
+		else
+			currenttip.add("No ID");
+		return currenttip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final List<String> getWailaTail(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor acc, IWailaConfigHandler config) {
+		/*
+		MovingObjectPosition mov = acc.getPosition();
+		if (this.isClientSufficient(acc.getWorld(), mov.blockX, mov.blockY, mov.blockZ))
+			return currenttip;
+		else {
+			for (int i = 0; i < currenttip.size(); i++) {
+
+			}
+		}*/
+		return currenttip;
+	}
+
+	@Override
+	@ModDependent(ModList.WAILA)
+	public final NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
+		return tag;
+	}
+
 	public static class TileEntityChromaDoor extends TileEntity {
 
 		private UUID uid;
@@ -214,6 +278,10 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable {
 
 		public boolean isOwner(EntityPlayer ep) {
 			return ep.getUniqueID().equals(placer);
+		}
+
+		public boolean isOwned() {
+			return placer != null;
 		}
 
 		public boolean canOpen(EntityPlayer ep, UUID uid) {

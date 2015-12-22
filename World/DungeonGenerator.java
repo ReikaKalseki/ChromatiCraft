@@ -209,6 +209,14 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMaxZ()), BiomeDictionary.Type.SANDY))
 			return false;
+		if (world.getBlock(struct.getMinX(), struct.getMinY()+3, struct.getMinZ()) == Blocks.air)
+			return false;
+		if (world.getBlock(struct.getMaxX(), struct.getMinY()+3, struct.getMinZ()) == Blocks.air)
+			return false;
+		if (world.getBlock(struct.getMinX(), struct.getMinY()+3, struct.getMaxZ()) == Blocks.air)
+			return false;
+		if (world.getBlock(struct.getMaxX(), struct.getMinY()+3, struct.getMaxZ()) == Blocks.air)
+			return false;
 		return true;
 	}
 
@@ -537,7 +545,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case BURROW:
 				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 			case DESERT:
-				return r.nextInt(128) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
+				return r.nextInt(96) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
 			default:
 				return false;
 		}

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -50,6 +51,13 @@ public class ItemDoorKey extends ItemChromaTool {
 			return true;
 		}
 		return false;
+	}
+
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		UUID uid = this.getUID(is);
+		li.add("ID: "+uid.toString());
 	}
 
 	public UUID getUID(ItemStack is) {

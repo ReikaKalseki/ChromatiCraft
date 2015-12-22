@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -54,14 +52,6 @@ public enum ExtraChromaIDs implements IDRegistry {
 
 	public int getDefaultID() {
 		return defaultID;
-	}
-
-	public boolean isBlock() {
-		return type == Blocks.class;
-	}
-
-	public boolean isItem() {
-		return type == Item.class;
 	}
 
 	public int getValue() {

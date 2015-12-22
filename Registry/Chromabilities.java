@@ -793,10 +793,11 @@ public enum Chromabilities implements Ability {
 		ep.playSound("random.explode", power/6F, 2-power/6F);
 	}
 
-	public static void shiftArea(WorldServer world, BlockBox box, ForgeDirection dir, int dist, EntityPlayerMP ep) {
+	public static boolean shiftArea(WorldServer world, BlockBox box, ForgeDirection dir, int dist, EntityPlayerMP ep) {
 		FilledBlockArray moved = new FilledBlockArray(world);
 		BlockArray toDel = new BlockArray();
 		toDel.setWorld(world);
+		int air = 0;
 		for (int i = 0; i < box.getSizeX(); i++) {
 			for (int j = 0; j < box.getSizeY(); j++) {
 				for (int k = 0; k < box.getSizeZ(); k++) {
@@ -805,23 +806,39 @@ public enum Chromabilities implements Ability {
 					int z = k+box.minZ;
 					Block b = world.getBlock(x, y, z);
 					int meta = world.getBlockMetadata(x, y, z);
-					if (!b.hasTileEntity(meta)) {
-						//if (ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
-						moved.setBlock(x, y, z, b, meta);
-						toDel.addBlockCoordinate(x, y, z);
-						//}
+					if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
+						continue;
+					if (b.getPlayerRelativeBlockHardness(ep, world, x, y, z) >= 0) {
+						if (!b.hasTileEntity(meta)) {
+							//if (ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
+							moved.setBlock(x, y, z, b, meta);
+							toDel.addBlockCoordinate(x, y, z);
+							//}
+							if (b.isAir(world, x, y, z))
+								air++;
+						}
 					}
 				}
 			}
 		}
 		moved.offset(dir, dist);
-		if (ReikaPlayerAPI.playerCanBreakAt(world, toDel, ep) && ReikaPlayerAPI.playerCanBreakAt(world, moved, ep)) {
+
+		int factor = (int)(Math.pow((box.getVolume()-air), 1.5)*dist/4D);
+		ElementTagCompound cost = AbilityHelper.instance.getUsageElementsFor(SHIFT).scale(factor);
+		boolean nrg = PlayerElementBuffer.instance.playerHas(ep, cost);
+		boolean flag = false;
+		if (nrg && ReikaPlayerAPI.playerCanBreakAt(world, toDel, ep) && ReikaPlayerAPI.playerCanBreakAt(world, moved, ep)) {
 			toDel.clearArea();
 			moved.place();
+			PlayerElementBuffer.instance.removeFromPlayer(ep, cost);
+			flag = true;
+		}
+		else {
+			flag = false;
+			ChromaSounds.ERROR.playSound(ep);
 		}
 		Chromabilities.SHIFT.setToPlayer(ep, false);
-		int factor = box.getVolume()*box.getVolume()*dist/4;
-		PlayerElementBuffer.instance.removeFromPlayer(ep, AbilityHelper.instance.getUsageElementsFor(SHIFT).scale(factor));
+		return flag;
 	}
 
 	private static void healPlayer(EntityPlayer ep, int health) {

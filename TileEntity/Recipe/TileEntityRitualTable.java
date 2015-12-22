@@ -256,7 +256,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	public boolean triggerRitual(EntityPlayer ep) {
-		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isPlacer(ep)) {
+		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isOwnedByPlayer(ep)) {
 			if (worldObj.isRemote)
 				return true;
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);

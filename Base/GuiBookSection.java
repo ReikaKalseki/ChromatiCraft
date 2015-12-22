@@ -23,11 +23,14 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
+import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -48,8 +51,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected final boolean NEItrigger;
 
-	protected GuiBookSection(EntityPlayer ep, ChromaResearch r, int x, int y, boolean nei) {
-		super(ep, x, y);
+	protected GuiBookSection(ChromaGuis g, EntityPlayer ep, ChromaResearch r, int x, int y, boolean nei) {
+		super(g, ep, x, y);
 
 		page = r;
 		NEItrigger = nei;
@@ -65,7 +68,9 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		String file = "Textures/GUIs/Handbook/buttons.png";
 		buttonList.add(new CustomSoundGuiButton(50, j+xSize-27, k-2, 20, 20, "X", this));	//back to main navigation
+		this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
 
 		if (this.getMaxSubpage() > 0) {
 			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));
@@ -85,6 +90,11 @@ public abstract class GuiBookSection extends ChromaBookGui {
 				player.closeScreen();
 			else
 				this.goTo(ChromaGuis.BOOKNAV, null);
+			return;
+		}
+		else if (button.id == 51) {
+			GuiNavigation.saveLocation(/*guiType, page, subpage*/this);
+			player.closeScreen();
 			return;
 		}
 		else if (button.id == 13) {

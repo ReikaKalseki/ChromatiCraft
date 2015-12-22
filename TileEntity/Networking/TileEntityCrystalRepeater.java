@@ -12,7 +12,9 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -37,23 +40,33 @@ import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, NBTTile, SneakPop, OwnedTile {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;
 	private int depth = -1;
 	private boolean isTurbo = false;
+
+	private CrystalElement surgeColor;
+	private int surgeTicks = 0;
 
 	protected int connectionRenderTick = 0;
 
@@ -74,6 +87,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			connectionRenderTick--;
 			if (connectionRenderTick == 0) {
 				connectableTiles = null;
+			}
+		}
+
+		if (surgeTicks > 0) {
+			surgeTicks--;
+			if (surgeTicks == 0) {
+				this.doSurge();
+			}
+			if (world.isRemote) {
+				this.doSurgingParticles(world, x, y, z);
 			}
 		}
 	}
@@ -156,6 +179,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		hasMultiblock = NBT.getBoolean("multi");
 		depth = NBT.getInteger("depth");
 		isTurbo = NBT.getBoolean("turbo");
+
+		surgeTicks = NBT.getInteger("surge");
+		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
 	}
 
 	@Override
@@ -168,6 +194,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("depth", depth);
 		NBT.setBoolean("turbo", isTurbo);
+
+		NBT.setInteger("surge", surgeTicks);
+		if (surgeColor != null)
+			NBT.setInteger("surge_c", surgeColor.ordinal());
 	}
 
 	public final boolean isTurbocharged() {
@@ -336,6 +366,86 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		else {
 			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(0.5, 0.5, 0.5);
 		}
+	}
+
+	@Override
+	public float getFailureWeight(CrystalElement e) {
+		return 1.5F;
+	}
+
+	@Override
+	public final void overload(CrystalElement e) {
+		this.startSurge(e);
+	}
+
+	private void startSurge(CrystalElement e) {
+		ChromaSounds.REPEATERSURGE.playSoundAtBlock(this, 1, 1);
+		surgeTicks = 55;
+		surgeColor = e;
+		this.syncAllData(false);
+	}
+
+	private void doSurge() {
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.REPEATERSURGE.ordinal(), this, 64, surgeColor.ordinal());
+		int y = yCoord-1;
+		Block b = worldObj.getBlock(xCoord, y, zCoord);
+		while (y > 0 && b == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b == ChromaBlocks.RUNE.getBlockInstance()) {
+			ReikaWorldHelper.dropAndDestroyBlockAt(worldObj, xCoord, y, zCoord, null, true);
+			y--;
+			b = worldObj.getBlock(xCoord, y, zCoord);
+		}
+		this.delete();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doSurgingParticles(World world, int x, int y, int z) {
+		int n = 1+rand.nextInt(2);
+		if (rand.nextInt(10) == 0)
+			n = 24+rand.nextInt(24);
+		double phi = rand.nextDouble()*360;
+		double theta = 2+rand.nextDouble()*86;
+		double dx = xCoord+0.5;
+		double dy = yCoord+0.5;
+		double dz = zCoord+0.5;
+		for (int i = 0; i < n; i++) {
+			double phi2 = ReikaRandomHelper.getRandomPlusMinus(phi, 2D);
+			double theta2 = ReikaRandomHelper.getRandomPlusMinus(theta, 2D);
+			double v = ReikaRandomHelper.getRandomBetween(0.25, 0.125);
+			float s = 1.5F+rand.nextFloat()*2.5F;
+			double[] vxyz = ReikaPhysicsHelper.polarToCartesian(v, theta2, phi2);
+			int l = 20+rand.nextInt(80);
+			EntityBlurFX fx = new EntityBlurFX(surgeColor, worldObj, dx, dy, dz, vxyz[0], vxyz[1], vxyz[2]).setLife(l).setScale(s).setRapidExpand().setNoSlowdown();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static final void overloadClient(World world, int x, int y, int z, CrystalElement e) {
+		for (int i = 0; i < 256; i++) {
+			double dx = x+rand.nextDouble();
+			double dy = y+rand.nextDouble();
+			double dz = z+rand.nextDouble();
+			double v = 0.25;
+			double vx = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			double vz = ReikaRandomHelper.getRandomPlusMinus(0, v);
+			float s = 1.5F+rand.nextFloat()*2.5F;
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			EntityBlurFX fx = new EntityBlurFX(e, world, dx, dy, dz, vx, vy, vz).setLife(200).setScale(s).setGravity(g).setRapidExpand().setNoSlowdown();
+			switch(rand.nextInt(3)) {
+				case 0:
+					break;
+				case 1:
+					fx.setIcon(ChromaIcons.FLARE);
+					break;
+				case 2:
+					fx.setIcon(ChromaIcons.BIGFLARE);
+					break;
+			}
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z);
+		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.glass);
 	}
 
 }

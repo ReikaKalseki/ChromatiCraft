@@ -39,7 +39,7 @@ public enum ChromaSounds implements SoundEnum {
 	DING("ding2"),
 	DING_HI("ding2_hi"),
 	DING_LO("ding2_lo"),
-	SHOCKWAVE("shockwave"),
+	SHOCKWAVE("shockwave3"),
 	BALLLIGHTNING("balllightning"),
 	ITEMSTAND("stand"),
 	POWERCRYS("powercrystal"),
@@ -54,7 +54,8 @@ public enum ChromaSounds implements SoundEnum {
 	PYLONTURBO("pylonturbo"),
 	PYLONBOOSTRITUAL("pylonboost_ritual_short"),
 	PYLONBOOSTSTART("pylonbooststart"),
-	DASH("dash");
+	DASH("dash"),
+	REPEATERSURGE("repeatersurge");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -91,7 +92,8 @@ public enum ChromaSounds implements SoundEnum {
 		return vol;
 	}
 
-	public float getModVolume() {
+	@Override
+	public float getModulatedVolume() {
 		if (!isVolumed)
 			return 1F;
 		else
@@ -109,7 +111,7 @@ public enum ChromaSounds implements SoundEnum {
 	public void playSound(World world, double x, double y, double z, float vol, float pitch) {
 		if (world.isRemote)
 			return;
-		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol*this.getModVolume(), pitch);
+		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, world, x, y, z, vol/* *this.getModulatedVolume()*/, pitch);
 	}
 
 	public void playSoundAtBlock(World world, int x, int y, int z, float vol, float pitch) {
@@ -130,7 +132,7 @@ public enum ChromaSounds implements SoundEnum {
 		double x = te.xCoord+0.5;
 		double y = te.yCoord+0.5;
 		double z = te.zCoord+0.5;
-		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol*this.getModVolume(), pitch, false);
+		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);
 	}
 
 	public void playSoundAtBlock(TileEntity te) {
@@ -174,6 +176,6 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE;
 	}
 }

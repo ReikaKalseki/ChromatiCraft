@@ -74,7 +74,8 @@ public enum ChromaResearch implements ProgressElement {
 
 	//---------------------INFO--------------------//
 	INTRO("Introduction", ""),
-	START("Getting Started",			ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
+	START("Getting Started",			new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
+	LEXICON("The Lexicon",				ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
 	ELEMENTS("Crystal Energy", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 				ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 					ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
@@ -97,7 +98,7 @@ public enum ChromaResearch implements ProgressElement {
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.PYLONCRAFT),
 	//LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
-	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.MULTICRAFT),
+	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.PYLONCRAFT),
 	ACCEL(			ChromaTiles.ACCELERATOR, 	ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
 	TANK(			ChromaTiles.TANK, 			ResearchLevel.PYLONCRAFT),
@@ -355,6 +356,10 @@ public enum ChromaResearch implements ProgressElement {
 		struct = s;
 	}
 
+	public boolean isAlwaysPresent() {
+		return this == START || this == LEXICON;
+	}
+
 	public boolean playerCanSee(EntityPlayer ep) {
 		if (this.isDummiedOut())
 			return DragonAPICore.isReikasComputer();
@@ -429,9 +434,19 @@ public enum ChromaResearch implements ProgressElement {
 
 	@SideOnly(Side.CLIENT)
 	public void drawTabIcon(RenderItem ri, int x, int y) {
-		if (this == BALLLIGHTNING) {
+		if (this == START) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glColor4f(1, 1, 1, 1);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
+			GL11.glPopAttrib();
+			return;
+		}
+		else if (this == BALLLIGHTNING) {
 			EntityBallLightning eb = new EntityBallLightning(Minecraft.getMinecraft().theWorld);
 			eb.isDead = true;
+			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glPushMatrix();
 			double d = 8;
 			GL11.glTranslated(x+d, y+d, 0);

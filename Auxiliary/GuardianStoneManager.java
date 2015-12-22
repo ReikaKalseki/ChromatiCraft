@@ -67,7 +67,7 @@ public class GuardianStoneManager {
 		return in;
 	}
 
-	protected ArrayList<ProtectionZone> getProtectionZonesForPlayer(EntityPlayer ep) {
+	public ArrayList<ProtectionZone> getProtectionZonesForPlayer(EntityPlayer ep) {
 		ArrayList<ProtectionZone> in = new ArrayList();
 		for (int i = 0; i < zones.size(); i++) {
 			ProtectionZone zone = zones.get(i);

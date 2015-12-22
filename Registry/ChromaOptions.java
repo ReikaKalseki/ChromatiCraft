@@ -54,12 +54,13 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	DELEND("Delete End on Unload", false),
 	EASYFRAG("Auxiliary Fragment Acquisition", false),
 	COPYSIZE("Duplication Wand Max Volume", 1000),
-	SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false),
+	//SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false),
 	STRUCTDIFFICULTY("Dimension Structure Difficulty", 3),
 	BALLLIGHTNING("Enable Ball Lightning", true),
 	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
 	RIFTLOAD("World Rifts Chunkload", false),
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
+	NETHERPENDANT("Advanced Pendants Apply Nether Effects", true),
 	MUSICVOL("Dimension Music Volume", 1F);
 
 	private String label;

@@ -98,7 +98,7 @@ public class RenderPersonalCharger extends ChromaRenderBase {
 
 				int color = last ? 0xffffff : te.getRenderColor();
 
-				if (!last && StructureRenderer.isRenderingTiles()) {
+				if (!last && StructureRenderer.isRenderingTiles() && !StructureRenderer.isRenderingRealTiles()) {
 					color = CrystalElement.elements[(int)((System.currentTimeMillis()/4000)%16)].getColor();
 				}
 

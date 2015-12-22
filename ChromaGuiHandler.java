@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
@@ -192,6 +193,11 @@ public class ChromaGuiHandler implements IGuiHandler {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+		if (ChromaBookGui.lastGui != null) {
+			Object ret = ChromaBookGui.lastGui;
+			ChromaBookGui.lastGui = null;
+			return ret;
+		}
 		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {
 			case LINK:

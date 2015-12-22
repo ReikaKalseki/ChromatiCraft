@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -28,7 +29,7 @@ public class GuiRitual extends GuiBookSection {
 	private final Chromabilities ability;
 
 	public GuiRitual(EntityPlayer ep, Chromabilities r) {
-		super(ep, null, 256, 220, false);
+		super(ChromaGuis.RITUAL, ep, null, 256, 220, false);
 		ability = r;
 	}
 

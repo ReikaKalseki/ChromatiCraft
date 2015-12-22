@@ -54,8 +54,6 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		int len = 4+rand.nextInt(8);
 		int radius = 6+rand.nextInt(5);
 		this.addDynamicStructure(new LocksEntrance(this, dir, radius, len), x, z);
-		entryX = x;
-		entryZ = z;
 
 		int len2 = 4+rand.nextInt(6);
 		//int[] lens = new int[4];

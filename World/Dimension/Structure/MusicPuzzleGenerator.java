@@ -48,9 +48,6 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 
 		posY = 20+rand.nextInt(80);
 
-		entryX = chunkX;
-		entryZ = chunkZ;
-
 		int x = chunkX;
 		int z = chunkZ;
 		int y = posY;

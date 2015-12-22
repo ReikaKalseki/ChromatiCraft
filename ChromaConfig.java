@@ -25,21 +25,18 @@ public class ChromaConfig extends ControlledConfig {
 	private static final ArrayList<String> modTrees = getModTrees();
 	private static final int treeLength = modTrees.size();
 	private static final int vanillaTreeCount = ReikaTreeHelper.treeList.length;
-	private final boolean[] trees = new boolean[treeLength+vanillaTreeCount];
+	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
 
 	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id, int cfg) {
 		super(mod, option, id, cfg);
-	}
 
-	@Override
-	protected void loadAdditionalData() {
 		for (int i = 0; i < vanillaTreeCount; i++) {
 			String name = ReikaTreeHelper.treeList[i].getName();
-			trees[i] = config.get("Generate Vanilla Logs", name, true).getBoolean(true);
+			trees[i] = this.registerAdditionalOption("Generate Vanilla Logs", name, true);
 		}
 		for (int i = 0; i < treeLength; i++) {
 			String name = modTrees.get(i);
-			trees[i+vanillaTreeCount] = config.get("Generate Mod Logs", name, true).getBoolean(true);
+			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
 		}
 	}
 
@@ -83,11 +80,11 @@ public class ChromaConfig extends ControlledConfig {
 	}
 
 	public boolean shouldGenerateLogType(ModWoodList tree) {
-		return trees[tree.ordinal()+ReikaTreeHelper.treeList.length];
+		return trees[tree.ordinal()+ReikaTreeHelper.treeList.length].getData();
 	}
 
 	public boolean shouldGenerateLogType(ReikaTreeHelper tree) {
-		return trees[tree.ordinal()];
+		return trees[tree.ordinal()].getData();
 	}
 
 }

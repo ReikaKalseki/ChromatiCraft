@@ -273,6 +273,7 @@
 		</desc>
 		<note>
 			Capacity: %d+%dn^%d, where n is the number of leaf blocks
+			Cannot function without a view of the sky
 		</note>
 	</powertree>
 	<lampcontrol>

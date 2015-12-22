@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiBu
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.ModList;
@@ -45,7 +46,7 @@ public class GuiPoolRecipe extends GuiBookSection {
 	private boolean centeredMouse = false;
 
 	public GuiPoolRecipe(EntityPlayer ep, int offset, boolean nei) {
-		super(ep, ChromaResearch.ALLOYS, 256, 220, nei);
+		super(ChromaGuis.ALLOYING, ep, ChromaResearch.ALLOYS, 256, 220, nei);
 		recipes = new ArrayList(PoolRecipes.instance.getAllPoolRecipes());
 		index = offset;
 	}

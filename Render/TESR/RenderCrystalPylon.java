@@ -80,7 +80,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 
 				int color = te.getRenderColor();
 
-				if (StructureRenderer.isRenderingTiles()) {
+				if (StructureRenderer.isRenderingTiles() && !StructureRenderer.isRenderingRealTiles()) {
 					color = CrystalElement.elements[(int)((System.currentTimeMillis()/4000)%16)].getColor();
 				}
 

@@ -18,12 +18,13 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
 public class GuiToolDescription extends GuiDescription {
 
 	public GuiToolDescription(EntityPlayer ep, ChromaResearch i) {
-		super(ep, i, 256, 220);
+		super(ChromaGuis.TOOLDESC, ep, i, 256, 220);
 	}
 
 	@Override

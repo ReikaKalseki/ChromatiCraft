@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
@@ -279,16 +280,20 @@ public class ChromaAspectManager {
 	public ElementTagCompound getElementCost(Aspect a, float depthcost) {
 		ElementTagCompound tag = new ElementTagCompound();
 		this.recursiveCount(a, tag, 0, depthcost);
+		if (tag.isEmpty()) {
+			ChromatiCraft.logger.logError("Aspect "+a.getName()+" was calculated to have zero cost!");
+		}
 		return tag;
 	}
 
 	private void recursiveCount(Aspect a, ElementTagCompound tag, int depth, float depthcost) {
 		Collection<CrystalElement> li = aspectsThematic.getBackward(a);
-		if (li == null) {
+		if (li == null || li.isEmpty()) {
 			Aspect[] parents = a.getComponents();
-			if (parents != null) {
-				for (int i = 0; i < parents.length; i++)
+			if (parents != null && parents.length > 0) {
+				for (int i = 0; i < parents.length; i++) {
 					this.recursiveCount(parents[i], tag, depth+1, depthcost);
+				}
 			}
 		}
 		else {

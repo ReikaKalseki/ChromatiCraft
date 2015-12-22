@@ -21,6 +21,7 @@ import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
 
@@ -50,6 +51,7 @@ public class ChromaDimensionManager {
 
 		private void create() {
 			id = config.getValue();
+			BiomeCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
 			try {
 				Constructor c = biomeClass.getConstructor(int.class);
 				instance = (BiomeGenBase)c.newInstance(id);

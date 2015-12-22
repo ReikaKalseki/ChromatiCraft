@@ -12,13 +12,14 @@ package Reika.ChromatiCraft.GUI.Book;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 
 public class GuiPackChanges extends GuiDescription {
 
 	public GuiPackChanges(EntityPlayer ep) {
-		super(ep, ChromaResearch.PACKCHANGES, 256, 220);
+		super(ChromaGuis.INFO, ep, ChromaResearch.PACKCHANGES, 256, 220);
 	}
 
 	@Override

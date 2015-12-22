@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.Calendar;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -57,6 +59,11 @@ public class BlockPylonStructure extends Block {
 		if (s < 2 && meta < 6)
 			return icons[0][0];
 		return icons[meta][0];
+	}
+
+	private boolean loadXmasTextures() {
+		Calendar c = Calendar.getInstance();
+		return c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 23;
 	}
 
 	@Override
@@ -147,6 +154,11 @@ public class BlockPylonStructure extends Block {
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < variants[i]; k++) {
 				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
+				if (i == 2 || i == 3) {
+					if (this.loadXmasTextures()) {
+						suff = suff+"_xm";
+					}
+				}
 				icons[i][k] = ico.registerIcon("chromaticraft:pylon/block_"+suff);
 			}
 		}

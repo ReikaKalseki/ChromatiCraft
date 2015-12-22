@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.enchantment.Enchantment;
@@ -19,6 +20,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -28,6 +30,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaLiquidRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -44,6 +47,9 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 				validEnchants.add(e);
 			}
 		}
+
+		Collections.sort(validEnchants, ReikaEnchantmentHelper.enchantmentNameSorter);
+		Collections.sort(validEnchants, ReikaEnchantmentHelper.enchantmentTypeSorter);
 	}
 
 
@@ -63,8 +69,10 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		int dx = 122;
 		int dy = 33;
 		int w = 4;
-		buttonList.add(new CustomSoundGuiButton(0, j+dx-w, k+dy, 20, 20, "-", this));
-		buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy, 20, 20, "+", this));
+		buttonList.add(new CustomSoundGuiButton(0, j+dx-w, k+dy-13, 20, 20, "-", this));
+		buttonList.add(new CustomSoundGuiButton(1, j+dx+20+w, k+dy-13, 20, 20, "+", this));
+
+		buttonList.add(new CustomSoundGuiButton(10, j+dx-w, k+dy+20+5-13, 48, 20, "Reset", this));
 
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+16, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(3, j+154, k+72, 7, 14, 200, 200, this.getFullTexturePath(), ChromatiCraft.class, this));
@@ -79,16 +87,36 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 			case 1:
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 1);
 				break;
+			case 10:
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTERRESET.ordinal(), ench);
+				selectedEnchant = 0;
+				break;
 			case 2:
-				if (selectedEnchant > 0)
-					selectedEnchant--;
+				this.decrementEnchant(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
 				break;
 			case 3:
-				if (selectedEnchant < validEnchants.size()-1)
-					selectedEnchant++;
+				this.incrementEnchant(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
 				break;
 		}
 		this.initGui();
+	}
+
+	private void incrementEnchant(boolean newType) {
+		Enchantment pre = this.getHighlightedEnchantment();
+		if (selectedEnchant < validEnchants.size()-1) {
+			do {
+				selectedEnchant++;
+			} while(newType && selectedEnchant < validEnchants.size()-1 && this.getHighlightedEnchantment().type != pre.type);
+		}
+	}
+
+	private void decrementEnchant(boolean newType) {
+		Enchantment pre = this.getHighlightedEnchantment();
+		if (selectedEnchant > 0) {
+			do {
+				selectedEnchant--;
+			} while(newType && selectedEnchant > 0 && this.getHighlightedEnchantment().type != pre.type);
+		}
 	}
 
 	private Enchantment getHighlightedEnchantment() {

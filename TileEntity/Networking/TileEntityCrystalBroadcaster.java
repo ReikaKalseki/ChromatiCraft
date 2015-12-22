@@ -130,4 +130,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 			this.checkInterfere();
 	}
 
+	@Override
+	public float getFailureWeight(CrystalElement e) {
+		return 1.125F;
+	}
+
 }

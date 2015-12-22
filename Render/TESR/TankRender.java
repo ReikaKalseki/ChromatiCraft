@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -114,7 +115,7 @@ public class TankRender extends ChromaRenderBase {
 				int x = Math.round(f1);
 				int y = Math.round(f2);
 				int z = Math.round(f3);
-				ArrayList<ForgeDirection> li = ReikaJavaLibrary.makeListFromArray(ForgeDirection.VALID_DIRECTIONS);
+				HashSet<ForgeDirection> li = new HashSet(ReikaJavaLibrary.makeListFromArray(ForgeDirection.VALID_DIRECTIONS));
 				for (int k = 0; k < 6; k++) {
 					int dx = x+dirs[k].offsetX;
 					int dy = y+dirs[k].offsetY;

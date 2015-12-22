@@ -114,12 +114,14 @@ public class ChromaBookData {
 				int w = 10;
 				int h2 = 48;
 				int x = posX+7+e.ordinal()*(w+4);
-				int ht = energy*h2/tag.getValue(e);
-				int dy = Math.max(h2-ht, 0); //prevent gui overflow
+				//int ht = energy*h2/tag.getValue(e);
+				//int dy = Math.max(h2-ht, 0); //prevent gui overflow
 				int y1 = posY+26;
-				int y = posY+26+h2;
-				gui.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
-				gui.drawRect(x, y1+dy, x+w, y, e.getColor());
+				//int y = posY+26+h2;
+				//gui.drawRect(x, y1, x+w, y, e.getJavaColor().darker().darker().getRGB());
+				//gui.drawRect(x, y1+dy, x+w, y, e.getColor());
+
+				ChromaFX.drawFillBar(e, x, y1, w, h2, energy/(float)max);
 			}
 		}
 	}
@@ -180,14 +182,17 @@ public class ChromaBookData {
 				//int dy = posY+20;
 
 				int energy = (int)((System.currentTimeMillis())%max);
-				int w = 3;
-				int h2 = 30;
-				int x = posX+7+(e.ordinal()/4)*(h2+4);
-				int ht = Math.min(h2, energy*h2/tag.getValue(e)); //prevent gui overflow
+				int h = 3;
+				int w = 30;
+				int x = posX+7+(e.ordinal()/4)*(w+4);
+				//int ht = Math.min(h2, energy*h2/tag.getValue(e)); //prevent gui overflow
 				int y = posY+193+(e.ordinal()%4)*7;
-				int y1 = posY+26+h2;
-				gui.drawRect(x, y, x+h2, y+w, e.getJavaColor().darker().darker().getRGB());
-				gui.drawRect(x, y, x+ht, y+w, e.getColor());
+				//int y1 = posY+26+h2;
+				//gui.drawRect(x, y, x+h2, y+w, e.getJavaColor().darker().darker().getRGB());
+				//gui.drawRect(x, y, x+ht, y+w, e.getColor());
+
+				float f = energy/(float)tag.getValue(e);
+				ChromaFX.drawHorizontalFillBar(e, x, y, w, h, f);
 			}
 		}
 	}

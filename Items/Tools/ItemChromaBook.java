@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -57,7 +56,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (ep.isSneaking()) {
 			if (!this.isCreative(is))
-			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, 0, 0, 0);
+				ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKPAGES.ordinal(), null, 0, 0, 0);
 		}
 		else {
 			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
@@ -66,6 +65,20 @@ public class ItemChromaBook extends ItemChromaTool {
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.BOOKNAV.ordinal(), world, 0, 0, 0);
 		}
 		return is;
+	}
+
+	public static void clearNoteTexts(ItemStack is) {
+		if (is.stackTagCompound != null)
+			is.stackTagCompound.removeTag("notes");
+	}
+
+	public static void addNoteText(ItemStack is, String s) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		NBTTagList li = is.stackTagCompound.getTagList("notes", NBTTypes.STRING.ID);
+		li.appendTag(new NBTTagString(s));
+		is.stackTagCompound.setTag("notes", li);
+		//ReikaJavaLibrary.pConsole("Appended "+s+" to "+li);
 	}
 
 	@Override
@@ -120,7 +133,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	public static boolean hasPage(ItemStack is, ChromaResearch b) {
 		if (isCreative(is))
 			return true;
-		if (b == ChromaResearch.START)
+		if (b.isAlwaysPresent())
 			return true;
 		if (b == ChromaResearch.PACKCHANGES)
 			return true;
@@ -147,26 +160,6 @@ public class ItemChromaBook extends ItemChromaTool {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return 0;
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagCount();
-	}
-
-	public static HashMap<String, PlayerNote> getNotes(ItemStack is) {
-		return null;
-	}
-
-	public static void setNotes(ItemStack is, HashMap<String, PlayerNote> notes) {
-
-	}
-
-	public static class PlayerNote {
-
-		public final String title;
-		public final String note;
-
-		private PlayerNote(String t, String n) {
-			title = t;
-			note = n;
-		}
-
 	}
 
 }

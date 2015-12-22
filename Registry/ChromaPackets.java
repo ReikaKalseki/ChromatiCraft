@@ -14,6 +14,7 @@ import Reika.DragonAPI.Auxiliary.PacketTypes;
 public enum ChromaPackets {
 
 	ENCHANTER(2),
+	ENCHANTERRESET(),
 	SPAWNERPROGRAM(1),
 	CRYSTALEFFECT(),
 	PLANTUPDATE(),
@@ -30,7 +31,6 @@ public enum ChromaPackets {
 	TNT(4),
 	BOOKINVSCROLL(1),
 	TICKER(1),
-	PYLONCLEAR(1),
 	SHARDBOOST(1),
 	GIVERESEARCH(1),
 	LEAFBREAK(1),
@@ -45,6 +45,7 @@ public enum ChromaPackets {
 	AURAPOUCH(2),
 	FARMERHARVEST(3),
 	PYLONCACHE(4),
+	PYLONCACHECLEAR(1),
 	TRANSITIONWAND(1),
 	TELEPORT(),
 	NEWTELEPORT(),
@@ -98,6 +99,9 @@ public enum ChromaPackets {
 	MINERJAM(),
 	REPEATERCONN(),
 	CHARGERTOGGLE(1),
+	BOOKNOTESRESET(),
+	BOOKNOTE(),
+	REPEATERSURGE(1),
 	;
 
 	public final int numInts;

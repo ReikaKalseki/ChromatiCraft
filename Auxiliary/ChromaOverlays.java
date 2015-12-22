@@ -211,7 +211,7 @@ public class ChromaOverlays {
 
 		if (!Minecraft.getMinecraft().isGamePaused()) {
 			if (washout >= WASHOUT_LENGTH-FLASH_FADE || tick%WASHOUT_FACTOR == 0)
-				washout--;
+				washout -= Math.max(1, 90/Math.max(1, ReikaRenderHelper.getFPS()));
 			if (washout == 0) {
 				if (rehideGui) {
 					Minecraft.getMinecraft().gameSettings.hideGUI = true;
@@ -504,7 +504,7 @@ public class ChromaOverlays {
 	}
 
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
-		String tex = ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
+		String tex = "Textures/aura-bar-half-grid.png";//ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -521,8 +521,8 @@ public class ChromaOverlays {
 			if (dd < 32) {
 				int step = 40;
 				int frame = (int)((System.currentTimeMillis()/step)%20+e.ordinal()*1.25F)%20;
-				int imgw = 20;
-				int imgh = 1;
+				int imgw = 4;//20;
+				int imgh = 5;//1;
 				double u = frame%imgw/(double)imgw;
 				double du = u+1D/imgw;
 				double v = frame/imgw/(double)imgh;
@@ -853,13 +853,13 @@ public class ChromaOverlays {
 
 		Tessellator v5 = Tessellator.instance;
 		int w = 4;
-		int r = 32;
+		int r = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 48 : 32;
 		int rb = r;
 		int sp = 4;
 		int ox = this.getPieX(r, sp, gsc);
 		int oy = this.getPieY(r, sp, gsc);
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/wheelback.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/wheelback_2.png");
 		v5.startDrawingQuads();
 		v5.setColorOpaque_I(0xffffff);
 		v5.addVertexWithUV(ox-r*2, oy+r*2, 0, 0, 1);
@@ -947,7 +947,7 @@ public class ChromaOverlays {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			int s = 8;
-			double rr = 26;
+			double rr = 0.8125*r;
 			double dx = ox-s/2+rr*Math.cos(Math.toRadians(11.125+i*22.5));
 			double dy = oy-s/2+rr*Math.sin(Math.toRadians(11.125+i*22.5));
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

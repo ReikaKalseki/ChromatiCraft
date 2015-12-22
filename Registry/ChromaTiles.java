@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
+import Reika.ChromatiCraft.TileEntity.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
@@ -150,8 +151,9 @@ public enum ChromaTiles {
 	TURRET("chroma.turret",				ChromaBlocks.TILEMODELLED2,	TileEntityLumenTurret.class,		9, "RenderLumenTurret"),
 	CONSOLE("chroma.console",			ChromaBlocks.CONSOLE,		TileEntityCrystalConsole.class,		0, "RenderCrystalConsole"),
 	BROADCAST("chroma.broadcast",		ChromaBlocks.PYLON,			TileEntityCrystalBroadcaster.class,	8, "RenderCrystalBroadcast"),
-	CLOAKING("chroma.tower",			ChromaBlocks.TILEMODELLED2, TileEntityCloakingTower.class,		10, "RenderCloakingTower");
-	//POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10);
+	CLOAKING("chroma.tower",			ChromaBlocks.TILEMODELLED2, TileEntityCloakingTower.class,		10, "RenderCloakingTower"),
+	//POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10),
+	HOLOGRAM("chroma.hologram",			ChromaBlocks.TILEMODELLED2, TileEntityAreaHologram.class,		11, "RenderAreaHologram");
 
 	private final Class tile;
 	private final String name;
@@ -233,6 +235,7 @@ public enum ChromaTiles {
 			case CLOAKING:
 				//case TANK:
 				//case ITEMRIFT:
+			case HOLOGRAM:
 				return true;
 			default:
 				return false;
@@ -325,6 +328,8 @@ public enum ChromaTiles {
 	}
 
 	public boolean allowsAcceleration() {
+		if (this.isRepeater())
+			return false;
 		switch(this) {
 			case TABLE:
 			case RITUAL:
@@ -333,6 +338,11 @@ public enum ChromaTiles {
 			case AUTOMATOR:
 			case INFUSER:
 			case AURAPOINT:
+			case RELAYSOURCE:
+			case PERSONAL:
+			case PYLONTURBO:
+			case CLOAKING:
+			case MINER:
 				return false;
 			default:
 				return true;

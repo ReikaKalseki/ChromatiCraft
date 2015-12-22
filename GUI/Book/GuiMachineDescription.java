@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
@@ -29,7 +30,7 @@ public class GuiMachineDescription extends GuiDescription {
 	private float renderq = 22.5F;
 
 	public GuiMachineDescription(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220);
+		super(ChromaGuis.MACHINEDESC, ep, r, 256, 220);
 	}
 
 	@Override

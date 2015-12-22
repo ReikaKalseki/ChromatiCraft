@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiBookSection;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
@@ -48,7 +49,7 @@ public class GuiCraftingRecipe extends GuiBookSection {
 	private boolean centeredMouse = false;
 
 	public GuiCraftingRecipe(EntityPlayer ep, ArrayList<IRecipe> out, int offset) {
-		super(ep, null, 256, 220, false);
+		super(ChromaGuis.CRAFTING, ep, null, 256, 220, false);
 		recipes = new ArrayList(out);
 		index = offset;
 	}

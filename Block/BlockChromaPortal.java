@@ -40,7 +40,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -132,10 +131,10 @@ public class BlockChromaPortal extends Block {
 				this.onFirstTick();
 			ticks++;
 
-			if (DragonAPICore.debugtest) {
-				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
-				DragonAPICore.debugtest = false;
-			}
+			//if (DragonAPICore.debugtest) {
+			//	ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
+			//	DragonAPICore.debugtest = false;
+			//}
 
 			if (complete) {
 				if (charge < MINCHARGE || !ChunkProviderChroma.areStructuresReady()) {
@@ -431,8 +430,13 @@ public class BlockChromaPortal extends Block {
 
 		@Override
 		public void placeInPortal(Entity e, double x, double y, double z, float facing) {
-			ChunkCoordinates p = world.getSpawnPoint();
-			e.setLocationAndAngles(p.posX, 1024, p.posZ, 0, 0);
+			e.setLocationAndAngles(0, 1024, 0, 0, 0);
+			if (world.provider.dimensionId == 0) {
+				ChunkCoordinates p = world.getSpawnPoint();
+				if (e instanceof EntityPlayer)
+					p = ((EntityPlayer)e).getBedLocation(0);
+				e.setLocationAndAngles(p.posX, 1024, p.posZ, 0, 0);
+			}
 			this.placeInExistingPortal(e, x, y, z, facing);
 		}
 

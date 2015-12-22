@@ -41,8 +41,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
@@ -50,6 +53,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -64,6 +68,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	private boolean digging = false;
 	private boolean digReady = false;
+
+	private boolean finishedDigging = false;
 
 	private int range = 128;
 
@@ -158,6 +164,9 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 								//ores.addBlockCoordinate(dx, dy, dz);
 								this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
 							}
+							else if (this.shouldMine(id, meta2)) {
+								this.dropBlock(world, x, y, z, dx, dy, dz, id, meta2);
+							}
 							else if (this.isTieredResource(world, dx, dy, dz, id, meta2)) {
 								this.dropTieredResource(world, x, y, z, dx, dy, dz, id, meta2);
 							}
@@ -165,13 +174,15 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 								this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
 							}
 							this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+							//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
 							index++;
 							if (index >= coords.size()) {
 								this.finishDigging();
+								k = n;
 							}
 						}
 					}
-					else if (!digReady) {
+					else if (!digReady && !finishedDigging) {
 						this.prepareChunkloading();
 						for (int i = 0; i < TICKSTEP; i++) {
 							int dx = x+readX;
@@ -195,8 +206,9 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 							else if (this.shouldMine(id, meta2)) {
 								add = coords.add(new Coordinate(dx, dy, dz));
 							}
-							if (add)
+							if (add) {
 								this.addFound(world, dx, dy, dz, id, meta2);
+							}
 							this.updateReadPosition();
 							if (readY >= worldObj.getActualHeight()) {
 								this.prepareDigging();
@@ -223,6 +235,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		readX = 0;
 		readY = 0;
 		readZ = 0;
+		index = 0;
 		ChunkManager.instance.unloadChunks(this);
 	}
 
@@ -231,6 +244,10 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		digReady = false;
 		coords.clear();
 		found.clear();
+		finishedDigging = true;
+		//ReikaJavaLibrary.pConsole(found);
+		this.syncAllData(true);
+		this.scheduleBlockUpdate(5);
 		//ChunkManager.instance.unloadChunks(this);
 	}
 
@@ -280,6 +297,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 			found.put(is, i-1);
 		else
 			found.remove(is);
+		//ReikaJavaLibrary.pConsole("Removed "+b+":"+meta+" from cache, now have "+found.get(is));
 	}
 
 	private void addFound(World world, int x, int y, int z, Block b, int meta) {
@@ -305,6 +323,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		if (i == null)
 			i = 0;
 		found.put(is, i+1);
+		//ReikaJavaLibrary.pConsole("Found "+b+":"+meta+" @ "+x+","+y+","+z+"; have "+(i+1));
 	}
 
 	public List<ItemStack> getFound() {
@@ -411,13 +430,17 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		else {
 			this.dropItems(world, x, y, z, id.getDrops(world, dx, dy, dz, meta2, 0));
 		}
-		world.setBlock(dx, dy, dz, Blocks.stone);
+		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
+		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
+		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
 	}
 
 	private void dropTieredResource(World world, int x, int y, int z, int dx,int dy, int dz, Block id, int meta2) {
 		Collection<ItemStack> li = ((BlockTieredResource)id).getHarvestResources(world, dx, dy, dz, 10, this.getPlacer());
 		this.dropItems(world, x, y, z, li);
-		world.setBlock(dx, dy, dz, id.getMaterial().isSolid() ? Blocks.stone : Blocks.air);
+		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
+		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
+		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
 	}
 
 	private void dropMineableBlock(World world, int x, int y, int z, int dx, int dy, int dz, Block id, int meta2) {
@@ -427,7 +450,23 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		else {
 			this.dropItems(world, x, y, z, ((MinerBlock)id).getHarvestItems(world, dx, dy, dz, meta2, 0));
 		}
-		world.setBlock(dx, dy, dz, Blocks.stone);
+		this.getFillerBlock(world, dx, dy, dz, id, meta2).place(world, dx, dy, dz);
+		ReikaSoundHelper.playBreakSound(world, dx, dy, dz, id);
+		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, dx, dy, dz, Block.getIdFromBlock(id), meta2);
+	}
+
+	private BlockKey getFillerBlock(World world, int dx, int dy, int dz, Block id, int meta2) {
+		if (!id.getMaterial().isSolid())
+			return new BlockKey(Blocks.air);
+		if (id == Blocks.glowstone)
+			return new BlockKey(Blocks.air);
+		if (id == Blocks.mob_spawner)
+			return new BlockKey(Blocks.air);
+		if (world.provider.dimensionId == -1)
+			return new BlockKey(Blocks.netherrack);
+		if (world.provider.dimensionId == 1)
+			return new BlockKey(Blocks.end_stone);
+		return new BlockKey(Blocks.stone);
 	}
 
 	private boolean silkTouch() {
@@ -553,10 +592,12 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 		digging = NBT.getBoolean("dig");
 		digReady = NBT.getBoolean("dig2");
+		finishedDigging = NBT.getBoolean("finish");
 		index = NBT.getInteger("index");
 
 		dropFlag = NBT.getBoolean("dropped");
 
+		found.clear();
 		NBTTagList li = NBT.getTagList("count", NBTTypes.COMPOUND.ID);
 		for (Object o : li.tagList) {
 			NBTTagCompound tag = (NBTTagCompound)o;
@@ -575,6 +616,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		NBT.setBoolean("dig", digging);
 		NBT.setBoolean("dig2", digReady);
 		NBT.setInteger("index", index);
+		NBT.setBoolean("finish", finishedDigging);
 
 		NBTTagList li = new NBTTagList();
 		for (ItemStack is : found.keySet()) {

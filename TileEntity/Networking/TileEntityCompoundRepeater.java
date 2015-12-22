@@ -170,4 +170,9 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			NBT.setInteger("depth_"+e.ordinal(), depth.get(e));
 	}
 
+	@Override
+	public float getFailureWeight(CrystalElement e) {
+		return 1.25F;
+	}
+
 }

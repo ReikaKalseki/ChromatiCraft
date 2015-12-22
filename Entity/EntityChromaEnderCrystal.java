@@ -12,10 +12,10 @@ package Reika.ChromatiCraft.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import codechicken.lib.math.MathHelper;
 
 public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 

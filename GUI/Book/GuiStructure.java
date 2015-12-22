@@ -9,6 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -24,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -36,6 +41,7 @@ import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockChoiceHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockRenderHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.EntityRender;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiStructure extends GuiBookSection {
 
@@ -46,7 +52,7 @@ public class GuiStructure extends GuiBookSection {
 	private final StructureRenderer render;
 
 	public GuiStructure(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220, false);
+		super(ChromaGuis.STRUCTURE, ep, r, 256, 220, false);
 
 		array = page.getStructure().getStructureForDisplay();
 		if (page.name().toLowerCase().contains("casting")) {
@@ -79,10 +85,9 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.TREE) {
 			render.addOverride(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getCraftedProduct());
-			render.addBlockHook(ChromaTiles.POWERTREE.getBlock(), new LumenTreeHook()); //Unused
 		}
 		else if (page == ChromaResearch.PORTALSTRUCT) {
-			render.addBlockHook(Blocks.bedrock, new EnderCrystalHook());
+			render.addOverride(new ItemStack(Blocks.bedrock), ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1));
 
 			render.addEntityRender(-5, -1, -9, createCrystalRender());
 			render.addEntityRender(-9, -1, -5, createCrystalRender());
@@ -188,7 +193,9 @@ public class GuiStructure extends GuiBookSection {
 		ItemHashMap<Integer> map = array.tally();
 		int i = 0;
 		int n = 8;
-		for (ItemStack is : map.keySet()) {
+		List<ItemStack> c = new ArrayList(map.keySet());
+		Collections.sort(c, ReikaItemHelper.comparator);
+		for (ItemStack is : c) {
 			int dx = j+10+(i/n)*50;
 			int dy = k+30+(i%n)*22;
 			ItemStack is2 = is.copy();
@@ -234,7 +241,7 @@ public class GuiStructure extends GuiBookSection {
 			render.rotate(0.75, 0, 0);
 		}
 
-		render.draw3D(j, k, ptick);
+		render.draw3D(j, k, ptick, true);
 	}
 
 	private static int getElementByTick() {
@@ -256,24 +263,6 @@ public class GuiStructure extends GuiBookSection {
 		@Override
 		public int getOffsetY() {
 			return -6;
-		}
-
-	}
-
-	private static class LumenTreeHook implements BlockChoiceHook {
-
-		@Override
-		public ItemStack getBlock(Coordinate pos, int meta) {
-			return ChromaTiles.POWERTREE.getCraftedProduct();
-		}
-
-	}
-
-	private static class EnderCrystalHook implements BlockChoiceHook {
-
-		@Override
-		public ItemStack getBlock(Coordinate pos, int meta) {
-			return ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
 		}
 
 	}

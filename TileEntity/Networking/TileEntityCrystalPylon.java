@@ -102,6 +102,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public static boolean TUNED_PYLONS = true;
 
+	public boolean enhancing = false;
+
 	private static final Collection<Coordinate> crystalPositions = new ArrayList();
 
 	private static Class node;
@@ -830,11 +832,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public void enhance() {
 		enhanced = true;
+		enhancing = false;
 		this.syncAllData(true);
 	}
 
 	public void disenhance() {
 		enhanced = false;
+		enhancing = false;
 		energy = Math.min(energy, this.getMaxStorage(color));
 		this.syncAllData(true);
 	}

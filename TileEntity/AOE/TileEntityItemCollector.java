@@ -9,8 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -48,7 +49,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final Collection<WorldLocation> cache = new ArrayList();
+	private static final Collection<WorldLocation> cache = new HashSet();
 
 	static {
 		required.addTag(CrystalElement.LIME, 25);
@@ -127,8 +128,14 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	public static boolean absorbItem(Entity e) {
 		for (WorldLocation loc : cache) {
-			if (((TileEntityItemCollector)loc.getTileEntity()).checkAbsorb(e))
-				return true;
+			TileEntity te = loc.getTileEntity();
+			if (te instanceof TileEntityItemCollector) {
+				if (((TileEntityItemCollector)te).checkAbsorb(e))
+					return true;
+			}
+			else {
+				ChromatiCraft.logger.logError("Incorrect tile ("+te+") @ "+loc+" in Item Collector cache!?");
+			}
 		}
 		return false;
 	}

@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.inventory.IInventory;
@@ -103,6 +104,11 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	}
 
 	private TileEntityCastingTable getTable(World world, int x, int y, int z) {
+		for (int i = 1; i < 5; i++) {
+			Block b = world.getBlock(x, y-i, z);
+			if (!b.isAir(world, x, y-i, z))
+				return null;
+		}
 		TileEntity te = world.getTileEntity(x, y-5, z);
 		return te instanceof TileEntityCastingTable ? (TileEntityCastingTable)te : null;
 	}

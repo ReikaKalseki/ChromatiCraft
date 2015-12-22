@@ -53,6 +53,98 @@ public class ChromaFX {
 
 	private static final Random rand = new Random();
 
+	public static void drawFillBar(CrystalElement e, int x, int y, int w, int h, float f) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/bartex.png");
+		float u = e.ordinal()/16F;
+		float du = u+Math.min(0.0625F, w/512F);
+		float v = 0;
+		float dv = h/128F;
+
+		f = Math.min(f, 1);
+
+		int dh = (int)(f*h);
+
+		Tessellator v5 = Tessellator.instance;
+
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(0xffffff);
+		v5.setBrightness(240);
+
+		v5.addVertexWithUV(x, y+h, 0, u, dv);
+		v5.addVertexWithUV(x+w, y+h, 0, du, dv);
+		v5.addVertexWithUV(x+w, y, 0, du, v);
+		v5.addVertexWithUV(x, y, 0, u, v);
+
+		v5.draw();
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(e.getColor());
+		v5.setBrightness(240);
+
+		v5.addVertex(x, y+h, 0);
+		v5.addVertex(x+w, y+h, 0);
+		v5.addVertex(x+w, y+h-dh, 0);
+		v5.addVertex(x, y+h-dh, 0);
+
+		v5.draw();
+
+		GL11.glPopAttrib();
+	}
+
+	public static void drawHorizontalFillBar(CrystalElement e, int x, int y, int w, int h, float f) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/bartex.png");
+		float u = e.ordinal()/16F;
+		float du = u+Math.min(0.0625F, h/512F);
+		float v = 0;
+		float dv = w/128F;
+
+		f = Math.min(f, 1);
+
+		int dw = (int)(f*w);
+
+		Tessellator v5 = Tessellator.instance;
+
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(0xffffff);
+		v5.setBrightness(240);
+
+		v5.addVertexWithUV(x, y+h, 0, du, dv);
+		v5.addVertexWithUV(x+w, y+h, 0, du, v);
+		v5.addVertexWithUV(x+w, y, 0, u, v);
+		v5.addVertexWithUV(x, y, 0, u, dv);
+
+		v5.draw();
+
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+		v5.startDrawingQuads();
+		v5.setColorOpaque_I(e.getColor());
+		v5.setBrightness(240);
+
+		v5.addVertex(x, y+h, 0);
+		v5.addVertex(x+dw, y+h, 0);
+		v5.addVertex(x+dw, y, 0);
+		v5.addVertex(x, y, 0);
+
+		v5.draw();
+
+		GL11.glPopAttrib();
+	}
+
 	public static void poolRecipeParticles(EntityItem ei) {
 		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);

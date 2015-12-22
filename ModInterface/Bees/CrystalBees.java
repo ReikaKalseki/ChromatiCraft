@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -240,11 +241,9 @@ public class CrystalBees {
 		@Override
 		public IEffectData doEffect(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
 			World world = ibh.getWorld();
-			int x = ibh.getXCoord();
-			int y = ibh.getYCoord();
-			int z = ibh.getZCoord();
+			ChunkCoordinates c = ibh.getCoordinates();
 			int[] r = ibg.getTerritory();
-			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r[0], r[1], r[2]);
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 			List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 			for (EntityLivingBase e : li) {
 				CrystalBlock.applyEffectFromColor(600, 0, e, color);
@@ -281,7 +280,7 @@ public class CrystalBees {
 		public final CrystalElement color;
 
 		private FlowerProviderCrystal(CrystalElement color) {
-			super(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal(), false);
+			super(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal(), color.name().toLowerCase());
 			this.color = color;
 		}
 

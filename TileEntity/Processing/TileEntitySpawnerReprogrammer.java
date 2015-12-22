@@ -77,6 +77,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered {
 		addDisallowedMob("Thaumcraft.TaintedCow");
 		addDisallowedMob("Thaumcraft.TaintedPig");
 		addDisallowedMob("Thaumcraft.TaintedCreeper");
+		addDisallowedMob("Thaumcraft.CultistPortal");
 
 		addDisallowedMob("TwilightForest.Hydra");
 		addDisallowedMob("TwilightForest.Naga");

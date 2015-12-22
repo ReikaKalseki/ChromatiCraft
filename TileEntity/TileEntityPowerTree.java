@@ -594,7 +594,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public boolean playerCanUse(EntityPlayer ep) {
-		return ep.getUniqueID().equals(this.getPlacerUUID());
+		return this.isOwnedByPlayer(ep);
 	}
 
 	@Override

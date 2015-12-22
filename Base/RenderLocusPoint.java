@@ -70,16 +70,16 @@ public abstract class RenderLocusPoint extends ChromaRenderBase {
 
 		//ReikaJavaLibrary.pConsole(te.getEnergy());
 
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurapoint2.png");
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/aurapoint2-grid.png");
 
 		for (int i = 0; i < 3; i++) {
 
 			int alpha = 255-i*64;//255;
-			double tick = (tile.getTicksExisted()*(i*3+1))%80;//+par8;
-			double u = tick/80D;//0;//0.125;
-			double v = 0;//(int)(tick/20)/4D;//0.125;
-			double du = u+1/80D;//u+1;//0.9375;
-			double dv = v+1;//0.9375;
+			int tick = (int)((System.currentTimeMillis()/250)%80);//(tile.getTicksExisted()*(i*3+1))%80;//+par8;
+			double u = (tick%8)/8D;//tick/80D;//0;//0.125;
+			double v = (tick/8)/10D;//0;//(int)(tick/20)/4D;//0.125;
+			double du = u+1/8D;//u+1/80D;//u+1;//0.9375;
+			double dv = v+1/10D;//v+1;//0.9375;
 
 			double s = 1-i*0.25;
 			//for (double s = 0.5; s >= 0.25; s -= 0.0625) {

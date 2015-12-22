@@ -62,15 +62,15 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 			}
 			y += h;
 			switch(this) {
-			case BALL:
-				generateBallTree(world, x, y, z, rand);
-				break;
-			case OAK:
-				generateOakTree(world, x, y, z, rand);
-				break;
-			case TALL:
-				generateTallTree(world, x, y, z, rand);
-				break;
+				case BALL:
+					generateBallTree(world, x, y, z, rand);
+					break;
+				case OAK:
+					generateOakTree(world, x, y, z, rand);
+					break;
+				case TALL:
+					generateTallTree(world, x, y, z, rand);
+					break;
 			}
 			return true;
 		}
@@ -603,6 +603,11 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 		@Override
 		public boolean exists() {
 			return true;
+		}
+
+		@Override
+		public int getSaplingMeta() {
+			return 0;
 		}
 
 	}

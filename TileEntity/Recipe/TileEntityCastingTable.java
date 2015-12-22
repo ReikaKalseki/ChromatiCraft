@@ -140,6 +140,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
+		energy.clear();
+		energy.addValueToColor(CrystalElement.BLUE, 250);
+		energy.addValueToColor(CrystalElement.RED, 2000);
+
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
@@ -570,13 +574,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					ReikaInventoryHelper.decrStack(i, inv);
 			}
 			count += activeRecipe.getOutput().stackSize;
-			EntityPlayer ep = this.getPlacer();
+			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonRecipe) {
 				energy.subtract(((PylonRecipe)activeRecipe).getRequiredAura());
-				ProgressStage.LINK.stepPlayerTo(ep);
+				ProgressStage.LINK.stepPlayerTo(craftingPlayer);
 			}
-			ProgressStage.CASTING.stepPlayerTo(ep);
-			activeRecipe.onCrafted(this, ep);
+			activeRecipe.onCrafted(this, craftingPlayer);
 			activeRecipe = recipe;
 			recipe = this.getValidRecipe();
 			if (activeRecipe instanceof PylonRecipe && recipe == activeRecipe) {
@@ -606,7 +609,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				}
 			}
 		}
-		RecipesCastingTable.setPlayerHasCrafted(this.getPlacer(), activeRecipe.type);
+		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, activeRecipe.type);
 		if (!repeat) {
 			activeRecipe = null;
 			craftSoundTimer = 20000;

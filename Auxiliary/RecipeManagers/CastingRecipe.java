@@ -72,10 +72,12 @@ public class CastingRecipe {
 	}
 
 	public final void setFragment(ChromaResearch r) {
-		if (fragment == null)
-			fragment = r;
-		else
-			throw new IllegalStateException("Cannot change the research type of a recipe once initialized!");
+		if (r != fragment) {
+			if (fragment == null)
+				fragment = r;
+			else
+				throw new IllegalStateException("Cannot change the research type of a recipe once initialized!");
+		}
 	}
 
 	public final ChromaResearch getFragment() {

@@ -10,12 +10,13 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
 public abstract class GuiDescription extends GuiBookSection {
 
-	protected GuiDescription(EntityPlayer ep, ChromaResearch r, int x, int y) {
-		super(ep, r, x, y, false);
+	protected GuiDescription(ChromaGuis g, EntityPlayer ep, ChromaResearch r, int x, int y) {
+		super(g, ep, r, x, y, false);
 	}
 
 	@Override

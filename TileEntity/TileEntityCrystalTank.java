@@ -36,13 +36,14 @@ import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction {
 
-	public static final int MAXCAPACITY = 1000000000;
+	public static final int MAXCAPACITY = 2000000000;
 
 	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", MAXCAPACITY);
 	private int scheduledUpdate = 0;
@@ -150,7 +151,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	@Override
 	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
-		return tank.drain(resource.amount, doDrain);
+		return this.canDrain(from, resource.getFluid()) ? tank.drain(resource.amount, doDrain) : null;
 	}
 
 	@Override
@@ -165,7 +166,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	@Override
 	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-		return true;
+		return ReikaFluidHelper.isFluidDrainableFromTank(fluid, tank);
 	}
 
 	@Override

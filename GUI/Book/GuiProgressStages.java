@@ -26,6 +26,7 @@ import org.lwjgl.util.Rectangle;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
@@ -33,7 +34,6 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
-import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -59,7 +59,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private static final int spacingY = 15;//30;
 
 	public GuiProgressStages(EntityPlayer ep) {
-		super(ep, 256, 220, 242, 112);
+		super(ChromaGuis.PROGRESS, ep, 256, 220, 242, 112);
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			ChromaDescriptions.reload();
@@ -104,7 +104,7 @@ public class GuiProgressStages extends GuiScrollingPage {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
-		buttonList.add(new ImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class));
+		this.addAuxButton(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this), "Return");
 	}
 
 	@Override

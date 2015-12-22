@@ -615,7 +615,8 @@ public class ChromaticEventManager {
 					ev.damageAmount = 0;
 					ev.shouldDamage = false;
 				}
-				evt.setCanceled(true);
+				else
+					evt.setCanceled(true);
 			}
 			else if (ratio > 0) {
 				ElementTagCompound rem = tag1.copy();

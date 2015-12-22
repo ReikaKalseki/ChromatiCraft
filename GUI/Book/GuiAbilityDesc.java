@@ -15,13 +15,14 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 public class GuiAbilityDesc extends GuiDescription {
 
 	public GuiAbilityDesc(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220);
+		super(ChromaGuis.ABILITYDESC, ep, r, 256, 220);
 	}
 
 	@Override

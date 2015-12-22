@@ -92,20 +92,26 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 	@Override
 	public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
+		if (world.getBlock(x, y+1, z) == this) {
+			int c = this.colorMultiplier(world, x, y+1, z);
+			return c;
+		}
 		int meta = world.getBlockMetadata(x, y, z);
 		if (meta == 0) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
 			return te != null ? te.getColor() : 0xffffff;
 		}
 		else {
-			if (world.getBlock(x, y+1, z) == this && world.getBlockMetadata(x, y+1, z) == 0)
-				return this.colorMultiplier(world, x, y+1, z);
 			for (int i = 2; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				int dx = x+dir.offsetX;
 				int dy = y+dir.offsetY;
 				int dz = z+dir.offsetZ;
 				if (world.getBlock(dx, dy, dz) == this) {
+					if (world.getBlock(dx, dy+1, dz) == this) {
+						int c = this.colorMultiplier(world, dx, dy+1, dz);
+						return c;
+					}
 					int meta2 = world.getBlockMetadata(dx, dy, dz);
 					if (meta2 == 0) {
 						return this.colorMultiplier(world, dx, dy, dz);
@@ -117,8 +123,8 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 					}
 				}
 			}
-			return 0xffffff;
 		}
+		return 0xffffff;
 	}
 
 	public static int getColor(CrystalElement e, int berries) {

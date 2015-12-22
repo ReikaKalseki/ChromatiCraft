@@ -9,12 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -23,7 +22,11 @@ import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -51,14 +54,18 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -79,26 +86,71 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	private final int GRIDSIZE = 256;
 
 	private final HashMap<Integer, boolean[][]> data = new HashMap();
+
+	public static final String NBT_TAG = "pylonloc";
 	private final EnumMap<CrystalElement, Collection<WorldLocation>> colorCache = new EnumMap(CrystalElement.class);
 
 	private PylonGenerator() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
+	public void savePylonLocations(NBTTagCompound NBT) {
+		NBTTagList li = NBT.getTagList(NBT_TAG, NBTTypes.COMPOUND.ID);
+		for (CrystalElement e : colorCache.keySet()) {
+			Collection<WorldLocation> c = colorCache.get(e);
+			for (WorldLocation loc : c) {
+				NBTTagCompound tag = new NBTTagCompound();
+				loc.writeToNBT("pos", tag);
+				tag.setInteger("color", e.ordinal());
+			}
+		}
+		NBT.setTag(NBT_TAG, li);
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Saved pylons: "+colorCache);
+	}
+
+	public void loadPylonLocations(NBTTagCompound NBT) {
+		NBTTagList li = NBT.getTagList(NBT_TAG, NBTTypes.COMPOUND.ID);
+		for (NBTTagCompound tag : (List<NBTTagCompound>)li.tagList) {
+			WorldLocation loc = WorldLocation.readFromNBT("pos", tag);
+			CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
+			this.addLocation(loc, e);
+		}
+		NBT.setTag(NBT_TAG, li);
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Loaded pylons: "+colorCache);
+	}
+
+	public void sendDimensionCacheToPlayer(EntityPlayerMP ep, int dim) {
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Sending cache in DIM"+dim+" to "+ep+": "+colorCache);
+		for (CrystalElement e : colorCache.keySet()) {
+			Collection<WorldLocation> c = colorCache.get(e);
+			for (WorldLocation loc : c) {
+				if (loc.dimensionID == dim)
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PYLONCACHE.ordinal(), ep, loc.xCoord, loc.yCoord, loc.zCoord, e.ordinal());
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void clearOnUnload(WorldEvent.Unload evt) {
 		if (evt.world.isRemote) {
-
+			//this.clear(evt.world);
 		}
 		else {
 			this.clear(evt.world);
-			ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCLEAR.ordinal(), evt.world.provider.dimensionId);
+			//ReikaPacketHelper.sendDataPacketToEntireServer(ChromatiCraft.packetChannel, ChromaPackets.PYLONCLEAR.ordinal(), evt.world.provider.dimensionId);
 		}
 	}
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
+		colorCache.clear();
+	}
 
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
 		colorCache.clear();
 	}
 
@@ -106,16 +158,22 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		this.clearDimension(world.provider.dimensionId);
 	}
 
+	//@SideOnly(Side.CLIENT)
 	public void clearDimension(int dim) {
 		data.remove(dim);
+
+		/*
 		for (CrystalElement e : colorCache.keySet()) {
 			Iterator<WorldLocation> it = colorCache.get(e).iterator();
 			while (it.hasNext()) {
 				WorldLocation loc = it.next();
-				if (loc.dimensionID == dim)
+				if (loc.dimensionID == dim) {
 					it.remove();
+					//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] #"+System.identityHashCode(colorCache)+"/"+System.identityHashCode(this)+" Removed "+loc+"="+e+" from DIM"+dim);
+				}
 			}
 		}
+		 */
 	}
 
 	private void fillArray(World world) {
@@ -237,6 +295,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	private boolean canGenerateAt(World world, int x, int y, int z) {
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		if (BiomeDictionary.isBiomeOfType(biome, Type.NETHER))
+			return false;
+
+		if (world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z)) //sky/void world
 			return false;
 
 		Block origin = world.getBlock(x, y, z);
@@ -421,13 +482,15 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	@SideOnly(Side.CLIENT)
 	public void cachePylonLocation(World world, int x, int y, int z, CrystalElement e) {
+		//ReikaJavaLibrary.pConsole("Receive for cache in DIM"+world.provider.dimensionId+": "+x+","+y+","+z+"="+e);
 		this.addLocation(new WorldLocation(world, x, y, z), e);
 	}
 
 	private void addLocation(WorldLocation loc, CrystalElement e) {
+		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Add to cache: "+loc+"="+e);
 		Collection<WorldLocation> c = colorCache.get(e);
 		if (c == null) {
-			c = new ArrayList();
+			c = new HashSet();
 			colorCache.put(e, c);
 		}
 		if (!c.contains(loc))
@@ -458,6 +521,10 @@ public final class PylonGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Pylons";
+	}
+
+	public void printPylonCache(ICommandSender ics) {
+		ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Cache Debug: "+System.identityHashCode(colorCache)+"/"+System.identityHashCode(this)+"#"+colorCache);
 	}
 
 }

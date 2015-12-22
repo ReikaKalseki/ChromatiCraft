@@ -45,6 +45,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -274,7 +275,13 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta].getOpposite();
 			TileEntity te = worldObj.getTileEntity(xCoord+dir.offsetX, yCoord+dir.offsetY, zCoord+dir.offsetZ);
 			if (te instanceof ThermalTile) {
-				((ThermalTile)te).setTemperature(((ThermalTile) te).getTemperature()+(int)Math.signum(temperature-((ThermalTile) te).getTemperature()));
+				//((ThermalTile)te).setTemperature(((ThermalTile) te).getTemperature()+(int)Math.signum(temperature-((ThermalTile) te).getTemperature()));
+				ThermalTile tl = (ThermalTile)te;
+				if (temperature > tl.getTemperature()) {
+					tl.setTemperature(tl.getTemperature()+1);
+					if (ModList.ROTARYCRAFT.isLoaded() && te instanceof BasicTemperatureMachine)
+						((BasicTemperatureMachine)te).resetAmbientTemperatureTimer();
+				}
 			}
 		}
 

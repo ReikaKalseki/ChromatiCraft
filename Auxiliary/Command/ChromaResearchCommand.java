@@ -7,23 +7,24 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Command;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.Command.DragonCommandBase;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 
-public class ProgressionStageCommand extends DragonCommandBase {
+public class ChromaResearchCommand extends DragonCommandBase {
 
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {
-		if (args.length != 2 && args.length != 1) {
+		if (args.length != 1 && args.length != 2) {
 			sendChatToSender(ics, EnumChatFormatting.RED.toString()+"Invalid arguments. Valid Formats:");
 			sendChatToSender(ics, EnumChatFormatting.RED.toString()+"  Set a player: /"+this.getCommandString()+" <playername> <level>");
 			sendChatToSender(ics, EnumChatFormatting.RED.toString()+"  Set yourself: /"+this.getCommandString()+" <level>");
@@ -37,22 +38,31 @@ public class ProgressionStageCommand extends DragonCommandBase {
 		try {
 			int stage = Integer.parseInt(args[args.length-1]);
 			if (stage == -1) {
-				ProgressionManager.instance.maxPlayerProgression(ep);
+				ChromaResearchManager.instance.maxPlayerResearch(ep);
 			}
 			else if (stage == -2) {
-				ProgressionManager.instance.resetPlayerProgression(ep);
+				ChromaResearchManager.instance.resetPlayerResearch(ep);
 			}
 			else if (stage == -3) {
-				Collection<ProgressStage> c = ProgressionManager.instance.getStagesFor(ep);
-				Collection<CrystalElement> c2 = ProgressionManager.instance.getColorsFor(ep);
-				Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);
-				ReikaChatHelper.sendChatToPlayer(ep, "Progress for "+ep.getCommandSenderName()+":\n"+c.toString());
-				ReikaChatHelper.sendChatToPlayer(ep, "Elements for "+ep.getCommandSenderName()+":\n"+c2.toString());
-				ReikaChatHelper.sendChatToPlayer(ep, "Structure Flags for "+ep.getCommandSenderName()+":\n"+c3.toString());
+				for (int i = 0; i < ResearchLevel.levelList.length; i++) {
+					ResearchLevel rl = ResearchLevel.levelList[i];
+					Collection<ChromaResearch> c = ChromaResearchManager.instance.getResearchForLevel(rl);
+				}
+				ResearchLevel pl = ChromaResearchManager.instance.getPlayerResearchLevel(ep);
+				Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
+				sendChatToSender(ics, "Player research: ");
+				sendChatToSender(ics, "Level "+pl);
+				sendChatToSender(ics, "Fragments: "+cp);
+				Collection<ChromaResearch> missing = new ArrayList(ChromaResearchManager.instance.getResearchForLevel(pl));
+				//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
+				missing.removeAll(cp);
+				//ReikaJavaLibrary.pConsole(missing);
+				sendChatToSender(ics, "Can step to "+pl.post()+": "+pl.post().canProgressTo(ep)+" && "+missing.isEmpty());
+				sendChatToSender(ics, "Missing research for "+pl+": "+missing);
 			}
 			else {
-				if (ProgressionManager.instance.setPlayerStage(ep, stage, true)) {
-					sendChatToSender(ics, EnumChatFormatting.GREEN.toString()+"Player progression stage set successfully.");
+				if (ChromaResearchManager.instance.setPlayerResearchLevel(ep, ResearchLevel.levelList[stage])) {
+					sendChatToSender(ics, EnumChatFormatting.GREEN.toString()+"Player research stage set successfully.");
 				}
 				else {
 					sendChatToSender(ics, EnumChatFormatting.RED.toString()+"Invalid stage number: "+args[args.length-1]);
@@ -66,7 +76,7 @@ public class ProgressionStageCommand extends DragonCommandBase {
 
 	@Override
 	public String getCommandString() {
-		return "chromaprog";
+		return "chromaresearch";
 	}
 
 	@Override

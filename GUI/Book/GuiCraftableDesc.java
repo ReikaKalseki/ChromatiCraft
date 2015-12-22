@@ -17,12 +17,13 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 
 public class GuiCraftableDesc extends GuiDescription {
 
 	public GuiCraftableDesc(EntityPlayer ep, ChromaResearch r) {
-		super(ep, r, 256, 220);
+		super(ChromaGuis.BASICDESC, ep, r, 256, 220);
 	}
 
 	@Override

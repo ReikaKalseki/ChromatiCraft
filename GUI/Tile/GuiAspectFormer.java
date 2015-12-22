@@ -10,8 +10,10 @@
 package Reika.ChromatiCraft.GUI.Tile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
@@ -28,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Base.CoreContainer;
+import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -159,10 +162,23 @@ public class GuiAspectFormer extends GuiChromaBase {
 		ElementTagCompound tag = TileEntityAspectFormer.getAspectCost(this.getActive());
 		int dx = 18;
 		int dy = 21;
+		boolean text = GuiScreen.isCtrlKeyDown() && api.isMouseInBox(j+dx+32-20, j+dx+32+20, k+dy+20-20, k+dy+20+20);
+		Proportionality<CrystalElement> p = text ? null : new Proportionality();
+		HashMap<CrystalElement, Integer> colors = text ? null : new HashMap();
 		for (CrystalElement e : tag.elementSet()) {
-			String s = e.displayName+": "+tag.getValue(e)+" L/Vis";
-			fontRendererObj.drawString(s, dx, dy, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F));
-			dy += fontRendererObj.FONT_HEIGHT;
+			if (text) {
+				String s = e.displayName+": "+tag.getValue(e)+" L/Vis";
+				fontRendererObj.drawString(s, dx, dy, ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.75F));
+				dy += fontRendererObj.FONT_HEIGHT;
+			}
+			else {
+				p.addValue(e, tag.getValue(e));
+				colors.put(e, e.getColor());
+			}
+		}
+		if (!text) {
+			p.renderAsPie(dx+32, dy+20, 20, 0, colors);
+			api.drawCircle(dx+32, dy+20, 20.25, 0x000000);
 		}
 	}
 

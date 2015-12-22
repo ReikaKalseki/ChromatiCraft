@@ -58,15 +58,48 @@ public class RenderItemStand extends ChromaRenderBase {
 
 			if (MinecraftForgeClient.getRenderPass() == 0) {
 				GL11.glPushMatrix();
-				double ang = ((te.getTicksExisted()+ptick)*3D)%360;
-				double dy = 0.0625*Math.sin(Math.toRadians(ang*2));
-				GL11.glTranslated(0.5, 0.625+dy, 0.5);
-				GL11.glTranslated(par2, par4, par6);
-				GL11.glRotated(ang, 0, 1, 0);
-				GL11.glTranslated(-par2, -par4, -par6);
 
 				Render r = RenderManager.instance.getEntityClassRenderObject(EntityItem.class);
-				r.doRender(ei, par2, par4, par6, 0, 0);
+				int num = 1;
+				if (is.stackSize >= 32) {
+					num = 6;
+				}
+				else if (is.stackSize >= 18) {
+					num = 5;
+				}
+				else if (is.stackSize >= 8) {
+					num = 4;
+				}
+				else if (is.stackSize >= 4) {
+					num = 3;
+				}
+				else if (is.stackSize >= 2) {
+					num = 2;
+				}
+				float tick = te.getTicksExisted()+ptick;
+				double s = num > 1 ? 1D/Math.pow(num, 0.25) : 1;
+				double d = 0.3125;//-0.25/s;
+				double d2 = 0;
+				for (int i = 0; i < num; i++) {
+					GL11.glPushMatrix();
+					double ang = (tick*3D)%360+i*360D/num;
+					double dy = 0.0625*Math.sin(Math.toRadians(ang*2));
+					GL11.glTranslated(par2, par4, par6);
+					GL11.glTranslated(0.5, (0.625+dy), 0.5);
+					GL11.glRotated(ang, 0, 1, 0);
+					if (num > 1) {
+						GL11.glScaled(s, s, s);
+						GL11.glTranslated(d, 0, d2);
+						GL11.glRotated(tick*4+i*90D/num, 0, 1, 0);
+						GL11.glTranslated(-d, 0, -d2);
+					}
+					GL11.glTranslated(-par2, -par4, -par6);
+					if (num > 1) {
+						GL11.glTranslated(0.3125, 0, 0);
+					}
+					r.doRender(ei, par2, par4, par6, 0, 0);
+					GL11.glPopMatrix();
+				}
 
 				GL11.glPopMatrix();
 			}

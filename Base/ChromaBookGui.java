@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -60,10 +61,20 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 
 	private int guiTick = 0;
 
-	protected ChromaBookGui(EntityPlayer ep, int x, int y) {
+	protected final ChromaGuis guiType;
+
+	//public static GuiPosition saveLocation = null;
+
+	public static ChromaBookGui lastGui = null;
+
+	private final RegionMap<AuxButton> auxButtons = new RegionMap();
+
+	protected ChromaBookGui(ChromaGuis t, EntityPlayer ep, int x, int y) {
 		player = ep;
 		xSize = x;
 		ySize = y;
+
+		guiType = t;
 
 		cacheMouse = true;
 	}
@@ -98,6 +109,11 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 		//buttonList.add(new GuiButton(12, j+xSize-27, k-4, 20, 20, "X"));	//Close gui button
 	}
 
+	protected final void addAuxButton(GuiButton b, String name) {
+		buttonList.add(b);
+		auxButtons.addRegionByWH(b.xPosition-1, b.yPosition-1, b.width, b.height, new AuxButton(b, name));
+	}
+
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		buttoncooldown = System.currentTimeMillis();
@@ -124,6 +140,21 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
+		AuxButton ab = auxButtons.getRegion(api.getMouseRealX(), api.getMouseRealY());
+		if (ab != null) { //api.isMouseInBox(posX+xSize-1, posX+xSize-1+22, posY+13, posY+13+39)
+			//String sg = "Save & Exit";
+			int bw = ab.button.width;
+			int sp = 4;
+			String sg = ab.text;
+			int sw = fontRendererObj.getStringWidth(sg);//20+fontRendererObj.getStringWidth(sg)/2;
+			int dx = posX+12-bw-sp;//Math.min(api.getMouseRealX(), posX-22)-sw+16;
+			if (api.getMouseRealX() > posX+xSize-2) {
+				//ReikaJavaLibrary.pConsole((posX+xSize+22)+","+(api.getMouseRealX()+sw+32));
+				dx = posX+xSize+sw+20+bw+sp;//Math.max(posX+xSize+22*0, api.getMouseRealX())+sw+32;
+			}
+			api.drawTooltipAt(fontRendererObj, sg, dx, api.getMouseRealY());
+		}
+
 		this.drawTexturedModalRect(posX, posY, 0, 0, xSize, ySize);
 		guiTick++;
 		super.drawScreen(x, y, f);
@@ -146,6 +177,10 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 	}
 
 	protected final void goTo(ChromaGuis next, ChromaResearch to) {
+		goTo(next, to, player);
+	}
+
+	protected static final void goTo(ChromaGuis next, ChromaResearch to, EntityPlayer player) {
 		//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
 		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 		preMouseX = Mouse.getX();
@@ -154,4 +189,30 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 		player.openGui(ChromatiCraft.instance, next.ordinal(), null, to != null ? to.ordinal() : -1, 0, 0);
 	}
 
+	private static class AuxButton {
+
+		private final GuiButton button;
+		private final String text;
+
+		private AuxButton(GuiButton b, String s) {
+			button = b;
+			text = s;
+		}
+
+	}
+	/*
+	public static class GuiPosition {
+
+		public final ChromaGuis gui;
+		public final ChromaResearch page;
+		public final int subpage;
+
+		public GuiPosition(ChromaGuis g, ChromaResearch r, int s) {
+			gui = g;
+			page = r;
+			subpage = s;
+		}
+
+	}
+	 */
 }

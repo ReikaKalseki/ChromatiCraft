@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -308,7 +309,7 @@ public class PylonFinder {
 	}
 
 	private boolean isConnectableSource(CrystalSource te, int thresh) {
-		return te.canSupply(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user));
+		return te.canSupply(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user)) && (!(te instanceof TileEntityCrystalPylon) || !((TileEntityCrystalPylon)te).enhancing);
 	}
 
 	/*

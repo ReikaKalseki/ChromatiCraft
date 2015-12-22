@@ -116,6 +116,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		genCore = new ChunkCoordIntPair(chunkX >> 4, chunkZ >> 4);
 		posX = chunkX;
 		posZ = chunkZ;
+		entryX = chunkX;
+		entryZ = chunkZ;
 		this.calculate(chunkX, chunkZ, rand);
 	}
 
@@ -221,6 +223,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return this.hasCore();
 	}
 
+	@Override
+	public final String toString() {
+		return this.getClass().getSimpleName()+" @ "+this.getCentralBlockCoords()+" (E = "+this.getEntryLocation()+")";
+	}
+
 	public static final class StructurePair {
 
 		public final DimensionStructureGenerator generator;
@@ -243,6 +250,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 				return p.color == color && p.generator == generator;
 			}
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return color.name()+" "+generator;
 		}
 
 	}

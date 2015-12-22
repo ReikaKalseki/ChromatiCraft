@@ -221,6 +221,9 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		isPylonSpawn = nbt.getBoolean("pylon");
 		doDrops = nbt.getBoolean("dodrops");
+
+		if (nbt.getBoolean("isdead"))
+			this.setDead();
 	}
 
 	@Override
@@ -232,6 +235,8 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 		nbt.setBoolean("dodrops", doDrops);
 		nbt.setBoolean("pylon", isPylonSpawn);
+
+		nbt.setBoolean("isdead", isDead);
 	}
 
 	private void die() {

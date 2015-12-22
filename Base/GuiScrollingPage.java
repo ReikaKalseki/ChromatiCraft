@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -29,15 +30,24 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 	protected final int paneWidth;
 	protected final int paneHeight;
 
-	protected GuiScrollingPage(EntityPlayer ep, int x, int y, int w, int h) {
-		super(ep, x, y);
+	protected GuiScrollingPage(ChromaGuis g, EntityPlayer ep, int x, int y, int w, int h) {
+		super(g, ep, x, y);
 		paneWidth = w;
 		paneHeight = h;
 	}
 
 	public static void resetOffset() {
-		offsetX = 0;
-		offsetY = 0;
+		if (ChromaBookGui.lastGui == null) {
+			offsetX = 0;
+			offsetY = 0;
+		}
+		else {
+			//goTo(ChromaBookGui.saveLocation.gui, ChromaBookGui.saveLocation.page, Minecraft.getMinecraft().thePlayer);
+		}
+	}
+
+	public static void saveLocation(/*ChromaGuis g, ChromaResearch r, int s*/GuiBookSection gui) {
+		ChromaBookGui.lastGui = gui;// = new GuiPosition(g, r, s);
 	}
 
 	@Override

@@ -137,6 +137,26 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 	}
 
 	@Override
+	public boolean shouldSideBeRendered(IBlockAccess world, int dx, int dy, int dz, int s) {
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+		Block b = world.getBlock(dx, dy, dz);
+		if (b.isOpaqueCube())
+			return false;
+		if (b == this)
+			return false;
+		switch(dir) {
+			case EAST:
+			case WEST:
+			case SOUTH:
+			case NORTH:
+			case UP:
+			case DOWN:
+			default:
+				return true;
+		}
+	}
+
+	@Override
 	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
 		return meta >= 8 && !BlockType.list[meta%8].isMineable();
 	}

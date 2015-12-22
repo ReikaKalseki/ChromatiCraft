@@ -254,6 +254,11 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				}
+				case ENCHANTERRESET: {
+					TileEntityAutoEnchanter ench = (TileEntityAutoEnchanter)tile;
+					ench.clearEnchantments();
+					break;
+				}
 				case SPAWNERPROGRAM:
 					TileEntitySpawnerReprogrammer prog = (TileEntitySpawnerReprogrammer)tile;
 					prog.setMobType(stringdata);
@@ -322,9 +327,9 @@ public class ChromatiPackets implements PacketHandler {
 				case TICKER:
 					((TileEntityInventoryTicker)tile).ticks = data[0];
 					break;
-				case PYLONCLEAR:
-					PylonGenerator.instance.clearDimension(data[0]);
-					break;
+					//case PYLONCLEAR:
+					//	PylonGenerator.instance.clearDimension(data[0]);
+					//	break;
 				case SHARDBOOST: {
 					Entity e = world.getEntityByID(data[0]);
 					if (e instanceof EntityItem) {
@@ -409,6 +414,10 @@ public class ChromatiPackets implements PacketHandler {
 					PylonGenerator.instance.cachePylonLocation(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);
 					break;
 				}
+				case PYLONCACHECLEAR: {
+					PylonGenerator.instance.clearDimension(data[0]);
+					break;
+				}
 				case TRANSITIONWAND: {
 					((ItemTransitionWand)ep.getCurrentEquippedItem().getItem()).setMode(ep.getCurrentEquippedItem(), TransitionMode.list[data[0]]);
 					break;
@@ -437,10 +446,11 @@ public class ChromatiPackets implements PacketHandler {
 				case WANDCHARGE:
 					CrystalWand.updateWandClient(ep, data);
 					break;
-				case BULKITEM:
+				case BULKITEM: {
 					ItemStack is = new ItemStack(Item.getItemById(data[0]), 1, data[1]);
 					ItemBulkMover.setStoredItem(ep.getCurrentEquippedItem(), is);
 					break;
+				}
 				case BULKNUMBER:
 					ItemBulkMover.setNumberToCarry(ep.getCurrentEquippedItem(), data[0]);
 					break;
@@ -566,6 +576,18 @@ public class ChromatiPackets implements PacketHandler {
 				case CHARGERTOGGLE:
 					((TileEntityCrystalCharger)tile).toggle(CrystalElement.elements[data[0]]);
 					break;
+				case BOOKNOTE: {
+					ItemChromaBook.addNoteText(ep.getCurrentEquippedItem(), stringdata);
+					break;
+				}
+				case BOOKNOTESRESET: {
+					ItemChromaBook.clearNoteTexts(ep.getCurrentEquippedItem());
+					break;
+				}
+				case REPEATERSURGE: {
+					TileEntityCrystalRepeater.overloadClient(world, x, y, z, CrystalElement.elements[data[0]]);
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

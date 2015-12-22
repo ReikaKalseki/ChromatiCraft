@@ -117,6 +117,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	@Override
 	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
+		/*
 		int has = inv[0] != null ? inv[0].stackSize : 0;
 		int sum = item != null ? has+item.stackSize : has;
 		boolean all = this.recentClicked() && ReikaItemHelper.matchStacks(item, inv[0]) && item != null && sum <= item.getMaxStackSize();
@@ -127,7 +128,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			ChromaSounds.ERROR.playSoundAtBlock(this);
 			return item;
 		}
-		 */
+		 *//*
 		ItemStack put = item != null ? (all ? ReikaItemHelper.getSizedItemStack(item, sum) : ReikaItemHelper.getSizedItemStack(item, 1)) : null;
 		inv[0] = put;
 		this.updateItem();
@@ -137,6 +138,32 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			else
 				item.stackSize--;
 		}
+		  */
+
+		if (inv[0] == null) {
+			inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
+			item.stackSize--;
+		}
+		else {
+			if (ReikaItemHelper.matchStacks(inv[0], item)) {
+				int add = Math.min(item.stackSize, inv[0].getMaxStackSize()-inv[0].stackSize);
+				inv[0].stackSize += add;
+				item.stackSize -= add;
+			}
+			else if (item == null) {
+				this.dropSlot();
+				inv[0] = null;
+			}
+			else {
+				this.dropSlot();
+				inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
+				item.stackSize--;
+			}
+		}
+
+		if (item != null && item.stackSize <= 0)
+			item = null;
+
 		clickTick = 10;
 		ChromaSounds.ITEMSTAND.playSoundAtBlock(this);
 		return item;

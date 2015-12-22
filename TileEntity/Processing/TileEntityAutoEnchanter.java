@@ -154,6 +154,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		this.setEnchantment(e, newlevel);
 	}
 
+	public void clearEnchantments() {
+		selected.clear();
+	}
+
 	public int getEnchantment(Enchantment e) {
 		return selected.containsKey(e) ? selected.get(e) : 0;
 	}

@@ -48,7 +48,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 	private RegionMap<ChromaResearch> locations = new RegionMap();
 
 	public GuiFragmentRecovery(EntityPlayer ep) {
-		super(ep, 256, 220);
+		super(ChromaGuis.REFRAGMENT, ep, 256, 220);
 
 		Collection<ChromaResearch> c = ChromaResearchManager.instance.getFragments(ep);
 		for (ChromaResearch r : c) {
@@ -72,7 +72,7 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 
-		buttonList.add(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this));
+		this.addAuxButton(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this), "Return");
 	}
 
 	@Override
