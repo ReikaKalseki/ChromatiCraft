@@ -61,6 +61,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -523,7 +524,29 @@ public enum ChromaResearch implements ProgressElement {
 			}
 			return;
 		}
+		float zp = ri.zLevel;
+		if (this.isUnloadable()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glColor4f(1, 1, 1, 0.75F);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.NOENTER.getIcon(), 16, 16);
+			GL11.glPopAttrib();
+			ri.zLevel = 0;
+		}
 		ReikaGuiAPI.instance.drawItemStack(ri, this.getTabIcon(), x, y);
+		ri.zLevel = zp;
+	}
+
+	public boolean isUnloadable() {
+		if (!ChromatiCraft.instance.isDimensionLoadable()) {
+			if (this == DIMENSION || this == DIMENSION2 || this == PORTAL || this == PORTALSTRUCT) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public String getData() {

@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.DragonOptions;
+import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController.Donator;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler;
@@ -321,6 +322,11 @@ public class ChromaClient extends ChromaCommon {
 			else
 				ChromatiCraft.logger.logError("Donator "+s.displayName+" UUID could not be found! Cannot give special render!");
 		}
+	}
+
+	@Override
+	public void logPopupWarning(String msg) {
+		PopupWriter.instance.addMessage(msg);
 	}
 
 }

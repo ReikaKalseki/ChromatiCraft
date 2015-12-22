@@ -215,7 +215,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
 
-	public static final ChromaConfig config = new ChromaConfig(instance, ChromaOptions.optionList, ExtraChromaIDs.idList, 0);
+	public static final ChromaConfig config = new ChromaConfig(instance, ChromaOptions.optionList, ExtraChromaIDs.idList);
 
 	public static ModLogger logger;
 
@@ -224,6 +224,12 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
+
+	private boolean dimensionLoadable = true;
+
+	public boolean isDimensionLoadable() {
+		return dimensionLoadable;
+	}
 
 	public final boolean isLocked() {
 		return isLocked;
@@ -258,9 +264,18 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ReikaJVMParser.getJavaVersion(0) >= 8) {
 			String arg = "-XX:+UseG1GC";
 			if (!ReikaJVMParser.isArgumentPresent(arg)) {
-				String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes.";
-				msg += "\nNote that you may have to remove other GC arguments, such as '-XX:+UseConcMarkSweepGC', which is commonly auto-specified by launchers.";
-				throw new InstallationException(this, msg);
+				if (ChromaOptions.FORCEG1GC.getState()) {
+					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes.";
+					msg += "\nNote that you may have to remove other GC arguments, such as '-XX:+UseConcMarkSweepGC', which is commonly auto-specified by launchers.";
+					throw new InstallationException(this, msg);
+				}
+				else {
+					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes when using some ChromatiCraft content.";
+					msg += " Your pack developer has chosen to disable forcing the argument, but some content will be inaccessible to prevent crashes.";
+					ChromatiCraft.logger.logError(msg);
+					proxy.logPopupWarning(msg);
+					dimensionLoadable = false;
+				}
 			}
 		}
 

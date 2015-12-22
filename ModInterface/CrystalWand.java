@@ -34,6 +34,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -45,6 +46,12 @@ public class CrystalWand extends WandRod {
 
 	public CrystalWand() {
 		super("CRYSTALWAND", 6000, ChromaStacks.crystalWand, 18, null, null);
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			this.registerTexture();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void registerTexture() {
 		this.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/crystalwand.png"));
 	}
 

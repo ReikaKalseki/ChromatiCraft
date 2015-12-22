@@ -26,6 +26,7 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TieredOreCap extends WandCap {
 
@@ -34,8 +35,14 @@ public class TieredOreCap extends WandCap {
 	public static void registerAll() {
 		for (TieredOres t : items.keySet()) {
 			WandCap cap = new TieredOreCap(t);
-			cap.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
+			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				registerTexture(t, cap);
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void registerTexture(TieredOres t, WandCap cap) {
+		cap.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
 	}
 
 	private TieredOreCap(TieredOres t) {

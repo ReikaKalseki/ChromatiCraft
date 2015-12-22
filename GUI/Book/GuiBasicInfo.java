@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.RuneShapeRenderer;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -159,7 +160,21 @@ public class GuiBasicInfo extends GuiBookSection {
 		int c = 0xffffff;
 		int px = posX+descX;
 		if (subpage == 0 || page.sameTextAllSubpages()) {
-			fontRendererObj.drawSplitString(String.format("%s", page.getData()), px, posY+descY, 242, c);
+			String s = String.format("%s", page.getData());
+			boolean flag = page.isUnloadable();
+			if (flag) {
+				int c1 = 0x6c6c6c; //7a7a7a avg
+				int c2 = 0x828282;
+				float mix = (float)(0.5+0.5*Math.sin(this.getGuiTick()/16D));
+				fontRendererObj.drawSplitString(s, px, posY+descY, 242, ReikaColorAPI.mixColors(c1, c2, mix));
+				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(s, px, posY+descY, 242, ReikaColorAPI.mixColors(c1, c2, 1-mix));
+				String err = "Something is wrong with the fabric of the world; this entry seems to be illegible, and whatever it pertains to is likely unavailable.";
+				err += "\n\nPerhaps someone else might have influenced this, and perhaps they could be of assistance to you.";
+				fontRendererObj.drawSplitString(err, px, posY+descY, 242, 0xffffff);
+			}
+			else {
+				fontRendererObj.drawSplitString(s, px, posY+descY, 242, c);
+			}
 		}
 		if (this.isElementPage()) {
 			this.renderElementPage(CrystalElement.elements[subpage-1], posX, posY, px, c);

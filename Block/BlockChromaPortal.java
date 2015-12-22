@@ -118,6 +118,10 @@ public class BlockChromaPortal extends Block {
 		ChromaSounds.POWERDOWN.playSound(e);
 	}
 
+	public static boolean isPortalFunctional() {
+		return ChunkProviderChroma.areStructuresReady() && ChromatiCraft.instance.isDimensionLoadable();
+	}
+
 	public static class TileEntityCrystalPortal extends TileEntity {
 
 		private boolean complete;
@@ -173,7 +177,7 @@ public class BlockChromaPortal extends Block {
 		}
 
 		public boolean canPlayerUse(EntityPlayer ep) {
-			return ChunkProviderChroma.areStructuresReady() && charge >= MINCHARGE && ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.DIMENSION);
+			return isPortalFunctional() && charge >= MINCHARGE && ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.DIMENSION);
 		}
 
 		public int getTicks() {

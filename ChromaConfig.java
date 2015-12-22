@@ -27,8 +27,8 @@ public class ChromaConfig extends ControlledConfig {
 	private static final int vanillaTreeCount = ReikaTreeHelper.treeList.length;
 	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
 
-	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id, int cfg) {
-		super(mod, option, id, cfg);
+	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id) {
+		super(mod, option, id);
 
 		for (int i = 0; i < vanillaTreeCount; i++) {
 			String name = ReikaTreeHelper.treeList[i].getName();

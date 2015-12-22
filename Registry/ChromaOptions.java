@@ -61,7 +61,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	RIFTLOAD("World Rifts Chunkload", false),
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
 	NETHERPENDANT("Advanced Pendants Apply Nether Effects", true),
-	MUSICVOL("Dimension Music Volume", 1F);
+	MUSICVOL("Dimension Music Volume", 1F),
+	FORCEG1GC("Forge G1GC To Prevent Crashes - Disabling this disables some content", true);
 
 	private String label;
 	private boolean defaultState;
