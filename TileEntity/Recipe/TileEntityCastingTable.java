@@ -140,10 +140,6 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
-		energy.clear();
-		energy.addValueToColor(CrystalElement.BLUE, 250);
-		energy.addValueToColor(CrystalElement.RED, 2000);
-
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
