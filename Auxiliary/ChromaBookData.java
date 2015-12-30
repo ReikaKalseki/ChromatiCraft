@@ -54,7 +54,9 @@ public class ChromaBookData {
 	}
 
 	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
-		gui.drawItemStack(ri, fr, c.getOutput(), posX+7, posY+5);
+		ItemStack isout = c.getOutput();
+		isout.stackTagCompound = c.getOutputTag(isout.stackTagCompound);
+		gui.drawItemStack(ri, fr, isout, posX+7, posY+5);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 0 || subpage == 2) {
 			ItemStack[] arr = c.getArrayForDisplay();

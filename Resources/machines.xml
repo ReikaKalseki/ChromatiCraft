@@ -383,14 +383,14 @@
 			Requires the tower structure around it to focus its energy and function correctly
 		</note>
 	</cloaking>
-	<name>
+	<lighter>
 		<desc>
-
+			Caves are an extremely unpleasant place to be - how many times have you found a large vein of ore, only to be shot into lava, fall down a gravel pit, or be dive-bombed by a creeper? - largely due to their cavernous gloom. Sure, you can cover the entire interior of the cave system with torches, but that quickly gets ridiculous, and after that incident with a gas pocket near the coal vein you wish for an alternative. Knowing that %s energy is that of light, you are sure you can use that to your advantage and make cave-mining actually enjoyable again.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</lighter>
 	<name>
 		<desc>
 

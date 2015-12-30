@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.IScribeTools;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.nodes.INode;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -174,7 +175,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 					cp.enhance();
 			}
 			else {
-				cp.setColor(CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+				ChromaAux.changePylonColor(cp, CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
 			}
 			return true;
 		}

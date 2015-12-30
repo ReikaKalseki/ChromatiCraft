@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
@@ -53,6 +55,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		if (!world.isRemote) {
 			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
 			b.call = this;
+			b.silkTouch = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch, itemstack) > 0;
 			b.drops = !ep.capabilities.isCreativeMode;
 			breakers.put(b.hashCode(), ep);
 		}

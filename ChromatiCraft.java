@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressionStageCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
@@ -73,7 +74,6 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
-import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -132,7 +132,6 @@ import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
-import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
@@ -261,6 +260,13 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.startTiming(LoadPhase.PRELOAD);
 		this.verifyInstallation();
 
+		config.loadSubfolderedConfigFile(evt);
+		config.initProps(evt);
+
+		logger = new ModLogger(instance, false);
+		if (DragonOptions.FILELOG.getState())
+			logger.setOutput("**_Loading_Log.log");
+
 		if (ReikaJVMParser.getJavaVersion(0) >= 8) {
 			String arg = "-XX:+UseG1GC";
 			if (!ReikaJVMParser.isArgumentPresent(arg)) {
@@ -278,13 +284,6 @@ public class ChromatiCraft extends DragonAPIMod {
 				}
 			}
 		}
-
-		config.loadSubfolderedConfigFile(evt);
-		config.initProps(evt);
-
-		logger = new ModLogger(instance, false);
-		if (DragonOptions.FILELOG.getState())
-			logger.setOutput("**_Loading_Log.log");
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MusicLoader.instance.registerAssets();
@@ -404,7 +403,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(TieredWorldGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 
-		ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
+		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
 		ChromaChests.addToChests();
 
@@ -549,6 +548,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (MTInteractionManager.isMTLoaded()) {
 			MTInteractionManager.instance.blacklistRecipeRemovalFor(ChromaTiles.TABLE.getCraftedProduct());
+
+			MTInteractionManager.instance.blacklistOreDictTagsFor(ChromaItems.SHARD.getItemInstance());
+			MTInteractionManager.instance.blacklistOreDictTagsFor(ChromaItems.TIERED.getItemInstance());
+			MTInteractionManager.instance.blacklistOreDictTagsFor(ChromaBlocks.CRYSTAL.getBlockInstance());
 		}
 
 		SensitiveFluidRegistry.instance.registerFluid("chroma");
@@ -569,6 +572,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private void addEntities() {
 		ReikaRegistryHelper.registerModEntities(instance, ChromaEntities.entityList);
+		//ReikaEntityHelper.removeEntityFromRegistry(EntityEnderCrystal.class);
+		//EntityList.addMapping(EntityChromaEnderCrystal.class, "EnderCrystal", 200);
 	}
 
 	private void addDyeCompat() {
@@ -814,6 +819,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new StructureGenCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
+		evt.registerServerCommand(new ReshufflePylonCommand());
 	}
 
 	@EventHandler

@@ -94,6 +94,7 @@ public enum ChromaResearch implements ProgressElement {
 	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.ENDGAME,		ProgressStage.CTM),
 	SELFCHARGE("Energy Internalization",ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
 	MYSTPAGE("World Authoring",			new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
+	ENCHANTING("Crystal Enchanting",	new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING),
@@ -143,6 +144,7 @@ public enum ChromaResearch implements ProgressElement {
 	TURRET(			ChromaTiles.TURRET,			ResearchLevel.BASICCRAFT,		ProgressStage.KILLMOB),
 	BROADCAST(		ChromaTiles.BROADCAST,		ResearchLevel.NETWORKING),
 	CLOAKING(		ChromaTiles.CLOAKING,		ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
+	CAVELIGHTER(	ChromaTiles.LIGHTER,		ResearchLevel.RUNECRAFT,		ProgressStage.BEDROCK),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

@@ -27,11 +27,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -117,33 +120,33 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 			AxisAlignedBB box = this.getAABB(r);
 			List<Entity> li = world.getEntitiesWithinAABB(Entity.class, box);
 			switch(color) {
-			case LIME:
-				double vmax = 1;
-				for (Entity e : li) {
-					if (Math.abs(e.motionX) < vmax)
-						e.motionX += this.getFacing().offsetX*0.0625;
-					if (Math.abs(e.motionY) < vmax)
-						e.motionY += this.getFacing().offsetY*0.0625;
-					if (Math.abs(e.motionZ) < vmax)
-						e.motionZ += this.getFacing().offsetZ*0.0625;
-				}
-				break;
-			case RED:
-				for (Entity e : li) {
-					if (e instanceof EntityLivingBase)
-						((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.resistance.id, 100, 1));
-				}
-				break;
-			case BLACK:
-				for (Entity e : li) {
-					if (e instanceof EntityPlayer) {
-						EntityPlayer ep = (EntityPlayer)e;
-
+				case LIME:
+					double vmax = 1;
+					for (Entity e : li) {
+						if (Math.abs(e.motionX) < vmax)
+							e.motionX += this.getFacing().offsetX*0.0625;
+						if (Math.abs(e.motionY) < vmax)
+							e.motionY += this.getFacing().offsetY*0.0625;
+						if (Math.abs(e.motionZ) < vmax)
+							e.motionZ += this.getFacing().offsetZ*0.0625;
 					}
-				}
-				break;
-			default:
-				break;
+					break;
+				case RED:
+					for (Entity e : li) {
+						if (e instanceof EntityLivingBase)
+							((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.resistance.id, 100, 1));
+					}
+					break;
+				case BLACK:
+					for (Entity e : li) {
+						if (e instanceof EntityPlayer) {
+							EntityPlayer ep = (EntityPlayer)e;
+
+						}
+					}
+					break;
+				default:
+					break;
 			}
 		}
 		if (localEffects.contains(color)) {
@@ -152,17 +155,21 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 				int dy = y+dir.offsetY*i;
 				int dz = z+dir.offsetZ*i;
 				switch(color) {
-				case BLUE: //light beam?
-					break;
-				case GREEN:
-					Block b = world.getBlock(dx, dy, dz);
-					b.updateTick(world, dx, dy, dz, rand);
-					break;
-				case ORANGE:
-					ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 400);
-					break;
-				default:
-					break;
+					case BLUE:
+						if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
+							world.setBlock(dx, dy, dz, ChromaBlocks.LIGHT.getBlockInstance(), 0, 3);
+						}
+						break;
+					case GREEN:
+						Block b = world.getBlock(dx, dy, dz);
+						b.updateTick(world, dx, dy, dz, rand);
+						BlockTickEvent.fire(world, dx, dy, dz, b, UpdateFlags.FORCED.flag);
+						break;
+					case ORANGE:
+						ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 400);
+						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -178,56 +185,56 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 		int maxz = 0;
 
 		switch (this.getFacing()) {
-		case WEST:
-			minx = xCoord-range-1;
-			maxx = xCoord;
-			miny = yCoord;
-			maxy = yCoord+1;
-			minz = zCoord;
-			maxz = zCoord+1;
-			break;
-		case EAST:
-			minx = xCoord+1;
-			maxx = xCoord+range+1;
-			miny = yCoord;
-			maxy = yCoord+1;
-			minz = zCoord;
-			maxz = zCoord+1;
-			break;
-		case SOUTH:
-			maxz = zCoord+range+1;
-			minz = zCoord+1;
-			miny = yCoord;
-			maxy = yCoord+1;
-			minx = xCoord;
-			maxx = xCoord+1;
-			break;
-		case NORTH:
-			maxz = zCoord;
-			minz = zCoord-range-1;
-			miny = yCoord;
-			maxy = yCoord+1;
-			minx = xCoord;
-			maxx = xCoord+1;
-			break;
-		case UP:
-			minz = zCoord;
-			maxz = zCoord+1;
-			miny = yCoord+1;
-			maxy = yCoord+range+1;
-			minx = xCoord;
-			maxx = xCoord+1;
-			break;
-		case DOWN:
-			minz = zCoord;
-			maxz = zCoord+1;
-			maxy = yCoord;
-			miny = yCoord-range;
-			minx = xCoord;
-			maxx = xCoord+1;
-			break;
-		case UNKNOWN:
-			break;
+			case WEST:
+				minx = xCoord-range-1;
+				maxx = xCoord;
+				miny = yCoord;
+				maxy = yCoord+1;
+				minz = zCoord;
+				maxz = zCoord+1;
+				break;
+			case EAST:
+				minx = xCoord+1;
+				maxx = xCoord+range+1;
+				miny = yCoord;
+				maxy = yCoord+1;
+				minz = zCoord;
+				maxz = zCoord+1;
+				break;
+			case SOUTH:
+				maxz = zCoord+range+1;
+				minz = zCoord+1;
+				miny = yCoord;
+				maxy = yCoord+1;
+				minx = xCoord;
+				maxx = xCoord+1;
+				break;
+			case NORTH:
+				maxz = zCoord;
+				minz = zCoord-range-1;
+				miny = yCoord;
+				maxy = yCoord+1;
+				minx = xCoord;
+				maxx = xCoord+1;
+				break;
+			case UP:
+				minz = zCoord;
+				maxz = zCoord+1;
+				miny = yCoord+1;
+				maxy = yCoord+range+1;
+				minx = xCoord;
+				maxx = xCoord+1;
+				break;
+			case DOWN:
+				minz = zCoord;
+				maxz = zCoord+1;
+				maxy = yCoord;
+				miny = yCoord-range;
+				minx = xCoord;
+				maxx = xCoord+1;
+				break;
+			case UNKNOWN:
+				break;
 		}
 		return AxisAlignedBB.getBoundingBox(minx, miny, minz, maxx, maxy, maxz).expand(0.0, 0.0, 0.0);
 	}
@@ -251,20 +258,20 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 
 	public ForgeDirection getFacing() {
 		switch(this.getBlockMetadata()) {
-		case 0:
-			return ForgeDirection.WEST;
-		case 1:
-			return ForgeDirection.EAST;
-		case 2:
-			return ForgeDirection.NORTH;
-		case 3:
-			return ForgeDirection.SOUTH;
-		case 4:
-			return ForgeDirection.UP;
-		case 5:
-			return ForgeDirection.DOWN;
-		default:
-			return ForgeDirection.UNKNOWN;
+			case 0:
+				return ForgeDirection.WEST;
+			case 1:
+				return ForgeDirection.EAST;
+			case 2:
+				return ForgeDirection.NORTH;
+			case 3:
+				return ForgeDirection.SOUTH;
+			case 4:
+				return ForgeDirection.UP;
+			case 5:
+				return ForgeDirection.DOWN;
+			default:
+				return ForgeDirection.UNKNOWN;
 		}
 	}
 

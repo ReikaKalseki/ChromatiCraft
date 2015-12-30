@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,19 +19,28 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -220,5 +230,29 @@ public class ChromaAux {
 			map.addValue(loc, t.color);
 		}
 		return map;
+	}
+
+	public static void changePylonColor(TileEntityCrystalPylon te, CrystalElement e) {
+		CrystalNetworker.instance.removeTile(te);
+		PylonGenerator.instance.removeCachedPylon(te);
+		te.setColor(e);
+		BlockArray runes = te.getRuneLocations(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+		for (int i = 0; i < runes.getSize(); i++) {
+			Coordinate c = runes.getNthBlock(i);
+			if (c.getBlock(te.worldObj) == ChromaBlocks.RUNE.getBlockInstance())
+				te.worldObj.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, te.getColor().ordinal(), 3);
+		}
+		CrystalNetworker.instance.addTile(te);
+		PylonGenerator.instance.cachePylon(te);
+	}
+
+	public static void notifyServerPlayersExcept(EntityPlayer ep, ProgressElement p) {
+		String sg = ep.getCommandSenderName()+" has learned something new: "+p.getTitle();
+		WorldServer[] ws = DimensionManager.getWorlds();
+		for (int i = 0; i < ws.length; i++) {
+			for (EntityPlayer ep2 : ((List<EntityPlayer>)ws[i].playerEntities)) {
+				ReikaChatHelper.sendChatToPlayer(ep2, sg);
+			}
+		}
 	}
 }

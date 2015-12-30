@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenMesa;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
@@ -174,7 +175,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				y -= 8;
 				Block b = world.getBlock(x, y, z);
 				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-				if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY)) {
+				if (this.isValidBiomeForDesertStruct(biome)) {
 
 					x -= 7;
 					y -= 3;
@@ -200,14 +201,18 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
+	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
+		return BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) && !(biome instanceof BiomeGenMesa);
+	}
+
 	private boolean isValidDesertLocation(World world, int x, int y, int z, FilledBlockArray struct) {
-		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMinX(), struct.getMinZ()), BiomeDictionary.Type.SANDY))
+		if (!this.isValidBiomeForDesertStruct(world.getBiomeGenForCoords(struct.getMinX(), struct.getMinZ())))
 			return false;
-		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMinZ()), BiomeDictionary.Type.SANDY))
+		if (!this.isValidBiomeForDesertStruct(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMinZ())))
 			return false;
-		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMinX(), struct.getMaxZ()), BiomeDictionary.Type.SANDY))
+		if (!this.isValidBiomeForDesertStruct(world.getBiomeGenForCoords(struct.getMinX(), struct.getMaxZ())))
 			return false;
-		if (!BiomeDictionary.isBiomeOfType(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMaxZ()), BiomeDictionary.Type.SANDY))
+		if (!this.isValidBiomeForDesertStruct(world.getBiomeGenForCoords(struct.getMaxX(), struct.getMaxZ())))
 			return false;
 		if (world.getBlock(struct.getMinX(), struct.getMinY()+3, struct.getMinZ()) == Blocks.air)
 			return false;

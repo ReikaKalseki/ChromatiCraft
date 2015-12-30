@@ -119,7 +119,7 @@ public class GuiCastingTable extends GuiChromaBase {
 			else {
 				ItemStack out = r.getOutput();
 				ItemStack ctr = tile.getStackInSlot(4);
-				if (ctr != null && ctr.stackTagCompound != null) {
+				if (ctr != null) {
 					out.stackTagCompound = r.getOutputTag(ctr.stackTagCompound);
 				}
 				api.drawItemStack(itemRender, out, 189, 12);

@@ -212,8 +212,9 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 			else {
 				if (!type.isRipe(world, c.xCoord, c.yCoord, c.zCoord)) {
 					int state = type.getGrowthState(world, c.xCoord, c.yCoord, c.zCoord);
-					for (int k = 0; k < CROP_UPDATES; k++)
-						c.getBlock(world).updateTick(world, c.xCoord, c.yCoord, c.zCoord, rand);
+					for (int k = 0; k < CROP_UPDATES; k++) {
+						c.updateTick(world, rand);
+					}
 					if (state != type.getGrowthState(world, c.xCoord, c.yCoord, c.zCoord)) {
 						ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURAGROW.ordinal(), this, 64, c.xCoord, c.yCoord, c.zCoord);
 					}

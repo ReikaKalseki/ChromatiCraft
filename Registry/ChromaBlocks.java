@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTileNonCube;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Block.BlockEnderTNT;
+import Reika.ChromatiCraft.Block.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
@@ -174,7 +175,8 @@ public enum ChromaBlocks implements BlockEnum {
 	COLORALTAR(BlockColoredAltar.class,			ItemBlockDyeTypes.class,		"chroma.coloraltar"),
 	DOOR(BlockChromaDoor.class,													"chroma.door"),
 	GLASS(BlockCrystalGlass.class,				ItemBlockDyeTypes.class,		"chroma.glass"),
-	CONSOLE(BlockCrystalConsole.class,											"chroma.console");
+	CONSOLE(BlockCrystalConsole.class,											"chroma.console"),
+	LIGHT(BlockEtherealLight.class,												"chroma.light");
 
 	private Class blockClass;
 	private String blockName;
@@ -231,6 +233,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return Material.leaves;
 			case HOVER:
 				return ChromatiCraft.airMat;
+			case LIGHT:
+				return Material.circuits;
 			default:
 				return Material.rock;
 		}
@@ -386,6 +390,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case DOOR:
 			case DIMDATA:
 			case CONSOLE:
+			case LIGHT:
 				return false;
 			default:
 				return true;

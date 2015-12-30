@@ -51,7 +51,6 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -343,7 +342,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
-	private BlockArray getRuneLocations(World world, int x, int y, int z) {
+	public BlockArray getRuneLocations(World world, int x, int y, int z) {
 		BlockArray blocks = new BlockArray();
 		blocks.addBlockCoordinate(x-3, y-4, z-1);
 		blocks.addBlockCoordinate(x-1, y-4, z-3);
@@ -555,15 +554,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	public void setColor(CrystalElement e) {
-		if (worldObj.isRemote)
-			return;
 		color = e;
-		BlockArray runes = this.getRuneLocations(worldObj, xCoord, yCoord, zCoord);
-		for (int i = 0; i < runes.getSize(); i++) {
-			Coordinate c = runes.getNthBlock(i);
-			if (c.getBlock(worldObj) == ChromaBlocks.RUNE.getBlockInstance())
-				worldObj.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, color.ordinal(), 3);
-		}
 	}
 
 	@Override

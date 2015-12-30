@@ -684,6 +684,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void cloakPlayers(MobTargetingEvent.Pre evt) {
+		if (evt.world.isRemote)
+			return;
 		if (TileEntityCloakingTower.isPlayerCloaked(evt.player)) {
 			if (evt.player.getDistanceSq(evt.x, evt.y, evt.z) >= 4) {
 				evt.setResult(Result.DENY);
@@ -1028,6 +1030,8 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority=EventPriority.LOWEST, receiveCanceled = true)
 	public void killSpawns(EntityJoinWorldEvent ev) {
 		World world = ev.world;
+		if (world.isRemote)
+			return;
 		if (ev.entity instanceof EntityLiving) {
 			int x = (int)Math.floor(ev.entity.posX);
 			int y = (int)Math.floor(ev.entity.posY);

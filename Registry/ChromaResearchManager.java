@@ -29,6 +29,7 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -349,6 +350,9 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		}
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
+			if (ChromaOptions.PROGRESSNOTIFY.getState()) {
+				ChromaAux.notifyServerPlayersExcept(ep, p);
+			}
 		}
 	}
 

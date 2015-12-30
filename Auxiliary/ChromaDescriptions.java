@@ -300,6 +300,7 @@ public final class ChromaDescriptions {
 		addData(ChromaTiles.REPEATER, TileEntityCrystalPylon.RANGE);
 		addData(ChromaTiles.LASER, TileEntityCrystalLaser.MAX_RANGE);
 		addData(ChromaTiles.BEACON, CrystalElement.RED.displayName);
+		addData(ChromaTiles.LIGHTER, CrystalElement.BLUE.displayName);
 
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());

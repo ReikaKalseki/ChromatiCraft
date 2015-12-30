@@ -17,6 +17,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -24,8 +25,10 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
+import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -77,6 +80,18 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 		guiType = t;
 
 		cacheMouse = true;
+	}
+
+	protected final ItemStack getBook() {
+		return player.getCurrentEquippedItem();
+	}
+
+	protected final boolean isFragmentPresent(ChromaResearch r) {
+		return ItemChromaBook.hasPage(this.getBook(), r);
+	}
+
+	protected final boolean shouldDisplayFragment(ChromaResearch r) {
+		return ChromaResearchManager.instance.playerHasFragment(player, r) && this.isFragmentPresent(r);
 	}
 
 	public final void playButtonSound(GuiButton b) {

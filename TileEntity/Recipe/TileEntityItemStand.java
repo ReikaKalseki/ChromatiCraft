@@ -141,6 +141,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		  */
 
 		if (inv[0] == null) {
+			if (item == null)
+				return null;
 			inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
 			item.stackSize--;
 		}

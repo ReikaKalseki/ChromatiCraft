@@ -60,6 +60,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
@@ -430,6 +431,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (broken)
 			this.breakPylon(array);
 
+		Coordinate offset = this.getTreeDodgeAttempt(array, world, x, y, z, 8, 16);
+		array.offset(offset.xCoord, offset.yCoord, offset.zCoord);
+
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
 			for (int i = 2; i < 6; i++) {
@@ -468,6 +472,53 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		world.func_147451_t(x, y+9, z);
 		this.addToCache(te, e);
 		MinecraftForge.EVENT_BUS.post(new PylonGenerationEvent(world, x, y+9, z, rand, broken, e.getAPIProxy()));
+	}
+
+	private Coordinate getTreeDodgeAttempt(FilledBlockArray array, World world, int x0, int y0, int z0, int tries, int range) {
+		if (!this.isTreePylon(array, world, x0, y0, z0))
+			return new Coordinate(0, 0, 0);
+
+		for (int i = 0; i < tries; i++) {
+			int x = ReikaRandomHelper.getRandomPlusMinus(x0, range);
+			int z = ReikaRandomHelper.getRandomPlusMinus(z0, range);
+			int y = world.getTopSolidOrLiquidBlock(x, z)-1;
+			if (!this.isTreePylon(array, world, x, y, z)) {
+				Coordinate c = new Coordinate(x-x0, y-y0, z-z0);
+				ChromatiCraft.logger.debug("Moved pylon @ "+x0+","+z0+" to avoid in-tree generation: delta="+c);
+				return c;
+			}
+			else if (ChromatiCraft.logger.shouldDebug()) {
+				Coordinate c = new Coordinate(x-x0, y-y0, z-z0);
+				ChromatiCraft.logger.debug("Pylon @ "+x0+","+z0+" tree avoidance attempt "+i+": delta "+c+" failed. Floor block = "+world.getBlock(array.getMidX(), array.getMinY(), array.getMidZ()));
+			}
+		}
+		ChromatiCraft.logger.debug("Tried moving pylon @ "+x0+","+z0+" to avoid in-tree generation, but failed to find better spawn after "+tries+" attempts.");
+		return new Coordinate(0, 0, 0);
+	}
+
+	private boolean isTreePylon(FilledBlockArray array, World world, int x, int y, int z) {
+		int midx = array.getMidX();
+		int miny = array.getMinY();
+		int midz = array.getMidZ();
+		if (ChromatiCraft.logger.shouldDebug()) {
+			ChromatiCraft.logger.debug("Testing prospective pylon location "+x+", "+y+", "+z);
+		}
+		if (ReikaBlockHelper.isWood(world, midx, miny, midz) || ReikaBlockHelper.isLeaf(world, midx, miny, midz))
+			return true;
+		if (ReikaBlockHelper.isWood(world, midx, miny-1, midz) || ReikaBlockHelper.isLeaf(world, midx, miny-1, midz))
+			return true;
+		if (ChromatiCraft.logger.shouldDebug()) {
+			ChromatiCraft.logger.debug("Pylon location passed tree test.");
+		}
+		return false;
+	}
+
+	public void removeCachedPylon(TileEntityCrystalPylon te) {
+		WorldLocation loc = new WorldLocation(te);
+		Collection<WorldLocation> c = colorCache.get(te.getColor());
+		if (c != null) {
+			c.remove(loc);
+		}
 	}
 
 	public void cachePylon(TileEntityCrystalPylon te) {

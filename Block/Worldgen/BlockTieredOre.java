@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -195,7 +196,13 @@ public class BlockTieredOre extends BlockChromaTiered {
 	@Override
 	public Collection<ItemStack> getNoHarvestResources(World world, int x, int y, int z, int fortune, EntityPlayer player) {
 		ArrayList li = new ArrayList();
-		li.addAll(this.getDisguise(world.getBlockMetadata(x, y, z)).getDrops(world, x, y, z, 0, fortune));
+		Block b = this.getDisguise(world.getBlockMetadata(x, y, z));
+		Collection<ItemStack> drops = b.getDrops(world, x, y, z, 0, fortune);
+		if (EnchantmentHelper.getSilkTouchModifier(player)) {
+			drops.clear();
+			drops.add(new ItemStack(b));
+		}
+		li.addAll(drops);
 		return li;
 	}
 

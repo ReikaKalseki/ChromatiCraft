@@ -384,6 +384,21 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
+	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range) {
+		Collection<TileEntityCrystalPylon> li = new ArrayList();
+		for (CrystalElement e : pylons.keySet()) {
+			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
+			if (c != null) {
+				for (WorldLocation loc : c.keySet()) {
+					if (loc.dimensionID == world.provider.dimensionId && loc.getDistanceTo(x, y, z) <= range) {
+						li.add(c.get(loc));
+					}
+				}
+			}
+		}
+		return li;
+	}
+
 	public void removeTile(CrystalNetworkTile te) {
 		tiles.remove(PylonFinder.getLocation(te));
 

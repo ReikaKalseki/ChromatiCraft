@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -67,6 +68,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Upgrade
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
@@ -75,6 +77,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Automat
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CaveLighterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaCollectorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CloakTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CompoundRepeaterRecipe;
@@ -508,6 +511,13 @@ public class RecipesCastingTable {
 		this.addRecipe(new LumenBroadcastRecipe(ChromaTiles.BROADCAST.getCraftedProduct(), ChromaStacks.crystalStar, repeater));
 
 		this.addRecipe(new CloakTowerRecipe(ChromaTiles.CLOAKING.getCraftedProduct(), ChromaStacks.crystalFocus));
+
+		is = ChromaTiles.LIGHTER.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sas", "ala", "sbs", 's', ChromaStacks.blueShard, 'b', ChromaStacks.chromaDust, 'a', ChromaStacks.auraDust, 'l', ChromaBlocks.LAMPBLOCK.getStackOfMetadata(CrystalElement.WHITE.ordinal()));
+		this.addRecipe(new CaveLighterRecipe(is, sr));
+
+		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ChromaStacks.auraDust, ChromaStacks.chargedPurpleShard, ChromaStacks.chromaDust, Enchantment.silkTouch, 1));
+		this.addRecipe(new EnchantmentRecipe(ChromaResearch.EXCAVATOR, ChromaItems.EXCAVATOR.getStackOf(), ReikaItemHelper.lapisDye.copy(), ChromaStacks.chargedPurpleShard, ChromaStacks.focusDust, Enchantment.fortune, 3));
 	}
 
 	public void addPostLoadRecipes() {
@@ -571,8 +581,10 @@ public class RecipesCastingTable {
 			ArrayList<CastingRecipe> ir = recipes.get(type);
 			if (ir != null) {
 				for (CastingRecipe r : ir) {
-					if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
-						li.add(r);
+					if (!(r instanceof EnchantmentRecipe)) {
+						if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
+							li.add(r);
+					}
 				}
 			}
 		}
@@ -587,6 +599,20 @@ public class RecipesCastingTable {
 				for (CastingRecipe r : ir) {
 					if (r.usesItem(ingredient))
 						li.add(r);
+				}
+			}
+		}
+		return li;
+	}
+
+	public Collection<EnchantmentRecipe> getAllEnchantingRecipes() {
+		ArrayList<EnchantmentRecipe> li = new ArrayList();
+		for (RecipeType type : recipes.keySet()) {
+			ArrayList<CastingRecipe> ir = recipes.get(type);
+			if (ir != null) {
+				for (CastingRecipe r : ir) {
+					if (r instanceof EnchantmentRecipe)
+						li.add((EnchantmentRecipe)r);
 				}
 			}
 		}

@@ -188,7 +188,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 							int dx = x+readX;
 							int dy = readY;
 							int dz = z+readZ;
-							ReikaWorldHelper.forceGenAndPopulate(world, dx, dy, dz, meta);
+							ReikaWorldHelper.forceGenAndPopulate(world, dx, dz);
 							Block id = this.parseBlock(world.getBlock(dx, dy, dz));
 							int meta2 = world.getBlockMetadata(dx, dy, dz);
 							//ReikaJavaLibrary.pConsole(readX+":"+dx+", "+dy+", "+readZ+":"+dz+" > "+ores.getSize(), Side.SERVER);

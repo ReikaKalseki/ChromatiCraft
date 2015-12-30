@@ -23,6 +23,7 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.RuneShapeRenderer;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -55,11 +57,19 @@ public class GuiBasicInfo extends GuiBookSection {
 	private RuneViewer view;
 	private int modifier;
 
+	private ArrayList<EnchantmentRecipe> enchants = new ArrayList();
+
 	public GuiBasicInfo(EntityPlayer ep, ChromaResearch r) {
 		super(ChromaGuis.INFO, ep, r, 256, 220, false);
 
 		if (r == ChromaResearch.USINGRUNES) {
 			view = this.getAllUsedRunes();
+		}
+		else if (r == ChromaResearch.ENCHANTING) {
+			for (EnchantmentRecipe e : RecipesCastingTable.instance.getAllEnchantingRecipes()) {
+				if (this.shouldDisplayFragment(e.parent))
+					enchants.add(e);
+			}
 		}
 	}
 
@@ -69,7 +79,7 @@ public class GuiBasicInfo extends GuiBookSection {
 		for (CastingRecipe cr : li) {
 			if (cr instanceof TempleCastingRecipe) {
 				ChromaResearch r = cr.getFragment();
-				if (r == null || ChromaResearchManager.instance.playerHasFragment(player, r)) {
+				if (r == null || this.shouldDisplayFragment(r)) {
 					TempleCastingRecipe t = (TempleCastingRecipe)cr;
 					if (ChromaResearchManager.instance.playerHasUsedRecipe(player, cr)) {
 						Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
@@ -88,7 +98,7 @@ public class GuiBasicInfo extends GuiBookSection {
 		for (CastingRecipe cr : li) {
 			if (cr instanceof TempleCastingRecipe) {
 				ChromaResearch r = cr.getFragment();
-				if (r == null || ChromaResearchManager.instance.playerHasFragment(player, r)) {
+				if (r == null || this.shouldDisplayFragment(r)) {
 					TempleCastingRecipe t = (TempleCastingRecipe)cr;
 					Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
 					data.putAll(map);
@@ -139,6 +149,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return CrystalElement.elements.length;
 		else if (page == ChromaResearch.USINGRUNES)
 			return 1;
+		else if (page == ChromaResearch.ENCHANTING)
+			return enchants.size()+1;
 		return 0;
 	}
 
@@ -147,6 +159,10 @@ public class GuiBasicInfo extends GuiBookSection {
 		if (this.isElementPage())
 			return PageType.ELEMENT;
 		else if (page == ChromaResearch.USINGRUNES && subpage == 1)
+			return PageType.RUNES;
+		else if (page == ChromaResearch.ENCHANTING && subpage > 1)
+			return PageType.MULTICAST;
+		else if (page == ChromaResearch.ENCHANTING && subpage == 1)
 			return PageType.RUNES;
 		return PageType.PLAIN;
 	}
@@ -188,6 +204,23 @@ public class GuiBasicInfo extends GuiBookSection {
 		else if (page == ChromaResearch.USINGRUNES && subpage == 1) {
 			this.renderRunes(posX, posY);
 		}
+		else if (page == ChromaResearch.ENCHANTING && subpage > 0) {
+			if (subpage == 1)
+				this.renderEnchantmentRunes(posX, posY);
+			else
+				this.renderEnchantment(posX, posY, enchants.get(subpage-2));
+		}
+	}
+
+	private void renderEnchantmentRunes(int posX, int posY) {
+		Map<Coordinate, CrystalElement> map = EnchantmentRecipe.getEnchantingRunes();
+		RuneShape rs = new RuneShape(map);
+		RuneViewer rv = rs.getView();
+		RuneShapeRenderer.instance.render(rv, posX+xSize/2, posY+ySize/2+8, rv.getMinY());
+	}
+
+	private void renderEnchantment(int posX, int posY, EnchantmentRecipe r) {
+		ChromaBookData.drawCastingRecipe(fontRendererObj, itemRender, r, 2, posX, posY+8);
 	}
 
 	private void renderRunes(int posX, int posY) {

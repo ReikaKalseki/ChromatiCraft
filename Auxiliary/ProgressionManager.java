@@ -474,7 +474,6 @@ public class ProgressionManager implements ProgressRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (set) {
 				playerMap.addValue(ep.getCommandSenderName(), s);
-
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 				this.giveAuxiliaryResearch(ep, s);
 			}
