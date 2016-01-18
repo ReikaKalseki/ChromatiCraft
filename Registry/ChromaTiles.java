@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.TileEntityMultiStorage;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
@@ -89,12 +90,13 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
+import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public enum ChromaTiles {
+public enum ChromaTiles implements TileEnum {
 
 	CHROMAFLOWER("chroma.flower", 		ChromaBlocks.TILEPLANT, 	TileEntityChromaFlower.class, 		0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", 		ChromaBlocks.TILEENTITY, 	TileEntityAutoEnchanter.class, 		0),
@@ -155,7 +157,8 @@ public enum ChromaTiles {
 	CLOAKING("chroma.tower",			ChromaBlocks.TILEMODELLED2, TileEntityCloakingTower.class,		10, "RenderCloakingTower"),
 	//POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10),
 	HOLOGRAM("chroma.hologram",			ChromaBlocks.TILEMODELLED2, TileEntityAreaHologram.class,		11, "RenderAreaHologram"),
-	LIGHTER("chroma.lighter",			ChromaBlocks.TILEMODELLED2,	TileEntityCaveLighter.class,		12, "RenderCaveLighter");
+	LIGHTER("chroma.lighter",			ChromaBlocks.TILEMODELLED2,	TileEntityCaveLighter.class,		12, "RenderCaveLighter"),
+	STORAGE("chroma.itemstorage",		ChromaBlocks.TILEENTITY,	TileEntityMultiStorage.class,		14);
 
 	private final Class tile;
 	private final String name;
@@ -562,7 +565,7 @@ public enum ChromaTiles {
 	}
 
 	public boolean isTextureFace() {
-		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING;
+		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER;
 	}
 
 	public boolean needsSilkTouch() {

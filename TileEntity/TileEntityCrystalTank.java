@@ -9,11 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -34,9 +33,11 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -107,7 +108,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	private void initCoords(World world, int x, int y, int z) {
 		if (blocks.isEmpty()) {
 			BlockArray toadd = new BlockArray();
-			List<Block> li = Arrays.asList(ChromaBlocks.TANK.getBlockInstance(), ChromaTiles.TANK.getBlock());
+			Set<BlockKey> li = ReikaJavaLibrary.getSet(new BlockKey(ChromaBlocks.TANK.getBlockInstance()));
 			toadd.recursiveAddMultipleWithBounds(world, x, y, z, li, x-32, y-32, z-32, x+32, y+32, z+32);
 
 			for (int i = 0; i < toadd.getSize(); i++) {

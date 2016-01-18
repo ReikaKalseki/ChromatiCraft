@@ -22,6 +22,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -184,6 +186,10 @@ public class ChromaAspectManager {
 			ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 			ItemStack bshard = ChromaItems.SHARD.getStackOfMetadata(i+16);
 			ItemStack rune = new ItemStack(ChromaBlocks.RUNE.getBlockInstance(), 1, i);
+			ItemStack leaf = new ItemStack(ChromaBlocks.DECAY.getBlockInstance(), 1, i);
+			ItemStack leaf2 = new ItemStack(ChromaBlocks.DYELEAF.getBlockInstance(), 1, i);
+			ItemStack berry = ChromaItems.BERRY.getStackOfMetadata(i);
+			ItemStack lumenleaf = new ItemStack(ChromaBlocks.POWERTREE.getBlockInstance(), 1, i);
 			List<Aspect> li = new ArrayList();
 			li.addAll(aspectsColor.getForward(dye));
 			li.addAll(aspectsThematic.getForward(dye));
@@ -199,12 +205,26 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(potion, Aspect.MAGIC, 16);
 			ReikaThaumHelper.addAspects(potion, Aspect.AURA, 16);
 			ReikaThaumHelper.addAspects(potion, Aspect.CRYSTAL, 20);
+			ReikaThaumHelper.addAspects(leaf, Aspect.PLANT, 3);
+			ReikaThaumHelper.addAspects(leaf2, Aspect.PLANT, 3);
+			ReikaThaumHelper.addAspects(berry, Aspect.PLANT, 1);
+			ReikaThaumHelper.addAspects(berry, Aspect.HUNGER, 1);
+			ReikaThaumHelper.addAspects(berry, Aspect.ENERGY, 1);
+			ReikaThaumHelper.addAspects(lumenleaf, Aspect.ENERGY, 4);
+			ReikaThaumHelper.addAspects(lumenleaf, Aspect.CRYSTAL, 4);
+			ReikaThaumHelper.addAspects(lumenleaf, Aspect.TREE, 4);
+			ReikaThaumHelper.addAspects(lumenleaf, Aspect.LIGHT, 4);
+			ReikaThaumHelper.addAspects(lumenleaf, Aspect.CRAFT, 4);
 			for (Aspect a : li) {
 				ReikaThaumHelper.addAspects(shard, a, 2);
 				ReikaThaumHelper.addAspects(bshard, a, 5);
 				ReikaThaumHelper.addAspects(crystal, a, 16);
 				ReikaThaumHelper.addAspects(potion, a, 16);
 				ReikaThaumHelper.addAspects(rune, a, 4);
+				ReikaThaumHelper.addAspects(leaf, a, 2);
+				ReikaThaumHelper.addAspects(leaf2, a, 2);
+				ReikaThaumHelper.addAspects(berry, a, 2);
+				ReikaThaumHelper.addAspects(lumenleaf, a, 8);
 			}
 		}
 
@@ -275,6 +295,42 @@ public class ChromaAspectManager {
 				al.merge(al2);
 			ReikaThaumHelper.addAspects(out, al);
 		}
+
+		Aspect[] tierores = {
+				Aspect.ENERGY,
+				Aspect.CRAFT,
+				Aspect.TRAP,
+				Aspect.LIGHT,
+				Aspect.TRAVEL,
+				Aspect.WATER,
+				Aspect.FIRE,
+				Aspect.ORDER,
+				Aspect.ENTROPY,
+				Aspect.AURA,
+				Aspect.ELDRITCH,
+				Aspect.GREED,
+				Aspect.WEAPON,
+		};
+
+		Aspect[] tierplants = {
+				Aspect.AURA,
+				Aspect.ORDER,
+				Aspect.ENERGY,
+				Aspect.PLANT,
+				Aspect.EXCHANGE
+		};
+
+		for (int i = 0; i < TieredOres.list.length; i++) {
+			ReikaThaumHelper.addAspects(ChromaBlocks.TIEREDORE.getStackOfMetadata(i), tierores[i], 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.TIEREDORE.getStackOfMetadata(i), Aspect.MAGIC, 3);
+		}
+
+		for (int i = 0; i < TieredPlants.list.length; i++) {
+			ReikaThaumHelper.addAspects(ChromaBlocks.TIEREDPLANT.getStackOfMetadata(i), tierplants[i], 2);
+			ReikaThaumHelper.addAspects(ChromaBlocks.TIEREDPLANT.getStackOfMetadata(i), Aspect.MAGIC, 3);
+		}
+
+		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3, Aspect.VOID, 1);
 	}
 
 	public ElementTagCompound getElementCost(Aspect a, float depthcost) {

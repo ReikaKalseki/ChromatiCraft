@@ -269,7 +269,7 @@ public class ChromaOverlays {
 				int x = w/2;
 				int y = h/2/*-12*/; //crosshair misalign is confusing
 
-				double r = h/2*0.875;
+				double r = h/2*0.75;//0.875;
 
 				int s = 16;
 				int d = 40;
@@ -332,7 +332,7 @@ public class ChromaOverlays {
 				double ang = pingAng.get(e);
 				double dist = pingDist.get(e);
 
-				double dr = MathHelper.clamp_double(r*Math.pow(dist, 1.5)/1000000D, 5, r);
+				double dr = MathHelper.clamp_double(r*Math.pow(dist, 1.5)/1000000D, 2, r);
 
 				double ax = dr*Math.cos(Math.toRadians(ang))-s/2;
 				double ay = dr*Math.sin(Math.toRadians(ang))-s/2;

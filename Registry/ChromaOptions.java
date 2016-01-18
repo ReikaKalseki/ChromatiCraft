@@ -13,9 +13,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
 import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
 import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
+import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
 
 
-public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig {
+public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),
@@ -61,7 +62,6 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	RIFTLOAD("World Rifts Chunkload", false),
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
 	NETHERPENDANT("Advanced Pendants Apply Nether Effects", true),
-	MUSICVOL("Dimension Music Volume", 1F),
 	FORCEG1GC("Force Java 8 to use G1GC To Prevent Crashes - Disabling this disables some content", true),
 	PROGRESSNOTIFY("Notify other players of progress gains", true);
 
@@ -188,6 +188,22 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	public static int getStructureDifficulty() {
 		int base = STRUCTDIFFICULTY.getValue();
 		return Math.min(3, Math.max(1, base));
+	}
+
+	@Override
+	public boolean enforceMatch() {
+		switch(this) {
+			case FORCEG1GC:
+			case GUARDIAN:
+			case RAINBOWSPREAD:
+			case EASYFRAG:
+			case BIOMEPAINTER:
+			case ENDERTNT:
+			case HARDTHAUM:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

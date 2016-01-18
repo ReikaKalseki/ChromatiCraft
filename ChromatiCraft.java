@@ -12,6 +12,7 @@ package Reika.ChromatiCraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -22,6 +23,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.stats.Achievement;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -60,14 +62,15 @@ import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Command.ChromaResearchCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
-import Reika.ChromatiCraft.Auxiliary.Command.ProgressionStageCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.RedecorateCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
@@ -75,6 +78,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -105,6 +109,7 @@ import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
+import Reika.ChromatiCraft.World.DecoFlowerGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
@@ -118,6 +123,8 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
+import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
+import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
@@ -146,6 +153,9 @@ import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler.Potions;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
@@ -204,6 +214,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static final Material crystalMat = new CrystalMaterial();
 	public static final Material airMat = PseudoAirMaterial.instance;
+
+	private static final HashMap<String, ChromaDecorator> decorators = new HashMap();
 
 	public static PotionGrowthHormone growth;
 	public static PotionBetterSaturation betterSat;
@@ -273,6 +285,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				if (ChromaOptions.FORCEG1GC.getState()) {
 					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes.";
 					msg += "\nNote that you may have to remove other GC arguments, such as '-XX:+UseConcMarkSweepGC', which is commonly auto-specified by launchers.";
+					msg += "\nCurrent Java Args: "+ReikaJVMParser.getAllArguments();
 					throw new InstallationException(this, msg);
 				}
 				else {
@@ -361,6 +374,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		FMLInterModComms.sendMessage("zzzzzcustomconfigs", "blacklist-mod-as-output", this.getModContainer().getModId());
 
+		ConfigMatcher.instance.addConfigList(this, ChromaOptions.optionList);
+
 		this.basicSetup(evt);
 		this.finishTiming();
 	}
@@ -397,11 +412,13 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ChromaDimensionManager.initialize();
 
-		RetroGenController.instance.addHybridGenerator(CrystalGenerator.instance, 0, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(ColorTreeGenerator.instance, -10, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(TieredWorldGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
+
+		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
+		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
+		this.addRerunnableDecorator(TieredWorldGenerator.instance, Integer.MIN_VALUE);
+		this.addRerunnableDecorator(DecoFlowerGenerator.instance, Integer.MIN_VALUE);
 
 		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
@@ -417,9 +434,9 @@ public class ChromatiCraft extends DragonAPIMod {
 			ChromaRecipes.addRecipes();
 		}
 
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			ChromaDescriptions.loadData();
-		}
+		//if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+		ChromaDescriptions.loadData();
+		//}
 
 		PackModificationTracker.instance.addMod(this, config);
 
@@ -455,6 +472,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			OreDictionary.registerOre("treeSapling", sapling);
 			OreDictionary.registerOre("plant"+dye.colorNameNoSpaces, flower);
 			OreDictionary.registerOre("flower"+dye.colorNameNoSpaces, flower);
+			FurnaceFuelRegistry.instance.registerItemSimple(sapling, 0.5F);
 		}
 
 		if (ChromaOptions.doesVanillaDyeDrop()) {
@@ -570,6 +588,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.finishTiming();
 	}
 
+	private static void addRerunnableDecorator(ChromaDecorator d, int wt) {
+		RetroGenController.instance.addHybridGenerator(d, wt, ChromaOptions.RETROGEN.getState());
+		decorators.put(d.getCommandID().toLowerCase(), d);
+	}
+
 	private void addEntities() {
 		ReikaRegistryHelper.registerModEntities(instance, ChromaEntities.entityList);
 		//ReikaEntityHelper.removeEntityFromRegistry(EntityEnderCrystal.class);
@@ -626,6 +649,16 @@ public class ChromatiCraft extends DragonAPIMod {
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.RUNE.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLON.getBlockInstance());
+
+			for (int i = 0; i < ThaumIDHandler.Potions.list.length; i++) {
+				Potions p = ThaumIDHandler.Potions.list[i];
+				if (p.isWarpRelated() && p.getID() != -1)
+					CrystalPotionController.addIgnoredPotion(Potion.potionTypes[p.getID()]);
+			}
+		}
+
+		if (ModList.BLOODMAGIC.isLoaded() && BloodMagicHandler.getInstance().soulFrayID != -1) {
+			CrystalPotionController.addIgnoredPotion(Potion.potionTypes[BloodMagicHandler.getInstance().soulFrayID]);
 		}
 
 		if (ModList.MEKANISM.isLoaded()) {
@@ -810,8 +843,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	@EventHandler
 	public void registerCommands(FMLServerStartingEvent evt) {
 		evt.registerServerCommand(new GuardianCommand());
-		evt.registerServerCommand(new ProgressionStageCommand());
-		evt.registerServerCommand(new ChromaResearchCommand());
+		evt.registerServerCommand(new ProgressModifyCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
 		evt.registerServerCommand(new ChromabilityCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
@@ -820,6 +852,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
 		evt.registerServerCommand(new ReshufflePylonCommand());
+		evt.registerServerCommand(new RedecorateCommand());
 	}
 
 	@EventHandler
@@ -946,5 +979,9 @@ public class ChromatiCraft extends DragonAPIMod {
 	@Override
 	public String getUpdateCheckURL() {
 		return CommandableUpdateChecker.reikaURL;
+	}
+
+	public static ChromaDecorator getDecorator(String id) {
+		return decorators.get(id);
 	}
 }

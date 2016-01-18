@@ -24,8 +24,8 @@ public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
 
 	public final ChromaResearch parent;
 
-	private final Enchantment enchantment;
-	private final int level;
+	public final Enchantment enchantment;
+	public final int level;
 
 	public EnchantmentRecipe(ChromaResearch r, ItemStack ctr, ItemStack side, ItemStack top, ItemStack bottom, Enchantment e, int lvl) {
 		super(ctr, ctr);
@@ -57,9 +57,20 @@ public final class EnchantmentRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public NBTTagCompound getOutputTag(NBTTagCompound input) {
-		NBTTagCompound tag = new NBTTagCompound();
-		ReikaEnchantmentHelper.addEnchantment(tag, enchantment, level);
+		NBTTagCompound tag = input != null ? (NBTTagCompound)input.copy() : new NBTTagCompound();
+		//ReikaJavaLibrary.pConsole("Adding "+enchantment+" "+level+" to "+input);
+		ReikaEnchantmentHelper.addEnchantment(tag, enchantment, level, false);
 		return tag;
+	}
+
+	@Override
+	protected boolean isValidCentralNBT(ItemStack is) {
+		return super.isValidCentralNBT(is) && ReikaEnchantmentHelper.getEnchantmentLevel(enchantment, is) < level;
+	}
+
+	@Override
+	public int getDuration() {
+		return 12*super.getDuration();
 	}
 
 	public static Map<Coordinate, CrystalElement> getEnchantingRunes() {

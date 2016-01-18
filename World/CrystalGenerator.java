@@ -20,6 +20,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -30,7 +31,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 
-public class CrystalGenerator implements RetroactiveGenerator {
+public class CrystalGenerator implements RetroactiveGenerator, ChromaDecorator {
 
 	public static final CrystalGenerator instance = new CrystalGenerator();
 
@@ -151,6 +152,11 @@ public class CrystalGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Crystals";
+	}
+
+	@Override
+	public String getCommandID() {
+		return "crystal";
 	}
 
 }

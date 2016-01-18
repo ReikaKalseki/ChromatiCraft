@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -27,6 +29,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
 
@@ -146,6 +149,17 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	public final boolean isOwnedByPlayer(EntityPlayer ep) {
 		return owners.contains(ep.getUniqueID());
+	}
+
+	public final Collection<EntityPlayer> getOwners(boolean allowFake) {
+		Collection<EntityPlayer> c = new ArrayList();
+		for (UUID uid : owners) {
+			EntityPlayer ep = worldObj.func_152378_a(uid);
+			if (ep != null && (allowFake || !ReikaPlayerAPI.isFake(ep))) {
+				c.add(ep);
+			}
+		}
+		return c;
 	}
 
 	public boolean onlyAllowOwnersToUse() {

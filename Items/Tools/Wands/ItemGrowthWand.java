@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.TreeMap;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -31,6 +32,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
@@ -51,7 +53,7 @@ public class ItemGrowthWand extends ItemWandBase {
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int s, float f1, float f2, float f3) {
 		if (this.sufficientEnergy(ep)) {
 			int r = this.getRange(ep);
-			ticker.addLocation(ep, world, x, y, z, r, r/2, ep.isSneaking());
+			ticker.addLocation(ep, world, x, y, z, r, r/2, ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.power, is) > 0);
 			ChromaSounds.USE.playSoundAtBlock(world, x, y, z);
 			return true;
 		}

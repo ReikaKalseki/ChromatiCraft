@@ -226,7 +226,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 		}
 		craftingTick--;
-		if (craftingTick <= 0) {
+		if (craftingTick <= 0 && !world.isRemote) {
 			this.craft();
 			//craftingTick = activeRecipe.getDuration();
 		}
@@ -406,7 +406,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			hasStructure = hasStructure2 = hasPylonConnections = false;
 		}
 
-		if (hasStructure)
+		if (hasStructure2)
 			ProgressStage.MULTIBLOCK.stepPlayerTo(this.getPlacer());
 
 		if (activeRecipe != null && !this.getValidRecipeTypes().contains(activeRecipe.type)) {
@@ -421,11 +421,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	public boolean triggerCrafting(EntityPlayer ep) {
 		if (activeRecipe != null && craftingTick == 0) {
 			if (activeRecipe.canRunRecipe(ep) && this.isOwnedByPlayer(ep)) {
+				craftingPlayer = ep;
 				if (worldObj.isRemote)
 					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				this.setRecipeTickDuration(activeRecipe);
-				craftingPlayer = ep;
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
 					this.requestEnergyDifference(tag);

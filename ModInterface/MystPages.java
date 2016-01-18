@@ -19,6 +19,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
 
+import com.xcompwiz.mystcraft.api.hook.SymbolValuesAPI;
 import com.xcompwiz.mystcraft.api.hook.WordAPI;
 import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
 import com.xcompwiz.mystcraft.api.word.DrawableWord;
@@ -42,22 +43,35 @@ public class MystPages {
 		for (int i = 0; i < Pages.list.length; i++) {
 			Pages p = Pages.list[i];
 			ReikaMystcraftHelper.registerAgeSymbol(p);
+			ReikaMystcraftHelper.setPageRank(p, p.itemRank);
+			ReikaMystcraftHelper.setRandomAgeWeight(p, p.randomWeight);
 			ChromatiCraft.logger.log("Registering custom MystCraft page '"+p.name+"'");
+		}
+
+		SymbolValuesAPI api = ReikaMystcraftHelper.getAPI(APISegment.SYMBOLVALUES, 1);
+		if (api != null) {
+			for (int i = 0; i < Pages.list.length; i++) {
+				Pages p = Pages.list[i];
+				api.setSymbolIsPurchasable(p, p.purchasable());
+			}
 		}
 	}
 
 	public static enum Pages implements IAgeSymbol {
 
-		PYLONS("Crystal Pylons", 50, Symbols.STRUCTURE, Symbols.ENERGY),
-		STRUCTURES("Buried Structures", 200, Symbols.STRUCTURE, Symbols.CIVILIZATION),
-		PLANTS("Chroma Plants", 20, Symbols.MATERIAL, Symbols.HERBAL),
-		ORES("Chroma Ores", 10, Symbols.MATERIAL, Symbols.MINERAL),
-		CRYSTALS("Cave Crystals", 80, Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
-		TREES("Dye Trees", 5, Symbols.HERBAL, Symbols.ENERGY),
-		DENSE("Dense Generation", 400, Symbols.UPGRADE);
+		PYLONS("Crystal Pylons", 		50, 	4, 0.25F,		Symbols.STRUCTURE, Symbols.ENERGY),
+		STRUCTURES("Buried Structures", 200, 	4, 0.125F,		Symbols.STRUCTURE, Symbols.CIVILIZATION),
+		PLANTS("Chroma Plants", 		20, 	3, 0.75F,		Symbols.MATERIAL, Symbols.HERBAL),
+		ORES("Chroma Ores", 			10, 	3, 0.75F,		Symbols.MATERIAL, Symbols.MINERAL),
+		CRYSTALS("Cave Crystals", 		80, 	2, 0.5F,		Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
+		TREES("Dye Trees", 				5, 		1, 1F,			Symbols.HERBAL, Symbols.ENERGY),
+		DENSE("Dense Generation", 		400, 	6, 0.03125F,	Symbols.UPGRADE);
 
 		public final String name;
 		public final int instability;
+
+		private final int itemRank;
+		private final float randomWeight;
 
 		private final HashMap<Integer, Boolean> dimCache = new HashMap();
 
@@ -65,9 +79,12 @@ public class MystPages {
 
 		private static final Pages[] list = values();
 
-		private Pages(String s, int ins, Symbols... icons) {
+		private Pages(String s, int ins, int r, float w, Symbols... icons) {
 			name = s;
 			instability = ins;
+
+			itemRank = r;
+			randomWeight = w;
 
 			this.icons = ReikaJavaLibrary.makeListFromArray(icons);
 			this.icons.add(0, Symbols.BASE);
@@ -124,6 +141,18 @@ public class MystPages {
 				li.add(s.getID());
 			}
 			return li.toArray(new String[li.size()]);
+		}
+
+		public boolean purchasable() {
+			switch(this) {
+				case PLANTS:
+				case ORES:
+				case TREES:
+				case CRYSTALS:
+					return true;
+				default:
+					return false;
+			}
 		}
 
 	}

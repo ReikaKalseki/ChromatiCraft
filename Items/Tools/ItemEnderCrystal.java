@@ -67,6 +67,8 @@ public class ItemEnderCrystal extends ItemChromaTool {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float par8, float par9, float par10) {
+		if (world.isRemote)
+			return true;
 		if (!this.canPlaceCrystal(is))
 			return false;
 		if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava) {
@@ -82,25 +84,25 @@ public class ItemEnderCrystal extends ItemChromaTool {
 				--x;
 			if (side == 5)
 				++x;
-			if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava)
+			if (!ReikaWorldHelper.softBlocks(world, x, y, z) || ReikaWorldHelper.getMaterial(world, x, y, z) == Material.water || ReikaWorldHelper.getMaterial(world, x, y, z) == Material.lava)
 				return false;
 		}
-		if (!ep.canPlayerEdit(x, y, z, 0, is))
+		if (!ep.canPlayerEdit(x, y, z, 0, is)) {
 			return false;
-		else if (!this.checkSpace(world, x, y, z))
+		}
+		else if (!this.checkSpace(world, x, y, z)) {
 			return false;
+		}
 		else
 		{
 			if (!ep.capabilities.isCreativeMode)
 				is.setItemDamage(0);
 			//world.setBlock(x, y, z, RedstoneBlocks.WIRE.getBlock());
-			if (!world.isRemote) {
-				world.setBlock(x, y, z, Blocks.bedrock);
-				world.setBlock(x, y+1, z, Blocks.fire);
-				EntityChromaEnderCrystal cry = new EntityChromaEnderCrystal(world);
-				cry.setPosition(x+0.5, y+1, z+0.5);
-				world.spawnEntityInWorld(cry);
-			}
+			world.setBlock(x, y, z, Blocks.bedrock);
+			world.setBlock(x, y+1, z, Blocks.fire);
+			EntityChromaEnderCrystal cry = new EntityChromaEnderCrystal(world);
+			cry.setPosition(x+0.5, y+1, z+0.5);
+			world.spawnEntityInWorld(cry);
 			ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.bedrock);
 		}
 		return true;

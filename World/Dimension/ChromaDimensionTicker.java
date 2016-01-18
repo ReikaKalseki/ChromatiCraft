@@ -15,13 +15,13 @@ import java.util.EnumSet;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import paulscode.sound.StreamThread;
+import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -60,7 +60,7 @@ public class ChromaDimensionTicker implements TickHandler {
 		for (String path : li) {
 			CustomMusic mus = new CustomMusic(path);
 			music.add(mus);
-			DirectResourceManager.getInstance().registerCustomPath(mus.path, SoundCategory.MUSIC, true);
+			DirectResourceManager.getInstance().registerCustomPath(mus.path, ChromaClient.chromaCategory, true);
 		}
 	}
 

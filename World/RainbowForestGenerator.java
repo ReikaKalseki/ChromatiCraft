@@ -66,9 +66,9 @@ public class RainbowForestGenerator extends WorldGenerator {
 
 	public static ReikaDyeHelper getColor(int x, int y, int z) {
 		double[] color = new double[3];
-		int sc = 32;
-		int vsc = 64;
-		int hexcolor;
+		//int sc = 32;
+		//int vsc = 64;
+		//int hexcolor;
 		return ReikaDyeHelper.dyes[(Math.abs(x/16)+y+Math.abs(z/16))%16];
 	}
 

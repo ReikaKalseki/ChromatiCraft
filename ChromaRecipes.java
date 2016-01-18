@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -24,6 +27,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -33,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Recipe.ShapelessNBTRecipe;
+import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
@@ -43,6 +48,7 @@ import Reika.RotaryCraft.API.RecipeInterface;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
+import forestry.api.recipes.RecipeManagers;
 
 public class ChromaRecipes {
 
@@ -75,6 +81,19 @@ public class ChromaRecipes {
 				ThermalRecipeHelper.addPulverizerRecipe(shard, ChromaStacks.crystalPowder, 1000);
 			}
 		}
+
+		loadSmelting();
+	}
+
+	private static void loadSmelting() {
+		int[] metas = {1, 2, 6, 7, 8, 10, 11, 12};
+		ItemStack basic = ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0);
+		for (int i = 0; i < metas.length; i++) {
+			int meta = metas[i];
+			//int n = CrystalStoneRecipe.getRecipeForMeta(meta).getOutput().stackSize;
+			ItemStack is = ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(meta);//new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), n, meta);
+			ReikaRecipeHelper.addSmelting(is, basic, 0);
+		}
 	}
 
 	private static ItemStack getShard(CrystalElement color) {
@@ -88,10 +107,10 @@ public class ChromaRecipes {
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {
 				CrystalElement color = CrystalElement.elements[i];
+				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.CRYSTAL.getBlockInstance(), i, color.getColor());
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.LAMP.getBlockInstance(), i, color.getColor());
 				BlockColorInterface.addGPRBlockColor(ChromaBlocks.SUPER.getBlockInstance(), i, color.getColor());
-				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 12));
 				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
 				RecipeInterface.grinder.addAPIRecipe(shard, ChromaStacks.crystalPowder);
@@ -150,6 +169,20 @@ public class ChromaRecipes {
 			}
 
 			TieredOreCap.addRecipes();
+		}
+
+		if (ModList.FORESTRY.isLoaded()) {
+			for (int i = 0; i < CrystalElement.elements.length; i++) {
+				CrystalElement color = CrystalElement.elements[i];
+				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
+				ItemStack in = ItemColoredModInteract.ColoredModItems.COMB.getItem(color);
+				if (ModList.ROTARYCRAFT.isLoaded()) {
+					RecipeInterface.centrifuge.addAPIRecipe(in, null, 0, shard, 0.5F);
+				}
+				Map<ItemStack, Float> map = new HashMap();
+				map.put(shard, 0.005F);
+				RecipeManagers.centrifugeManager.addRecipe(20, in, map);
+			}
 		}
 	}
 

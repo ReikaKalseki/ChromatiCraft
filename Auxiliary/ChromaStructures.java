@@ -1982,6 +1982,16 @@ public class ChromaStructures {
 		array.setBlock(x+6, y+6, z, Blocks.lapis_block);
 		array.setBlock(x-6, y+6, z, Blocks.lapis_block);
 
+		array.addBlock(x+1, y, z, b, 0);
+		array.addBlock(x-1, y, z, b, 0);
+		array.addBlock(x, y, z+1, b, 0);
+		array.addBlock(x, y, z-1, b, 0);
+
+		array.addBlock(x+1, y, z, ChromaBlocks.RUNE.getBlockInstance());
+		array.addBlock(x-1, y, z, ChromaBlocks.RUNE.getBlockInstance());
+		array.addBlock(x, y, z+1, ChromaBlocks.RUNE.getBlockInstance());
+		array.addBlock(x, y, z-1, ChromaBlocks.RUNE.getBlockInstance());
+
 		return array;
 	}
 

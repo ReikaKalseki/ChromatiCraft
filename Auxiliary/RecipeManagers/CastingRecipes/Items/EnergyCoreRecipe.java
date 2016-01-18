@@ -10,34 +10,13 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
-public class EnergyCoreRecipe extends MultiBlockCastingRecipe implements ShardGroupingRecipe {
+public class EnergyCoreRecipe extends LowCoreRecipe {
 
-	public EnergyCoreRecipe(ItemStack out, ItemStack main) {
-		super(out, main);
-
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), -2, -2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), -4, -4);
-
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 2, -2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 4, -4);
-
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), -2, 2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), -4, 4);
-
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 2, 2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 4, 4);
-
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 2, 0);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), -2, 0);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, 2);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, -2);
-
-		this.addRune(CrystalElement.YELLOW, -3, 0, -2);
-		this.addRune(CrystalElement.YELLOW, 3, 0, 2);
+	public EnergyCoreRecipe(ItemStack out) {
+		super(out, CrystalElement.YELLOW, CrystalElement.WHITE, new Coordinate(-3, 0, -2), new Coordinate(3, 0, 2));
 	}
 
 }

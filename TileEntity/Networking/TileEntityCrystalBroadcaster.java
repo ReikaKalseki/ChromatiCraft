@@ -27,7 +27,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 
 	public static int INTERFERENCE_RANGE = 128;
 	public static int MIN_RANGE = 192;
-	public static int BROADCAST_RANGE = 256;
+	public static int BROADCAST_RANGE = 4096;
 
 	private boolean interfered;
 

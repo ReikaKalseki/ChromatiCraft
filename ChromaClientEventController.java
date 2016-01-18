@@ -11,7 +11,9 @@ package Reika.ChromatiCraft;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -50,7 +52,6 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import pneumaticCraft.api.client.pneumaticHelmet.BlockTrackEvent;
@@ -71,7 +72,6 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -89,6 +89,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
@@ -108,12 +109,10 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -157,7 +156,7 @@ public class ChromaClientEventController {
 		if (evt.sound instanceof CustomMusic) {
 			CustomMusic cm = (CustomMusic)evt.sound;
 			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.contains(MusicLoader.instance.musicPath)) {
-				evt.volume = ChromaOptions.MUSICVOL.getFloat();
+				evt.volume = Math.max(0.1F, Minecraft.getMinecraft().gameSettings.getSoundLevel(ChromaClient.chromaCategory));
 			}
 		}
 	}
@@ -883,7 +882,13 @@ public class ChromaClientEventController {
 					GL11.glTranslated(p2, p4, p6);
 					BlockArray blocks = new BlockArray();
 					blocks.maxDepth = ItemExcavationWand.getDepth(Minecraft.getMinecraft().thePlayer)-1;
-					blocks.recursiveAddWithMetadata(world, x, y, z, id, meta);
+					Set<BlockKey> set = new HashSet();
+					set.add(new BlockKey(id, meta));
+					if (id == Blocks.lit_redstone_ore)
+						set.add(new BlockKey(Blocks.redstone_ore));
+					else if (id == Blocks.redstone_ore)
+						set.add(new BlockKey(Blocks.lit_redstone_ore));
+					blocks.recursiveAddMultipleWithBounds(world, x, y, z, set, x-32, y-32, z-32, x+32, y+32, z+32);
 					ReikaRenderHelper.prepareGeoDraw(true);
 					BlendMode.DEFAULT.apply();
 					Tessellator v5 = Tessellator.instance;
@@ -968,19 +973,6 @@ public class ChromaClientEventController {
 					}
 					ReikaRenderHelper.exitGeoDraw();
 					GL11.glPopMatrix();
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void renderVoidCell(RenderItemInSlotEvent evt) {
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			ItemStack is = evt.getItem();
-			if (ChromaItems.VOIDCELL.matchWith(is)) {
-				ItemStack store = ItemVoidStorage.getStoredItem(is);
-				if (store != null) {
-					ReikaGuiAPI.instance.drawItemStack(itemRender, ReikaItemHelper.getSizedItemStack(store, 1), evt.slotX, evt.slotY);
 				}
 			}
 		}

@@ -32,7 +32,7 @@ public class ContainerBookPages extends Container {
 	public static final int width = 9;
 	public static final int height = 3;
 
-	public static final int MAX_SCROLL = 1+ChromaResearch.getAllNonParents().size()/width-height;
+	public static final int MAX_SCROLL = 1+ChromaResearch.getAllObtainableFragments().size()/width-height;
 
 	private final BookInventory inventory = new BookInventory();
 
@@ -56,7 +56,7 @@ public class ContainerBookPages extends Container {
 				ChromatiCraft.logger.logError("Null research item {"+is.stackTagCompound+"} in the book?!");
 				continue;
 			}
-			int idx = ChromaResearch.getAllNonParents().indexOf(r);
+			int idx = ChromaResearch.getAllObtainableFragments().indexOf(r);
 			if (idx < 0)
 				throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment in the book!?!", true);
 			inventory.setInventorySlotContents(idx, is);
@@ -90,7 +90,7 @@ public class ContainerBookPages extends Container {
 		inventorySlots.clear();
 		inventoryItemStacks.clear();
 		int offset = scroll*9;
-		int lim = ChromaResearch.getAllNonParents().size();
+		int lim = ChromaResearch.getAllObtainableFragments().size();
 		int max = Math.min(lim, offset+27);
 		//ReikaJavaLibrary.pConsole(0+">"+offset+"|"+offset+">"+max+"|"+max+">"+lim);
 
@@ -111,11 +111,14 @@ public class ContainerBookPages extends Container {
 			Slot s = new SlotBook(inventory, i, -200, -200); //offscreen
 			this.addSlotToContainer(s);
 		}
+
+		for (int i = 0; i < 9; ++i)
+			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142));
+
 		for (int i = 0; i < 3; ++i)
 			for (int k = 0; k < 9; ++k)
 				this.addSlotToContainer(new Slot(player.inventory, k + i * 9 + 9, 8 + k * 18, 84 + i * 18));
-		for (int i = 0; i < 9; ++i)
-			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142));
+
 	}
 
 	@Override
@@ -160,8 +163,25 @@ public class ContainerBookPages extends Container {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
-	{
+	public ItemStack transferStackInSlot(EntityPlayer ep, int slot) {
+		int inv = slot-inventory.inventorySize;
+		if (inv >= 0) {
+			ItemStack at = ep.inventory.mainInventory[inv];
+			if (ChromaItems.FRAGMENT.matchWith(at)) {
+				ChromaResearch r = ItemInfoFragment.getResearch(at);
+				if (r != null) {
+					int idx = ChromaResearch.getAllObtainableFragments().indexOf(r);
+					if (idx >= 0) {
+						ItemStack in = inventory.getStackInSlot(idx);
+						if (in == null) {
+							//ReikaJavaLibrary.pConsole(r+" > "+in+" @ "+idx);
+							inventory.setInventorySlotContents(idx, at);
+							ep.inventory.mainInventory[inv] = null;
+						}
+					}
+				}
+			}
+		}
 		return null;
 	}
 
@@ -177,7 +197,7 @@ public class ContainerBookPages extends Container {
 	private static class BookInventory extends BasicInventory {
 
 		private BookInventory() {
-			super("Chroma Lexicon", ChromaResearch.getAllNonParents().size());
+			super("Chroma Lexicon", ChromaResearch.getAllObtainableFragments().size());
 		}
 
 		@Override

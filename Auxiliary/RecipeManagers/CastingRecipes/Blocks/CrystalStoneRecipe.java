@@ -16,8 +16,14 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 
 public class CrystalStoneRecipe extends CastingRecipe implements CoreRecipe {
 
+	private static final CrystalStoneRecipe[] recipesByMeta = new CrystalStoneRecipe[16];
+
 	public CrystalStoneRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
+	}
+
+	public static CrystalStoneRecipe getRecipeForMeta(int meta) {
+		return recipesByMeta[meta];
 	}
 
 }

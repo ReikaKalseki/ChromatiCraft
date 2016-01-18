@@ -79,7 +79,7 @@ public class GuiBookPages extends GuiContainer implements CustomSoundGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2)
 	{
-		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Pages: "+inv.getPageCount()+"/"+(inv.getSize()-1), xSize/2, 6, 0xffffff);
+		ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, "Pages: "+inv.getPageCount()+"/"+inv.getSize(), xSize/2, 6, 0xffffff);
 		fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, ySize - 96 + 2, 0xffffff);
 	}
 

@@ -18,6 +18,7 @@ import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.DragonAPI.ModList;
@@ -26,9 +27,9 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumBiomeHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 
-public class ColorTreeGenerator implements RetroactiveGenerator {
+public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator {
 
 	public static final ColorTreeGenerator instance = new ColorTreeGenerator();
 
@@ -74,7 +75,7 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 	}
 
 	public static int getTreeCount(World world, BiomeGenBase biome) {
-		if (ModList.THAUMCRAFT.isLoaded() && biome.biomeID == ThaumBiomeHandler.getInstance().taintBiomeID)
+		if (ModList.THAUMCRAFT.isLoaded() && biome.biomeID == ThaumIDHandler.Biomes.TAINT.getID())
 			return 0;
 
 		BiomeDecorator dec = biome.theBiomeDecorator;
@@ -164,6 +165,11 @@ public class ColorTreeGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Trees";
+	}
+
+	@Override
+	public String getCommandID() {
+		return "dyetree";
 	}
 
 }

@@ -89,11 +89,34 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 		super.mouseClicked(x, y, b);
 
 		ChromaResearch r = locations.getRegion(x, y);
-		if (r != null && this.canMakeFragments()) {
-			this.giveResearch(r);
-			//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
+		if (r != null) {
+			boolean cr = player.capabilities.isCreativeMode;
+			ItemStack[] inv = player.inventory.mainInventory;
+			int ink = cr ? -1 : this.checkForInk(inv);
+			if (cr || ink >= 0) {
+				int paper = cr ? -1 : ReikaInventoryHelper.locateInInventory(Items.paper, inv);
+				if (cr || paper >= 0) {
+					this.giveResearch(r);
+					ReikaInventoryHelper.decrStack(paper, inv);
+					ReikaInventoryHelper.decrStack(ink, inv);
+					//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
+					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
+				}
+			}
 		}
+	}
+
+	private int checkForInk(ItemStack[] inv) {
+		for (int i = 0; i < inv.length; i++) {
+			ItemStack in = inv[i];
+			if (in != null) {
+				if (ReikaItemHelper.matchStacks(in, ReikaItemHelper.inksac))
+					return i;
+				else if (ReikaItemHelper.isInOreTag(in, "dyeBlack"))
+					return i;
+			}
+		}
+		return -1;
 	}
 
 	@Override
@@ -121,13 +144,6 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 				fontRendererObj.drawString(r.getTitle()+" ("+r.level.getDisplayName()+")", j+8, k+196, 0xffffff);
 			}
 		}
-	}
-
-	private boolean canMakeFragments() {
-		if (player.capabilities.isCreativeMode)
-			return true;
-		ItemStack[] inv = player.inventory.mainInventory;
-		return ReikaInventoryHelper.checkForItem(Items.paper, inv) && ReikaInventoryHelper.checkForItemStack(ReikaItemHelper.inksac, inv, false);
 	}
 
 	private void giveResearch(ChromaResearch r) {

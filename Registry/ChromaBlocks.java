@@ -44,6 +44,8 @@ import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
+import Reika.ChromatiCraft.Block.BlockMultiStorage;
+import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
@@ -71,7 +73,6 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
@@ -84,6 +85,7 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -95,6 +97,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalHive;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalPlant;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDecoFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockHover;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockLockKey;
@@ -176,7 +179,9 @@ public enum ChromaBlocks implements BlockEnum {
 	DOOR(BlockChromaDoor.class,													"chroma.door"),
 	GLASS(BlockCrystalGlass.class,				ItemBlockDyeTypes.class,		"chroma.glass"),
 	CONSOLE(BlockCrystalConsole.class,											"chroma.console"),
-	LIGHT(BlockEtherealLight.class,												"chroma.light");
+	LIGHT(BlockEtherealLight.class,												"chroma.light"),
+	STORAGE(BlockMultiStorage.class,											"chroma.storageblock"),
+	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower");
 
 	private Class blockClass;
 	private String blockName;
@@ -288,6 +293,8 @@ public enum ChromaBlocks implements BlockEnum {
 			return new Class[0];
 		if (this == GLOWLOG)
 			return new Class[0];
+		if (this == DECOFLOWER)
+			return new Class[0];
 		return new Class[]{Material.class};
 	}
 
@@ -300,6 +307,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this.isLeaf() || this.isDyePlant() || this.isSapling())
 			return new Object[0];
 		if (this == GLOWLOG)
+			return new Object[0];
+		if (this == DECOFLOWER)
 			return new Object[0];
 		return new Object[]{this.getBlockMaterial()};
 	}
@@ -358,6 +367,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case LOCKKEY:
 			case HOVER:
 				return this.getBasicName();
+			case DECOFLOWER:
+				return StatCollector.translateToLocal("chroma.flower."+BlockDecoFlower.Flowers.list[meta].name().toLowerCase());
 			default:
 				return "";
 		}
@@ -366,6 +377,7 @@ public enum ChromaBlocks implements BlockEnum {
 	@Override
 	public boolean hasMultiValuedName() {
 		switch(this) {
+			case CHROMA:
 			case TANK:
 			case TNT:
 			case FENCE:
@@ -426,6 +438,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockLockKey.LockChannel.lockList.length;
 			case HOVER:
 				return BlockHoverBlock.HoverType.list.length;
+			case DECOFLOWER:
+				return BlockDecoFlower.Flowers.list.length;
 			default:
 				return 1;
 		}

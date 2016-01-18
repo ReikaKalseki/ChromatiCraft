@@ -19,6 +19,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.FluidIOInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -98,14 +99,19 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 	}
 
 	private void intakeXPFromPlayer(World world, int x, int y, int z) {
-		EntityPlayer ep = this.getPlacer();
-		if (ep != null && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 2)) {
-			int mult = this.getConversionSpeed();
-			if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
-				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 1, 0);
-				if (ep.boundingBox.intersectsWith(box)) {
-					output.addLiquid(mult, FluidRegistry.getFluid("chroma"));
-					ReikaPlayerAPI.removeExperience(ep, XP_PER_CHROMA*mult);
+		for (EntityPlayer ep : this.getOwners(false)) {
+			if (ep != null && !ReikaPlayerAPI.isFakeOrNotInteractable(ep, x+0.5, y+0.5, z+0.5, 2)) {
+				int mult = this.getConversionSpeed();
+				if (ep.experienceTotal >= XP_PER_CHROMA*mult) {
+					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).offset(0, 1, 0);
+					if (ep.boundingBox.intersectsWith(box)) {
+						int add = Math.min(output.getRemainingSpace(), mult);
+						if (add > 0) {
+							output.addLiquid(add, FluidRegistry.getFluid("chroma"));
+							ReikaPlayerAPI.removeExperience(ep, XP_PER_CHROMA*add);
+							ProgressStage.MAKECHROMA.stepPlayerTo(ep);
+						}
+					}
 				}
 			}
 		}
@@ -128,6 +134,8 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 		if (f.equals(FluidRegistry.getFluid("experience")))
 			return true;
 		if (f.equals(FluidRegistry.getFluid("xpjuice")))
+			return true;
+		if (ReikaXPFluidHelper.fluidsExist() && f.equals(ReikaXPFluidHelper.getFluid().getFluid()))
 			return true;
 		return false;
 	}

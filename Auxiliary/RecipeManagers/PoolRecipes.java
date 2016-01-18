@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -94,6 +95,7 @@ public class PoolRecipes {
 		if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance())
 			ei.worldObj.setBlock(x, y, z, Blocks.air);
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
+		ProgressStage.ALLOY.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 	}
 
 	public static class PoolRecipe {

@@ -25,7 +25,7 @@
 			In order to achieve your more grandoise casting arrangements, you will need to expand the grid beyond a 3x3, and that means you need a receptacle on which to store the items. Integrated into the structures around your table, these stands serve exactly that purpose, allowing you a 5x5 grid. The outer ring will need to be elevated by a block so that they have a clear line of sight to the table.
 		</desc>
 		<note>
-			In order to place a stack of more than one item, double-right-click on the stand with a stack
+			
 		</note>
 	</stand>
 	<telepump>
@@ -191,7 +191,7 @@
 			Enchanting has always been a random and infurating process. Spend a week collecting experience and you might get Bane of Arthropods I, or you might be lucky enough to get Fortune III and Efficiency V off of a few levels. Rather than tear your hair out trying to spend your experience efficiently, you recall the liquid chroma, which, being concentrated experience, may allow you not only automatic enchanting, but to allow you more fine control over the actual enchantments as well.
 		</desc>
 		<note>
-
+			Each level of enchantment requires %d mB of Chroma
 		</note>
 	</enchanter>
 	<chromaflower>

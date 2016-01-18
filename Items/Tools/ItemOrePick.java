@@ -41,7 +41,8 @@ public class ItemOrePick extends ItemChromaTool implements ToolSprite {
 		if (held && e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			int type = -1;
-			for (float i = 0; i <= 5; i += 0.2) {
+			float r = 8;//5;
+			for (float i = 0; i <= r; i += 0.2) {
 				int[] xyz = ReikaVectorHelper.getPlayerLookBlockCoords(ep, i);
 				Block id = world.getBlock(xyz[0], xyz[1], xyz[2]);
 				int meta = world.getBlockMetadata(xyz[0], xyz[1], xyz[2]);

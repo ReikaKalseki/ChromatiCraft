@@ -33,12 +33,15 @@ import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 
 public class GuiBiomeChanger extends GuiChromaBase {
 
 	private static final ColorDistributor biomeColors = new ColorDistributor(); //static to make consistent across GUI openings
 	private static final HashMap<BiomeGenBase, BiomePaint> biomeEntries = new HashMap();
+
+	private int refreshPosition;
 
 	static {
 		for (int i = 0; i <= 39; i++) { //Vanilla biomes
@@ -254,9 +257,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		frame++;
 
 		if (page == GuiPages.PAINT) {
-			if (frame < 5 || frame%8 == 0) {
-				this.redrawBiomes();
-			}
+			this.redrawBiomes();
 			painter.onRenderTick(a, b);
 			painter.draw();
 			painter.drawLegend(fontRendererObj, j+10+TileEntityBiomePainter.RANGE*2+3, k+ySize/2-TileEntityBiomePainter.RANGE);
@@ -269,17 +270,30 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	}
 
 	private void redrawBiomes() {
-		for (int ix = -tile.RANGE; ix <= tile.RANGE; ix++) {
-			for (int iz = -tile.RANGE; iz <= tile.RANGE; iz++) {
-				int dx = tile.xCoord+ix;
-				int dz = tile.zCoord+iz;
-				BiomeGenBase biome = tile.worldObj.getBiomeGenForCoords(dx, dz);
-				BiomePaint bp = biomeEntries.get(biome);
-				if (bp != null) {
-					painter.force(ix+tile.RANGE, iz+tile.RANGE, bp);
-				}
+		int d = tile.RANGE*2+1;
+		int n = ReikaMathLibrary.intpow2(d, 2);
+		//int d1 = frame%n;
+		//int d2 = Math.min(d1+32, n-1);
+		//for (int ix = -tile.RANGE; ix <= tile.RANGE; ix++) {
+		//	for (int iz = -tile.RANGE; iz <= tile.RANGE; iz++) {
+		for (int i = 0; i < d; i++) {
+			int ix = refreshPosition%d-tile.RANGE;
+			int iz = refreshPosition/d-tile.RANGE;
+			int dx = tile.xCoord+ix;
+			int dz = tile.zCoord+iz;
+
+			BiomeGenBase biome = tile.worldObj.getBiomeGenForCoords(dx, dz);
+			BiomePaint bp = biomeEntries.get(biome);
+			if (bp != null) {
+				painter.force(ix+tile.RANGE, iz+tile.RANGE, bp);
 			}
+
+			refreshPosition++;
+			if (refreshPosition >= n)
+				refreshPosition = 0;
 		}
+		//	}
+		//}
 	}
 
 	@Override

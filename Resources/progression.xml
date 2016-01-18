@@ -110,17 +110,50 @@
 			The raw magic energy in this tree is palpable, not to mention behind the impressive visual display.
 		</reveal>
 	</rainbowleaf>
-	<chroma>
+	<makechroma>
 		<title>
 			Magic Liquid
+		</title>
+		<hint>
+			A collector, but of what, and from what?
+		</hint>
+		<reveal>
+			Experience can be converted to a mysterious magic fluid. Surely that will have uses.
+		</reveal>
+	</makechroma>
+	<shardcharge>
+		<title>
+			Enriching Solvent
 		</title>
 		<hint>
 			The liquid is pulsing and throbbing with raw magical energy. You wonder what its effects are...
 		</hint>
 		<reveal>
+			Dissolving berries in the chroma allows it to greatly boost the magic energy found in the crystal shards.
+		</reveal>
+	</shardcharge>
+	<chroma>
+		<title>
+			Liquid Effects
+		</title>
+		<hint>
+			Liquid chroma has already proven itself a solvent for items tossed in. What else might happen?
+		</hint>
+		<reveal>
 			Stepping in it yourself seemed to do little - though you do feel a bit rejuvenated - but its power to enrich materials is not insignificant.
 		</reveal>
 	</chroma>
+	<alloy>
+		<title>
+			Magic Alloying
+		</title>
+		<hint>
+			What about mundane materials, perhaps with other materials mixed in?
+		</hint>
+		<reveal>
+			The chroma dissolves those materials, infusing the mundane materials with a great deal of energy.
+		</reveal>
+	</alloy>
 	<stones>
 		<title>
 			Unity of the Elements

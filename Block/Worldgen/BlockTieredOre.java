@@ -150,7 +150,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 					li.add(ChromaStacks.waterDust.copy());
 				break;
 			case FIRAXITE:
-				n = Math.min(64, 1+rand.nextInt(12)+fortune*8);
+				n = Math.min(64, 1+rand.nextInt(12)+rand.nextInt(1+fortune)*8);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.firaxite.copy());
 				break;

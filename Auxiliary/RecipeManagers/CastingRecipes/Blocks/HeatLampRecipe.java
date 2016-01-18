@@ -24,7 +24,7 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 16;
+		return 8;
 	}
 
 }

@@ -10,14 +10,18 @@
 package Reika.ChromatiCraft.World;
 
 import java.awt.Color;
+import java.util.Random;
 
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenForest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 
 public class BiomeEnderForest extends BiomeGenForest {
@@ -89,6 +93,27 @@ public class BiomeEnderForest extends BiomeGenForest {
 	public BiomeDecorator createBiomeDecorator()
 	{
 		return new DecoratorEnderForest();
+	}
+
+	@Override
+	public void plantFlower(World world, Random rand, int x, int y, int z) {
+		if (rand.nextInt(4) > 0) {
+			switch(rand.nextInt(2)) {
+				case 0:
+					if (Flowers.ENDERFLOWER.canPlantAt(world, x, y, z)) {
+						world.setBlock(x, y, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.ENDERFLOWER.ordinal(), 3);
+					}
+					break;
+				case 1:
+					if (Flowers.RESOCLOVER.canPlantAt(world, x, y, z)) {
+						world.setBlock(x, y, z, ChromaBlocks.DECOFLOWER.getBlockInstance(), Flowers.RESOCLOVER.ordinal(), 3);
+					}
+					break;
+			}
+		}
+		else {
+			super.plantFlower(world, rand, x, y, z);
+		}
 	}
 
 }

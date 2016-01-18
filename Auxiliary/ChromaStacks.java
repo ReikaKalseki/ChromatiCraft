@@ -52,6 +52,9 @@ public class ChromaStacks {
 	public static final ItemStack auraIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(20);
 	public static final ItemStack complexIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(21);
 	public static final ItemStack spaceIngot 			= ChromaItems.CRAFTING.getStackOfMetadata(22);
+	public static final ItemStack voidCoreHigh 			= ChromaItems.CRAFTING.getStackOfMetadata(23);
+	public static final ItemStack transformCoreHigh 	= ChromaItems.CRAFTING.getStackOfMetadata(24);
+	public static final ItemStack energyCoreHigh		= ChromaItems.CRAFTING.getStackOfMetadata(25);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);

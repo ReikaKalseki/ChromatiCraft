@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension.Structure;
+package Reika.ChromatiCraft.Block;
 
 import java.util.Random;
 
@@ -21,14 +21,17 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockMusicTrigger extends Block {
+public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 
 	private static final Random rand = new Random();
 
@@ -38,13 +41,23 @@ public class BlockMusicTrigger extends Block {
 		super(mat);
 
 		this.setResistance(60000);
-		this.setBlockUnbreakable();
 		this.setCreativeTab(ChromatiCraft.tabChromaGen);
+	}
+
+	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
+		return world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue();
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		return s <= 1 ? icons[0] : icons[1];
+	}
+
+	@Override
+	public final void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
+			this.ping(world, x, y, z, world.getBlockPowerInput(x, y, z)/4);
+		}
 	}
 
 	@Override
@@ -58,21 +71,25 @@ public class BlockMusicTrigger extends Block {
 		if (s > 1) {
 			int idx = this.getIndex(s, a, b, c);
 			if (idx >= 0) {
-				Block bk = world.getBlock(x, y+1, z);
-				if (bk instanceof CrystalTypeBlock) {
-					int meta = world.getBlockMetadata(x, y+1, z);
-					CrystalElement e = CrystalElement.elements[meta];
-					float p = CrystalMusicManager.instance.getScaledDing(e, idx);
-					CrystalTypeBlock.ding(world, x, y, z, e, p);
-					BlockMusicMemory.ping(world, x, y, z, e, idx);
-					if (world.isRemote) {
-						this.createParticle(world, x, y+1, z, e);
-					}
-
-				}
+				this.ping(world, x, y, z, idx);
 			}
 		}
 		return true;
+	}
+
+	private void ping(World world, int x, int y, int z, int idx) {
+		Block bk = world.getBlock(x, y+1, z);
+		if (bk instanceof CrystalTypeBlock) {
+			int meta = world.getBlockMetadata(x, y+1, z);
+			CrystalElement e = CrystalElement.elements[meta];
+			float p = CrystalMusicManager.instance.getScaledDing(e, idx);
+			CrystalTypeBlock.ding(world, x, y, z, e, p);
+			BlockMusicMemory.ping(world, x, y, z, e, idx);
+			if (world.isRemote) {
+				this.createParticle(world, x, y+1, z, e);
+			}
+
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

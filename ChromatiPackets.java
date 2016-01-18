@@ -346,7 +346,7 @@ public class ChromatiPackets implements PacketHandler {
 			}*/
 				case GIVERESEARCH: {
 					ChromaResearch r = ChromaResearch.researchList[data[0]];
-					ChromaResearchManager.instance.givePlayerFragment(ep, r);
+					ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 					break;
 				}
 				case LEAFBREAK:
@@ -354,7 +354,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case GIVEPROGRESS: {
 					ProgressStage p = ProgressStage.list[data[0]];
-					ProgressionManager.instance.setPlayerStageClient(ep, p, data[1] > 0);
+					ProgressionManager.instance.setPlayerStageClient(ep, p, data[1] > 0, true);
 					break;
 				}
 				case HEALTHSYNC:

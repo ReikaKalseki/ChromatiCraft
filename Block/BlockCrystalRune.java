@@ -64,7 +64,7 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 				((BlockPylonStructure)b).triggerAddCheck(world, dx, dy, dz);
 			}
 		}
-		if (e instanceof EntityPlayer && ReikaWorldHelper.checkForAdjBlock(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null) {
+		if (e instanceof EntityPlayer && ReikaWorldHelper.checkForAdjBlockWithCorners(world, x, y, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance()) != null) {
 			if (ReikaWorldHelper.findNearBlock(world, x, y, z, 6, ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata()))
 				ProgressStage.RUNEUSE.stepPlayerTo((EntityPlayer)e);
 		}

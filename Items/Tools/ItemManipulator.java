@@ -175,7 +175,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 					cp.enhance();
 			}
 			else {
-				ChromaAux.changePylonColor(cp, CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
+				ChromaAux.changePylonColor(world, cp, CrystalElement.elements[(cp.getColor().ordinal()+1)%16]);
 			}
 			return true;
 		}
@@ -351,7 +351,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			PlayerElementBuffer.instance.checkUpgrade(player, true);
 			ProgressStage.CHARGE.stepPlayerTo(player);
 			if (te instanceof TileEntityCrystalPylon)
-				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true);
+				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
 			if (player.worldObj.isRemote) {
 				//this.spawnParticles(player, e);
 				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);

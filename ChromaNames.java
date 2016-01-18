@@ -32,7 +32,8 @@ public class ChromaNames {
 		"chromacraft.energycore", "chromacraft.crystaldust", "chromacraft.transformcore", "chromacraft.elementunit",
 		"chromacraft.iridcrystal", "chromacraft.iridchunk", "chromacraft.ingot", "chromacraft.chassis0", "chromacraft.chassis1",
 		"chromacraft.chassis2", "chromacraft.chassis3", "chromacraft.ingot2", "chromacraft.ingot3", "chromacraft.ingot4", "chromacraft.ingot5",
-		"chromacraft.ingot6", "chromacraft.ingot7", "chromacraft.ingot8"
+		"chromacraft.ingot6", "chromacraft.ingot7", "chromacraft.ingot8", "chromacraft.hivoid", "chromacraft.hitransformcore",
+		"chromacraft.hienergycore"
 	};
 
 	public static final String[] tieredNames = {
@@ -56,6 +57,10 @@ public class ChromaNames {
 
 	public static final String[] modInteractNames = {
 		"chromamod.crystalwand", "chromamod.firaxcap", "chromamod.watercap", "chromamod.endercap", "chromamod.finalcap"
+	};
+
+	public static final String[] coloredModInteractNames = {
+		"chromamod.comb",
 	};
 
 	private static String getName(String[] names, int i) {

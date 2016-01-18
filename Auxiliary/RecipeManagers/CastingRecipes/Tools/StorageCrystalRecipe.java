@@ -68,6 +68,16 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 			this.addAuxItem(ChromaStacks.resonanceDust, 2, 0);
 			this.addAuxItem(ChromaStacks.resonanceDust, -2, 0);
 		}
+		else {
+			this.addAuxItem(ChromaStacks.elementDust, -2, -2);
+			this.addAuxItem(ChromaStacks.elementDust, 2, -2);
+			this.addAuxItem(ChromaStacks.elementDust, -2, 2);
+			this.addAuxItem(ChromaStacks.elementDust, 2, 2);
+			this.addAuxItem(ChromaStacks.elementDust, 0, -2);
+			this.addAuxItem(ChromaStacks.elementDust, 0, 2);
+			this.addAuxItem(ChromaStacks.elementDust, 2, 0);
+			this.addAuxItem(ChromaStacks.elementDust, -2, 0);
+		}
 
 		this.addRune(CrystalElement.BLUE, 4, 0, 1);
 		this.addRune(CrystalElement.BLUE, 4, 0, -1);

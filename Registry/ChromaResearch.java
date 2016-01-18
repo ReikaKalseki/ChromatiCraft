@@ -27,6 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -111,7 +112,7 @@ public enum ChromaResearch implements ProgressElement {
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
-	MINER(			ChromaTiles.MINER, 			ResearchLevel.PYLONCRAFT),
+	MINER(			ChromaTiles.MINER, 			ResearchLevel.ENDGAME,			ProgressStage.CTM),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
@@ -166,6 +167,7 @@ public enum ChromaResearch implements ProgressElement {
 	COLORALTAR(		ChromaBlocks.COLORALTAR,	CrystalElement.WHITE.ordinal(),		ResearchLevel.ENERGYEXPLORE),
 	DOOR(			ChromaBlocks.DOOR,												ResearchLevel.BASICCRAFT),
 	GLASS(			ChromaBlocks.GLASS,			CrystalElement.BLUE.ordinal(),		ResearchLevel.BASICCRAFT),
+	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -203,13 +205,14 @@ public enum ChromaResearch implements ProgressElement {
 	DUSTS("Plant Dusts",			ChromaStacks.auraDust, 									ResearchLevel.ENERGYEXPLORE),
 	GROUPS("Groups",				ChromaStacks.crystalCore, 								ResearchLevel.BASICCRAFT),
 	CORES("Cores",					ChromaStacks.energyCore,								ResearchLevel.MULTICRAFT),
-	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.CHROMA),
+	HICORES("Energized Cores",		ChromaStacks.energyCoreHigh,							ResearchLevel.PYLONCRAFT),
+	IRID("Iridescent Crystal",		ChromaStacks.iridCrystal,								ResearchLevel.MULTICRAFT,	ProgressStage.ALLOY),
 	ORES("Buried Secrets",			ChromaStacks.bindingCrystal,							ResearchLevel.RUNECRAFT),
 	CRYSTALSTONE("Crystal Stone",	ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 			ResearchLevel.BASICCRAFT),
 	SEED("Crystal Seeds",			ChromaItems.SEED.getStackOf(CrystalElement.MAGENTA),	ResearchLevel.RAWEXPLORE,	ProgressStage.CRYSTALS),
 	FRAGMENT("Fragments",			ChromaItems.FRAGMENT, 									ResearchLevel.ENTRY),
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
-	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressStage.CHROMA),
+	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 
 	ABILITYDESC("Abilities", ""),
@@ -272,6 +275,7 @@ public enum ChromaResearch implements ProgressElement {
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
 	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
+	private static final List<ChromaResearch> obtainable = new ArrayList();
 	private static final HashMap<String, ChromaResearch> byName = new HashMap();
 	private static final IdentityHashMap<Object, ChromaResearch> duplicateChecker = new IdentityHashMap();
 
@@ -598,6 +602,8 @@ public enum ChromaResearch implements ProgressElement {
 			return true;
 		if (this == CORES)
 			return true;
+		if (this == HICORES)
+			return true;
 		if (this == ALLOYS)
 			return true;
 		if (this == IRID)
@@ -635,6 +641,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == DOOR)
 			return true;
 		if (this == GLASS)
+			return true;
+		if (this == MUSICTRIGGER)
 			return true;
 		return false;
 	}
@@ -755,6 +763,13 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.voidCore);
 			li.add(ChromaStacks.elementUnit);
 			li.add(ChromaStacks.crystalLens);
+			return li;
+		}
+		if (this == HICORES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.energyCoreHigh);
+			li.add(ChromaStacks.transformCoreHigh);
+			li.add(ChromaStacks.voidCoreHigh);
 			return li;
 		}
 		if (this == PATH) {
@@ -955,6 +970,11 @@ public enum ChromaResearch implements ProgressElement {
 		return "Something new to investigate";//"A new item to investigate";
 	}
 
+	@Override
+	public String getFormatting() {
+		return EnumChatFormatting.ITALIC.toString();
+	}
+
 	private Object getIDObject() {
 		if (machine != null)
 			return machine;
@@ -977,10 +997,15 @@ public enum ChromaResearch implements ProgressElement {
 				if (r.level != null)
 					levelMap.addValue(r.level, r);
 				byName.put(r.name(), r);
-				if (r.isParent)
+				if (r.isParent) {
 					parents.add(r);
-				else
+				}
+				else {
 					nonParents.add(r);
+					if (!r.isAlwaysPresent()) {
+						obtainable.add(r);
+					}
+				}
 			}
 			ChromaResearch pre = duplicateChecker.get(r.getIDObject());
 			if (pre != null)
@@ -1059,6 +1084,11 @@ public enum ChromaResearch implements ProgressElement {
 
 	public static List<ChromaResearch> getAllNonParents() {
 		return Collections.unmodifiableList(nonParents);
+	}
+
+	/** All nonparent, minus the ones always present */
+	public static List<ChromaResearch> getAllObtainableFragments() {
+		return Collections.unmodifiableList(obtainable);
 	}
 
 	public static ChromaResearch getByName(String s) {

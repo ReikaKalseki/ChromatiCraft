@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -97,8 +98,13 @@ public class BlockChromaPortal extends Block {
 					if (te.canPlayerUse(ep)) {
 						int dim = te.getTargetDimension();
 						ReikaEntityHelper.transferEntityToDimension(e, dim, new ChromaTeleporter(dim));
-						ProgressStage.DIMENSION.stepPlayerTo(ep);
-						ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
+						if (ProgressStage.DIMENSION.stepPlayerTo(ep)) {
+							ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
+						}
+						else {
+							ChromaSounds.GOTODIM.playSoundAtBlock(te, 1, 1);
+							ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
+						}
 					}
 					else {
 						this.denyEntity(e);
@@ -135,10 +141,10 @@ public class BlockChromaPortal extends Block {
 				this.onFirstTick();
 			ticks++;
 
-			//if (DragonAPICore.debugtest) {
-			//	ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
-			//	DragonAPICore.debugtest = false;
-			//}
+			if (DragonAPICore.debugtest) {
+				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
+				DragonAPICore.debugtest = false;
+			}
 
 			if (complete) {
 				if (charge < MINCHARGE || !ChunkProviderChroma.areStructuresReady()) {
@@ -439,6 +445,8 @@ public class BlockChromaPortal extends Block {
 				ChunkCoordinates p = world.getSpawnPoint();
 				if (e instanceof EntityPlayer)
 					p = ((EntityPlayer)e).getBedLocation(0);
+				if (p == null)
+					p = world.getSpawnPoint();
 				e.setLocationAndAngles(p.posX, 1024, p.posZ, 0, 0);
 			}
 			this.placeInExistingPortal(e, x, y, z, facing);

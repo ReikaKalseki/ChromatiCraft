@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -19,7 +19,9 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.Magic.ElementMixer;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -59,7 +61,8 @@ public enum CrystalElement {
 	private static final Random rand = new Random();
 
 	public static final CrystalElement[] elements = values();
-	private static final HashMap<Integer, ArrayList<CrystalElement>> levelMap = new HashMap();
+	private static final MultiMap<Integer, CrystalElement> levelMap = new MultiMap(new MultiMap.HashSetFactory());
+	private static final HashMap<String, CrystalElement> nameMap = new HashMap();
 
 	private CrystalElement(String n, int rgb, EnumChatFormatting c) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
@@ -192,8 +195,8 @@ public enum CrystalElement {
 	}
 
 	public static CrystalElement randomElement(int level) {
-		ArrayList<CrystalElement> li = levelMap.get(level);
-		return li != null ? li.get(rand.nextInt(li.size())) : null;
+		Collection<CrystalElement> li = levelMap.get(level);
+		return li != null ? ReikaJavaLibrary.getRandomCollectionEntry(li) : null;
 	}
 
 	public static CrystalElement randomPrimaryElement() {
@@ -211,12 +214,8 @@ public enum CrystalElement {
 		for (int i = 0; i < elements.length; i++) {
 			CrystalElement e = elements[i];
 			int lvl = e.getLevel();
-			ArrayList<CrystalElement> li = levelMap.get(lvl);
-			if (li == null) {
-				li = new ArrayList();
-				levelMap.put(lvl, li);
-			}
-			li.add(e);
+			levelMap.addValue(lvl, e);
+			nameMap.put(e.displayName, e);
 		}
 	}
 
@@ -230,6 +229,10 @@ public enum CrystalElement {
 
 	public static CrystalElement getFromAPI(CrystalElementProxy e) {
 		return elements[e.ordinal()];
+	}
+
+	public static CrystalElement getByName(String s) {
+		return nameMap.get(s);
 	}
 
 }

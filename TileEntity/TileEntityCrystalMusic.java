@@ -64,9 +64,9 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 		colorPositions.put(CrystalElement.BLUE, 		new Coordinate(3, 0, 0));
 		colorPositions.put(CrystalElement.PURPLE, 		new Coordinate(3, 0, 1));
 		colorPositions.put(CrystalElement.CYAN, 		new Coordinate(2, 0, 2));
-		colorPositions.put(CrystalElement.PINK, 		new Coordinate(1, 0, 3));
+		colorPositions.put(CrystalElement.LIGHTGRAY, 	new Coordinate(1, 0, 3));
 		colorPositions.put(CrystalElement.GRAY, 		new Coordinate(0, 0, 3));
-		colorPositions.put(CrystalElement.LIGHTGRAY, 	new Coordinate(-1, 0, 3));
+		colorPositions.put(CrystalElement.PINK, 		new Coordinate(-1, 0, 3));
 		colorPositions.put(CrystalElement.LIME, 		new Coordinate(-2, 0, 2));
 		colorPositions.put(CrystalElement.YELLOW, 		new Coordinate(-3, 0, 1));
 		colorPositions.put(CrystalElement.LIGHTBLUE, 	new Coordinate(-3, 0, 0));

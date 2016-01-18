@@ -450,6 +450,8 @@ public class GuiNavigation extends GuiScrollingPage {
 			GL11.glEnable(GL11.GL_BLEND);
 			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
 
+			GL11.glColor4f(1, 1, 1, 1);
+
 			GL11.glEnable(GL11.GL_BLEND);
 			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
 				GL11.glPushMatrix();

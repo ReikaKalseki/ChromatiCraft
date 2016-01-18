@@ -21,6 +21,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 
 	private static final CrystalBrewerHandler crystal = new CrystalBrewerHandler();
 	private static final FabricatorHandler fabrication = new FabricatorHandler();
+	private static final CrystalFurnaceHandler furnace = new CrystalFurnaceHandler();
 
 	private static final ChromaNEITabOccluder occlusion = new ChromaNEITabOccluder();
 
@@ -32,6 +33,9 @@ public class NEIChromaConfig implements IConfigureNEI {
 
 		API.registerRecipeHandler(crystal);
 		API.registerUsageHandler(crystal);
+
+		API.registerRecipeHandler(furnace);
+		API.registerUsageHandler(furnace);
 
 		API.registerRecipeHandler(fabrication);
 

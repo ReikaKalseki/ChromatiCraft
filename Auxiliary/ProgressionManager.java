@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,6 +28,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.FakePlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
@@ -88,7 +90,10 @@ public class ProgressionManager implements ProgressRegistry {
 		CHARGE(ChromaItems.TOOL.getStackOf()), //charge from a pylon
 		ABILITY(ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
 		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOf()), //harvest a rainbow leaf
-		CHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()), //step in liquid chroma
+		MAKECHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()),
+		SHARDCHARGE(ChromaStacks.chargedRedShard),
+		ALLOY(ChromaStacks.chromaIngot),
+		CHROMA(ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
 		STONES(ChromaStacks.elementUnit), //craft all elemental stones together
 		SHOCK(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon
 		HIVE(ChromaBlocks.HIVE.getBlockInstance(), ModList.FORESTRY.isLoaded()),
@@ -156,41 +161,46 @@ public class ProgressionManager implements ProgressRegistry {
 			return instance.isOneStepAway(ep, this);
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitle() {
 			return this.getTitleString();
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getShortDesc() {
 			return this.getRevealedString();
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitleString() {
 			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
 			return ChromaDescriptions.getProgressText(this).title;
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getHintString() {
 			//StatCollector.translateToLocal("chromaprog."+this.name().toLowerCase());
 			return ChromaDescriptions.getProgressText(this).hint;
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getRevealedString() {
 			//StatCollector.translateToLocal("chromaprog.reveal."+this.name().toLowerCase());
 			return ChromaDescriptions.getProgressText(this).reveal;
 		}
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public ItemStack getIcon() {
 			return icon.copy();
 		}
 
 		public boolean isGatedAfter(ProgressStage p) {
 			return ProgressionManager.instance.progressMap.getRecursiveParents(this).contains(p);
+		}
+
+		@Override
+		public String getFormatting() {
+			return EnumChatFormatting.UNDERLINE.toString();
 		}
 	}
 
@@ -218,6 +228,9 @@ public class ProgressionManager implements ProgressRegistry {
 	private void load() {
 		progressMap.addParent(ProgressStage.CASTING,	ProgressStage.CRYSTALS);
 
+		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
+
+		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
 		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.CASTING);
 
 		progressMap.addParent(ProgressStage.MULTIBLOCK,	ProgressStage.RUNEUSE);
@@ -235,23 +248,32 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.SHOCK, 		ProgressStage.PYLON);
 
-		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.MAKECHROMA, ProgressStage.CASTING);
+
+		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.MAKECHROMA);
+		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.RUNEUSE);
+		progressMap.addParent(ProgressStage.SHARDCHARGE, ProgressStage.DYETREE);
+
+		progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MAKECHROMA);
+		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.RUNEUSE);
+		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
+
+		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.SHARDCHARGE);
+		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.CHROMA);
 
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
-		progressMap.addParent(ProgressStage.ALLCOLORS,	ProgressStage.PYLON);
-
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 
-		progressMap.addParent(ProgressStage.RUNEUSE,	ProgressStage.ALLCOLORS);
-
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.LINK);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.STORAGE);
 		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.CHARGE);
+		progressMap.addParent(ProgressStage.POWERCRYSTAL, ProgressStage.ALLOY);
 
 		progressMap.addParent(ProgressStage.DIE,		ProgressStage.CHARGE);
 
@@ -297,7 +319,7 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	public Topology getTopology() {
-		return progressMap.getTopology();
+		return progressMap.getTopology();//.sort(new AlphabeticalProgressComparator());
 	}
 
 	private Collection<ProgressStage> getPlayerData(EntityPlayer ep) {
@@ -371,7 +393,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		if (!this.canStepPlayerTo(ep, s))
 			return false;
-		this.setPlayerStage(ep, s, true);
+		this.setPlayerStage(ep, s, true, true);
 		return true;
 	}
 
@@ -395,7 +417,11 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		return true;
 	}
+	/*
+	public boolean playerHasAnyPrereq(EntityPlayer ep, ProgressStage s) {
 
+	}
+	 */
 	public Collection<ProgressStage> getPrereqs(ProgressStage s) {
 		return Collections.unmodifiableCollection(progressMap.getParents(s));
 	}
@@ -423,30 +449,30 @@ public class ProgressionManager implements ProgressRegistry {
 		return true;
 	}
 
-	public boolean setPlayerStage(EntityPlayer ep, int val, boolean set) {
+	public boolean setPlayerStage(EntityPlayer ep, int val, boolean set, boolean notify) {
 		if (ep instanceof FakePlayer)
 			return false;
 		if (val < 0 || val >= ProgressStage.values().length)
 			return false;
-		this.setPlayerStage(ep, ProgressStage.values()[val], set);
+		this.setPlayerStage(ep, ProgressStage.values()[val], set, notify);
 		return true;
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void setPlayerStageClient(EntityPlayer ep, ProgressStage s, boolean set) {
-		this.setPlayerStage(ep, s, set, true);
+	public void setPlayerStageClient(EntityPlayer ep, ProgressStage s, boolean set, boolean notify) {
+		this.setPlayerStage(ep, s, set, true, notify);
 	}
 
-	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set) {
-		this.setPlayerStage(ep, s, set, false);
+	public void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean notify) {
+		this.setPlayerStage(ep, s, set, false, notify);
 	}
 
-	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient) {
+	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
 		if (ep instanceof FakePlayer)
 			return;
 		if (ep.worldObj.isRemote && !allowClient)
 			return;
-		if (ep instanceof EntityPlayerMP)
+		if (notify && ep instanceof EntityPlayerMP)
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), (EntityPlayerMP)ep, s.ordinal(), set ? 1 : 0);
 		NBTTagList li = this.getNBTList(ep);
 		NBTBase tag = new NBTTagString(s.name());
@@ -455,6 +481,11 @@ public class ProgressionManager implements ProgressRegistry {
 			if (!li.tagList.contains(tag)) {
 				flag = true;
 				li.appendTag(tag);
+				Collection<ProgressStage> c = progressMap.getRecursiveParents(s);
+				for (ProgressStage s2 : c) {
+					NBTBase tag2 = new NBTTagString(s2.name());
+					li.tagList.add(tag2);
+				}
 			}
 		}
 		else {
@@ -474,7 +505,8 @@ public class ProgressionManager implements ProgressRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (set) {
 				playerMap.addValue(ep.getCommandSenderName(), s);
-				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
+				if (notify)
+					ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 				this.giveAuxiliaryResearch(ep, s);
 			}
 			else {
@@ -484,7 +516,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 	}
 
-	public void resetPlayerProgression(EntityPlayer ep) {
+	public void resetPlayerProgression(EntityPlayer ep, boolean notify) {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
 		Collection<ProgressStage> c = playerMap.remove(ep.getCommandSenderName());
@@ -496,22 +528,22 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(NBT_TAG, li);
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false);
-			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false);
+			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, notify);
+			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, notify);
 		}
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		this.updateChunks(ep);
 	}
 
-	public void maxPlayerProgression(EntityPlayer ep) {
+	public void maxPlayerProgression(EntityPlayer ep, boolean notify) {
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			if (ProgressStage.list[i].active)
-				this.setPlayerStage(ep, ProgressStage.list[i], true);
+				this.setPlayerStage(ep, ProgressStage.list[i], true, notify);
 		}
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true);
-			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true);
+			this.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true, notify);
+			this.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, notify);
 		}
 		for (int i = 0; i < RecipeType.typeList.length; i++) {
 			RecipeType r = RecipeType.typeList[i];
@@ -519,7 +551,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 	}
 
-	public void setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc) {
+	public void setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG2);
@@ -532,7 +564,7 @@ public class ProgressionManager implements ProgressRegistry {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			this.updateChunks(ep);
-			if (disc)
+			if (disc && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
 		}
 	}
@@ -577,19 +609,19 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitle() {
 			return color.displayName;
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getShortDesc() {
 			return "A new form of crystal energy";
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public ItemStack getIcon() {
 			return ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal());
 		}
@@ -609,6 +641,11 @@ public class ProgressionManager implements ProgressRegistry {
 			return o instanceof ColorDiscovery && ((ColorDiscovery)o).color == color;
 		}
 
+		@Override
+		public String getFormatting() {
+			return color.getChatColorString();
+		}
+
 	}
 
 	public static class StructureComplete implements ProgressElement {
@@ -620,19 +657,19 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitle() {
 			return color.displayName+" Core";
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getShortDesc() {
 			return "Another piece of the puzzle";
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public ItemStack getIcon() {
 			ItemStack is = ChromaTiles.DIMENSIONCORE.getCraftedProduct();
 			is.stackTagCompound = new NBTTagCompound();
@@ -655,13 +692,18 @@ public class ProgressionManager implements ProgressRegistry {
 			return o instanceof StructureComplete && ((StructureComplete)o).color == color;
 		}
 
+		@Override
+		public String getFormatting() {
+			return color.getChatColorString();
+		}
+
 	}
 
 	public void giveAuxiliaryResearch(EntityPlayer ep, ProgressStage p) {
 		if (ChromaOptions.EASYFRAG.getState()) {
 			ChromaResearch r = auxiliaryReference.get(p);
 			if (r != null)
-				ChromaResearchManager.instance.givePlayerFragment(ep, r);
+				ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 		}
 	}
 
@@ -728,7 +770,7 @@ public class ProgressionManager implements ProgressRegistry {
 		return nbt.getBoolean(e.name());
 	}
 
-	public void markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set) {
+	public void markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(NBT_TAG3);
@@ -741,7 +783,7 @@ public class ProgressionManager implements ProgressRegistry {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			this.updateChunks(ep);
-			if (set)
+			if (set && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
 		}
 	}
@@ -763,6 +805,15 @@ public class ProgressionManager implements ProgressRegistry {
 				c.add(CrystalElement.valueOf(tag));
 		}
 		return c;
+	}
+
+	private static class AlphabeticProgressComparator implements Comparator<ProgressStage> {
+
+		@Override
+		public int compare(ProgressStage o1, ProgressStage o2) {
+			return o1.getTitleString().compareToIgnoreCase(o2.getTitleString());
+		}
+
 	}
 
 }

@@ -98,7 +98,11 @@ public class GuiStructure extends GuiBookSection {
 			render.addEntityRender(5, -1, 9, createCrystalRender());
 			render.addEntityRender(9, -1, 5, createCrystalRender());
 		}
-		render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
+
+		if (page != ChromaResearch.CAVERN) {
+			render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
+		}
+
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
 	}
 

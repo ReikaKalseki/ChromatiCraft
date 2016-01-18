@@ -49,14 +49,17 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
-		if (e instanceof EntityPlayer) {
+		if (e instanceof EntityPlayer && !world.isRemote) {
 			EntityPlayer ep = (EntityPlayer)e;
-			ChromaResearch r = getResearch(is);
-			if (r == null) {
-				this.programShardAndGiveData(is, ep);
-			}
-			else {
-				ChromaResearchManager.instance.givePlayerFragment(ep, r);
+			int n = 8;
+			if (world.getTotalWorldTime()%n == slot%n) {
+				ChromaResearch r = getResearch(is);
+				if (r == null) {
+					this.programShardAndGiveData(is, ep);
+				}
+				else {
+					ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
+				}
 			}
 		}
 	}
@@ -139,7 +142,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		ChromaResearch r = ChromaResearchManager.instance.getRandomNextResearchFor(ep);
 		if (r != null && !ep.worldObj.isRemote) {
 			setResearch(is, r);
-			ChromaResearchManager.instance.givePlayerFragment(ep, getResearch(is));
+			ChromaResearchManager.instance.givePlayerFragment(ep, getResearch(is), true);
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVERESEARCH.ordinal(), (EntityPlayerMP)ep, r.ordinal());
 		}
 	}

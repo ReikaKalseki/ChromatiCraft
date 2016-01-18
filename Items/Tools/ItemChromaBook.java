@@ -44,7 +44,7 @@ public class ItemChromaBook extends ItemChromaTool {
 		ItemStack is = new ItemStack(this);
 		is.stackTagCompound = new NBTTagCompound();
 		NBTTagList list = new NBTTagList();
-		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			list.appendTag(new NBTTagString(r.name()));
 		}
 		is.stackTagCompound.setTag("pages", list);
@@ -87,7 +87,7 @@ public class ItemChromaBook extends ItemChromaTool {
 			li.add("Creative Spawned");
 		}
 		else {
-			li.add(String.format("Has %d of %d pages.", this.getNumberPages(is), ChromaResearch.getAllNonParents().size()));
+			li.add(String.format("Has %d of %d pages.", this.getNumberPages(is), ChromaResearch.getAllObtainableFragments().size()));
 		}
 	}
 
@@ -149,7 +149,7 @@ public class ItemChromaBook extends ItemChromaTool {
 	}
 
 	private static boolean hasAllPages(ItemStack is) {
-		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			if (!hasPage(is, r))
 				return false;
 		}

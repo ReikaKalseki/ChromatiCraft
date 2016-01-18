@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Dye;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.creativetab.CreativeTabs;
@@ -72,18 +71,11 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	@Override
 	protected void onRandomUpdate(World world, int x, int y, int z, Random r) {
 		CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y, z)];
-		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 16, false);
+		ArrayList<TileEntityCrystalPylon> c = new ArrayList(CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 16, false));
 		if (c == null || c.isEmpty())
 			return;
-		int index = r.nextInt(c.size());
-		int i = 0;
-		for (TileEntityCrystalPylon te : c) {
-			if (i == index) {
-				te.speedRegenShortly();
-				break;
-			}
-			i++;
-		}
+		TileEntityCrystalPylon te = c.get(r.nextInt(c.size()));
+		te.speedRegenShortly();
 	}
 
 	@Override

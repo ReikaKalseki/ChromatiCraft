@@ -663,7 +663,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	@Override
 	public Collection<ChunkCoordIntPair> getChunksToLoad() {
-		return ChunkManager.getChunkSquare(xCoord, zCoord, range);
+		return ChunkManager.getChunkSquare(xCoord, zCoord, range >> 4);
 	}
 
 }

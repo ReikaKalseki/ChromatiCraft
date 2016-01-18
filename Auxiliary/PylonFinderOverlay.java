@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -22,8 +23,10 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -150,7 +153,7 @@ public class PylonFinderOverlay {
 								v5.draw();
 								GL11.glDisable(GL11.GL_TEXTURE_2D);
 							}
-							else {
+							else { //on screen, in FOV
 								v5.startDrawingQuads();
 								v5.setColorRGBA_I(e.getColor(), 32);
 								v5.setBrightness(240);
@@ -182,6 +185,16 @@ public class PylonFinderOverlay {
 								v5.addVertexWithUV(cx+8, cy-8, 0, du, v);
 								v5.addVertexWithUV(cx-8, cy-8, 0, u, v);
 								v5.draw();
+
+								FontRenderer fr = ChromaFontRenderer.FontType.HUD.renderer;
+								int base = ReikaMathLibrary.intpow2(10, (int)ReikaMathLibrary.logbase(dl, 10));
+								int dist = ReikaMathLibrary.roundToNearestX(base, (int)Math.round(dl));
+								String unit = ReikaEngLibrary.getSIPrefix(dist);
+								String s = String.format("%.0f%sm", ReikaMathLibrary.getThousandBase(dist), unit);
+								//ReikaJavaLibrary.pConsole(dl+" >> "+base+" = "+dist+" [[ "+s);
+								fr.drawString(s, cx+11, cy+11, ReikaColorAPI.mixColors(0, e.getColor(), 0.67F));
+								fr.drawString(s, cx+10, cy+10, ReikaColorAPI.mixColors(0xffffff, e.getColor(), 0.8F));
+
 								GL11.glDisable(GL11.GL_TEXTURE_2D);
 							}
 						}

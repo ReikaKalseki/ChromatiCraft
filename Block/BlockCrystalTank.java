@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
@@ -45,8 +45,10 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockCrystalTank extends Block implements IWailaDataProvider, ConnectedTextureGlass {
@@ -200,7 +202,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 
 	private void confirmHasController(World world, int x, int y, int z) {
 		BlockArray blocks = new BlockArray();
-		List<Block> li = Arrays.asList(this, ChromaTiles.TANK.getBlock());
+		Set<BlockKey> li = ReikaJavaLibrary.getSet(new BlockKey(this), new BlockKey(ChromaTiles.TANK));
 		blocks.recursiveAddMultipleWithBounds(world, x, y, z, li, x-32, y-32, z-32, x+32, y+32, z+32);
 		TileEntityCrystalTank con = null;
 		int count = 0;

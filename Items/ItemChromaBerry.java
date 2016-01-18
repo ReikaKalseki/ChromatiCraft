@@ -17,12 +17,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ItemChromaBerry extends ItemCrystalBasic {
 
@@ -38,22 +40,34 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 		Block b = ei.worldObj.getBlock(x, y, z);
 		if (b == ChromaBlocks.CHROMA.getBlockInstance()) {
 			if (ei.worldObj.getBlockMetadata(x, y, z) == 0) {
-				TileEntity te = ei.worldObj.getTileEntity(x, y, z);
-				if (te instanceof TileEntityChroma) {
-					TileEntityChroma tc = (TileEntityChroma)te;
-					ItemStack is = ei.getEntityItem();
-					int df = is.stackSize;
-					//ReikaJavaLibrary.pConsole("pre "+is.stackSize, Side.SERVER);
-					int amt = tc.activate(CrystalElement.elements[is.getItemDamage()], is.stackSize);
-					//ReikaJavaLibrary.pConsole(amt+" from "+is.stackSize, Side.SERVER);
-					if (!ei.worldObj.isRemote)
-						is.stackSize -= amt;
-					//ReikaJavaLibrary.pConsole(ei.age+":"+amt+", "+df+">"+is.stackSize, Side.SERVER);
-					if (is.stackSize <= 0)
-						ei.setDead();
-					else
-						ei.setEntityItemStack(is);
+				if (this.canCharge(ei)) {
+					TileEntity te = ei.worldObj.getTileEntity(x, y, z);
+					if (te instanceof TileEntityChroma) {
+						TileEntityChroma tc = (TileEntityChroma)te;
+						ItemStack is = ei.getEntityItem();
+						int df = is.stackSize;
+						//ReikaJavaLibrary.pConsole("pre "+is.stackSize, Side.SERVER);
+						int amt = tc.activate(CrystalElement.elements[is.getItemDamage()], is.stackSize);
+						//ReikaJavaLibrary.pConsole(amt+" from "+is.stackSize, Side.SERVER);
+						if (!ei.worldObj.isRemote)
+							is.stackSize -= amt;
+						//ReikaJavaLibrary.pConsole(ei.age+":"+amt+", "+df+">"+is.stackSize, Side.SERVER);
+						if (is.stackSize <= 0)
+							ei.setDead();
+						else
+							ei.setEntityItemStack(is);
+					}
 				}
+			}
+		}
+		return false;
+	}
+
+	private boolean canCharge(EntityItem ei) {
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (ep != null) {
+			if (ProgressStage.SHARDCHARGE.playerHasPrerequisites(ep)) {
+				return true;
 			}
 		}
 		return false;

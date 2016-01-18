@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem {
 
@@ -56,7 +57,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		Block b = ei.worldObj.getBlock(x, y, z);
 		if (b == ChromaBlocks.CHROMA.getBlockInstance()) {
 			if (ei.worldObj.getBlockMetadata(x, y, z) == 0) {
-				if (dmg < 16) {
+				if (dmg < 16 && this.canCharge(ei)) {
 					TileEntity te = ei.worldObj.getTileEntity(x, y, z);
 					if (te instanceof TileEntityChroma) {
 						TileEntityChroma tc = (TileEntityChroma)te;
@@ -71,6 +72,16 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 				else {
 					ei.lifespan = Integer.MAX_VALUE;
 				}
+			}
+		}
+		return false;
+	}
+
+	private boolean canCharge(EntityItem ei) {
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (ep != null) {
+			if (ProgressStage.SHARDCHARGE.playerHasPrerequisites(ep)) {
+				return true;
 			}
 		}
 		return false;
@@ -98,6 +109,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 				ei.worldObj.spawnEntityInWorld(ei2);
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SHARDBOOST.ordinal(), ei.worldObj, x, y, z, ei.getEntityId());
 				ChromaSounds.INFUSE.playSoundAtBlock(ei.worldObj, x, y, z);
+				ProgressStage.SHARDCHARGE.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 			}
 			ei.setDead();
 			return true;
@@ -138,56 +150,56 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		String ret = "";
 		CrystalElement dye = CrystalElement.elements[is.getItemDamage()];
 		switch(dye) {
-		case BLACK:
-			ret += PotionHelper.fermentedSpiderEyeEffect;
-			break;
-		case BLUE:
-			ret += PotionHelper.goldenCarrotEffect;
-			break;
-		case BROWN:
-			ret += PotionHelper.redstoneEffect;
-			break;
-		case CYAN: //water breathing
-			ret += "";
-			break;
-		case GRAY: //slowness
-			ret += PotionHelper.sugarEffect;
-			break;
-		case GREEN:
-			ret += PotionHelper.spiderEyeEffect;
-			break;
-		case LIGHTBLUE:
-			ret += PotionHelper.sugarEffect;
-			break;
-		case LIGHTGRAY: //weakness
-			ret += PotionHelper.blazePowderEffect;
-			break;
-		case LIME: //jump boost
-			ret += "";
-			break;
-		case MAGENTA:
-			ret += PotionHelper.ghastTearEffect;
-			break;
-		case ORANGE:
-			ret += PotionHelper.magmaCreamEffect;
-			break;
-		case PINK:
-			ret += PotionHelper.blazePowderEffect;
-			break;
-		case PURPLE: //xp -> level2?
-			ret += PotionHelper.glowstoneEffect;
-			break;
-		case RED: //resistance
-			ret += "";
-		case WHITE:
-			ret += PotionHelper.goldenCarrotEffect;
-			break;
-		case YELLOW: //haste
-			ret += "";
-			break;
-		default:
-			ret += "";
-			break;
+			case BLACK:
+				ret += PotionHelper.fermentedSpiderEyeEffect;
+				break;
+			case BLUE:
+				ret += PotionHelper.goldenCarrotEffect;
+				break;
+			case BROWN:
+				ret += PotionHelper.redstoneEffect;
+				break;
+			case CYAN: //water breathing
+				ret += "";
+				break;
+			case GRAY: //slowness
+				ret += PotionHelper.sugarEffect;
+				break;
+			case GREEN:
+				ret += PotionHelper.spiderEyeEffect;
+				break;
+			case LIGHTBLUE:
+				ret += PotionHelper.sugarEffect;
+				break;
+			case LIGHTGRAY: //weakness
+				ret += PotionHelper.blazePowderEffect;
+				break;
+			case LIME: //jump boost
+				ret += "";
+				break;
+			case MAGENTA:
+				ret += PotionHelper.ghastTearEffect;
+				break;
+			case ORANGE:
+				ret += PotionHelper.magmaCreamEffect;
+				break;
+			case PINK:
+				ret += PotionHelper.blazePowderEffect;
+				break;
+			case PURPLE: //xp -> level2?
+				ret += PotionHelper.glowstoneEffect;
+				break;
+			case RED: //resistance
+				ret += "";
+			case WHITE:
+				ret += PotionHelper.goldenCarrotEffect;
+				break;
+			case YELLOW: //haste
+				ret += "";
+				break;
+			default:
+				ret += "";
+				break;
 		}
 		if (is.getItemDamage() >= 16) {
 			ret += "+5+6-7"; //level II and extended

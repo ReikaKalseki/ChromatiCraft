@@ -47,7 +47,7 @@ public class ExplorationMonitor implements TickHandler {
 
 				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
 					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true);
+					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true, true);
 				}
 
 				Block b = world.getBlock(x, y, z);

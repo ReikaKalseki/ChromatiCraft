@@ -15,7 +15,9 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,18 +36,21 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -138,10 +143,10 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-		int color = world.getBlockMetadata(x, y, z);
-		double[] v = ReikaDyeHelper.getColorFromDamage(color).getRedstoneParticleVelocityForColor();
-		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 1);
-		CrystalElement e = CrystalElement.elements[color];
+		CrystalElement e = this.getCrystalElement(world, x, y, z);
+
+		this.doParticles(world, x, y, z, e, rand);
+
 		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
 			if (rand.nextInt(3) == 0)
 				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
@@ -150,19 +155,51 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean addHitEffects(World world, MovingObjectPosition target, EffectRenderer effectRenderer)
-	{
+	public boolean addHitEffects(World world, MovingObjectPosition target, EffectRenderer effectRenderer) {
 		int x = target.blockX;
 		int y = target.blockY;
 		int z = target.blockZ;;
 		CrystalElement e = this.getCrystalElement(world, x, y, z);
-		double[] v = ReikaDyeHelper.dyes[e.ordinal()].getRedstoneParticleVelocityForColor();
-		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, v[0], v[1], v[2], 4);
+
+		this.doParticles(world, x, y, z, e, rand);
+
 		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
 			if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
 				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
 		}
 		return false;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doParticles(World world, int x, int y, int z, CrystalElement e, Random rand) {
+		EntityFX fx;
+		if (rand.nextInt(20) > 0) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.5);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5+0.125, 0.5);
+			float s = 1+rand.nextFloat()*1.5F;
+			int l = 5+rand.nextInt(60);
+			int n = 3+rand.nextInt(6);
+			float f = s/16F;
+			float s2 = s/4F;
+			for (int i = 0; i < n; i++) {
+				double rrx = ReikaRandomHelper.getRandomPlusMinus(rx, f);
+				double rry = ReikaRandomHelper.getRandomPlusMinus(ry, f);
+				double rrz = ReikaRandomHelper.getRandomPlusMinus(rz, f);
+				fx = new EntityBlurFX(e, world, rrx, rry, rrz, 0, 0, 0).setLife(l).setScale(s2).setIcon(ChromaIcons.SPARKLEPARTICLE);
+				if (rand.nextBoolean())
+					((EntityBlurFX)fx).setRapidExpand();
+				if (rand.nextBoolean())
+					((EntityBlurFX)fx).setBasicBlend();
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+		else {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.35);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.35);
+			fx = new EntityFloatingSeedsFX(world, rx, y+0.5, rz, 0, 90).setColor(e.getColor()).setIcon(ChromaIcons.CENTER).setScale(4).setLife(120).setColliding();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	public void updateEffects(World world, int x, int y, int z) {
@@ -265,7 +302,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 				case PURPLE:
 					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
 						EntityPlayer ep = (EntityPlayer)e;
-						e.playSound("random.orb", 1, 1);
+						e.playSound("random.orb", 0.2F, rand.nextFloat()*2);
 						ep.addExperience(1);
 					}
 					break;

@@ -43,6 +43,10 @@ public class EntityBlurFX extends EntityFX {
 
 	private Coordinate destination;
 
+	private EntityFX lock;
+
+	private boolean additiveBlend = true;
+
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
 	}
@@ -139,6 +143,16 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX lockTo(EntityFX fx) {
+		lock = fx;
+		return this;
+	}
+
+	public EntityBlurFX setBasicBlend() {
+		additiveBlend = false;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -216,6 +230,15 @@ public class EntityBlurFX extends EntityFX {
 				motionZ = -motionZ;
 			}
 		}
+
+		if (lock != null) {
+			posX = lock.posX;
+			posY = lock.posY;
+			posZ = lock.posZ;
+			motionX = lock.motionX;
+			motionY = lock.motionY;
+			motionZ = lock.motionZ;
+		}
 	}
 
 	@Override
@@ -223,7 +246,8 @@ public class EntityBlurFX extends EntityFX {
 	{
 		v5.draw();
 		ReikaTextureHelper.bindTerrainTexture();
-		BlendMode.ADDITIVEDARK.apply();
+		if (additiveBlend)
+			BlendMode.ADDITIVEDARK.apply();
 		GL11.glColor4f(1, 1, 1, 1);
 		v5.startDrawingQuads();
 		v5.setBrightness(this.getBrightnessForRender(0));

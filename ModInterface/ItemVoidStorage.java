@@ -11,9 +11,15 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.List;
 
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.ModList;
@@ -21,6 +27,9 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.DummyInventory;
+import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;
@@ -33,7 +42,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 
 @Strippable(value = "appeng.api.implementations.items.IStorageCell")
-public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
+public class ItemVoidStorage extends ItemChromaTool implements SpriteRenderCallback, IStorageCell {
 
 	private static class CellInventory extends BasicInventory {
 
@@ -154,6 +163,27 @@ public class ItemVoidStorage extends ItemChromaTool implements IStorageCell {
 		else {
 			return null;
 		}
+	}
+
+	@Override
+	public boolean onRender(RenderItem ri, ItemStack is, ItemRenderType type) {
+		if (type == ItemRenderType.INVENTORY) {
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				ItemStack store = ItemVoidStorage.getStoredItem(is);
+				if (store != null) {
+					double s = 0.063;
+					GL11.glScaled(s, -s, s);
+					ReikaGuiAPI.instance.drawItemStack(ri, ReikaItemHelper.getSizedItemStack(store, 1), 0, -16);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean doPreGLTransforms(ItemStack is, ItemRenderType type) {
+		return true;
 	}
 
 }

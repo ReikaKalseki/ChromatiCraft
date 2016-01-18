@@ -31,10 +31,12 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
@@ -55,8 +57,8 @@ public class GuiProgressStages extends GuiScrollingPage {
 	private int elementWidth = 0;
 	private int elementHeight = 20;
 
-	private static final int spacingX = 30;//80;
-	private static final int spacingY = 15;//30;
+	private static final int spacingX = 30;//60;//30;//80;
+	private static final int spacingY = 15;//25;//15;//30;
 
 	public GuiProgressStages(EntityPlayer ep) {
 		super(ChromaGuis.PROGRESS, ep, 256, 220, 242, 112);
@@ -221,6 +223,14 @@ public class GuiProgressStages extends GuiScrollingPage {
 				GL11.glPopAttrib();
 			}
 		}
+		else {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.INVERTEDADD.apply();
+			api.drawTexturedModelRectFromIcon(x+2, y+2, ChromaIcons.QUESTION.getIcon(), 16, 16);
+			GL11.glPopAttrib();
+		}
 		locations.put(p, new Rectangle(x, y, elementWidth, elementHeight));
 	}
 
@@ -240,9 +250,19 @@ public class GuiProgressStages extends GuiScrollingPage {
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.DEFAULT.apply();
 			ProgressStage p = active;//this.getStage();
-			fontRendererObj.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
+			if (p.isOneStepAway(player) || p.playerHasPrerequisites(player)) {
+				fontRendererObj.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
+			}
+			else {
+				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(p.getTitleString(), px, posY+descY+36, 242, 0xffffff);
+			}
 
-			fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
+			if (this.renderClearText(p)) {
+				fontRendererObj.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
+			}
+			else {
+				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawSplitString(p.getHintString(), px, posY+descY+36+20, 242, 0xffffff);
+			}
 
 			int dy = posY+descY+100+15;
 			if (p.isPlayerAtStage(player)) {

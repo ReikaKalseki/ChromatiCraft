@@ -14,6 +14,7 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.ModInterface.MystPages;
@@ -24,7 +25,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 
-public class TieredWorldGenerator implements RetroactiveGenerator {
+public class TieredWorldGenerator implements RetroactiveGenerator, ChromaDecorator {
 
 	public static final TieredWorldGenerator instance = new TieredWorldGenerator();
 
@@ -81,6 +82,10 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean generateIn(World world, boolean ore) {
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
+			return false;
+		if (Math.abs(world.provider.dimensionId) <= 1)
+			return true;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			return true;
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
@@ -88,7 +93,7 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 				return false;
 			}
 		}
-		return (world.getWorldInfo().getTerrainType() != WorldType.FLAT || ChromaOptions.FLATGEN.getState()) && !world.provider.hasNoSky;
+		return !world.provider.hasNoSky;
 	}
 
 	@Override
@@ -99,6 +104,11 @@ public class TieredWorldGenerator implements RetroactiveGenerator {
 	@Override
 	public String getIDString() {
 		return "ChromatiCraft Tiered Materials";
+	}
+
+	@Override
+	public String getCommandID() {
+		return "tiered";
 	}
 
 }

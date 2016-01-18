@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,9 +21,17 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Interfaces.Registry.OreType;
+import Reika.DragonAPI.Interfaces.Registry.OreType.OreRarity;
 import Reika.DragonAPI.Interfaces.TileEntity.XPProducer;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModRegistry.ModOreList;
+import Reika.GeoStrata.Registry.RockTypes;
+import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 
 public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements XPProducer {
 
@@ -87,7 +97,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		if (out == null)
 			return false;
 		out = out.copy();
-		out.stackSize *= this.getMultiplyRate(out);
+		out.stackSize *= this.getMultiplyRate(inv[0], out);
 		if (inv[1] == null)
 			return true;
 		if (!ReikaItemHelper.matchStacks(out, inv[1]) || !ItemStack.areItemStackTagsEqual(out, inv[1]))
@@ -99,18 +109,52 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	private void smelt() {
 		ItemStack is = FurnaceRecipes.smelting().getSmeltingResult(inv[0]).copy();
-		is.stackSize *= this.getMultiplyRate(is);
+		ElementTagCompound tag = getSmeltingCost(inv[0], is);
+		is.stackSize *= this.getMultiplyRate(inv[0], is);
 		ReikaInventoryHelper.addOrSetStack(is, inv, 1);
 		xp += FurnaceRecipes.smelting().func_151398_b(inv[0])*6;
 		ReikaInventoryHelper.decrStack(0, inv);
-		this.drainEnergy(smelt);
+		this.drainEnergy(tag);
 	}
 
-	private int getMultiplyRate(ItemStack is) {
-		int[] ids = OreDictionary.getOreIDs(is);
+	public static ElementTagCompound getSmeltingCost(ItemStack in, ItemStack out) {
+		ElementTagCompound tag = smelt.copy();
+		if (ReikaBlockHelper.isOre(in))
+			tag.scale(1.5F);
+		else if (ModList.ROTARYCRAFT.isLoaded() && ExtractorModOres.isOreFlake(in)) {
+			tag.scale(2F);
+		}
+		else if (in.getItem() instanceof ItemFood) {
+			tag.scale(0.75F);
+		}
+		return tag.scale((float)Math.pow(getMultiplyRate(in, out)/2F, 2));
+	}
+
+	public static int getMultiplyRate(ItemStack in, ItemStack out) {
+		int[] ids = OreDictionary.getOreIDs(in);
+		if (in.getDisplayName() != null && in.getDisplayName().toLowerCase().contains("cobblestone"))
+			return 1;
+		else if (ModList.GEOSTRATA.isLoaded() && RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())) != null) {
+			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
+			return 1;
+		}
+		else if (ReikaBlockHelper.isOre(in)) {
+			int ret = 4;
+			OreType ore = ReikaOreHelper.getEntryByOreDict(in);
+			if (ore == null)
+				ore = ModOreList.getModOreFromOre(in);
+			if (ore != null) {
+				if (ore.getRarity() == OreRarity.RARE) {
+					ret = 8;
+				}
+			}
+			return ret;
+		}
 		for (int i = 0; i < ids.length; i++) {
 			String name = OreDictionary.getOreName(ids[i]);
 			if (name.startsWith("dust")) //exploits
+				return 1;
+			else if (name.equalsIgnoreCase("cobblestone")) //exploits
 				return 1;
 		}
 		return MULTIPLY;

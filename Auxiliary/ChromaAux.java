@@ -16,8 +16,10 @@ import java.util.List;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -232,26 +234,37 @@ public class ChromaAux {
 		return map;
 	}
 
-	public static void changePylonColor(TileEntityCrystalPylon te, CrystalElement e) {
-		CrystalNetworker.instance.removeTile(te);
-		PylonGenerator.instance.removeCachedPylon(te);
-		te.setColor(e);
-		BlockArray runes = te.getRuneLocations(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
-		for (int i = 0; i < runes.getSize(); i++) {
-			Coordinate c = runes.getNthBlock(i);
-			if (c.getBlock(te.worldObj) == ChromaBlocks.RUNE.getBlockInstance())
-				te.worldObj.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, te.getColor().ordinal(), 3);
+	public static void changePylonColor(World world, TileEntityCrystalPylon te, CrystalElement e) {
+		try {
+			ChunkCoordIntPair ch = new Coordinate(te).asChunkPair();
+			world.getChunkProvider().provideChunk(ch.chunkXPos, ch.chunkZPos);
+			TileEntityCrystalPylon old = te;
+			te = (TileEntityCrystalPylon)world.getTileEntity(te.xCoord, te.yCoord, te.zCoord);
+			CrystalNetworker.instance.removeTile(old);
+			PylonGenerator.instance.removeCachedPylon(old);
+			te.setColor(e);
+			BlockArray runes = te.getRuneLocations(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+			for (int i = 0; i < runes.getSize(); i++) {
+				Coordinate c = runes.getNthBlock(i);
+				if (c.getBlock(te.worldObj) == ChromaBlocks.RUNE.getBlockInstance())
+					te.worldObj.setBlockMetadataWithNotify(c.xCoord, c.yCoord, c.zCoord, te.getColor().ordinal(), 3);
+			}
+			CrystalNetworker.instance.addTile(te);
+			PylonGenerator.instance.cachePylon(te);
 		}
-		CrystalNetworker.instance.addTile(te);
-		PylonGenerator.instance.cachePylon(te);
+		catch (Exception ex) {
+			ChromatiCraft.logger.logError("Could not change pylon color @ "+te);
+			ex.printStackTrace();
+		}
 	}
 
 	public static void notifyServerPlayersExcept(EntityPlayer ep, ProgressElement p) {
-		String sg = ep.getCommandSenderName()+" has learned something new: "+p.getTitle();
+		String sg = EnumChatFormatting.GOLD+ep.getCommandSenderName()+EnumChatFormatting.RESET+" has learned something new: "+p.getFormatting()+p.getTitle();
 		WorldServer[] ws = DimensionManager.getWorlds();
 		for (int i = 0; i < ws.length; i++) {
 			for (EntityPlayer ep2 : ((List<EntityPlayer>)ws[i].playerEntities)) {
-				ReikaChatHelper.sendChatToPlayer(ep2, sg);
+				if (ep2 != ep)
+					ReikaChatHelper.sendChatToPlayer(ep2, sg);
 			}
 		}
 	}

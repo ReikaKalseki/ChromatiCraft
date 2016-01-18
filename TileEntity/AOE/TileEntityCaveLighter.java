@@ -1,5 +1,6 @@
 package Reika.ChromatiCraft.TileEntity.AOE;
 
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
@@ -83,7 +84,7 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase {
 	}
 
 	private boolean placeBlockAt(World world, int x, int y, int z) {
-		return !world.canBlockSeeTheSky(x, y+1, z) && world.getBlockLightValue(x, y, z) <= 7 && world.getBlock(x, y, z).isAir(world, x, y, z);
+		return world.getBlock(x, y, z).isAir(world, x, y, z) && world.getBlockLightValue(x, y, z) <= 7 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 4 && !world.canBlockSeeTheSky(x, y+1, z);
 	}
 
 }

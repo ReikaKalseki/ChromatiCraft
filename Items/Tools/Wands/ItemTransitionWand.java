@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -79,7 +80,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				//br.extraSpread = true;
 				//br.tickRate = 2;
 				br.player = ep;
-				br.silkTouch = true;
+				br.silkTouch = EnchantmentHelper.getSilkTouchModifier(ep);
 				BlockReplace brp = new BlockReplace(ep, id, meta, mode);
 				if (mode == TransitionMode.VOLUMETRIC) {
 					br.bounds = this.getStoredBox(is);

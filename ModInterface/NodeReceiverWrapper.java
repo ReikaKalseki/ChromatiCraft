@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 import java.util.UUID;
@@ -44,6 +43,8 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -57,30 +58,51 @@ import cpw.mods.fml.relauncher.SideOnly;
 public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetworkTile, WrapperTile {
 
 	private static final int DELAY = 600;
+	private static final int MIN_DELAY = 200;
 
 	private static final int NEW_ASPECT_COST = 240000;
 
 	private static final float LOSS_FACTOR = 0.6F;
+
+	private static final String LOGGER_ID = "chromanodes";
 
 	private static final Random rand = new Random();
 
 	private final INode node;
 	public final WorldLocation location;
 	private final UUID uid = UUID.randomUUID();
+
+	private int fulltick = MIN_DELAY;
 	private int tick = DELAY;
 
 	private final ElementTagCompound baseVis = new ElementTagCompound();
+
+	private final WeightedRandom<Aspect> newAspectWeight = new WeightedRandom();
+
+	static {
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
+	}
 
 	NodeReceiverWrapper(INode n) {
 		node = n;
 		location = new WorldLocation((TileEntity)n);
 
 		AspectList al = n.getAspectsBase();
+
+		for (Aspect a : Aspect.aspects.values()) {
+			if (!al.aspects.containsKey(a)) {
+				double wt = a.isPrimal() ? 100 : 10/ReikaThaumHelper.decompose(a).size();
+				newAspectWeight.addEntry(a, wt);
+			}
+		}
+
 		for (Aspect a : al.aspects.keySet()) {
 			int amt = al.getAmount(a);
 			ElementTagCompound tag = this.getTagValue(a).scale(amt);
 			baseVis.addTag(tag);
 		}
+
+		ModularLogger.instance.log(LOGGER_ID, "Node wrapper created for node "+location);
 	}
 
 	private int getCurrentValue(CrystalElement e) {
@@ -197,11 +219,14 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (rand.nextInt(240) == 0)
 			this.healNode();
 
+		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" recharge");
+
 		location.triggerBlockUpdate(false);
 	}
 
 	public void tick() {
 		tick++;
+		fulltick++;
 
 		if (rand.nextInt(240) == 0) {
 			this.playSound("thaumcraft:zap");
@@ -211,7 +236,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (rand.nextInt(1600) == 0)
 			this.healNode();
 
-		if (tick >= DELAY) {
+		if (tick >= DELAY && fulltick >= MIN_DELAY) {
 			ElementTagCompound req = new ElementTagCompound();
 			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
 				int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
@@ -222,22 +247,23 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			req.scale(1.25F/LOSS_FACTOR);
 			boolean flag = false;
 			for (CrystalElement e : req.elementSet()) {
+				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" requesting "+req.getValue(e)+" of "+e.displayName);
 				flag |= CrystalNetworker.instance.makeRequest(this, e, req.getValue(e), this.getReceiveRange());
 			}
+			fulltick = 0;
 			if (flag) {
 				this.playSound("thaumcraft:craftstart");
 				tick = 0;
 			}
 		}
 
-		if (rand.nextInt(32000) == 0) {
-			ArrayList<Aspect> li = Aspect.getPrimalAspects();
+		if (rand.nextInt(32000) == 0 && !newAspectWeight.isEmpty()) {
 			AspectList al = node.getAspectsBase();
-			for (Aspect a : li) {
-				if (!al.aspects.containsKey(a)) {
-					if (this.tryToAddAspect(a, al))
-						break;
-				}
+			Aspect a = newAspectWeight.getRandomEntry();
+			newAspectWeight.remove(a);
+			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" attempting to gain aspect '"+a.getName()+"'");
+			if (this.tryToAddAspect(a, al)) {
+				ModularLogger.instance.log(LOGGER_ID, "Node "+location+" gained aspect '"+a.getName()+"'");
 			}
 			location.triggerBlockUpdate(false);
 		}
@@ -348,6 +374,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			else {
 				node.setNodeModifier(NodeModifier.BRIGHT);
 			}
+
+			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" brightness change");
 		}
 
 		if (rand.nextInt(240) == 0) {
@@ -370,6 +398,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 					node.setNodeType(NodeType.TAINTED);
 					break;
 			}
+
+			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" type change");
 		}
 
 		AspectList al = node.getAspectsBase();
@@ -377,8 +407,9 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			int amt = al.getAmount(a);
 			int newamt = Math.min(720, Math.max(amt+1, (int)(amt+rand.nextDouble()*Math.sqrt(amt))));//(int)(amt*(1+rand.nextFloat()/5F));
 			al.merge(a, newamt);
-			//ReikaJavaLibrary.pConsole(a.getName()+" from "+amt+" to "+newamt);
+			ModularLogger.instance.log(LOGGER_ID, "Node "+location+" aspect '"+a.getName()+"' cap increased to "+newamt);
 		}
+		//ReikaJavaLibrary.pConsole(a.getName()+" from "+amt+" to "+newamt);
 
 		location.triggerBlockUpdate(false);
 	}
@@ -390,11 +421,15 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 				node.takeFromContainer(a, amt-1);
 		}
 
+		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" emptied");
+
 		location.triggerBlockUpdate(false);
 	}
 
 	private void fillNode() {
 		node.setAspects(node.getAspectsBase());
+
+		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" filled");
 
 		location.triggerBlockUpdate(false);
 	}
@@ -412,6 +447,9 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		ChromaSounds.POWERDOWN.playSound(world, x, y, z, 2, 1);
 		EntityLightningBolt elb = new EntityLightningBolt(world, x-0.5, y, z-0.5); //already has +0.5
 		world.addWeatherEffect(elb);
+
+		ModularLogger.instance.log(LOGGER_ID, "Node "+location+" destroyed");
+
 		location.setBlock(Blocks.air);
 	}
 

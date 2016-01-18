@@ -22,9 +22,11 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Worldgen.ModSpawnEntry;
@@ -36,7 +38,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BiomeRainbowForest extends BiomeGenBase {
 
-	Random rand = new Random();
+	private final Random rand = new Random();
 
 	private final int waterColor = new Color(0, 255, 255).getRGB();
 	private final int skyColor = new Color(100, 140, 255).getRGB();
@@ -65,12 +67,12 @@ public class BiomeRainbowForest extends BiomeGenBase {
 
 		spawnableMonsterList.add(new SpawnListEntry(EntitySlime.class, 8, 4, 4));
 
-		spawnableCreatureList.add(new SpawnListEntry(EntityWolf.class, 1, 4, 4));
+		spawnableCreatureList.add(new SpawnListEntry(EntityWolf.class, 3, 4, 4));
 		spawnableCreatureList.add(new SpawnListEntry(EntitySheep.class, 6, 4, 4));
 		spawnableCreatureList.add(new SpawnListEntry(EntityPig.class, 7, 4, 4));
 		spawnableCreatureList.add(new SpawnListEntry(EntityChicken.class, 6, 4, 4));
 		spawnableCreatureList.add(new SpawnListEntry(EntityCow.class, 6, 4, 4));
-		spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 2, 1, 3));
+		spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 3, 1, 3));
 
 		spawnableMonsterList.add(new SpawnListEntry(EntityBallLightning.class, 5, 1, 1));
 
@@ -176,6 +178,17 @@ public class BiomeRainbowForest extends BiomeGenBase {
 	public int getWaterColorMultiplier()
 	{
 		return waterColor;
+	}
+
+	@Override
+	public void plantFlower(World world, Random rand, int x, int y, int z) {
+		if (rand.nextInt(8) > 0 && ChromaBlocks.DYEFLOWER.getBlockInstance().canBlockStay(world, x, y, z)) {
+			int meta = rand.nextInt(16);
+			world.setBlock(x, y, z, ChromaBlocks.DYEFLOWER.getBlockInstance(), meta, 3);
+		}
+		else {
+			super.plantFlower(world, rand, x, y, z);
+		}
 	}
 
 	public static boolean isMobAllowed(EntityLivingBase e) {

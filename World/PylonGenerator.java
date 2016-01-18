@@ -434,6 +434,8 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		Coordinate offset = this.getTreeDodgeAttempt(array, world, x, y, z, 8, 16);
 		array.offset(offset.xCoord, offset.yCoord, offset.zCoord);
 
+		y -= array.sink(world, Material.wood, Material.leaves);
+
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
 			for (int i = 2; i < 6; i++) {

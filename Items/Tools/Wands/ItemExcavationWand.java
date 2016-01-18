@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -23,6 +24,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
@@ -46,7 +48,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public boolean canHarvestBlock(Block b, ItemStack is) {
-		return true;
+		return b != Blocks.stone && b != Blocks.netherrack && b != Blocks.end_stone;
 	}
 
 	@Override
@@ -54,9 +56,16 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		World world = ep.worldObj;
 		if (!world.isRemote) {
 			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
+			//b.looseMatches.put(Blocks.redstone_ore, new BlockKey(Blocks.lit_redstone_ore));
 			b.call = this;
 			b.silkTouch = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch, itemstack) > 0;
 			b.drops = !ep.capabilities.isCreativeMode;
+			b.fortune = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.fortune, itemstack);
+			Block bk = ep.worldObj.getBlock(x, y, z);
+			if (bk == Blocks.lit_redstone_ore)
+				b.addBlock(new BlockKey(Blocks.redstone_ore));
+			else if (bk == Blocks.redstone_ore)
+				b.addBlock(new BlockKey(Blocks.lit_redstone_ore));
 			breakers.put(b.hashCode(), ep);
 		}
 		return true;

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -85,12 +86,21 @@ public class AspectJarRenderer extends ChromaRenderBase {
 		GL11.glTranslated(0.5, 0.01, 0.5);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 		try {
-			JarTilt jt = te.getAngle();
-			if (jt != null) {
-				int a = jt.direction.offsetX == 0 ? 1 : 0;
+			ForgeDirection sp = te.getSpill();
+			if (sp != null) {
+				int a = sp.offsetX == 0 ? 1 : 0;
 				int b = 1-a;
-				int dir = jt.direction.offsetX+jt.direction.offsetZ;
-				GL11.glRotated(dir*jt.getAngle(), a, 0, b);
+				int dir = sp.offsetX+sp.offsetZ;
+				GL11.glRotated(dir*90, a, 0, b);
+			}
+			else {
+				JarTilt jt = te.getAngle();
+				if (jt != null) {
+					int a = jt.direction.offsetX == 0 ? 1 : 0;
+					int b = 1-a;
+					int dir = jt.direction.offsetX+jt.direction.offsetZ;
+					GL11.glRotated(dir*jt.getAngle(), a, 0, b);
+				}
 			}
 			this.renderAspects(te);
 			this.renderJar(te);
@@ -123,7 +133,8 @@ public class AspectJarRenderer extends ChromaRenderBase {
 
 		GL11.glDisable(GL11.GL_LIGHTING);
 
-		double level = 0.625*Math.sqrt((double)amt/te.CAPACITY);//ReikaMathLibrary.logbase2(te.getAmount())/ReikaMathLibrary.logbase2(te.CAPACITY);
+		double cap = a.isPrimal() ? te.CAPACITY_PRIMAL : te.CAPACITY;
+		double level = 0.625*Math.sqrt(amt/cap);//ReikaMathLibrary.logbase2(te.getAmount())/ReikaMathLibrary.logbase2(te.CAPACITY);
 
 		Tessellator v5 = Tessellator.instance;
 

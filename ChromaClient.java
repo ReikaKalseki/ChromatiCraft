@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.renderer.entity.RenderFireball;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSlime;
+import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.Item;
@@ -31,6 +33,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
+import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
@@ -84,6 +87,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
+import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -93,6 +97,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final ItemSpriteSheetRenderer[] items = {
 		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items.png"),
 		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items2.png"),
+		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items3.png"),
 	};
 
 	//public static final ItemMachineRenderer machineItems = new ItemMachineRenderer();
@@ -129,9 +134,13 @@ public class ChromaClient extends ChromaCommon {
 
 	public static KeyBinding key_ability;
 
+	public static SoundCategory chromaCategory;
+
 	@Override
 	public void registerSounds() {
 		new SoundLoader(ChromaSounds.soundList).register();
+
+		chromaCategory = ReikaRegistryHelper.addSoundCategory("CHROMA", "ChromatiCraft");
 	}
 
 	@Override
@@ -149,6 +158,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityChainGunShot.class, new RenderChainGunShot());
 		RenderingRegistry.registerEntityRenderingHandler(EntitySplashGunShot.class, new RenderSplashGunShot());
 		RenderingRegistry.registerEntityRenderingHandler(EntityVacuum.class, new RenderVacuum());
+		RenderingRegistry.registerEntityRenderingHandler(EntityChromaEnderCrystal.class, new RenderEnderCrystal());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();

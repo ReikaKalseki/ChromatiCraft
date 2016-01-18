@@ -10,13 +10,10 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ItemWandBase extends ItemChromaTool {
 
@@ -46,7 +43,7 @@ public abstract class ItemWandBase extends ItemChromaTool {
 		return energy.copy().scale(scale);
 	}
 
-	@SideOnly(Side.CLIENT)
+	//@SideOnly(Side.CLIENT)
 	public String generateUsageData() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Base usage cost: \n");
@@ -58,7 +55,7 @@ public abstract class ItemWandBase extends ItemChromaTool {
 
 	@Override
 	public final int getItemEnchantability() {
-		return Items.golden_pickaxe.getItemEnchantability();
+		return 0;//Items.golden_pickaxe.getItemEnchantability();
 	}
 
 	protected static boolean canUseBoostedEffect(EntityPlayer ep) {

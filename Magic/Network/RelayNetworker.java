@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.CompoundPlayerTarget;
@@ -36,8 +37,14 @@ public final class RelayNetworker {
 
 	public static final RelayNetworker instance = new RelayNetworker(getConfigurableRange(), 48);
 
+	private static final String LOGGER_ID = "lumenrelay";
+
 	public final int maxRange;
 	public final int maxDepth;
+
+	static {
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
+	}
 
 	private RelayNetworker(int r, int d) {
 		maxRange = r;
@@ -78,6 +85,7 @@ public final class RelayNetworker {
 			while (!li.isEmpty()) {
 				path.add(li.removeLast()); //reverse list
 			}
+			ModularLogger.instance.log(LOGGER_ID, "Relay pathfinding complete from "+source+" to "+target+" for "+e);
 		}
 
 		public void transmit(CrystalElement e) {
@@ -131,6 +139,7 @@ public final class RelayNetworker {
 			color = e;
 			amount = amt;
 			path.addFirst(target);
+			ModularLogger.instance.log(LOGGER_ID, "Relay pathfinding start @ "+loc+" in "+world.provider.dimensionId+" for "+amt+" of "+e);
 		}
 
 		private RelayPath find() {

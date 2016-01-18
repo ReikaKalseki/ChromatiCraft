@@ -21,6 +21,7 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 
 	public EntityChromaEnderCrystal(World world) {
 		super(world);
+		yOffset = 0;
 	}
 
 	public EntityChromaEnderCrystal(World world, EntityEnderCrystal e) {
@@ -36,10 +37,12 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 	public void onUpdate() {
 		super.onUpdate();
 
-		int x = MathHelper.floor_double(posX);
-		int y = MathHelper.floor_double(posY);
-		int z = MathHelper.floor_double(posZ);
-		worldObj.setBlock(x, y, z, Blocks.fire);
+		if (!worldObj.isRemote) {
+			int x = MathHelper.floor_double(posX);
+			int y = MathHelper.floor_double(posY);
+			int z = MathHelper.floor_double(posZ);
+			worldObj.setBlock(x, y+1, z, Blocks.fire);
+		}
 	}
 
 	@Override //Identical except cannot die outside of end

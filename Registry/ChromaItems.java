@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemResetWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.DragonAPICore;
@@ -128,6 +129,7 @@ public enum ChromaItems implements ItemEnum {
 	CARD(31, false,			"chroma.card",			ItemCrystalCard.class),
 	SHARE(30, false,		"chroma.share",			ItemOwnerKey.class),
 	RESET(42, false,		"chroma.reset",			ItemResetWand.class),
+	COLOREDMOD(512, true, 	"chroma.colormod", 		ItemColoredModInteract.class),
 	;
 
 	private final int index;
@@ -249,6 +251,8 @@ public enum ChromaItems implements ItemEnum {
 				return StatCollector.translateToLocal(ChromaNames.miscNames[meta]);
 			case MODINTERACT:
 				return StatCollector.translateToLocal(ChromaNames.modInteractNames[meta]);
+			case COLOREDMOD:
+				return CrystalElement.elements[meta%16].displayName+" "+StatCollector.translateToLocal(ChromaNames.coloredModInteractNames[meta/16]);
 			case ENDERCRYSTAL:
 				return this.getBasicName();
 			case CRAFTING:
@@ -328,6 +332,8 @@ public enum ChromaItems implements ItemEnum {
 				return ChromaNames.miscNames.length;
 			case MODINTERACT:
 				return ChromaNames.modInteractNames.length;
+			case COLOREDMOD:
+				return ChromaNames.coloredModInteractNames.length*CrystalElement.elements.length;
 			case SEED:
 				return 16; //was 32
 			case ENDERCRYSTAL:

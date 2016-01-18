@@ -33,7 +33,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	private HashMap<Enchantment, Integer> selected = new HashMap();
 
-	private static final int XP_PER_LEVEL = 500;
+	public static final int CHROMA_PER_LEVEL = 500;
 
 	private StepTimer progress = new StepTimer(40);
 	public int progressTimer;
@@ -109,7 +109,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			int level = it.next();
 			total += level;
 		}
-		return total*XP_PER_LEVEL;
+		return total*CHROMA_PER_LEVEL;
 	}
 
 	public boolean setEnchantment(Enchantment e, int level) {

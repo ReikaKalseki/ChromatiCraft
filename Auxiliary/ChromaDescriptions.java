@@ -43,12 +43,16 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ChromaDescriptions {
 
@@ -86,6 +90,11 @@ public final class ChromaDescriptions {
 	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
 
 	private static String getParent() {
+		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static String getLocalizedParent() {
 		Language language = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage();
 		String lang = language.getLanguageCode();
 		if (hasLocalizedFor(language) && !"en_US".equals(lang))
@@ -93,6 +102,7 @@ public final class ChromaDescriptions {
 		return "Resources/";
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static boolean hasLocalizedFor(Language language) {
 		String lang = language.getLanguageCode();
 		Object o = ChromatiCraft.class.getResourceAsStream("Resources/"+lang+"/categories.xml");
@@ -284,16 +294,24 @@ public final class ChromaDescriptions {
 
 	static {
 		loadNumericalData();
-		MinecraftForge.EVENT_BUS.register(new ReloadListener());
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			registerReloadListener();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static final class ReloadListener {
 
 		@SubscribeEvent
+		@SideOnly(Side.CLIENT)
 		public void reload(ResourceReloadEvent evt) {
 			ChromaDescriptions.reload();
 		}
 
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void registerReloadListener() {
+		MinecraftForge.EVENT_BUS.register(new ReloadListener());
 	}
 
 	private static void loadNumericalData() {
@@ -302,6 +320,7 @@ public final class ChromaDescriptions {
 		addData(ChromaTiles.BEACON, CrystalElement.RED.displayName);
 		addData(ChromaTiles.LIGHTER, CrystalElement.BLUE.displayName);
 
+		addNotes(ChromaTiles.ENCHANTER, TileEntityAutoEnchanter.CHROMA_PER_LEVEL);
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
@@ -339,7 +358,7 @@ public final class ChromaDescriptions {
 	}
 
 	static ProgressNote getProgressText(ProgressStage p) {
-		return progressText.get(p);
+		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("NULL", "NULL", "NULL");
 	}
 
 	static class ProgressNote {

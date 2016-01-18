@@ -64,9 +64,13 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.REPEATER, Aspect.LIGHT, 12);
 		this.addAspect(ChromaTiles.REPEATER, Aspect.EXCHANGE, 12);
 
-		this.addAspect(ChromaTiles.COMPOUND, Aspect.ENERGY, 12);
-		this.addAspect(ChromaTiles.COMPOUND, Aspect.LIGHT, 12);
-		this.addAspect(ChromaTiles.COMPOUND, Aspect.EXCHANGE, 12);
+		this.addAspect(ChromaTiles.COMPOUND, Aspect.ENERGY, 16);
+		this.addAspect(ChromaTiles.COMPOUND, Aspect.LIGHT, 16);
+		this.addAspect(ChromaTiles.COMPOUND, Aspect.EXCHANGE, 16);
+
+		this.addAspect(ChromaTiles.BROADCAST, Aspect.ENERGY, 60);
+		this.addAspect(ChromaTiles.BROADCAST, Aspect.LIGHT, 60);
+		this.addAspect(ChromaTiles.BROADCAST, Aspect.EXCHANGE, 60);
 
 		this.addAspect(ChromaTiles.CRYSTAL, Aspect.ENERGY, 12);
 		this.addAspect(ChromaTiles.CRYSTAL, Aspect.MAGIC, 12);
@@ -182,6 +186,20 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MAGIC, 8);
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.TRAP, 8);
 		this.addAspect(ChromaTiles.STRUCTCONTROL, Aspect.MIND, 8);
+
+		this.addAspect(ChromaTiles.LIGHTER, Aspect.LIGHT, 8);
+		this.addAspect(ChromaTiles.LIGHTER, Aspect.MINE, 4);
+
+		this.addAspect(ChromaTiles.RFDISTRIBUTOR, Aspect.ENERGY, 8);
+		this.addAspect(ChromaTiles.RFDISTRIBUTOR, Aspect.AURA, 4);
+
+		this.addAspect(ChromaTiles.WINDOW, Aspect.TRAVEL, 12);
+
+		this.addAspect(ChromaTiles.TURRET, Aspect.WEAPON, 12);
+
+		this.addAspect(ChromaTiles.CLOAKING, Aspect.AURA, 4);
+		this.addAspect(ChromaTiles.CLOAKING, Aspect.TRAP, 6);
+		this.addAspect(ChromaTiles.CLOAKING, Aspect.MIND, 8);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

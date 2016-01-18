@@ -1,0 +1,36 @@
+package Reika.ChromatiCraft.ModInterface;
+
+import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Base.ItemChromaMulti;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+
+
+public class ItemColoredModInteract extends ItemChromaMulti {
+
+	public ItemColoredModInteract(int tex) {
+		super(tex);
+	}
+
+	public static enum ColoredModItems {
+		COMB(ModList.FORESTRY);
+
+		private final ModList mod;
+
+		private static final ColoredModItems[] list = values();
+
+		private ColoredModItems(ModList m) {
+			mod = m;
+		}
+
+		public ItemStack getItem(CrystalElement e) {
+			return ChromaItems.COLOREDMOD.getStackOfMetadata(this.ordinal()*16+e.ordinal());
+		}
+
+		public boolean isAvailable() {
+			return mod.isLoaded();
+		}
+	}
+
+}

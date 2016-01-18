@@ -438,6 +438,7 @@ public class ChromaticEventManager {
 					ReikaEntityHelper.transferEntityToDimension(evt.entityLiving, 0, new ChromaTeleporter(0));
 				}
 				evt.ammount = 0;
+				evt.setCanceled(true);
 			}
 		}
 	}
@@ -460,16 +461,28 @@ public class ChromaticEventManager {
 	public void doPoolRecipes(ItemUpdateEvent evt) {
 		EntityItem ei = evt.entityItem;
 		if (rand.nextInt(5) == 0) {
-			PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
-			if (out != null) {
-				if (ei.worldObj.isRemote) {
-					ChromaFX.poolRecipeParticles(ei);
-				}
-				else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
-					PoolRecipes.instance.makePoolRecipe(ei, out);
+			if (this.canAlloyItem(ei)) {
+				PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
+				if (out != null) {
+					if (ei.worldObj.isRemote) {
+						ChromaFX.poolRecipeParticles(ei);
+					}
+					else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
+						PoolRecipes.instance.makePoolRecipe(ei, out);
+					}
 				}
 			}
 		}
+	}
+
+	private boolean canAlloyItem(EntityItem ei) {
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (ep != null) {
+			if (ProgressStage.ALLOY.playerHasPrerequisites(ep)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SubscribeEvent

@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
 import net.minecraft.command.ICommandSender;
@@ -25,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.ResearchFetcher;
@@ -45,9 +47,6 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 import com.google.common.collect.HashBiMap;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ChromaResearchManager implements ResearchRegistry {
 
@@ -126,7 +125,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		}
 		this.checkForUpgrade(ep);
 		ArrayList<ChromaResearch> li = new ArrayList();
-		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			if (!this.playerHasFragment(ep, r)) {
 				if (r.level == null || this.getPlayerResearchLevel(ep).ordinal() >= r.level.ordinal()) {
 					boolean missingdep = false;
@@ -178,13 +177,30 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return r.isAlwaysPresent() || r == ChromaResearch.PACKCHANGES || this.getFragments(ep).contains(r);
 	}
 
-	public boolean givePlayerFragment(EntityPlayer ep, ChromaResearch r) {
+	public boolean removePlayerFragment(EntityPlayer ep, ChromaResearch r, boolean notify) {
+		if (this.playerHasFragment(ep, r)) {
+			NBTTagList li = this.getNBTFragments(ep);
+			Iterator<NBTTagString> it = li.tagList.iterator();
+			while (it.hasNext()) {
+				NBTTagString s = it.next();
+				if (s.func_150285_a_().equals(r.name()))
+					it.remove();
+			}
+			if (ep instanceof EntityPlayerMP)
+				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean givePlayerFragment(EntityPlayer ep, ChromaResearch r, boolean notify) {
 		if (!this.playerHasFragment(ep, r)) {
 			this.getNBTFragments(ep).appendTag(new NBTTagString(r.name()));
 			this.checkForUpgrade(ep);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			this.notifyPlayerOfProgression(ep, r);
+			if (notify)
+				this.notifyPlayerOfProgression(ep, r);
 			return true;
 		}
 		return false;
@@ -242,14 +258,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	public boolean stepPlayerResearchLevel(EntityPlayer ep, ResearchLevel r) {
-		return (this.getPlayerResearchLevel(ep).ordinal() == r.ordinal()-1) && this.setPlayerResearchLevel(ep, r);
+		return (this.getPlayerResearchLevel(ep).ordinal() == r.ordinal()-1) && this.setPlayerResearchLevel(ep, r, true);
 	}
 
-	public boolean setPlayerResearchLevel(EntityPlayer ep, ResearchLevel r) {
+	public boolean setPlayerResearchLevel(EntityPlayer ep, ResearchLevel r, boolean notify) {
 		if (r.movePlayerTo(ep)) {
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			this.notifyPlayerOfProgression(ep, r);
+			if (notify)
+				this.notifyPlayerOfProgression(ep, r);
 			return true;
 		}
 		return false;
@@ -259,10 +276,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return ResearchLevel.levelList[this.getNBT(ep).getInteger("research_level")];
 	}
 
-	public void maxPlayerResearch(EntityPlayer ep) {
-		this.setPlayerResearchLevel(ep, ResearchLevel.levelList[ResearchLevel.levelList.length-1]);
-		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
-			this.givePlayerFragment(ep, r);
+	public void maxPlayerResearch(EntityPlayer ep, boolean notify) {
+		this.setPlayerResearchLevel(ep, ResearchLevel.levelList[ResearchLevel.levelList.length-1], notify);
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
+			this.givePlayerFragment(ep, r, notify);
 		}
 		for (CastingRecipe r : RecipesCastingTable.instance.getAllRecipes()) {
 			this.givePlayerRecipe(ep, r);
@@ -271,7 +288,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
-	public void resetPlayerResearch(EntityPlayer ep) {
+	public void resetPlayerResearch(EntityPlayer ep, boolean notify) {
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).removeTag(NBT_TAG);
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
@@ -459,21 +476,26 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitle() {
 			return this.getDisplayName();
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getShortDesc() {
 			return "More of the world becomes visible to you.";
 		}
 
 		@Override
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public ItemStack getIcon() {
 			return ChromaItems.FRAGMENT.getStackOf();
+		}
+
+		@Override
+		public String getFormatting() {
+			return EnumChatFormatting.BOLD.toString();
 		}
 	}
 
@@ -523,14 +545,17 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	public static interface ProgressElement {
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getTitle();
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public String getShortDesc();
 
-		@SideOnly(Side.CLIENT)
+		//@SideOnly(Side.CLIENT)
 		public ItemStack getIcon();
+
+		//@SideOnly(Side.CLIENT)
+		public String getFormatting();
 
 	}
 

@@ -82,7 +82,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-//Make player able to manufacture in the very late game, otherwise rare worldgen
+
 @Strippable(value = {"thaumcraft.api.nodes.INode", "thaumcraft.api.wands.IWandable"})
 public class TileEntityCrystalPylon extends CrystalTransmitterBase implements NaturalCrystalSource, ChargingPoint, ChunkLoadingTile, INode, IWandable {
 
@@ -708,7 +708,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
 					int added = amt-ret;
 					if (added > 0) {
-						this.drain(color, Math.min(energy, energy-added*48));
+						this.drain(color, Math.min(energy, added*48));
 					}
 				}
 			}
