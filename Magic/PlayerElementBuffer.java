@@ -74,7 +74,7 @@ public class PlayerElementBuffer {
 	}
 
 	public boolean playerHas(EntityPlayer ep, CrystalElement e, int amt) {
-		return this.getPlayerContent(ep, e) >= amt;
+		return ep.capabilities.isCreativeMode || this.getPlayerContent(ep, e) >= amt;
 	}
 
 	public boolean playerHas(EntityPlayer player, ElementTagCompound tag) {

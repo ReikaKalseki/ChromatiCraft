@@ -135,16 +135,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 							ChromatiCraft.logger.log("Fragment "+r+" rejected; insufficient progress "+Arrays.toString(r.getRequiredProgress())+".");
 					}
 					else {
-						Collection<ChromaResearch> deps = data.getParents(r);
-						if (deps != null && !deps.isEmpty()) {
-							for (ChromaResearch p : deps) {
-								if (!this.playerHasFragment(ep, p)) {
-									missingdep = true;
-									if (debug)
-										ChromatiCraft.logger.log("Fragment "+r+" rejected; missing dependency "+p+".");
-									break;
-								}
-							}
+						if (!this.playerHasDependencies(r, ep)) {
+							if (debug)
+								ChromatiCraft.logger.log("Fragment "+r+" rejected; missing dependency.");// "+p+".");
+							missingdep = true;
 						}
 					}
 					if (!missingdep)
@@ -156,6 +150,18 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			}
 		}
 		return li;
+	}
+
+	public boolean playerHasDependencies(ChromaResearch r, EntityPlayer ep) {
+		Collection<ChromaResearch> deps = data.getParents(r);
+		if (deps != null && !deps.isEmpty()) {
+			for (ChromaResearch p : deps) {
+				if (!this.playerHasFragment(ep, p)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public ChromaResearch getRandomNextResearchFor(EntityPlayer ep) {

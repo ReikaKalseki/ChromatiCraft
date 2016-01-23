@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.ItemMatch;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -288,13 +289,13 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			if (recipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mr = (MultiBlockCastingRecipe)recipe;
 				HashMap<List<Integer>, TileEntityItemStand> map = te.getOtherStands();
-				Map<List<Integer>, ItemStack> items = mr.getAuxItems();
+				Map<List<Integer>, ItemMatch> items = mr.getAuxItems();
 				for (List<Integer> key : map.keySet()) {
-					ItemStack item = items.get(key);
+					ItemMatch item = items.get(key);
 					TileEntityItemStand stand = map.get(key);
 					if (stand != null) {
 						ItemStack in = stand.getStackInSlot(0);
-						if (!ReikaItemHelper.matchStacks(in, item) || (item != null && item.stackTagCompound != null && !ItemStack.areItemStackTagsEqual(in, item))) {
+						if ((item == null && in != null) || (item != null && !item.match(in))) {
 							if (in != null) {
 								if (this.recoverItem(in)) {
 									stand.setInventorySlotContents(0, null);
@@ -392,6 +393,8 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 			li.add((ItemStack)item);
 		if (item instanceof List)
 			li.addAll((List)item);
+		if (item instanceof ItemMatch)
+			li.addAll(((ItemMatch)item).getItemList());
 
 		if (DragonAPICore.debugtest)
 			return ReikaItemHelper.getSizedItemStack(li.get(0), amt);

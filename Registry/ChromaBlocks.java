@@ -473,7 +473,8 @@ public enum ChromaBlocks implements BlockEnum {
 
 	public static void loadMappings() {
 		for (int i = 0; i < blockList.length; i++) {
-			blockMap.put(blockList[i].getBlockInstance(), blockList[i]);
+			Block b = blockList[i].getBlockInstance();
+			blockMap.put(b, blockList[i]);
 		}
 	}
 

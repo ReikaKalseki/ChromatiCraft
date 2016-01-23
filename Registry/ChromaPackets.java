@@ -102,6 +102,8 @@ public enum ChromaPackets {
 	BOOKNOTESRESET(),
 	BOOKNOTE(),
 	REPEATERSURGE(1),
+	FIREDUMP(1),
+	FIRECONSUMEITEM(1),
 	;
 
 	public final int numInts;

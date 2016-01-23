@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.Auxiliary.Command.RedecorateCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ReshufflePylonCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.StructureGenCommand;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
@@ -86,6 +87,7 @@ import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
+import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
@@ -637,6 +639,12 @@ public class ChromatiCraft extends DragonAPIMod {
 		ItemDuplicationWand.loadMappings();
 		ChunkProviderChroma.triggerStructureGen();
 
+		for (int i = 0; i < blocks.length; i++) {
+			if (blocks[i] instanceof LoadRegistry) {
+				((LoadRegistry)blocks[i]).onLoad();
+			}
+		}
+
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ChromaAspectManager.instance.register();
 			ChromaAspectMapper.instance.register();
@@ -767,8 +775,9 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		if (ModList.ROTARYCRAFT.isLoaded()) {
-			ReservoirAPI.registerHandler(new PoolRecipeHandler());
+			ReservoirAPI.registerHandler(new ChromaPrepHandler());
 			ReservoirAPI.registerHandler(new ShardBoostingHandler());
+			ReservoirAPI.registerHandler(new PoolRecipeHandler());
 		}
 
 		if (ModList.METEORCRAFT.isLoaded()) {

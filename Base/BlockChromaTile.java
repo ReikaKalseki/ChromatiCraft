@@ -282,6 +282,7 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 		if (m == ChromaTiles.MUSIC && is != null && is.getItem() instanceof MusicDataItem) {
 			TileEntityCrystalMusic mus = (TileEntityCrystalMusic)te;
 			mus.setTrack(((MusicDataItem)is.getItem()).getMusic(is));
+			return true;
 		}
 
 		if (ChromaItems.SHARD.matchWith(is) && is.getItemDamage() >= 16 && m == ChromaTiles.LAMP) {

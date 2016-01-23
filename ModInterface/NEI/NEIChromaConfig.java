@@ -22,6 +22,8 @@ public class NEIChromaConfig implements IConfigureNEI {
 	private static final CrystalBrewerHandler crystal = new CrystalBrewerHandler();
 	private static final FabricatorHandler fabrication = new FabricatorHandler();
 	private static final CrystalFurnaceHandler furnace = new CrystalFurnaceHandler();
+	private static final GlowFireHandler glow = new GlowFireHandler();
+	private static final PlantDustHandler plants = new PlantDustHandler();
 
 	private static final ChromaNEITabOccluder occlusion = new ChromaNEITabOccluder();
 
@@ -38,6 +40,11 @@ public class NEIChromaConfig implements IConfigureNEI {
 		API.registerUsageHandler(furnace);
 
 		API.registerRecipeHandler(fabrication);
+
+		API.registerRecipeHandler(plants);
+
+		API.registerRecipeHandler(glow);
+		API.registerUsageHandler(glow);
 
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {

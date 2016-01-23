@@ -26,6 +26,7 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.TieredOreCap;
@@ -115,6 +116,11 @@ public class ChromaRecipes {
 				RecipeInterface.grinder.addAPIRecipe(new ItemStack(ChromaBlocks.LAMP.getBlockInstance(), 1, i), ReikaItemHelper.getSizedItemStack(shard, 4));
 				RecipeInterface.grinder.addAPIRecipe(shard, ChromaStacks.crystalPowder);
 			}
+
+			for (int i = 0; i < Flowers.list.length; i++) {
+				ItemStack is = Flowers.list[i].getDrop();
+				RecipeInterface.grinder.addAPIRecipe(ChromaBlocks.DECOFLOWER.getStackOfMetadata(i), ReikaItemHelper.getSizedItemStack(is, 3));
+			}
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
@@ -177,7 +183,7 @@ public class ChromaRecipes {
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
 				ItemStack in = ItemColoredModInteract.ColoredModItems.COMB.getItem(color);
 				if (ModList.ROTARYCRAFT.isLoaded()) {
-					RecipeInterface.centrifuge.addAPIRecipe(in, null, 0, shard, 0.5F);
+					RecipeInterface.centrifuge.addAPIRecipe(in, null, 0, shard, 2.5F);
 				}
 				Map<ItemStack, Float> map = new HashMap();
 				map.put(shard, 0.005F);

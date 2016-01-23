@@ -21,12 +21,14 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -82,18 +84,26 @@ public class PoolRecipes {
 		return null;
 	}
 
-	public void makePoolRecipe(EntityItem ei, PoolRecipe pr) {
-		int x = MathHelper.floor_double(ei.posX);
-		int y = MathHelper.floor_double(ei.posY);
-		int z = MathHelper.floor_double(ei.posZ);
+	public PoolRecipe getPoolRecipeByOutput(ItemStack is) {
+		for (PoolRecipe p : this.getAllPoolRecipes()) {
+			if (ReikaItemHelper.matchStacks(p.output, is))
+				return p;
+		}
+		return null;
+	}
+
+	public void makePoolRecipe(EntityItem ei, PoolRecipe pr, int ether, int x, int y, int z) {
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
 		Collection<EntityItem> li = ei.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
+		boolean flag = ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance();
 		pr.makeFrom(li);
 		ReikaEntityHelper.decrEntityItemStack(ei, 1);
-		EntityItem newitem = ReikaItemHelper.dropItem(ei, pr.getOutput());
+		int n = ReikaRandomHelper.doWithChance(BlockActiveChroma.getDoublingChance(ether)) ? 2 : 1;
+		EntityItem newitem = ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(pr.getOutput(), n*pr.getOutput().stackSize));
 		newitem.lifespan = Integer.MAX_VALUE;
-		if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance())
+		if (flag) {
 			ei.worldObj.setBlock(x, y, z, Blocks.air);
+		}
 		ReikaWorldHelper.causeAdjacentUpdates(ei.worldObj, x, y, z);
 		ProgressStage.ALLOY.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 	}

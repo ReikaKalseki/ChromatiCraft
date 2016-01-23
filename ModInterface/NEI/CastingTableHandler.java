@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.ItemMatch;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -59,9 +60,9 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 			dx = 5;
 			dy = 3;
 			if (recipe instanceof MultiBlockCastingRecipe) {
-				Map<List<Integer>, ItemStack> map = ((MultiBlockCastingRecipe)recipe).getAuxItems();
+				Map<List<Integer>, ItemMatch> map = ((MultiBlockCastingRecipe)recipe).getAuxItems();
 				for (List<Integer> key : map.keySet()) {
-					ItemStack is = map.get(key);
+					ItemMatch is = map.get(key);
 					int i = key.get(0);
 					int k = key.get(1);
 					int sx = i == 0 ? 0 : i < 0 ? -1 : 1;
@@ -70,7 +71,7 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 					int ty = Math.abs(k) == 2 ? 38 : 63;
 					int px = 80+sx*(tx);
 					int py = 75+sy*(ty);
-					stacks.add(new PositionedStack(is, px-dx, py-dy));
+					stacks.add(new PositionedStack(is.getCycledItem(), px-dx, py-dy));
 				}
 			}
 			return stacks;
@@ -97,15 +98,15 @@ public class CastingTableHandler extends TemplateRecipeHandler {
 		CastingCrafting c = (CastingCrafting)arecipes.get(recipe);
 		CastingRecipe r = c.recipe;
 		switch(r.type) {
-		case CRAFTING:
-		case TEMPLE:
-			return "/Reika/ChromatiCraft/Textures/GUIs/table2.png";
-		case MULTIBLOCK:
-			return "/Reika/ChromatiCraft/Textures/GUIs/table4.png";
-		case PYLON:
-			return "/Reika/ChromatiCraft/Textures/GUIs/table5.png";
-		default:
-			return "/Reika/ChromatiCraft/Textures/GUIs/table.png";
+			case CRAFTING:
+			case TEMPLE:
+				return "/Reika/ChromatiCraft/Textures/GUIs/table2.png";
+			case MULTIBLOCK:
+				return "/Reika/ChromatiCraft/Textures/GUIs/table4.png";
+			case PYLON:
+				return "/Reika/ChromatiCraft/Textures/GUIs/table5.png";
+			default:
+				return "/Reika/ChromatiCraft/Textures/GUIs/table.png";
 		}
 	}
 

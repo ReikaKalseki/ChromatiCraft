@@ -1,13 +1,19 @@
 package Reika.ChromatiCraft.Block.Worldgen;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemShears;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.ColorizerGrass;
@@ -18,15 +24,25 @@ import net.minecraft.world.biome.BiomeGenHills;
 import net.minecraft.world.biome.BiomeGenSwamp;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
+import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.IFluidBlock;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
@@ -38,7 +54,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockDecoFlower extends Block {
+public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	private final IIcon[] icons = new IIcon[Flowers.list.length];
 
@@ -60,13 +76,13 @@ public class BlockDecoFlower extends Block {
 	}
 
 	@Override
-	public int damageDropped(int meta) {
-		return meta;
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
+		return ReikaJavaLibrary.makeListFrom(Flowers.list[meta].getDrop());
 	}
 
 	@Override
 	public int getRenderType() {
-		return 1;
+		return ChromatiCraft.proxy.flowerRender;
 	}
 
 	@Override
@@ -118,6 +134,53 @@ public class BlockDecoFlower extends Block {
 	}
 
 	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+		Flowers f = Flowers.list[world.getBlockMetadata(x, y, z)];
+		switch(f) {
+			case ENDERFLOWER:
+				this.setBlockBounds(0, 0, 0, 1, 0.875F, 1);
+				break;
+			case RESOCLOVER:
+				this.setBlockBounds(0, 0, 0, 1, 0.0625F, 1);
+				break;
+			case SANOBLOOM:
+				this.setBlockBounds(0, 0, 0, 1, 0.5F, 1);
+				break;
+			case FLOWIVY:
+				float nx = 1-0.0625F;
+				float nz = 1-0.0625F;
+				float px = 0.0625F;
+				float pz = 0.0625F;
+				if (world.getBlock(x+1, y, z).isOpaqueCube()) {
+					px = 1;
+					nz = 0;
+					pz = 1;
+				}
+				if (world.getBlock(x-1, y, z).isOpaqueCube()) {
+					nx = 0;
+					nz = 0;
+					pz = 1;
+				}
+				if (world.getBlock(x, y, z+1).isOpaqueCube()) {
+					pz = 1;
+					nx = 0;
+					px = 1;
+				}
+				if (world.getBlock(x, y, z-1).isOpaqueCube()) {
+					nz = 0;
+					nx = 0;
+					px = 1;
+				}
+
+				this.setBlockBounds(nx, 0, nz, px, 1, pz);
+				break;
+			default:
+				this.setBlockBounds(0, 0, 0, 1, 1, 1);
+				break;
+		}
+	}
+
+	@Override
 	public int getRenderColor(int meta) {
 		Flowers f = Flowers.list[meta];
 		return f.isBiomeColored() ? ColorizerGrass.getGrassColor(0.75F, 1) : 0xffffff;
@@ -125,13 +188,49 @@ public class BlockDecoFlower extends Block {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random rand) {
-		if (!this.checkAndDropBlock(world, x, y, z))
-			Flowers.list[world.getBlockMetadata(x, y, z)].grow(world, x, y, z, this, rand);
+		if (!this.checkAndDropBlock(world, x, y, z)) {
+			int meta = world.getBlockMetadata(x, y, z);
+			if (Flowers.list[meta].grow(world, x, y, z, this, rand)) {
+				ReikaSoundHelper.playBreakSound(world, x, y, z, this, 1, 1);
+				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(this), meta);
+			}
+		}
 	}
 
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		Flowers.list[world.getBlockMetadata(x, y, z)].doParticles(world, x, y, z, r);
+	}
+
+	@Override
+	public boolean isShearable(ItemStack item, IBlockAccess world, int x, int y, int z) {
+		return true;
+	}
+
+	@Override
+	public ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune) {
+		return ReikaJavaLibrary.makeListFrom(new ItemStack(this, 1, world.getBlockMetadata(x, y, z)));
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer ep, int x, int y, int z, int meta) {
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (is != null && is.getItem() instanceof ItemShears) {
+			return;
+		}
+		super.harvestBlock(world, ep, x, y, z, meta);
+	}
+
+	@Override
+	public int damageDropped(int dmg) {
+		return dmg;
+	}
+
+	@Override
+	public void onLoad() {
+		for (int i = 0; i < Flowers.list.length; i++) {
+			Flowers.list[i].registerDrops(this);
+		}
 	}
 
 	public static enum Flowers {
@@ -143,6 +242,16 @@ public class BlockDecoFlower extends Block {
 		FLOWIVY();
 
 		public static final Flowers[] list = values();
+
+		//private final ItemStack drop;
+
+		private Flowers(/*ItemStack is*/) {
+			//drop = is;
+		}
+
+		private void registerDrops(BlockDecoFlower b) {
+			PlantDropManager.instance.registerDrops(b, this.ordinal(), this.getDrop());
+		}
 
 		public boolean canGenerateIn(BiomeGenBase b) {
 			switch(this) {
@@ -156,7 +265,7 @@ public class BlockDecoFlower extends Block {
 				case VOIDREED:
 					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp;
 				case FLOWIVY:
-					return b instanceof BiomeGenHills || b.rootHeight >= 1 && b.topBlock == Blocks.grass;
+					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
 			}
 			return false;
 		}
@@ -179,14 +288,51 @@ public class BlockDecoFlower extends Block {
 			}
 		}
 
-		public void grow(World world, int x, int y, int z, Block b, Random rand) {
+		public boolean grow(World world, int x, int y, int z, Block b, Random rand) {
 			switch(this) {
 				case ENDERFLOWER:
 				case SANOBLOOM:
-					return;
+				{
+					int n = this.onActiveGrass(world, x, y, z) ? 8 : 32;
+					if (rand.nextInt(n) > 0)
+						return false;
+					if (this == ENDERFLOWER && rand.nextInt(4) > 0)
+						return false;
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						int dx = x+dir.offsetX;
+						int dz = z+dir.offsetZ;
+						if (this.matchAt(world, dx, y, dz))
+							return false;
+					}
+					int rx = ReikaRandomHelper.getRandomPlusMinus(x, 4);
+					int rz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
+					int ry = y;
+					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry, rz))
+						ry--;
+					if (world.getBlock(rx, ry, rz).isAir(world, rx, ry, rz) && this.canPlantAt(world, rx, ry, rz)) {
+						world.setBlock(rx, ry, rz, b, this.ordinal(), 3);
+						return true;
+					}
+					return false;
+				}
 				case LUMALILY:
 				case RESOCLOVER: {
 					int n = this.onActiveGrass(world, x, y, z) ? 5 : 20;
+					if (this == LUMALILY)
+						n *= 4;
+					int c = 0;
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						int dx = x+dir.offsetX;
+						int dz = z+dir.offsetZ;
+						if (this.matchAt(world, dx, y, dz))
+							c++;
+					}
+					if (c >= 2)
+						return false;
+					else if (c == 1 && rand.nextBoolean())
+						return false;
 					if (rand.nextInt(n) == 0) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[2+rand.nextInt(4)];
 						int dx = x+dir.offsetX;
@@ -194,17 +340,27 @@ public class BlockDecoFlower extends Block {
 						Block idb = world.getBlock(dx, y-1, dz);
 						if (world.getBlock(dx, y, dz).isAir(world, dx, y, dz) && (idb == Blocks.grass || idb == Blocks.dirt)) {
 							world.setBlock(dx, y, dz, b, this.ordinal(), 3);
+							return true;
 						}
 					}
-					break;
+					return false;
 				}
 				case FLOWIVY: {
 					if (rand.nextInt(3) == 0) {
-						if (world.getBlock(x, y-1, z).isAir(world, x, y-1, z)) {
-							world.setBlock(x, y-1, z, b, this.ordinal(), 3);
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)];
+						if (dir == ForgeDirection.UP && rand.nextBoolean())
+							dir = ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)];
+						if (rand.nextInt(4) == 0)
+							dir = ForgeDirection.DOWN;
+						int dx = x+dir.offsetX;
+						int dy = y+dir.offsetY;
+						int dz = z+dir.offsetZ;
+						if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz) && this.canPlantAt(world, dx, dy, dz)) {
+							world.setBlock(dx, dy, dz, b, this.ordinal(), 3);
+							return true;
 						}
 					}
-					break;
+					return false;
 				}
 				case VOIDREED: {
 					int n = this.isChromaPool(world, x, y, z) ? 20 : 40;
@@ -212,18 +368,34 @@ public class BlockDecoFlower extends Block {
 						n = n*3/4;
 					if (rand.nextInt(n) == 0) {
 						if (world.getBlock(x, y+1, z).isAir(world, x, y+1, z)) {
-							world.setBlock(x, y+1, z, b, this.ordinal(), 3);
+							int h = 1;
+							int y2 = y-1;
+							while (this.matchAt(world, x, y2, z)) {
+								y2--;
+								h++;
+							}
+							if (h < rand.nextInt(7)) { //slower as taller
+								world.setBlock(x, y+1, z, b, this.ordinal(), 3);
+								return true;
+							}
 						}
 					}
-					break;
+					return false;
 				}
 			}
+			return false;
 		}
 
 		public boolean canPlantAt(World world, int x, int y, int z) {
 			switch(this) {
-				case FLOWIVY:
-					return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();
+				case FLOWIVY: {
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						if (world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ).getMaterial() == Material.rock)
+							return true;
+					}
+					//return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();
+				}
 				case VOIDREED:
 					return this.matchAt(world, x, y-1, z) || this.isChromaPool(world, x, y, z) || ReikaPlantHelper.SUGARCANE.canPlantAt(world, x, y, z);
 				case ENDERFLOWER:
@@ -360,6 +532,48 @@ public class BlockDecoFlower extends Block {
 				default:
 					return 1;
 			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		public void render(IBlockAccess world, int x, int y, int z, Block b, RenderBlocks rb, Tessellator v5) {
+			IIcon ico = ((BlockDecoFlower)b).icons[this.ordinal()];
+			v5.setColorOpaque_I(b.colorMultiplier(world, x, y, z));
+			v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
+			switch(this) {
+				case VOIDREED:
+				case LUMALILY:
+				case SANOBLOOM:
+					ReikaRenderHelper.renderCrossTex(world, x, y, z, ico, v5, rb, 1);
+					break;
+				case RESOCLOVER: {
+					double d = 0.03125+0.03125/2*Math.sin(x+y+z);
+					ReikaRenderHelper.renderFlatInnerTextureOnSide(world, x, y, z, ico, v5, rb, ForgeDirection.DOWN, d, false);
+					break;
+				}
+				case FLOWIVY: {
+					double d = 0.03125+0.03125/2*Math.sin(x+y+z);
+					for (int i = 1; i < 6; i++) {
+						ReikaRenderHelper.renderFlatInnerTextureOnSide(world, x, y, z, ico, v5, rb, ForgeDirection.VALID_DIRECTIONS[i], 0.03125, true);
+					}
+					break;
+				}
+				case ENDERFLOWER:
+					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, ico, v5, rb, 0.1875, 1);
+					//top of flower ReikaRenderHelper.renderFlatInnerTextureOnSide(world, x, y, z, ico, v5, rb, ForgeDirection.DOWN, 0.75, false);
+					break;
+			}
+		}
+
+		public ItemStack getDrop() {
+			switch(this) {
+				case ENDERFLOWER: return ChromaStacks.teleDust;
+				case LUMALILY: return ChromaStacks.icyDust;
+				case RESOCLOVER: return ChromaStacks.energyPowder;
+				case SANOBLOOM: return ChromaStacks.etherBerries;
+				case VOIDREED: return ChromaStacks.voidDust;
+				case FLOWIVY: return ChromaStacks.livingEssence;
+			}
+			return null;
 		}
 	}
 }

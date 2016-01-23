@@ -55,7 +55,9 @@ public enum ChromaSounds implements SoundEnum {
 	PYLONBOOSTRITUAL("pylonboost_ritual_short"),
 	PYLONBOOSTSTART("pylonbooststart"),
 	DASH("dash"),
-	REPEATERSURGE("repeatersurge");
+	REPEATERSURGE("repeatersurge"),
+	FIRE("fire"),
+	LASER("laser");
 
 	public static final ChromaSounds[] soundList = values();
 

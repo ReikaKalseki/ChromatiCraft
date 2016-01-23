@@ -10,7 +10,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class LowCoreRecipe extends MultiBlockCastingRecipe implements ShardGroupingRecipe {
 
-	protected LowCoreRecipe(ItemStack out, CrystalElement primary, CrystalElement secondary, Coordinate rune1, Coordinate rune2) {
+	protected LowCoreRecipe(ItemStack out, CrystalElement primary, CrystalElement secondary, Coordinate rune1, Coordinate rune2, ItemStack dust) {
 		super(out, ChromaStacks.crystalCore);
 
 		this.addAuxItem(this.getChargedShard(primary), -2, -2);
@@ -29,6 +29,11 @@ public class LowCoreRecipe extends MultiBlockCastingRecipe implements ShardGroup
 		this.addAuxItem(this.getChargedShard(secondary), -2, 0);
 		this.addAuxItem(this.getChargedShard(secondary), 0, 2);
 		this.addAuxItem(this.getChargedShard(secondary), 0, -2);
+
+		this.addAuxItem(dust, 4, 0);
+		this.addAuxItem(dust, -4, 0);
+		this.addAuxItem(dust, 0, 4);
+		this.addAuxItem(dust, 0, -4);
 
 		this.addRune(primary, rune1.xCoord, rune1.yCoord, rune1.zCoord);
 		this.addRune(primary, rune2.xCoord, rune2.yCoord, rune2.zCoord);

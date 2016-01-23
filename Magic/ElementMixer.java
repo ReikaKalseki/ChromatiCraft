@@ -24,13 +24,14 @@ public class ElementMixer {
 
 	private ElementMixer() {
 		this.addMix(CrystalElement.BLACK, CrystalElement.WHITE, CrystalElement.GRAY);
-		this.addMix(CrystalElement.GRAY, CrystalElement.WHITE, CrystalElement.LIGHTGRAY);
 		this.addMix(CrystalElement.RED, CrystalElement.WHITE, CrystalElement.PINK);
 		this.addMix(CrystalElement.GREEN, CrystalElement.WHITE, CrystalElement.LIME);
 		this.addMix(CrystalElement.BLUE, CrystalElement.WHITE, CrystalElement.LIGHTBLUE);
 		this.addMix(CrystalElement.BLUE, CrystalElement.GREEN, CrystalElement.CYAN);
 		this.addMix(CrystalElement.RED, CrystalElement.YELLOW, CrystalElement.ORANGE);
 		this.addMix(CrystalElement.RED, CrystalElement.BLUE, CrystalElement.PURPLE);
+
+		this.addMix(CrystalElement.GRAY, CrystalElement.WHITE, CrystalElement.LIGHTGRAY);
 		this.addMix(CrystalElement.PURPLE, CrystalElement.PINK, CrystalElement.MAGENTA);
 
 		this.addIncompatibility(CrystalElement.CYAN, CrystalElement.RED);

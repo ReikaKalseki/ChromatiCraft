@@ -10,13 +10,14 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class VoidCoreRecipe extends LowCoreRecipe {
 
 	public VoidCoreRecipe(ItemStack out) {
-		super(out, CrystalElement.BLACK, CrystalElement.WHITE, new Coordinate(3, -1, -2), new Coordinate(-3, -1, 2));
+		super(out, CrystalElement.BLACK, CrystalElement.WHITE, new Coordinate(3, -1, -2), new Coordinate(-3, -1, 2), ChromaStacks.voidDust);
 	}
 
 }

@@ -68,7 +68,7 @@ public class RenderLootChest extends ChromaRenderBase {
 
 		GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
 		model.chestLid.rotateAngleX = -(f1*(float)Math.PI/2.0F);
-		if (MinecraftForgeClient.getRenderPass() == 0)
+		if (MinecraftForgeClient.getRenderPass() == 0 || !te.hasWorldObj())
 			this.renderModel(te, model);
 		GL11.glPopMatrix();
 

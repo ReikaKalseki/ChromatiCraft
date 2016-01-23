@@ -58,7 +58,8 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 					this.programShardAndGiveData(is, ep);
 				}
 				else {
-					ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
+					if (r.playerHasProgress(ep) && ChromaResearchManager.instance.playerHasDependencies(r, ep))
+						ChromaResearchManager.instance.givePlayerFragment(ep, r, true);
 				}
 			}
 		}
@@ -68,7 +69,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 	public final void getSubItems(Item i, CreativeTabs tab, List li)
 	{
 		li.add(ChromaItems.FRAGMENT.getStackOf());
-		for (ChromaResearch r : ChromaResearch.getAllNonParents()) {
+		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			li.add(this.getItem(r));
 		}
 	}

@@ -144,6 +144,9 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.COMMUNICATE, ProgressStage.KILLMOB);
 		progressMap.addValue(Chromabilities.RANGEDBOOST, ProgressStage.KILLMOB);
 		progressMap.addValue(Chromabilities.LEECH, ProgressStage.KILLMOB);
+		progressMap.addValue(Chromabilities.LASER, ProgressStage.TURBOCHARGE);
+		progressMap.addValue(Chromabilities.FIRERAIN, ProgressStage.NETHER);
+		progressMap.addValue(Chromabilities.FIRERAIN, ProgressStage.CTM);
 
 		for (TileXRays x : TileXRays.values()) {
 			xRayMap.put(x.tileClass, x);
@@ -717,7 +720,10 @@ public class AbilityHelper {
 	}
 
 	public ElementTagCompound getUsageElementsFor(Ability c) {
-		return tagMap.get(c).copy().scale(0.0008F); //was 0.0008F //was 0.0002F
+		ElementTagCompound ret = tagMap.get(c).copy().scale(0.0008F); //was 0.0008F //was 0.0002F
+		if (c == Chromabilities.FIRERAIN)
+			ret.scale(12.5F);
+		return ret;
 	}
 
 	public boolean playerCanGetAbility(Chromabilities c, EntityPlayer ep) {

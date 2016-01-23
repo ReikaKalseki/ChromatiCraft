@@ -72,6 +72,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
+import Reika.ChromatiCraft.Block.BlockActiveChroma;
+import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
@@ -467,8 +469,17 @@ public class ChromaticEventManager {
 					if (ei.worldObj.isRemote) {
 						ChromaFX.poolRecipeParticles(ei);
 					}
-					else if (ei.ticksExisted > 20 && rand.nextInt(20) == 0 && (ei.ticksExisted >= 600 || rand.nextInt(600-ei.ticksExisted) == 0)) {
-						PoolRecipes.instance.makePoolRecipe(ei, out);
+					else if (ei.ticksExisted > 20) {
+						int x = MathHelper.floor_double(ei.posX);
+						int y = MathHelper.floor_double(ei.posY);
+						int z = MathHelper.floor_double(ei.posZ);
+						TileEntityChroma te = (TileEntityChroma)ei.worldObj.getTileEntity(x, y, z);
+						int ether = te.getEtherCount();
+						int n = BlockActiveChroma.getSpeedMultiplier(ether);
+						if (rand.nextInt(20/n) == 0 && (ei.ticksExisted >= 600/n || rand.nextInt((600-ei.ticksExisted)/n) == 0)) {
+							te.clear();
+							PoolRecipes.instance.makePoolRecipe(ei, out, ether, x, y, z);
+						}
 					}
 				}
 			}

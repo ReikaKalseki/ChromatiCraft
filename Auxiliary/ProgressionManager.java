@@ -89,7 +89,7 @@ public class ProgressionManager implements ProgressRegistry {
 		LINK(ChromaTiles.COMPOUND.getCraftedProduct()), //Made a network connection/high-tier crafting
 		CHARGE(ChromaItems.TOOL.getStackOf()), //charge from a pylon
 		ABILITY(ChromaTiles.RITUAL.getCraftedProduct()), //use an ability
-		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOf()), //harvest a rainbow leaf
+		RAINBOWLEAF(ChromaBlocks.RAINBOWLEAF.getStackOfMetadata(3)), //harvest a rainbow leaf
 		MAKECHROMA(ChromaTiles.COLLECTOR.getCraftedProduct()),
 		SHARDCHARGE(ChromaStacks.chargedRedShard),
 		ALLOY(ChromaStacks.chromaIngot),

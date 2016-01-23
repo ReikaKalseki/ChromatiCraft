@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.DragonAPI.ModList;
@@ -78,10 +79,10 @@ public class ItemElementCalculator {
 
 			ElementTagCompound tag2 = tag1.copy();
 			tag2.addValueToColor(CrystalElement.GREEN, 1);
-			cache.put(new ItemStack(Blocks.wool, 1, i), tag2);
+			cache.put(new ItemStack(Blocks.wool, 1, 16-i), tag2);
 			Block rockwool = GameRegistry.findBlock(ModList.THERMALEXPANSION.modLabel, "Rockwool");
 			if (rockwool != null) {
-				cache.put(new ItemStack(rockwool, 1, i), tag2);
+				cache.put(new ItemStack(rockwool, 1, 16-i), tag2);
 			}
 		}
 
@@ -97,6 +98,22 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.firaxite, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0));
 		cache.put(ChromaStacks.spaceDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.elementDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+
+		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
+		cache.put(ChromaStacks.icyDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+		cache.put(ChromaStacks.teleDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.livingEssence, new ElementTagCompound(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.etherBerries, new ElementTagCompound(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACK.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CRACKS.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.GLASS.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.LIGHT.ordinal()), new ElementTagCompound(2, 4, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), new ElementTagCompound(2, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0));
 	}
 
 	public ElementTagCompound getValueForItem(ItemStack is) {
@@ -106,7 +123,7 @@ public class ItemElementCalculator {
 			ChromatiCraft.logger.debug("Recipe contains its own output, possibly recursively.");
 			return empty.copy();
 		}
-		//ChromatiCraft.logger.debug("Fetching element calculation data for "+is);
+		//ChromatiCraft.logger.log("Fetching element calculation data for "+is);
 		ElementTagCompound tag = cache.get(is);
 		if (tag == null) {
 			tag = this.calculateTag(is);
@@ -117,6 +134,7 @@ public class ItemElementCalculator {
 			tag.addValueToColor(CrystalElement.BLACK, 5);
 			tag.addValueToColor(CrystalElement.PURPLE, 2);
 		}
+		//ChromatiCraft.logger.log("Found data for "+is+": "+tag);
 		return tag;
 	}
 

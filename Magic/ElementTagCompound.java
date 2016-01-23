@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Iterator;
 
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -66,8 +67,8 @@ public final class ElementTagCompound {
 			data.put(e, value);
 	}
 
-	public void removeTag(CrystalElement e) {
-		data.remove(e);
+	public int removeTag(CrystalElement e) {
+		return data.remove(e);
 	}
 
 	public int getValue(CrystalElement e) {
@@ -149,9 +150,12 @@ public final class ElementTagCompound {
 	}
 
 	public void clearEmptyKeys() {
-		for (CrystalElement e : data.keySet()) {
-			if (data.containsKey(e) && data.get(e) <= 0)
+		Iterator<CrystalElement> it = data.keySet().iterator();
+		while (it.hasNext()) {
+			CrystalElement e = it.next();
+			if (data.get(e) <= 0) {
 				data.remove(e);
+			}
 		}
 	}
 
@@ -169,7 +173,7 @@ public final class ElementTagCompound {
 		for (CrystalElement e : data.keySet()) {
 			int amt = data.get(e);
 			amt *= s;
-			if (amt == 0)
+			if (amt <= 0)
 				amt = 1;
 			this.setTag(e, amt);
 		}
@@ -375,6 +379,21 @@ public final class ElementTagCompound {
 		for (CrystalElement e : data.keySet()) {
 			data.put(e, amt);
 		}
+	}
+
+	public int keySetAsBits() {
+		int val = 0;
+		for (CrystalElement e : this.elementSet()) {
+			val = val | (1 << e.ordinal());
+		}
+		return val;
+	}
+
+	public boolean isPrimaryOnly() {
+		for (CrystalElement e : this.elementSet())
+			if (!e.isPrimary())
+				return false;
+		return true;
 	}
 
 }

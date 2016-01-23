@@ -21,10 +21,10 @@ public class GrowthWandRecipe extends MultiBlockCastingRecipe {
 		super(out, main);
 
 		//for now
-		this.addAuxItem(Items.stick, -2, -2);
-		this.addAuxItem(Items.stick, 2, 2);
-		this.addAuxItem(Items.stick, -2, 2);
-		this.addAuxItem(Items.stick, 2, -2);
+		this.addAuxItem("stickWood", -2, -2);
+		this.addAuxItem("stickWood", 2, 2);
+		this.addAuxItem("stickWood", -2, 2);
+		this.addAuxItem("stickWood", 2, -2);
 
 		this.addAuxItem(ChromaStacks.chromaIngot, -2, 0);
 		this.addAuxItem(ChromaStacks.chromaIngot, 2, 0);
@@ -37,15 +37,15 @@ public class GrowthWandRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, 0, -4);
 		this.addAuxItem(ChromaStacks.auraDust, 0, 4);
 
-		this.addAuxItem(ChromaStacks.greenShard, -4, 2);
 		this.addAuxItem(ChromaStacks.greenShard, -4, -2);
 		this.addAuxItem(ChromaStacks.greenShard, 4, 2);
-		this.addAuxItem(ChromaStacks.greenShard, 4, -2);
-
-		this.addAuxItem(ChromaStacks.greenShard, -2, 4);
 		this.addAuxItem(ChromaStacks.greenShard, -2, -4);
 		this.addAuxItem(ChromaStacks.greenShard, 2, 4);
-		this.addAuxItem(ChromaStacks.greenShard, 2, -4);
+
+		this.addAuxItem(ChromaStacks.livingEssence, -4, -2);
+		this.addAuxItem(ChromaStacks.livingEssence, -2, 4);
+		this.addAuxItem(ChromaStacks.livingEssence, 4, 2);
+		this.addAuxItem(ChromaStacks.livingEssence, 2, -4);
 
 		this.addAuxItem(ReikaItemHelper.bonemeal, -4, 4);
 		this.addAuxItem(ReikaItemHelper.bonemeal, -4, -4);

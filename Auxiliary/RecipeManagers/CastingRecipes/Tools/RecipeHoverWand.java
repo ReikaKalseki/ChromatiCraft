@@ -20,10 +20,10 @@ public class RecipeHoverWand extends PylonRecipe {
 	public RecipeHoverWand(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(Items.stick, -2, -2);
-		this.addAuxItem(Items.stick, 2, -2);
-		this.addAuxItem(Items.stick, -2, 2);
-		this.addAuxItem(Items.stick, 2, 2);
+		this.addAuxItem("stickWood", -2, -2);
+		this.addAuxItem("stickWood", 2, -2);
+		this.addAuxItem("stickWood", -2, 2);
+		this.addAuxItem("stickWood", 2, 2);
 
 		this.addAuxItem(Items.iron_ingot, -2, 0);
 		this.addAuxItem(Items.iron_ingot, 2, 0);

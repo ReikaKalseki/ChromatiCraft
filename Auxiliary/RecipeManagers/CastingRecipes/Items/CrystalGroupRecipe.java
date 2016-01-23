@@ -20,8 +20,8 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 public class CrystalGroupRecipe extends TempleCastingRecipe implements ShardGroupingRecipe {
 
-	public CrystalGroupRecipe(ItemStack out, Object... o) {
-		super(out, getRecipe(out, o));
+	public CrystalGroupRecipe(ItemStack out, CrystalElement e1, CrystalElement e2, CrystalElement e3, CrystalElement e4, ItemStack ctr) {
+		super(out, getRecipe(out, e1, e2, e3, e4, ctr));
 
 		List<ItemStack>[] items = this.getRecipeArray();
 		int r = out.getItemDamage() == 0 ? 3 : 4;
@@ -32,12 +32,8 @@ public class CrystalGroupRecipe extends TempleCastingRecipe implements ShardGrou
 		this.addRune(items[7].get(0).getItemDamage(), 0-dl, 0, r);
 	}
 
-	private static IRecipe getRecipe(ItemStack out, Object... o) {
-		for (int i = 0; i < o.length; i++) {
-			if (o[i] instanceof CrystalElement)
-				o[i] = getShard((CrystalElement)o[i]);
-		}
-		return ReikaRecipeHelper.getShapedRecipeFor(out, o);
+	private static IRecipe getRecipe(ItemStack out, CrystalElement e1, CrystalElement e2, CrystalElement e3, CrystalElement e4, ItemStack ctr) {
+		return ReikaRecipeHelper.getShapedRecipeFor(out, " A ", "BIC", " D ", 'A', getShard(e1), 'B', getShard(e2), 'C', getShard(e3), 'D', getShard(e4), 'I', ctr);
 	}
 
 

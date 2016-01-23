@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
@@ -89,6 +90,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
@@ -333,8 +335,9 @@ public class ChromatiPackets implements PacketHandler {
 				case SHARDBOOST: {
 					Entity e = world.getEntityByID(data[0]);
 					if (e instanceof EntityItem) {
-						ChromaFX.doShardBoostingFX((EntityItem)e);
+						ChromaFX.spawnShardBoostedEffects((EntityItem)e);
 					}
+					((TileEntityChroma)world.getTileEntity(x, y, z)).clear();
 					break;
 				}/*
 			case FRAGPROGRAM: {
@@ -586,6 +589,14 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case REPEATERSURGE: {
 					TileEntityCrystalRepeater.overloadClient(world, x, y, z, CrystalElement.elements[data[0]]);
+					break;
+				}
+				case FIREDUMP: {
+					TileEntityGlowFire.emptyClientFX(world, x, y, z, data[0]);
+					break;
+				}
+				case FIRECONSUMEITEM: {
+					TileEntityGlowFire.consumeItemFX(world, x, y, z, data[0]);
 					break;
 				}
 			}

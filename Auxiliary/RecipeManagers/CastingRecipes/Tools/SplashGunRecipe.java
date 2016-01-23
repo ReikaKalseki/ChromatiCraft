@@ -34,7 +34,7 @@ public class SplashGunRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.conductiveIngot, 2, 0);
 		this.addAuxItem(ChromaStacks.conductiveIngot, 0, 2);
 
-		this.addAuxItem(Items.stick, 0, 4);
+		this.addAuxItem("stickWood", 0, 4);
 	}
 
 }

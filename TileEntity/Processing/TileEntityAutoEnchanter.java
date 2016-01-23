@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
@@ -91,7 +90,19 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && !ReikaEnchantmentHelper.hasEnchantments(is);
+		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && !ReikaEnchantmentHelper.hasEnchantments(is) && this.areEnchantsValid(is, selected.keySet());
+	}
+
+	private boolean areEnchantsValid(ItemStack is, Collection<Enchantment> c) {
+		for (Enchantment e : c) {
+			if (is.getItem() == Items.book && !e.isAllowedOnBooks()) {
+				return false;
+			}
+			if (!e.canApply(is)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void applyEnchants() {
@@ -103,10 +114,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	private int getConsumedChroma() {
 		int total = 0;
-		Collection<Integer> levels = selected.values();
-		Iterator<Integer> it = levels.iterator();
-		while (it.hasNext()) {
-			int level = it.next();
+		for (int level : selected.values()) {
 			total += level;
 		}
 		return total*CHROMA_PER_LEVEL;

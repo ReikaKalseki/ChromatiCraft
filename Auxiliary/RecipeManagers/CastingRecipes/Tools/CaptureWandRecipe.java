@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -20,10 +19,10 @@ public class CaptureWandRecipe extends MultiBlockCastingRecipe {
 		super(out, main);
 
 		//for now
-		this.addAuxItem(Items.stick, -2, -2);
-		this.addAuxItem(Items.stick, 2, 2);
-		this.addAuxItem(Items.stick, -2, 2);
-		this.addAuxItem(Items.stick, 2, -2);
+		this.addAuxItem("stickWood", -2, -2);
+		this.addAuxItem("stickWood", 2, 2);
+		this.addAuxItem("stickWood", -2, 2);
+		this.addAuxItem("stickWood", 2, -2);
 
 		this.addAuxItem(ChromaStacks.chromaIngot, -2, 0);
 		this.addAuxItem(ChromaStacks.chromaIngot, 2, 0);

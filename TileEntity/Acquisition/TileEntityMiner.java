@@ -469,15 +469,19 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return new BlockKey(Blocks.stone);
 	}
 
-	private boolean silkTouch() {
+	public boolean hasCrystal() {
+		return ChromaItems.STORAGE.matchWith(inv[0]);
+	}
+
+	public boolean silkTouch() {
 		return ReikaItemHelper.matchStacks(inv[1], ChromaStacks.silkUpgrade);
 	}
 
-	private boolean hasSpeed() {
+	public boolean hasSpeed() {
 		return ReikaItemHelper.matchStacks(inv[2], ChromaStacks.speedUpgrade);
 	}
 
-	private boolean hasEfficiency() {
+	public boolean hasEfficiency() {
 		return ReikaItemHelper.matchStacks(inv[3], ChromaStacks.efficiencyUpgrade);
 	}
 

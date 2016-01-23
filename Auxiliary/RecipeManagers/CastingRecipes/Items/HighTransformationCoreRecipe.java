@@ -10,13 +10,14 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class HighTransformationCoreRecipe extends HighCoreRecipe {
 
 	public HighTransformationCoreRecipe(ItemStack out) {
-		super(out, CrystalElement.GRAY, CrystalElement.BLACK, new Coordinate(3, 0, -2), new Coordinate(-3, 0, 2));
+		super(out, CrystalElement.GRAY, CrystalElement.BLACK, new Coordinate(3, 0, -2), new Coordinate(-3, 0, 2), ChromaStacks.teleDust);
 	}
 
 }

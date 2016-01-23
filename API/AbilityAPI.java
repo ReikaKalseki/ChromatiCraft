@@ -50,8 +50,8 @@ public class AbilityAPI {
 		/** The maximum power level for this ability. Only used for trigger-type abilities. */
 		public int getMaxPower();
 
-		/** For "action-type" abilities like lightning. Actually performs the ability. Args: Player, power level */
-		public void trigger(EntityPlayer ep, int level);
+		/** For "action-type" abilities like lightning. Actually performs the ability. Args: Player, power level. Return true if successfully executed. */
+		public boolean trigger(EntityPlayer ep, int level);
 
 		/** For "ambient-type" abilities like magnet mode. Performs the ability this tick. Args: Player */
 		public void apply(EntityPlayer ep);

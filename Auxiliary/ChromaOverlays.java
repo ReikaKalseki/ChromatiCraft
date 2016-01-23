@@ -783,11 +783,13 @@ public class ChromaOverlays {
 
 	private void renderAbilityStatus(EntityPlayer ep, int gsc) {
 		ArrayList<Ability> li = Chromabilities.getFrom(ep);
+		GL11.glColor4f(1, 1, 1, 1);
 		int i = 0;
 		for (Ability c : li) {
 			ReikaTextureHelper.bindTexture(c.getTextureReferenceClass(), c.getTexturePath(false));
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
+			v5.setColorOpaque_I(0xffffff);
 			int x = Minecraft.getMinecraft().displayWidth/gsc-20;
 			int y = Minecraft.getMinecraft().displayHeight/gsc/2-8-(int)(li.size()/2F*20)+i*20;
 			v5.addVertexWithUV(x+0, y+16, 0, 0, 1);

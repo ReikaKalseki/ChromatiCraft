@@ -165,6 +165,7 @@ public class EntityBlurFX extends EntityFX {
 				this.setNoSlowdown();
 				lifeFreeze = 20;
 				particleGravity *= 4;
+				this.onCollision();
 			}
 			if (isCollidedHorizontally) {
 
@@ -239,6 +240,10 @@ public class EntityBlurFX extends EntityFX {
 			motionY = lock.motionY;
 			motionZ = lock.motionZ;
 		}
+	}
+
+	protected void onCollision() {
+
 	}
 
 	@Override

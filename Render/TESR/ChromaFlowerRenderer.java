@@ -34,7 +34,9 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityChromaFlower te = (TileEntityChromaFlower)tile;
 		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glTranslated(par2, par4, par6);
@@ -106,8 +108,7 @@ public class ChromaFlowerRenderer extends ChromaRenderBase {
 			BlendMode.DEFAULT.apply();
 			GL11.glDisable(GL11.GL_BLEND);
 		}
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 

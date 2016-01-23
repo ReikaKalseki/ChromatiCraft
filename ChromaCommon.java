@@ -33,6 +33,7 @@ public class ChromaCommon {
 	public static int oreRender;
 	public static int plantRender;
 	public static int plantRender2;
+	public static int flowerRender;
 
 	public void registerRenderers()
 	{

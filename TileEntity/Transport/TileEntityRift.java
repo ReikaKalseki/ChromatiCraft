@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Transport;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.List;
 
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Context;
@@ -19,6 +20,7 @@ import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -26,6 +28,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -37,6 +40,9 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import vazkii.botania.api.internal.IManaBurst;
+import vazkii.botania.api.mana.IManaCollisionGhost;
+import vazkii.botania.api.mana.IManaReceiver;
 import Reika.ChromatiCraft.API.Interfaces.WorldRift;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -53,17 +59,21 @@ import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cofh.api.energy.IEnergyHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
+
 @Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
-"li.cil.oc.api.network.ManagedPeripheral"})
+		"li.cil.oc.api.network.ManagedPeripheral", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, SneakPop, IFluidHandler, IEnergyHandler,
-IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral, ChunkLoadingTile {
+IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
 
 	private WorldLocation target;
 	private int color = 0xffffff;
@@ -82,6 +92,51 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaItems.RIFT.getStackOf());
 			this.delete();
 		}
+		if (!world.isRemote && this.isLinked() && this.getOther() != null) {
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);//.expand(0.15, 0.15, 0.15);
+			List<Entity> li = world.getEntitiesWithinAABB(Entity.class, box);
+			for (Entity e : li) {
+				if (this.shouldTeleport(e)) {
+					this.teleport(e);
+				}
+			}
+		}
+	}
+
+	private void teleport(Entity e) {
+		double rx = 1-(e.posX-xCoord);
+		double ry = 1-(e.posY-yCoord);
+		double rz = 1-(e.posZ-zCoord);
+		TileEntityRift te = this.getOther();
+		if (ModList.BOTANIA.isLoaded() && e instanceof IManaBurst) {
+			IManaBurst b = (IManaBurst)e;
+			/*
+			int c = b.getColor();
+			float[] hsb = Color.RGBtoHSB(ReikaColorAPI.getRed(c), ReikaColorAPI.getGreen(c), ReikaColorAPI.getBlue(c), null);
+			hsb[1] = 1;
+			hsb[0] += 0.1667F; //60 deg purpleshift
+			if (hsb[0] > 1)
+				hsb[0] -= 1;
+			c = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+			b.setColor(c);
+			 */
+			b.setColor(color);
+			b.setBurstSourceCoords(te.xCoord, te.yCoord, te.zCoord);
+			b.setMana(b.getStartingMana()); //reset life
+			ReikaSoundHelper.playSoundAtBlock(worldObj, te.xCoord, te.yCoord, te.zCoord, "botania:spreaderFire", 0.5F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25));
+		}
+		e.setLocationAndAngles(te.xCoord+rx, te.yCoord+ry, te.zCoord+rz, e.rotationYaw, e.rotationPitch);
+		e.getEntityData().setLong("rift_teleported", worldObj.getTotalWorldTime());
+	}
+
+	private boolean shouldTeleport(Entity e) {
+		long get = e.getEntityData().getLong("rift_teleported");
+		if (worldObj.getTotalWorldTime()-get < 5)
+			return false;
+		if (ModList.BOTANIA.isLoaded() && e instanceof IManaBurst) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -791,6 +846,31 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	@Override
 	public Collection<ChunkCoordIntPair> getChunksToLoad() {
 		return ChunkManager.getChunkSquare(xCoord, zCoord, 2);
+	}
+
+	@Override
+	public int getCurrentMana() {
+		return 0;
+	}
+
+	@Override
+	public boolean isGhost() {
+		return false;
+	}
+
+	@Override
+	public boolean isFull() {
+		return false;
+	}
+
+	@Override
+	public void recieveMana(int mana) {
+
+	}
+
+	@Override
+	public boolean canRecieveManaFromBursts() {
+		return true;
 	}
 
 }

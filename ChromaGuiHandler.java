@@ -193,12 +193,12 @@ public class ChromaGuiHandler implements IGuiHandler {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
-		if (ChromaBookGui.lastGui != null) {
+		ChromaGuis gui = ChromaGuis.guiList[id];
+		if (ChromaBookGui.lastGui != null && gui.isLexiconGUI() && z == 0) {
 			Object ret = ChromaBookGui.lastGui;
 			ChromaBookGui.lastGui = null;
 			return ret;
 		}
-		ChromaGuis gui = ChromaGuis.guiList[id];
 		switch(gui) {
 			case LINK:
 				return new GuiInventoryLinker(player, world);

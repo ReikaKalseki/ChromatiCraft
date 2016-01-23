@@ -57,25 +57,25 @@ public class ItemStorageCrystal extends ItemChromaTool {
 		}
 	}
 
-	public int getCapacity(ItemStack is) {
+	public static int getCapacity(ItemStack is) {
 		return (int)(1000*Math.pow(8, is.getItemDamage()-1));
 	}
 
-	public void addEnergy(ItemStack is, CrystalElement e, int value) {
-		ElementTagCompound etg = this.getTag(is);
-		int amt = this.getStoredEnergy(is, e);
-		int sum = Math.min(this.getCapacity(is), amt+value);
+	public static void addEnergy(ItemStack is, CrystalElement e, int value) {
+		ElementTagCompound etg = getTag(is);
+		int amt = getStoredEnergy(is, e);
+		int sum = Math.min(getCapacity(is), amt+value);
 		etg.setTag(e, sum);
-		this.writeTag(is, etg);
+		writeTag(is, etg);
 	}
 
-	public void removeEnergy(ItemStack is, CrystalElement e, int value) {
-		ElementTagCompound etg = this.getTag(is);
+	public static void removeEnergy(ItemStack is, CrystalElement e, int value) {
+		ElementTagCompound etg = getTag(is);
 		etg.subtract(e, value);
-		this.writeTag(is, etg);
+		writeTag(is, etg);
 	}
 
-	private ElementTagCompound getTag(ItemStack is) {
+	private static ElementTagCompound getTag(ItemStack is) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
 		ElementTagCompound etg = new ElementTagCompound();
@@ -84,34 +84,34 @@ public class ItemStorageCrystal extends ItemChromaTool {
 		return etg;
 	}
 
-	private void writeTag(ItemStack is, ElementTagCompound etg) {
+	private static void writeTag(ItemStack is, ElementTagCompound etg) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
 		etg.writeToNBT("energy", is.stackTagCompound);
 	}
 
 
-	public int getStoredEnergy(ItemStack is, CrystalElement e) {
-		return this.getTag(is).getValue(e);
+	public static int getStoredEnergy(ItemStack is, CrystalElement e) {
+		return getTag(is).getValue(e);
 	}
 
-	public int getTotalEnergy(ItemStack is) {
-		return this.getTag(is).getTotalEnergy();
+	public static int getTotalEnergy(ItemStack is) {
+		return getTag(is).getTotalEnergy();
 	}
 
-	public ElementTagCompound getStoredTags(ItemStack is) {
-		return this.getTag(is).copy();
+	public static ElementTagCompound getStoredTags(ItemStack is) {
+		return getTag(is).copy();
 	}
 
-	public int getSpace(CrystalElement e, ItemStack is) {
-		return this.getCapacity(is)-this.getStoredEnergy(is, e);
+	public static int getSpace(CrystalElement e, ItemStack is) {
+		return getCapacity(is)-getStoredEnergy(is, e);
 	}
 
-	public boolean isFull(ItemStack is) {
-		int max = this.getCapacity(is);
-		ElementTagCompound tag = this.getTag(is);
+	public static boolean isFull(ItemStack is) {
+		int max = getCapacity(is);
+		ElementTagCompound tag = getTag(is);
 		for (CrystalElement e : tag.elementSet()) {
-			if (this.getSpace(e, is) > 0)
+			if (getSpace(e, is) > 0)
 				return false;
 		}
 		return true;

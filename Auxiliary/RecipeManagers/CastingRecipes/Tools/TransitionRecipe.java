@@ -34,6 +34,19 @@ public class TransitionRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.auraDust, 4, 0);
 		this.addAuxItem(ChromaStacks.auraDust, 0, 4);
 		this.addAuxItem(ChromaStacks.auraDust, 0, -4);
+		/*
+		this.addAuxItem(ChromaStacks.voidDust, -4, -2);
+		this.addAuxItem(ChromaStacks.voidDust, -4, 2);
+
+		this.addAuxItem(ChromaStacks.voidDust, 4, -2);
+		this.addAuxItem(ChromaStacks.voidDust, 4, 2);
+
+		this.addAuxItem(ChromaStacks.voidDust, 2, 4);
+		this.addAuxItem(ChromaStacks.voidDust, -2, 4);
+
+		this.addAuxItem(ChromaStacks.voidDust, 2, -4);
+		this.addAuxItem(ChromaStacks.voidDust, -2, -4);
+		 */
 	}
 
 }

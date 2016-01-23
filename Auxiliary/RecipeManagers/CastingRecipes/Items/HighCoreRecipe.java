@@ -11,7 +11,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public abstract class HighCoreRecipe extends PylonRecipe implements ShardGroupingRecipe {
 
-	protected HighCoreRecipe(ItemStack out, CrystalElement primary, CrystalElement secondary, Coordinate rune1, Coordinate rune2) {
+	protected HighCoreRecipe(ItemStack out, CrystalElement primary, CrystalElement secondary, Coordinate rune1, Coordinate rune2, ItemStack dust) {
 		super(out, ChromaStacks.crystalStar);
 
 		this.addAuxItem(this.getChargedShard(primary), -2, -2);
@@ -37,9 +37,9 @@ public abstract class HighCoreRecipe extends PylonRecipe implements ShardGroupin
 		this.addAuxItem(ChromaStacks.iridCrystal, 4, 4);
 
 		this.addAuxItem(ChromaStacks.placehold6Dust, -2, -4);
-		this.addAuxItem(ChromaStacks.placehold6Dust, 4, -2);
+		this.addAuxItem(dust, 4, -2);
 		this.addAuxItem(ChromaStacks.placehold6Dust, 2, 4);
-		this.addAuxItem(ChromaStacks.placehold6Dust, -4, 2);
+		this.addAuxItem(dust, -4, 2);
 
 		this.addAuxItem(ChromaStacks.enderDust, 2, -4);
 		this.addAuxItem(ChromaStacks.spaceDust, -4, -2);

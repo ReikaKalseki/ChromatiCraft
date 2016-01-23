@@ -34,6 +34,8 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -47,7 +49,7 @@ import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public final class BlockTieredPlant extends BlockChromaTiered implements IPlantable {
+public final class BlockTieredPlant extends BlockChromaTiered implements IPlantable, LoadRegistry {
 
 	public static final int ARR_LENGTH = 5;
 
@@ -74,67 +76,68 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 		public static final TieredPlants[] list = values();
 
-		private TieredPlants(ProgressStage lvl, int c) {
+		private TieredPlants(ProgressStage lvl, int c/*, ItemStack is*/) {
 			level = lvl;
 			color = c;
+			//drop = is;
 		}
 
 		public Coordinate generate(World world, int x, int z, Random r) {
 			int y = 0;
 			switch(this) {
-			case BULB:
-				y = world.provider.getAverageGroundLevel();
-				for (int i = 0; i < 16; i++) {
-					int dy = y+i;
-					Block b = world.getBlock(x, dy+1, z);
-					int meta = world.getBlockMetadata(x, dy+1, z);
-					boolean leaf = b == Blocks.leaves || b == Blocks.leaves2 || ModWoodList.isModLeaf(b, meta);
-					if (world.getBlock(x, dy, z) == Blocks.air && leaf) {
-						return new Coordinate(x, dy, z);
+				case BULB:
+					y = world.provider.getAverageGroundLevel();
+					for (int i = 0; i < 16; i++) {
+						int dy = y+i;
+						Block b = world.getBlock(x, dy+1, z);
+						int meta = world.getBlockMetadata(x, dy+1, z);
+						boolean leaf = b == Blocks.leaves || b == Blocks.leaves2 || ModWoodList.isModLeaf(b, meta);
+						if (world.getBlock(x, dy, z) == Blocks.air && leaf) {
+							return new Coordinate(x, dy, z);
+						}
 					}
-				}
-				break;
-			case CAVE:
-				for (int i = 0; i < 64; i++) {
-					int dy = y+i;
-					Block b = world.getBlock(x, dy+1, z);
-					int meta = world.getBlockMetadata(x, dy+1, z);
-					boolean flag = b == Blocks.stone || b.isReplaceableOreGen(world, x, dy+1, z, Blocks.stone) || ReikaBlockHelper.isOre(b, meta);
-					if (flag && world.getBlock(x, dy, z) == Blocks.air) {
-						return new Coordinate(x, dy, z);
+					break;
+				case CAVE:
+					for (int i = 0; i < 64; i++) {
+						int dy = y+i;
+						Block b = world.getBlock(x, dy+1, z);
+						int meta = world.getBlockMetadata(x, dy+1, z);
+						boolean flag = b == Blocks.stone || b.isReplaceableOreGen(world, x, dy+1, z, Blocks.stone) || ReikaBlockHelper.isOre(b, meta);
+						if (flag && world.getBlock(x, dy, z) == Blocks.air) {
+							return new Coordinate(x, dy, z);
+						}
 					}
-				}
-				break;
-			case FLOWER:
-				y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				for (int i = -8; i < 8; i++) {
-					int dy = y+i;
-					boolean ground = world.getBlock(x, dy, z) == Blocks.dirt || world.getBlock(x, dy, z) == Blocks.grass;
-					if (ground && world.getBlock(x, dy+1, z) == Blocks.air) {
-						return new Coordinate(x, dy+1, z);
+					break;
+				case FLOWER:
+					y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					for (int i = -8; i < 8; i++) {
+						int dy = y+i;
+						boolean ground = world.getBlock(x, dy, z) == Blocks.dirt || world.getBlock(x, dy, z) == Blocks.grass;
+						if (ground && world.getBlock(x, dy+1, z) == Blocks.air) {
+							return new Coordinate(x, dy+1, z);
+						}
 					}
-				}
-				break;
-			case LILY:
-				y = world.getTopSolidOrLiquidBlock(x, z);
-				for (int i = -8; i < 38; i++) {
-					int dy = y+i;
-					boolean water = world.getBlock(x, dy, z) == Blocks.water && world.getBlockMetadata(x, dy, z) == 0;
-					if (water && world.getBlock(x, dy+1, z) == Blocks.air && world.canBlockSeeTheSky(x, dy+1, z)) {
-						return new Coordinate(x, dy+1, z);
+					break;
+				case LILY:
+					y = world.getTopSolidOrLiquidBlock(x, z);
+					for (int i = -8; i < 38; i++) {
+						int dy = y+i;
+						boolean water = world.getBlock(x, dy, z) == Blocks.water && world.getBlockMetadata(x, dy, z) == 0;
+						if (water && world.getBlock(x, dy+1, z) == Blocks.air && world.canBlockSeeTheSky(x, dy+1, z)) {
+							return new Coordinate(x, dy+1, z);
+						}
 					}
-				}
-				break;
-			case DESERT:
-				y = world.getTopSolidOrLiquidBlock(x, z)-1;
-				for (int i = -8; i < 8; i++) {
-					int dy = y+i;
-					boolean ground = world.getBlock(x, dy, z) == Blocks.sand;
-					if (ground && world.getBlock(x, dy+1, z) == Blocks.air) {
-						return new Coordinate(x, dy+1, z);
+					break;
+				case DESERT:
+					y = world.getTopSolidOrLiquidBlock(x, z)-1;
+					for (int i = -8; i < 8; i++) {
+						int dy = y+i;
+						boolean ground = world.getBlock(x, dy, z) == Blocks.sand;
+						if (ground && world.getBlock(x, dy+1, z) == Blocks.air) {
+							return new Coordinate(x, dy+1, z);
+						}
 					}
-				}
-				break;
+					break;
 			}
 			return null;
 		}
@@ -153,6 +156,27 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 		public boolean isWaterPlaced() {
 			return this == LILY;
+		}
+
+		private void registerDrops(BlockTieredPlant b) {
+			PlantDropManager.instance.registerDrops(b, this.ordinal(), this.getDrop());
+		}
+
+		public ItemStack getDrop() {
+			switch (this) {
+				case FLOWER: return ChromaStacks.auraDust;
+				case CAVE: return ChromaStacks.purityDust;
+				case LILY: return ChromaStacks.elementDust;
+				case BULB: return ChromaStacks.resonanceDust;
+				case DESERT: return ChromaStacks.beaconDust;
+			}
+			return null;
+		}
+	}
+
+	public void onLoad() {
+		for (int i = 0; i < TieredPlants.list.length; i++) {
+			TieredPlants.list[i].registerDrops(this);
 		}
 	}
 
@@ -176,32 +200,27 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		if (ItemFetcher.isPlayerHoldingBedrockPick(player))
 			fortune = 5;
 		fortune = Math.max(fortune, EnchantmentHelper.getLootingModifier(player));
-		switch(TieredPlants.list[world.getBlockMetadata(x, y, z)]) {
-		case FLOWER:
-			n = 1+fortune*rand.nextInt(8);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.auraDust.copy());
-			break;
-		case CAVE:
-			n = (1+rand.nextInt(3))*(1+fortune*(1+rand.nextInt(4)));
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.purityDust.copy());
-			break;
-		case LILY:
-			n = 4*(1+fortune*fortune/2);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.elementDust.copy());
-			break;
-		case BULB:
-			n = 1+fortune*4+2*rand.nextInt(9);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.resonanceDust.copy());
-			break;
-		case DESERT:
-			n = (1+fortune*fortune)+2*rand.nextInt(5);
-			for (int i = 0; i < n; i++)
-				li.add(ChromaStacks.beaconDust.copy());
-			break;
+		TieredPlants p = TieredPlants.list[world.getBlockMetadata(x, y, z)];
+		ItemStack is = p.getDrop();
+		switch(p) {
+			case FLOWER:
+				n = 1+fortune*rand.nextInt(8);
+				break;
+			case CAVE:
+				n = (1+rand.nextInt(3))*(1+fortune*(1+rand.nextInt(4)));
+				break;
+			case LILY:
+				n = 4*(1+fortune*fortune/2);
+				break;
+			case BULB:
+				n = 1+fortune*4+2*rand.nextInt(9);
+				break;
+			case DESERT:
+				n = (1+fortune*fortune)+2*rand.nextInt(5);
+				break;
+		}
+		for (int i = 0; i < n; i++) {
+			li.add(is.copy());
 		}
 		return li;
 	}
@@ -260,45 +279,45 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		if (world.getTotalWorldTime()%2 == 0 && this.isPlayerSufficientTier(world, x, y, z, Minecraft.getMinecraft().thePlayer)) {
 			int meta = world.getBlockMetadata(x, y, z);
 			switch(meta) {
-			case 0: {
-				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
-				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
-				int g = r.nextInt(255);
-				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.95, z+0.5, vx, 0, vz).setGravity(0.015F).setColor(0, g, 255).setScale(2);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				break;
-			}
-			case 1: {
-				float g = 0.02F+0.005F*r.nextFloat();
-				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.65, z+0.5, 0, 0, 0).setGravity(g).setScale(2);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				break;
-			}
-			case 2: {
-				float g = 0.04F+0.01F*r.nextFloat();
-				int red = r.nextInt(255);
-				EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.375, z+0.5, 0, 0, 0).setColor(red, 0, 255).setGravity(-g).setScale(4);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				break;
-			}
-			case 3: {
-				float g = 0.02F+0.005F*r.nextFloat();
-				int gr = r.nextInt(255);
-				double px = x+rand.nextDouble();
-				double pz = z+rand.nextDouble();
-				EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(0, 255, gr).setGravity(g).setScale(2);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				break;
-			}
-			case 4: {
-				float g = 0.02F+0.005F*r.nextFloat();
-				int gr = r.nextInt(255);
-				double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
-				double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
-				EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				break;
-			}
+				case 0: {
+					double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
+					double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.005);
+					int g = r.nextInt(255);
+					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.95, z+0.5, vx, 0, vz).setGravity(0.015F).setColor(0, g, 255).setScale(2);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
+				case 1: {
+					float g = 0.02F+0.005F*r.nextFloat();
+					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.65, z+0.5, 0, 0, 0).setGravity(g).setScale(2);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
+				case 2: {
+					float g = 0.04F+0.01F*r.nextFloat();
+					int red = r.nextInt(255);
+					EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.375, z+0.5, 0, 0, 0).setColor(red, 0, 255).setGravity(-g).setScale(4);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
+				case 3: {
+					float g = 0.02F+0.005F*r.nextFloat();
+					int gr = r.nextInt(255);
+					double px = x+rand.nextDouble();
+					double pz = z+rand.nextDouble();
+					EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(0, 255, gr).setGravity(g).setScale(2);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
+				case 4: {
+					float g = 0.02F+0.005F*r.nextFloat();
+					int gr = r.nextInt(255);
+					double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
+					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
+					EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
 			}
 		}
 	}
@@ -339,19 +358,18 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		Block b = world.getBlock(x, y, z);
 		int meta = world.getBlockMetadata(x, y, z);
 		switch(p) {
-		case FLOWER:
-			return b == Blocks.grass || b == Blocks.dirt || b == Blocks.farmland;
-		case BULB:
-			return b.getMaterial() == Material.leaves;
-		case CAVE:
-			return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta);
-		case LILY:
-			return b == Blocks.water || b == Blocks.flowing_water;
-		case DESERT:
-			return b == Blocks.sand;
-		default:
-			return false;
+			case FLOWER:
+				return b == Blocks.grass || b == Blocks.dirt || b == Blocks.farmland;
+			case BULB:
+				return b.getMaterial() == Material.leaves;
+			case CAVE:
+				return b == Blocks.stone || ReikaBlockHelper.isOre(b, meta);
+			case LILY:
+				return b == Blocks.water || b == Blocks.flowing_water;
+			case DESERT:
+				return b == Blocks.sand;
 		}
+		return false;
 	}
 
 	@Override
@@ -381,34 +399,32 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 	private boolean isValidLocation(World world, int x, int y, int z, int meta) {
 		TieredPlants p = TieredPlants.list[meta];
 		switch(p) {
-		case FLOWER:
-		case LILY:
-		case DESERT:
-			return this.canPlaceBlockOn(world, x, y-1, z, p);
-		case BULB:
-		case CAVE:
-			return this.canPlaceBlockOn(world, x, y+1, z, p);
-		default:
-			return true;
+			case FLOWER:
+			case LILY:
+			case DESERT:
+				return this.canPlaceBlockOn(world, x, y-1, z, p);
+			case BULB:
+			case CAVE:
+				return this.canPlaceBlockOn(world, x, y+1, z, p);
 		}
+		return false;
 	}
 
 	@Override
 	public EnumPlantType getPlantType(IBlockAccess world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		switch(TieredPlants.list[meta]) {
-		case FLOWER:
-		case BULB:
-			return EnumPlantType.Plains;
-		case CAVE:
-			return EnumPlantType.Cave;
-		case LILY:
-			return EnumPlantType.Water;
-		case DESERT:
-			return EnumPlantType.Desert;
-		default:
-			return null;
+			case FLOWER:
+			case BULB:
+				return EnumPlantType.Plains;
+			case CAVE:
+				return EnumPlantType.Cave;
+			case LILY:
+				return EnumPlantType.Water;
+			case DESERT:
+				return EnumPlantType.Desert;
 		}
+		return null;
 	}
 
 	@Override

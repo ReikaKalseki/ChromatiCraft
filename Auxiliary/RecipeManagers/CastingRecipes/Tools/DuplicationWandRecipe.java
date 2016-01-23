@@ -20,10 +20,10 @@ public class DuplicationWandRecipe extends PylonRecipe {
 		super(out, main);
 
 		//for now
-		this.addAuxItem(Items.stick, -2, -2);
-		this.addAuxItem(Items.stick, 2, 2);
-		this.addAuxItem(Items.stick, -2, 2);
-		this.addAuxItem(Items.stick, 2, -2);
+		this.addAuxItem("stickWood", -2, -2);
+		this.addAuxItem("stickWood", 2, 2);
+		this.addAuxItem("stickWood", -2, 2);
+		this.addAuxItem("stickWood", 2, -2);
 
 		this.addAuxItem(ChromaStacks.auraIngot, -2, 0);
 		this.addAuxItem(ChromaStacks.auraIngot, 2, 0);

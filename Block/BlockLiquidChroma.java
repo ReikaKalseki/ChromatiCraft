@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,9 +27,11 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -88,10 +91,28 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	}
 	 */
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		Color c = ReikaDyeHelper.getRandomColor().getJavaColor().brighter().brighter().brighter().brighter();
 		ReikaParticleHelper.spawnColoredParticles(world, x, y, z, c.getRed()/255F, c.getGreen()/255F, c.getBlue()/255F, 2);
-		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.explode");
+		if (world.getBlockMetadata(x, y, z) == 0) {
+			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
+			if (te != null) {
+				int ct = te.getEtherCount();
+				if (ct > 0) {
+					int n = 1+ct/4;
+					if (r.nextInt(1+n) > 0) {
+						for (int i = 0; i < n; i++) {
+							double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
+							double ry = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 0.5);
+							double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
+							EntityChromaFluidFX fx = new EntityChromaFluidFX(world, rx, ry, rz).setLife(20);
+							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override

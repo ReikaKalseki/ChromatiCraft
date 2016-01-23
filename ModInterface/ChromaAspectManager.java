@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -331,6 +332,61 @@ public class ChromaAspectManager {
 		}
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3, Aspect.VOID, 1);
+
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(1), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(2), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(3), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.ENERGY, 8);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(4), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.ENERGY, 8);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.ENERGY, 12, Aspect.AURA, 8);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(6), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(7), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.CRAFT, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(8), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.CRAFT, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(9), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 1, Aspect.ENERGY, 1, Aspect.AURA, 1, Aspect.ENTROPY, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(10), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.CRAFT, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(11), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.CRAFT, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(12), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.CRAFT, 1);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(13), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 8, Aspect.CRAFT, 2, Aspect.ENERGY, 2, Aspect.AURA, 2);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(14), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.ENERGY, 12, Aspect.AURA, 8);
+		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(15), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2, Aspect.ENERGY, 12, Aspect.AURA, 4, Aspect.EXCHANGE, 6);
+		for (int i = 0; i < 16; i++) {
+			for (Aspect a : aspectsThematic.getForward(CrystalElement.elements[i])) {
+				ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(13), a, 2);
+			}
+		}
+
+		for (int i = 0; i < Flowers.list.length; i++) {
+			ItemStack is = ChromaBlocks.DECOFLOWER.getStackOfMetadata(i);
+			ItemStack is2 = Flowers.list[i].getDrop();
+			ReikaThaumHelper.addAspects(is, Aspect.PLANT, 2, Aspect.MAGIC, 2);
+			ReikaThaumHelper.addAspects(is2, Aspect.PLANT, 1, Aspect.MAGIC, 2);
+			switch(Flowers.list[i]) {
+				case ENDERFLOWER:
+					ReikaThaumHelper.addAspects(is, Aspect.AURA, 4, Aspect.ELDRITCH, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.AURA, 1, Aspect.ELDRITCH, 1);
+					break;
+				case FLOWIVY:
+					ReikaThaumHelper.addAspects(is, Aspect.LIFE, 4, Aspect.EARTH, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.LIFE, 1, Aspect.EARTH, 1);
+					break;
+				case LUMALILY:
+					ReikaThaumHelper.addAspects(is, Aspect.COLD, 4, Aspect.CRYSTAL, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.COLD, 1, Aspect.CRYSTAL, 1);
+					break;
+				case RESOCLOVER:
+					ReikaThaumHelper.addAspects(is, Aspect.ENERGY, 4, Aspect.MOTION, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.ENERGY, 1, Aspect.MOTION, 1);
+					break;
+				case SANOBLOOM:
+					ReikaThaumHelper.addAspects(is, Aspect.HEAL, 4, Aspect.TRAVEL, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.HEAL, 1, Aspect.TRAVEL, 1);
+					break;
+				case VOIDREED:
+					ReikaThaumHelper.addAspects(is, Aspect.VOID, 4, Aspect.DARKNESS, 1);
+					ReikaThaumHelper.addAspects(is2, Aspect.VOID, 1, Aspect.DARKNESS, 1);
+					break;
+			}
+		}
 	}
 
 	public ElementTagCompound getElementCost(Aspect a, float depthcost) {

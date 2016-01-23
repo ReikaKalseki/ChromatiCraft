@@ -63,6 +63,8 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 										posY++;
 									}
 								}
+								if (p == Flowers.FLOWIVY && !world.getBlock(posX, posY-1, posZ).isAir(world, posX, posY-1, posZ))
+									continue;
 								world.setBlock(posX, posY, posZ, ChromaBlocks.DECOFLOWER.getBlockInstance(), p.ordinal(), 3);
 								if (p == Flowers.FLOWIVY) {
 									int g = random.nextInt(12);

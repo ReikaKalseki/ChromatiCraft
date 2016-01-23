@@ -20,8 +20,8 @@ public class LampRecipe extends MultiBlockCastingRecipe {
 	public LampRecipe(ItemStack out, ItemStack main) {
 		super(out, main);
 
-		this.addAuxItem(ReikaItemHelper.inksac, -2, 0);
-		this.addAuxItem(ReikaItemHelper.inksac, 2, 0);
+		this.addAuxItem("dyeBlack", -2, 0);
+		this.addAuxItem("dyeBlack", 2, 0);
 
 		this.addAuxItem(Items.gold_ingot, -4, 0);
 		this.addAuxItem(Items.gold_ingot, 4, 0);

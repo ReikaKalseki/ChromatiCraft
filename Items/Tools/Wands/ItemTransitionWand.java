@@ -82,6 +82,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				br.player = ep;
 				br.silkTouch = EnchantmentHelper.getSilkTouchModifier(ep);
 				BlockReplace brp = new BlockReplace(ep, id, meta, mode);
+				brp.silkTouch = br.silkTouch;
 				if (mode == TransitionMode.VOLUMETRIC) {
 					br.bounds = this.getStoredBox(is);
 					br.isOmni = true;
@@ -161,6 +162,10 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
+				if (r.silkTouch) {
+					li.clear();
+					li.add(ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta));
+				}
 				for (ItemStack is : li) {
 					r.drops.add(is);
 				}
@@ -221,6 +226,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 		private final int placeM;
 		private final TransitionMode mode;
 		private ArrayList<ItemStack> drops = new ArrayList();
+		private boolean silkTouch;
 
 		private BlockReplace(EntityPlayer ep, Block b, int meta, TransitionMode m) {
 			place = b;

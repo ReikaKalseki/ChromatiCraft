@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeComparat
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
+import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -170,6 +171,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 				//subindex = 0;
 				index--;
 				number = 1;
+				cr = this.getRecipe();
 			} while(index > 0 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
 		}
 	}
@@ -185,6 +187,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 			do {
 				index++;
 				number = 1;
+				cr = this.getRecipe();
 			} while(index < visible.size()-1 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
 		}
 	}
@@ -193,6 +196,9 @@ public class GuiCastingAuto extends GuiChromaBase {
 		if (newType) {
 			if (cur.getItem() instanceof ItemPendant) {
 				return r.getOutput().getItem() instanceof ItemPendant;
+			}
+			if (cur.getItem() instanceof ItemChromaPlacer) {
+				return r.getOutput().getItemDamage() == cur.getItemDamage();
 			}
 		}
 		return (newType ? cur.getItem() == this.getRecipe().getOutput().getItem() : ReikaItemHelper.matchStacks(cur, this.getRecipe().getOutput()));

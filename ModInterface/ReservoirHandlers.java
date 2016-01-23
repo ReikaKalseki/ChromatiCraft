@@ -20,6 +20,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
@@ -28,6 +29,7 @@ import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.API.ReservoirAPI.TankHandler;
 
 public class ReservoirHandlers {
@@ -52,11 +54,12 @@ public class ReservoirHandlers {
 
 	}
 
-	public static class ShardBoostingHandler extends ChromaReservoirRecipeHandlerBase {
+	public static class ChromaPrepHandler extends ChromaReservoirRecipeHandlerBase {
 
 		@Override
 		protected int doTick(TileEntity te, FluidStack fs) {
 			int dye = fs.tag != null ? fs.tag.getInteger("berries") : 0;
+			int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
 			CrystalElement e = dye > 0 ? CrystalElement.elements[fs.tag.getInteger("element")] : null;
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
 			List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
@@ -77,10 +80,40 @@ public class ReservoirHandlers {
 						ei.setDead();
 					flag = true;
 				}
-				else if (e != null && is.getItemDamage() == e.ordinal() && ChromaItems.SHARD.matchWith(is) && dye == TileEntityChroma.BERRY_SATURATION) {
+				else if (!te.worldObj.isRemote && rand.nextInt(20) == 0 && ether < TileEntityChroma.ETHER_SATURATION && ReikaItemHelper.matchStacks(is, ChromaStacks.etherBerries)) {
+					if (fs.tag == null)
+						fs.tag = new NBTTagCompound();
+					while (ether < TileEntityChroma.ETHER_SATURATION && is.stackSize > 0) {
+						ether = fs.tag.getInteger("ether")+1;
+						fs.tag.setInteger("ether", ether);
+						is.stackSize--;
+					}
+					if (is.stackSize <= 0)
+						ei.setDead();
+					flag = true;
+				}
+			}
+			if (flag && e != null)
+				fs.tag.setInteger("renderColor", BlockActiveChroma.getColor(e, dye));
+			return 0;
+		}
+	}
+
+	public static class ShardBoostingHandler extends ChromaReservoirRecipeHandlerBase {
+
+		@Override
+		protected int doTick(TileEntity te, FluidStack fs) {
+			int dye = fs.tag != null ? fs.tag.getInteger("berries") : 0;
+			int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
+			CrystalElement e = dye > 0 ? CrystalElement.elements[fs.tag.getInteger("element")] : null;
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
+			List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
+			for (EntityItem ei : li) {
+				ItemStack is = ei.getEntityItem();
+				if (e != null && is.getItemDamage() == e.ordinal() && ChromaItems.SHARD.matchWith(is) && dye == TileEntityChroma.BERRY_SATURATION) {
 					boolean done = false;
 					for (int i = 0; i < ACCEL_FACTOR && !done; i++) {
-						done = ItemCrystalShard.tickShardCharging(ei, e, te.xCoord, te.yCoord, te.zCoord);
+						done = ItemCrystalShard.tickShardCharging(ei, e, ether, te.xCoord, te.yCoord, te.zCoord);
 					}
 					if (!te.worldObj.isRemote && done) {
 						fs.tag = null;
@@ -88,8 +121,6 @@ public class ReservoirHandlers {
 					}
 				}
 			}
-			if (flag && e != null)
-				fs.tag.setInteger("renderColor", BlockActiveChroma.getColor(e, dye));
 			return 0;
 		}
 
@@ -100,6 +131,7 @@ public class ReservoirHandlers {
 		@Override
 		protected int doTick(TileEntity te, FluidStack fs) {
 			if (rand.nextInt(3) == 0) {
+				int ether = fs.tag != null ? fs.tag.getInteger("ether") : 0;
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
 				List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (EntityItem ei : li) {
@@ -111,7 +143,8 @@ public class ReservoirHandlers {
 							}
 						}
 						else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
-							PoolRecipes.instance.makePoolRecipe(ei, pr);
+							PoolRecipes.instance.makePoolRecipe(ei, pr, ether, te.xCoord, te.yCoord, te.zCoord);
+							fs.tag = null;
 							return 1000;
 						}
 						break;

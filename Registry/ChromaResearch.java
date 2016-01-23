@@ -146,6 +146,7 @@ public enum ChromaResearch implements ProgressElement {
 	BROADCAST(		ChromaTiles.BROADCAST,		ResearchLevel.NETWORKING),
 	CLOAKING(		ChromaTiles.CLOAKING,		ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
 	CAVELIGHTER(	ChromaTiles.LIGHTER,		ResearchLevel.RUNECRAFT,		ProgressStage.BEDROCK),
+	GLOWFIRE(		ChromaTiles.GLOWFIRE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.SHARDCHARGE),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -238,6 +239,8 @@ public enum ChromaResearch implements ProgressElement {
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
 	DIMPING(		Chromabilities.DIMPING,						ResearchLevel.ENDGAME),
 	DASH(			Chromabilities.DASH),
+	LASERBILITY(	Chromabilities.LASER,						ResearchLevel.ENDGAME),
+	FIRERAIN(		Chromabilities.FIRERAIN,					ResearchLevel.ENDGAME),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -269,6 +272,8 @@ public enum ChromaResearch implements ProgressElement {
 	public final ResearchLevel level;
 	private Chromabilities ability;
 	private Structures struct;
+
+	private int sectionIndex = 0;
 
 	public static final ChromaResearch[] researchList = values();
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
@@ -361,6 +366,10 @@ public enum ChromaResearch implements ProgressElement {
 		progress = p;
 		level = r;
 		struct = s;
+	}
+
+	public int sectionIndex() {
+		return sectionIndex;
 	}
 
 	public boolean isAlwaysPresent() {
@@ -737,6 +746,10 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.firaxite);
 			li.add(ChromaStacks.spaceDust);
 			li.add(ChromaStacks.resocrystal);
+			li.add(ChromaStacks.placehold4Dust);
+			li.add(ChromaStacks.placehold5Dust);
+			li.add(ChromaStacks.placehold6Dust);
+			li.add(ChromaStacks.placehold7Dust);
 			return li;
 		}
 		if (this == DUSTS) {
@@ -746,6 +759,12 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.elementDust);
 			li.add(ChromaStacks.beaconDust);
 			li.add(ChromaStacks.resonanceDust);
+			li.add(ChromaStacks.teleDust);
+			li.add(ChromaStacks.icyDust);
+			li.add(ChromaStacks.etherBerries);
+			li.add(ChromaStacks.energyPowder);
+			li.add(ChromaStacks.livingEssence);
+			li.add(ChromaStacks.voidDust);
 			return li;
 		}
 		if (this == IRID) {
@@ -879,6 +898,9 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	public int getRecipeIndex(ItemStack is) {
+		if (this == ALLOYS) {
+			return new ArrayList(PoolRecipes.instance.getAllPoolRecipes()).indexOf(PoolRecipes.instance.getPoolRecipeByOutput(is));
+		}
 		ArrayList<CastingRecipe> li = this.getCraftingRecipes();
 		for (int i = 0; i < li.size(); i++) {
 			if (ReikaItemHelper.matchStacks(is, li.get(i).getOutput()))
@@ -991,6 +1013,7 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	static {
+		int index = 0;
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
 			if (!r.isDummiedOut()) {
@@ -999,12 +1022,14 @@ public enum ChromaResearch implements ProgressElement {
 				byName.put(r.name(), r);
 				if (r.isParent) {
 					parents.add(r);
+					index++;
 				}
 				else {
 					nonParents.add(r);
 					if (!r.isAlwaysPresent()) {
 						obtainable.add(r);
 					}
+					r.sectionIndex = index;
 				}
 			}
 			ChromaResearch pre = duplicateChecker.get(r.getIDObject());

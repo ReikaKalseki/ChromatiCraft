@@ -21,6 +21,8 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -36,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -62,7 +65,9 @@ import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -82,6 +87,7 @@ import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -91,6 +97,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import com.google.common.collect.HashBiMap;
@@ -123,7 +130,9 @@ public enum Chromabilities implements Ability {
 	BREADCRUMB(null, true),
 	RANGEDBOOST(null, false),
 	DIMPING(null, false),
-	DASH(Phase.END, false);
+	DASH(Phase.END, false),
+	LASER(null, true),
+	FIRERAIN(Phase.START, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -248,19 +257,22 @@ public enum Chromabilities implements Ability {
 				else
 					ep.stepHeight = 0.5F;
 				break;
+			case FIRERAIN:
+				this.tickFireRain(ep);
+				break;
 			default:
 				break;
 		}
 	}
 
-	public void trigger(EntityPlayer ep, int data) {
+	public boolean trigger(EntityPlayer ep, int data) {
 		switch(this) {
 			case REACH:
 				this.setReachDistance(ep, this.enabledOn(ep) ? MAX_REACH : -1); //use data?
-				break;
+				return true;
 			case SONIC:
 				this.destroyBlocksAround(ep, data);
-				break;
+				return true;
 			case SHIFT:
 				if (this.enabledOn(ep)) {
 					AbilityHelper.instance.startDrawingBoxes(ep);
@@ -270,39 +282,40 @@ public enum Chromabilities implements Ability {
 					AbilityHelper.instance.stopDrawingBoxes(ep);
 					AbilityHelper.instance.shifts.remove(ep);
 				}
-				break;
+				return true;
 			case HEAL:
 				this.healPlayer(ep, data);
-				break;
+				return true;
 			case FIREBALL:
 				this.launchFireball(ep, data);
-				break;
+				return true;
 			case HEALTH:
 				this.setPlayerMaxHealth(ep, this.enabledOn(ep) ? data : 0);
-				break;
+				return true;
 			case LIGHTNING:
-				this.spawnLightning(ep, data);
-				break;
+				return this.spawnLightning(ep, data);
 			case LIFEPOINT:
 				this.convertBufferToLP(ep, data);
-				break;
+				return true;
 			case HOTBAR:
 				addInvPage(ep);
-				break;
+				return true;
 			case SHOCKWAVE:
 				causeShockwave(ep);
-				break;
+				return true;
 			case TELEPORT:
 				teleportPlayerMenu(ep);
-				break;
+				return true;
 			case BREADCRUMB:
 				AbilityHelper.instance.setPathLength(ep, this.enabledOn(ep) ? ReikaMathLibrary.intpow2(2, data) : 0);
-				break;
+				return true;
 			case DIMPING:
 				doDimensionPing(ep);
-				break;
+				return true;
+			case LASER:
+				return doLaserPulse(ep);
 			default:
-				break;
+				return false;
 		}
 	}
 
@@ -328,8 +341,9 @@ public enum Chromabilities implements Ability {
 			use.scale(5);
 		if (a == DIMPING)
 			use.scale(250);
+		if (a == LASER)
+			use.scale(800);
 
-		PlayerElementBuffer.instance.removeFromPlayer(ep, use);
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
 
@@ -340,7 +354,9 @@ public enum Chromabilities implements Ability {
 
 		}
 		else {
-			a.trigger(ep, data);
+			if (a.trigger(ep, data)) {
+				PlayerElementBuffer.instance.removeFromPlayer(ep, use);
+			}
 		}
 	}
 
@@ -354,6 +370,7 @@ public enum Chromabilities implements Ability {
 			case SHOCKWAVE:
 			case TELEPORT:
 			case DIMPING:
+			case LASER:
 				return true;
 			default:
 				return false;
@@ -480,6 +497,165 @@ public enum Chromabilities implements Ability {
 			AbilityHelper.instance.setNoClippingMagnet(ep, false);
 	}
 
+	private static void tickFireRain(EntityPlayer ep) {
+		World world = ep.worldObj;
+		if (world.isRemote) {
+			doFireRainParticles(ep);
+		}
+		else {
+			int x = MathHelper.floor_double(ep.posX);
+			int z = MathHelper.floor_double(ep.posZ);
+			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 128);
+			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 128);
+			int dy = world.getTopSolidOrLiquidBlock(dx, dz);
+			ReikaWorldHelper.ignite(world, dx, dy, dz);
+			/*
+			if (world.rand.nextInt(20) == 0) {
+				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 910);
+			}
+			else if (world.rand.nextInt(200) == 0) {
+				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 1510);
+			}
+			 */
+			ChromaSounds.FIRE.playSoundAtBlock(world, dx, dy, dz, 1.5F, 1+world.rand.nextFloat()*0.5F);
+			if (ep.ticksExisted%4 == 0) {
+				ChromaSounds.FIRE.playSound(ep, 0.3F, 0.2F+world.rand.nextFloat());
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void doFireRainParticles(EntityPlayer ep) {
+		int n = 1+ep.worldObj.rand.nextInt(8);
+		for (int i = 0; i < n; i++) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 32);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 32);
+			double ry = ReikaRandomHelper.getRandomPlusMinus(ep.posY+32, 32);
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0.5, 0.25);
+			int l = 200;
+			EntityFX fx = new EntityFireFX(ep.worldObj, rx, ry, rz).setGravity(g).setScale(8).setLife(l);
+			if (ep.worldObj.rand.nextInt(8) == 0)
+				((EntityFireFX)fx).setExploding();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	private static boolean doLaserPulse(EntityPlayer ep) {
+		World world = ep.worldObj;
+		MovingObjectPosition p = ReikaPlayerAPI.getLookedAtBlock(ep, 128, false);
+		if (p == null || p.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)
+			return false;
+		if (!world.canBlockSeeTheSky(p.blockX, p.blockY+1, p.blockZ))
+			return false;
+		double px = p.blockX+0.5;
+		double py = p.blockY+0.5;
+		double pz = p.blockZ+0.5;
+		if (world.isRemote) {
+			doLaserPunchParticles(ep, px, py, pz);
+		}
+		else {
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(px, py, pz, px, py, pz).expand(64, 32, 64);
+			List<EntityLiving> li = world.getEntitiesWithinAABB(EntityLiving.class, box);
+			for (EntityLiving e : li) {
+				e.attackEntityFrom(DamageSource.causeIndirectMagicDamage(e, ep), Integer.MAX_VALUE);
+			}
+			double r = ReikaRandomHelper.getRandomPlusMinus(10D, 2D);
+			double h = ReikaRandomHelper.getRandomBetween(r, r*4);
+			for (int i = -(int)Math.ceil(r); i <= Math.ceil(r); i++) {
+				for (int k = -(int)Math.ceil(r); k <= Math.ceil(r); k++) {
+					for (int j = -(int)Math.ceil(h); j <= Math.ceil(h); j++) {
+						if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, h, r)) {
+							double d = ReikaMathLibrary.py3d(i, 0, k);
+							double dx = px+i;
+							double dy = py+j;
+							double dz = pz+k;
+							int dpx = MathHelper.floor_double(dx);
+							int dpy = MathHelper.floor_double(dy);
+							int dpz = MathHelper.floor_double(dz);
+							Block b = world.getBlock(dpx, dpy, dpz);
+							int meta = world.getBlockMetadata(dpx, dpy, dpz);
+							if (b == Blocks.bedrock && dpy <= 4)
+								continue;
+							if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, dpx, dpy, dpz, meta))
+								continue;
+							boolean flag = false;
+							if ((0.5+0.5*world.rand.nextDouble())*d < r*(0.5+world.rand.nextDouble()*0.5)) {
+								if (ReikaBlockHelper.isOre(b, meta)) {
+									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta);
+									ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(is);
+									if (out != null) {
+										out = out.copy();
+										out.stackSize *= 2;
+										EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, out);
+										ReikaEntityHelper.setInvulnerable(ei, true);
+									}
+								}
+								else if (b instanceof BlockTieredResource && ((BlockTieredResource)b).isPlayerSufficientTier(world, dpx, dpy, dpz, ep)) {
+									for (ItemStack is : ((BlockTieredResource)b).getHarvestResources(world, dpx, dpy, dpz, 3, ep)) {
+										EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, is);
+										ReikaEntityHelper.setInvulnerable(ei, true);
+									}
+								}
+								world.setBlock(dpx, dpy, dpz, Blocks.air);
+							}
+						}
+					}
+				}
+			}
+			for (float f = 0.1F; f <= 2; f *= 2) {
+				ReikaSoundHelper.playSoundFromServer(world, px, py, pz, "random.explode", 2, f, true);
+				ReikaSoundHelper.playSoundFromServer(world, ep.posX, ep.posY, ep.posZ, "random.explode", 1, f, true);
+			}
+			ChromaSounds.LASER.playSound(ep, 2, 1);
+		}
+		return true;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void doLaserPunchParticles(EntityPlayer ep, double px, double py, double pz) {
+		int n = 2048+ep.worldObj.rand.nextInt(16384);
+		double maxr = 32;
+		for (int i = 0; i < n; i++) {
+			double a = ep.worldObj.rand.nextDouble()*360;
+			double r = ReikaRandomHelper.getRandomBetween(0, maxr);
+			double rx = px+r*Math.sin(Math.toRadians(a));
+			double rz = pz+r*Math.cos(Math.toRadians(a));
+			double ry = ReikaRandomHelper.getRandomPlusMinus(py+1.5, 1)+(ep.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(rx), MathHelper.floor_double(rz))-ep.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(px), MathHelper.floor_double(pz)));
+			int l = 40+ep.worldObj.rand.nextInt(120);
+			double v = ReikaRandomHelper.getRandomPlusMinus(0.25, 0.125)/32D;
+			double vx = (rx-px)*v;
+			double vz = (rz-pz)*v;
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			float f = (float)(r/maxr);
+			float s = (float)ReikaRandomHelper.getRandomPlusMinus(8D, 4D)+4*(1-f);
+			int c = f < 0.5 ? ReikaColorAPI.mixColors(0xffffff, 0x00a0ff, 1-(f*2)) : ReikaColorAPI.mixColors(0x0000ff, 0x00a0ff, (f-0.5F)*2);
+			EntityFX fx = new EntityBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		for (int i = 0; i < n/16; i++) {
+			double a = ep.worldObj.rand.nextDouble()*360;
+			double r = ReikaRandomHelper.getRandomPlusMinus(maxr+24, 4);
+			double rx = px+r*Math.sin(Math.toRadians(a));
+			double rz = pz+r*Math.cos(Math.toRadians(a));
+			double ry = ReikaRandomHelper.getRandomPlusMinus(py+1.5, 1)+(ep.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(rx), MathHelper.floor_double(rz))-ep.worldObj.getTopSolidOrLiquidBlock(MathHelper.floor_double(px), MathHelper.floor_double(pz)));
+			int l = 40+ep.worldObj.rand.nextInt(120);
+			double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625)/64D;
+			double vx = (rx-px)*v;
+			double vz = (rz-pz)*v;
+			double vy = ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			float s = (float)ReikaRandomHelper.getRandomPlusMinus(16D, 4D);
+			int c = 0xa000ff;
+			EntityFX fx = new EntityBlurFX(ep.worldObj, rx, ry, rz, vx, vy, vz).setColor(c).setScale(s).setLife(l).setRapidExpand().setColliding();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		for (double dy = py; dy < 1024; dy += 1) {
+			EntityFX fx = new EntityBlurFX(ep.worldObj, px, dy, pz).setColor(0xffffff).setScale(16).setLife(120).setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
 	private static void doDimensionPing(EntityPlayer ep) {
 		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			int x = MathHelper.floor_double(ep.posX);
@@ -536,7 +712,7 @@ public enum Chromabilities implements Ability {
 		return (idbelow instanceof BlockLiquid || idbelow instanceof BlockFluidBase) && !((id instanceof BlockLiquid || id instanceof BlockFluidBase));
 	}
 
-	private static void spawnLightning(EntityPlayer ep, int power) {
+	private static boolean spawnLightning(EntityPlayer ep, int power) {
 		if (!ep.worldObj.isRemote) {
 			MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(ep, 128, false);
 			if (mov != null) {
@@ -564,12 +740,15 @@ public enum Chromabilities implements Ability {
 							}
 						}
 					}
+					return true;
 				}
 				else {
 					ChromaSounds.ERROR.playSound(ep);
+					return false;
 				}
 			}
 		}
+		return false;
 	}
 
 	private static void teleportPlayerMenu(EntityPlayer ep) {

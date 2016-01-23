@@ -10,13 +10,15 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -37,6 +39,8 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -52,11 +56,13 @@ import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Territory;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.TraitsBee;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
 import cpw.mods.fml.common.registry.GameRegistry;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeModifier;
@@ -70,6 +76,8 @@ import forestry.api.genetics.IIndividual;
 
 public class CrystalBees {
 
+	private static final String LOGGER_TAG = "CrystalBees";
+
 	private static final Random rand = new Random();
 
 	protected static BasicBee protective;
@@ -79,9 +87,14 @@ public class CrystalBees {
 	protected static BasicBee crystal;
 	protected static BasicBee purity;
 
-	protected static final HashMap<CrystalElement, CrystalBee> beeMap = new HashMap();
-	protected static final HashMap<CrystalElement, CrystalEffect> effectMap = new HashMap();
-	protected static final HashMap<CrystalElement, CrystalAllele> flowerMap = new HashMap();
+	protected static final EnumMap<CrystalElement, CrystalBee> beeMap = new EnumMap(CrystalElement.class);
+	protected static final EnumMap<CrystalElement, CrystalEffect> effectMap = new EnumMap(CrystalElement.class);
+	protected static final EnumMap<CrystalElement, CrystalAllele> flowerMap = new EnumMap(CrystalElement.class);
+	protected static final EnumMap<CrystalElement, ItemHashMap<ProductCondition>> productConditions = new EnumMap(CrystalElement.class);
+
+	static {
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_TAG);
+	}
 
 	public static void register() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
@@ -133,6 +146,13 @@ public class CrystalBees {
 		protective.addBreeding("Heroic", crystal, 10);
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
+
+		protective.addProduct(new ItemStack(Blocks.obsidian), 2);
+		hostile.addProduct(new ItemStack(Items.gunpowder), 4);
+		luminous.addProduct(new ItemStack(Items.glowstone_dust), 5);
+		protective.addProduct(Combs.HONEY.getItem(), 10);
+		hostile.addProduct(Combs.HONEY.getItem(), 10);
+		luminous.addProduct(Combs.HONEY.getItem(), 10);
 
 		GameRegistry.registerWorldGenerator(HiveGenerator.instance, -5);
 	}
@@ -324,12 +344,69 @@ public class CrystalBees {
 
 		@Override
 		public ItemStack[] affectProducts(World world, IIndividual individual, int x, int y, int z, ItemStack[] products) {
-			IAlleleBeeSpecies bee = (IAlleleBeeSpecies)individual;
+			IBeeGenome ibg = ((IBee)individual).getGenome();
+			IAlleleBeeSpecies bee1 = ibg.getPrimary();
+			IAlleleBeeSpecies bee2 = ibg.getSecondary();
+			IBeeHousing ibh = (IBeeHousing)world.getTileEntity(x, y, z);
 			ArrayList<ItemStack> li = ReikaJavaLibrary.makeListFromArray(products);
-			if (bee.getUID().equals(beeMap.get(color).getUID())) {
-
+			ItemHashMap<ProductCondition> map = productConditions.get(color);
+			ModularLogger.instance.log(LOGGER_TAG, "Flower provider "+this.getDescription()+" affecting products "+li+" for "+bee1.getName()+"; map="+map);
+			if (map != null) {
+				Iterator<ItemStack> it = li.iterator();
+				while (it.hasNext()) {
+					ItemStack is = it.next();
+					ProductCondition c = map.get(is);
+					ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+": "+c);
+					if (c != null) {
+						boolean flag = false;
+						if (bee1.getUID().equals(bee2.getUID())) {
+							if (bee1.getUID().equals(beeMap.get(color).getUID())) {
+								if (this.areConditionalsAvailable(world, x, y, z, ibg, ibh)) {
+									if (c.check(world, x, y, z, ibg, ibh)) {
+										ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+" passed.");
+										flag = true;
+									}
+								}
+								else {
+									ModularLogger.instance.log(LOGGER_TAG, "Conditionals unavailable. Removing.");
+								}
+							}
+						}
+						if (!flag) {
+							ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+" failed. Removing.");
+							it.remove();
+						}
+					}
+				}
 			}
 			ItemStack[] ret = li.toArray(new ItemStack[li.size()]);
+			return ret;
+		}
+
+		private boolean areConditionalsAvailable(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			if (!(ibg.getFlowerProvider() instanceof FlowerProviderCrystal))
+				return false;
+			if (((FlowerProviderCrystal)ibg.getFlowerProvider()).color != color)
+				return false;
+			if (rand.nextFloat() > ibg.getSpeed())
+				return false;
+			if (ibg.getFlowering() < Flowering.AVERAGE.getValue())
+				return false;
+			if (!ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z))) {
+				if (rand.nextInt(2) > 0) {
+					return false;
+				}
+			}
+			if (!ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)))
+				return false;
+
+			if (rand.nextInt(3) > 0)
+				return true;
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			if (ep != null) {
+				return ProgressStage.SHARDCHARGE.isPlayerAtStage(ep);
+			}
+			return false;
 		}
 
 		/*
@@ -371,13 +448,13 @@ public class CrystalBees {
 			temperature = traits.temperature;
 			humidity = traits.humidity;
 
-			this.addSpecialty(ChromaItems.BERRY.getStackOf(color), 25, new LeafCheck(color));
-			this.addSpecialty(ItemColoredModInteract.ColoredModItems.COMB.getItem(color), 8, new CrystalPlantCheck(color));
-			this.addProduct(ForestryHandler.Combs.HONEY.getItem(), 6);
-			this.addProduct(ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 1, color.ordinal()) : ChromaItems.DYE.getStackOf(color), 20, new FlowerCheck(color));
+			this.addConditionalProduct(ChromaItems.BERRY.getStackOf(color), 25, false, new LeafCheck(color));
+			this.addConditionalProduct(ItemColoredModInteract.ColoredModItems.COMB.getItem(color), 8, true, new CrystalPlantCheck(color));
+			this.addProduct(ForestryHandler.Combs.HONEY.getItem(), 15);
+			this.addConditionalProduct(ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 1, color.ordinal()) : ChromaItems.DYE.getStackOf(color), 20, false, new FlowerCheck(color));
 			switch(color) {
 				case BLACK:
-					this.addSpecialty(ChromaStacks.auraDust, 5, new ProgressionCheck(TieredPlants.FLOWER.level));
+					this.addConditionalProduct(ChromaStacks.auraDust, 5, true, new ProgressionCheck(TieredPlants.FLOWER.level));
 					break;
 				case GREEN:
 					this.addSpecialty(ForestryHandler.Combs.SILKY.getItem(), 10);
@@ -396,23 +473,36 @@ public class CrystalBees {
 					this.addSpecialty(new ItemStack(Items.blaze_powder), 10);
 					break;
 				case BLUE:
-					this.addSpecialty(new ItemStack(Items.glowstone_dust), 10);
+					this.addConditionalProduct(ChromaStacks.beaconDust, 5, true, new ProgressionCheck(TieredPlants.DESERT.level));
 					break;
 				case YELLOW:
 					this.addSpecialty(new ItemStack(Items.redstone), 10);
 					break;
 				case WHITE:
-					this.addSpecialty(ChromaStacks.purityDust, 5, new ProgressionCheck(TieredPlants.CAVE.level));
+					this.addConditionalProduct(ChromaStacks.purityDust, 5, true, new ProgressionCheck(TieredPlants.CAVE.level));
 					break;
 				case CYAN:
-					this.addSpecialty(ChromaStacks.waterDust, 5, new ProgressionCheck(TieredOres.WATERY.level));
+					this.addConditionalProduct(ChromaStacks.waterDust, 5, true, new ProgressionCheck(TieredOres.WATERY.level));
 					break;
 				case LIME:
-					this.addSpecialty(ChromaStacks.spaceDust, 5, new ProgressionCheck(TieredOres.END2.level));
+					this.addConditionalProduct(ChromaStacks.spaceDust, 5, true, new ProgressionCheck(TieredOres.END2.level));
 					break;
 				default:
 					break;
 			}
+		}
+
+		private void addConditionalProduct(ItemStack is, int chance, boolean specialty, ProductCondition c) {
+			if (specialty)
+				this.addSpecialty(is, chance);
+			else
+				this.addProduct(is, chance);
+			ItemHashMap<ProductCondition> map = productConditions.get(color);
+			if (map == null) {
+				map = new ItemHashMap();
+				productConditions.put(color, map);
+			}
+			map.put(is, c);
 		}
 
 		@Override
@@ -442,44 +532,11 @@ public class CrystalBees {
 			if (!ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)))
 				return false;
 
-			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
-			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
-			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			if (!ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.DYEFLOWER.getBlockInstance(), color.ordinal()))
-				return false;
-			if (!this.findLeaf(world, x, y, z, r, r2))
-				return false;
 			if (rand.nextInt(3) > 0)
 				return true;
 			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
 			if (ep != null) {
 				return ProgressStage.SHARDCHARGE.isPlayerAtStage(ep);
-			}
-			return false;
-		}
-
-		private boolean findLeaf(World world, int x, int y, int z, int r, int vr) {
-			int d = 2;
-			boolean last = false;
-			for (int i = -r; i <= r; i += d) {
-				for (int k = -r; k <= r; k += d) {
-					for (int h = -vr; h <= vr; h += d) {
-						int dx = x+i;
-						int dy = y+h;
-						int dz = z+k;
-						Block b = world.getBlock(dx, dy, dz);
-						if (b instanceof BlockDyeLeaf && world.getBlockMetadata(dx, dy, dz) == color.ordinal()) {
-							if (last)
-								return true;
-							else
-								last = true;
-						}
-						else
-							last = false;
-					}
-				}
 			}
 			return false;
 		}
@@ -583,6 +640,110 @@ public class CrystalBees {
 		@Override
 		public IAllele getEffectAllele() {
 			return effectMap.get(color);
+		}
+
+	}
+
+	private static abstract class ProductCondition {
+
+		public abstract boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh);
+
+	}
+
+	private static class ProgressionCheck extends ProductCondition {
+
+		private final ProgressStage progress;
+
+		private ProgressionCheck(ProgressStage p) {
+			progress = p;
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			return ep != null && progress.isPlayerAtStage(ep);
+		}
+
+	}
+
+	private static class CrystalPlantCheck extends ProductCondition {
+
+		private final CrystalElement color;
+
+		private CrystalPlantCheck(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
+			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
+			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
+
+			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.PLANT.getBlockInstance(), color.ordinal());
+		}
+	}
+
+	private static class FlowerCheck extends ProductCondition {
+
+		private final CrystalElement color;
+
+		private FlowerCheck(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
+			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
+			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
+
+			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.DYEFLOWER.getBlockInstance(), color.ordinal());
+		}
+	}
+
+	private static class LeafCheck extends ProductCondition {
+
+		private final CrystalElement color;
+
+		private LeafCheck(CrystalElement e) {
+			color = e;
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
+			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
+			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
+
+			return this.findLeaf(world, x, y, z, r, r2);
+		}
+
+		private boolean findLeaf(World world, int x, int y, int z, int r, int vr) {
+			int d = 2;
+			boolean last = false;
+			for (int i = -r; i <= r; i += d) {
+				for (int k = -r; k <= r; k += d) {
+					for (int h = -vr; h <= vr; h += d) {
+						int dx = x+i;
+						int dy = y+h;
+						int dz = z+k;
+						Block b = world.getBlock(dx, dy, dz);
+						if (b instanceof BlockDyeLeaf && world.getBlockMetadata(dx, dy, dz) == color.ordinal()) {
+							if (last)
+								return true;
+							else
+								last = true;
+						}
+						else
+							last = false;
+					}
+				}
+			}
+			return false;
 		}
 
 	}

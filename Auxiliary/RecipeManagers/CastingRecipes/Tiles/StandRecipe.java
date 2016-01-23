@@ -33,7 +33,7 @@ public class StandRecipe extends TempleCastingRecipe implements CoreRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 24;
+		return 25;
 	}
 
 }

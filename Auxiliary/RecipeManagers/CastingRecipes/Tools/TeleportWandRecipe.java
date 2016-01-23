@@ -27,10 +27,10 @@ public class TeleportWandRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.diamond, 4, 2);
 		this.addAuxItem(Items.diamond, 0, -4);
 
-		this.addAuxItem(Items.stick, -4, -4);
-		this.addAuxItem(Items.stick, 4, -4);
-		this.addAuxItem(Items.stick, -4, 4);
-		this.addAuxItem(Items.stick, 4, 4);
+		this.addAuxItem("stickWood", -4, -4);
+		this.addAuxItem("stickWood", 4, -4);
+		this.addAuxItem("stickWood", -4, 4);
+		this.addAuxItem("stickWood", 4, 4);
 
 		this.addAuxItem(ChromaStacks.chromaDust, -2, 0);
 		this.addAuxItem(ChromaStacks.chromaDust, 2, 0);

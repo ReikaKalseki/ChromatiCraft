@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+
 public enum ChromaGuis {
 
 	TILE(),
@@ -37,5 +39,9 @@ public enum ChromaGuis {
 	HOVER();
 
 	public static final ChromaGuis[] guiList = values();
+
+	public boolean isLexiconGUI() {
+		return ReikaMathLibrary.isValueInsideBoundsIncl(BOOKNAV.ordinal(), NOTES.ordinal(), this.ordinal());
+	}
 
 }

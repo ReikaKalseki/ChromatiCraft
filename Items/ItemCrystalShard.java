@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -62,7 +63,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 					if (te instanceof TileEntityChroma) {
 						TileEntityChroma tc = (TileEntityChroma)te;
 						if (tc.isFullyActive() && tc.getElement().ordinal() == dmg) {
-							boolean done = tickShardCharging(ei, CrystalElement.elements[dmg], x, y, z);
+							boolean done = tickShardCharging(ei, CrystalElement.elements[dmg], tc.getEtherCount(), x, y, z);
 							if (done) {
 								tc.clear();
 							}
@@ -87,17 +88,21 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		return false;
 	}
 
-	public static boolean tickShardCharging(EntityItem ei, CrystalElement e, int x, int y, int z) {
+	public static boolean tickShardCharging(EntityItem ei, CrystalElement e, int ether, int x, int y, int z) {
 		ei.lifespan = Integer.MAX_VALUE;
 		NBTTagCompound tag = ei.getEntityData().getCompoundTag("chroma");
 		int tick = tag.getInteger("tick");
 		int age = tag.getInteger("age");
-		if (ei.worldObj.isRemote && tick%16 == 0)
-			ChromaFX.doShardBoostingFX(ei);
+		if (ei.worldObj.isRemote) {
+			if (tick%16 == 0)
+				ChromaFX.doShardBoostingFX(ei);
+			return false;
+		}
+		int n = BlockActiveChroma.getSpeedMultiplier(ether);
 		if (age > ei.age) { //items were combined
 			tick = 0;
 			//ReikaJavaLibrary.pConsole(ei);
-			tag.setInteger("tick", tick+1);
+			tag.setInteger("tick", tick+n);
 			tag.setInteger("age", ei.age);
 			ei.getEntityData().setTag("chroma", tag);
 		}
@@ -115,7 +120,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 			return true;
 		}
 		else {
-			tag.setInteger("tick", tick+1);
+			tag.setInteger("tick", tick+n);
 			tag.setInteger("age", ei.age);
 			ei.getEntityData().setTag("chroma", tag);
 		}
@@ -284,5 +289,10 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 	@Override
 	public boolean isTiered(ItemStack is) {
 		return is.getItemDamage() >= 16;
+	}
+
+	@Override
+	public boolean verticalFrames() {
+		return true;
 	}
 }

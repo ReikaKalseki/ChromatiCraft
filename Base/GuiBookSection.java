@@ -70,7 +70,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		buttonList.add(new CustomSoundGuiButton(50, j+xSize-27, k-2, 20, 20, "X", this));	//back to main navigation
-		this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
+		if (!NEItrigger)
+			this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
 
 		if (this.getMaxSubpage() > 0) {
 			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));

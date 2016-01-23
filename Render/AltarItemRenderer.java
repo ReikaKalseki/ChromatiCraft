@@ -50,7 +50,7 @@ public class AltarItemRenderer implements IItemRenderer {
 		GL11.glScaled(s, s, s);
 
 		renderTile.renderColor = CrystalElement.elements[item.getItemDamage()];
-		TileEntityRendererDispatcher.instance.renderTileEntityAt(renderTile, 0, 0, 0, 0);
+		TileEntityRendererDispatcher.instance.renderTileEntityAt(renderTile, 0, -0.1, 0, 0);
 
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();

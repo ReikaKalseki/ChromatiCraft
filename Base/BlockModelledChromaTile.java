@@ -48,7 +48,8 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 
 	@Override
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
-		return this.getCollisionBoundingBoxFromPool(world, x, y, z);
+		AxisAlignedBB box = this.getCollisionBoundingBoxFromPool(world, x, y, z);
+		return box != null ? box : ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.4, 0.4, 0.4);
 	}
 
 	@Override
@@ -56,6 +57,8 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m == null)
 			return ReikaAABBHelper.getBlockAABB(x, y, z);
+		if (m.isIntangible())
+			return null;
 		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
 		//if (te.isFlipped) {

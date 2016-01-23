@@ -22,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.ItemMatch;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
@@ -77,7 +78,7 @@ public class ChromaBookData {
 			RuneShapeRenderer.instance.render(((TempleCastingRecipe)c).getRunes(), posX+128, posY+110);
 		}
 		if (subpage == 2) {
-			Map<List<Integer>, ItemStack> items = ((MultiBlockCastingRecipe)c).getAuxItems();
+			Map<List<Integer>, ItemMatch> items = ((MultiBlockCastingRecipe)c).getAuxItems();
 			for (List<Integer> key : items.keySet()) {
 				int i = key.get(0);
 				int k = key.get(1);
@@ -87,7 +88,7 @@ public class ChromaBookData {
 				int ty = Math.abs(k) == 2 ? 38 : 63;
 				int dx = posX+120+sx*tx;
 				int dy = posY+94+sy*ty;
-				ItemStack out = items.get(key).copy();
+				ItemStack out = items.get(key).getCycledItem().copy();
 				if (out.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					List<ItemStack> dmg = ReikaItemHelper.getAllMetadataPermutations(out.getItem());
 					if (System.currentTimeMillis()%1000 == 0) {
@@ -147,7 +148,7 @@ public class ChromaBookData {
 		GL11.glColor4f(1, 1, 1, 1);
 
 		if (c instanceof MultiBlockCastingRecipe) {
-			Map<List<Integer>, ItemStack> items = ((MultiBlockCastingRecipe)c).getAuxItems();
+			Map<List<Integer>, ItemMatch> items = ((MultiBlockCastingRecipe)c).getAuxItems();
 			for (List<Integer> key : items.keySet()) {
 				int i = key.get(0);
 				int k = key.get(1);
@@ -157,7 +158,7 @@ public class ChromaBookData {
 				int ty = Math.abs(k) == 2 ? 37 : 57;
 				int dx = posX+65+sx*tx;
 				int dy = posY+114+sy*ty;
-				ItemStack out = items.get(key).copy();
+				ItemStack out = items.get(key).getCycledItem().copy();
 				if (out.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 					List<ItemStack> dmg = ReikaItemHelper.getAllMetadataPermutations(out.getItem());
 					if (System.currentTimeMillis()%1000 == 0) {

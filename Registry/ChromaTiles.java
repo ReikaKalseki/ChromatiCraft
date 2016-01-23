@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
@@ -158,7 +159,8 @@ public enum ChromaTiles implements TileEnum {
 	//POSLINK("chroma.poslink",			ChromaBlocks.TILEMODELLED2,	TileEntityPositionRelay.class,		10),
 	HOLOGRAM("chroma.hologram",			ChromaBlocks.TILEMODELLED2, TileEntityAreaHologram.class,		11, "RenderAreaHologram"),
 	LIGHTER("chroma.lighter",			ChromaBlocks.TILEMODELLED2,	TileEntityCaveLighter.class,		12, "RenderCaveLighter"),
-	STORAGE("chroma.itemstorage",		ChromaBlocks.TILEENTITY,	TileEntityMultiStorage.class,		14);
+	STORAGE("chroma.itemstorage",		ChromaBlocks.TILEENTITY,	TileEntityMultiStorage.class,		14),
+	GLOWFIRE("chroma.glowfire",			ChromaBlocks.TILEMODELLED2,	TileEntityGlowFire.class,			13);
 
 	private final Class tile;
 	private final String name;
@@ -223,6 +225,7 @@ public enum ChromaTiles implements TileEnum {
 			case RELAYSOURCE:
 			case ASPECT:
 			case LAMP:
+			case MINER:
 			case POWERTREE:
 			case LAMPCONTROL:
 			case STRUCTCONTROL:
@@ -576,6 +579,15 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean isLumenTile() {
 		return LumenTile.class.isAssignableFrom(tile);
+	}
+
+	public boolean isIntangible() {
+		switch(this) {
+			case GLOWFIRE:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

@@ -43,13 +43,13 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocation
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldChunk;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
@@ -80,6 +80,7 @@ public class CrystalNetworker implements TickHandler {
 
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, NBT_TAG);
 	}
 
 	@SubscribeEvent
@@ -373,52 +374,59 @@ public class CrystalNetworker implements TickHandler {
 	public Collection<TileEntityCrystalPylon> getNearbyPylons(World world, int x, int y, int z, CrystalElement e, int range, boolean LOS) {
 		TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 		Collection<TileEntityCrystalPylon> li = new ArrayList();
-		HashSet<WorldLocation> remove = new HashSet();
+		//HashSet<WorldLocation> remove = new HashSet();
 		if (c != null) {
 			WorldLocation p = new WorldLocation(world, x, y, z);
-			for (WorldLocation loc : tiles.getAllLocationsNear(p, range)) {
+			for (WorldLocation loc : c.getAllLocationsNear(p, range)) {
 				if (loc.getDistanceTo(x, y, z) <= range) {
 					if (!LOS || PylonFinder.lineOfSight(world, x, y, z, loc.xCoord, loc.yCoord, loc.zCoord)) {
 						TileEntityCrystalPylon te = c.get(loc);
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
-							remove.add(loc);
+							//remove.add(loc);
+							te = (TileEntityCrystalPylon)loc.getTileEntity();
+							c.put(loc, te);
 						}
-						else
-							li.add(te);
+						//else
+						li.add(te);
 					}
 				}
 			}
+			/*
 			for (WorldLocation loc : remove) {
 				tiles.remove(loc);
 				c.remove(loc);
 			}
 			if (c.isEmpty())
 				pylons.remove(e);
+			 */
 		}
 		return li;
 	}
 
 	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range) {
 		Collection<TileEntityCrystalPylon> li = new ArrayList();
-		MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(new HashSetFactory());
+		//MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(new HashSetFactory());
 		for (CrystalElement e : pylons.keySet()) {
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 			if (c != null) {
 				WorldLocation p = new WorldLocation(world, x, y, z);
-				for (WorldLocation loc : tiles.getAllLocationsNear(p, range)) {
+				for (WorldLocation loc : c.getAllLocationsNear(p, range)) {
 					if (loc.getDistanceTo(x, y, z) <= range) {
 						TileEntityCrystalPylon te = c.get(loc);
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
-							remove.addValue(e, loc);
+							//remove.addValue(e, loc);
+							te = (TileEntityCrystalPylon)loc.getTileEntity();
+							c.put(loc, te);
 						}
-						else
-							li.add(te);
+						//else
+						li.add(te);
 					}
 				}
 			}
 		}
+		/*
 		for (CrystalElement e : remove.keySet()) {
 			TileEntityCache<TileEntityCrystalPylon> c = pylons.get(e);
 			for (WorldLocation loc : remove.get(e)) {
@@ -428,6 +436,7 @@ public class CrystalNetworker implements TickHandler {
 			if (c.isEmpty())
 				pylons.remove(e);
 		}
+		 */
 		return li;
 	}
 
@@ -482,7 +491,10 @@ public class CrystalNetworker implements TickHandler {
 	ArrayList<CrystalTransmitter> getTransmittersTo(CrystalReceiver r, CrystalElement e) {
 		ArrayList<CrystalTransmitter> li = new ArrayList();
 		WorldLocation loc = PylonFinder.getLocation(r);
-		for (WorldLocation c : tiles.getAllLocationsNear(loc, r.getReceiveRange())) {
+		Collection<WorldLocation> locs = tiles.getAllLocationsNear(loc, r.getReceiveRange());
+		if (ModularLogger.instance.isEnabled(NBT_TAG))
+			ModularLogger.instance.log(NBT_TAG, "Found "+locs.size()+" transmitters to "+r+": "+locs);
+		for (WorldLocation c : locs) {
 			CrystalNetworkTile tile = tiles.get(c);
 			if (tile instanceof CrystalTransmitter && r != tile) {
 				CrystalTransmitter te = (CrystalTransmitter)tile;

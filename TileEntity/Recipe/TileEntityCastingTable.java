@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.ItemMatch;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -554,7 +555,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.addXP((int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe)));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
-				HashMap<WorldLocation, ItemStack> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
+				HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
 				for (WorldLocation loc : map.keySet()) {
 					TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
 					//ReikaJavaLibrary.pConsole(te+":"+te.getStackInSlot(0), Side.SERVER);

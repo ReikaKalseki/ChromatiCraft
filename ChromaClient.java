@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.entity.RenderSlime;
 import net.minecraft.client.renderer.tileentity.RenderEnderCrystal;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
@@ -46,6 +45,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.AltarItemRenderer;
 import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
+import Reika.ChromatiCraft.Render.LootChestRenderer;
 import Reika.ChromatiCraft.Render.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlassRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
@@ -129,6 +130,8 @@ public class ChromaClient extends ChromaCommon {
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
 
 	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
+
+	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -287,6 +290,9 @@ public class ChromaClient extends ChromaCommon {
 		plantRender2 = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(plantRender2, plant2);
 
+		flowerRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(flowerRender, flower);
+
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAccelerator.class, new AcceleratorRenderer());
@@ -296,8 +302,9 @@ public class ChromaClient extends ChromaCommon {
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.ENDERCRYSTAL.getItemInstance(), csr);
 
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ChromaBlocks.PORTAL.getBlockInstance()), new PortalItemRenderer());
-		MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(ChromaBlocks.COLORALTAR.getBlockInstance()), new AltarItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.PORTAL.getItem(), new PortalItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.COLORALTAR.getItem(), new AltarItemRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.LOOTCHEST.getItem(), new LootChestRenderer());
 	}
 
 

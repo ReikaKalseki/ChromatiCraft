@@ -34,13 +34,17 @@ import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuiNavigation extends GuiScrollingPage {
 
@@ -65,7 +69,7 @@ public class GuiNavigation extends GuiScrollingPage {
 				if (ItemChromaBook.hasPage(player.getCurrentEquippedItem(), b)) {
 					//if (b.playerCanSee(ep)) {
 					if (!b.isDummiedOut())
-						z.addElement(new SectionElement(b));
+						z.addElement(new SectionElement(b, this));
 				}
 			}
 		}
@@ -178,7 +182,13 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		SectionElement e = this.getSectionElementAt(x, y);
 		if (e != null && e.getGuiType() != null) {
-			this.goTo(e.getGuiType(), e.destination);
+			if (e.isActive()) {
+				this.goTo(e.getGuiType(), e.destination);
+			}
+			else {
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 0.35F, 0.8F);
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 0.35F, 1.2F);
+			}
 		}
 	}
 
@@ -428,9 +438,11 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		private int hoverTime = 0;
 		private final ChromaResearch destination;
+		private final GuiNavigation gui;
 
-		private SectionElement(ChromaResearch b) {
+		private SectionElement(ChromaResearch b, GuiNavigation g) {
 			destination = b;
+			gui = g;
 		}
 
 		private void increaseHover() {
@@ -453,7 +465,19 @@ public class GuiNavigation extends GuiScrollingPage {
 			GL11.glColor4f(1, 1, 1, 1);
 
 			GL11.glEnable(GL11.GL_BLEND);
-			if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
+			if (!this.isActive()) {
+				GL11.glPushMatrix();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.DEFAULT.apply();
+				GL11.glTranslated(0, 0, 400);
+				ReikaTextureHelper.bindTerrainTexture();
+				api.drawTexturedModelRectFromIcon(ex+8, ey+8, ChromaIcons.QUESTION.getIcon(), 9, 9);
+				GL11.glPopAttrib();
+				GL11.glPopMatrix();
+			}
+			else if (craftMode() && (destination.isCrafting() || destination.isAbility())) {
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glTranslated(0, 0, 400);
@@ -475,6 +499,10 @@ public class GuiNavigation extends GuiScrollingPage {
 				GL11.glPopMatrix();
 			}
 			GL11.glPopAttrib();
+		}
+
+		private boolean isActive() {
+			return ChromaResearchManager.instance.playerHasFragment(gui.player, destination);
 		}
 
 		public ChromaGuis getGuiType() {

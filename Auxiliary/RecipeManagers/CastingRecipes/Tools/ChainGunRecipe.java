@@ -34,7 +34,7 @@ public class ChainGunRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(ChromaStacks.auraIngot, 2, 0);
 		this.addAuxItem(ChromaStacks.auraIngot, 0, 2);
 
-		this.addAuxItem(Items.stick, 0, 4);
+		this.addAuxItem("stickWood", 0, 4);
 	}
 
 }

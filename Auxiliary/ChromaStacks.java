@@ -55,6 +55,12 @@ public class ChromaStacks {
 	public static final ItemStack voidCoreHigh 			= ChromaItems.CRAFTING.getStackOfMetadata(23);
 	public static final ItemStack transformCoreHigh 	= ChromaItems.CRAFTING.getStackOfMetadata(24);
 	public static final ItemStack energyCoreHigh		= ChromaItems.CRAFTING.getStackOfMetadata(25);
+	public static final ItemStack teleDust				= ChromaItems.CRAFTING.getStackOfMetadata(26);
+	public static final ItemStack icyDust				= ChromaItems.CRAFTING.getStackOfMetadata(27);
+	public static final ItemStack energyPowder			= ChromaItems.CRAFTING.getStackOfMetadata(28);
+	public static final ItemStack etherBerries			= ChromaItems.CRAFTING.getStackOfMetadata(29);
+	public static final ItemStack voidDust				= ChromaItems.CRAFTING.getStackOfMetadata(30);
+	public static final ItemStack livingEssence			= ChromaItems.CRAFTING.getStackOfMetadata(31);
 
 	public static final ItemStack chromaDust 		= ChromaItems.TIERED.getStackOfMetadata(0);
 	public static final ItemStack auraDust 			= ChromaItems.TIERED.getStackOfMetadata(1);

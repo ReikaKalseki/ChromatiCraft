@@ -380,7 +380,7 @@ public class CastingRecipe {
 
 	public static class MultiBlockCastingRecipe extends TempleCastingRecipe {
 
-		private final HashMap<List<Integer>, ItemStack> inputs = new HashMap();
+		private final HashMap<List<Integer>, ItemMatch> inputs = new HashMap();
 		private final ItemStack main;
 
 		public MultiBlockCastingRecipe(ItemStack out, ItemStack main) {
@@ -396,27 +396,35 @@ public class CastingRecipe {
 			return main.copy();
 		}
 
-		protected MultiBlockCastingRecipe addAuxItem(Block b, int dx, int dz) {
+		protected final MultiBlockCastingRecipe addAuxItem(Block b, int dx, int dz) {
 			return this.addAuxItem(new ItemStack(b), dx, dz);
 		}
 
-		protected MultiBlockCastingRecipe addAuxItem(Item i, int dx, int dz) {
+		protected final MultiBlockCastingRecipe addAuxItem(Item i, int dx, int dz) {
 			return this.addAuxItem(new ItemStack(i), dx, dz);
 		}
 
-		protected MultiBlockCastingRecipe addAuxItem(ItemStack is, int dx, int dz) {
+		protected final MultiBlockCastingRecipe addAuxItem(ItemStack is, int dx, int dz) {
+			return this.addAuxItem(new ItemMatch(is), dx, dz);
+		}
+
+		protected final MultiBlockCastingRecipe addAuxItem(String s, int dx, int dz) {
+			return this.addAuxItem(new ItemMatch(s), dx, dz);
+		}
+
+		private MultiBlockCastingRecipe addAuxItem(ItemMatch is, int dx, int dz) {
 			inputs.put(Arrays.asList(dx, dz), is);
 			return this;
 		}
 
-		public Map<List<Integer>, ItemStack> getAuxItems() {
+		public Map<List<Integer>, ItemMatch> getAuxItems() {
 			return Collections.unmodifiableMap(inputs);
 		}
 
-		public HashMap<WorldLocation, ItemStack> getOtherInputs(World world, int x, int y, int z) {
-			HashMap<WorldLocation, ItemStack> map = new HashMap();
+		public HashMap<WorldLocation, ItemMatch> getOtherInputs(World world, int x, int y, int z) {
+			HashMap<WorldLocation, ItemMatch> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {
-				ItemStack is = inputs.get(li).copy();
+				ItemMatch is = inputs.get(li).copy();
 				int dx = li.get(0);
 				int dz = li.get(1);
 				int dy = y+(Math.abs(dx) != 4 && Math.abs(dz) != 4 ? 0 : 1);
@@ -445,9 +453,12 @@ public class CastingRecipe {
 				//ReikaJavaLibrary.pConsole(stands.keySet());
 				for (List key : stands.keySet()) {
 					ItemStack at = (stands.get(key).getStackInSlot(0));
-					ItemStack is = inputs.get(key);
+					ItemMatch is = inputs.get(key);
 					//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput(), this.getOutput().getDisplayName().endsWith("ter"));
-					if (!ReikaItemHelper.matchStacks(at, is) || (is != null && is.stackTagCompound != null && !ItemStack.areItemStackTagsEqual(at, is))) {
+					if (is == null && at != null) {
+						return false;
+					}
+					else if (is != null && !is.match(at)) {
 						//ReikaJavaLibrary.pConsole(key+": "+is+" & "+at+" * "+this.getOutput());
 						return false;
 					}
@@ -474,8 +485,8 @@ public class CastingRecipe {
 			if (ReikaItemHelper.matchStacks(is, main) && (main.stackTagCompound == null || ItemStack.areItemStackTagsEqual(is, main)))
 				return true;
 			for (List<Integer> key : inputs.keySet()) {
-				ItemStack item = inputs.get(key);
-				if (ReikaItemHelper.matchStacks(is, item) && (item.stackTagCompound == null || ItemStack.areItemStackTagsEqual(is, item)))
+				ItemMatch item = inputs.get(key);
+				if (item.match(is))
 					return true;
 			}
 			return false;
@@ -499,7 +510,10 @@ public class CastingRecipe {
 			ItemHashMap<Integer> map = new ItemHashMap();
 			ItemStack[] items = this.getArrayForDisplay();
 			map.put(items[4], 1);
-			Collection<ItemStack> c = this.getAuxItems().values();
+			Collection<ItemStack> c = new ArrayList();
+			for (ItemMatch m : inputs.values()) {
+				c.add(m.getCycledItem());
+			}
 			for (ItemStack is : c) {
 				Integer num = map.get(is);
 				int n = num != null ? num.intValue() : 0;
@@ -511,8 +525,8 @@ public class CastingRecipe {
 		@Override
 		public ElementTagCompound getInputElements() {
 			ElementTagCompound tag = super.getInputElements();
-			for (ItemStack is : inputs.values()) {
-				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is));
+			for (ItemMatch is : inputs.values()) {
+				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is.items.get(0)));
 			}
 			return tag;
 		}
@@ -521,7 +535,9 @@ public class CastingRecipe {
 		public Collection<ItemStack> getAllInputs() {
 			Collection<ItemStack> c = new ArrayList();
 			c.add(main);
-			c.addAll(inputs.values());
+			for (ItemMatch m : inputs.values()) {
+				c.addAll(m.items);
+			}
 			return c;
 		}
 	}
@@ -627,6 +643,7 @@ public class CastingRecipe {
 			int flags = 0;
 
 			if (r.fragment != null) {
+				flags += 10000000*r.fragment.sectionIndex();
 				flags += 1000000*r.fragment.level.ordinal();
 				flags += 10000*r.fragment.ordinal();
 			}
@@ -644,6 +661,50 @@ public class CastingRecipe {
 		@Override
 		public int compare(CastingRecipe o1, CastingRecipe o2) {
 			return o1.getOutput().getDisplayName().compareToIgnoreCase(o2.getOutput().getDisplayName());
+		}
+
+	}
+
+	public static class ItemMatch {
+
+		private ArrayList<ItemStack> items = new ArrayList();
+
+		private ItemMatch(ItemStack is) {
+			items.add(is);
+		}
+
+		private ItemMatch(String s) {
+			items.addAll(OreDictionary.getOres(s));
+			if (items.isEmpty())
+				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an OreDict tag with no registered items!");
+		}
+
+		private ItemMatch(Collection<ItemStack> c) {
+			items.addAll(c);
+			if (items.isEmpty())
+				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an list with no items!");
+		}
+
+		public ItemMatch copy() {
+			return new ItemMatch(items);
+		}
+
+		public boolean match(ItemStack is) {
+			for (ItemStack in : items) {
+				if (ReikaItemHelper.matchStacks(in, is) && (in.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, is))) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public ItemStack getCycledItem() {
+			return items.get((int)((System.currentTimeMillis()/2000+this.hashCode())%items.size())).copy();
+		}
+
+		public List<ItemStack> getItemList() {
+			return Collections.unmodifiableList(items);
 		}
 
 	}

@@ -131,6 +131,14 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		return ReikaColorAPI.mixColors(e.getColor(), 0xffffff, berries/(float)TileEntityChroma.BERRY_SATURATION);
 	}
 
+	public static float getDoublingChance(int ether) {
+		return 0.75F*(float)(Math.pow(ether, 2)/Math.pow(TileEntityChroma.ETHER_SATURATION, 2));
+	}
+
+	public static int getSpeedMultiplier(int ether) {
+		return (int)(1+4*ether/(float)TileEntityChroma.ETHER_SATURATION);
+	}
+
 	@Override
 	public Fluid getFluid() {
 		return FluidRegistry.getFluid("chroma");
@@ -145,9 +153,12 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 	public static class TileEntityChroma extends TileEntity {
 
 		public static final int BERRY_SATURATION = 24;
+		public static final int ETHER_SATURATION = 16;
 
 		private int berryCount;
 		private CrystalElement element;
+
+		private int etherCount;
 
 		public int activate(CrystalElement e, int amt) {
 			int add = Math.min(BERRY_SATURATION-berryCount, amt);
@@ -160,6 +171,15 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 				else {
 					add = 0;
 				}
+			}
+			return add;
+		}
+
+		public int etherize(int amt) {
+			int add = Math.min(ETHER_SATURATION-etherCount, amt);
+			if (add > 0) {
+				etherCount += add;
+				this.update();
 			}
 			return add;
 		}
@@ -199,6 +219,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 			//NBT.setBoolean("act", isActive);
 			NBT.setInteger("count", berryCount);
+			NBT.setInteger("ether", etherCount);
 
 			NBT.setInteger("elem", element != null ? element.ordinal() : -1);
 		}
@@ -209,6 +230,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 			//isActive = NBT.getBoolean("act");
 			berryCount = NBT.getInteger("count");
+			etherCount = NBT.getInteger("ether");
 
 			int ord = NBT.getInteger("elem");
 			element = ord >= 0 ? CrystalElement.elements[ord] : null;
@@ -233,15 +255,20 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 
 		public void clear() {
 			berryCount = 0;
+			etherCount = 0;
 			element = null;
 			this.update();
 		}
 
-		/*
+		public int getEtherCount() {
+			return etherCount;
+		}
+
 		public int getBerryCount() {
 			return berryCount;
 		}
 
+		/*
 		public void setBerries(int count) {
 			berryCount = count;
 			this.update();

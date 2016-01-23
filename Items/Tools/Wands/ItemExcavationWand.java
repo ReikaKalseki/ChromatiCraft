@@ -33,7 +33,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	private static final int MAX_DEPTH = 12;
 	private static final int MAX_DEPTH_BOOST = 18;
 
-	private static HashMap<Integer, EntityPlayer> breakers = new HashMap();
+	private static final HashMap<Integer, EntityPlayer> breakers = new HashMap();
 
 	public ItemExcavationWand(int index) {
 		super(index);
@@ -61,6 +61,10 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			b.silkTouch = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch, itemstack) > 0;
 			b.drops = !ep.capabilities.isCreativeMode;
 			b.fortune = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.fortune, itemstack);
+			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.field_151369_A, itemstack) > 0) { //lure
+				b.dropInventory = ep.inventory;
+			}
+			b.player = ep;
 			Block bk = ep.worldObj.getBlock(x, y, z);
 			if (bk == Blocks.lit_redstone_ore)
 				b.addBlock(new BlockKey(Blocks.redstone_ore));

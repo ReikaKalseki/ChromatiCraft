@@ -142,8 +142,8 @@ public class BlockChromaPortal extends Block {
 			ticks++;
 
 			if (DragonAPICore.debugtest) {
-				ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
-				DragonAPICore.debugtest = false;
+				//ChromaStructures.getPortalStructure(worldObj, xCoord, yCoord, zCoord, false).place();
+				//DragonAPICore.debugtest = false;
 			}
 
 			if (complete) {

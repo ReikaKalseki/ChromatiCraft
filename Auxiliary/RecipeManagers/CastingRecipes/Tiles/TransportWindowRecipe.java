@@ -21,22 +21,23 @@ public class TransportWindowRecipe extends MultiBlockCastingRecipe {
 
 		this.addAuxItem(Items.iron_ingot, -4, -4);
 		this.addAuxItem(Items.iron_ingot, -2, -4);
-		this.addAuxItem(Items.iron_ingot, 0, -4);
 		this.addAuxItem(Items.iron_ingot, 2, -4);
 		this.addAuxItem(Items.iron_ingot, 4, -4);
 
 		this.addAuxItem(Items.iron_ingot, -4, 4);
 		this.addAuxItem(Items.iron_ingot, -2, 4);
-		this.addAuxItem(Items.iron_ingot, 0, 4);
 		this.addAuxItem(Items.iron_ingot, 2, 4);
 		this.addAuxItem(Items.iron_ingot, 4, 4);
 
 		this.addAuxItem(Items.iron_ingot, -4, -2);
 		this.addAuxItem(Items.iron_ingot, 4, -2);
-		this.addAuxItem(Items.iron_ingot, -4, 0);
-		this.addAuxItem(Items.iron_ingot, 4, 0);
 		this.addAuxItem(Items.iron_ingot, -4, 2);
 		this.addAuxItem(Items.iron_ingot, 4, 2);
+
+		this.addAuxItem(ChromaStacks.teleDust, 0, -4);
+		this.addAuxItem(ChromaStacks.teleDust, 0, 4);
+		this.addAuxItem(ChromaStacks.teleDust, -4, 0);
+		this.addAuxItem(ChromaStacks.teleDust, 4, 0);
 
 		this.addAuxItem(ChromaStacks.spaceDust, -2, -2);
 		this.addAuxItem(ChromaStacks.spaceDust, 2, -2);

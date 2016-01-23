@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
@@ -118,6 +119,20 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 			}
 			return true;
+		}
+		if (t == ChromaTiles.GLOWFIRE) {
+			TileEntityGlowFire te = (TileEntityGlowFire)tile;
+			if (ep.isSneaking()) {
+				te.empty();
+			}
+			else {
+				if (te.craft()) {
+					ChromaSounds.CAST.playSoundAtBlock(te);
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(te);
+				}
+			}
 		}
 		if (t == ChromaTiles.WINDOW) {
 			TileEntityTransportWindow ir = (TileEntityTransportWindow)tile;
