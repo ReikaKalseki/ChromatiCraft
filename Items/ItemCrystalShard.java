@@ -96,7 +96,6 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		if (ei.worldObj.isRemote) {
 			if (tick%16 == 0)
 				ChromaFX.doShardBoostingFX(ei);
-			return false;
 		}
 		int n = BlockActiveChroma.getSpeedMultiplier(ether);
 		if (age > ei.age) { //items were combined
@@ -106,7 +105,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 			tag.setInteger("age", ei.age);
 			ei.getEntityData().setTag("chroma", tag);
 		}
-		else if (tick >= 6000) {
+		else if (tick >= 6000 && !ei.worldObj.isRemote) {
 			ItemStack is = ChromaItems.SHARD.getCraftedMetadataProduct(ei.getEntityItem().stackSize, 16+e.ordinal());
 			EntityItem ei2 = new EntityItem(ei.worldObj, ei.posX, ei.posY, ei.posZ, is);
 			ei2.lifespan = Integer.MAX_VALUE;

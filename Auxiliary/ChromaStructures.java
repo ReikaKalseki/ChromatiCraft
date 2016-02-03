@@ -571,7 +571,6 @@ public class ChromaStructures {
 		array.setBlock(x+6, y+19, z+8, b, 2);
 		array.setBlock(x+6, y+20, z+4, b, 7);
 		array.setBlock(x+6, y+20, z+5, b, 0);
-		array.setBlock(x+6, y+20, z+6, b, 0);
 		array.setBlock(x+6, y+20, z+7, b, 0);
 		array.setBlock(x+6, y+20, z+8, b, 7);
 		array.setBlock(x+6, y+21, z+5, b, 0);
@@ -857,6 +856,8 @@ public class ChromaStructures {
 
 		array.setBlock(x+6, y+6, z+6, ChromaTiles.COMPOUND.getBlock(), ChromaTiles.COMPOUND.getBlockMetadata());
 		array.setBlock(x+6, y+23, z+6, ChromaTiles.BROADCAST.getBlock(), ChromaTiles.BROADCAST.getBlockMetadata());
+
+		array.setBlock(x+6, y+20, z+6, Blocks.air);
 
 		array.setBlock(x+3, y+4, z+5, Blocks.air);
 		array.setBlock(x+3, y+4, z+6, Blocks.air);
@@ -1739,18 +1740,18 @@ public class ChromaStructures {
 			}
 
 			if (i > 1) {
-				array.addBlock(x-1, dy, z, Blocks.air);
-				array.addBlock(x-1, dy, z-1, Blocks.air);
-				array.addBlock(x-1, dy, z-2, Blocks.air);
-				array.addBlock(x-1, dy, z+1, Blocks.air);
-				array.addBlock(x+2, dy, z, Blocks.air);
-				array.addBlock(x+2, dy, z-1, Blocks.air);
-				array.addBlock(x+2, dy, z+1, Blocks.air);
-				array.addBlock(x+2, dy, z-2, Blocks.air);
-				array.addBlock(x, dy, z-2, Blocks.air);
-				array.addBlock(x+1, dy, z-2, Blocks.air);
-				array.addBlock(x, dy, z+1, Blocks.air);
-				array.addBlock(x+1, dy, z+1, Blocks.air);
+				array.addEmpty(x-1, dy, z, false, false);
+				array.addEmpty(x-1, dy, z-1, false, false);
+				array.addEmpty(x-1, dy, z-2, false, false);
+				array.addEmpty(x-1, dy, z+1, false, false);
+				array.addEmpty(x+2, dy, z, false, false);
+				array.addEmpty(x+2, dy, z-1, false, false);
+				array.addEmpty(x+2, dy, z+1, false, false);
+				array.addEmpty(x+2, dy, z-2, false, false);
+				array.addEmpty(x, dy, z-2, false, false);
+				array.addEmpty(x+1, dy, z-2, false, false);
+				array.addEmpty(x, dy, z+1, false, false);
+				array.addEmpty(x+1, dy, z+1, false, false);
 
 				Block b2 = ChromaBlocks.POWERTREE.getBlockInstance();
 				array.addBlock(x-1, dy, z, b2);

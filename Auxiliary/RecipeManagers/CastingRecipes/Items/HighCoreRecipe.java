@@ -36,9 +36,9 @@ public abstract class HighCoreRecipe extends PylonRecipe implements ShardGroupin
 		this.addAuxItem(ChromaStacks.iridCrystal, -4, 4);
 		this.addAuxItem(ChromaStacks.iridCrystal, 4, 4);
 
-		this.addAuxItem(ChromaStacks.placehold6Dust, -2, -4);
+		this.addAuxItem(ChromaStacks.fireEssence, -2, -4);
 		this.addAuxItem(dust, 4, -2);
-		this.addAuxItem(ChromaStacks.placehold6Dust, 2, 4);
+		this.addAuxItem(ChromaStacks.fireEssence, 2, 4);
 		this.addAuxItem(dust, -4, 2);
 
 		this.addAuxItem(ChromaStacks.enderDust, 2, -4);

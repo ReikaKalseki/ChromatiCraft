@@ -99,7 +99,7 @@ public class ItemBlockCrystal extends ItemBlock {
 		PotionEffect eff = CrystalPotionController.getEffectFromColor(color, 200, 0);
 		PotionEffect neff = CrystalPotionController.getNetherEffectFromColor(color, 200, 0);
 		boolean negative = eff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[eff.getPotionID()]) : false;
-		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) : false;
+		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) || neff.getPotionID() == Potion.nightVision.id : false;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			if (block.shouldGiveEffects(color)) {
 				li.add("Effects: "+CrystalPotionController.getEffectName(color));

@@ -60,11 +60,13 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemGrowthWand;
+import Reika.ChromatiCraft.Items.Tools.Wands.ItemLightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemResetWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
+import Reika.ChromatiCraft.ModInterface.ItemCrystalCell;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
 import Reika.DragonAPI.DragonAPICore;
@@ -122,7 +124,7 @@ public enum ChromaItems implements ItemEnum {
 	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG),
 	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
 	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class),
-	HOVERWAND(41, false,	"chroma.hoverwand",		ItemFlightWand.class),
+	HOVERWAND(41, false,	"chroma.hover",			ItemFlightWand.class),
 	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class),
 	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
 	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
@@ -130,6 +132,9 @@ public enum ChromaItems implements ItemEnum {
 	SHARE(30, false,		"chroma.share",			ItemOwnerKey.class),
 	RESET(42, false,		"chroma.reset",			ItemResetWand.class),
 	COLOREDMOD(512, true, 	"chroma.colormod", 		ItemColoredModInteract.class),
+	//FLUIDWAND(43, false,	"chroma.fluid",			ItemFluidWand.class),
+	LIGHTWAND(44, false,	"chroma.lightwand",		ItemLightWand.class),
+	CRYSTALCELL(22, false,	"chroma.crystalcell",	ItemCrystalCell.class, ModList.APPENG),
 	;
 
 	private final int index;

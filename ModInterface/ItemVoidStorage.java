@@ -124,7 +124,7 @@ public class ItemVoidStorage extends ItemChromaTool implements SpriteRenderCallb
 
 	@Override
 	public double getIdleDrain() {
-		return 1;
+		return 10;
 	}
 
 	@Override

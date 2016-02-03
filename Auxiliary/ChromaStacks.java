@@ -73,13 +73,13 @@ public class ChromaStacks {
 	public static final ItemStack enderDust 		= ChromaItems.TIERED.getStackOfMetadata(8);
 	public static final ItemStack waterDust 		= ChromaItems.TIERED.getStackOfMetadata(9);
 	public static final ItemStack firaxite 			= ChromaItems.TIERED.getStackOfMetadata(10);
-	public static final ItemStack placehold4Dust 	= ChromaItems.TIERED.getStackOfMetadata(11);
-	public static final ItemStack placehold5Dust 	= ChromaItems.TIERED.getStackOfMetadata(12);
+	public static final ItemStack lumaDust 			= ChromaItems.TIERED.getStackOfMetadata(11);
+	public static final ItemStack echoCrystal 		= ChromaItems.TIERED.getStackOfMetadata(12);
 	public static final ItemStack cavernLoot 		= ChromaItems.TIERED.getStackOfMetadata(13);
 	public static final ItemStack burrowLoot 		= ChromaItems.TIERED.getStackOfMetadata(14);
 	public static final ItemStack oceanLoot 		= ChromaItems.TIERED.getStackOfMetadata(15);
-	public static final ItemStack placehold6Dust 	= ChromaItems.TIERED.getStackOfMetadata(16);
-	public static final ItemStack placehold7Dust 	= ChromaItems.TIERED.getStackOfMetadata(17);
+	public static final ItemStack fireEssence 		= ChromaItems.TIERED.getStackOfMetadata(16);
+	public static final ItemStack thermiticCrystal 	= ChromaItems.TIERED.getStackOfMetadata(17);
 	public static final ItemStack resocrystal 		= ChromaItems.TIERED.getStackOfMetadata(18);
 	public static final ItemStack spaceDust 		= ChromaItems.TIERED.getStackOfMetadata(19);
 	public static final ItemStack desertLoot 		= ChromaItems.TIERED.getStackOfMetadata(20);

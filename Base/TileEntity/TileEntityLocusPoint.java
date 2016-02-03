@@ -25,7 +25,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-// Shoot down hostile mobs,
 public abstract class TileEntityLocusPoint extends TileEntityChromaticBase implements LocationCached {
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
@@ -45,9 +44,25 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
 
-		int n = this instanceof TileEntityAuraPoint ? 1+rand.nextInt(4) : 1;
+		double n = this instanceof TileEntityAuraPoint ? 1+rand.nextInt(4) : 1;
 
-		for (int i = 0; i < n; i++) {
+		n *= 1+0.75*Math.sin((this.getTicksExisted()+this.hashCode())/8D);
+
+		int ps = Minecraft.getMinecraft().gameSettings.particleSetting;
+		switch(ps) {
+			case 1:
+				n *= 0.5;
+				break;
+			case 2:
+				n *= 0.25;
+				break;
+		}
+		double d = Math.max(1, Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord+0.5, yCoord+0.5, zCoord+0.5)/1024D);
+		n /= d;
+
+		int num = n <= 1 ? ReikaRandomHelper.doWithChance(n) ? 1 : 0 : (int)n;
+
+		for (int i = 0; i < num; i++) {
 			int color = this.getRenderColor();
 
 			double v = ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);

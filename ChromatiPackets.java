@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.ModInterface.CrystalWand;
+import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
@@ -81,6 +82,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
@@ -597,6 +599,22 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case FIRECONSUMEITEM: {
 					TileEntityGlowFire.consumeItemFX(world, x, y, z, data[0]);
+					break;
+				}
+				case ESSENTIAPARTICLE: {
+					EssentiaPath.sendParticle(world, data[0], data[1], data[2], data[3], data[4], data[5], stringdata, data[6]);
+					break;
+				}
+				case INSERTERMODE: {
+					((TileEntityItemInserter)tile).setInsertionType(data[0], ((TileEntityItemInserter)tile).getInsertionType(data[0]).next());
+					break;
+				}
+				case INSERTERCLEAR: {
+					((TileEntityItemInserter)tile).removeCoordinate(data[0]);
+					break;
+				}
+				case INSERTERCONNECTION: {
+					((TileEntityItemInserter)tile).toggleConnection(data[0], data[1]);
 					break;
 				}
 			}

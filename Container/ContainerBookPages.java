@@ -57,8 +57,9 @@ public class ContainerBookPages extends Container {
 				continue;
 			}
 			int idx = ChromaResearch.getAllObtainableFragments().indexOf(r);
-			if (idx < 0)
-				throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment in the book!?!", true);
+			if (idx < 0) {
+				throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment '"+r+"' in the book!?!", true);
+			}
 			inventory.setInventorySlotContents(idx, is);
 		}
 

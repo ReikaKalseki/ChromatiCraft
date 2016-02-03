@@ -163,7 +163,7 @@ public class CastingRecipe {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal()+16);
 	}
 
-	public boolean match(TileEntityCastingTable table) {
+	public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
 		if (recipe == null)
 			return true;
 		ItemStack[] items = new ItemStack[9];
@@ -301,10 +301,10 @@ public class CastingRecipe {
 			super(out, type, recipe);
 		}
 
-		protected boolean matchRunes(World world, int x, int y, int z) {
+		protected boolean matchRunes(World world, int x, int y, int z, EntityPlayer ep) {
 			//runes.place(world, x, y, z);
 			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
-			return runes.matchAt(world, x, y, z, 0, 0, 0);
+			return runes.matchAt(world, x, y, z, 0, 0, 0, ep);
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
@@ -336,20 +336,25 @@ public class CastingRecipe {
 			allRunes.put(c, color);
 		}
 
+		protected CastingRecipe addRunes(TempleCastingRecipe r) {
+			runes.addAll(r.runes);
+			return this;
+		}
+		/*
 		protected CastingRecipe addRunes(RuneViewer view) {
 			Map<Coordinate, CrystalElement> map = view.getRunes();
 			for (Coordinate c : map.keySet())
 				runes.addRune(map.get(c), c.xCoord, c.yCoord, c.zCoord);
 			return this;
 		}
-
-		public RuneViewer getRunes() {
-			return runes.getView();
+		 */
+		public RuneViewer getRunes(World world, EntityPlayer ep) {
+			return runes.getView(world, ep);
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table) {
-			return super.match(table) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord);
+		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
+			return super.match(table, ep) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord, ep);
 		}
 
 		@Override
@@ -366,14 +371,14 @@ public class CastingRecipe {
 		@Override
 		public ElementTagCompound getInputElements() {
 			ElementTagCompound tag = super.getInputElements();
-			for (CrystalElement e : runes.getView().getRunes().values()) {
+			for (CrystalElement e : runes.getRuneTypes()) {
 				tag.addValueToColor(e, 1);
 			}
 			return tag;
 		}
 
-		public static RuneViewer getAllRegisteredRunes() {
-			return new RuneShape(allRunes).getView();
+		public static RuneViewer getAllRegisteredRunes(World world, EntityPlayer ep) {
+			return new RuneShape(allRunes).getView(world, ep);
 		}
 
 	}
@@ -435,7 +440,7 @@ public class CastingRecipe {
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table) {
+		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
 			ItemStack main = table.getStackInSlot(4);
 			for (int i = 0; i < 9; i++) {
 				if (i != 4) {
@@ -464,7 +469,7 @@ public class CastingRecipe {
 					}
 				}
 				//ReikaJavaLibrary.pConsole(this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord));
-				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord)) {
+				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord, ep)) {
 					return true;
 				}
 			}
@@ -573,8 +578,8 @@ public class CastingRecipe {
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table) {
-			return super.match(table);
+		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
+			return super.match(table, ep);
 		}
 
 		@Override
@@ -669,17 +674,17 @@ public class CastingRecipe {
 
 		private ArrayList<ItemStack> items = new ArrayList();
 
-		private ItemMatch(ItemStack is) {
+		public ItemMatch(ItemStack is) {
 			items.add(is);
 		}
 
-		private ItemMatch(String s) {
+		public ItemMatch(String s) {
 			items.addAll(OreDictionary.getOres(s));
 			if (items.isEmpty())
 				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an OreDict tag with no registered items!");
 		}
 
-		private ItemMatch(Collection<ItemStack> c) {
+		public ItemMatch(Collection<ItemStack> c) {
 			items.addAll(c);
 			if (items.isEmpty())
 				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an list with no items!");
@@ -700,11 +705,45 @@ public class CastingRecipe {
 
 		@SideOnly(Side.CLIENT)
 		public ItemStack getCycledItem() {
-			return items.get((int)((System.currentTimeMillis()/2000+this.hashCode())%items.size())).copy();
+			return items.get((int)((System.currentTimeMillis()/2000+Math.abs(this.hashCode()))%items.size())).copy();
 		}
 
 		public List<ItemStack> getItemList() {
 			return Collections.unmodifiableList(items);
+		}
+
+		@Override
+		public String toString() {
+			return items.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			return items.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof ItemMatch) {
+				ItemMatch m = (ItemMatch)o;
+				if (m.items.size() == items.size()) {
+					for (ItemStack is : items) {
+						if (ReikaItemHelper.listContainsItemStack(m.items, is, false)) {
+
+						}
+						else {
+							return false;
+						}
+					}
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
 		}
 
 	}

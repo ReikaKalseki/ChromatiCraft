@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ContainerInventoryLinker extends Container {
@@ -48,10 +49,10 @@ public class ContainerInventoryLinker extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, var6, 8 + var6 * 18, 142));
 
 		ItemStack tool = player.getCurrentEquippedItem();
-		ItemInventoryLinker iil = (ItemInventoryLinker)tool.getItem();
-		ArrayList<ItemStack> li = iil.getItemList(tool);
-		for (int i = 0; i < li.size(); i++) {
-			inventory.setInventorySlotContents(i, li.get(i));
+		int i = 0;
+		for (KeyedItemStack is : ItemInventoryLinker.getItemList(tool)) {
+			inventory.setInventorySlotContents(i, is.getItemStack());
+			i++;
 		}
 
 		this.onCraftMatrixChanged(inventory);
@@ -84,8 +85,7 @@ public class ContainerInventoryLinker extends Container {
 
 		ItemStack is = ep.getCurrentEquippedItem();
 		if (ChromaItems.LINK.matchWith(is)) {
-			ItemInventoryLinker iil = (ItemInventoryLinker)is.getItem();
-			iil.setItems(is, li);
+			ItemInventoryLinker.setItems(is, li);
 		}
 	}
 

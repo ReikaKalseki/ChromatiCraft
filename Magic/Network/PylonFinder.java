@@ -395,14 +395,21 @@ public class PylonFinder {
 	static {
 		tracer = new RayTracer(0, 0, 0, 0, 0, 0);
 		tracer.softBlocksOnly = true;
+		tracer.allowFluids = false;
 		tracer.addTransparentBlock(Blocks.glass);
+		tracer.addTransparentBlock(Blocks.glass_pane);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);
+
+		tracer.addOpaqueBlock(Blocks.deadbush);
+		tracer.addOpaqueBlock(Blocks.tallgrass, 0);
+		tracer.addOpaqueBlock(Blocks.tallgrass, 2);
+		tracer.addOpaqueBlock(Blocks.fire);
+		tracer.addOpaqueBlock(Blocks.vine);
+
 		/*
 		tracer.addOpaqueBlock(Blocks.standing_sign);
 		tracer.addOpaqueBlock(Blocks.reeds);
 		tracer.addOpaqueBlock(Blocks.carpet);
-		tracer.addOpaqueBlock(Blocks.tallgrass);
-		tracer.addOpaqueBlock(Blocks.deadbush);
 		tracer.addOpaqueBlock(Blocks.rail);
 		tracer.addOpaqueBlock(Blocks.web);
 		tracer.addOpaqueBlock(Blocks.torch);

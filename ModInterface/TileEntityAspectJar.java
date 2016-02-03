@@ -315,7 +315,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public Aspect getSuctionType(ForgeDirection face) {
-		return tank.getFirstAspect();
+		return null;
 	}
 
 	@Override
@@ -357,7 +357,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean renderExtendedTube() {
-		return false;
+		return true;
 	}
 
 	@Override

@@ -9,7 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -30,10 +32,10 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Items.AuraPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 
@@ -54,25 +56,13 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (ep.isSneaking()) {
-			is.setItemDamage(1-is.getItemDamage());
+			is.setItemDamage(0);
+			this.setMode(is, this.getMode(is).next());
 		}
 		else {
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.LINK.ordinal(), world, 0, 0, 0);
 		}
 		return is;
-	}
-
-	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
-		if (is.stackTagCompound == null)
-			is.stackTagCompound = new NBTTagCompound();
-		NBTTagList items = new NBTTagList();
-		for (int i = 0; i < li.size(); i++) {
-			ItemStack in = li.get(i);
-			NBTTagCompound nbt = new NBTTagCompound();
-			in.writeToNBT(nbt);
-			items.appendTag(nbt);
-		}
-		is.stackTagCompound.setTag("items", items);
 	}
 
 	@Override
@@ -105,15 +95,25 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 			else {
 				li.add("No link");
 			}
-			if (is.getItemDamage() == 1) {
-				li.add("Sending all items");
+			Mode m = getMode(is);
+			switch(m) {
+				case EVERYTHING:
+					li.add("Sending all items");
+					break;
+				case NOTHING:
+					li.add("Sending no items");
+					break;
+				case BLACKLIST:
+					li.add("Sending everything except:");
+					break;
+				case WHITELIST:
+					li.add("Sending:");
+					break;
 			}
-			else if (is.stackTagCompound.hasKey("items")) {
+			if (m.usesInventory() && is.stackTagCompound.hasKey("items")) {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-					ArrayList<ItemStack> items = this.getItemList(is);
-					for (int i = 0; i < items.size(); i++) {
-						ItemStack in = items.get(i);
-						li.add(">>"+in.getDisplayName());
+					for (KeyedItemStack in : getItemList(is)) {
+						li.add(">>"+in.getCriteriaAsChatFormatting()+in.getItemStack().getDisplayName());
 					}
 				}
 				else {
@@ -128,36 +128,137 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 		return new ElementTagCompound();
 	}
 
-	private boolean canLinkItems() {
+	private static boolean canLinkItems(EntityPlayer ep, ItemStack tool) {
 		return true;
 	}
 
-	public boolean linksItem(ItemStack tool, ItemStack is) {
-		return this.canLinkItems() && (tool.getItemDamage() == 1 || ReikaItemHelper.collectionContainsItemStack(this.getItemList(tool), is));
+	public static boolean linksItem(EntityPlayer ep, ItemStack tool, ItemStack is) {
+		return canLinkItems(ep, tool) && getMode(tool).linksItem(tool, is);
 	}
 
-	public ArrayList<ItemStack> getItemList(ItemStack is) {
-		ArrayList<ItemStack> li = new ArrayList();
-		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("items")) {
-			NBTTagList items = is.stackTagCompound.getTagList("items", NBTTypes.COMPOUND.ID);
-			for (int i = 0; i < items.tagCount(); i++) {
-				NBTTagCompound nbt = items.getCompoundTagAt(i);
-				ItemStack item = ItemStack.loadItemStackFromNBT(nbt);
-				li.add(item);
+	public static Mode getMode(ItemStack tool) {
+		if (tool.stackTagCompound == null)
+			tool.stackTagCompound = new NBTTagCompound();
+		return Mode.list[tool.stackTagCompound.getInteger("mode")];
+	}
+
+	private static void setMode(ItemStack tool, Mode mode) {
+		if (tool.stackTagCompound == null)
+			tool.stackTagCompound = new NBTTagCompound();
+		tool.stackTagCompound.setInteger("mode", mode.ordinal());
+	}
+
+	public static ArrayList<Filter> getFilters(ItemStack is) {
+		ArrayList<Filter> li = new ArrayList();
+		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("filter")) {
+			NBTTagList items = is.stackTagCompound.getTagList("filter", NBTTypes.COMPOUND.ID);
+			for (NBTTagCompound nbt : ((List<NBTTagCompound>)items.tagList)) {
+				String s = nbt.getString("filterType");
+				Filter f = constructFilter(s);
+				if (f == null) {
+					ChromatiCraft.logger.logError("Error reading item filter for "+is.getDisplayName()+"; unrecognized type "+s);
+					continue;
+				}
+				f.readFromNBT(nbt);
+				li.add(f);
 			}
 		}
 		return li;
 	}
 
-	public boolean processItem(World world, ItemStack tool, ItemStack is) {
-		IInventory ii = this.getInventory(world, tool);
+	public static final HashSet<KeyedItemStack> getItemList(ItemStack tool) {
+		if (tool.stackTagCompound == null)
+			tool.stackTagCompound = new NBTTagCompound();
+		if (tool.stackTagCompound.hasKey("items")) {
+			return loadItemList(tool.stackTagCompound.getTagList("items", NBTTypes.COMPOUND.ID));
+		}
+		ArrayList<Filter> li = getFilters(tool);
+		HashSet<KeyedItemStack> set = new HashSet();
+		for (Filter f : li) {
+			KeyedItemStack ks = f.getKey();
+			if (!set.contains(ks))
+				set.add(ks);
+		}
+		return set;
+	}
+
+	private static HashSet<KeyedItemStack> loadItemList(NBTTagList tag) {
+		HashSet<KeyedItemStack> set = new HashSet();
+		for (NBTTagCompound nbt : ((List<NBTTagCompound>)tag.tagList)) {
+			KeyedItemStack item = KeyedItemStack.readFromNBT(nbt);
+			if (!set.contains(item))
+				set.add(item);
+		}
+		return set;
+	}
+
+	private static void saveItemList(NBTTagCompound tag, HashSet<KeyedItemStack> set) {
+		NBTTagList li = new NBTTagList();
+		for (KeyedItemStack is : set) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			is.writeToNBT(nbt);
+			li.appendTag(nbt);
+		}
+		tag.setTag("items", li);
+	}
+
+	private static Filter constructFilter(String s) {
+		try {
+			Class c = Class.forName(s);
+			Constructor<Filter> con = c.getDeclaredConstructor();
+			con.setAccessible(true);
+			return con.newInstance();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static void setFilters(ItemStack is, ArrayList<Filter> li) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		is.stackTagCompound.removeTag("items");
+		NBTTagList items = new NBTTagList();
+		for (Filter f : li) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			f.writeToNBT(nbt);
+			nbt.setString("filterType", f.getClass().getName());
+			items.appendTag(nbt);
+		}
+		is.stackTagCompound.setTag("filter", items);
+	}
+
+	public static void setItems(ItemStack is, ArrayList<ItemStack> li) {
+		if (is.stackTagCompound == null)
+			is.stackTagCompound = new NBTTagCompound();
+		ArrayList<Filter> li2 = new ArrayList();
+		for (ItemStack in : li) {
+			Filter f = constructFilter(in);
+			if (f != null)
+				li2.add(f);
+		}
+		setFilters(is, li2);
+		saveItemList(is.stackTagCompound, getItemList(is));
+	}
+
+	private static Filter constructFilter(ItemStack in) {
+		if (in == null)
+			return null;
+		//		if (in.getItem() == ChromaItems.INVFILTER.getItemInstance())
+		//			return ?;
+		return new ItemFilter(in);
+	}
+
+	public static boolean processItem(World world, ItemStack tool, ItemStack is) {
+		IInventory ii = getInventory(world, tool);
 		if (ii != null) {
 			return ReikaInventoryHelper.addToIInv(is.copy(), ii);
 		}
 		return false;
 	}
 
-	private IInventory getInventory(World world, ItemStack is) {
+	private static IInventory getInventory(World world, ItemStack is) {
 		if (is.stackTagCompound == null)
 			return null;
 		if (!is.stackTagCompound.hasKey("link"))
@@ -170,11 +271,84 @@ public class ItemInventoryLinker extends ItemChromaTool implements AuraPowered {
 		return null;
 	}
 
-	private void link(ItemStack is, TileEntity te) {
+	private static void link(ItemStack is, TileEntity te) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
 		WorldLocation loc = new WorldLocation(te);
 		loc.writeToNBT("link", is.stackTagCompound);
+	}
+
+	public static enum Mode {
+		WHITELIST(),
+		BLACKLIST(),
+		EVERYTHING(),
+		NOTHING();
+
+		private static final Mode[] list = values();
+
+		private boolean linksItem(ItemStack tool, ItemStack is) {
+			switch(this) {
+				case BLACKLIST:
+					return !WHITELIST.linksItem(tool, is);
+				case WHITELIST:
+					return ItemInventoryLinker.getItemList(tool).contains(new KeyedItemStack(is).setSimpleHash(true));
+				case EVERYTHING:
+					return true;
+				case NOTHING:
+					return false;
+			}
+			return false;
+		}
+
+		public boolean usesInventory() {
+			return this != EVERYTHING && this != NOTHING;
+		}
+
+		private Mode next() {
+			return list[(this.ordinal()+1)%list.length];
+		}
+	}
+
+	public static abstract class Filter {
+
+		protected Filter() {
+
+		}
+
+		protected abstract void writeToNBT(NBTTagCompound tag);
+		protected abstract void readFromNBT(NBTTagCompound tag);
+
+		protected abstract KeyedItemStack getKey();
+
+	}
+
+	public static final class ItemFilter extends Filter {
+
+		private ItemStack item;
+
+		private ItemFilter() {
+			super();
+		}
+
+		public ItemFilter(ItemStack is) {
+			item = is.copy();
+		}
+
+		@Override
+		protected void writeToNBT(NBTTagCompound tag) {
+			item.writeToNBT(tag);
+		}
+
+		@Override
+		protected void readFromNBT(NBTTagCompound tag) {
+			item = ItemStack.loadItemStackFromNBT(tag);
+		}
+
+		@Override
+		protected KeyedItemStack getKey() {
+			return new KeyedItemStack(item).setIgnoreMetadata(false).setSized(false).setIgnoreNBT(false).setSimpleHash(true);
+		}
+
 	}
 
 }

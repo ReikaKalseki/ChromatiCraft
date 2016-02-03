@@ -80,7 +80,7 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 			this.addAuraRequirement(e, e.isPrimary() ? 100000 : 50000);
 			this.addRuneRingRune(e);
 		}
-		this.addRunes(repeater.getRunes());
+		this.addRunes(repeater);
 	}
 
 	@Override
@@ -122,15 +122,15 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 	public static void onClientSideRandomTick(TileEntityCastingTable te, int x, int y, int z, int var) {
 		//ReikaJavaLibrary.pConsole("P"+var);
 		switch(var) {
-		case 0:
-			genExplosion(te, x, y, z);
-			break;
-		case 1:
-			genLightning(te);
-			break;
-		case 2:
-			generateBurstParticles(te);
-			break;
+			case 0:
+				genExplosion(te, x, y, z);
+				break;
+			case 1:
+				genLightning(te);
+				break;
+			case 2:
+				generateBurstParticles(te);
+				break;
 		}
 	}
 

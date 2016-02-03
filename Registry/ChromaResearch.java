@@ -147,6 +147,8 @@ public enum ChromaResearch implements ProgressElement {
 	CLOAKING(		ChromaTiles.CLOAKING,		ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
 	CAVELIGHTER(	ChromaTiles.LIGHTER,		ResearchLevel.RUNECRAFT,		ProgressStage.BEDROCK),
 	GLOWFIRE(		ChromaTiles.GLOWFIRE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.SHARDCHARGE),
+	ESSENTIA(		ChromaTiles.ESSENTIARELAY,	ResearchLevel.RUNECRAFT),
+	INSERTER(		ChromaTiles.INSERTER,		ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -199,6 +201,8 @@ public enum ChromaResearch implements ProgressElement {
 	VACUUMGUN(			ChromaItems.VACUUMGUN,		ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	DOORKEY(			ChromaItems.KEY,			ResearchLevel.BASICCRAFT),
 	OWNERKEY(			ChromaItems.SHARE,			ResearchLevel.BASICCRAFT),
+	//FLUIDWAND(			ChromaItems.FLUIDWAND,		ResearchLevel.RUNECRAFT,	ProgressStage.OCEAN),
+	CRYSTALCELL(		ChromaItems.CRYSTALCELL,	ResearchLevel.MULTICRAFT,	ProgressStage.CHARGE),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -746,10 +750,10 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.firaxite);
 			li.add(ChromaStacks.spaceDust);
 			li.add(ChromaStacks.resocrystal);
-			li.add(ChromaStacks.placehold4Dust);
-			li.add(ChromaStacks.placehold5Dust);
-			li.add(ChromaStacks.placehold6Dust);
-			li.add(ChromaStacks.placehold7Dust);
+			li.add(ChromaStacks.lumaDust);
+			li.add(ChromaStacks.echoCrystal);
+			li.add(ChromaStacks.fireEssence);
+			li.add(ChromaStacks.thermiticCrystal);
 			return li;
 		}
 		if (this == DUSTS) {

@@ -14,6 +14,7 @@ import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
@@ -25,6 +26,7 @@ public enum ChromaEntities implements EntityEnum {
 	CHAINGUN(EntityChainGunShot.class, "ChainGun Shot"),
 	SPLASHGUN(EntitySplashGunShot.class, "SplashGun Shot"),
 	VACUUM(EntityVacuum.class, "Vacuum"),
+	LIGHT(EntityFlyingLight.class, "Light"),
 	ENDERCRYS(EntityChromaEnderCrystal.class, "CC Ender Crystal");
 
 	public final String entityName;

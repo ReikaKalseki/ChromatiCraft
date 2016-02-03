@@ -89,16 +89,21 @@ public class BlockColoredAltar extends CrystalTypeBlock {
 		@SideOnly(Side.CLIENT)
 		private void renderParticles(CrystalElement e) {
 			int ps = Minecraft.getMinecraft().gameSettings.particleSetting;
-			int n = 2;
+			double n = 2;
 			switch(ps) {
 				case 1:
 					n = 1;
 					break;
 				case 2:
-					n = rand.nextInt(2);
+					n = 0.5;
 					break;
 			}
-			for (int i = 0; i < n; i++) {
+			double d = Math.max(1, Minecraft.getMinecraft().thePlayer.getDistanceSq(xCoord+0.5, yCoord+0.25, zCoord+0.5)/256D);
+			n /= d;
+
+			int num = n <= 1 ? ReikaRandomHelper.doWithChance(n) ? 1 : 0 : (int)n;
+
+			for (int i = 0; i < num; i++) {
 				double r = ReikaRandomHelper.getRandomPlusMinus(0.55, 0.05);
 				double ang = rand.nextDouble()*360;;//(ticks*8+i*360/n)%360
 				double dx = xCoord+0.5+r*Math.sin(Math.toRadians(ang));

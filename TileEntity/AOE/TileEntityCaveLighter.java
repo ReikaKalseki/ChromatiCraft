@@ -1,10 +1,12 @@
 package Reika.ChromatiCraft.TileEntity.AOE;
 
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -14,10 +16,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCaveLighter extends TileEntityChromaticBase {
 
-	public static final int RANGE = 128;
-	private static final int ZONE_SIZE = 8;
+	public static final int RANGE = Math.min(64, ChromaOptions.CAVELIGHTERRANGE.getValue());
+	private static final int ZONE_SIZE = MathHelper.clamp_int(2, 16, ChromaOptions.CAVELIGHTERSIZE.getValue());
 
-	private final BlockSpiral[] spiral = new BlockSpiral[128/ZONE_SIZE];
+	private final BlockSpiral[] spiral = new BlockSpiral[RANGE/ZONE_SIZE];
 
 	@Override
 	public ChromaTiles getTile() {

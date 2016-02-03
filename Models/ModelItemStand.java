@@ -167,6 +167,7 @@ public class ModelItemStand extends ChromaModelBase
 	public void renderAll(TileEntity te, ArrayList li)
 	{
 		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		EntityItem item = (EntityItem)li.get(0);
 		if (item != null) {
 			ReikaRenderHelper.disableEntityLighting();
@@ -182,10 +183,7 @@ public class ModelItemStand extends ChromaModelBase
 		Shape4a.render(te, f5);
 		Shape4b.render(te, f5);
 		Shape4c.render(te, f5);
-		if (item != null) {
-			ReikaRenderHelper.enableEntityLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
-		}
+		GL11.glPopAttrib();
 
 		Shape2.render(te, f5);
 

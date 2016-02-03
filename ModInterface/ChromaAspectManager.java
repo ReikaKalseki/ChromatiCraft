@@ -200,6 +200,8 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(crystal, Aspect.AURA, 4);
 			ReikaThaumHelper.addAspects(crystal, Aspect.LIGHT, 3);
 			ReikaThaumHelper.addAspects(crystal, Aspect.MAGIC, 6);
+			ReikaThaumHelper.addAspects(rune, Aspect.MAGIC, 8);
+			ReikaThaumHelper.addAspects(rune, Aspect.CRAFT, 2);
 			ReikaThaumHelper.addAspects(lamp, Aspect.LIGHT, 8);
 			ReikaThaumHelper.addAspects(lamp, Aspect.CRYSTAL, 20);
 			ReikaThaumHelper.addAspects(potion, Aspect.LIGHT, 8);

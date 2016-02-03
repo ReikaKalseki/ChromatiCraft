@@ -111,7 +111,8 @@ public class WorldGenMiniAltar extends ChromaWorldGenerator {
 		int n = 4+rand.nextInt(24);
 		ArrayList<ItemStack> li = ItemMagicRegistry.instance.getAllRegisteredItems();
 		for (int i = 0; i < n; i++) {
-			ItemStack in = li.get(rand.nextInt(li.size()));
+			int idx = rand.nextInt(li.size());
+			ItemStack in = li.get(idx);
 			ElementTagCompound value = ItemMagicRegistry.instance.getItemValue(in);
 			int max = Math.min(16, 24/value.getMaximumValue());
 			int num = Math.min(1+rand.nextInt(max), in.getMaxStackSize());

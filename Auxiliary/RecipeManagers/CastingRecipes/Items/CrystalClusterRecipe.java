@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ShardGroupingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -26,10 +27,11 @@ public class CrystalClusterRecipe extends TempleCastingRecipe implements ShardGr
 	}
 
 	private static IRecipe getRecipe(ItemStack out) {
-		ItemStack is1 = ChromaItems.CLUSTER.getStackOfMetadata(2*out.getItemDamage()%8);
-		ItemStack is2 = ChromaItems.CLUSTER.getStackOfMetadata(1+2*out.getItemDamage()%8);
+		int mod = (out.getItemDamage()-ChromaStacks.primaryCluster.getItemDamage())%2;
+		ItemStack is1 = ChromaItems.CLUSTER.getStackOfMetadata(2*mod);
+		ItemStack is2 = ChromaItems.CLUSTER.getStackOfMetadata(1+2*mod);
 
-		ItemStack ctr = getShard(CrystalElement.WHITE);
+		ItemStack ctr = getShard(mod == 1 ? CrystalElement.BLACK : CrystalElement.WHITE);
 
 		Object[] o = {" A ", "BFB", " A ", 'A', is1, 'B', is2, 'F', ctr};
 		return ReikaRecipeHelper.getShapedRecipeFor(out, o);

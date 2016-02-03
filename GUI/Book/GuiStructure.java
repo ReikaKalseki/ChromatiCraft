@@ -57,6 +57,18 @@ public class GuiStructure extends GuiBookSection {
 		array = page.getStructure().getStructureForDisplay();
 		if (page.name().toLowerCase().contains("casting")) {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
+			if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
+				for (int i = -4; i <= 4; i += 2) {
+					for (int k = -4; k <= 4; k += 2) {
+						if (i != 0 || k != 0) {
+							int dx = array.getMidX()+i;
+							int dz = array.getMidZ()+k;
+							int dy = array.getMinY()+1+(Math.abs(i) != 4 && Math.abs(k) != 4 ? 0 : 1);
+							array.setBlock(dx, dy, dz, ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata());
+						}
+					}
+				}
+			}
 		}
 		if (page == ChromaResearch.TREE) {
 			array.setBlock(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());

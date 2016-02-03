@@ -104,6 +104,8 @@ public class RecipeCrystalRepeater extends MultiBlockCastingRecipe implements En
 
 	@Override
 	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+		if (tag == null)
+			tag = new NBTTagCompound();
 		tag.setBoolean("boosted", false);
 		return tag;
 	}

@@ -182,9 +182,11 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	private ElementTagCompound consumeItem(ItemStack is) {
 		ElementTagCompound tag = this.getDecompositionValue(is);
-		for (CrystalElement e : tag.elementSet()) {
-			if (energy.getValue(e)+tag.getValue(e) > this.getMaxStorage(e)) {
-				return null;
+		if (tag != null) {
+			for (CrystalElement e : tag.elementSet()) {
+				if (energy.getValue(e)+tag.getValue(e) > this.getMaxStorage(e)) {
+					return null;
+				}
 			}
 		}
 		return tag;

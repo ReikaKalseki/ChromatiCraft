@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
+import Reika.ChromatiCraft.Container.ContainerItemInserter;
 import Reika.ChromatiCraft.Container.ContainerMiner;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
@@ -77,6 +78,7 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalFurnace;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiInventoryTicker;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemFabricator;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemInserter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiMiner;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiSpawnerProgrammer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
@@ -96,6 +98,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
@@ -165,6 +168,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerMEDistributor(player, (TileEntityMEDistributor)te);
 				if (te instanceof TileEntityPatternCache)
 					return new ContainerPatternCache(player, (TileEntityPatternCache)te);
+				if (te instanceof TileEntityItemInserter)
+					return new ContainerItemInserter(player, (TileEntityItemInserter)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -253,6 +258,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiCrystalMusic(player, (TileEntityCrystalMusic)te);
 				if (te instanceof TileEntityPatternCache)
 					return new GuiPatternCache(player, (TileEntityPatternCache)te);
+				if (te instanceof TileEntityItemInserter)
+					return new GuiItemInserter(player, (TileEntityItemInserter)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

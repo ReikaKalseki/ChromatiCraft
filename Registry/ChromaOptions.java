@@ -63,7 +63,9 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
 	NETHERPENDANT("Advanced Pendants Apply Nether Effects", true),
 	FORCEG1GC("Force Java 8 to use G1GC To Prevent Crashes - Disabling this disables some content", true),
-	PROGRESSNOTIFY("Notify other players of progress gains", true);
+	PROGRESSNOTIFY("Notify other players of progress gains", true),
+	CAVELIGHTERRANGE("Cave Lighter Range", 128),
+	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8);
 
 	private String label;
 	private boolean defaultState;

@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelItemStand;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
@@ -45,8 +46,14 @@ public class RenderItemStand extends ChromaRenderBase {
 			this.renderItem(te, par2, par4, par6, par8);
 		}
 		GL11.glTranslated(par2, par4, par6);
-		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld())
+		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld() || StructureRenderer.isRenderingTiles()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			if (StructureRenderer.isRenderingTiles()) {
+				GL11.glDisable(GL11.GL_LIGHTING);
+			}
 			this.renderModel(te, model, te.getItem());
+			GL11.glPopAttrib();
+		}
 
 		GL11.glPopMatrix();
 	}

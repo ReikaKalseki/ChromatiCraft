@@ -14,7 +14,6 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
@@ -26,12 +25,12 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SelectiveMovable;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -39,15 +38,19 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 
+	public static final int ACTIVATION_TIME = 60;
+
 	private EntityPlayer firingPlayer;
 	private boolean isActivated;
-	private int lifespan = 400+rand.nextInt(200);
+	private int lifespan = 400+rand.nextInt(200)+ACTIVATION_TIME;
+	private int entityRange = ReikaRandomHelper.getRandomPlusMinus(10, 2);
 	private int blockRange = ReikaRandomHelper.getRandomPlusMinus(6, 2);
 
 	public EntityVacuum(World world, EntityPlayer ep) {
@@ -56,7 +59,7 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 		firingPlayer = ep;
 
 		Vec3 vec = ep.getLookVec();
-		double v = 0.5;
+		double v = 0.85;
 		motionX = v*vec.xCoord;
 		motionY = v*vec.yCoord;
 		motionZ = v*vec.zCoord;
@@ -85,14 +88,14 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 				this.suckInEntities();
 			}
 		}
-		else if (ticksExisted >= 40) {
+		else if (ticksExisted >= ACTIVATION_TIME) {
 			this.activate();
 		}
 		else {
 			if (worldObj.isRemote) {
 				this.travelParticles();
 			}
-			if (ticksExisted >= 30) {
+			if (ticksExisted >= ACTIVATION_TIME-10) {
 				motionX *= 0.8;
 				motionY *= 0.8;
 				motionZ *= 0.8;
@@ -157,14 +160,13 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 	}
 
 	private void suckInEntities() {
-		int r = 12;
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(posX, posY, posZ, posX, posY, posZ).expand(r, r, r);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(posX, posY, posZ, posX, posY, posZ).expand(entityRange, entityRange, entityRange);
 		List<Entity> li = worldObj.getEntitiesWithinAABB(Entity.class, box);
 		for (Entity e : li) {
 			if (!(e instanceof EntityVacuum)) {
 				this.suck(e);
 
-				if (this.getDistanceToEntity(e) <= 1) {
+				if (e != firingPlayer && this.getDistanceToEntity(e) <= 1) {
 					e.attackEntityFrom(DamageSource.magic, 1);
 				}
 			}
@@ -185,7 +187,7 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 						if (y >= 0 && y <= 255) {
 							Block b = worldObj.getBlock(dx, dy, dz);
 							if (this.canMove(b, worldObj, dx, dy, dz)) {
-								EntityFallingBlock e = new EntityFallingBlock(worldObj, dx, dy, dz, b, worldObj.getBlockMetadata(dx, dy, dz));
+								EntityFallingBlock e = new EntityTumblingBlock(worldObj, dx, dy, dz, b, worldObj.getBlockMetadata(dx, dy, dz));
 								e.field_145812_b = -10000;
 								e.field_145813_c = false;
 								worldObj.setBlockToAir(dx, dy, dz);
@@ -207,7 +209,7 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 			return false;
 		if (b instanceof SemiUnbreakable)
 			return !((SemiUnbreakable)b).isUnbreakable(world, x, y, z, world.getBlockMetadata(x, y, z));
-		if (b instanceof BlockFluidBase || b instanceof BlockLiquid)
+		if (ReikaBlockHelper.isLiquid(b))
 			return world.getBlockMetadata(x, y, z) == 0;
 		if (b instanceof SelectiveMovable)
 			return ((SelectiveMovable)b).canMove(world, x, y, z);

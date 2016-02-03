@@ -64,6 +64,8 @@ public class ItemMagicRegistry {
 		this.addElement(Items.coal, CrystalElement.ORANGE, 4);
 		this.addElement("redstone", CrystalElement.YELLOW, 2);
 		this.addElement("redstone", CrystalElement.LIME, 2);
+		this.addElement("dustRedstone", CrystalElement.YELLOW, 2);
+		this.addElement("dustRedstone", CrystalElement.LIME, 2);
 		this.addElement("dustGlowstone", CrystalElement.BLUE, 4);
 		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.BROWN, 3);
 		this.addElement(ModOreList.CERTUSQUARTZ.getProductOreDictName(), CrystalElement.WHITE, 2);
@@ -223,10 +225,32 @@ public class ItemMagicRegistry {
 	}
 
 	private void addElement(String s, CrystalElement e, int amt) {
-		Collection<ItemStack> li = OreDictionary.getOres(s);
+		Collection<ItemStack> li = this.getOres(s);
 		for (ItemStack is : li) {
 			this.addElement(is, e, amt);
 		}
+	}
+
+	private Collection<ItemStack> getOres(String s) {
+		ArrayList<ItemStack> li = new ArrayList(OreDictionary.getOres(s));
+		/*
+		ArrayList<ItemStack> li2 = new ArrayList();
+		for (ItemStack is : li) {
+			if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+				int n = ?;
+				for (int i = 0; i < n; i++) {
+					ItemStack is2 = is.copy();
+					is2.setItemDamage(i);
+					li2.add(is2);
+				}
+			}
+			else {
+				li2.add(is);
+			}
+		}
+		return li2;
+		 */
+		return li;
 	}
 
 	private void addElement(Block b, CrystalElement e, int amt) {

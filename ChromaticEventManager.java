@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -53,6 +54,7 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
@@ -117,6 +119,7 @@ import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -150,6 +153,18 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void forceExcavatorSpeed(BreakSpeed evt) {
+		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
+		if (ChromaItems.EXCAVATOR.matchWith(is)) {
+			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency, is) == 1) {
+				evt.newSpeed = 2*evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z); //force same speed on everything, even superhard blocks
+				evt.setCanceled(false);
+			}
+		}
+	}
+
 	/*
 	@SubscribeEvent
 	public void triggerDoubleJump(RawKeyPressEvent evt) {
@@ -682,17 +697,23 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void onLogin(PlayerEvent.PlayerChangedDimensionEvent evt) {
+	public void respawnDragon(WorldEvent.Load evt) {
+		if (evt.world.provider.dimensionId == 1 && !evt.world.isRemote) {
+			if (ChromaOptions.REDRAGON.getState()) {
+				EntityDragon ed = new EntityDragon(evt.world);
+				ed.setLocationAndAngles(0.0D, 128.0D, 0.0D, evt.world.rand.nextFloat() * 360.0F, 0.0F);
+				evt.world.spawnEntityInWorld(ed);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent evt) {
 		if (evt.toDim == -1) {
 			ProgressStage.NETHER.stepPlayerTo(evt.player);
 		}
 		else if (evt.toDim == 1) {
 			ProgressStage.END.stepPlayerTo(evt.player);
-			if (ChromaOptions.REDRAGON.getState()) {
-				EntityDragon ed = new EntityDragon(evt.player.worldObj);
-				ed.setLocationAndAngles(0.0D, 128.0D, 0.0D, evt.player.worldObj.rand.nextFloat() * 360.0F, 0.0F);
-				evt.player.worldObj.spawnEntityInWorld(ed);
-			}
 		}
 		else if (evt.toDim == ReikaTwilightHelper.getDimensionID()) {
 			ProgressStage.TWILIGHT.stepPlayerTo(evt.player);
@@ -795,14 +816,15 @@ public class ChromaticEventManager {
 
 	private void parseInventoryForLinking(EntityItemPickupEvent ev, ItemStack[] inv, ItemStack active) {
 		EntityItem e = ev.item;
+		if (e.isDead || ev.isCanceled())
+			return;
 		ItemStack picked = e.getEntityItem();
 		for (int i = 0; i < inv.length; i++) {
 			if (active == null || ((ActivatedInventoryItem)active.getItem()).isSlotActive(active, i)) {
 				ItemStack in = inv[i];
 				if (in != null && in.getItem() == ChromaItems.LINK.getItemInstance()) {
-					ItemInventoryLinker iil = (ItemInventoryLinker)in.getItem();
-					if (iil.linksItem(in, picked)) {
-						if (iil.processItem(ev.entityPlayer.worldObj, in, picked)) {
+					if (ItemInventoryLinker.linksItem(ev.entityPlayer, in, picked)) {
+						if (ItemInventoryLinker.processItem(ev.entityPlayer.worldObj, in, picked)) {
 							e.playSound("random.pop", 0.5F, 1);
 							e.setDead();
 							ev.setCanceled(true);

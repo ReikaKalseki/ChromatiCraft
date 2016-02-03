@@ -22,8 +22,10 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -35,7 +37,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityTransportWindow extends TileEntityChromaticBase implements BreakAction {
 
-	private static final HashSet<Block> acceptedFrames = new HashSet();
+	private static final HashSet<BlockKey> acceptedFrames = new HashSet();
 
 	private boolean hasStructure;
 	private final PlayerMap<Integer> cooldowns = new PlayerMap();
@@ -71,7 +73,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 			}
 
 			//ReikaJavaLibrary.pConsole(cooldowns);
-			for (UUID uid : cooldowns.keySet()) {
+			for (UUID uid : new HashSet<UUID>(cooldowns.keySet())) {
 				EntityPlayer ep = world.func_152378_a(uid);
 				if (ep != null && !this.canTeleportPosition(this.getFacing(), ep)) {
 					int time = cooldowns.directGet(uid);
@@ -255,17 +257,17 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	}
 
 	private boolean checkStructure(World world, int x, int y, int z) {
-		if (!acceptedFrames.contains(world.getBlock(x, y+1, z)) || !acceptedFrames.contains(world.getBlock(x, y-1, z)))
+		if (!acceptedFrames.contains(BlockKey.getAt(world, x, y+1, z)) || !acceptedFrames.contains(BlockKey.getAt(world, x, y-1, z)))
 			return false;
 		if (this.getFacing().offsetX != 0) {
 			for (int i = -1; i <= 1; i++) {
-				if (!acceptedFrames.contains(world.getBlock(x, y+i, z-1)) || !acceptedFrames.contains(world.getBlock(x, y+i, z+1)))
+				if (!acceptedFrames.contains(BlockKey.getAt(world, x, y+i, z-1)) || !acceptedFrames.contains(BlockKey.getAt(world, x, y+i, z+1)))
 					return false;
 			}
 		}
 		else {
 			for (int i = -1; i <= 1; i++) {
-				if (!acceptedFrames.contains(world.getBlock(x-1, y+i, z)) || !acceptedFrames.contains(world.getBlock(x+1, y+i, z)))
+				if (!acceptedFrames.contains(BlockKey.getAt(world, x-1, y+i, z)) || !acceptedFrames.contains(BlockKey.getAt(world, x+1, y+i, z)))
 					return false;
 			}
 		}
@@ -306,11 +308,20 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	}
 
 	static {
-		acceptedFrames.add(Blocks.bedrock);
-		acceptedFrames.add(Blocks.obsidian);
-		acceptedFrames.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
-		acceptedFrames.add(ChromaBlocks.STRUCTSHIELD.getBlockInstance());
-		acceptedFrames.add(ChromaBlocks.SPECIALSHIELD.getBlockInstance());
+		acceptedFrames.add(new BlockKey(Blocks.bedrock));
+		acceptedFrames.add(new BlockKey(Blocks.obsidian));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.PYLONSTRUCT.getBlockInstance()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.ordinal()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.ordinal()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.MOSS.metadata));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.ordinal()));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata));
+		acceptedFrames.add(new BlockKey(ChromaBlocks.SPECIALSHIELD.getBlockInstance()));
 	}
 
 }

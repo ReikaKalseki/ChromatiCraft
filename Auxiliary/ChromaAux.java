@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.entity.EntityLiving;
@@ -267,5 +268,33 @@ public class ChromaAux {
 					ReikaChatHelper.sendChatToPlayer(ep2, sg);
 			}
 		}
+	}
+	/*
+	public static int overrideLightValue(IBlockAccess world, int x, int y, int z, int val) {
+		world = Minecraft.getMinecraft().theWorld;
+		int base = defaultLightBrightness((World)world, x, y, z, val);
+		double dist = EntityFlyingLight.getClosestLight((World)world, x, y, z);
+		//dist = Math.min(dist, Minecraft.getMinecraft().thePlayer.getDistance(x+0.5, y+0.5, z+0.5));
+		int l = 0;
+		int m = 5;
+		if (dist < m) {
+			l = 15;
+		}
+		else if (dist < 15+m) {
+			l = 15+m-(int)dist;
+		}
+		//ReikaJavaLibrary.pConsole(Integer.toHexString(base)+"; "+l, dist < Double.POSITIVE_INFINITY);
+		return ReikaMathLibrary.bitRound(base, 20) | (l << 4);
+	}
+
+	private static int defaultLightBrightness(World world, int x, int y, int z, int val) {
+		int sky = world.getSkyBlockTypeBrightness(EnumSkyBlock.Sky, x, y, z);
+		int block = Math.max(val, world.getSkyBlockTypeBrightness(EnumSkyBlock.Block, x, y, z));
+		return sky << 20 | block << 4;
+	}
+	 */
+
+	public static void permuteRunes(HashMap<Coordinate, CrystalElement> map, World world, EntityPlayer ep) {
+
 	}
 }

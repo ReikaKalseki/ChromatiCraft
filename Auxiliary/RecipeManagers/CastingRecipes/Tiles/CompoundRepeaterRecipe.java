@@ -52,7 +52,7 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe implements E
 		this.addAuxItem(ChromaStacks.focusDust, -2, -2);
 		this.addAuxItem(ChromaStacks.focusDust, -2, 2);
 
-		this.addRunes(repeater.getRunes());
+		this.addRunes(repeater);
 	}
 
 	@Override

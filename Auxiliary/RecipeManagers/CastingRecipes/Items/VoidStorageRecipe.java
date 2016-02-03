@@ -49,16 +49,16 @@ public class VoidStorageRecipe extends PylonRecipe {
 		this.addAuxItem(AppEngHandler.getInstance().getGoldProcessor(), -4, 4);
 		this.addAuxItem(AppEngHandler.getInstance().getGoldProcessor(), 4, 4);
 
-		this.addAuxItem(ChromaStacks.chromaDust, -2, -4);
+		this.addAuxItem(ChromaStacks.voidDust, -2, -4);
 		this.addAuxItem(ChromaStacks.chromaDust, 2, -4);
 
-		this.addAuxItem(ChromaStacks.chromaDust, 2, 4);
+		this.addAuxItem(ChromaStacks.voidDust, 2, 4);
 		this.addAuxItem(ChromaStacks.chromaDust, -2, 4);
 
+		this.addAuxItem(ChromaStacks.voidDust, 4, -2);
 		this.addAuxItem(ChromaStacks.chromaDust, -4, -2);
-		this.addAuxItem(ChromaStacks.chromaDust, 4, -2);
 
-		this.addAuxItem(ChromaStacks.chromaDust, -4, 2);
+		this.addAuxItem(ChromaStacks.voidDust, -4, 2);
 		this.addAuxItem(ChromaStacks.chromaDust, 4, 2);
 	}
 

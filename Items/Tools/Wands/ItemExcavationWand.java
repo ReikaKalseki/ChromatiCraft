@@ -48,6 +48,15 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 
 	@Override
 	public boolean canHarvestBlock(Block b, ItemStack is) {
+		return true;
+	}
+
+	@Override
+	public int getHarvestLevel(ItemStack stack, String toolClass) {
+		return Integer.MAX_VALUE;
+	}
+
+	public static boolean spreadOn(World world, Block b) {
 		return b != Blocks.stone && b != Blocks.netherrack && b != Blocks.end_stone;
 	}
 

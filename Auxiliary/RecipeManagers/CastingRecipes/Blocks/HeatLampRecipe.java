@@ -19,7 +19,7 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 	public HeatLampRecipe(ItemStack out, IRecipe recipe, HeatLilyRecipe r) {
 		super(out, recipe);
 
-		this.addRunes(r.getRunes());
+		this.addRunes(r);
 	}
 
 	@Override

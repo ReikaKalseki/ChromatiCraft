@@ -44,6 +44,7 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 					int n = random.nextInt(5) == 0 ? 1+random.nextInt(4)+random.nextInt(6) : 1;
 					int tries = 0;
 					while (done < n && tries < 40) {
+						tries++;
 						int posX = chunkX + random.nextInt(16);
 						int posZ = chunkZ + random.nextInt(16);
 						BiomeGenBase b = world.getBiomeGenForCoords(posX, posZ);
@@ -55,7 +56,7 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 								if (posY <= 0)
 									continue;
 							}
-							while (!world.getBlock(posX, posY, posZ).isAir(world, posX, posY, posZ))
+							while (!world.getBlock(posX, posY, posZ).isAir(world, posX, posY, posZ) && posY < 255)
 								posY++;
 							if (world.getBlock(posX, posY, posZ).isAir(world, posX, posY, posZ) && p.canPlantAt(world, posX, posY, posZ)) {
 								if (p == Flowers.FLOWIVY) {
@@ -85,7 +86,6 @@ public class DecoFlowerGenerator implements RetroactiveGenerator, ChromaDecorato
 								done++;
 							}
 						}
-						tries++;
 					}
 				}
 			}

@@ -164,11 +164,11 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 
 		public ItemStack getDrop() {
 			switch (this) {
-				case FLOWER: return ChromaStacks.auraDust;
-				case CAVE: return ChromaStacks.purityDust;
-				case LILY: return ChromaStacks.elementDust;
-				case BULB: return ChromaStacks.resonanceDust;
-				case DESERT: return ChromaStacks.beaconDust;
+				case FLOWER: return ChromaStacks.auraDust.copy();
+				case CAVE: return ChromaStacks.purityDust.copy();
+				case LILY: return ChromaStacks.elementDust.copy();
+				case BULB: return ChromaStacks.resonanceDust.copy();
+				case DESERT: return ChromaStacks.beaconDust.copy();
 			}
 			return null;
 		}

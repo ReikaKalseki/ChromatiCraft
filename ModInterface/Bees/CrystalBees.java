@@ -45,14 +45,17 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Effect;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Fertility;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Flower;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Flowering;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Life;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Speeds;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Territory;
+import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Tolerance;
 import Reika.DragonAPI.ModInteract.Bees.BasicFlowerProvider;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Fertility;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Flowering;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Life;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Speeds;
-import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.Territory;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.TraitsBee;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
@@ -87,6 +90,15 @@ public class CrystalBees {
 	protected static BasicBee crystal;
 	protected static BasicBee purity;
 
+	protected static Fertility superFertility;
+	protected static Territory superTerritory;
+	protected static Speeds superSpeed;
+	protected static Flowering superFlowering;
+	protected static Life superLife;
+	protected static Life blinkLife;
+	//protected static IAlleleTolerance anyTemperature; green
+	//protected static IAlleleTolerance anyHumidity; gray
+
 	protected static final EnumMap<CrystalElement, CrystalBee> beeMap = new EnumMap(CrystalElement.class);
 	protected static final EnumMap<CrystalElement, CrystalEffect> effectMap = new EnumMap(CrystalElement.class);
 	protected static final EnumMap<CrystalElement, CrystalAllele> flowerMap = new EnumMap(CrystalElement.class);
@@ -97,9 +109,18 @@ public class CrystalBees {
 	}
 
 	public static void register() {
+		superFertility = Fertility.createNew("multiply", 8, false);
+		superSpeed = Speeds.createNew("accelerated", 4F, false);
+		superFlowering = Flowering.createNew("naturalistic", 240, false);
+		superTerritory = Territory.createNew("exploratory", 32, 16, false);
+		superLife = Life.createNew("eon", 600, false);
+		blinkLife = Life.createNew("blink", 2, false);
+		//anyTemperature = Tolerance.createNew("", new OmniToleranceCheck(), false);
+		//anyHumidity = Tolerance.createNew("", new OmniToleranceCheck(), false);
+
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
-			BeeTraits traits = CrystalBeeTypes.list[color.ordinal()].getTraits();
+			BeeTraits traits = CrystalBeeTypes.list[i].getTraits();
 			CrystalBee bee = new CrystalBee(color, traits);
 			CrystalEffect eff = new CrystalEffect(color);
 			CrystalAllele flw = new CrystalAllele(color);
@@ -115,8 +136,8 @@ public class CrystalBees {
 
 		crystal = new BasicBee("Crystalline", "Vitreus Crystallum", Speeds.NORMAL, Life.SHORTEST, Flowering.SLOWEST, Fertility.LOW, Territory.DEFAULT, 0x46A7FF);
 		purity = new BasicBee("Pure", "Purus Mundi", Speeds.SLOWER, Life.NORMAL, Flowering.AVERAGE, Fertility.NORMAL, Territory.DEFAULT, 0xffffff);
-		crystal.setCave();
-		purity.setCave();
+		//crystal.setCave();
+		//purity.setCave();
 
 		protective.register();
 		luminous.register();
@@ -153,6 +174,8 @@ public class CrystalBees {
 		protective.addProduct(Combs.HONEY.getItem(), 10);
 		hostile.addProduct(Combs.HONEY.getItem(), 10);
 		luminous.addProduct(Combs.HONEY.getItem(), 10);
+		crystal.addProduct(ChromaStacks.crystalPowder, 5);
+		purity.addProduct(new ItemStack(Items.ghast_tear), 1);
 
 		GameRegistry.registerWorldGenerator(HiveGenerator.instance, -5);
 	}
@@ -273,7 +296,7 @@ public class CrystalBees {
 		public final CrystalElement color;
 
 		public CrystalEffect(CrystalElement color) {
-			super("effect.cavecrystal."+color.name().toLowerCase(), color.displayName+" Crystal");
+			super("effect.cavecrystal."+color.name().toLowerCase(), color.displayName);
 			this.color = color;
 		}
 
@@ -317,7 +340,7 @@ public class CrystalBees {
 		private final FlowerProviderCrystal provider;
 
 		public CrystalAllele(CrystalElement color) {
-			super("flower.cavecrystal."+color.name().toLowerCase(), color.displayName+" Cave Crystal");
+			super("flower.cavecrystal."+color.name().toLowerCase(), color.displayName);
 			this.color = color;
 			provider = new FlowerProviderCrystal(color);
 		}
@@ -339,7 +362,7 @@ public class CrystalBees {
 
 		@Override
 		public String getDescription() {
-			return color.displayName+" Crystals";
+			return color.displayName;
 		}
 
 		@Override
@@ -390,7 +413,7 @@ public class CrystalBees {
 				return false;
 			if (rand.nextFloat() > ibg.getSpeed())
 				return false;
-			if (ibg.getFlowering() < Flowering.AVERAGE.getValue())
+			if (ibg.getFlowering() < Flowering.AVERAGE.getAllele().getValue())
 				return false;
 			if (!ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z))) {
 				if (rand.nextInt(2) > 0) {
@@ -485,7 +508,7 @@ public class CrystalBees {
 					this.addConditionalProduct(ChromaStacks.waterDust, 5, true, new ProgressionCheck(TieredOres.WATERY.level));
 					break;
 				case LIME:
-					this.addConditionalProduct(ChromaStacks.spaceDust, 5, true, new ProgressionCheck(TieredOres.END2.level));
+					this.addConditionalProduct(ChromaStacks.spaceDust, 5, true, new ProgressionCheck(TieredOres.SPACERIFT.level));
 					break;
 				default:
 					break;
@@ -507,7 +530,7 @@ public class CrystalBees {
 
 		@Override
 		public boolean isNocturnal() {
-			return true;
+			return color == CrystalElement.BLUE;
 		}
 
 		@Override
@@ -522,7 +545,7 @@ public class CrystalBees {
 				return false;
 			if (rand.nextFloat() > ibg.getSpeed())
 				return false;
-			if (ibg.getFlowering() < Flowering.AVERAGE.getValue())
+			if (ibg.getFlowering() < Flowering.AVERAGE.getAllele().getValue())
 				return false;
 			if (!ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z))) {
 				if (rand.nextInt(2) > 0) {
@@ -633,6 +656,11 @@ public class CrystalBees {
 		}
 
 		@Override
+		public boolean isTolerantFlyer() {
+			return color == CrystalElement.CYAN;
+		}
+
+		@Override
 		public int getOutlineColor() {
 			return color.getJavaColor().getRGB();
 		}
@@ -678,7 +706,7 @@ public class CrystalBees {
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
 			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
 
 			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.PLANT.getBlockInstance(), color.ordinal());
@@ -697,7 +725,7 @@ public class CrystalBees {
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
 			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
 
 			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.DYEFLOWER.getBlockInstance(), color.ordinal());
@@ -716,7 +744,7 @@ public class CrystalBees {
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
 			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
 
 			return this.findLeaf(world, x, y, z, r, r2);

@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
@@ -58,6 +59,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
@@ -160,7 +162,9 @@ public enum ChromaTiles implements TileEnum {
 	HOLOGRAM("chroma.hologram",			ChromaBlocks.TILEMODELLED2, TileEntityAreaHologram.class,		11, "RenderAreaHologram"),
 	LIGHTER("chroma.lighter",			ChromaBlocks.TILEMODELLED2,	TileEntityCaveLighter.class,		12, "RenderCaveLighter"),
 	STORAGE("chroma.itemstorage",		ChromaBlocks.TILEENTITY,	TileEntityMultiStorage.class,		14),
-	GLOWFIRE("chroma.glowfire",			ChromaBlocks.TILEMODELLED2,	TileEntityGlowFire.class,			13);
+	GLOWFIRE("chroma.glowfire",			ChromaBlocks.TILEMODELLED2,	TileEntityGlowFire.class,			13),
+	ESSENTIARELAY("chroma.essentia",	ChromaBlocks.TILEMODELLED2,	TileEntityEssentiaRelay.class,		14, "RenderEssentiaRelay"),
+	INSERTER("chroma.inserter",			ChromaBlocks.TILEENTITY,	TileEntityItemInserter.class,		15);
 
 	private final Class tile;
 	private final String name;
@@ -244,6 +248,7 @@ public enum ChromaTiles implements TileEnum {
 				//case TANK:
 				//case ITEMRIFT:
 			case HOLOGRAM:
+			case ESSENTIARELAY:
 				return true;
 			default:
 				return false;
@@ -568,7 +573,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isTextureFace() {
-		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER;
+		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER || this == ESSENTIARELAY;
 	}
 
 	public boolean needsSilkTouch() {
@@ -584,6 +589,7 @@ public enum ChromaTiles implements TileEnum {
 	public boolean isIntangible() {
 		switch(this) {
 			case GLOWFIRE:
+			case ESSENTIARELAY:
 				return true;
 			default:
 				return false;

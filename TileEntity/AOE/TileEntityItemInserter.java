@@ -1,0 +1,304 @@
+package Reika.ChromatiCraft.TileEntity.AOE;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
+
+
+public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback {
+
+	private final Coordinate[] targets = new Coordinate[this.getSizeInventory()];
+	private final HashMap<Coordinate, InsertionType> locations = new HashMap();
+	private final ItemHashMap<ArrayList<Coordinate>> routing = new ItemHashMap();
+	private boolean[][] connections = new boolean[6][6];
+	private int maxCoord = 0;
+
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		if (world.isRemote)
+			return;
+		int slot = this.getTicksExisted()%this.getSizeInventory();
+		if (inv[slot] != null && inv[slot].stackSize > 1 && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
+			if (this.sendItem(inv[slot])) {
+				ReikaInventoryHelper.decrStack(slot, inv);
+			}
+		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.rebuildCache();
+	}
+
+	@Override
+	protected void onPreSlotSet(int slot, ItemStack is) {
+		if (!ReikaItemHelper.matchStacks(is, inv[slot])) {
+			for (int i = 0; i < 6; i++) {
+				connections[slot][i] = false;
+			}
+		}
+	}
+
+	@Override
+	protected void onSlotSet(int slot, ItemStack is) {
+		this.rebuildCache();
+	}
+
+	private void rebuildCache() {
+		routing.clear();
+		for (int i = 0; i < targets.length; i++) {
+			ItemStack is = inv[i];
+			if (is != null) {
+				ArrayList<Coordinate> li = routing.get(is);
+				if (li == null) {
+					li = new ArrayList();
+					routing.put(is, li);
+				}
+				/*
+				li.add(targets[i]);
+				 */
+				for (int k = 0; k < targets.length; k++) {
+					Coordinate c = targets[k];
+					if (c != null && this.isLinkEnabled(i, k)) {
+						li.add(c);
+					}
+				}
+			}
+		}
+		this.syncAllData(false);
+		ReikaPacketHelper.sendDataPacketWithRadius(DragonAPIInit.packetChannel, PacketIDs.GUIRELOAD.ordinal(), this, 12);
+	}
+
+	public boolean isLinkEnabled(int i, int k) {
+		return connections[i][k];
+	}
+
+	public void toggleConnection(int i, int k) {
+		connections[i][k] = !connections[i][k];
+		this.rebuildCache();
+		//ReikaJavaLibrary.pConsole("Connection "+i+","+k+" set to "+connections[i][k]);
+	}
+
+	@Override
+	public ChromaTiles getTile() {
+		return ChromaTiles.INSERTER;
+	}
+
+	@Override
+	protected void animateWithTick(World world, int x, int y, int z) {
+
+	}
+
+	@Override
+	public void linkTo(World world, int x, int y, int z) {
+		if (world.provider.dimensionId == worldObj.provider.dimensionId)
+			this.addCoordinate(x, y, z);
+	}
+
+	private void addCoordinate(int x, int y, int z) {
+		if (maxCoord >= inv.length)
+			return;
+		Coordinate c = new Coordinate(x, y, z);
+		locations.put(c, InsertionType.INVENTORY);
+		targets[maxCoord] = c;
+		maxCoord++;
+		this.rebuildCache();
+	}
+
+	public void removeCoordinate(int slot) {
+		Coordinate c = targets[slot];
+		if (c != null) {
+			targets[slot] = null;
+			locations.remove(c);
+			if (inv[slot] != null) {
+				routing.get(inv[slot]).remove(c);
+			}
+		}
+		for (int i = 0; i < 6; i++) {
+			connections[i][slot] = false;
+		}
+		maxCoord = slot;
+		this.rebuildCache();
+	}
+
+	public InsertionType getInsertionType(int slot) {
+		Coordinate c = targets[slot];
+		return c != null ? locations.get(c) : null;
+	}
+
+	public Coordinate getLink(int slot) {
+		return targets[slot];
+	}
+
+	public void setInsertionType(int slot, InsertionType type) {
+		Coordinate c = targets[slot];
+		if (c != null) {
+			locations.put(c, type);
+		}
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack is, int side) {
+		return false;
+	}
+
+	@Override
+	public int getSizeInventory() {
+		return 6;
+	}
+
+	@Override
+	public int getInventoryStackLimit() {
+		return 64;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int slot, ItemStack is) {
+		return ReikaItemHelper.matchStacks(inv[slot], is);
+	}
+
+	public boolean sendItem(ItemStack is) {
+		ArrayList<Coordinate> li = routing.get(is);
+		if (li == null || li.isEmpty())
+			return false;
+		Coordinate c = li.get(rand.nextInt(li.size()));
+		return locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer());
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		for (int i = 0; i < this.getSizeInventory(); i++) {
+			Coordinate c = targets[i];
+			if (c != null) {
+				c.writeToNBT("loc_"+i, NBT);
+			}
+		}
+
+		NBTTagList li = new NBTTagList();
+		for (Coordinate c : locations.keySet()) {
+			InsertionType type = locations.get(c);
+			NBTTagCompound tag = new NBTTagCompound();
+			c.writeToNBT("loc", tag);
+			tag.setInteger("type", type.ordinal());
+			li.appendTag(tag);
+		}
+		NBT.setTag("locs", li);
+
+		for (int i = 0; i < 6; i++) {
+			byte n = ReikaArrayHelper.booleanToByteBitflags(connections[i]);
+			NBT.setByte("conn_"+i, n);
+		}
+
+		NBT.setInteger("maxc", maxCoord);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		for (int i = 0; i < this.getSizeInventory(); i++) {
+			if (NBT.hasKey("loc_"+i)) {
+				targets[i] = Coordinate.readFromNBT("loc_"+i, NBT);
+			}
+			else {
+				targets[i] = null;
+			}
+		}
+
+		locations.clear();
+		NBTTagList li = NBT.getTagList("locs", NBTTypes.COMPOUND.ID);
+		for (NBTTagCompound tag : ((List<NBTTagCompound>)li.tagList)) {
+			Coordinate c = Coordinate.readFromNBT("loc", tag);
+			InsertionType type = InsertionType.list[tag.getInteger("type")];
+			locations.put(c, type);
+		}
+
+		for (int i = 0; i < 6; i++) {
+			byte n = NBT.getByte("conn_"+i);
+			connections[i] = ReikaArrayHelper.booleanFromByteBitflags(n, 6);
+		}
+
+		maxCoord = NBT.getInteger("maxc");
+	}
+
+	public static enum InsertionType {
+		INVENTORY("Inventory"),
+		RIGHTCLICK("Right-Click"),
+		LEFTCLICK("Left-Click"),
+		ENTITY("Entity");
+
+		public final String displayName;
+
+		private static final InsertionType[] list = values();
+
+		private InsertionType(String s) {
+			displayName = s;
+		}
+
+		private boolean send(World world, Coordinate c, ItemStack is, EntityPlayer ep) {
+			switch(this) {
+				case INVENTORY:
+					TileEntity te = c.getTileEntity(world);
+					if (te instanceof IInventory) {
+						return ReikaInventoryHelper.addToIInv(is, (IInventory)te);
+					}
+					return false;
+				case RIGHTCLICK: {
+					ItemStack hold = ep.getCurrentEquippedItem();
+					ep.setCurrentItemOrArmor(0, is);
+					boolean flag = c.getBlock(world).onBlockActivated(world, c.xCoord, c.yCoord, c.zCoord, ep, 1, 0, 0, 0);
+					ep.setCurrentItemOrArmor(0, hold);
+					return flag;
+				}
+				case LEFTCLICK: {
+					ItemStack hold = ep.getCurrentEquippedItem();
+					int orig = is.stackSize;
+					ep.setCurrentItemOrArmor(0, is);
+					c.getBlock(world).onBlockClicked(world, c.xCoord, c.yCoord, c.zCoord, ep);
+					ItemStack ret = ep.getCurrentEquippedItem();
+					ep.setCurrentItemOrArmor(0, hold);
+					return ret == null || ret.stackSize < orig;
+				}
+				case ENTITY:
+					EntityItem ei = ReikaItemHelper.dropItem(world, c.xCoord+0.5, c.yCoord+c.getBlock(world).getBlockBoundsMaxY()+0.125, c.zCoord+0.5, is);
+					ei.motionX = ei.motionY = ei.motionZ = 0;
+					ei.delayBeforeCanPickup = 0;
+					ei.lifespan = Integer.MAX_VALUE;
+					MinecraftForge.EVENT_BUS.post(new ItemTossEvent(ei, ep));
+					return true;
+			}
+			return false;
+		}
+
+		public InsertionType next() {
+			return this.ordinal() != list.length-1 ? list[this.ordinal()+1] : list[0];
+		}
+	}
+
+}

@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
 public class BlockPylonStructure extends Block {
@@ -42,6 +44,35 @@ public class BlockPylonStructure extends Block {
 	private final IIcon[][] icons = new IIcon[16][16];
 
 	private final int[] variants = ReikaArrayHelper.getArrayOf(1, 16);
+
+	public static enum StoneTypes {
+		SMOOTH(),
+		BEAM(),
+		COLUMN(),
+		GLOWCOL(),
+		GLOWBEAM(),
+		FOCUS(),
+		CORNER(),
+		ENGRAVED(),
+		EMBOSSED(),
+		FOCUSFRAME(),
+		GROOVE1(),
+		GROOVE2(),
+		BRICKS(),
+		MULTICHROMIC(),
+		STABILIZER(),
+		RESORING();
+
+		public static final StoneTypes[] list = values();
+
+		public BlockKey getBlock() {
+			return new BlockKey(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), this.ordinal());
+		}
+
+		public boolean needsSilkTouch() {
+			return this == GLOWCOL || this == GLOWBEAM || this == FOCUS;
+		}
+	}
 
 	public BlockPylonStructure(Material mat) {
 		super(mat);

@@ -291,12 +291,11 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		public boolean grow(World world, int x, int y, int z, Block b, Random rand) {
 			switch(this) {
 				case ENDERFLOWER:
-				case SANOBLOOM:
-				{
+				case SANOBLOOM: {
 					int n = this.onActiveGrass(world, x, y, z) ? 8 : 32;
 					if (rand.nextInt(n) > 0)
 						return false;
-					if (this == ENDERFLOWER && rand.nextInt(4) > 0)
+					if (this == ENDERFLOWER && rand.nextInt(24) > 0)
 						return false;
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -308,9 +307,10 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					int rx = ReikaRandomHelper.getRandomPlusMinus(x, 4);
 					int rz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
 					int ry = y;
-					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry, rz))
+					int oy = y;
+					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry, rz) && ry > 0)
 						ry--;
-					if (world.getBlock(rx, ry, rz).isAir(world, rx, ry, rz) && this.canPlantAt(world, rx, ry, rz)) {
+					if (Math.abs(oy-ry) <= 12 && world.getBlock(rx, ry, rz).isAir(world, rx, ry, rz) && this.canPlantAt(world, rx, ry, rz)) {
 						world.setBlock(rx, ry, rz, b, this.ordinal(), 3);
 						return true;
 					}
@@ -395,6 +395,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 							return true;
 					}
 					//return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();
+					return false;
 				}
 				case VOIDREED:
 					return this.matchAt(world, x, y-1, z) || this.isChromaPool(world, x, y, z) || ReikaPlantHelper.SUGARCANE.canPlantAt(world, x, y, z);
@@ -566,12 +567,12 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 		public ItemStack getDrop() {
 			switch(this) {
-				case ENDERFLOWER: return ChromaStacks.teleDust;
-				case LUMALILY: return ChromaStacks.icyDust;
-				case RESOCLOVER: return ChromaStacks.energyPowder;
-				case SANOBLOOM: return ChromaStacks.etherBerries;
-				case VOIDREED: return ChromaStacks.voidDust;
-				case FLOWIVY: return ChromaStacks.livingEssence;
+				case ENDERFLOWER: return ChromaStacks.teleDust.copy();
+				case LUMALILY: return ChromaStacks.icyDust.copy();
+				case RESOCLOVER: return ChromaStacks.energyPowder.copy();
+				case SANOBLOOM: return ChromaStacks.etherBerries.copy();
+				case VOIDREED: return ChromaStacks.voidDust.copy();
+				case FLOWIVY: return ChromaStacks.livingEssence.copy();
 			}
 			return null;
 		}

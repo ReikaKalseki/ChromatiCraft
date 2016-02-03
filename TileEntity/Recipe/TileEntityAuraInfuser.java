@@ -16,8 +16,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
@@ -28,15 +30,22 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile.PipeType;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile {
+@Strippable(value={"buildcraft.api.transport.IPipeConnection"})
+public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile, InertIInv, IPipeConnection {
 
 	private InertItem item;
 
@@ -161,7 +170,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 			item = is != null ? new InertItem(worldObj, is) : null;
 		}
 
-		if (ReikaItemHelper.matchStacks(inv[0], ChromaStacks.rawCrystal)) {
+		if (this.canCraft()) {
 			if (craftingTick == 0)
 				craftingTick = 608;
 		}
@@ -171,6 +180,10 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 			}
 			craftingTick = 0;
 		}
+	}
+
+	private boolean canCraft() {
+		return ReikaItemHelper.matchStacks(inv[0], ChromaStacks.rawCrystal) && ProgressStage.ALLOY.isPlayerAtStage(this.getPlacer());
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -202,7 +215,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 
 	@Override
 	public int getSizeInventory() {
-		return 16;
+		return 1;
 	}
 
 	@Override
@@ -252,6 +265,12 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 
 	public int getCraftingTick() {
 		return craftingTick;
+	}
+
+	@Override
+	@ModDependent(ModList.BCTRANSPORT)
+	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
+		return ConnectOverride.DISCONNECT;
 	}
 
 }

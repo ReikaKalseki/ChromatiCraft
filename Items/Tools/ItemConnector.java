@@ -19,12 +19,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport.TileEntityTeleport;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -48,6 +50,13 @@ public class ItemConnector extends ItemChromaTool {
 		}
 		else if (te instanceof Linkable) {
 			return this.tryConnection((Linkable)te, world, x, y, z, is, ep);
+		}
+		else if (te instanceof LinkerCallback) {
+			is.stackTagCompound = new NBTTagCompound();
+			NBTTagCompound tag = new NBTTagCompound();
+			new WorldLocation(te).writeToNBT(tag);
+			is.stackTagCompound.setTag("callback", tag);
+			return true;
 		}
 
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
@@ -81,6 +90,17 @@ public class ItemConnector extends ItemChromaTool {
 			}
 		}
 
+		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
+			WorldLocation loc = WorldLocation.readFromNBT(is.stackTagCompound.getCompoundTag("callback"));
+			if (loc != null) {
+				TileEntity tile = loc.getTileEntity();
+				if (tile instanceof LinkerCallback) {
+					((LinkerCallback)tile).linkTo(world, x, y, z);
+					is.stackTagCompound = null;
+					return true;
+				}
+			}
+		}
 		is.stackTagCompound = null;
 		return false;
 	}

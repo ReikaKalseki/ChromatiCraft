@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PlayerChargedFromPylonEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
@@ -165,6 +166,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (ChromaOptions.PYLONLOAD.getState()) {
 			if (forceLoad && this.getEnergy(color) < this.getMaxStorage(color)) {
 				ChunkManager.instance.loadChunks(this);
+			}
+			else {
+				forceLoad = false;
+				ChunkManager.instance.unloadChunks(this);
 			}
 		}
 		else {
@@ -799,6 +804,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public void onUsedBy(EntityPlayer ep, CrystalElement e) {
 		this.forceLoading();
+		MinecraftForge.EVENT_BUS.post(new PlayerChargedFromPylonEvent(this, ep));
 	}
 
 	@Override

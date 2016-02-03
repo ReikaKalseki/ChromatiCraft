@@ -549,7 +549,8 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 		}
 
 		private static void placeLeaf(World world, int x, int y, int z, Random rand) {
-			world.setBlock(x, y, z, ChromaBlocks.GLOWLEAF.getBlockInstance(), rand.nextInt(5), 3);
+			if (world.getBlock(x, y, z).canBeReplacedByLeaves(world, x, y, z))
+				world.setBlock(x, y, z, ChromaBlocks.GLOWLEAF.getBlockInstance(), rand.nextInt(5), 3);
 		}
 
 	}

@@ -23,6 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -246,6 +247,11 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		if (world instanceof World)
 			this.addInstability((World)world, x, y, z); //make burning the tree add the instability back
 		return 180;
+	}
+
+	@Override
+	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion e) {
+		this.addInstability(world, x, y, z); //make exploding the tree add the instability back
 	}
 
 	@Override

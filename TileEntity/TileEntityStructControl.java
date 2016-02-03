@@ -581,16 +581,16 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		}
 		switch(struct) {
 			case CAVERN:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.cavernLoot, this);
+				ReikaInventoryHelper.addToIInv(ChromaStacks.cavernLoot, this, true);
 				break;
 			case BURROW:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.burrowLoot, this);
+				ReikaInventoryHelper.addToIInv(ChromaStacks.burrowLoot, this, true);
 				break;
 			case OCEAN:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.oceanLoot, this);
+				ReikaInventoryHelper.addToIInv(ChromaStacks.oceanLoot, this, true);
 				break;
 			case DESERT:
-				ReikaInventoryHelper.addToIInv(ChromaStacks.desertLoot, this);
+				ReikaInventoryHelper.addToIInv(ChromaStacks.desertLoot, this, true);
 				break;
 			default:
 				break;

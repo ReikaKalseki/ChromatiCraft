@@ -61,12 +61,12 @@ public class BlockTieredOre extends BlockChromaTiered {
 		TELEPORT(Blocks.stone, ProgressStage.END),
 		WATERY(Blocks.stone, ProgressStage.OCEAN),
 		FIRAXITE(Blocks.stone, ProgressStage.NETHER),
-		PLACEHOLDER7(Blocks.stone, ProgressStage.NEVER),
-		PLACEHOLDER8(Blocks.stone, ProgressStage.NEVER),
-		NETHER1(Blocks.netherrack, ProgressStage.LINK),
-		NETHER2(Blocks.netherrack, ProgressStage.END),
-		END(Blocks.end_stone, ProgressStage.ABILITY),
-		END2(Blocks.end_stone, ProgressStage.KILLDRAGON);
+		LUMA(Blocks.stone, ProgressStage.DIMENSION),
+		ECHO(Blocks.stone, ProgressStage.CTM),
+		FIRESTONE(Blocks.netherrack, ProgressStage.LINK),
+		THERMITE(Blocks.netherrack, ProgressStage.END),
+		RESO(Blocks.end_stone, ProgressStage.ABILITY),
+		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON);
 
 		public final ProgressStage level;
 		private final Block genBlock;
@@ -79,7 +79,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 		}
 
 		public boolean generate(World world, int x, int z, Random r) {
-			int y = this.ordinal() >= NETHER1.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
+			int y = this.ordinal() >= FIRESTONE.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
 			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 				y = r.nextInt(200);
 			int n = genBlock == Blocks.netherrack ? 16 : 8;
@@ -89,19 +89,19 @@ public class BlockTieredOre extends BlockChromaTiered {
 		public int getGenerationCount() {
 			if (genBlock == Blocks.netherrack)
 				return 4;
-			if (this == END)
+			if (this == RESO)
 				return 8;
-			if (this == END2)
+			if (this == SPACERIFT)
 				return 12;
-			return this == PLACEHOLDER8 ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
+			return this == ECHO ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
 		}
 
 		public int getGenerationChance() {
-			return this == PLACEHOLDER8 ? 2 : 1;
+			return this == ECHO ? 2 : 1;
 		}
 
 		public boolean renderAsGeode() {
-			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == NETHER2 || this == END2;
+			return this == BINDING || this == FOCAL || this == TELEPORT || this == FIRAXITE || this == THERMITE || this == SPACERIFT;
 		}
 	}
 
@@ -154,32 +154,32 @@ public class BlockTieredOre extends BlockChromaTiered {
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.firaxite.copy());
 				break;
-			case PLACEHOLDER7:
+			case LUMA:
 				n = Math.min(64, (1+fortune)*(1+4*rand.nextInt(5)));
 				for (int i = 0; i < n; i++)
-					li.add(ChromaStacks.placehold4Dust.copy());
+					li.add(ChromaStacks.lumaDust.copy());
 				break;
-			case PLACEHOLDER8:
+			case ECHO:
 				n = Math.min(64, (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8)));
 				for (int i = 0; i < n; i++)
-					li.add(ChromaStacks.placehold5Dust.copy());
+					li.add(ChromaStacks.echoCrystal.copy());
 				break;
-			case NETHER1:
+			case FIRESTONE:
 				n = 1+rand.nextInt(6)*(1+fortune/2);
 				for (int i = 0; i < n; i++)
-					li.add(ChromaStacks.placehold6Dust.copy());
+					li.add(ChromaStacks.fireEssence.copy());
 				break;
-			case NETHER2:
+			case THERMITE:
 				n = 1+rand.nextInt(1+fortune*fortune);
 				for (int i = 0; i < n; i++)
-					li.add(ChromaStacks.placehold7Dust.copy());
+					li.add(ChromaStacks.thermiticCrystal.copy());
 				break;
-			case END:
+			case RESO:
 				n = 1+fortune*4;
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.resocrystal.copy());
 				break;
-			case END2:
+			case SPACERIFT:
 				n = 1+fortune+2*rand.nextInt(1+fortune);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.spaceDust.copy());

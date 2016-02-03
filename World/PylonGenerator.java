@@ -103,10 +103,11 @@ public final class PylonGenerator implements RetroactiveGenerator {
 				NBTTagCompound tag = new NBTTagCompound();
 				loc.writeToNBT("pos", tag);
 				tag.setInteger("color", e.ordinal());
+				li.appendTag(tag);
 			}
 		}
 		NBT.setTag(NBT_TAG, li);
-		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Saved pylons: "+colorCache);
+		//ChromatiCraft.logger.log("["+FMLCommonHandler.instance().getEffectiveSide()+"] Saved pylons to "+li+": "+colorCache);
 	}
 
 	public void loadPylonLocations(NBTTagCompound NBT) {
@@ -117,7 +118,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			this.addLocation(loc, e);
 		}
 		NBT.setTag(NBT_TAG, li);
-		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Loaded pylons: "+colorCache);
+		//ChromatiCraft.logger.log("["+FMLCommonHandler.instance().getEffectiveSide()+"] Loaded pylons from "+li+": "+colorCache);
 	}
 
 	public void sendDimensionCacheToPlayer(EntityPlayerMP ep, int dim) {

@@ -153,6 +153,11 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setAge(int age) {
+		particleAge = age;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -197,15 +202,17 @@ public class EntityBlurFX extends EntityFX {
 			particleAge--;
 		}
 
+		int age = Math.max(particleAge, 1);
+
 		if (fadeColor != -1) {
-			int c = ReikaColorAPI.mixColors(fadeColor, preColor, particleAge/(float)particleMaxAge);
+			int c = ReikaColorAPI.mixColors(fadeColor, preColor, age/(float)particleMaxAge);
 			this.setColor(c);
 		}
 
 		if (rapidExpand)
-			particleScale = scale*(particleMaxAge/particleAge >= 12 ? particleAge*12F/particleMaxAge : 1-particleAge/(float)particleMaxAge);
+			particleScale = scale*(particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
 		else
-			particleScale = scale*(float)Math.sin(Math.toRadians(180D*particleAge/particleMaxAge));
+			particleScale = scale*(float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
 		//if (particleAge < 10)
 		//	particleScale = scale*(particleAge+1)/10F;
 		//else if (particleAge > 50)
@@ -214,7 +221,7 @@ public class EntityBlurFX extends EntityFX {
 		//	particleScale = scale;
 
 		if (cyclescale > 0) {
-			CrystalElement e = CrystalElement.elements[(int)((particleAge*cyclescale)%16)];
+			CrystalElement e = CrystalElement.elements[(int)((age*cyclescale)%16)];
 			particleRed = e.getRed()/255F;
 			particleGreen = e.getGreen()/255F;
 			particleBlue = e.getBlue()/255F;

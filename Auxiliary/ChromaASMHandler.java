@@ -72,6 +72,8 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje"),
 			//CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
 			CHUNKPOPLN("net.minecraft.world.gen.ChunkProviderServer", "ms"),
+			//WORLDLIGHT("net.minecraft.world.World", "ahb"),
+			//WORLDLIGHT2("net.minecraft.world.ChunkCache", "ahr"),
 			;
 
 			private final String obfName;
@@ -198,9 +200,23 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 								}
 							}
 						}
-						break;
-
 					}
+					break;/*
+					case WORLDLIGHT:
+					case WORLDLIGHT2: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_72802_i", "getLightBrightnessForSkyBlocks", "(IIII)I");
+						m.instructions.clear();
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						m.instructions.add(new VarInsnNode(Opcodes.ILOAD, 1));
+						m.instructions.add(new VarInsnNode(Opcodes.ILOAD, 2));
+						m.instructions.add(new VarInsnNode(Opcodes.ILOAD, 3));
+						m.instructions.add(new VarInsnNode(Opcodes.ILOAD, 4));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "overrideLightValue", "(Lnet/minecraft/world/IBlockAccess;IIII)I", false));
+						m.instructions.add(new InsnNode(Opcodes.IRETURN));
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
+					 */
 
 				}
 

@@ -77,7 +77,9 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
+import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -90,7 +92,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
-public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
+public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock, IWailaDataProvider {
 
 	private static final Random par5Random = new Random();
 
@@ -574,6 +576,11 @@ public class BlockChromaTile extends BlockTEBase implements IWailaDataProvider {
 	@ModDependent(ModList.WAILA)
 	public final NBTTagCompound getNBTData(EntityPlayerMP player, TileEntity te, NBTTagCompound tag, World world, int x, int y, int z) {
 		return tag;
+	}
+
+	@Override
+	public final TileEnum getMachine(IBlockAccess world, int x, int y, int z) {
+		return ChromaTiles.getTile(world, x, y, z);
 	}
 
 }

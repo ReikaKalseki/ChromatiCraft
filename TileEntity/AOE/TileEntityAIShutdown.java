@@ -26,20 +26,20 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 
 	public ForgeDirection getFacing() {
 		switch(this.getBlockMetadata()) {
-		case 0:
-			return ForgeDirection.WEST;
-		case 1:
-			return ForgeDirection.EAST;
-		case 2:
-			return ForgeDirection.NORTH;
-		case 3:
-			return ForgeDirection.SOUTH;
-		case 4:
-			return ForgeDirection.UP;
-		case 5:
-			return ForgeDirection.DOWN;
-		default:
-			return ForgeDirection.UNKNOWN;
+			case 0:
+				return ForgeDirection.WEST;
+			case 1:
+				return ForgeDirection.EAST;
+			case 2:
+				return ForgeDirection.NORTH;
+			case 3:
+				return ForgeDirection.SOUTH;
+			case 4:
+				return ForgeDirection.UP;
+			case 5:
+				return ForgeDirection.DOWN;
+			default:
+				return ForgeDirection.UNKNOWN;
 		}
 	}
 	/*
@@ -105,6 +105,11 @@ public class TileEntityAIShutdown extends TileEntityEntityCacher {
 	@Override
 	public ElementTagCompound getRequestedTotal() {
 		return null;
+	}
+
+	@Override
+	protected Class getEntitySearchClass() {
+		return EntityLiving.class;
 	}
 
 }

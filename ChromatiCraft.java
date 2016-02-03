@@ -20,6 +20,7 @@ import mekanism.api.MekanismAPI;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -57,6 +58,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalPlantHandler;
 import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
+import Reika.ChromatiCraft.Auxiliary.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
@@ -76,6 +78,7 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionBetterSaturation;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.TransmutationRecipes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -135,12 +138,14 @@ import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
+import Reika.DragonAPI.Auxiliary.Trackers.VanillaIntegrityTracker;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
 import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
+import Reika.DragonAPI.Libraries.ReikaDispenserHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
@@ -396,6 +401,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ItemStackRepository.instance.registerClass(this, ChromaStacks.class);
 
+		TransmutationRecipes.instance.getClass();
+
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
 		}
@@ -450,6 +457,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			TickRegistry.instance.registerTickHandler(CrystalNetworker.instance);
 			TickRegistry.instance.registerTickHandler(ExplorationMonitor.instance);
 			TickRegistry.instance.registerTickHandler(ChromaDimensionTicker.instance);
+			//TickRegistry.instance.registerTickHandler(LightingRerenderer.instance);
 			//TickRegistry.instance.registerTickHandler(ChunkResetter.instance);
 			if (ModList.THAUMCRAFT.isLoaded())
 				TickRegistry.instance.registerTickHandler(NodeRecharger.instance);
@@ -498,6 +506,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		this.addDyeCompat();
+
+		VanillaIntegrityTracker.instance.addWatchedBlock(instance, Blocks.leaves);
 
 		if (ModList.ATG.isLoaded()) {
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", rainbowforest, 1.0);
@@ -638,6 +648,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityBiomePainter.buildBiomeList();
 		ItemDuplicationWand.loadMappings();
 		ChunkProviderChroma.triggerStructureGen();
+
+		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
 
 		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i] instanceof LoadRegistry) {

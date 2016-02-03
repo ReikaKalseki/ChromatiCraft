@@ -73,7 +73,9 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
 import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion;
+import Reika.DragonAPI.Instantiable.FlyingBlocksExplosion.TumbleCreator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -99,6 +101,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 import com.google.common.collect.HashBiMap;
 
@@ -509,6 +512,9 @@ public enum Chromabilities implements Ability {
 			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 128);
 			int dy = world.getTopSolidOrLiquidBlock(dx, dz);
 			ReikaWorldHelper.ignite(world, dx, dy, dz);
+			if (ModWoodList.getModWoodFromLeaf(world.getBlock(dx, dy, dz), world.getBlockMetadata(dx, dy, dz)) == ModWoodList.DARKWOOD) {
+				world.setBlock(dx, dy, dz, Blocks.fire);
+			}
 			/*
 			if (world.rand.nextInt(20) == 0) {
 				ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 910);
@@ -724,7 +730,7 @@ public enum Chromabilities implements Ability {
 					world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
 					int r = 2+power*4;
 					if (power == 2) {
-						new FlyingBlocksExplosion(world, x+0.5, y-2.5, z+0.5, 6).doExplosion();
+						new FlyingBlocksExplosion(world, x+0.5, y-2.5, z+0.5, 6).setTumbling(new LightningTumble(world, x, y, z, r)).doExplosion();
 					}
 					else if (power == 1) {
 						world.newExplosion(null, x+0.5, y-0.5, z+0.5, 4, true, true);
@@ -1101,6 +1107,8 @@ public enum Chromabilities implements Ability {
 
 	public static int maxPower(EntityPlayer ep, Ability a) {
 		int base = a.getMaxPower();
+		if (ep.capabilities.isCreativeMode)
+			return base;
 		int lvl = base;
 		ElementTagCompound use = AbilityHelper.instance.getElementsFor(a).scale(0.01F);
 		for (CrystalElement e : use.elementSet()) {
@@ -1224,5 +1232,31 @@ public enum Chromabilities implements Ability {
 		NBTTagCompound nbt = from.getEntityData();
 		NBTTagCompound data = nbt.getCompoundTag(NBT_TAG);
 		to.getEntityData().setTag(NBT_TAG, data);
+	}
+
+	private static class LightningTumble implements TumbleCreator {
+
+		private final World world;
+		private final int posX;
+		private final int posY;
+		private final int posZ;
+		private final int radius;
+
+		private LightningTumble(World world, int x, int y, int z, int r) {
+			this.world = world;
+			posX = x;
+			posY = y;
+			posZ = z;
+			radius = r;
+		}
+
+		@Override
+		public EntityTumblingBlock createBlock(World world, int x, int y, int z, Block b, int meta) {
+			double dx = x-posX;
+			double dz = z-posZ;
+			double v = ReikaRandomHelper.getRandomPlusMinus(0D, 15D);
+			return new EntityTumblingBlock(world, x, y, z, b, meta).setRotationSpeed(v*dx/radius, 0, v*dz/radius);
+		}
+
 	}
 }
