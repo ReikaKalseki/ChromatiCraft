@@ -163,7 +163,7 @@ public class CastingRecipe {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal()+16);
 	}
 
-	public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
+	public boolean match(TileEntityCastingTable table) {
 		if (recipe == null)
 			return true;
 		ItemStack[] items = new ItemStack[9];
@@ -301,10 +301,10 @@ public class CastingRecipe {
 			super(out, type, recipe);
 		}
 
-		protected boolean matchRunes(World world, int x, int y, int z, EntityPlayer ep) {
+		protected boolean matchRunes(World world, int x, int y, int z) {
 			//runes.place(world, x, y, z);
 			//ReikaJavaLibrary.pConsole(this.getOutput().getDisplayName());
-			return runes.matchAt(world, x, y, z, 0, 0, 0, ep);
+			return runes.matchAt(world, x, y, z, 0, 0, 0);
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
@@ -336,25 +336,20 @@ public class CastingRecipe {
 			allRunes.put(c, color);
 		}
 
-		protected CastingRecipe addRunes(TempleCastingRecipe r) {
-			runes.addAll(r.runes);
-			return this;
-		}
-		/*
 		protected CastingRecipe addRunes(RuneViewer view) {
 			Map<Coordinate, CrystalElement> map = view.getRunes();
 			for (Coordinate c : map.keySet())
 				runes.addRune(map.get(c), c.xCoord, c.yCoord, c.zCoord);
 			return this;
 		}
-		 */
-		public RuneViewer getRunes(World world, EntityPlayer ep) {
-			return runes.getView(world, ep);
+
+		public RuneViewer getRunes() {
+			return runes.getView();
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
-			return super.match(table, ep) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord, ep);
+		public boolean match(TileEntityCastingTable table) {
+			return super.match(table) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord);
 		}
 
 		@Override
@@ -371,14 +366,14 @@ public class CastingRecipe {
 		@Override
 		public ElementTagCompound getInputElements() {
 			ElementTagCompound tag = super.getInputElements();
-			for (CrystalElement e : runes.getRuneTypes()) {
+			for (CrystalElement e : runes.getView().getRunes().values()) {
 				tag.addValueToColor(e, 1);
 			}
 			return tag;
 		}
 
-		public static RuneViewer getAllRegisteredRunes(World world, EntityPlayer ep) {
-			return new RuneShape(allRunes).getView(world, ep);
+		public static RuneViewer getAllRegisteredRunes() {
+			return new RuneShape(allRunes).getView();
 		}
 
 	}
@@ -440,7 +435,7 @@ public class CastingRecipe {
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
+		public boolean match(TileEntityCastingTable table) {
 			ItemStack main = table.getStackInSlot(4);
 			for (int i = 0; i < 9; i++) {
 				if (i != 4) {
@@ -469,7 +464,7 @@ public class CastingRecipe {
 					}
 				}
 				//ReikaJavaLibrary.pConsole(this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord));
-				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord, ep)) {
+				if (this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord)) {
 					return true;
 				}
 			}
@@ -578,8 +573,8 @@ public class CastingRecipe {
 		}
 
 		@Override
-		public boolean match(TileEntityCastingTable table, EntityPlayer ep) {
-			return super.match(table, ep);
+		public boolean match(TileEntityCastingTable table) {
+			return super.match(table);
 		}
 
 		@Override

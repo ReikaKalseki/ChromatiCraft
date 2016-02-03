@@ -294,6 +294,7 @@ public class ChromaAux {
 	}
 	 */
 
+	@Deprecated
 	public static void permuteRunes(HashMap<Coordinate, CrystalElement> map, World world, EntityPlayer ep) {
 
 	}

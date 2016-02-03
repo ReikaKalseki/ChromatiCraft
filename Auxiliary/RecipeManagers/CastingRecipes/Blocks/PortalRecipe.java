@@ -80,7 +80,7 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 			this.addAuraRequirement(e, e.isPrimary() ? 100000 : 50000);
 			this.addRuneRingRune(e);
 		}
-		this.addRunes(repeater);
+		this.addRunes(repeater.getRunes());
 	}
 
 	@Override

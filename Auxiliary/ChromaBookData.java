@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
@@ -76,7 +75,7 @@ public class ChromaBookData {
 		}
 		GL11.glColor4f(1, 1, 1, 1);
 		if (subpage == 1) {
-			RuneShapeRenderer.instance.render(((TempleCastingRecipe)c).getRunes(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer), posX+128, posY+110);
+			RuneShapeRenderer.instance.render(((TempleCastingRecipe)c).getRunes(), posX+128, posY+110);
 		}
 		if (subpage == 2) {
 			Map<List<Integer>, ItemMatch> items = ((MultiBlockCastingRecipe)c).getAuxItems();

@@ -591,7 +591,7 @@ public class RecipesCastingTable {
 		return Collections.unmodifiableList(APIrecipes);
 	}
 
-	public CastingRecipe getRecipe(TileEntityCastingTable table, EntityPlayer ep, ArrayList<RecipeType> type) {
+	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {
 		ItemStack main = table.getStackInSlot(0);
 		ArrayList<CastingRecipe> li = new ArrayList();
 		for (int i = 0; i < type.size(); i++) {
@@ -600,7 +600,7 @@ public class RecipesCastingTable {
 				li.addAll(list);
 		}
 		for (CastingRecipe r : li) {
-			if (r.match(table, ep))
+			if (r.match(table))
 				return r;
 		}
 		return null;

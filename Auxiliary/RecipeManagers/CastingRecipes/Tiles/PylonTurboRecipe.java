@@ -45,7 +45,7 @@ public class PylonTurboRecipe extends PylonRecipe {
 			this.addAuraRequirement(e, 10000);
 			this.addRuneRingRune(e);
 		}
-		this.addRunes(repeater);
+		this.addRunes(repeater.getRunes());
 	}
 
 	@Override

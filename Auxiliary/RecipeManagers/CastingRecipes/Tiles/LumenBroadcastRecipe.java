@@ -53,7 +53,7 @@ public class LumenBroadcastRecipe extends MultiBlockCastingRecipe implements Ene
 		this.addAuxItem(ChromaStacks.beaconDust, -4, 0);
 		this.addAuxItem(ChromaStacks.beaconDust, -4, -2);
 
-		this.addRunes(repeater);
+		this.addRunes(repeater.getRunes());
 	}
 
 	@Override

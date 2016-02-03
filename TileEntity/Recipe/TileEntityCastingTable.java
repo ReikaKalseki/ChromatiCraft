@@ -708,7 +708,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	private CastingRecipe getValidRecipe() {
-		CastingRecipe r = RecipesCastingTable.instance.getRecipe(this, craftingPlayer, this.getValidRecipeTypes());
+		CastingRecipe r = RecipesCastingTable.instance.getRecipe(this, this.getValidRecipeTypes());
 		//ReikaJavaLibrary.pConsole(r);
 		if (r instanceof MultiBlockCastingRecipe) {
 			MultiBlockCastingRecipe m = (MultiBlockCastingRecipe)r;

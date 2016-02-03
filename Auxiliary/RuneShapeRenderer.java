@@ -42,7 +42,7 @@ public class RuneShapeRenderer {
 	}
 
 	public void render(RuneShape s, int x, int y) {
-		this.render(s.getView(Minecraft.getMinecraft().theWorld, Minecraft.getMinecraft().thePlayer), x, y);
+		this.render(s.getView(), x, y);
 	}
 
 	public void render(RuneViewer s, int midx, int midy) {

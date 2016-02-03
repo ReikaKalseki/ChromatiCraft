@@ -9,15 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -121,24 +118,8 @@ public final class RuneShape {
 		return runes.isEmpty();
 	}
 
-	public RuneViewer getView(World world, EntityPlayer ep) {
-		return new RuneViewer(this, world, ep);
-	}
-
-	public Collection<CrystalElement> getRuneTypes() {
-		return Collections.unmodifiableCollection(runes.values());
-	}
-
-	public void addAll(RuneShape rs) {
-		for (Coordinate c : rs.runes.keySet()) {
-			this.addRune(rs.getRuneAt(c.xCoord, c.yCoord, c.zCoord), c.xCoord, c.yCoord, c.zCoord);
-		}
-	}
-
-	public RuneShape copy() {
-		RuneShape rs = new RuneShape();
-		rs.addAll(this);
-		return rs;
+	public RuneViewer getView() {
+		return new RuneViewer(this);
 	}
 
 	public static class RuneLocation {
@@ -167,11 +148,8 @@ public final class RuneShape {
 
 		private final RuneShape shape;
 
-		private RuneViewer(RuneShape r, World world, EntityPlayer ep) {
-			HashMap<Coordinate, CrystalElement> map = new HashMap();
-			map.putAll(r.runes);
-			ChromaAux.permuteRunes(map, world, ep);
-			shape = new RuneShape(map);
+		private RuneViewer(RuneShape r) {
+			shape = r;
 		}
 
 		public Map<Coordinate, CrystalElement> getRunes() {

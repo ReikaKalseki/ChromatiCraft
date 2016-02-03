@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -83,14 +82,14 @@ public class GuiBasicInfo extends GuiBookSection {
 				if (r == null || this.shouldDisplayFragment(r)) {
 					TempleCastingRecipe t = (TempleCastingRecipe)cr;
 					if (ChromaResearchManager.instance.playerHasUsedRecipe(player, cr)) {
-						Map<Coordinate, CrystalElement> map = t.getRunes(Minecraft.getMinecraft().theWorld, player).getRunes();
+						Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
 						data.putAll(map);
 					}
 				}
 			}
 		}
 		RuneShape rs = new RuneShape(data);
-		return rs.getView(Minecraft.getMinecraft().theWorld, player);
+		return rs.getView();
 	}
 
 	private RuneViewer getAllVisibleRunes() {
@@ -101,13 +100,13 @@ public class GuiBasicInfo extends GuiBookSection {
 				ChromaResearch r = cr.getFragment();
 				if (r == null || this.shouldDisplayFragment(r)) {
 					TempleCastingRecipe t = (TempleCastingRecipe)cr;
-					Map<Coordinate, CrystalElement> map = t.getRunes(Minecraft.getMinecraft().theWorld, player).getRunes();
+					Map<Coordinate, CrystalElement> map = t.getRunes().getRunes();
 					data.putAll(map);
 				}
 			}
 		}
 		RuneShape rs = new RuneShape(data);
-		return rs.getView(Minecraft.getMinecraft().theWorld, player);
+		return rs.getView();
 	}
 
 	@Override
@@ -216,7 +215,7 @@ public class GuiBasicInfo extends GuiBookSection {
 	private void renderEnchantmentRunes(int posX, int posY) {
 		Map<Coordinate, CrystalElement> map = EnchantmentRecipe.getEnchantingRunes();
 		RuneShape rs = new RuneShape(map);
-		RuneViewer rv = rs.getView(Minecraft.getMinecraft().theWorld, player);
+		RuneViewer rv = rs.getView();
 		RuneShapeRenderer.instance.render(rv, posX+xSize/2, posY+ySize/2+8, rv.getMinY());
 	}
 
