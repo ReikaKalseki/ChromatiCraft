@@ -82,11 +82,11 @@ public class TieredWorldGenerator implements RetroactiveGenerator, ChromaDecorat
 	}
 
 	private boolean generateIn(World world, boolean ore) {
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			return true;
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
 			return false;
 		if (Math.abs(world.provider.dimensionId) <= 1)
-			return true;
-		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 			return true;
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
 			if (ore ? !MystPages.Pages.ORES.existsInWorld(world) : !MystPages.Pages.PLANTS.existsInWorld(world)) {

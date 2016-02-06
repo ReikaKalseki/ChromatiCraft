@@ -30,6 +30,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -42,7 +43,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class TankRender extends ChromaRenderBase {
 
@@ -84,7 +84,7 @@ public class TankRender extends ChromaRenderBase {
 			colors = new HashMap();
 			te.runes = colors;
 		}
-		CrystalElement et = getRune(tick, te.getFluid());
+		CrystalElement et = ChromaAux.getRune(te.getFluid());
 		int last = te.lastptick;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			Coordinate dat = blocks.getRandomBlock();
@@ -194,30 +194,6 @@ public class TankRender extends ChromaRenderBase {
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glPopMatrix();
 		}
-	}
-
-	private static CrystalElement getRune(int tick, Fluid fluid) {
-		ArrayList<CrystalElement> li = new ArrayList();
-		li.add(CrystalElement.CYAN);
-		if (fluid.getTemperature() > 900) //900K
-			li.add(CrystalElement.ORANGE);
-		if (fluid.getTemperature() < 270)
-			li.add(CrystalElement.WHITE);
-		if (fluid.isGaseous())
-			li.add(CrystalElement.LIME);
-		if (fluid.getLuminosity() > 0)
-			li.add(CrystalElement.BLUE);
-		if (fluid.getDensity() > 4000)
-			li.add(CrystalElement.RED);
-		if (fluid.getName().toLowerCase().contains("oil"))
-			li.add(CrystalElement.BROWN);
-		if (fluid.getName().toLowerCase().contains("fuel"))
-			li.add(CrystalElement.YELLOW);
-		if (fluid.getName().toLowerCase().contains("xp"))
-			li.add(CrystalElement.PURPLE);
-		if (fluid.getName().toLowerCase().contains("bio") || fluid.getName().toLowerCase().contains("honey"))
-			li.add(CrystalElement.GREEN);
-		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 
 	private void renderGlint(TileEntityCrystalTank te, double par2, double par4, double par6, float par8) {

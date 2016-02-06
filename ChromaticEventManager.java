@@ -153,7 +153,35 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
-
+	/*
+	@SubscribeEvent
+	public void punishDamagedForests(BlockTickEvent evt) {
+		int r = 2;
+		for (int i = -r; i <= r; i++) {
+			for (int k = -r; k <= r; k++) {
+				int x = evt.xCoord+i;
+				int z = evt.zCoord+k;
+				if (!evt.world.isRemote && evt.world.checkChunksExist(x, evt.yCoord, z, x, evt.yCoord, z)) {
+					BiomeGenBase b = evt.world.getBiomeGenForCoords(x, z);
+					if (b == ChromatiCraft.rainbowforest) {
+						if (BiomeRainbowForest.isDamaged(evt.world, x, z)) {
+							int y = evt.world.getTopSolidOrLiquidBlock(x, z)-1;
+							while (ReikaBlockHelper.isLiquid(evt.world.getBlock(x, y, z)))
+								y++;
+							while (y >= 0 && evt.world.getBlock(x, y, z) == Blocks.air)
+								y--;
+							ReikaWorldHelper.erodeBlock(evt.world, x, y, z);
+							int dx = ReikaRandomHelper.getRandomPlusMinus(x, 4);
+							int dy = ReikaRandomHelper.getRandomPlusMinus(evt.yCoord, 4);
+							int dz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
+							//evt.world.scheduleBlockUpdate(dx, dx, dz, evt.world.getBlock(dx, dy, dz), 20);
+						}
+					}
+				}
+			}
+		}
+	}
+	 */
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void forceExcavatorSpeed(BreakSpeed evt) {
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();

@@ -108,6 +108,8 @@ public enum ChromaPackets {
 	INSERTERMODE(1),
 	INSERTERCLEAR(1),
 	INSERTERCONNECTION(2),
+	INSERTERACTION(5),
+	COBBLEGENEND(2),
 	;
 
 	public final int numInts;

@@ -94,7 +94,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 	public final void keyTyped(char c, int key) {
 		super.keyTyped(c, key);
 
-		if (ModList.NEI.isLoaded() && key == NEIClientConfig.getKeyBinding("gui.recipe")) {
+		if (ModList.NEI.isLoaded() && key == NEIClientConfig.getKeyBinding("gui.recipe") && !NEIClientConfig.isHidden()) {
 			int x = ReikaGuiAPI.instance.getMouseRealX();
 			int y = ReikaGuiAPI.instance.getMouseRealY();
 			int j = (width - xSize) / 2;

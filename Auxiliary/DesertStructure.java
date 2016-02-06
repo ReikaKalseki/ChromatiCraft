@@ -194,13 +194,13 @@ public class DesertStructure {
 		array.setBlock(x+4, y+4, z+11, b, ms);
 		array.setBlock(x+4, y+5, z+2, b, ms);
 		array.setBlock(x+4, y+5, z+3, b, ms);
-		array.setBlock(x+4, y+5, z+4, b, mc);
+		array.setBlock(x+4, y+5, z+4, Blocks.mob_spawner);
 		array.setBlock(x+4, y+5, z+5, b, mc);
 		array.setBlock(x+4, y+5, z+6, b, mc);
 		array.setBlock(x+4, y+5, z+7, b, mc);
 		array.setBlock(x+4, y+5, z+8, b, mc);
 		array.setBlock(x+4, y+5, z+9, b, mc);
-		array.setBlock(x+4, y+5, z+10, b, mc);
+		array.setBlock(x+4, y+5, z+10, Blocks.mob_spawner);
 		array.setBlock(x+4, y+5, z+11, b, ms);
 		array.setBlock(x+4, y+5, z+12, b, ms);
 		array.setBlock(x+4, y+6, z+1, b, ms);
@@ -268,11 +268,9 @@ public class DesertStructure {
 		array.setBlock(x+5, y+5, z+2, b, ms);
 		array.setBlock(x+5, y+5, z+3, b, ms);
 		array.setBlock(x+5, y+5, z+4, b, mc);
-		array.setBlock(x+5, y+5, z+5, b, ms);
 		array.setBlock(x+5, y+5, z+6, b, ms);
 		array.setBlock(x+5, y+5, z+7, b, ms);
 		array.setBlock(x+5, y+5, z+8, b, ms);
-		array.setBlock(x+5, y+5, z+9, b, ms);
 		array.setBlock(x+5, y+5, z+10, b, mc);
 		array.setBlock(x+5, y+5, z+11, b, ms);
 		array.setBlock(x+5, y+5, z+12, b, ms);
@@ -355,7 +353,8 @@ public class DesertStructure {
 		array.setBlock(x+7, y+1, z+4, b, ms);
 		array.setBlock(x+7, y+1, z+5, b, ms);
 		array.setBlock(x+7, y+1, z+6, b, ms);
-		array.setBlock(x+7, y+1, z+7, b, ms);
+		array.setBlock(x+7, y+0, z+7, b, ms);
+		array.setBlock(x+7, y+1, z+7, Blocks.mob_spawner);
 		array.setBlock(x+7, y+1, z+8, b, ms);
 		array.setBlock(x+7, y+1, z+9, b, ms);
 		array.setBlock(x+7, y+1, z+10, b, ms);
@@ -496,11 +495,9 @@ public class DesertStructure {
 		array.setBlock(x+9, y+5, z+2, b, ms);
 		array.setBlock(x+9, y+5, z+3, b, ms);
 		array.setBlock(x+9, y+5, z+4, b, mc);
-		array.setBlock(x+9, y+5, z+5, b, ms);
 		array.setBlock(x+9, y+5, z+6, b, ms);
 		array.setBlock(x+9, y+5, z+7, b, ms);
 		array.setBlock(x+9, y+5, z+8, b, ms);
-		array.setBlock(x+9, y+5, z+9, b, ms);
 		array.setBlock(x+9, y+5, z+10, b, mc);
 		array.setBlock(x+9, y+5, z+11, b, ms);
 		array.setBlock(x+9, y+5, z+12, b, ms);
@@ -544,13 +541,13 @@ public class DesertStructure {
 		array.setBlock(x+10, y+4, z+11, b, ms);
 		array.setBlock(x+10, y+5, z+2, b, ms);
 		array.setBlock(x+10, y+5, z+3, b, ms);
-		array.setBlock(x+10, y+5, z+4, b, mc);
+		array.setBlock(x+10, y+5, z+4, Blocks.mob_spawner);
 		array.setBlock(x+10, y+5, z+5, b, mc);
 		array.setBlock(x+10, y+5, z+6, b, mc);
 		array.setBlock(x+10, y+5, z+7, b, mc);
 		array.setBlock(x+10, y+5, z+8, b, mc);
 		array.setBlock(x+10, y+5, z+9, b, mc);
-		array.setBlock(x+10, y+5, z+10, b, mc);
+		array.setBlock(x+10, y+5, z+10, Blocks.mob_spawner);
 		array.setBlock(x+10, y+5, z+11, b, ms);
 		array.setBlock(x+10, y+5, z+12, b, ms);
 		array.setBlock(x+10, y+6, z+1, b, ms);
@@ -748,6 +745,18 @@ public class DesertStructure {
 		array.setBlock(x+13, y+8, z+11, b, ms);
 		array.setBlock(x+13, y+8, z+12, b, ms);
 		array.setBlock(x+13, y+8, z+13, b, ms);
+
+		for (int i = 5; i <= 9; i++) {
+			for (int k = 5; k <= 9; k++) {
+				array.setBlock(x+i, y+5, z+k, b, BlockType.CLOAK.metadata);
+			}
+		}
+
+		array.setBlock(x+5, y+5, z+5, Blocks.sandstone);
+		array.setBlock(x+5, y+5, z+9, Blocks.sandstone);
+		array.setBlock(x+9, y+5, z+5, Blocks.sandstone);
+		array.setBlock(x+9, y+5, z+9, Blocks.sandstone);
+
 		array.setBlock(x+2, y+2, z+6, Blocks.air);
 		array.setBlock(x+2, y+2, z+7, Blocks.air);
 		array.setBlock(x+2, y+2, z+8, Blocks.air);

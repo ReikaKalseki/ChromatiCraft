@@ -226,9 +226,9 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				int dx = c.xCoord;
 				int dy = c.yCoord;
 				int dz = c.zCoord;
-				CrystalTankAuxTile te2 = (CrystalTankAuxTile)world.getTileEntity(dx, dy, dz);
-				if (te2 != null) {
-					te2.removeFromTank();
+				TileEntity te2 = world.getTileEntity(dx, dy, dz);
+				if (te2 instanceof CrystalTankAuxTile) {
+					((CrystalTankAuxTile)te2).removeFromTank();
 				}
 			}
 		}

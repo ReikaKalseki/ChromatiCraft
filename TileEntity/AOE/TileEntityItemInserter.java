@@ -4,29 +4,44 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.ItemElementCalculator;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback {
@@ -43,9 +58,40 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			return;
 		int slot = this.getTicksExisted()%this.getSizeInventory();
 		if (inv[slot] != null && inv[slot].stackSize > 1 && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
-			if (this.sendItem(inv[slot])) {
+			Coordinate c = this.sendItem(inv[slot]);
+			if (c != null) {
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSERTERACTION.ordinal(), this, 64, Item.getIdFromItem(inv[slot].getItem()), inv[slot].getItemDamage(), c.xCoord, c.yCoord, c.zCoord);
 				ReikaInventoryHelper.decrStack(slot, inv);
 			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void sendItemClientside(int id, int meta, int x, int y, int z) {
+		ItemStack is = new ItemStack(Item.getItemById(id), 1, meta);
+		double dx = x-xCoord;
+		double dy = y-yCoord;
+		double dz = z-zCoord;
+		double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+		double v = 0.125;
+		double vx = v*dx/dd;
+		double vy = v*dy/dd;
+		double vz = v*dz/dd;
+		double[] angs = ReikaPhysicsHelper.cartesianToPolar(dx, dy, dz);
+		int n = 6+rand.nextInt(16);
+		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is);
+		for (int i = 0; i < n; i++) {
+			double px = xCoord+rand.nextDouble();//+0.5;
+			double py = yCoord+rand.nextDouble();//0.5;
+			double pz = zCoord+rand.nextDouble();//0.5;
+			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(worldObj, px, py, pz, angs[2]+180, angs[1]-90);
+			fx.angleVelocity = 2.5;
+			fx.particleVelocity = v;
+			fx.freedom = 10;
+			int c = tag == null || tag.isEmpty() ? 0x22aaff : ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()).getColor();
+			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(dx, dy, dz);
+			fx.setColor(c).setLife(100).setScale(2.5F).setIcon(ChromaIcons.CENTER).markDestination(x, y, z).setNoSlowdown().bound(box);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -181,12 +227,12 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		return ReikaItemHelper.matchStacks(inv[slot], is);
 	}
 
-	public boolean sendItem(ItemStack is) {
+	public Coordinate sendItem(ItemStack is) {
 		ArrayList<Coordinate> li = routing.get(is);
 		if (li == null || li.isEmpty())
-			return false;
+			return null;
 		Coordinate c = li.get(rand.nextInt(li.size()));
-		return locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer());
+		return locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer()) ? c : null;
 	}
 
 	@Override
@@ -270,11 +316,13 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 					}
 					return false;
 				case RIGHTCLICK: {
+					int orig = is.stackSize;
 					ItemStack hold = ep.getCurrentEquippedItem();
 					ep.setCurrentItemOrArmor(0, is);
 					boolean flag = c.getBlock(world).onBlockActivated(world, c.xCoord, c.yCoord, c.zCoord, ep, 1, 0, 0, 0);
+					ItemStack ret = ep.getCurrentEquippedItem();
 					ep.setCurrentItemOrArmor(0, hold);
-					return flag;
+					return /*flag && */(ret == null || ret.stackSize < orig);
 				}
 				case LEFTCLICK: {
 					ItemStack hold = ep.getCurrentEquippedItem();

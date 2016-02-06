@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.fluids.Fluid;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -297,5 +299,29 @@ public class ChromaAux {
 	@Deprecated
 	public static void permuteRunes(HashMap<Coordinate, CrystalElement> map, World world, EntityPlayer ep) {
 
+	}
+
+	public static CrystalElement getRune(Fluid fluid) {
+		ArrayList<CrystalElement> li = new ArrayList();
+		li.add(CrystalElement.CYAN);
+		if (fluid.getTemperature() > 900) //900K
+			li.add(CrystalElement.ORANGE);
+		if (fluid.getTemperature() < 270)
+			li.add(CrystalElement.WHITE);
+		if (fluid.isGaseous())
+			li.add(CrystalElement.LIME);
+		if (fluid.getLuminosity() > 0)
+			li.add(CrystalElement.BLUE);
+		if (fluid.getDensity() > 4000)
+			li.add(CrystalElement.RED);
+		if (fluid.getName().toLowerCase().contains("oil"))
+			li.add(CrystalElement.BROWN);
+		if (fluid.getName().toLowerCase().contains("fuel"))
+			li.add(CrystalElement.YELLOW);
+		if (fluid.getName().toLowerCase().contains("xp"))
+			li.add(CrystalElement.PURPLE);
+		if (fluid.getName().toLowerCase().contains("bio") || fluid.getName().toLowerCase().contains("honey"))
+			li.add(CrystalElement.GREEN);
+		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 }

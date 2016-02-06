@@ -7,11 +7,13 @@ import java.util.Collection;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -81,6 +83,22 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				}
 				break;
 			}
+			case "abilities":
+			case "ability": {
+				try {
+					Ability a = Chromabilities.getAbility(args[1].toLowerCase());
+					if (set)
+						Chromabilities.give(ep, a);
+					else
+						Chromabilities.removeFromPlayer(ep, a);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Fragment "+a.getDisplayName()+" set to "+set+" for "+ep.getCommandSenderName());
+				}
+				catch (IllegalArgumentException e) {
+					this.sendChatToSender(ics, EnumChatFormatting.RED+" Invalid fragment '"+args[1]+"'.");
+					return;
+				}
+				break;
+			}
 			case "level": {
 				try {
 					ResearchLevel r = ResearchLevel.valueOf(args[1].toUpperCase());
@@ -108,6 +126,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					ProgressionManager.instance.resetPlayerProgression(ep, false);
 				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research"))
 					ChromaResearchManager.instance.resetPlayerResearch(ep, false);
+				if (args[1].equals("all") || args[1].equals("ability") || args[1].equals("abilities")) {
+					for (Ability c : Chromabilities.getAbilities()) {
+						if (!Chromabilities.playerHasAbility(ep, c))
+							Chromabilities.removeFromPlayer(ep, c);
+					}
+				}
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression reset for "+ep.getCommandSenderName());
 				break;
 			}
@@ -116,6 +140,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					ProgressionManager.instance.maxPlayerProgression(ep, false);
 				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research"))
 					ChromaResearchManager.instance.maxPlayerResearch(ep, false);
+				if (args[1].equals("all") || args[1].equals("ability") || args[1].equals("abilities")) {
+					for (Ability c : Chromabilities.getAbilities()) {
+						if (!Chromabilities.playerHasAbility(ep, c))
+							Chromabilities.give(ep, c);
+					}
+				}
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression maximized for "+ep.getCommandSenderName());
 				break;
 			}

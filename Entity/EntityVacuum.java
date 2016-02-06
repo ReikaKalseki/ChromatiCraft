@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -190,6 +191,11 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 								EntityFallingBlock e = new EntityTumblingBlock(worldObj, dx, dy, dz, b, worldObj.getBlockMetadata(dx, dy, dz));
 								e.field_145812_b = -10000;
 								e.field_145813_c = false;
+								TileEntity te = worldObj.getTileEntity(dx, dy, dz);
+								if (te != null) {
+									e.field_145810_d = new NBTTagCompound();
+									te.writeToNBT(e.field_145810_d);
+								}
 								worldObj.setBlockToAir(dx, dy, dz);
 								worldObj.spawnEntityInWorld(e);
 							}

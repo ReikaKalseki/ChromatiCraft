@@ -361,6 +361,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				ChromaSounds.TRAP.playSound(ep, 1, 1);
 				break;
 			case DESERT:
+				ChromaSounds.TRAP.playSound(ep, 1, 1);
 				ReikaSoundHelper.playBreakSound(world, x, y+2, z, Blocks.stone);
 				if (world.isRemote)
 					ReikaRenderHelper.spawnDropParticles(world, x, y+2, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
@@ -368,6 +369,16 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				x -= 7;
 				z -= 7;
 				y -= 3;
+
+				world.setBlock(x+5, y+9, z+5, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);
+				world.setBlock(x+5, y+9, z+9, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);
+				world.setBlock(x+9, y+9, z+5, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);
+				world.setBlock(x+9, y+9, z+9, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 3);
+
+				world.setBlock(x+5, y+5, z+5, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+				world.setBlock(x+5, y+5, z+9, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+				world.setBlock(x+9, y+5, z+5, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+				world.setBlock(x+9, y+5, z+9, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
 
 				world.setBlockMetadataWithNotify(x+12, y+5, z+6, BlockType.CRACK.metadata, 3);
 				world.setBlockMetadataWithNotify(x+12, y+5, z+7, BlockType.CRACK.metadata, 3);

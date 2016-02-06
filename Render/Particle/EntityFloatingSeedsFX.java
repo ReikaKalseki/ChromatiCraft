@@ -32,7 +32,8 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 
 	public double tolerance = 1.5;
 	public double freedom = 20;
-	public double velocity = 0.75;
+	public double angleVelocity = 0.75;
+	public double particleVelocity = 0.0625;
 
 	public EntityFloatingSeedsFX(World world, double x, double y, double z, double windAng, double climbAng) {
 		super(world, x, y, z);
@@ -92,10 +93,10 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 		angXZ_target = ReikaRandomHelper.getRandomPlusMinus(windAngle, freedom);
 
 		if (angXZ_target > angXZ) {
-			angXZ_vel = velocity;
+			angXZ_vel = angleVelocity;
 		}
 		else if (angXZ_target < angXZ) {
-			angXZ_vel = -velocity;
+			angXZ_vel = -angleVelocity;
 		}
 	}
 
@@ -103,16 +104,15 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 		angY_target = ReikaRandomHelper.getRandomPlusMinus(climbAngle, freedom);
 
 		if (angY_target > angY) {
-			angY_vel = velocity;
+			angY_vel = angleVelocity;
 		}
 		else if (angY_target < angY) {
-			angY_vel = -velocity;
+			angY_vel = -angleVelocity;
 		}
 	}
 
 	private void updateVelocities() {
-		double v = 0.0625;
-		double[] xyz = ReikaPhysicsHelper.polarToCartesian(v, angY, angXZ);
+		double[] xyz = ReikaPhysicsHelper.polarToCartesian(particleVelocity, angY, angXZ);
 		motionX = xyz[0];
 		motionY = xyz[1];
 		motionZ = xyz[2];

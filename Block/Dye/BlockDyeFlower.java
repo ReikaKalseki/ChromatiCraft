@@ -9,12 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dye;
 
+import java.awt.Color;
+
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.EnumPlantType;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 
 public class BlockDyeFlower extends BlockFlower {
@@ -58,7 +62,8 @@ public class BlockDyeFlower extends BlockFlower {
 	public int colorMultiplier(IBlockAccess iba, int x, int y, int z)
 	{
 		int dmg = iba.getBlockMetadata(x, y, z);
-		return ReikaDyeHelper.dyes[dmg].getJavaColor().brighter().getRGB();
+		Color c = ReikaDyeHelper.dyes[dmg].getJavaColor();
+		return BiomeRainbowForest.isDamaged(iba, x, z) ? ReikaColorAPI.mixColors(0xa0a0a0, c.darker().getRGB(), 0.5F) : c.brighter().getRGB();
 	}
 
 }

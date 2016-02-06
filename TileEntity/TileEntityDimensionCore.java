@@ -272,7 +272,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 						float s = 2*(float)ReikaRandomHelper.getRandomPlusMinus(1.25, 0.5);
 						EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, px, py, pz, 0, -90);
 						fx = (EntityFloatingSeedsFX)fx.setGravity(g).setScale(s).setLife(l).setColor(color.getColor());
-						fx.velocity *= 3;
+						fx.angleVelocity *= 3;
 						fx.freedom *= 5;
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}

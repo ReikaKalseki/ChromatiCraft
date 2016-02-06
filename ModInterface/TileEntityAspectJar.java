@@ -255,7 +255,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean takeFromContainer(Aspect tag, int amount) {
-		if (tag == tank.getAspects() && tank.getLevel(tag) >= amount) {
+		if (tank.getLevel(tag) >= amount) {
 			tank.drainAspect(tag, amount);
 			return true;
 		}
@@ -272,7 +272,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean doesContainerContainAmount(Aspect tag, int amount) {
-		return tank.getAspects() == tag && amount >= amount;
+		return tank.getLevel(tag) >= amount;
 	}
 
 	@Override
@@ -285,7 +285,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int containerContains(Aspect tag) {
-		return tank.getAspects() == tag ? tank.getLevel(tag) : 0;
+		return tank.getLevel(tag);
 	}
 
 	@Override

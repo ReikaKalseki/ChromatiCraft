@@ -118,6 +118,14 @@ public class ItemChromaPlacer extends Item implements ISize {
 		ChromaTiles m = ChromaTiles.TEList[is.getItemDamage()];
 		if (m == ChromaTiles.HEATLILY)
 			return false;
+		if (m.getBlock() == ChromaBlocks.DECOPLANT.getBlockInstance()) {
+			if (m == ChromaTiles.COBBLEGEN && !world.getBlock(x, y+1, z).isOpaqueCube()) {
+				return false;
+			}
+			if (m != ChromaTiles.COBBLEGEN && !world.getBlock(x, y-1, z).isOpaqueCube()) {
+				return false;
+			}
+		}
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
 			return false;
 		if (!m.allowFakePlacer() && ReikaPlayerAPI.isFake(ep))
@@ -140,7 +148,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.stone);
 			}
 			else if (mat == Material.plants) {
-				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.grass);
+				ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.grass);
 			}
 			else if (mat == Material.glass) {
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.glass);

@@ -138,6 +138,8 @@ public class CrystalPotionController {
 			return true;
 		if (color == CrystalElement.RED)
 			return true;
+		if (color == CrystalElement.BROWN)
+			return true;
 		return false;
 	}
 

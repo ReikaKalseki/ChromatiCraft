@@ -9,13 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -25,7 +29,9 @@ import net.minecraftforge.common.IPlantable;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
@@ -47,10 +53,12 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
 		switch(world.getBlockMetadata(x, y, z)) {
-		case 0:
-			return 15;
-		default:
-			return 0;
+			case 0:
+				return 15;
+			case 1:
+				return 6;
+			default:
+				return 0;
 		}
 	}
 
@@ -91,11 +99,13 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	@Override
 	public boolean canBlockStay(World world, int x, int y, int z) {
 		switch(world.getBlockMetadata(x, y, z)) {
-		case 0:
-			return ReikaPlantHelper.LILYPAD.canPlantAt(world, x, y, z);
-		default:
-			boolean light = world.getFullBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z);
-			return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) && light;
+			case 0:
+				return ReikaPlantHelper.LILYPAD.canPlantAt(world, x, y, z);
+			case 2:
+				return (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid());// || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.COBBLEGEN;
+			default:
+				boolean light = world.getFullBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z);
+				return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) && light;
 		}
 	}
 
@@ -103,12 +113,26 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
 		switch(world.getBlockMetadata(x, y, z)) {
-		case 0:
-			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.1875);
-			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875);
-			double ry = y+0.25+r.nextDouble()*0.75;
-			ReikaParticleHelper.FLAME.spawnAt(world, rx, ry, rz);
+			case 0: {
+				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.1875);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875);
+				double ry = y+0.25+r.nextDouble()*0.75;
+				ReikaParticleHelper.FLAME.spawnAt(world, rx, ry, rz);
+				break;
+			}
+			case 1: {
+				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.1875*2);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875*2);
+				double ry = y+0.25+r.nextDouble()*0.75+0.5;
+				ReikaParticleHelper.ENCHANTMENT.spawnAt(world, rx, ry, rz);
+				break;
+			}
 		}
+	}
+
+	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
+		return ReikaJavaLibrary.makeListFrom(ChromaTiles.getTileFromIDandMetadata(this, meta).getCraftedProduct());
 	}
 
 	@Override
@@ -157,10 +181,12 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	public EnumPlantType getPlantType(IBlockAccess world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
 		switch(meta) {
-		case 0:
-			return EnumPlantType.Water;
-		default:
-			return EnumPlantType.Plains;
+			case 0:
+				return EnumPlantType.Water;
+			case 2:
+				return EnumPlantType.Cave;
+			default:
+				return EnumPlantType.Plains;
 		}
 	}
 
@@ -178,9 +204,14 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		int meta = world.getBlockMetadata(x, y, z);
 		switch(meta) {
-		case 0:
-			e.setFire(2);
-		default:
+			case 0:
+				e.setFire(2);
+				break;
+			case 1:
+				if (e instanceof EntityLivingBase)
+					((EntityLivingBase)e).addPotionEffect(new PotionEffect(ChromatiCraft.betterRegen.id, 20, 0));
+				break;
+			default:
 
 		}
 	}

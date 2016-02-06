@@ -533,7 +533,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 						float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
 						EntityFX fx = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setLife(l).setScale(s).setColor(c).setGravity(g);
 						((EntityFloatingSeedsFX)fx).freedom = 40;
-						((EntityFloatingSeedsFX)fx).velocity = 1.25;
+						((EntityFloatingSeedsFX)fx).angleVelocity = 1.25;
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 				}

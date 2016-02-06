@@ -143,7 +143,7 @@ public enum ChromaBlocks implements BlockEnum {
 	FENCE(BlockCrystalFence.class,												"crystal.fencerelay"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
-	DECOPLANT(BlockDecoPlant.class, 			 								"Chromatic Plant 2"),
+	DECOPLANT(BlockDecoPlant.class, 			ItemBlockChromaFlower.class, 	"Chromatic Plant 2"),
 	POWERTREE(BlockPowerTree.class,				ItemBlockDyeTypes.class,		"chroma.powerleaf"),
 	TILEMODELLED2(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 2"),
 	LAMPBLOCK(BlockRangeLamp.class,				ItemBlockDyeTypes.class,		"chroma.lampblock"),
@@ -216,6 +216,8 @@ public enum ChromaBlocks implements BlockEnum {
 		switch(this) {
 			case TILEPLANT:
 			case TIEREDPLANT:
+			case DECOPLANT:
+			case DECOFLOWER:
 				return Material.plants;
 			case CHROMA:
 				//case ACTIVECHROMA:

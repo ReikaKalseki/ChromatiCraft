@@ -86,6 +86,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCobbleGen;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -615,6 +616,14 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case INSERTERCONNECTION: {
 					((TileEntityItemInserter)tile).toggleConnection(data[0], data[1]);
+					break;
+				}
+				case INSERTERACTION: {
+					((TileEntityItemInserter)tile).sendItemClientside(data[0], data[1], data[2], data[3], data[4]);
+					break;
+				}
+				case COBBLEGENEND: {
+					((TileEntityCobbleGen)tile).endCraftingFX(world, x, y, z, data[0], data[1] > 0);
 					break;
 				}
 			}

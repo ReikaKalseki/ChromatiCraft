@@ -22,6 +22,7 @@ import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityWolf;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -42,6 +43,9 @@ public class BiomeRainbowForest extends BiomeGenBase {
 
 	private final int waterColor = new Color(0, 255, 255).getRGB();
 	private final int skyColor = new Color(100, 140, 255).getRGB();
+
+	private final int waterColorDamaged = new Color(64, 64, 64).getRGB();
+	private final int skyColorDamaged = new Color(32, 48, 64).getRGB();
 
 	private static final ArrayList<ModSpawnEntry> classes = new ArrayList();
 	private static final ArrayList<ModSpawnEntry> caveClasses = new ArrayList();
@@ -148,7 +152,7 @@ public class BiomeRainbowForest extends BiomeGenBase {
 	{
 		int original = BiomeGenBase.forest.getBiomeGrassColor(x, y, z);
 		Color c = ReikaDyeHelper.dyes[(Math.abs(x/16)+y+Math.abs(z/16))%16].getJavaColor().brighter();
-		double bias = 0.00095;
+		double bias = this.isDamaged(null, x, z) ? 0.5 : 0.00095;
 		double d = 1D-bias;
 		int r = c.getRed();
 		int g = c.getGreen();
@@ -171,13 +175,13 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		//return new Color(130, 170, 255).getRGB(); //original
 		//return new Color(160, 130, 205).getRGB();
 		//return new Color(0, 0, 0).getRGB();
-		return skyColor; //original
+		return isDamaged(null, 0, 0) ? skyColorDamaged : skyColor; //original
 	}
 
 	@Override
 	public int getWaterColorMultiplier()
 	{
-		return waterColor;
+		return isDamaged(null, 0, 0) ? waterColorDamaged : waterColor;
 	}
 
 	@Override
@@ -208,6 +212,10 @@ public class BiomeRainbowForest extends BiomeGenBase {
 		else {
 			return true;
 		}
+	}
+
+	public static boolean isDamaged(IBlockAccess world, int x, int z) {
+		return false;
 	}
 
 	static {

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -76,6 +77,14 @@ public class FabricationRecipes {
 		tag2 = tag.copy();
 		tag2.addTag(CrystalElement.BLUE, 500);
 		this.addRecipe(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), tag2);
+
+		tag = new ElementTagCompound();
+		tag.addTag(CrystalElement.BROWN, 500);
+		tag.addTag(CrystalElement.BLACK, 10000);
+		tag.addTag(CrystalElement.YELLOW, 25000);
+		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.GLOWBEAM.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.GLOWCOL.ordinal()), tag);
+		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.FOCUS.ordinal()), tag);
 	}
 
 	private void addRecipe(ItemStack is, ElementTagCompound tag) {

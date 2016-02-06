@@ -149,6 +149,8 @@ public enum ChromaResearch implements ProgressElement {
 	GLOWFIRE(		ChromaTiles.GLOWFIRE,		ResearchLevel.ENERGYEXPLORE,	ProgressStage.SHARDCHARGE),
 	ESSENTIA(		ChromaTiles.ESSENTIARELAY,	ResearchLevel.RUNECRAFT),
 	INSERTER(		ChromaTiles.INSERTER,		ResearchLevel.RUNECRAFT),
+	LOTUS(			ChromaTiles.REVERTER, 		ResearchLevel.RUNECRAFT),
+	COBBLEGEN(		ChromaTiles.COBBLEGEN,		ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

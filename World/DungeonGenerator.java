@@ -17,7 +17,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntitySilverfish;
+import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
@@ -47,6 +50,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
@@ -161,7 +165,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x, y, z);
 						te.generate(s, CrystalElement.WHITE);
 						this.populateChests(s, struct, r);
-						this.programSpawners(s, struct, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
+						this.programSpawners(s, struct);
 						this.mossify(s, struct, r);
 						this.generatePit(world, x, y, z);
 						return true;
@@ -190,6 +194,34 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						TileEntityStructControl te = (TileEntityStructControl)world.getTileEntity(x+7, y+3, z+7);
 						te.generate(s, CrystalElement.WHITE);
 						this.populateChests(s, struct, r);
+						this.programSpawners(s, struct);
+						for (int k = 0; k < struct.getSize(); k++) {
+							Coordinate c = struct.getNthBlock(k);
+							if (c.yCoord > struct.getMaxY()-2) {
+								Block b1 = c.offset(0, 1, 0).getBlock(world);
+								Block b2 = c.offset(0, -1, 0).getBlock(world);
+								if (b1 == Blocks.air && b2 == Blocks.sand && ReikaRandomHelper.doWithChance(20+30D*Math.abs(Math.abs(c.xCoord-struct.getMidX())+Math.abs(c.zCoord-struct.getMidZ()))/7D)) {
+									c.setBlock(world, Blocks.air);
+								}
+							}
+						}
+						for (int k1 = struct.getMinX(); k1 <= struct.getMaxX(); k1++) {
+							for (int k2 = struct.getMinZ(); k2 <= struct.getMaxZ(); k2++) {
+								Coordinate c = new Coordinate(k1, world.getTopSolidOrLiquidBlock(k1, k2), k2);
+								if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(6)) {
+									if (c.offset(1, 0, 0).getBlock(world) == Blocks.air && c.offset(-1, 0, 0).getBlock(world) == Blocks.air) {
+										if (c.offset(0, 0, 1).getBlock(world) == Blocks.air && c.offset(0, 0, -1).getBlock(world) == Blocks.air) {
+											c.setBlock(world, Blocks.cactus);
+											if (ReikaRandomHelper.doWithChance(40)) {
+												c.offset(0, 1, 0).setBlock(world, Blocks.cactus);
+												if (ReikaRandomHelper.doWithChance(40))
+													c.offset(0, 2, 0).setBlock(world, Blocks.cactus);
+											}
+										}
+									}
+								}
+							}
+						}
 						//too dry for moss//this.mossify(s, struct, r);
 						return true;
 					}
@@ -346,14 +378,39 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void programSpawners(Structures s, FilledBlockArray arr, String mob) {
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
-			Block b = c.getBlock(arr.world);
-			if (b == Blocks.mob_spawner) {
-				TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
-				ReikaSpawnerHelper.setMobSpawnerMob(te, mob);
-			}
+	private void programSpawners(Structures s, FilledBlockArray arr) {
+		switch(s) {
+			case OCEAN:
+				for (int k = 0; k < arr.getSize(); k++) {
+					Coordinate c = arr.getNthBlock(k);
+					Block b = c.getBlock(arr.world);
+					if (b == Blocks.mob_spawner) {
+						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
+						te.func_145881_a().activatingRangeFromPlayer = 8;
+						te.func_145881_a().maxNearbyEntities = 16;
+						ReikaSpawnerHelper.setMobSpawnerMob(te, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
+					}
+				}
+				break;
+			case DESERT:
+				for (int k = 0; k < arr.getSize(); k++) {
+					Coordinate c = arr.getNthBlock(k);
+					Block b = c.getBlock(arr.world);
+					if (b == Blocks.mob_spawner) {
+						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
+						Class mob = c.yCoord <= arr.getMinY()+4 ? EntityBlaze.class : Math.abs(c.xCoord-arr.getMinX()) == Math.abs(c.zCoord-arr.getMinZ()) ? EntitySpider.class : EntitySilverfish.class;
+						ReikaSpawnerHelper.setMobSpawnerMob(te, (String)EntityList.classToStringMapping.get(mob));
+						te.func_145881_a().activatingRangeFromPlayer = 4;
+						te.func_145881_a().spawnDelay = 0;
+						if (mob == EntityBlaze.class) {
+							te.func_145881_a().maxSpawnDelay = 100;
+							te.func_145881_a().minSpawnDelay = 40;
+						}
+					}
+				}
+				break;
+			default:
+				break;
 		}
 	}
 

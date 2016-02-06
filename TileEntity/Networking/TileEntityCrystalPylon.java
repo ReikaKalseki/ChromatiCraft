@@ -484,7 +484,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextInt(360), ReikaRandomHelper.getRandomPlusMinus(0, 90));
 				fx.fadeColors(ReikaColorAPI.mixColors(color.getColor(), 0xffffff, 0.375F), color.getColor()).setScale(s).setLife(l).setRapidExpand();
 				fx.freedom *= 3;
-				fx.velocity *= 3;
+				fx.angleVelocity *= 3;
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

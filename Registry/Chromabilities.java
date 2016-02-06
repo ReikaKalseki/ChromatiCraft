@@ -553,6 +553,8 @@ public enum Chromabilities implements Ability {
 			return false;
 		if (!world.canBlockSeeTheSky(p.blockX, p.blockY+1, p.blockZ))
 			return false;
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() && p.blockY < 90)
+			return false;
 		double px = p.blockX+0.5;
 		double py = p.blockY+0.5;
 		double pz = p.blockZ+0.5;

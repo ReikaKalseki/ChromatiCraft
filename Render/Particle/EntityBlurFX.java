@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -46,6 +47,8 @@ public class EntityBlurFX extends EntityFX {
 	private EntityFX lock;
 
 	private boolean additiveBlend = true;
+
+	private MotionController motionController;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -158,6 +161,11 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setMotionController(MotionController m) {
+		motionController = m;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -246,6 +254,13 @@ public class EntityBlurFX extends EntityFX {
 			motionX = lock.motionX;
 			motionY = lock.motionY;
 			motionZ = lock.motionZ;
+		}
+
+		if (motionController != null) {
+			motionX = motionController.getMotionX(this);
+			motionY = motionController.getMotionY(this);
+			motionZ = motionController.getMotionZ(this);
+			motionController.update(this);
 		}
 	}
 

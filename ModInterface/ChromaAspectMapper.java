@@ -33,7 +33,7 @@ public class ChromaAspectMapper {
 
 	private ChromaAspectMapper() {
 
-		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.AURA, 4);
+		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.AURA, 6);
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.CRYSTAL, 4);
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.ENERGY, 4);
 		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.TRAVEL, 4);
@@ -61,16 +61,19 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.POWERTREE, Aspect.EXCHANGE, 12);
 
 		this.addAspect(ChromaTiles.REPEATER, Aspect.ENERGY, 12);
-		this.addAspect(ChromaTiles.REPEATER, Aspect.LIGHT, 12);
-		this.addAspect(ChromaTiles.REPEATER, Aspect.EXCHANGE, 12);
+		this.addAspect(ChromaTiles.REPEATER, Aspect.LIGHT, 8);
+		this.addAspect(ChromaTiles.REPEATER, Aspect.EXCHANGE, 6);
+		this.addAspect(ChromaTiles.REPEATER, ChromaAspectManager.instance.SIGNAL, 18);
 
 		this.addAspect(ChromaTiles.COMPOUND, Aspect.ENERGY, 16);
-		this.addAspect(ChromaTiles.COMPOUND, Aspect.LIGHT, 16);
-		this.addAspect(ChromaTiles.COMPOUND, Aspect.EXCHANGE, 16);
+		this.addAspect(ChromaTiles.COMPOUND, Aspect.LIGHT, 12);
+		this.addAspect(ChromaTiles.COMPOUND, Aspect.EXCHANGE, 8);
+		this.addAspect(ChromaTiles.COMPOUND, ChromaAspectManager.instance.SIGNAL, 18);
 
 		this.addAspect(ChromaTiles.BROADCAST, Aspect.ENERGY, 60);
 		this.addAspect(ChromaTiles.BROADCAST, Aspect.LIGHT, 60);
 		this.addAspect(ChromaTiles.BROADCAST, Aspect.EXCHANGE, 60);
+		this.addAspect(ChromaTiles.BROADCAST, ChromaAspectManager.instance.SIGNAL, 100);
 
 		this.addAspect(ChromaTiles.CRYSTAL, Aspect.ENERGY, 12);
 		this.addAspect(ChromaTiles.CRYSTAL, Aspect.MAGIC, 12);
@@ -316,8 +319,12 @@ public class ChromaAspectMapper {
 			ChromaTiles m = ChromaTiles.TEList[i];
 			ItemStack is = m.getCraftedProduct();
 			if (is != null) {
-				ReikaThaumHelper.addAspects(is, this.getAspects(m, 0));
-				ReikaThaumHelper.addAspectsToBlockMeta(m.getBlock(), m.getBlockMetadata(), this.getAspects(m, 0));
+				AspectList al = this.getAspects(m, 0);
+				if (al != null) {
+					ReikaThaumHelper.clearNullAspects(al);
+					ReikaThaumHelper.addAspects(is, al);
+					ReikaThaumHelper.addAspectsToBlockMeta(m.getBlock(), m.getBlockMetadata(), al);
+				}
 			}
 		}
 	}

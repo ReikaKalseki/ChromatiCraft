@@ -16,15 +16,24 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.OreType.OreRarity;
-import Reika.DragonAPI.Interfaces.TileEntity.XPProducer;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
@@ -32,8 +41,11 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.GeoStrata.Registry.RockTypes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
+import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipeTile.PipeType;
 
-public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements XPProducer {
+@Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
+public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection {
 
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 
@@ -42,7 +54,9 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	public int smeltTimer;
 
-	private float xp;
+	//private float xp;
+
+	private final HybridTank tank = new HybridTank("crystalfurn", 4000);
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -112,7 +126,9 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		ElementTagCompound tag = getSmeltingCost(inv[0], is);
 		is.stackSize *= this.getMultiplyRate(inv[0], is);
 		ReikaInventoryHelper.addOrSetStack(is, inv, 1);
-		xp += FurnaceRecipes.smelting().func_151398_b(inv[0])*6;
+		float xp = FurnaceRecipes.smelting().func_151398_b(inv[0])*6;
+		int amt = (int)(xp/TileEntityCollector.XP_PER_CHROMA);
+		tank.addLiquid(amt, FluidRegistry.getFluid("chroma"));
 		ReikaInventoryHelper.decrStack(0, inv);
 		this.drainEnergy(tag);
 	}
@@ -166,16 +182,6 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	}
 
 	@Override
-	public void clearXP() {
-		xp = 0;
-	}
-
-	@Override
-	public float getXP() {
-		return xp;
-	}
-
-	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
@@ -187,20 +193,24 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("time", smeltTimer);
+
+		tank.writeToNBT(NBT);
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 
-		xp = NBT.getFloat("xp");
+		//xp = NBT.getFloat("xp");
+
+		tank.readFromNBT(NBT);
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
-		NBT.setFloat("xp", xp);
+		//NBT.setFloat("xp", xp);
 	}
 
 	static {
@@ -235,6 +245,42 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
 		return true;
+	}
+
+	@Override
+	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+		return 0;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+		return this.canDrain(from, resource.getFluid()) ? tank.drain(resource.amount, doDrain) : null;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+		return this.canDrain(from, null) ? tank.drain(maxDrain, doDrain) : null;
+	}
+
+	@Override
+	public boolean canFill(ForgeDirection from, Fluid fluid) {
+		return false;
+	}
+
+	@Override
+	public boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return ReikaFluidHelper.isFluidDrainableFromTank(fluid, tank);
+	}
+
+	@Override
+	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		return new FluidTankInfo[]{tank.getInfo()};
+	}
+
+	@Override
+	@ModDependent(ModList.BCTRANSPORT)
+	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
+		return ConnectOverride.DEFAULT;
 	}
 
 }

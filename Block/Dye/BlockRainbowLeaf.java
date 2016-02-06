@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -98,7 +99,8 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 		int sc = 32;
 		int meta = iba.getBlockMetadata(x, y, z);
 		float hue = meta == 3 ? (System.currentTimeMillis()%7200)/7200F : (float)(ReikaMathLibrary.py3d(x, y*3, z+x)%sc)/sc;
-		return Color.HSBtoRGB(hue, 0.7F, 1F);
+		boolean dmgd = BiomeRainbowForest.isDamaged(iba, x, z);
+		return Color.HSBtoRGB(hue, dmgd ? 0.4F : 0.7F, dmgd ? 0.6F : 1F);
 	}
 
 	@Override

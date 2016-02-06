@@ -28,7 +28,9 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -53,7 +55,8 @@ public class BlockDyeLeaf extends BlockCustomLeaf {
 	public final int colorMultiplier(IBlockAccess iba, int x, int y, int z)
 	{
 		int dmg = iba.getBlockMetadata(x, y, z);
-		return ReikaDyeHelper.dyes[dmg].getJavaColor().brighter().getRGB();
+		Color c = ReikaDyeHelper.dyes[dmg].getJavaColor();
+		return BiomeRainbowForest.isDamaged(iba, x, z) ? ReikaColorAPI.mixColors(0xa0a0a0, ReikaColorAPI.getColorWithBrightnessMultiplier(c.getRGB(), 0.85F), 0.4F) : c.brighter().getRGB();
 	}
 
 	@Override

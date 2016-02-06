@@ -459,7 +459,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					float s = 1+r.nextFloat()*1.5F;
 					int c = ReikaColorAPI.mixColors(0x00ff00, 0xa0ffa0, r.nextFloat());
 					EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, dx, dy, dz, 0, -90).setLife(l).setScale(s).setColor(c).setIcon(ChromaIcons.CENTER);
-					fx.velocity = 0.25;
+					fx.angleVelocity = 0.25;
 					fx.freedom = 70;
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
@@ -472,7 +472,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					float s = 2+r.nextFloat()*2;
 					int c = ReikaColorAPI.mixColors(0x0000ff, 0xffffff, 0.5F+(float)(0.5*Math.sin(System.currentTimeMillis()/1000D)));
 					EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setLife(l).setScale(s).setColor(c).setGravity(-0.125F).setRapidExpand().setIcon(ChromaIcons.CENTER);
-					fx.velocity = 0.5;
+					fx.angleVelocity = 0.5;
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					break;
 				}
@@ -527,6 +527,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case ENDERFLOWER:
 					return 4;
 				case RESOCLOVER:
+				case LUMALILY:
 					return 2;
 				case SANOBLOOM:
 					return 6;

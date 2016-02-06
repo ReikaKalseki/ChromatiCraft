@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -23,6 +24,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
@@ -62,6 +64,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IAlleleBeeEffect;
 import forestry.api.apiculture.IAlleleBeeSpecies;
@@ -71,6 +75,8 @@ import forestry.api.apiculture.IBeeHousing;
 import forestry.api.apiculture.IBeeModifier;
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;
+import forestry.api.core.ForestryAPI;
+import forestry.api.core.IErrorState;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleFlowers;
 import forestry.api.genetics.IEffectData;
@@ -98,6 +104,44 @@ public class CrystalBees {
 	protected static Life blinkLife;
 	//protected static IAlleleTolerance anyTemperature; green
 	//protected static IAlleleTolerance anyHumidity; gray
+
+	private static final IErrorState conditionalsUnavailable = new IErrorState() {
+
+		private IIcon icon;
+
+		@Override
+		public short getID() {
+			return 1600;
+		}
+
+		@Override
+		public String getUniqueName() {
+			return "ChromatiCraft:noconditionals";
+		}
+
+		@Override
+		public String getDescription() {
+			return "Conditionals Unavailable";
+		}
+
+		@Override
+		public String getHelp() {
+			return "Specialized products are unavailable due to their conditions not being met.";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void registerIcons(IIconRegister register) {
+			icon = register.registerIcon("chromaticraft:forestry-no-conditionals");
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public IIcon getIcon() {
+			return icon;
+		}
+
+	};
 
 	protected static final EnumMap<CrystalElement, CrystalBee> beeMap = new EnumMap(CrystalElement.class);
 	protected static final EnumMap<CrystalElement, CrystalEffect> effectMap = new EnumMap(CrystalElement.class);
@@ -129,6 +173,8 @@ public class CrystalBees {
 			bee.register();
 			beeMap.put(color, bee);
 		}
+
+		ForestryAPI.errorStateRegistry.registerErrorState(conditionalsUnavailable);
 
 		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.ELONGATED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
 		luminous = new BasicBee("Luminous", "Vitreus Lumens", Speeds.SLOW, Life.SHORTER, Flowering.SLOWER, Fertility.HIGH, Territory.DEFAULT, 0xBAEBFF);
@@ -385,6 +431,7 @@ public class CrystalBees {
 						if (bee1.getUID().equals(bee2.getUID())) {
 							if (bee1.getUID().equals(beeMap.get(color).getUID())) {
 								if (this.areConditionalsAvailable(world, x, y, z, ibg, ibh)) {
+									ibh.getErrorLogic().setCondition(false, conditionalsUnavailable);
 									if (c.check(world, x, y, z, ibg, ibh)) {
 										ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+" passed.");
 										flag = true;
@@ -392,6 +439,7 @@ public class CrystalBees {
 								}
 								else {
 									ModularLogger.instance.log(LOGGER_TAG, "Conditionals unavailable. Removing.");
+									ibh.getErrorLogic().setCondition(true, conditionalsUnavailable);
 								}
 							}
 						}
