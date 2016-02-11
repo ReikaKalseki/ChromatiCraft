@@ -15,12 +15,14 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import vazkii.botania.api.recipe.IFlowerComponent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
@@ -36,12 +38,14 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem {
+@Strippable(value={"vazkii.botania.api.recipe.IFlowerComponent"})
+public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSpritesheet, TieredItem, IFlowerComponent {
 
 	private static final int[] offsets;
 
@@ -293,5 +297,15 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 	@Override
 	public boolean verticalFrames() {
 		return true;
+	}
+
+	@Override
+	public boolean canFit(ItemStack stack, IInventory apothecary) {
+		return true;
+	}
+
+	@Override
+	public int getParticleColor(ItemStack is) {
+		return CrystalElement.elements[is.getItemDamage()%16].getColor();
 	}
 }

@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -92,18 +93,38 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 	private final void checkFlowerChange(World world, int x, int y, int z) {
 		if (!this.canBlockStay(world, x, y, z)) {
 			this.dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			world.setBlock(x, y, z, Blocks.air, 0, 3);
 		}
 	}
 
 	@Override
 	public boolean canBlockStay(World world, int x, int y, int z) {
-		switch(world.getBlockMetadata(x, y, z)) {
+		int meta = world.getBlockMetadata(x, y, z);
+		switch(meta) {
 			case 0:
 				return ReikaPlantHelper.LILYPAD.canPlantAt(world, x, y, z);
 			case 2:
+				if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL)
+					return true;
 				return (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid());// || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.COBBLEGEN;
+			case 3:
+				BlockArray b = new BlockArray();
+				b.recursiveAddWithBoundsMetadata(world, x, y, z, this, meta, x, y-256, z, x, y+256, z);
+				if (!(world.getBlock(x, b.getMaxY()+1, z).isOpaqueCube() && world.getBlock(x, b.getMaxY()+1, z).getMaterial().isSolid()))
+					if (!(world.getBlock(x, b.getMinY()-1, z).isOpaqueCube() && world.getBlock(x, b.getMinY()-1, z).getMaterial().isSolid()))
+						return false;
+				if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL)
+					return true;
+				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
+					return true;
+				if (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid())
+					return true;
+				if (world.getBlock(x, y-1, z).isOpaqueCube() && world.getBlock(x, y-1, z).getMaterial().isSolid())
+					return true;
+				return false;
 			default:
+				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
+					return true;
 				boolean light = world.getFullBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z);
 				return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) && light;
 		}

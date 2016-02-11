@@ -294,6 +294,25 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
+		/*
+		if (m == ChromaTiles.TURRET && ChromaItems.SHARD.matchWith(is) && is.getItemDamage() < 16) {
+			TileEntityLumenTurret tile = (TileEntityLumenTurret)te;
+			boolean flag = false;
+			if (!tile.hasPassiveUpgrade && is.getItemDamage() == CrystalElement.GREEN.ordinal()) {
+				tile.hasPassiveUpgrade = true;
+				flag = true;
+			}
+			if (!tile.hasPlayerUpgrade && is.getItemDamage() == CrystalElement.LIGHTGRAY.ordinal()) {
+				tile.hasPlayerUpgrade = true;
+				flag = true;
+			}
+			if (flag) {
+
+				return true;
+			}
+		}
+		 */
+
 		if (is != null && is.stackSize == 1 && m == ChromaTiles.TANK) {
 			TileEntityCrystalTank tile = (TileEntityCrystalTank)te;
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);

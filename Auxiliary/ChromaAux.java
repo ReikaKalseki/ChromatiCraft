@@ -318,7 +318,7 @@ public class ChromaAux {
 			li.add(CrystalElement.BROWN);
 		if (fluid.getName().toLowerCase().contains("fuel"))
 			li.add(CrystalElement.YELLOW);
-		if (fluid.getName().toLowerCase().contains("xp"))
+		if (fluid.getName().toLowerCase().contains("xp") || fluid == ChromatiCraft.chroma)
 			li.add(CrystalElement.PURPLE);
 		if (fluid.getName().toLowerCase().contains("bio") || fluid.getName().toLowerCase().contains("honey"))
 			li.add(CrystalElement.GREEN);

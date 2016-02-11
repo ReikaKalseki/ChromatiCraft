@@ -42,7 +42,7 @@ public class RenderCrystalBeacon extends ChromaRenderBase {
 		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			this.renderGlow(te, par2, par4, par6, par8);
 		}
-		if (te.isInWorld()) {
+		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			this.renderOrb(te);
 			this.renderFire(te);
 		}

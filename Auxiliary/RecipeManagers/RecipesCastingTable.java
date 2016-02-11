@@ -87,6 +87,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ChromaC
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CloakTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CobbleGenRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CompoundRepeaterRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CropSpeedPlantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalBrewerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalChargerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalFenceRecipe;
@@ -111,6 +112,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTu
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PlantAccelerationRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RFDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RecipeCrystalRepeater;
@@ -365,6 +367,14 @@ public class RecipesCastingTable {
 		is = ChromaTiles.COBBLEGEN.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LSL", "FBF", " D ", 'L', ReikaItemHelper.oakLeaves, 'D', Items.glowstone_dust, 'F', Blocks.red_flower, 'S', ChromaStacks.cyanShard, 'B', Blocks.glass);
 		this.addRecipe(new CobbleGenRecipe(is, sr));
+
+		is = ChromaTiles.PLANTACCEL.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LSL", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', Blocks.red_flower, 'S', ChromaStacks.lightBlueShard);
+		this.addRecipe(new PlantAccelerationRecipe(is, sr));
+
+		is = ChromaTiles.CROPSPEED.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " R ", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', Blocks.yellow_flower, 'S', ChromaStacks.lightBlueShard);
+		this.addRecipe(new CropSpeedPlantRecipe(is, sr));
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();
 		sr = new ShapedOreRecipe(is, "SES", "CSC", "CCC", 'C', "cobblestone", 'S', ChromaItems.SHARD.getAnyMetaStack(), 'E', ChromaStacks.energyPowder);

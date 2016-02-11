@@ -151,6 +151,8 @@ public enum ChromaResearch implements ProgressElement {
 	INSERTER(		ChromaTiles.INSERTER,		ResearchLevel.RUNECRAFT),
 	LOTUS(			ChromaTiles.REVERTER, 		ResearchLevel.RUNECRAFT),
 	COBBLEGEN(		ChromaTiles.COBBLEGEN,		ResearchLevel.RUNECRAFT),
+	PLANTACCEL(		ChromaTiles.PLANTACCEL,		ResearchLevel.RUNECRAFT),
+	CROPSPEED(		ChromaTiles.CROPSPEED,		ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

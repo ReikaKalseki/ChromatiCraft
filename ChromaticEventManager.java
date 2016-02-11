@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.API.Interfaces.CustomEnderDragon;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
@@ -182,6 +183,15 @@ public class ChromaticEventManager {
 		}
 	}
 	 */
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void dropLumenTurretDrops(LivingDropsEvent evt) {
+		if (!(evt.entityLiving instanceof EntityPlayer)) {
+			if (evt.source instanceof LumenTurretDamage) {
+				evt.setCanceled(true);
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
 	public void forceExcavatorSpeed(BreakSpeed evt) {
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();

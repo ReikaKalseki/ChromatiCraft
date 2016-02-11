@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -303,7 +304,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 				if (rand.nextInt(10) == 0)
 					this.fightDecay(world, x, y, z);
 			}
-			if (ChromaOptions.RAINBOWSPREAD.getState() && rand.nextInt(50) == 0)
+			if (ChromaOptions.RAINBOWSPREAD.getState() && rand.nextInt(50) == 0 && world.getBiomeGenForCoords(x, z) == ChromatiCraft.rainbowforest)
 				this.convertToRainbowForest(world, x, y, z);
 		}
 	}
@@ -404,10 +405,12 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 				for (int k = -r; k <= r; k++) {
 					int dx = rx+i;
 					int dz = rz+k;
-					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-					int id = biome.biomeID;
-					if (id != ChromatiCraft.rainbowforest.biomeID) {
-						ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest);
+					if (!TileEntityBiomeReverter.stopConversion(world, dx, dz)) {
+						BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
+						int id = biome.biomeID;
+						if (id != ChromatiCraft.rainbowforest.biomeID) {
+							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest);
+						}
 					}
 				}
 			}

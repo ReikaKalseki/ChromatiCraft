@@ -119,10 +119,21 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.HEATLILY)
 			return false;
 		if (m.getBlock() == ChromaBlocks.DECOPLANT.getBlockInstance()) {
-			if (m == ChromaTiles.COBBLEGEN && !world.getBlock(x, y+1, z).isOpaqueCube()) {
+			if (m == ChromaTiles.COBBLEGEN && (!world.getBlock(x, y+1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y+1, z) != ChromaTiles.PLANTACCEL)) {
 				return false;
 			}
-			if (m != ChromaTiles.COBBLEGEN && !world.getBlock(x, y-1, z).isOpaqueCube()) {
+			else if (m == ChromaTiles.PLANTACCEL) {
+				if (ChromaTiles.getTile(world, x, y-1, z) == m || ChromaTiles.getTile(world, x, y+1, z) == m) {
+
+				}
+				else if (world.getBlock(x, y-1, z).isOpaqueCube() || world.getBlock(x, y+1, z).isOpaqueCube()) {
+
+				}
+				else {
+					return false;
+				}
+			}
+			else if (m != ChromaTiles.COBBLEGEN && (!world.getBlock(x, y-1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)) {
 				return false;
 			}
 		}

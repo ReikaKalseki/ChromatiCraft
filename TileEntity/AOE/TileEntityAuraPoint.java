@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FastBlockCache;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -50,6 +51,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
+import Reika.VoidMonster.Entity.EntityVoidMonster;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -129,7 +131,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	}
 
 	private void killEntities(World world, int x, int y, int z) {
-		int r = 64;
+		int r = this.getAttackRange();
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-r, 0, z-r, x+1+r, 256, z+1+r);
 		List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 		boolean flag = false;
@@ -147,6 +149,14 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 			if (ep != null && ep.getDistance(x+0.5, y+0.5, z+0.5) < 32)
 				ChromaSounds.DISCHARGE.playSound(ep, 0.125F, 0.75F);
 		}
+	}
+
+	private int getAttackRange() {
+		return Math.min(8+this.getTileEntityAge()/16, 96);
+	}
+
+	private int getHealRange() {
+		return Math.min(4+this.getTileEntityAge()/64, 32);
 	}
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
@@ -192,6 +202,9 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 			if (this.isPlacer(ep))
 				return false;
 			return hostilePlayers.containsPlayer(ep);
+		}
+		else if (ModList.VOIDMONSTER.isLoaded() && e instanceof EntityVoidMonster) {
+			return e.posY > 4;
 		}
 		if (ReikaEntityHelper.isHostile(e) || e instanceof EntityEnderman || e instanceof EntityPigZombie)
 			return true;
@@ -257,7 +270,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	}
 
 	private void healFriendly(World world, int x, int y, int z) {
-		int r = 32;
+		int r = this.getHealRange();
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-r, 0, z-r, x+1+r, 256, z+1+r);
 		List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 		boolean flag = false;

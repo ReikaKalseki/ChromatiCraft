@@ -14,23 +14,23 @@ import net.minecraft.item.crafting.IRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class ReversionLotusRecipe extends TempleCastingRecipe {
+public class PlantAccelerationRecipe extends TempleCastingRecipe {
 
-	public ReversionLotusRecipe(ItemStack out, IRecipe recipe) {
+	public PlantAccelerationRecipe(ItemStack out, IRecipe recipe) {
 		super(out, recipe);
 
-		this.addRune(CrystalElement.GREEN, 2, -1, -5);
-		this.addRune(CrystalElement.MAGENTA, -2, -1, 5);
+		this.addRune(CrystalElement.LIGHTBLUE, 2, -1, -4);
+		this.addRune(CrystalElement.GREEN, -2, -1, 4);
 	}
 
 	@Override
 	public int getNumberProduced() {
-		return 6;
+		return 2;
 	}
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 32;
+		return 16;
 	}
 
 }

@@ -15,18 +15,23 @@ import java.util.Collection;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.EffectPlant;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 
-public class TileEntityHeatLily extends TileEntityChromaticBase implements EffectPlant, LocationCached {
+public class TileEntityHeatLily extends TileEntityMagicPlant implements LocationCached {
 
 	private StepTimer timer = new StepTimer(100);
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
+
+	@Override
+	public ForgeDirection getGrowthDirection() {
+		return ForgeDirection.UP;
+	}
 
 	@Override
 	public ChromaTiles getTile() {

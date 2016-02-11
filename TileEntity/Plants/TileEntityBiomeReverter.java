@@ -14,8 +14,8 @@ import java.util.Collection;
 
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.EffectPlant;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -24,7 +24,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityBiomeReverter extends TileEntityChromaticBase implements EffectPlant, LocationCached {
+public class TileEntityBiomeReverter extends TileEntityMagicPlant implements LocationCached {
 
 	private StepTimer timer = new StepTimer(40);
 
@@ -56,6 +56,11 @@ public class TileEntityBiomeReverter extends TileEntityChromaticBase implements 
 	}
 
 	@Override
+	public ForgeDirection getGrowthDirection() {
+		return ForgeDirection.UP;
+	}
+
+	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.REVERTER;
 	}
@@ -64,7 +69,9 @@ public class TileEntityBiomeReverter extends TileEntityChromaticBase implements 
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote)
 			return;
-		timer.update();
+		int n = 1+2*this.getAccelerationPlants();
+		for (int i = 0; i < n; i++)
+			timer.update();
 		if (timer.checkCap()) {
 			this.revertBiome(world, x, y, z);
 		}
