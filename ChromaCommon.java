@@ -29,6 +29,7 @@ public class ChromaCommon {
 	public static int glassRender;
 	public static int consoleRender;
 	public static int fenceRender;
+	public static int selectiveRender;
 
 	public static int oreRender;
 	public static int plantRender;

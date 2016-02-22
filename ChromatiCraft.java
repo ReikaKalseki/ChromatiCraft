@@ -65,6 +65,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Command.ChromabilityCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
@@ -84,6 +85,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
@@ -122,6 +124,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionJoinHandler;
+import Reika.ChromatiCraft.World.Nether.NetherStructureGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
@@ -129,12 +132,14 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
+import Reika.DragonAPI.Auxiliary.Trackers.EnchantmentCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerFirstTimeTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.PotionCollisionTracker;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.RetroGenController;
 import Reika.DragonAPI.Auxiliary.Trackers.SuggestedModsTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
@@ -239,6 +244,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static BiomeRainbowForest rainbowforest;
 	public static BiomeEnderForest enderforest;
+
+	public static EnchantmentWeaponAOE weaponAOE;
 
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
@@ -349,6 +356,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionCustomRegen.class);
 		betterRegen = new PotionCustomRegen(id);
 
+		id = ExtraChromaIDs.WEAPONAOEID.getValue();
+		EnchantmentCollisionTracker.instance.addEnchantmentID(instance, id, EnchantmentWeaponAOE.class);
+		weaponAOE = new EnchantmentWeaponAOE(id);
+
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
 
@@ -423,6 +434,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 
 		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
 		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
@@ -482,6 +494,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			OreDictionary.registerOre("treeSapling", sapling);
 			OreDictionary.registerOre("plant"+dye.colorNameNoSpaces, flower);
 			OreDictionary.registerOre("flower"+dye.colorNameNoSpaces, flower);
+			OreDictionary.registerOre("flower", flower);
 			FurnaceFuelRegistry.instance.registerItemSimple(sapling, 0.5F);
 		}
 
@@ -811,6 +824,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 			catch (Exception e) {
 				logger.logError("Could not blacklist Ball Lightning from MFR Safari Net!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.MINEFACTORY, e);
 				e.printStackTrace();
 			}
 		}
@@ -826,6 +840,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 			catch (Exception e) {
 				logger.logError("Could not add compatibility with Carpenter's blocks!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.CARPENTER, e);
 				e.printStackTrace();
 			}
 		}
@@ -835,14 +850,16 @@ public class ChromatiCraft extends DragonAPIMod {
 				Class c = Class.forName("crazypants.enderio.config.Config");
 				Field f = c.getField("travelStaffBlinkBlackList");
 				String[] arr = (String[])f.get(null);
-				String[] next = new String[arr.length+2];
+				String[] next = new String[arr.length+3];
 				System.arraycopy(arr, 0, next, 0, arr.length);
-				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
-				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
+				next[next.length-3] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
+				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
+				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.DOOR);
 				f.set(null, next);
 			}
 			catch (Exception e) {
 				logger.logError("Could not add EnderIO travelling staff blacklisting!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.ENDERIO, e);
 				e.printStackTrace();
 			}
 		}
@@ -872,6 +889,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new StructureGenCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
+		evt.registerServerCommand(new CrystalNetCommand());
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
 	}

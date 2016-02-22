@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dye;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +25,7 @@ import Reika.ChromatiCraft.World.TreeShaper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class BlockDyeSapling extends BlockSapling {
@@ -104,10 +104,13 @@ public class BlockDyeSapling extends BlockSapling {
 		Block id = world.getBlock(x, y, z);
 		if (!ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z))
 			return false;
-		if (id instanceof BlockLiquid)
+		if (ReikaBlockHelper.isLiquid(id))
 			return false;
 		for (int i = 0; i < 6; i++) {
+			id = world.getBlock(x, y+i, z);
 			if (!ReikaWorldHelper.softBlocks(world, x, y+i, z) && !(i == 0 && id == ChromaBlocks.DYESAPLING.getBlockInstance()))
+				return false;
+			if (ReikaBlockHelper.isLiquid(id))
 				return false;
 		}
 		return ignoreLight || world.getBlockLightValue(x, y, z) >= 9;

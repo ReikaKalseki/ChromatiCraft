@@ -567,8 +567,16 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				}
 			}
 			for (int i = 0; i < 9; i++) {
-				if (inv[i] != null)
+				if (i == 4) {
+					ItemStack ret = recipe.getCentralLeftover(inv[i]);
+					if (ret != null) {
+						inv[i] = ret;
+						continue;
+					}
+				}
+				if (inv[i] != null) {
 					ReikaInventoryHelper.decrStack(i, inv);
+				}
 			}
 			count += activeRecipe.getOutput().stackSize;
 			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
@@ -905,7 +913,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	@Override
-	public int getIconState() {
+	public int getIconState(int side) {
 		return isEnhanced ? 1 : 0;
 	}
 

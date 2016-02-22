@@ -217,7 +217,7 @@ public class CastingAPI {
 			loaded = true;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 }

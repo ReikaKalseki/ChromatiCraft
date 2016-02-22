@@ -136,7 +136,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		int meta = iba.getBlockMetadata(x, y, z);
 		TileEntityChromaticBase te = (TileEntityChromaticBase)iba.getTileEntity(x, y, z);
-		return icons[meta][s][te.getIconState()];
+		return icons[meta][s][te.getIconState(s)];
 	}
 
 	@Override

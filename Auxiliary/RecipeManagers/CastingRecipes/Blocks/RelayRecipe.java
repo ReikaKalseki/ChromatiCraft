@@ -38,7 +38,7 @@ public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkin
 
 	@Override
 	public int getNumberProduced() {
-		return 4;
+		return 8;
 	}
 
 }

@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -82,9 +83,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof SneakPop && ep.isSneaking()) {
-			((SneakPop)tile).drop();
-			ChromaSounds.RIFT.playSoundAtBlock(tile);
-			return true;
+			if (((SneakPop)tile).canDrop(ep)) {
+				((SneakPop)tile).drop();
+				ChromaSounds.RIFT.playSoundAtBlock(tile);
+				return true;
+			}
 		}
 		if (t == ChromaTiles.RIFT) {
 			TileEntityRift te = (TileEntityRift)tile;
@@ -284,7 +287,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone, 0.35F, 0.05F);
 		}
 
-		if (ModList.THAUMCRAFT.isLoaded() && InterfaceCache.NODE.instanceOf(tile)) {
+		if (ModList.THAUMCRAFT.isLoaded() && !(tile instanceof CrystalNetworkTile) && InterfaceCache.NODE.instanceOf(tile)) {
 			if (ProgressStage.CTM.isPlayerAtStage(ep) && ReikaThaumHelper.isResearchComplete(ep, "NODESTABILIZERADV")) { //CC and TC progression
 				if (!world.isRemote) {
 					NodeRecharger.instance.addNode((INode)tile);

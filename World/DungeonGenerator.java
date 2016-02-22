@@ -52,6 +52,7 @@ import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
@@ -208,7 +209,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						for (int k1 = struct.getMinX(); k1 <= struct.getMaxX(); k1++) {
 							for (int k2 = struct.getMinZ(); k2 <= struct.getMaxZ(); k2++) {
 								Coordinate c = new Coordinate(k1, world.getTopSolidOrLiquidBlock(k1, k2), k2);
-								if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(6)) {
+								if (c.getBlock(world) == Blocks.air && c.offset(0, -1, 0).getBlock(world) == Blocks.sand && ReikaRandomHelper.doWithChance(2)) {
 									if (c.offset(1, 0, 0).getBlock(world) == Blocks.air && c.offset(-1, 0, 0).getBlock(world) == Blocks.air) {
 										if (c.offset(0, 0, 1).getBlock(world) == Blocks.air && c.offset(0, 0, -1).getBlock(world) == Blocks.air) {
 											c.setBlock(world, Blocks.cactus);
@@ -475,7 +476,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			for (int k = 0; k < arr.getSize(); k++) {
 				Coordinate c = arr.getNthBlock(k);
 				Block b = c.getBlock(world);
-				if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord))
+				if (b.isAir(world, c.xCoord, c.yCoord, c.zCoord) || ReikaBlockHelper.isLiquid(b))
 					return false;
 			}
 			return true;

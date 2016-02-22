@@ -69,12 +69,12 @@
 	<dash>
 		Flail your weapon as you may, being surrounded by mobs will often result in your death. That night, however, you had a dream. Interspersed with hallucinations of some guy named "Kluex", it finally hit you: You can probably combine time- and movement-based energies to quickly bolt out of danger, turning sprint into something rather more powerful.
 	</dash>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
+	<firerain>
+		There are times when precise, directed efforts are optimal. And then there are times where everything in sight must be reduced to rubble. After venturing into a thick forest inhabited by giant spiders and invisible wolves, you lost a significant portion of your dignity when you barely made it halfway to the tower rising out of the center. Next time will be better, because you will make sure that there will not BE a forest.
+	</firerain>
+	<laser>
+		From a particularly obnoxious mountain range to mazes of near-impenetrable stone, you often find your path blocked. Recalling that "The best solution to a problem is usually the easiest one", it would be optimal to simply obliterate the obstacle. Unsurprisingly, this also kills everything in a large area, but its utility for that is limited unless you like living in a smoldering moonscape. Maybe, though, it could be used to kill that abomination below the bedrock...the proper word is "toast".
+	</laser>
 	<name>
 
 	</name>

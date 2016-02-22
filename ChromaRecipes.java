@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.Instantiable.Recipe.ShapelessNBTRecipe;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -129,6 +130,23 @@ public class ChromaRecipes {
 
 			ReikaThaumHelper.addBookCategory(new ResourceLocation("chromaticraft", "textures/blocks/tile/table_top.png"), "chromaticraft");
 
+			MathExpression costFactor = new MathExpression() {
+				@Override
+				public double evaluate(double arg) throws ArithmeticException {
+					return 1.5*Math.sqrt(arg);
+				}
+
+				@Override
+				public double getBaseValue() {
+					return 0;
+				}
+
+				@Override
+				public String toString() {
+					return "1.5*sqrt()";
+				}
+			};
+
 			{
 				ItemStack in = ChromaItems.WARP.getStackOfMetadata(0);
 				ItemStack out = ChromaItems.WARP.getStackOfMetadata(1);
@@ -153,7 +171,7 @@ public class ChromaRecipes {
 						new ItemStack(ThaumItemHelper.BlockEntry.CRYSTAL.getBlock(), 1, 6),
 				};
 				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("ELDRITCHMINOR", out, 16, al, in, recipe);
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, -3, -2, root, ref);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("WARPPROOF", desc, "chromaticraft", ir, costFactor, -3, -2, root, ref);
 			}
 
 			{
@@ -171,7 +189,7 @@ public class ChromaRecipes {
 						ThaumItemHelper.ItemEntry.VISFITLER.getItem(),
 				};
 				InfusionRecipe ir = ThaumcraftApi.addInfusionCraftingRecipe("", ChromaStacks.crystalWand, 6, al, ChromaStacks.iridChunk, recipe);
-				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, 3, 2, root, ref);
+				ReikaThaumHelper.addInfusionRecipeBookEntryViaXML("ROD_CRYSTALWAND", "Fashioning a wand from crystals", "chromaticraft", ir, costFactor, 3, 2, root, ref);
 			}
 
 			TieredOreCap.addRecipes();

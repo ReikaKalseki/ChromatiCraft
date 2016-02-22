@@ -840,6 +840,8 @@ public enum Chromabilities implements Ability {
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x, y, z, x, y, z).expand(range, range, range);
 		List<EntityItem> inbox = world.getEntitiesWithinAABB(EntityItem.class, box);
 		for (EntityItem ent : inbox) {
+			if (ent.isDead)
+				continue;
 			ReikaEntityHelper.setInvulnerable(ent, true);
 			if (ent.delayBeforeCanPickup == 0) {
 				double dx = (x+0.5 - ent.posX);
@@ -858,11 +860,14 @@ public enum Chromabilities implements Ability {
 					ent.motionZ = MathHelper.clamp_double(ent.motionZ, -0.75, 0.75);
 					if (ent.posY < y)
 						ent.motionY += 0.125;
+					if (ent.posY < 0)
+						ent.motionY = Math.max(1, ent.motionY);
 					if (!world.isRemote)
 						ent.velocityChanged = true;
 				}
 			}
-			ent.age--;
+			if (ent.age >= ent.lifespan-5)
+				ent.age = 0;
 			if (nc)
 				ent.noClip = true;
 			if (!ent.getEntityData().hasKey("cc_magnetized"))
@@ -870,6 +875,8 @@ public enum Chromabilities implements Ability {
 		}
 		List<EntityXPOrb> inbox2 = world.getEntitiesWithinAABB(EntityXPOrb.class, box);
 		for (EntityXPOrb ent : inbox2) {
+			if (ent.isDead)
+				continue;
 			ReikaEntityHelper.setInvulnerable(ent, true);
 			double dx = (x+0.5 - ent.posX);
 			double dy = (y+0.5 - ent.posY);
@@ -887,10 +894,13 @@ public enum Chromabilities implements Ability {
 				ent.motionZ = MathHelper.clamp_double(ent.motionZ, -0.75, 0.75);
 				if (ent.posY < y)
 					ent.motionY += 0.1;
+				if (ent.posY < 0)
+					ent.motionY = Math.max(1, ent.motionY);
 				if (!world.isRemote)
 					ent.velocityChanged = true;
 			}
-			ent.xpOrbAge--;
+			if (ent.xpOrbAge >= 6000)
+				ent.xpOrbAge = 0;
 			if (nc)
 				ent.noClip = true;
 			if (!ent.getEntityData().hasKey("cc_magnetized"))

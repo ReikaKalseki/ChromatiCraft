@@ -16,6 +16,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -241,7 +242,16 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		if (li == null || li.isEmpty())
 			return null;
 		Coordinate c = li.get(rand.nextInt(li.size()));
-		return locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer()) ? c : null;
+		while (c.getBlock(worldObj) == Blocks.air && !li.isEmpty()) {
+			li.remove(c);
+			if (!li.isEmpty()) {
+				c = li.get(rand.nextInt(li.size()));
+			}
+			else {
+				c = null;
+			}
+		}
+		return c != null ? (locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer()) ? c : null) : null;
 	}
 
 	@Override

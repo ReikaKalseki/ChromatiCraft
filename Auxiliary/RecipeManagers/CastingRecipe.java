@@ -28,6 +28,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
+import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
+import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
+import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Magic.ElementTag;
@@ -54,7 +58,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class CastingRecipe {
+public class CastingRecipe implements APICastingRecipe {
 
 	private final ItemStack out;
 	public final RecipeType type;
@@ -63,6 +67,10 @@ public class CastingRecipe {
 
 	protected CastingRecipe(ItemStack out, IRecipe recipe) {
 		this(out, RecipeType.CRAFTING, recipe);
+	}
+
+	public final int getTier() {
+		return type.ordinal();
 	}
 
 	private CastingRecipe(ItemStack out, RecipeType type, IRecipe recipe) {
@@ -267,7 +275,11 @@ public class CastingRecipe {
 		return tag;
 	}
 
-	public static class TempleCastingRecipe extends CastingRecipe {
+	public ItemStack getCentralLeftover(ItemStack is) {
+		return null;
+	}
+
+	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final BlockArray runeRing = new BlockArray();
 		private static final HashMap<Coordinate, CrystalElement> allRunes = new HashMap();
@@ -347,6 +359,15 @@ public class CastingRecipe {
 			return runes.getView();
 		}
 
+		public final Map<List<Integer>, CrystalElementProxy> getRunePositions() {
+			HashMap<List<Integer>, CrystalElementProxy> map = new HashMap();
+			Map<Coordinate, CrystalElement> rv = this.getRunes().getRunes();
+			for (Coordinate c : rv.keySet()) {
+				map.put(c.asIntList(), rv.get(c).getAPIProxy());
+			}
+			return map;
+		}
+
 		@Override
 		public boolean match(TileEntityCastingTable table) {
 			return super.match(table) && this.matchRunes(table.worldObj, table.xCoord, table.yCoord, table.zCoord);
@@ -378,7 +399,7 @@ public class CastingRecipe {
 
 	}
 
-	public static class MultiBlockCastingRecipe extends TempleCastingRecipe {
+	public static class MultiBlockCastingRecipe extends TempleCastingRecipe implements MultiRecipe {
 
 		private final HashMap<List<Integer>, ItemMatch> inputs = new HashMap();
 		private final ItemStack main;
@@ -392,7 +413,7 @@ public class CastingRecipe {
 			this.main = main;
 		}
 
-		public ItemStack getMainInput() {
+		public final ItemStack getMainInput() {
 			return main.copy();
 		}
 
@@ -419,6 +440,14 @@ public class CastingRecipe {
 
 		public Map<List<Integer>, ItemMatch> getAuxItems() {
 			return Collections.unmodifiableMap(inputs);
+		}
+
+		public final Map<List<Integer>, List<ItemStack>> getInputItems() {
+			HashMap<List<Integer>, List<ItemStack>> map = new HashMap();
+			for (List<Integer> li : inputs.keySet()) {
+				map.put(li, inputs.get(li).getItemList());
+			}
+			return map;
 		}
 
 		public HashMap<WorldLocation, ItemMatch> getOtherInputs(World world, int x, int y, int z) {
@@ -542,7 +571,7 @@ public class CastingRecipe {
 		}
 	}
 
-	public static class PylonRecipe extends MultiBlockCastingRecipe {
+	public static class PylonRecipe extends MultiBlockCastingRecipe implements LumenRecipe {
 
 		private final ElementTagCompound elements = new ElementTagCompound();
 
@@ -596,6 +625,10 @@ public class CastingRecipe {
 				tag.addValueToColor(e, Math.max(2, elements.getValue(e)/10000));
 			}
 			return tag;
+		}
+
+		public int getEnergyCost(CrystalElementProxy e) {
+			return elements.getValue(CrystalElement.getFromAPI(e));
 		}
 	}
 

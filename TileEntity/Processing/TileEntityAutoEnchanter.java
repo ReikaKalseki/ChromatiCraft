@@ -90,15 +90,17 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && !ReikaEnchantmentHelper.hasEnchantments(is) && this.areEnchantsValid(is, selected.keySet());
+		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is, selected.keySet());
 	}
 
 	private boolean areEnchantsValid(ItemStack is, Collection<Enchantment> c) {
 		for (Enchantment e : c) {
-			if (is.getItem() == Items.book && !e.isAllowedOnBooks()) {
-				return false;
+			if (is.getItem() == Items.book) {
+				if (!e.isAllowedOnBooks()) {
+					return false;
+				}
 			}
-			if (!e.canApply(is)) {
+			else if (!e.canApply(is)) {
 				return false;
 			}
 		}

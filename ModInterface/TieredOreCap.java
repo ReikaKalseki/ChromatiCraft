@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Instantiable.Formula.MathExpression;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -91,7 +92,25 @@ public class TieredOreCap extends WandCap {
 			ShapedArcaneRecipe ir = ThaumcraftApi.addArcaneCraftingRecipe("", wt.item, al, recipe);
 			String id = "CAP_TIEREDCAP_"+t.name();
 			String desc = "Novel caps";
-			ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, 2, i, ChromatiCraft.class, ref);
+
+			MathExpression cost = new MathExpression() {
+				@Override
+				public double evaluate(double arg) throws ArithmeticException {
+					return arg/5D;
+				}
+
+				@Override
+				public double getBaseValue() {
+					return 0;
+				}
+
+				@Override
+				public String toString() {
+					return "/5";
+				}
+			};
+
+			ReikaThaumHelper.addArcaneRecipeBookEntryViaXML(id, desc, "chromaticraft", ir, cost, 2, i, ChromatiCraft.class, ref);
 			i++;
 		}
 	}

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -141,20 +142,22 @@ public class GuiItemInserter extends GuiChromaBase {
 			Coordinate c = tile.getLink(i);
 			if (c != null) {
 				Block b = c.getBlock(tile.worldObj);
-				ItemStack is = b instanceof MachineRegistryBlock ? ((MachineRegistryBlock)b).getMachine(tile.worldObj, c.xCoord, c.yCoord, c.zCoord).getCraftedProduct() : new ItemStack(b, 1, c.getBlockMetadata(tile.worldObj));
-				api.drawItemStack(itemRender, fontRendererObj, is, 152, 15+20*i);
+				if (b != Blocks.air) {
+					ItemStack is = b instanceof MachineRegistryBlock ? ((MachineRegistryBlock)b).getMachine(tile.worldObj, c.xCoord, c.yCoord, c.zCoord).getCraftedProduct() : new ItemStack(b, 1, c.getBlockMetadata(tile.worldObj));
+					api.drawItemStack(itemRender, fontRendererObj, is, 152, 15+20*i);
 
-				int x = j+137;
-				int y = k+14+i*20;
-				if (api.isMouseInBox(x, x+8, y, y+18)) {
-					String s = tile.getInsertionType(i).displayName;
-					api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
-				}
+					int x = j+137;
+					int y = k+14+i*20;
+					if (api.isMouseInBox(x, x+8, y, y+18)) {
+						String s = tile.getInsertionType(i).displayName;
+						api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
+					}
 
-				x += 15;
-				if (api.isMouseInBox(x, x+16, y, y+18)) {
-					String s = is.getDisplayName()+" at "+c.toString();
-					api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
+					x += 15;
+					if (api.isMouseInBox(x, x+16, y, y+18)) {
+						String s = is.getDisplayName()+" at "+c.toString();
+						api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
+					}
 				}
 			}
 		}

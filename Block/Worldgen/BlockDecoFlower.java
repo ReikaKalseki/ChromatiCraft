@@ -304,7 +304,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					int n = this.onActiveGrass(world, x, y, z) ? 8 : 32;
 					if (rand.nextInt(n) > 0)
 						return false;
-					if (this == ENDERFLOWER && rand.nextInt(24) > 0)
+					if (this == ENDERFLOWER && rand.nextInt(12) > 0)
 						return false;
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -400,7 +400,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case FLOWIVY: {
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						if (world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ).getMaterial() == Material.rock)
+						Block b = world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+						if (b.isOpaqueCube() && b.getMaterial() == Material.rock)
 							return true;
 					}
 					//return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();

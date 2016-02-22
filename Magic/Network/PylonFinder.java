@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -36,12 +37,15 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
 public class PylonFinder {
+
+	public static final String LOGGER_ID = "PylonFinder";
 
 	private final LinkedList<WorldLocation> nodes = new LinkedList();
 	private final Collection<WorldLocation> blacklist = new HashSet();
@@ -67,6 +71,10 @@ public class PylonFinder {
 	private static final HashMap<WorldLocation, EnumMap<CrystalElement, ArrayList<CrystalPath>>> paths = new HashMap();
 
 	//private final HashMap<ChunkCoordIntPair, ChunkCopy> chunkCache = new HashMap();
+
+	static {
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
+	}
 
 	PylonFinder(CrystalElement e, CrystalReceiver r, EntityPlayer ep) {
 		element = e;
@@ -126,6 +134,8 @@ public class PylonFinder {
 
 	private boolean anyConnectedSources() {
 		ArrayList<CrystalSource> li = net.getAllSourcesFor(element, true);
+		if (ModularLogger.instance.isEnabled(LOGGER_ID))
+			ModularLogger.instance.log(LOGGER_ID, "Found "+li.size()+" sources for "+element+": "+li);
 		for (CrystalSource s : li) {
 			if (this.isSourceConnected(s))
 				return true;

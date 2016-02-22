@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Magic.Network;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.EnumMap;
@@ -32,6 +33,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -41,7 +43,10 @@ import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -53,6 +58,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.TileEntityCache;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -164,12 +170,22 @@ public class CrystalNetworker implements TickHandler {
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tiles.writeToNBT(tag);
 		NBT.setTag(NBT_TAG, tag);
+		//ChromatiCraft.logger.log("Saved crystal network: ");
+		//ChromatiCraft.logger.log("");
+		//this.printCrystalNetwork(null, -1, -1);
+		//ChromatiCraft.logger.log("");
+		//ChromatiCraft.logger.log("NBT: "+NBT);
 		//ReikaJavaLibrary.pConsole(tiles+" to "+tag, Side.SERVER);
 	}
 
 	private void load(NBTTagCompound NBT) {
 		NBTTagCompound tag = NBT.getCompoundTag(NBT_TAG);
 		tiles.readFromNBT(tag);
+		//ChromatiCraft.logger.log("Loaded crystal network: ");
+		//ChromatiCraft.logger.log("");
+		//ChromatiCraft.logger.log("NBT: "+NBT);
+		//ChromatiCraft.logger.log("");
+		//this.printCrystalNetwork(null, -1, -1);
 
 		for (CrystalNetworkTile te : tiles.values()) {
 			if (te instanceof TileEntityCrystalPylon) {
@@ -468,7 +484,7 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		PylonFinder.removePathsWithTile(te);
-		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true); //was false
+		WorldCrystalNetworkData.initNetworkData(te.getWorld()).setDirty(true); //was false, then true (which broke things?)
 		if (te instanceof TileEntityCrystalPylon) {
 			PylonLocationData.initNetworkData(te.getWorld()).setDirty(true);
 		}
@@ -518,7 +534,10 @@ public class CrystalNetworker implements TickHandler {
 		ArrayList<CrystalReceiver> li = new ArrayList();
 		try {
 			WorldLocation loc = PylonFinder.getLocation(r);
-			for (WorldLocation c : tiles.getAllLocationsNear(loc, r.getSendRange())) {
+			Collection<WorldLocation> locs = tiles.getAllLocationsNear(loc, r.getSendRange());
+			if (ModularLogger.instance.isEnabled(NBT_TAG))
+				ModularLogger.instance.log(NBT_TAG, "Found "+locs.size()+" receivers from "+r+": "+locs);
+			for (WorldLocation c : locs) {
 				CrystalNetworkTile tile = tiles.get(c);
 				if (tile instanceof CrystalReceiver && r != tile) {
 					CrystalReceiver te = (CrystalReceiver)tile;
@@ -807,6 +826,55 @@ public class CrystalNetworker implements TickHandler {
 			}
 		}
 		return li;
+	}
+
+	public void printCrystalNetwork(World world, int chunkX, int chunkZ) {
+		MultiMap<Integer, String> data = new MultiMap();
+		for (WorldLocation loc : tiles.keySet()) {
+			if (world == null || loc.dimensionID == world.provider.dimensionId)
+				if (chunkX == -1 || loc.xCoord/16 == chunkX)
+					if (chunkZ == -1 || loc.zCoord/16 == chunkZ)
+						data.addValue(loc.dimensionID, "("+loc+" @ "+this.getString(tiles.get(loc))+")");
+		}
+		if (data.isEmpty()) {
+			ReikaJavaLibrary.pConsole("[]");
+		}
+		else {
+			for (int dim : data.keySet()) {
+				ReikaJavaLibrary.pConsole("DIM"+dim+":");
+				Collection li = data.get(dim);
+				ReikaJavaLibrary.pConsole(li.size()+"# "+li);
+			}
+		}
+	}
+
+	private String getString(CrystalNetworkTile net) {
+		if (net instanceof TileEntityCrystalPylon) {
+			TileEntityCrystalPylon te = (TileEntityCrystalPylon)net;
+			return te.getColor()+" Pylon ["+te.getEnergy(te.getColor())+"/"+te.getMaxStorage(te.getColor())+"], Struct="+te.hasStructure()+", Turbo="+te.isEnhanced();
+		}
+		else if (net instanceof TileEntityCrystalRepeater) {
+			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)net;
+			if (te instanceof TileEntityCompoundRepeater) {
+				return "Compound Repeater, Struct="+te.canConduct()+", Turbo="+te.isTurbocharged();
+			}
+			else if (te instanceof TileEntityCrystalBroadcaster) {
+				return "Broadcast Repeater, Struct="+te.canConduct()+", Turbo="+te.isTurbocharged();
+			}
+			else {
+				return te.getActiveColor()+" Repeater, Struct="+te.canConduct()+", Turbo="+te.isTurbocharged();
+			}
+		}
+		else if (net instanceof TileEntityChromaticBase) {
+			return ((TileEntityChromaticBase)net).getName();
+		}
+		else {
+			int[] conn = new int[16];
+			for (int i = 0; i < 16; i++) {
+				conn[i] = net.isConductingElement(CrystalElement.elements[i]) ? 1 : 0;
+			}
+			return net.toString()+" : "+net.canConduct()+", E="+Arrays.toString(conn);
+		}
 	}
 
 }

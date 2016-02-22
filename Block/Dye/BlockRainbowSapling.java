@@ -43,7 +43,8 @@ public class BlockRainbowSapling extends BlockSapling {
 
 	@Override
 	public void func_149878_d(World world, int x, int y, int z, Random r) {
-		this.growTree(world, x, y, z, r);
+		if (this.canGrowAt(world, x, y, z))
+			this.growTree(world, x, y, z, r);
 	}
 
 	public void growTree(World world, int x, int y, int z, Random r)

@@ -110,6 +110,9 @@ public enum ChromaPackets {
 	INSERTERCONNECTION(2),
 	INSERTERACTION(5),
 	COBBLEGENEND(2),
+	LIGHTERACT(3),
+	LIGHTERDELTAY(1),
+	LIGHTEREND(),
 	;
 
 	public final int numInts;

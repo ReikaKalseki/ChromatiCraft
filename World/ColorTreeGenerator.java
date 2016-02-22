@@ -23,7 +23,6 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
@@ -106,25 +105,25 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 		BiomeDictionary.Type[] types = BiomeDictionary.getTypesForBiome(biome);
 		for (int i = 0; i < types.length; i++) {
 			if (types[i] == BiomeDictionary.Type.FOREST) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.forest), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.forest));
 			}
 			if (types[i] == BiomeDictionary.Type.MOUNTAIN) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.extremeHills), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.extremeHills));
 			}
 			if (types[i] == BiomeDictionary.Type.JUNGLE) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.jungle), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.jungle));
 			}
 			if (types[i] == BiomeDictionary.Type.HILLS) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.forestHills), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.forestHills));
 			}
 			if (types[i] == BiomeDictionary.Type.SNOWY) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.icePlains), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.icePlains));
 			}
 			if (types[i] == BiomeDictionary.Type.PLAINS) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.plains), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.plains));
 			}
 			if (types[i] == BiomeDictionary.Type.SWAMP) {
-				trees = ReikaMathLibrary.extrema(trees, getTreeCount(world, BiomeGenBase.swampland), "max");
+				trees = Math.max(trees, getTreeCount(world, BiomeGenBase.swampland));
 			}
 		}
 		return trees;

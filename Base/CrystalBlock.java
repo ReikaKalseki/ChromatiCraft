@@ -275,7 +275,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 					break;
 				case BROWN:
 					if (!e.isPotionActive(Potion.confusion.id))
-						e.addPotionEffect(new PotionEffect(Potion.confusion.id, (int)(dura*1.8), level, true));
+						e.addPotionEffect(new PotionEffect(Potion.confusion.id, Math.max(100, (int)(dura*1.8)), level, true));
 					break;
 				case LIME:
 					e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));

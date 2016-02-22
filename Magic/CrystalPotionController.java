@@ -119,11 +119,11 @@ public class CrystalPotionController {
 	public static String getPotionName(CrystalElement color) {
 		if (color == CrystalElement.BLACK)
 			return "corrupting";
-		if (color == CrystalElement.BROWN)
-			return "lengthening";
 		if (color == CrystalElement.PURPLE)
 			return "enhancing";
 		Potion pot = map.get(color);
+		if (pot == null && color == CrystalElement.BROWN)
+			return "lengthening";
 		if (pot == null)
 			return "[None]";
 		return StatCollector.translateToLocal(pot.getName());

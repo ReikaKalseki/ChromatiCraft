@@ -175,15 +175,18 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		BlockTieredOre t = (BlockTieredOre)b;
 		if (t.isPlayerSufficientTier(world, x, y, z, Minecraft.getMinecraft().thePlayer)) {
 			if (TieredOres.list[meta].renderAsGeode()) {
+				v5.setBrightness(240);
+				v5.setColorOpaque(255, 255, 255);
 				this.renderGeode(world, x, y, z, b, meta, rb);
 				//this.renderSimpleGeode(world, x, y, z, b, meta, rb);
 			}
 			else {
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
 
-				IIcon ico = t.getOverlay(meta);
 				v5.setBrightness(240);
 				v5.setColorOpaque(255, 255, 255);
+
+				IIcon ico = t.getOverlay(meta);
 				if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
 					rb.renderFaceYNeg(b, x, y, z, ico);
 				if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
@@ -362,8 +365,8 @@ public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
 		}
 
 		v5.clear();
-		if (world != null)
-			Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.setColorOpaque_I(0xffffff);
 		for (int i = 0; i < numSections; i++) {
 			double d = i*s;
 			double db = d+s;

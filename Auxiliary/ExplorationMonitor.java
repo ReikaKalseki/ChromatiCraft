@@ -60,7 +60,7 @@ public class ExplorationMonitor implements TickHandler {
 						}
 					}
 				}
-				else if (b == Blocks.bedrock) {
+				else if (b == Blocks.bedrock && y < 6) {
 					ProgressStage.BEDROCK.stepPlayerTo(ep);
 				}
 			}

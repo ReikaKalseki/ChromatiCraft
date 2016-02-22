@@ -131,7 +131,7 @@ public class TankRender extends ChromaRenderBase {
 				float du = ico.getMaxU();
 				float v = ico.getMinV();
 				float dv = ico.getMaxV();
-				double o = 0.001;
+				double o = 0.004;
 				double dx = f1-te.xCoord;
 				double dy = f2-te.yCoord;
 				double dz = f3-te.zCoord;
@@ -156,10 +156,10 @@ public class TankRender extends ChromaRenderBase {
 						v5.addVertexWithUV(dx-0-o, dy+1+o, dz-0-o, u, v);
 					}
 					if (li.contains(ForgeDirection.EAST)) {
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz-0-o, u, v);
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz+1+o, du, v);
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz+1+o, du, dv);
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz-0-o, u, dv);
+						v5.addVertexWithUV(dx+1+o, dy-0-o, dz+1-o, u, dv);
+						v5.addVertexWithUV(dx+1+o, dy-0-o, dz-0+o, du, dv);
+						v5.addVertexWithUV(dx+1+o, dy+1+o, dz-0+o, du, v);
+						v5.addVertexWithUV(dx+1+o, dy+1+o, dz+1-o, u, v);
 					}
 					/*
 				if (li.contains(ForgeDirection.UP)) {

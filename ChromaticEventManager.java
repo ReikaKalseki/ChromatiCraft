@@ -11,6 +11,7 @@ package Reika.ChromatiCraft;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -34,6 +35,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -78,6 +80,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
+import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -87,6 +90,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -98,6 +102,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
+import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
@@ -113,18 +118,22 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
+import Reika.DragonAPI.Instantiable.Event.EntityAboutToRayTraceEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
@@ -154,6 +163,43 @@ public class ChromaticEventManager {
 	private ChromaticEventManager() {
 
 	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void notifySelectiveGlass(EntityAboutToRayTraceEvent evt) {
+		HashSet<Coordinate> li = ReikaVectorHelper.getCoordsAlongVector(evt.startPos.xCoord, evt.startPos.yCoord, evt.startPos.zCoord, evt.endPos.xCoord, evt.endPos.yCoord, evt.endPos.zCoord);
+		for (Coordinate c : li) {
+			if (c.getBlock(evt.entity.worldObj) == ChromaBlocks.SELECTIVEGLASS.getBlockInstance()) {
+				BlockSelectiveGlass.addEntityCheckPos(c, evt.entity);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void reopenStructureOnDeath(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			int x = MathHelper.floor_double(evt.entityLiving.posX);
+			int y = MathHelper.floor_double(evt.entityLiving.posY);
+			int z = MathHelper.floor_double(evt.entityLiving.posZ);
+			int r = 12;
+			int rh = 6;
+			for (int i = -r; i <= r; i++) {
+				for (int j = -rh; j <= rh; j++) {
+					for (int k = -r; k <= r; k++) {
+						int dx = x+i;
+						int dy = y+j;
+						int dz = z+k;
+						if (ChromaTiles.getTile(evt.entityLiving.worldObj, dx, dy, dz) == ChromaTiles.STRUCTCONTROL) {
+							TileEntityStructControl te = (TileEntityStructControl)evt.entityLiving.worldObj.getTileEntity(dx, dy, dz);
+							if (te.isTriggerPlayer((EntityPlayer)evt.entityLiving)) {
+								te.reopenStructure();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/*
 	@SubscribeEvent
 	public void punishDamagedForests(BlockTickEvent evt) {
@@ -553,9 +599,40 @@ public class ChromaticEventManager {
 	public void stealHealth(LivingAttackEvent evt) {
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer)src.getEntity();;
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			if (Chromabilities.LEECH.enabledOn(ep)) {
 				ep.heal(evt.ammount*0.1F);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyAOE(LivingAttackEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromatiCraft.weaponAOE, weapon);
+				if (level > 0) {
+					double r = EnchantmentWeaponAOE.getRadius(level);
+					AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(evt.entityLiving, r);
+					Class<? extends EntityLivingBase> cat = ReikaEntityHelper.getEntityCategoryClass(mob);
+					List<EntityLivingBase> li = mob.worldObj.getEntitiesWithinAABB(cat, box);
+					for (EntityLivingBase e : li) {
+						if (e != mob) {
+							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
+							if (cat2 == cat) {
+								double d = e.getDistanceToEntity(mob);
+								double f = EnchantmentWeaponAOE.getDamageFactor(level, d, r);
+								if (f > 0) {
+									e.attackEntityFrom(src, (float)(f*evt.ammount));
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

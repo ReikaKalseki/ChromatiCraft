@@ -143,7 +143,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
 	}
 
-	public int getIconState() {
+	public int getIconState(int side) {
 		return 0;
 	}
 

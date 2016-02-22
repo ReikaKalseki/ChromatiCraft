@@ -288,8 +288,6 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.KILLDRAGON,	ProgressStage.KILLMOB);
 		progressMap.addParent(ProgressStage.KILLWITHER,	ProgressStage.KILLMOB);
 
-		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.DIMENSION);
-
 		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
@@ -298,6 +296,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
+
+		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.DIMENSION);
 
 		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.DIMENSION);
 

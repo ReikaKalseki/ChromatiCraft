@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -83,6 +84,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	private boolean regenned = false;
 	private int trapTick = 0;
 
+	private UUID lastTriggerPlayer;
+
 	private boolean isMonument;
 	private boolean triggeredMonument;
 	private int monumentTick;
@@ -107,6 +110,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			for (EntityPlayer ep : li) {
 				if (ep.boundingBox.intersectsWith(this.getBox(x, y, z))) {
 					this.onPlayerProximity(world, x, y, z, ep);
+					lastTriggerPlayer = ep.getPersistentID();
 				}
 			}
 		}
@@ -328,10 +332,14 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	}
 
 	private void onPlayerProximity(World world, int x, int y, int z, EntityPlayer ep) {
+		if (struct != null)
+			this.calcCrystals(world, x, y, z);
 		switch(struct) {
 			case CAVERN:
-				world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
-				world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+				if (!world.isRemote) {
+					world.setBlock(x+7, y, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+					world.setBlock(x+7, y-1, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+				}
 				ChromaSounds.TRAP.playSound(ep, 1, 1);
 				break;
 			case BURROW:
@@ -421,6 +429,41 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		triggered = true;
 	}
 
+	public void reopenStructure() {
+		boolean flag = false;
+		if (struct != null) {
+			switch(struct) {
+				case CAVERN:
+					worldObj.setBlock(xCoord+7, yCoord, zCoord, Blocks.air);
+					worldObj.setBlock(xCoord+7, yCoord-1, zCoord, Blocks.air);
+					flag = true;
+					break;
+				case DESERT:
+					int x = xCoord-7;
+					int z = zCoord-7;
+					int y = yCoord-3;
+
+					worldObj.setBlock(x+5, y+9, z+5, Blocks.air);
+					worldObj.setBlock(x+5, y+9, z+9, Blocks.air);
+					worldObj.setBlock(x+9, y+9, z+5, Blocks.air);
+					worldObj.setBlock(x+9, y+9, z+9, Blocks.air);
+
+					worldObj.setBlock(x+5, y+5, z+5, Blocks.sandstone);
+					worldObj.setBlock(x+5, y+5, z+9, Blocks.sandstone);
+					worldObj.setBlock(x+9, y+5, z+5, Blocks.sandstone);
+					worldObj.setBlock(x+9, y+5, z+9, Blocks.sandstone);
+					flag = true;
+					break;
+				default:
+					break;
+			}
+		}
+		if (flag) {
+			triggered = false;
+			lastTriggerPlayer = null;
+		}
+	}
+
 	private void openUpperChests() {
 		switch(struct) {
 			case CAVERN:
@@ -436,8 +479,8 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 						}
 					}
 				}
-				worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
-				worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
+				//worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord, zCoord)%8, 3);
+				//worldObj.setBlockMetadataWithNotify(xCoord+7, yCoord-1, zCoord, worldObj.getBlockMetadata(xCoord+7, yCoord-1, zCoord)%8, 3);
 				break;
 			case BURROW:
 				if (blocks != null) {
@@ -725,6 +768,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (struct != null)
 			NBT.setString("struct", struct.name());
+
+		if (lastTriggerPlayer != null)
+			NBT.setString("lastPlayer", lastTriggerPlayer.toString());
+
 		NBT.setInteger("color", this.getColor().ordinal());
 
 		NBT.setBoolean("trigger", triggered);
@@ -742,6 +789,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 		if (NBT.hasKey("struct"))
 			struct = Structures.valueOf(NBT.getString("struct"));
+
+		if (NBT.hasKey("lastPlayer"))
+			lastTriggerPlayer = UUID.fromString(NBT.getString("lastPlayer"));
+
 		color = CrystalElement.elements[NBT.getInteger("color")];
 
 		triggered = NBT.getBoolean("trigger");
@@ -813,6 +864,10 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 	public void triggerMonument() {
 		triggeredMonument = true;
 		monumentTick = 5;
+	}
+
+	public boolean isTriggerPlayer(EntityPlayer ep) {
+		return ep.getUniqueID().equals(lastTriggerPlayer);
 	}
 
 	public static class LootChestWatcher {

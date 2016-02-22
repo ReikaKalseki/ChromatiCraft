@@ -65,7 +65,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	FORCEG1GC("Force Java 8 to use G1GC To Prevent Crashes - Disabling this disables some content", true),
 	PROGRESSNOTIFY("Notify other players of progress gains", true),
 	CAVELIGHTERRANGE("Cave Lighter Range", 128),
-	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8);
+	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
+	BIOMEFX("Biome FX", true);
 
 	private String label;
 	private boolean defaultState;

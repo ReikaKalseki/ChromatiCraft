@@ -57,7 +57,7 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	private static final RayTracer tracer = new RayTracer(0, 0, 0, 0, 0, 0);
 
-	public static final int MAX_UPGRADES = 3;
+	public static final int MAX_UPGRADES = 4;
 
 	//public boolean hasPassiveUpgrade;
 	//public boolean hasPlayerUpgrade;
@@ -90,7 +90,7 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 		if (!world.isRemote) {
 			attackTimer.update();
 			if (attackTimer.checkCap()) {
-				if (TurretUpgrades.SKY.check(this) && world.canBlockSeeTheSky(x, y+1, z))
+				if (world.canBlockSeeTheSky(x, y+1, z) || TurretUpgrades.SKY.check(this))
 					this.attackEntities(world, x, y, z);
 			}
 
@@ -146,8 +146,12 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 		if (ReikaEntityHelper.isHostile(e))
 			return true;
 		if (e instanceof EntityPlayer)
-			return !this.isOwnedByPlayer((EntityPlayer)e) && TurretUpgrades.PLAYERS.check(this);
+			return !this.isOwnedByPlayer((EntityPlayer)e) && this.isHostile((EntityPlayer)e) && TurretUpgrades.PLAYERS.check(this);
 		return TurretUpgrades.PASSIVE.check(this);
+	}
+
+	private boolean isHostile(EntityPlayer e) {
+		return false;
 	}
 
 	private void tryAttackEntity(World world, int x, int y, int z, EntityLivingBase e) {

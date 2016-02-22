@@ -50,11 +50,10 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 
 	public static final int MULTIPLY = 2;
-	public static final int SMELT_TIME = 200;
 
 	public int smeltTimer;
 
-	//private float xp;
+	private float xp;
 
 	private final HybridTank tank = new HybridTank("crystalfurn", 4000);
 
@@ -63,7 +62,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		super.updateEntity(world, x, y, z, meta);
 		if (this.canSmelt()) {
 			smeltTimer += this.getSmeltSpeed();
-			if (smeltTimer >= SMELT_TIME) {
+			if (smeltTimer >= this.getSmeltTime()) {
 				this.smelt();
 				smeltTimer = 0;
 			}
@@ -73,8 +72,12 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		}
 	}
 
-	private int getSmeltSpeed() {
+	public int getSmeltSpeed() {
 		return 1+energy.getTotalEnergy()/12000;
+	}
+
+	public int getSmeltTime() {
+		return Math.max(5, 200-this.getEnergy(CrystalElement.LIGHTBLUE)/100);
 	}
 
 	@Override
@@ -126,11 +129,15 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		ElementTagCompound tag = getSmeltingCost(inv[0], is);
 		is.stackSize *= this.getMultiplyRate(inv[0], is);
 		ReikaInventoryHelper.addOrSetStack(is, inv, 1);
-		float xp = FurnaceRecipes.smelting().func_151398_b(inv[0])*6;
-		int amt = (int)(xp/TileEntityCollector.XP_PER_CHROMA);
-		tank.addLiquid(amt, FluidRegistry.getFluid("chroma"));
+		xp += FurnaceRecipes.smelting().func_151398_b(inv[1])*6;
+		if (xp >= TileEntityCollector.XP_PER_CHROMA) {
+			int amt = (int)(xp/TileEntityCollector.XP_PER_CHROMA);
+			tank.addLiquid(amt, FluidRegistry.getFluid("chroma"));
+			xp = 0;
+		}
 		ReikaInventoryHelper.decrStack(0, inv);
 		this.drainEnergy(tag);
+		energy.subtract(CrystalElement.LIGHTBLUE, 250);
 	}
 
 	public static ElementTagCompound getSmeltingCost(ItemStack in, ItemStack out) {
@@ -139,6 +146,10 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 			tag.scale(1.5F);
 		else if (ModList.ROTARYCRAFT.isLoaded() && ExtractorModOres.isOreFlake(in)) {
 			tag.scale(2F);
+			OreType ore = ExtractorModOres.getOreFromExtract(in);
+			if (ore.getRarity() == OreRarity.RARE) {
+				tag.scale(1.5F);
+			}
 		}
 		else if (in.getItem() instanceof ItemFood) {
 			tag.scale(0.75F);
@@ -221,12 +232,14 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	@Override
 	protected ElementTagCompound getRequiredEnergy() {
-		return smelt.copy();
+		ElementTagCompound tag = smelt.copy();
+		tag.addTag(CrystalElement.LIGHTBLUE, 500);
+		return tag;
 	}
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 120000;
+		return e == CrystalElement.LIGHTBLUE ? 20000 : 120000;
 	}
 
 	public static ElementTagCompound smeltTags() {
@@ -234,12 +247,12 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	}
 
 	public int getCookProgressScaled(int a) {
-		return smeltTimer * a / SMELT_TIME;
+		return smeltTimer * a / this.getSmeltTime();
 	}
 
 	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
-		return smelt.contains(e);
+		return smelt.contains(e) || e == CrystalElement.LIGHTBLUE;
 	}
 
 	@Override
@@ -281,6 +294,11 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	@ModDependent(ModList.BCTRANSPORT)
 	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
 		return ConnectOverride.DEFAULT;
+	}
+
+	@Override
+	public int getIconState(int side) {
+		return side > 1 && this.canSmelt() ? 1 : 0;
 	}
 
 }

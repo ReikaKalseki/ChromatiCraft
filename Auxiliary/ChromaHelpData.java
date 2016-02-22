@@ -16,6 +16,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
@@ -31,30 +34,32 @@ public class ChromaHelpData {
 
 	private ChromaHelpData() {
 		this.addKey(ChromaBlocks.CRYSTAL, "crystals");
+
 		this.addKey(ChromaBlocks.RAINBOWLEAF, "rainbowleaf");
+
+		this.addKey(ChromaBlocks.DYELEAF, "dyeleaf");
+		this.addKey(ChromaBlocks.DECAY, "dyeleaf");
+
 		this.addKey(ChromaBlocks.PYLON, ChromaTiles.PYLON.getBlockMetadata(), "pylon");
 		this.addKey(ChromaBlocks.PYLONSTRUCT, 3, "pylon");
 		this.addKey(ChromaBlocks.PYLONSTRUCT, 4, "pylon");
 		this.addKey(ChromaBlocks.PYLONSTRUCT, 5, "pylon");
+
+		this.addKey(ChromaTiles.DIMENSIONCORE.getBlock(), ChromaTiles.DIMENSIONCORE.getBlockMetadata(), "dimensioncore");
+
 		this.addKey(ChromaBlocks.RUNE, "rune");
-		this.addKey(ChromaBlocks.TIEREDORE, 0, "ore0");
-		this.addKey(ChromaBlocks.TIEREDORE, 1, "ore1");
-		this.addKey(ChromaBlocks.TIEREDORE, 2, "ore2");
-		this.addKey(ChromaBlocks.TIEREDORE, 3, "ore3");
-		this.addKey(ChromaBlocks.TIEREDORE, 4, "ore4");
-		this.addKey(ChromaBlocks.TIEREDORE, 5, "ore5");
-		this.addKey(ChromaBlocks.TIEREDORE, 6, "ore6");
-		this.addKey(ChromaBlocks.TIEREDORE, 7, "ore7");
-		this.addKey(ChromaBlocks.TIEREDORE, 8, "ore8");
-		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore9");
-		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore10");
-		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore11");
-		this.addKey(ChromaBlocks.TIEREDORE, 9, "ore12");
-		this.addKey(ChromaBlocks.TIEREDPLANT, 0, "plant0");
-		this.addKey(ChromaBlocks.TIEREDPLANT, 1, "plant1");
-		this.addKey(ChromaBlocks.TIEREDPLANT, 2, "plant2");
-		this.addKey(ChromaBlocks.TIEREDPLANT, 3, "plant3");
-		this.addKey(ChromaBlocks.TIEREDPLANT, 4, "plant4");
+
+		for (int i = 0; i < TieredOres.list.length; i++) {
+			this.addKey(ChromaBlocks.TIEREDORE, i, "ore_"+TieredOres.list[i].name().toLowerCase());
+		}
+
+		for (int i = 0; i < TieredPlants.list.length; i++) {
+			this.addKey(ChromaBlocks.TIEREDPLANT, i, "plant_"+TieredPlants.list[i].name().toLowerCase());
+		}
+
+		for (int i = 0; i < Flowers.list.length; i++) {
+			this.addKey(ChromaBlocks.DECOFLOWER, i, "flower_"+Flowers.list[i].name().toLowerCase());
+		}
 	}
 
 	private void addKey(ChromaBlocks b, String s) {
@@ -63,6 +68,10 @@ public class ChromaHelpData {
 
 	private void addKey(ChromaBlocks b, int meta, String s) {
 		data.put(b.getBlockInstance(), meta, new HelpKey(s));
+	}
+
+	private void addKey(Block b, int meta, String s) {
+		data.put(b, meta, new HelpKey(s));
 	}
 
 	private HelpKey getKey(Block b, int meta) {

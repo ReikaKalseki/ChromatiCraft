@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
@@ -123,6 +124,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final CrystalGlassRenderer glass = new CrystalGlassRenderer();
 	private static final ConsoleRenderer console = new ConsoleRenderer();
 	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
+	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
 
 	//private static FiberRenderer fiber;
 
@@ -277,6 +279,9 @@ public class ChromaClient extends ChromaCommon {
 		specialShieldRender = RenderingRegistry.getNextAvailableRenderId();
 		specialshield = new SpecialShieldRenderer();
 		RenderingRegistry.registerBlockHandler(specialShieldRender, specialshield);
+
+		selectiveRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(selectiveRender, selective);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

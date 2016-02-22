@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Recipe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeTankBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RuneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.SelectiveGlassRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalCellRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalClusterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalCoreRecipe;
@@ -313,8 +314,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalBrewerRecipe(is, sr));
 
 		is = ChromaTiles.CHROMAFLOWER.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LFL", "GsG", 'L', Blocks.leaves, 'F', Blocks.red_flower, 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getAnyMetaStack());
+		sr = new ShapedOreRecipe(is, "LFL", "GsG", 'L', Blocks.leaves, 'F', "flower", 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new ChromaFlowerRecipe(is, sr));
+
+		is = ChromaBlocks.SELECTIVEGLASS.getStackOf();
+		sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Items.glowstone_dust, 'e', ChromaStacks.teleDust, 'v', ChromaStacks.voidDust, 'b', ChromaStacks.icyDust);
+		this.addRecipe(new SelectiveGlassRecipe(is, sr));
 
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, new ItemStack(Blocks.glass)));
@@ -356,24 +361,24 @@ public class RecipesCastingTable {
 		this.addRecipe(new ElementUnitRecipe(ChromaStacks.elementUnit, ChromaStacks.bindingCrystal));
 
 		is = ChromaTiles.HEATLILY.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " F ", "FBF", "LSL", 'L', Blocks.waterlily, 'F', Blocks.yellow_flower, 'S', ChromaStacks.orangeShard, 'B', Items.blaze_powder);
+		sr = new ShapedOreRecipe(is, " F ", "FBF", "LSL", 'L', Blocks.waterlily, 'F', "flower", 'S', ChromaStacks.orangeShard, 'B', Items.blaze_powder);
 		HeatLilyRecipe hr = new HeatLilyRecipe(is, sr);
 		this.addRecipe(hr);
 
 		is = ChromaTiles.REVERTER.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " F ", "FBF", "LSL", 'L', ReikaItemHelper.fern, 'F', Blocks.yellow_flower, 'S', ChromaStacks.greenShard, 'B', Items.redstone);
+		sr = new ShapedOreRecipe(is, " F ", "FBF", "LSL", 'L', ReikaItemHelper.fern, 'F', "flower", 'S', ChromaStacks.greenShard, 'B', Items.redstone);
 		this.addRecipe(new ReversionLotusRecipe(is, sr));
 
 		is = ChromaTiles.COBBLEGEN.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LSL", "FBF", " D ", 'L', ReikaItemHelper.oakLeaves, 'D', Items.glowstone_dust, 'F', Blocks.red_flower, 'S', ChromaStacks.cyanShard, 'B', Blocks.glass);
+		sr = new ShapedOreRecipe(is, "LSL", "FBF", " D ", 'L', ReikaItemHelper.oakLeaves, 'D', Items.glowstone_dust, 'F', "flower", 'S', ChromaStacks.cyanShard, 'B', Blocks.glass);
 		this.addRecipe(new CobbleGenRecipe(is, sr));
 
 		is = ChromaTiles.PLANTACCEL.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "LSL", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', Blocks.red_flower, 'S', ChromaStacks.lightBlueShard);
+		sr = new ShapedOreRecipe(is, "LSL", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
 		this.addRecipe(new PlantAccelerationRecipe(is, sr));
 
 		is = ChromaTiles.CROPSPEED.getCraftedProduct();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " R ", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', Blocks.yellow_flower, 'S', ChromaStacks.lightBlueShard);
+		sr = new ShapedOreRecipe(is, " R ", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
 		this.addRecipe(new CropSpeedPlantRecipe(is, sr));
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();
@@ -479,9 +484,14 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new PortalRecipe(ChromaBlocks.PORTAL.getStackOf(), ChromaStacks.voidCoreHigh, repeater));
 
-		is = ChromaBlocks.HEATLAMP.getStackOf();
-		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', Items.iron_ingot);
-		this.addRecipe(new HeatLampRecipe(is, sr, hr));
+		Object[] metal = new Object[]{Items.iron_ingot, 1, Items.gold_ingot, 4, "ingotCopper", 1, "ingotSilver", 2, ChromaStacks.conductiveIngot, 6, ChromaStacks.fieryIngot, 8};
+		for (int i = 0; i < metal.length; i += 2) {
+			if (metal[i] instanceof String && !ReikaItemHelper.oreItemExists((String)metal[i]))
+				continue;
+			is = ReikaItemHelper.getSizedItemStack(ChromaBlocks.HEATLAMP.getStackOf(), (int)metal[i+1]);
+			sr = new ShapedOreRecipe(is, "fff", "faf", "fff", 'f', ChromaStacks.firaxite, 'a', metal[i]);
+			this.addRecipe(new HeatLampRecipe(is, sr, hr));
+		}
 
 		this.addRecipe(new EnderCrystalRecipe(ChromaItems.ENDERCRYSTAL.getStackOf(), ChromaStacks.crystalStar));
 

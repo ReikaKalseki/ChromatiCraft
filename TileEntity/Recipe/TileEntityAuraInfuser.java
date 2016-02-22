@@ -45,7 +45,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, OwnedTile, InertIInv, IPipeConnection {
+public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv, IPipeConnection {
 
 	private InertItem item;
 
@@ -261,6 +261,28 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 		inv[0] = item != null ? item.copy() : null;
 		this.markDirty();
 		return null;
+	}
+
+	public boolean onItemCollision(EntityItem ei) {
+		if (!worldObj.isRemote) {
+			ItemStack is = ei.getEntityItem();
+			if (ei.delayBeforeCanPickup == 0 && this.isItemValidForSlot(0, is)) {
+				if (inv[0] == null || ReikaItemHelper.matchStacks(is, inv[0])) {
+					int has = inv[0] != null ? inv[0].stackSize : 0;
+					int max = is.stackSize;
+					int add = Math.min(max, is.getMaxStackSize()-has);
+					if (add > 0) {
+						craftingTick = 0;
+						inv[0] = ReikaItemHelper.getSizedItemStack(is, has+add);
+						is.stackSize -= add;
+						this.syncAllData(true);
+						if (is.stackSize <= 0)
+							return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public int getCraftingTick() {

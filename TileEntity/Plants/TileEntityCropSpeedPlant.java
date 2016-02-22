@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Plants;
 
 import net.minecraft.block.Block;
@@ -16,12 +25,13 @@ import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 
 
 public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 
-	private static double[][] randomDistrib = {
+	private static double[][] growthDistrib = {
 		{0, 0, 4, 0, 0},
 		{0, 0, 8, 0, 0},
 		{4, 8, 0, 8, 4},
@@ -29,14 +39,32 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 		{0, 0, 4, 0, 0},
 	};
 
-	private static final WeightedRandom<Coordinate> coordinateRand = new WeightedRandom();
+	private static double[][] hydrateDistrib = {
+		{0, 1, 4, 1, 0},
+		{1, 2, 6, 2, 1},
+		{4, 6, 4, 6, 4},
+		{1, 2, 6, 2, 1},
+		{0, 1, 4, 1, 0},
+	};
+
+	private static final WeightedRandom<Coordinate> growthRand = new WeightedRandom();
+	private static final WeightedRandom<Coordinate> hydrateRand = new WeightedRandom();
 
 	static {
-		for (int i = 0; i < randomDistrib.length; i++) {
-			for (int k = 0; k < randomDistrib[i].length; k++) {
+		for (int i = 0; i < growthDistrib.length; i++) {
+			for (int k = 0; k < growthDistrib[i].length; k++) {
 				Coordinate c = new Coordinate(i-2, 0, k-2);
-				if (randomDistrib[i][k] > 0) {
-					coordinateRand.addEntry(c, randomDistrib[i][k]);
+				if (growthDistrib[i][k] > 0) {
+					growthRand.addEntry(c, growthDistrib[i][k]);
+				}
+			}
+		}
+
+		for (int i = 0; i < hydrateDistrib.length; i++) {
+			for (int k = 0; k < hydrateDistrib[i].length; k++) {
+				Coordinate c = new Coordinate(i-2, 0, k-2);
+				if (hydrateDistrib[i][k] > 0) {
+					hydrateRand.addEntry(c, hydrateDistrib[i][k]);
 				}
 			}
 		}
@@ -56,6 +84,8 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote)
 			return;
+		if (rand.nextInt(4) == 0)
+			this.hydrateFarmland(world, x, y, z);
 		double n = 0.1;
 		n *= Math.min(4, 1+this.getAccelerationPlants());
 		while (n >= 1) {
@@ -66,8 +96,16 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 			this.growCrop(world, x, y, z);
 	}
 
+	private void hydrateFarmland(World world, int x, int y, int z) {
+		Coordinate c = hydrateRand.getRandomEntry().offset(x, y-1, z);
+		Block b = c.getBlock(world);
+		if (b == Blocks.farmland) {
+			ReikaWorldHelper.hydrateFarmland(world, c.xCoord, c.yCoord, c.zCoord, false);
+		}
+	}
+
 	private void growCrop(World world, int x, int y, int z) {
-		Coordinate c = coordinateRand.getRandomEntry().offset(x, y, z);
+		Coordinate c = growthRand.getRandomEntry().offset(x, y, z);
 		Block b = c.getBlock(world);
 		int meta = c.getBlockMetadata(world);
 		boolean flag = b instanceof BlockSapling || b == ChromaBlocks.DECOFLOWER.getBlockInstance() || b instanceof BlockReed || b instanceof BlockCactus || b == Blocks.vine;

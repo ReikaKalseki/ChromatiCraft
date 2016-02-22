@@ -89,7 +89,7 @@ public class BlockEtherealLight extends Block {
 				int l = 10+rand.nextInt(50);
 				double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
 				double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.03125);
-				int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)(360D*y/64D));
+				int c = getParticleColor(world, y);
 				int r = ReikaColorAPI.getRed(c);//32;
 				int g = ReikaColorAPI.getGreen(c);//127;
 				int b = ReikaColorAPI.getBlue(c);//255;
@@ -97,6 +97,10 @@ public class BlockEtherealLight extends Block {
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
+	}
+
+	public static int getParticleColor(World world, int y) {
+		return ReikaColorAPI.getModifiedHue(0xff0000, (int)(360D*y/world.provider.getAverageGroundLevel()));
 	}
 
 	@Override

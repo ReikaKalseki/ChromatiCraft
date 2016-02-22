@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
+import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
@@ -181,7 +182,8 @@ public enum ChromaBlocks implements BlockEnum {
 	CONSOLE(BlockCrystalConsole.class,											"chroma.console"),
 	LIGHT(BlockEtherealLight.class,												"chroma.light"),
 	STORAGE(BlockMultiStorage.class,											"chroma.storageblock"),
-	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower");
+	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower"),
+	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass");
 
 	private Class blockClass;
 	private String blockName;
@@ -214,6 +216,8 @@ public enum ChromaBlocks implements BlockEnum {
 		if (this.isCrystal())
 			return ChromatiCraft.crystalMat;
 		switch(this) {
+			case SELECTIVEGLASS:
+				return Material.glass;
 			case TILEPLANT:
 			case TIEREDPLANT:
 			case DECOPLANT:
@@ -405,6 +409,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case DIMDATA:
 			case CONSOLE:
 			case LIGHT:
+			case SELECTIVEGLASS:
 				return false;
 			default:
 				return true;

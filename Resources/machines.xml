@@ -391,6 +391,94 @@
 
 		</note>
 	</lighter>
+	<reverter>
+		<desc>
+			Your world is slowly becoming corrupted. From pillars of obsidian that darken the world around them, to a purple weed that overtakes everything in sight, you find the once-beautiful landscape becoming ugly and inhospitable. Even the magic forests spread by the trees often make a mess of the biome. What you really need is a way to restore the biome to its former state.
+		</desc>
+		<note>
+
+		</note>
+	</reverter>
+	<cobblegen>
+		<desc>
+			You never think you would run out of cobblestone...until you actually do. Sure, you could mine more out of the ground, but you have better things to occupy your time. You know that mixing water and lava will make cobblestone, but automating that process is messy and often costly. One solution would be a flower that would pull up the required liquid from nearby pools, mixing it and dropping the result. It might even be able to make things other than cobblestone given the correct input liquids.
+		</desc>
+		<note>
+
+		</note>
+	</cobblegen>
+	<plantaccel>
+		<desc>
+			Like the proverbial grass and its glacial growth speed, your various flowers and plants to improve the area around them operate at a very slow pace. Perhaps they could be improved upon by being planted on a plant of its own.
+		</desc>
+		<note>
+
+		</note>
+	</plantaccel>
+	<cropspeed>
+		<desc>
+			Though some crops grow rapidly, the majority - even after careful crossbreeding and hours digging up weeds - very much do not. Already available to you are various means with which to increase that speed, but none of them fit neatly into the farm area itself, instead often requiring being placed nearby. This of course introduces an efficiency penalty, one that would be very desirable to avoid.
+		</desc>
+		<note>
+
+		</note>
+	</cropspeed>
+	<inserter>
+		<desc>
+			You have repeatedly found yourself manually adding items to constructs that cannot be connected to normal item transport. You long ago tired of dropping stack after stack of sugar into a stone basin, or of berries into a puddle of chroma. You need a way to automate that process before you give up and find something less of a hassle to work with.
+		</desc>
+		<note>
+
+		</note>
+	</inserter>
+	<essentiarelay>
+		<desc>
+			So you have a cauldron full of water, in which you need to dump various ingredients to fabricate your desired target. As that process more often fails than not, producing copious amounts of noxious gas in the process, you created an odd construct to help automate the process. However, you need to actually transport the essentia there, and the piping you tried at first...leaves much to be desired. A longer-range and more flexible solution - ideally more consistently functional as well - would fare far better.
+		</desc>
+		<note>
+
+		</note>
+	</essentiarelay>
+	<glowfire>
+		<desc>
+			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this...
+		</desc>
+		<note>
+
+		</note>
+	</glowfire>
+	<broadcast>
+		<desc>
+			You now regret living in a mountain archipelago. For one, most of the pylons to which you wish to connect are thousands of meters away. Worse, though, are that many are across vast stretches of ocean. Yes, you could build cobblestone pillars to raise repeaters from the ocean floor, but you want a solution that is both convenient and does not look ridiculous. To that end, you designed high-power broadcasters, which can send energy over thousands of blocks. However, such power requires a large structure, and that they would interfere if too close to each other.
+		</desc>
+		<note>
+
+		</note>
+	</broadcast>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
 	<name>
 		<desc>
 

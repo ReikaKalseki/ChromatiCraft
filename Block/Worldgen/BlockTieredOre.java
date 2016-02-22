@@ -135,32 +135,32 @@ public class BlockTieredOre extends BlockChromaTiered {
 					li.add(ChromaStacks.bindingCrystal.copy());
 				break;
 			case FOCAL:
-				n = Math.min(32, 1+rand.nextInt(8)*(1+rand.nextInt(1+fortune*2)));
+				n = Math.min(32, 1+rand.nextInt(6)*(1+rand.nextInt(1+fortune*3/2)));
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.focusDust.copy());
 				break;
 			case TELEPORT:
-				n = Math.min(64, 1+rand.nextInt(1+fortune)+fortune*fortune);
+				n = Math.min(32, 1+rand.nextInt(1+fortune)+fortune*fortune/2);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.enderDust.copy());
 				break;
 			case WATERY:
-				n = Math.min(64, 1+rand.nextInt(6)+rand.nextInt(1+6*fortune));
+				n = Math.min(32, 1+rand.nextInt(6)+rand.nextInt(1+3*fortune));
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.waterDust.copy());
 				break;
 			case FIRAXITE:
-				n = Math.min(64, 1+rand.nextInt(12)+rand.nextInt(1+fortune)*8);
+				n = Math.min(32, 1+rand.nextInt(8)+rand.nextInt(1+fortune)*4);
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.firaxite.copy());
 				break;
 			case LUMA:
-				n = Math.min(64, (1+fortune)*(1+4*rand.nextInt(5)));
+				n = Math.min(32, (1+fortune)*(1+4*rand.nextInt(5)));
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.lumaDust.copy());
 				break;
 			case ECHO:
-				n = Math.min(64, (1+fortune*fortune)*(1+rand.nextInt(8)+rand.nextInt(8)));
+				n = Math.min(32, (1+fortune*fortune/2)*(1+rand.nextInt(8)+rand.nextInt(8)));
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.echoCrystal.copy());
 				break;
@@ -180,7 +180,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 					li.add(ChromaStacks.resocrystal.copy());
 				break;
 			case SPACERIFT:
-				n = 1+fortune+2*rand.nextInt(1+fortune);
+				n = 1+fortune+rand.nextInt(1+fortune)*3/2;
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.spaceDust.copy());
 				break;

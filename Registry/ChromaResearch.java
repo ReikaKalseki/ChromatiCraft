@@ -175,6 +175,7 @@ public enum ChromaResearch implements ProgressElement {
 	DOOR(			ChromaBlocks.DOOR,												ResearchLevel.BASICCRAFT),
 	GLASS(			ChromaBlocks.GLASS,			CrystalElement.BLUE.ordinal(),		ResearchLevel.BASICCRAFT),
 	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT),
+	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -599,6 +600,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == BEES)
 			return false;
+		if (this == BALLLIGHTNING)
+			return false;
 		return struct == null || !struct.isNatural();
 	}
 
@@ -660,6 +663,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == GLASS)
 			return true;
 		if (this == MUSICTRIGGER)
+			return true;
+		if (this == SELECTIVEGLASS)
 			return true;
 		return false;
 	}

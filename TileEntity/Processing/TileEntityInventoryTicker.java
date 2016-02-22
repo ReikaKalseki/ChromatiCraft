@@ -14,12 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
+import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
-public class TileEntityInventoryTicker extends InventoriedRelayPowered {
+public class TileEntityInventoryTicker extends InventoriedChromaticBase {
 
 	public int ticks = 1;
 
@@ -33,12 +33,12 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 		required.addTag(CrystalElement.LIGHTBLUE, 25);
 		required.addTag(CrystalElement.GREEN, 10);
 	}
-
+	/*
 	@Override
 	protected ElementTagCompound getRequiredEnergy() {
 		return required.copy();
 	}
-
+	 */
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
 		return side == ForgeDirection.DOWN.ordinal();
@@ -66,7 +66,7 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		super.updateEntity(world, x, y, z, meta);
+		//super.updateEntity(world, x, y, z, meta);
 		this.updateItems();
 	}
 
@@ -76,9 +76,9 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 			for (int i = 0; i < this.getSizeInventory(); i++) {
 				ItemStack is = inv[i];
 				if (is != null) {
-					for (int k = 0; k < ticks && energy.containsAtLeast(required); k++) {
+					for (int k = 0; k < ticks/* && energy.containsAtLeast(required)*/; k++) {
 						is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
-						this.drainEnergy(required);
+						//this.drainEnergy(required);
 					}
 				}
 			}
@@ -89,7 +89,7 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 	protected void animateWithTick(World world, int x, int y, int z) {
 
 	}
-
+	/*
 	@Override
 	public boolean isAcceptingColor(CrystalElement e) {
 		return required.contains(e);
@@ -99,7 +99,7 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 	public int getMaxStorage(CrystalElement e) {
 		return 4000;
 	}
-
+	 */
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
@@ -113,10 +113,11 @@ public class TileEntityInventoryTicker extends InventoriedRelayPowered {
 
 		NBT.setInteger("ticks", ticks);
 	}
-
+	/*
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
 		return true;
 	}
+	 */
 
 }

@@ -9,90 +9,90 @@
 	<rune>
 		Runes seem to be able to act as weak foci for crystal energy of their color.
 	</rune>
-	<ore0>
+	<ore_infused>
 		Seams of energy run through this rock; its contents are likely useful in your endeavours.
-	</ore0>
-	<ore1>
+	</ore_infused>
+	<ore_stones>
 		Embedded in the stone appears to be a different kind of rock, one which glows with energy.
-	</ore1>
-	<ore2>
+	</ore_stones>
+	<ore_binding>
 		Fossilized crystals, fused together. Their color long since gone, they no longer contain energy but may be a good substrate.
-	</ore2>
-	<ore3>
+	</ore_binding>
+	<ore_focal>
 		Glowing an angry red, this rock may well have the capability to act as a lens for crystal energy.
-	</ore3>
-	<ore4>
+	</ore_focal>
+	<ore_teleport>
 		The similarity between the color of these gems and the color of an ender pearl is probably no coincidence.
-	</ore4>
-	<ore5>
+	</ore_teleport>
+	<ore_watery>
 		Watery in both color and texture, the powder from this rock is probably imbued with the essence of fluidity.
-	</ore5>
-	<ore6>
+	</ore_watery>
+	<ore_firaxite>
 		Palpably warm, Firaxite must be associated with heat energy.
-	</ore6>
-	<ore7>
-		
-	</ore7>
-	<ore8>
-		
-	</ore8>
-	<ore9>
+	</ore_firaxite>
+	<ore_luma>
+		Glowing brightly, the contents of this stone no doubt enhance the power of lumen transmission.
+	</ore_luma>
+	<ore_echo>
+		Vibrations pass back and forth through this rock; harnessing them might become a priority.
+	</ore_echo>
+	<ore_firestone>
 		Buried deep in the nether, it is no surprise the gems in this rock are almost painfully hot.
-	</ore9>
-	<ore10>
+	</ore_firestone>
+	<ore_thermite>
 		This rock is barely able to contain the energy within. Maybe if released it could act as a powerful emitter.
-	</ore10>
-	<ore11>
+	</ore_thermite>
+	<ore_reso>
 		These pulsing crystals might hold the secret to warping space itself.
-	</ore11>
-	<ore12>
+	</ore_reso>
+	<ore_spacerift>
 		This material might provide a key to being able to relocate oneself at will.
-	</ore12>
-	<plant0>
+	</ore_spacerift>
+	<plant_flower>
 		This gently glowing flower seems to weakly radiate energy; if extracted, its contents likely are crucial in maintaining an aura.
-	</plant0>
-	<plant1>
+	</plant_flower>
+	<plant_cave>
 		Sparkling in the dark, there is something cleansing about the essence of this plant.
-	</plant1>
-	<plant2>
+	</plant_cave>
+	<plant_lily>
 		This lily throbs will all colors of energy; perhaps its extracts could be used as a sort of unifier.
-	</plant2>
-	<plant3>
+	</plant_lily>
+	<plant_bulb>
 		Hanging from the underside of leaves, these bulbs are filled with a magical dust of unknown nature.
-	</plant3>
-	<plant4>
+	</plant_bulb>
+	<plant_desert>
 		This bush gives off a powerful aura - no doubt it will be critical in constructing beacons of your own.
-	</plant4>
+	</plant_desert>
 	<rainbowleaf>
 		Never before have you seen a tree like this. With leaves of every color of the rainbow, there must be more to this tree than meets the eye.
 	</rainbowleaf>
-	<name>
+	<flower_enderflower>
+		The growth pattern of these flowers - literally jumping from location to location - is no doubt a hint to their utility.
+	</flower_enderflower>
+	<flower_lumalily>
+		It can surely be no coincidence that these flowers, found in the frozen climates, are icy and bind things together.
+	</flower_lumalily>
+	<flower_resoclover>
+		The energetic sparks surrounding this plant offer a clue as to the usefulness of their internals.
+	</flower_resoclover>
+	<flower_sanobloom>
+		High atop the jungle canopy, these berries might be useful in combination with another form of berry...
+	</flower_sanobloom>
+	<flower_voidreed>
+		Looking into the gentle aura given off by these reeds gives you a sense of vertigo and space.
+	</flower_voidreed>
+	<flower_flowivy>
+		Growing like a weed, this fast-spreading ivy is almost nature incarnate.
+	</flower_flowivy>
+	<dyeleaf>
+		Brightly hued leaves cover this tree, and it appears that berries sprout from the twigs.
+	</dyeleaf>
+	<dyeflower>
 	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
-	<name>
-	
-	</name>
+	</dyeflower>
+	<dimensioncore>
+		Vibrantly hued and energetically luminous, this...thing is of obvious value.
+	</dimensioncore>
 	<name>
 	
 	</name>

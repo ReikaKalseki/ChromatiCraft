@@ -13,11 +13,13 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Recipe.ItemCollision;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 public class BlockModelledChromaTile extends BlockChromaTile {
@@ -71,6 +73,13 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+		if (!e.isDead && e instanceof EntityItem && te instanceof ItemCollision) {
+			if (((ItemCollision)te).onItemCollision((EntityItem)e)) {
+				e.setDead();
+				return;
+			}
+		}
 		if (e instanceof EntityLivingBase) {
 			if (c == ChromaTiles.CHARGER && ((EntityLivingBase)e).getHealth() > 1) {
 				e.attackEntityFrom(DamageSource.generic, 0.25F);

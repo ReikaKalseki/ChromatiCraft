@@ -245,6 +245,8 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 
 	@SideOnly(Side.CLIENT)
 	private void doRecipeParticles(World world, int x, int y, int z) {
+		if (activeRecipe == null)
+			return;
 		double px = ReikaRandomHelper.getRandomPlusMinus(primaryLocation.xCoord+0.5, 0.35);
 		double pz = ReikaRandomHelper.getRandomPlusMinus(primaryLocation.zCoord+0.5, 0.35);
 		EntityFluidFX fx1 = new EntityFluidFX(world, px, primaryLocation.yCoord+0.85, pz, FluidRegistry.getFluid(activeRecipe.primaryFluid));
@@ -352,7 +354,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 		if (!b.isAir(world, x, y, z) && ChromaTiles.getTileFromIDandMetadata(b, world.getBlockMetadata(x, y, z)) != this.getTile())
 			return -1;
 		int d = 0;
-		while (b.isAir(world, x, y, z) || ChromaTiles.getTileFromIDandMetadata(b, world.getBlockMetadata(x, y, z)) == this.getTile()) {
+		while (y > 0 && (b.isAir(world, x, y, z) || ChromaTiles.getTileFromIDandMetadata(b, world.getBlockMetadata(x, y, z)) == this.getTile())) {
 			y--;
 			d++;
 			b = world.getBlock(x, y, z);
@@ -367,7 +369,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 
 	private static enum FluidMix {
 		COBBLESTONE(FluidRegistry.WATER, FluidRegistry.LAVA, new ItemStack(Blocks.cobblestone), 10, 20, 0),
-		CRYSTALSTONE("chroma", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 40, 50F, 50F),
+		CRYSTALSTONE("chroma", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 50, 25F, 50F),
 		//ALLOY1("iron.molten", "lava", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), 10, 10F, 20F),
 		;
 

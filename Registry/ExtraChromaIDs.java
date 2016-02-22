@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Potion;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -17,15 +18,16 @@ import Reika.DragonAPI.Interfaces.Registry.IDRegistry;
 
 public enum ExtraChromaIDs implements IDRegistry {
 
-	GROWTHID(		"Other IDs", 	"Growth Hormone ID", 		36, 	Potion.class),
-	SATID(			"Other IDs", 	"Saturation ID", 			38, 	Potion.class),
-	REGENID(		"Other IDs", 	"Regen ID", 				39, 	Potion.class),
-	RAINBOWFOREST(	"Biome IDs", 	"Rainbow Forest Biome ID", 	48, 	BiomeGenBase.class),
-	ENDERFOREST(	"Biome IDs", 	"Ender Forest Biome ID", 	47, 	BiomeGenBase.class),
-	ISLANDS(		"Biome IDs", 	"Skyland Biome ID", 		100, 	BiomeGenBase.class),
-	SKYLANDS(		"Biome IDs", 	"Island Biome ID", 			101, 	BiomeGenBase.class),
-	PLAINS(			"Biome IDs", 	"Plains Biome ID", 			102, 	BiomeGenBase.class),
-	DIMID(			"Other IDs",	"Dimension ID",				60,		WorldProvider.class),
+	GROWTHID(		"Potion IDs", 		"Growth Hormone ID", 		36, 	Potion.class),
+	SATID(			"Potion IDs", 		"Saturation ID", 			38, 	Potion.class),
+	REGENID(		"Potion IDs", 		"Regen ID", 				39, 	Potion.class),
+	RAINBOWFOREST(	"Biome IDs", 		"Rainbow Forest Biome ID", 	48, 	BiomeGenBase.class),
+	ENDERFOREST(	"Biome IDs", 		"Ender Forest Biome ID", 	47, 	BiomeGenBase.class),
+	ISLANDS(		"Biome IDs", 		"Skyland Biome ID", 		100, 	BiomeGenBase.class),
+	SKYLANDS(		"Biome IDs", 		"Island Biome ID", 			101, 	BiomeGenBase.class),
+	PLAINS(			"Biome IDs", 		"Plains Biome ID", 			102, 	BiomeGenBase.class),
+	WEAPONAOEID(	"Enchantment IDs", 	"Weapon AOE ID", 			90, 	Enchantment.class),
+	DIMID(			"Other IDs",		"Dimension ID",				60,		WorldProvider.class),
 	;
 
 	private String name;

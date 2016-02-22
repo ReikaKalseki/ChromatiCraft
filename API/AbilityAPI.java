@@ -92,8 +92,7 @@ public class AbilityAPI {
 			add = abilities.getMethod("addAbility", Ability.class);
 		}
 		catch (Exception e) {
-			System.out.println("Failed to load the ability handler properly!");
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

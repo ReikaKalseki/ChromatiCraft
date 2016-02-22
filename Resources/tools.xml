@@ -81,9 +81,9 @@
 	<doorkey>
 		Doors are generally useless without keys. To that end, your ethereal barrier needs a key. After shift-right-clicking the key on the door, you linked the two and now using the key will open the door. Surely this key cannot open someone else's door.
 	</doorkey>
-	<name>
-		
-	</name>
+	<crystalcell>
+		A great many types of items come in sixteen variants, one for each color of crystal energy. Sure, you could just dump them all into your magical etched-crystal storage device, but after mining out a dungeon and finding 23 different tools of six materials (who leaves a bronze sword in a random area underground?), the limit on item types is becoming insurmountable. Perhaps a storage cell dedicated to these crystalline items would mitigate the issue.
+	</crystalcell>
 	<name>
 		
 	</name>

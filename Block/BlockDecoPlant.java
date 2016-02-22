@@ -58,6 +58,8 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				return 15;
 			case 1:
 				return 6;
+			case 4:
+				return 12;
 			default:
 				return 0;
 		}
@@ -122,6 +124,10 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				if (world.getBlock(x, y-1, z).isOpaqueCube() && world.getBlock(x, y-1, z).getMaterial().isSolid())
 					return true;
 				return false;
+			case 4:
+				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
+					return true;
+				return world.getBlock(x, y-1, z) == Blocks.farmland;
 			default:
 				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
 					return true;
@@ -146,6 +152,13 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875*2);
 				double ry = y+0.25+r.nextDouble()*0.75+0.5;
 				ReikaParticleHelper.ENCHANTMENT.spawnAt(world, rx, ry, rz);
+				break;
+			}
+			case 4: {
+				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.1875*2);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875*2);
+				double ry = y+0.25+r.nextDouble()*0.75+0.5;
+				ReikaParticleHelper.spawnColoredParticleAt(world, rx, ry, rz, 1, 0, 0);
 				break;
 			}
 		}
@@ -206,6 +219,8 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				return EnumPlantType.Water;
 			case 2:
 				return EnumPlantType.Cave;
+			case 4:
+				return EnumPlantType.Crop;
 			default:
 				return EnumPlantType.Plains;
 		}

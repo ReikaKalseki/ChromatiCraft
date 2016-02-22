@@ -54,9 +54,18 @@
 	<altar>
 		Continuing your endeavour to create fancy lighting, you decided to make an altar-like crystal flame. Not only does it glow and pulsate various colors, but it also gives off colored particles and fog, making for quite an impressive display.
 	</altar>
-	<name>
-		
-	</name>
+	<glass>
+		When you look at glass, your first thought is that it is too clear, too inert. Spurred by this, you have created glass from crystals, that is strongly tinted, and which serves better as a musical instrument than a window.
+	</glass>
+	<musictrigger>
+		Having spent (...wasted...) hours sitting there punching crystals for a musical tune, and yet more time devising elaborate redstone contraptions to play them with specific timings and at specific pitches, what you find yourself wanting is a way to do this more compactly, without a large analog circuit for each note on the scale. The buttons on this block serve that purpose well.
+	</musictrigger>
+	<selectiveglass>
+		Every night your house becomes surrounded by mobs, and they often manage to last long enough into the morning that you find yourself spending all your time cowering indoors. Sure, you could try and make a run for it, but half the time a leaf bomb is hiding around the corner, taking out the front half of your house the moment you step outside. You need a way to be able to kill them while still inside, without giving them the reciprocal ability.
+	</selectiveglass>
+	<altar>
+		Put some crystals and stone together, and you get a light source with an impressive display of energy...Probably enough so that putting several of these in proximity is a bad idea.
+	</altar>
 	<name>
 		
 	</name>

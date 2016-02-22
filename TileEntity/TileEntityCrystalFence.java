@@ -84,7 +84,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 		//	this.calcFence();
 		//}
 
-		if (!world.isRemote) {
+		if (!world.isRemote && !fence.isEmpty()) {
 			if (chargingTick > 0) {
 				chargingTick--;
 				int t = 5;

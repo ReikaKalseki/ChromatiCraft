@@ -169,12 +169,12 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 			else {
 				forceLoad = false;
-				ChunkManager.instance.unloadChunks(this);
+				this.unload();
 			}
 		}
 		else {
 			forceLoad = false;
-			ChunkManager.instance.unloadChunks(this);
+			this.unload();
 		}
 
 		if (ModList.THAUMCRAFT.isLoaded() && nodeCache != null) {
@@ -213,13 +213,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 
+		long diff = 1;//world.getTotalWorldTime()-lastWorldTick;
+		lastWorldTick = world.getTotalWorldTime();
+
 		if (hasMultiblock) {
 			//ReikaJavaLibrary.pConsole(energy, Side.SERVER, color == CrystalElement.BLUE);
 
 			int max = this.getCapacity();
-			if (world.getTotalWorldTime() != lastWorldTick) {
-				this.charge(world, x, y, z, max);
-				lastWorldTick = world.getTotalWorldTime();
+			if (diff > 0) {
+				this.charge(world, x, y, z, max, Math.max(1, (int)diff));
 			}
 			energy = Math.min(energy, max);
 
@@ -274,18 +276,18 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		Minecraft.getMinecraft().effectRenderer.addEffect(e);
 	}
 
-	private void charge(World world, int x, int y, int z, int max) {
+	private void charge(World world, int x, int y, int z, int max, int ticks) {
 		int laste = energy;
 		boolean lastconn = this.canConduct();
 
 		if (energy < max) {
-			energy += energyStep;
+			energy += energyStep*ticks;
 		}
 		if (energyStep > 1)
 			energyStep--;
 
-		int a = 1;
-		if (energy <= max-a) {
+		int a = ticks;
+		if (energy <= max) {
 			ArrayList<TileEntityChromaCrystal> blocks = this.getBoosterCrystals(world, x, y, z);
 			int c = this.isEnhanced() ? 3 : 2;
 			for (int i = 0; i < blocks.size(); i++) {
@@ -295,7 +297,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					energy += a*2;
 				}
 				if (energy >= max) {
-					return;
+					break;
 				}
 			}
 			//if (blocks.size() > 0 && this.getTicksExisted()%875 == 0) {
@@ -308,8 +310,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnRechargeParticles(world, x, y, z, blocks);
 		}
 
+		energy = Math.min(energy, this.getCapacity());
+
 		if (energy == this.getCapacity() && laste != this.getCapacity()) {
 			MinecraftForge.EVENT_BUS.post(new PylonFullyChargedEvent(this));
+			this.unload();
 		}
 		if (this.canConduct() && !lastconn) {
 			MinecraftForge.EVENT_BUS.post(new PylonRechargedEvent(this));
@@ -462,6 +467,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	public void validateMultiblock() {
 		hasMultiblock = true;
 		this.syncAllData(true);
+	}
+
+	public boolean hasStructure() {
+		return hasMultiblock;
 	}
 
 	@SideOnly(Side.CLIENT)

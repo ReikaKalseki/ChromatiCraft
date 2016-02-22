@@ -58,7 +58,7 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		int i1 = tile.getCookProgressScaled(24);
-		this.drawTexturedModalRect(j + 79, k + 34, 176, 14, i1 + 1, 16);
+		this.drawTexturedModalRect(j + 79, k + 35, 176, 14, i1 + 1, 16);
 
 		GL11.glColor4f(1, 1, 1, 1);
 		int i = 0;
@@ -71,11 +71,18 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 			api.drawRect(j+x1, k+dy-px+1, 10, px, e.getColor(), true);
 			i++;
 		}
+
+		int px = tile.getEnergyScaled(CrystalElement.LIGHTBLUE, 52);
+		int dy = 68;
+		int dx = 155;
+		//api.fillBar(j+x1, k+dy-33, 18, dy, e.color.color, px, 34, false);
+		api.drawRect(j+dx, k+dy-px+1, 10, px, CrystalElement.LIGHTBLUE.getColor(), true);
+		i++;
 	}
 
 	@Override
 	public String getGuiTexture() {
-		return "furnace";
+		return "furnace2";
 	}
 
 }

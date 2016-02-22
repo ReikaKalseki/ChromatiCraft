@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Item.AnimatedSpritesheet;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
@@ -115,7 +116,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 			ei2.lifespan = Integer.MAX_VALUE;
 			if (!ei.worldObj.isRemote) {
 				ei.worldObj.spawnEntityInWorld(ei2);
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SHARDBOOST.ordinal(), ei.worldObj, x, y, z, ei.getEntityId());
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.SHARDBOOST.ordinal(), new PacketTarget.RadiusTarget(ei, 64), ei.getEntityId());
 				ChromaSounds.INFUSE.playSoundAtBlock(ei.worldObj, x, y, z);
 				ProgressStage.SHARDCHARGE.stepPlayerTo(ReikaItemHelper.getDropper(ei));
 			}
