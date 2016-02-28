@@ -114,7 +114,7 @@ public class BlockPowerTree extends Block implements IWailaDataProvider {
 
 	@Override
 	public boolean removedByPlayer(World world, EntityPlayer ep, int x, int y, int z, boolean harvest) {
-		ep.attackEntityFrom(ChromatiCraft.pylon, 5);
+		ep.attackEntityFrom(ChromatiCraft.pylonDamage[this.getColor(world, x, y, z).ordinal()], 5);
 		ChromaSounds.DISCHARGE.playSound(ep, 2, 1);
 		ChromaSounds.DISCHARGE.playSoundAtBlock(world, x, y, z, 2, 1F);
 		return super.removedByPlayer(world, ep, x, y, z, harvest);

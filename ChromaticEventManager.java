@@ -90,10 +90,13 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -119,11 +122,14 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
+import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntityAboutToRayTraceEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
+import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
@@ -160,8 +166,111 @@ public class ChromaticEventManager {
 
 	private final Random rand = new Random();
 
+	private boolean applyingAOE;
+
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void applyAggroMask(PigZombieAggroSpreadEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AGGROMASK.getEnchantment(), weapon);
+				if (level > 0 && EnchantmentAggroMask.hidePigmanSpreadDamage(level)) {
+					evt.setCanceled(true);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyAggroMask(AttackAggroEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.AGGROMASK.getEnchantment(), weapon);
+				if (level > 0 && EnchantmentAggroMask.hideDirectDamage(level)) {
+					evt.setResult(Result.DENY);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyUseRepair(EnderAttackTPEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.ENDERLOCK.getEnchantment(), weapon);
+				if (level > 0) {
+					evt.setResult(Result.DENY);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyUseRepair(LivingHurtEvent evt) {
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.USEREPAIR.getEnchantment(), weapon);
+				if (level > 0) {
+					int rep = EnchantmentUseRepair.getRepairedDurability(weapon, level, evt.ammount);
+					weapon.setItemDamage(weapon.getItemDamage()-rep);
+					evt.ammount *= Math.pow(0.9875, rep);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void applyAOE(LivingAttackEvent evt) {
+		if (applyingAOE)
+			return;
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			EntityLivingBase mob = evt.entityLiving;
+			ItemStack weapon = ep.getCurrentEquippedItem();
+			if (weapon != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.WEAPONAOE.getEnchantment(), weapon);
+				if (level > 0) {
+					applyingAOE = true;
+					double r = EnchantmentWeaponAOE.getRadius(level);
+					AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(evt.entityLiving, r);
+					Class<? extends EntityLivingBase> cat = ReikaEntityHelper.getEntityCategoryClass(mob);
+					List<EntityLivingBase> li = mob.worldObj.getEntitiesWithinAABB(cat, box);
+					for (EntityLivingBase e : li) {
+						if (e != mob) {
+							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
+							if (cat2 == cat) {
+								double d = e.getDistanceToEntity(mob);
+								double f = EnchantmentWeaponAOE.getDamageFactor(level, d, r);
+								if (f > 0) {
+									e.attackEntityFrom(src, (float)(f*evt.ammount));
+								}
+							}
+						}
+					}
+					applyingAOE = false;
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -602,37 +711,6 @@ public class ChromaticEventManager {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
 			if (Chromabilities.LEECH.enabledOn(ep)) {
 				ep.heal(evt.ammount*0.1F);
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void applyAOE(LivingAttackEvent evt) {
-		DamageSource src = evt.source;
-		if (src.getEntity() instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer)src.getEntity();
-			EntityLivingBase mob = evt.entityLiving;
-			ItemStack weapon = ep.getCurrentEquippedItem();
-			if (weapon != null) {
-				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromatiCraft.weaponAOE, weapon);
-				if (level > 0) {
-					double r = EnchantmentWeaponAOE.getRadius(level);
-					AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(evt.entityLiving, r);
-					Class<? extends EntityLivingBase> cat = ReikaEntityHelper.getEntityCategoryClass(mob);
-					List<EntityLivingBase> li = mob.worldObj.getEntitiesWithinAABB(cat, box);
-					for (EntityLivingBase e : li) {
-						if (e != mob) {
-							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
-							if (cat2 == cat) {
-								double d = e.getDistanceToEntity(mob);
-								double f = EnchantmentWeaponAOE.getDamageFactor(level, d, r);
-								if (f > 0) {
-									e.attackEntityFrom(src, (float)(f*evt.ammount));
-								}
-							}
-						}
-					}
-				}
 			}
 		}
 	}

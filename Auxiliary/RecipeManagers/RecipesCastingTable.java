@@ -314,7 +314,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalBrewerRecipe(is, sr));
 
 		is = ChromaTiles.CHROMAFLOWER.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, "LFL", "GsG", 'L', Blocks.leaves, 'F', "flower", 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getAnyMetaStack());
+		sr = new ShapedOreRecipe(is, "LFL", "GsG", 'L', "treeLeaves", 'F', "flower", 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getAnyMetaStack());
 		this.addRecipe(new ChromaFlowerRecipe(is, sr));
 
 		is = ChromaBlocks.SELECTIVEGLASS.getStackOf();
@@ -370,15 +370,15 @@ public class RecipesCastingTable {
 		this.addRecipe(new ReversionLotusRecipe(is, sr));
 
 		is = ChromaTiles.COBBLEGEN.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, "LSL", "FBF", " D ", 'L', ReikaItemHelper.oakLeaves, 'D', Items.glowstone_dust, 'F', "flower", 'S', ChromaStacks.cyanShard, 'B', Blocks.glass);
+		sr = new ShapedOreRecipe(is, "LSL", "FBF", " D ", 'L', "treeLeaves", 'D', Items.glowstone_dust, 'F', "flower", 'S', ChromaStacks.cyanShard, 'B', Blocks.glass);
 		this.addRecipe(new CobbleGenRecipe(is, sr));
 
 		is = ChromaTiles.PLANTACCEL.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, "LSL", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
+		sr = new ShapedOreRecipe(is, "LSL", "FRF", "LSL", 'L', "treeLeaves", 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
 		this.addRecipe(new PlantAccelerationRecipe(is, sr));
 
 		is = ChromaTiles.CROPSPEED.getCraftedProduct();
-		sr = new ShapedOreRecipe(is, " R ", "FRF", "LSL", 'L', ReikaItemHelper.oakLeaves, 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
+		sr = new ShapedOreRecipe(is, " R ", "FRF", "LSL", 'L', "treeLeaves", 'R', Items.redstone, 'F', "flower", 'S', ChromaStacks.lightBlueShard);
 		this.addRecipe(new CropSpeedPlantRecipe(is, sr));
 
 		is = ChromaTiles.RITUAL.getCraftedProduct();

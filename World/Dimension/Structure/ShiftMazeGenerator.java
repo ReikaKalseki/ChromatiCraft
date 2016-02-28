@@ -107,7 +107,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		fixed.generate(world, x, posY, z);
 		doors.generate(world, x, posY, z);
 
-		int lx = x-((ANCHORS+1)*2+1)-10;
+		int lx = x-((ANCHORS+1)*2-1)-10;
 
 		loot.generate(world, lx, posY, z+5);
 

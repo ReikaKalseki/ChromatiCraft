@@ -92,7 +92,6 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -589,7 +588,7 @@ public enum Chromabilities implements Ability {
 							boolean flag = false;
 							if ((0.5+0.5*world.rand.nextDouble())*d < r*(0.5+world.rand.nextDouble()*0.5)) {
 								if (ReikaBlockHelper.isOre(b, meta)) {
-									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta);
+									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta, false);
 									ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(is);
 									if (out != null) {
 										out = out.copy();
@@ -972,7 +971,7 @@ public enum Chromabilities implements Ability {
 					int drop = Math.min(max, amt);
 					amt -= drop;
 					DecimalPosition pos = ReikaRandomHelper.getRandomSphericalPosition(x+0.5, y+0.5, z+0.5, r);
-					ReikaJavaLibrary.pConsole(drop+" of "+is+" @ "+pos);
+					//ReikaJavaLibrary.pConsole(drop+" of "+is+" @ "+pos);
 					ReikaItemHelper.dropItem(ep.worldObj, pos.xCoord, pos.yCoord, pos.zCoord, ReikaItemHelper.getSizedItemStack(is, drop));
 				}
 			}
@@ -1005,7 +1004,7 @@ public enum Chromabilities implements Ability {
 					int meta = world.getBlockMetadata(x, y, z);
 					if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
 						continue;
-					if (b.getPlayerRelativeBlockHardness(ep, world, x, y, z) >= 0) {
+					if (!ReikaBlockHelper.isUnbreakable(world, x, y, z, b, meta, ep)) {
 						if (!b.hasTileEntity(meta)) {
 							//if (ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
 							moved.setBlock(x, y, z, b, meta);
@@ -1025,6 +1024,9 @@ public enum Chromabilities implements Ability {
 		boolean nrg = PlayerElementBuffer.instance.playerHas(ep, cost);
 		boolean flag = false;
 		if (nrg && ReikaPlayerAPI.playerCanBreakAt(world, toDel, ep) && ReikaPlayerAPI.playerCanBreakAt(world, moved, ep)) {
+			for (ItemStack is : toDel.getAllDroppedItems(world, 0, ep)) {
+				ReikaPlayerAPI.addOrDropItem(is, ep);
+			}
 			toDel.clearArea();
 			moved.place();
 			PlayerElementBuffer.instance.removeFromPlayer(ep, cost);

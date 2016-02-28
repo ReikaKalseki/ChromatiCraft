@@ -21,6 +21,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -109,7 +111,7 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
-		if (!ReikaBlockHelper.isLiquid(b)) {
+		if (this.canBreakLitBlock(world, x, y, z, b)) {
 			for (int i = 0; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 				if (!this.isSideSolid(world, x, y, z, dir)) {
@@ -128,6 +130,20 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 				}
 			}
 		}
+	}
+
+	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
+		if (ReikaBlockHelper.isLiquid(b))
+			return false;
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (b instanceof BlockStructureShield)
+				return false;
+			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
+				return false;
+			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())
+				return false;
+		}
+		return true;
 	}
 
 	@Override

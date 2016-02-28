@@ -132,7 +132,7 @@ public enum ChromaResearch implements ProgressElement {
 	LAMP(			ChromaTiles.LAMP, 			ResearchLevel.ENERGYEXPLORE),
 	POWERTREE(		ChromaTiles.POWERTREE, 		ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	LAMPCONTROL(	ChromaTiles.LAMPCONTROL, 	ResearchLevel.RUNECRAFT),
-	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME),
+	BIOMEPAINT(		ChromaTiles.BIOMEPAINTER,	ResearchLevel.ENDGAME,			ProgressStage.RAINBOWFOREST),
 	ASPECTJAR(		ChromaTiles.ASPECTJAR,		ResearchLevel.PYLONCRAFT),
 	FARMER(			ChromaTiles.FARMER,			ResearchLevel.PYLONCRAFT),
 	AUTO(			ChromaTiles.AUTOMATOR,		ResearchLevel.ENDGAME),

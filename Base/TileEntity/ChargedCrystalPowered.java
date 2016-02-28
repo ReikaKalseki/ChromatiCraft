@@ -18,6 +18,18 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenTile {
 
+	protected final float getEnergyCostScale() {
+		float f = 1;
+		if (this.hasEfficiency())
+			f *= 0.25F;
+		f *= this.getCostModifier();
+		return f;
+	}
+
+	public abstract boolean hasEfficiency();
+
+	public abstract float getCostModifier();
+
 	public final int getEnergy(CrystalElement e) {
 		if (e == null)
 			return 0;

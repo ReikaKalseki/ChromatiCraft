@@ -330,7 +330,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				}
 				else {
 					float amt = Math.max(5, Math.min(e.getHealth()-4, e.getMaxHealth()*0.75F));
-					ChromaAux.doPylonAttack(e, amt, false);
+					ChromaAux.doPylonAttack(te.getColor(), e, amt, false);
 				}
 			}
 			else {

@@ -60,8 +60,9 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 		this.addAuxItem(Items.ender_eye, 0, 4);
 		this.addAuxItem(Items.ender_eye, 0, -4);
 
-		this.addAuxItem(Blocks.beacon, -4, -4);
-		this.addAuxItem(Blocks.beacon, 4, -4);
+		this.addAuxItem(ChromaStacks.complexIngot, -4, -4);
+		this.addAuxItem(ChromaStacks.complexIngot, 4, -4);
+
 		this.addAuxItem(Blocks.beacon, -4, 4);
 		this.addAuxItem(Blocks.beacon, 4, 4);
 

@@ -173,7 +173,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 							else if (id instanceof MinerBlock) {
 								this.dropMineableBlock(world, x, y, z, dx, dy, dz, id, meta2);
 							}
-							this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+							this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
 							//ReikaJavaLibrary.pConsole("Mining "+id+":"+meta2+" @ "+dx+","+dy+","+dz+"; index="+index);
 							index++;
 							if (index >= coords.size()) {
@@ -481,6 +481,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return ReikaItemHelper.matchStacks(inv[2], ChromaStacks.speedUpgrade);
 	}
 
+	@Override
 	public boolean hasEfficiency() {
 		return ReikaItemHelper.matchStacks(inv[3], ChromaStacks.efficiencyUpgrade);
 	}
@@ -668,6 +669,18 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	@Override
 	public Collection<ChunkCoordIntPair> getChunksToLoad() {
 		return ChunkManager.getChunkSquare(xCoord, zCoord, range >> 4);
+	}
+
+	@Override
+	public float getCostModifier() {
+		float f = 1;
+		if (this.hasSpeed()) {
+			f *= 2;
+		}
+		if (this.silkTouch()) {
+			f *= 8;
+		}
+		return f;
 	}
 
 }

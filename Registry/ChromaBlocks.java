@@ -503,4 +503,8 @@ public enum ChromaBlocks implements BlockEnum {
 		return false;
 	}
 
+	public boolean isDimensionStructureBlock() {
+		return blockClass.getName().startsWith("Reika.ChromatiCraft.Block.Dimension.Structure");
+	}
+
 }

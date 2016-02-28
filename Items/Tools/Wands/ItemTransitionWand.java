@@ -164,7 +164,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
 				if (r.silkTouch) {
 					li.clear();
-					li.add(ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta));
+					li.add(ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta, true));
 				}
 				for (ItemStack is : li) {
 					r.drops.add(is);
@@ -179,11 +179,13 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	@Override
 	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
 		BlockReplace r = breakers.get(b.hashCode());
-		if (id.getPlayerRelativeBlockHardness(r.player, world, x, y, z) < 0)
-			return false;
-		if (id instanceof SemiUnbreakable)
-			if (((SemiUnbreakable)id).isUnbreakable(world, x, y, z, meta))
+		if (!r.player.capabilities.isCreativeMode) {
+			if (ReikaBlockHelper.isUnbreakable(world, x, y, z, id, meta, r.player))
 				return false;
+			if (id instanceof SemiUnbreakable)
+				if (((SemiUnbreakable)id).isUnbreakable(world, x, y, z, meta))
+					return false;
+		}
 		if (world.getTileEntity(x, y, z) != null)
 			return false;
 		if (r != null) {

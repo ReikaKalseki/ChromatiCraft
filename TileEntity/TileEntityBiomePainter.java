@@ -151,7 +151,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 		private boolean isAccessibleBiome(BiomeGenBase in) {
 			if (in == ChromatiCraft.rainbowforest)
-				return false;
+				;//return false;
 			if (in instanceof ChromaDimensionBiome)
 				return false;
 			return true;

@@ -614,6 +614,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				}
 			}
 		}
+		if (inv[9] != null)
+			repeat = false;
 		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, activeRecipe.type);
 		if (!repeat) {
 			activeRecipe = null;

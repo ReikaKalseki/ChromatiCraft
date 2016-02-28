@@ -24,6 +24,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
@@ -158,8 +159,9 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	}
 
 	public static int getMultiplyRate(ItemStack in, ItemStack out) {
-		int[] ids = OreDictionary.getOreIDs(in);
-		if (in.getDisplayName() != null && in.getDisplayName().toLowerCase().contains("cobblestone"))
+		if (ChromaBlocks.PYLONSTRUCT.match(out))
+			return 1;
+		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase().contains("cobblestone"))
 			return 1;
 		else if (ModList.GEOSTRATA.isLoaded() && RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())) != null) {
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
@@ -177,6 +179,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 			}
 			return ret;
 		}
+		int[] ids = OreDictionary.getOreIDs(in);
 		for (int i = 0; i < ids.length; i++) {
 			String name = OreDictionary.getOreName(ids[i]);
 			if (name.startsWith("dust")) //exploits

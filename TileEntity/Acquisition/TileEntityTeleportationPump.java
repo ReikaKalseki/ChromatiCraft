@@ -215,7 +215,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 						if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
 							tank.addLiquid(src.fluid.amount, selected);
 							src.location.setBlock(world, Blocks.air);
-							this.useEnergy(required.copy().scale(this.hasEfficiency() ? 0.25F : 1));
+							this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
 							li.remove(0);
 							this.decrFluid(src.fluid.amount, selected);
 						}
@@ -310,7 +310,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return ReikaItemHelper.matchStacks(inv[2], ChromaStacks.speedUpgrade);
 	}
 
-	private boolean hasEfficiency() {
+	@Override
+	public boolean hasEfficiency() {
 		return ReikaItemHelper.matchStacks(inv[3], ChromaStacks.efficiencyUpgrade);
 	}
 
@@ -356,6 +357,15 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		//ReikaJavaLibrary.pConsole(counts);
+	}
+
+	@Override
+	public float getCostModifier() {
+		float f = 1;
+		if (this.hasSpeed()) {
+			f *= 2;
+		}
+		return f;
 	}
 
 	private static class FluidSource {

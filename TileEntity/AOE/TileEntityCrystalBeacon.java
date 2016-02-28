@@ -16,7 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -137,7 +137,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	public static boolean isDamageBlockable(DamageSource src) {
-		return src != ChromatiCraft.pylon;
+		return !(src instanceof PylonDamage);
 	}
 
 }

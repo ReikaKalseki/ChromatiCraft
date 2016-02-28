@@ -14,28 +14,26 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
-public class EnchantmentWeaponAOE extends ChromaticEnchantment {
+public class EnchantmentUseRepair extends ChromaticEnchantment {
 
-	public EnchantmentWeaponAOE(int id) {
-		super(id, EnumEnchantmentType.weapon);
+	public EnchantmentUseRepair(int id) {
+		super(id, EnumEnchantmentType.bow);
 	}
 
 	@Override
 	public int getMaxLevel() {
-		return 5;
+		return 3;
 	}
 
-	public static double getRadius(int level) {
-		return 1.5D+level/2D;
+	public static int getRepairedDurability(ItemStack item, int level, float damage/*, UseType type*/) {
+		float frac = (float)item.getItemDamage()/item.getMaxDamage();
+		return (int)Math.min(item.getItemDamage(), 1+level*level*frac*damage/2D);
 	}
-
-	public static double getDamageFactor(int level, double dist, double radius) {
-		return Math.min(1, 1D-Math.pow(dist/radius-level/40D, level));
+	/*
+	public static enum UseType {
+		MINE(),
+		MELEE(),
+		RANGED();
 	}
-
-	@Override
-	public boolean canApply(ItemStack is) {
-		return EnumEnchantmentType.weapon.canEnchantItem(is.getItem()) || EnumEnchantmentType.bow.canEnchantItem(is.getItem());
-	}
-
+	 */
 }

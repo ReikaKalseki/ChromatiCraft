@@ -14,6 +14,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -33,6 +34,7 @@ public class MonumentMineralBlocks {
 		blockChance.put(Blocks.glowstone, 35);
 		blockChance.put(Blocks.emerald_block, 67);
 		blockChance.put(Blocks.gold_block, 25);
+		blockChance.put(ChromaBlocks.CHROMA.getBlockInstance(), 30);
 	}
 
 	public void generate(ChunkSplicedGenerationCache world, Random r, int i, int j, int k) {
@@ -411,6 +413,18 @@ public class MonumentMineralBlocks {
 		this.setBlock(world, i + 23, j + 0, k + 38, Blocks.redstone_block);
 		this.setBlock(world, i + 35, j + 0, k + 14, Blocks.redstone_block);
 		this.setBlock(world, i + 35, j + 0, k + 28, Blocks.redstone_block);
+
+		Block ch = ChromaBlocks.CHROMA.getBlockInstance();
+		parent.registerMineralBlock(i + 21, j + 3, k + 21, ch);
+		this.setBlock(world, i + 20, j + 1, k + 19, ch);
+		this.setBlock(world, i + 22, j + 1, k + 19, ch);
+		this.setBlock(world, i + 20, j + 1, k + 23, ch);
+		this.setBlock(world, i + 22, j + 1, k + 23, ch);
+
+		this.setBlock(world, i + 19, j + 1, k + 20, ch);
+		this.setBlock(world, i + 19, j + 1, k + 22, ch);
+		this.setBlock(world, i + 23, j + 1, k + 20, ch);
+		this.setBlock(world, i + 23, j + 1, k + 22, ch);
 	}
 
 	private void setBlock(ChunkSplicedGenerationCache world, int x, int y, int z, Block b) {

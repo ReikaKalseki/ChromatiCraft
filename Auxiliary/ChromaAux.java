@@ -183,7 +183,7 @@ public class ChromaAux {
 		return name.contains("lycanite");
 	}
 
-	public static void doPylonAttack(EntityLivingBase e, float amt, boolean taperNew) {
+	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew) {
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
 		if (e instanceof EntityPlayer) {
@@ -211,12 +211,12 @@ public class ChromaAux {
 
 		float last = e.getHealth();
 
-		e.attackEntityFrom(ChromatiCraft.pylon, amt);
+		e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], amt);
 
 		if (e.getHealth() > last-amt) {
 			if (amt >= last) { //kill
 				e.setHealth(0.1F);
-				e.attackEntityFrom(ChromatiCraft.pylon, Float.MAX_VALUE);
+				e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], Float.MAX_VALUE);
 			}
 			else
 				e.setHealth(last-amt);

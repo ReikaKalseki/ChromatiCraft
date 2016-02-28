@@ -20,6 +20,7 @@ import mekanism.api.MekanismAPI;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -85,7 +86,6 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
-import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectMapper;
@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaEntities;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -132,7 +133,6 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
-import Reika.DragonAPI.Auxiliary.Trackers.EnchantmentCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
@@ -221,6 +221,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static final Block[] blocks = new Block[ChromaBlocks.blockList.length];
 	public static final Item[] items = new Item[ChromaItems.itemList.length];
+	public static final Enchantment[] enchants = new Enchantment[ChromaEnchants.enchantmentList.length];
 
 	public static Achievement[] achievements;
 
@@ -233,7 +234,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static PotionBetterSaturation betterSat;
 	public static PotionCustomRegen betterRegen;
 
-	public static final PylonDamage pylon = new PylonDamage("got too close to a Crystal Pylon");
+	public static final PylonDamage[] pylonDamage = new PylonDamage[16];
 
 	@Instance("ChromatiCraft")
 	public static ChromatiCraft instance = new ChromatiCraft();
@@ -244,8 +245,6 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static BiomeRainbowForest rainbowforest;
 	public static BiomeEnderForest enderforest;
-
-	public static EnchantmentWeaponAOE weaponAOE;
 
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
@@ -318,6 +317,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		proxy.registerSounds();
 
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			pylonDamage[i] = new PylonDamage(CrystalElement.elements[i]);
+		}
+
 		MinecraftForge.EVENT_BUS.register(GuardianStoneManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaticEventManager.instance);
 		MinecraftForge.EVENT_BUS.register(ChromaDimensionTicker.instance);
@@ -355,10 +358,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		id = ExtraChromaIDs.REGENID.getValue();
 		PotionCollisionTracker.instance.addPotionID(instance, id, PotionCustomRegen.class);
 		betterRegen = new PotionCustomRegen(id);
-
-		id = ExtraChromaIDs.WEAPONAOEID.getValue();
-		EnchantmentCollisionTracker.instance.addEnchantmentID(instance, id, EnchantmentWeaponAOE.class);
-		weaponAOE = new EnchantmentWeaponAOE(id);
 
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.RAINBOWFOREST.getValue(), BiomeRainbowForest.class);
 		BiomeCollisionTracker.instance.addBiomeID(instance, ExtraChromaIDs.ENDERFOREST.getValue(), BiomeEnderForest.class);
@@ -488,10 +487,12 @@ public class ChromatiCraft extends DragonAPIMod {
 			ItemStack used = ChromaOptions.isVanillaDyeMoreCommon() ? dye.getStackOf() : ChromaItems.DYE.getStackOfMetadata(i);
 			ItemStack sapling = new ItemStack(ChromaBlocks.DYESAPLING.getBlockInstance(), 1, i);
 			ItemStack flower = new ItemStack(ChromaBlocks.DYEFLOWER.getBlockInstance(), 1, i);
+			ItemStack leaf = new ItemStack(ChromaBlocks.DYELEAF.getBlockInstance(), 1, i);
 			GameRegistry.addRecipe(new ItemStack(ChromaBlocks.DYE.getBlockInstance(), 1, i), "ddd", "ddd", "ddd", 'd', used);
 			GameRegistry.addShapelessRecipe(used, flower);
 			OreDictionary.registerOre(dye.getOreDictName(), ChromaItems.DYE.getStackOfMetadata(i));
 			OreDictionary.registerOre("treeSapling", sapling);
+			OreDictionary.registerOre("treeLeaves", leaf);
 			OreDictionary.registerOre("plant"+dye.colorNameNoSpaces, flower);
 			OreDictionary.registerOre("flower"+dye.colorNameNoSpaces, flower);
 			OreDictionary.registerOre("flower", flower);
@@ -906,6 +907,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ReikaRegistryHelper.instantiateAndRegisterBlocks(instance, ChromaBlocks.blockList, blocks);
 		ReikaRegistryHelper.instantiateAndRegisterItems(instance, ChromaItems.itemList, items);
+		ReikaRegistryHelper.instantiateAndRegisterEnchantments(instance, ChromaEnchants.enchantmentList, enchants);
 
 		ChromaTiles.loadMappings();
 		ChromaBlocks.loadMappings();

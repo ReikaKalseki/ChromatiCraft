@@ -182,7 +182,8 @@ public class ChromaClientEventController {
 	 */
 	@SubscribeEvent
 	public void biomeFX(EntityRenderingLoopEvent evt) {
-		BiomeFXRenderer.instance.render();
+		if (ChromaOptions.BIOMEFX.getState() && Minecraft.getMinecraft().theWorld.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
+			BiomeFXRenderer.instance.render();
 	}
 
 	@SubscribeEvent
@@ -216,7 +217,7 @@ public class ChromaClientEventController {
 		if (evt.sound instanceof CustomMusic) {
 			CustomMusic cm = (CustomMusic)evt.sound;
 			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.contains(MusicLoader.instance.musicPath)) {
-				evt.volume = Math.max(0.1F, Minecraft.getMinecraft().gameSettings.getSoundLevel(ChromaClient.chromaCategory));
+				evt.volume = Math.max(0.02F, Minecraft.getMinecraft().gameSettings.getSoundLevel(ChromaClient.chromaCategory));
 			}
 		}
 	}

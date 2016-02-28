@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -38,7 +39,9 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.AttractiveMotionController;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Interfaces.MotionController;
@@ -71,6 +74,8 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 	private Coordinate primaryLocation = null;
 	private Coordinate secondaryLocation = null;
 
+	private OutputModifier modifier;
+
 	private MotionController particleMotion;
 
 	@Override
@@ -97,6 +102,8 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 		NBT.setInteger("recipeTick", recipeTick);
 		NBT.setInteger("recipe", activeRecipe != null ? activeRecipe.ordinal() : -1);
 
+		NBT.setInteger("modifier", modifier != null ? modifier.ordinal() : -1);
+
 		if (primaryLocation != null)
 			primaryLocation.writeToNBT("loc1", NBT);
 		if (secondaryLocation != null)
@@ -112,6 +119,9 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 		int r = NBT.getInteger("recipe");
 		activeRecipe = r >= 0 ? FluidMix.list[r] : null;
 
+		int m = NBT.getInteger("modifier");
+		modifier = m >= 0 ? OutputModifier.list[m] : null;
+
 		if (NBT.hasKey("loc2"))
 			primaryLocation = Coordinate.readFromNBT("loc1", NBT);
 		if (NBT.hasKey("loc1"))
@@ -122,6 +132,9 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote) {
 			this.doScan(world, x, y, z);
+		}
+		else {
+			this.doParticles(world, x, y, z);
 		}
 
 		if (recipeTick > 0) {
@@ -142,6 +155,13 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 					}
 				}
 			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doParticles(World world, int x, int y, int z) {
+		if (modifier != null) {
+			modifier.doParticles(world, x, y, z, this);
 		}
 	}
 
@@ -170,7 +190,10 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 	}
 
 	private void craft(World world, int x, int y, int z) {
-		ItemStack is = ReikaItemHelper.getSizedItemStack(activeRecipe.output, Math.min(64, ReikaMathLibrary.intpow2(2, this.getAccelerationPlants())));
+		int num = Math.min(64, ReikaMathLibrary.intpow2(2, this.getAccelerationPlants()));
+		ItemStack is = ReikaItemHelper.getSizedItemStack(activeRecipe.output, num);
+		if (modifier != null)
+			is = modifier.getOutput(is);
 		EntityItem ei = ReikaItemHelper.dropItem(world, x+0.5, y+0.125, z+0.5, is);
 		ei.lifespan = 300;
 		ei.motionX = ei.motionZ = ei.motionY = 0;
@@ -323,6 +346,21 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 				this.scanPosition(world, dx, y, dz);
 			}
 		}
+
+		modifier = this.getModifier(world, x, y, z);
+	}
+
+	private OutputModifier getModifier(World world, int x, int y, int z) {
+		for (int i = 1; i < Y_RANGE; i++) {
+			BlockKey bk = BlockKey.getAt(world, x, y-i, z);
+			OutputModifier mod = OutputModifier.getByBlock(bk);
+			if (mod != null) {
+				return mod;
+			}
+			else if (bk.blockID.isOpaqueCube())
+				return null;
+		}
+		return null;
 	}
 
 	private void scanPosition(World world, int dx, int y, int dz) {
@@ -399,6 +437,69 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 
 			requiredPrimaryAmount = Math.max(1, (int)(1000*consumePrimaryFluid/100D));
 			requiredSecondaryAmount = Math.max(1, (int)(1000*consumeSecondaryFluid/100D));
+		}
+	}
+
+	private static enum OutputModifier {
+		COBBLESMELT(ChromaTiles.HEATLILY),
+		;
+
+		private final BlockKey block;
+
+		private static final OutputModifier[] list = values();
+		private static final BlockMap<OutputModifier> map = new BlockMap();
+
+		private OutputModifier(ChromaTiles c) {
+			this(new BlockKey(c.getBlock(), c.getBlockMetadata()));
+		}
+
+		public static OutputModifier getByBlock(BlockKey bk) {
+			return map.get(bk);
+		}
+
+		private OutputModifier(BlockKey b) {
+			block = b;
+		}
+
+		private ItemStack getOutput(ItemStack in) {
+			switch(this) {
+				case COBBLESMELT:
+					if (ReikaItemHelper.matchStackWithBlock(in, Blocks.cobblestone))
+						return new ItemStack(Blocks.stone, in.stackSize, 0);
+					break;
+				default:
+					break;
+			}
+			return in;
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void doParticles(World world, int x, int y, int z, TileEntityCobbleGen te) {
+			switch(this) {
+				case COBBLESMELT:
+					double a = 0;//Math.toRadians((this.getTicksExisted()*2)%360);
+					int n = 3;
+					int sp = 360/n;
+					double r = 0.75+0.25*Math.sin(te.getTicksExisted()/10D);
+					for (int i = 0; i < 360; i += sp) {
+						double ri = Math.toRadians(i);
+						double dx = x+0.5+r*Math.sin(a+ri);
+						double dy = y-4;
+						double dz = z+0.5+r*Math.cos(a+ri);
+						EntityFX fx = new EntityBlurFX(CrystalElement.ORANGE, world, dx, dy, dz, 0, 0.1875, 0).setScale(2.5F).setNoSlowdown().setLife(25).setIcon(ChromaIcons.TRIDOT);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		static {
+			for (int i = 0; i < list.length; i++) {
+				BlockKey b = list[i].block;
+				map.put(b, list[i]);
+			}
 		}
 	}
 

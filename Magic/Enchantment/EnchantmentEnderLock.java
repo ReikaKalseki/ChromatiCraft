@@ -7,22 +7,21 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Base;
+package Reika.ChromatiCraft.Magic.Enchantment;
 
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.item.ItemStack;
+import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
-public abstract class ChromaticEnchantment extends Enchantment {
+public class EnchantmentEnderLock extends ChromaticEnchantment {
 
-	protected ChromaticEnchantment(int id, EnumEnchantmentType type) {
-		super(id, 0, type);
+	public EnchantmentEnderLock(int id) {
+		super(id, EnumEnchantmentType.bow);
 	}
 
 	@Override
-	public final boolean canApplyAtEnchantingTable(ItemStack stack) {
-		return false;
+	public int getMaxLevel() {
+		return 1;
 	}
 
 }

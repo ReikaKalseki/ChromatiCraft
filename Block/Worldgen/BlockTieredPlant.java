@@ -44,7 +44,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -87,12 +86,11 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			switch(this) {
 				case BULB:
 					y = world.provider.getAverageGroundLevel();
-					for (int i = 0; i < 16; i++) {
+					for (int i = 0; i < 32; i++) {
 						int dy = y+i;
 						Block b = world.getBlock(x, dy+1, z);
 						int meta = world.getBlockMetadata(x, dy+1, z);
-						boolean leaf = b == Blocks.leaves || b == Blocks.leaves2 || ModWoodList.isModLeaf(b, meta);
-						if (world.getBlock(x, dy, z) == Blocks.air && leaf) {
+						if (world.getBlock(x, dy, z) == Blocks.air && ReikaBlockHelper.isLeaf(b, meta)) {
 							return new Coordinate(x, dy, z);
 						}
 					}

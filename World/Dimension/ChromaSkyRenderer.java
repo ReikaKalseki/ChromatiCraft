@@ -43,7 +43,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
 		GL11.glDisable(GL11.GL_FOG);
 
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		this.renderBlackscreen();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
@@ -240,21 +242,21 @@ public class ChromaSkyRenderer extends IRenderHandler {
 			GL11.glPushMatrix();
 
 			switch(i) {
-			case 1:
-				GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-				break;
-			case 2:
-				GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-				break;
-			case 3:
-				GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
-				break;
-			case 4:
-				GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
-				break;
-			case 5:
-				GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
-				break;
+				case 1:
+					GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+					break;
+				case 2:
+					GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+					break;
+				case 3:
+					GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+					break;
+				case 4:
+					GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
+					break;
+				case 5:
+					GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
+					break;
 			}
 
 			GL11.glColor4f(0, 0, 0, 1);

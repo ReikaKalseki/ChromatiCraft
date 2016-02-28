@@ -14,6 +14,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -45,6 +46,11 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 		super(par2Material);
 		blockHardness = 2;
 		blockResistance = 5;
+	}
+
+	@Override
+	public float getExplosionResistance(Entity e, World world, int x, int y, int z, double eX, double eY, double eZ) {
+		return this.isUnbreakable(world, x, y, z, world.getBlockMetadata(x, y, z)) ? 1000000F : super.getExplosionResistance(e, world, x, y, z, eX, eY, eZ);
 	}
 
 	@Override

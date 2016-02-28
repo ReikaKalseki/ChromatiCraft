@@ -241,7 +241,8 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 		int meta = world.getBlockMetadata(x, y, z);
 		switch(meta) {
 			case 0:
-				e.setFire(2);
+				if (e instanceof EntityLivingBase)
+					e.setFire(2);
 				break;
 			case 1:
 				if (e instanceof EntityLivingBase)

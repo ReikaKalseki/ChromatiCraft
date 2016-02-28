@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
@@ -265,7 +266,7 @@ public class BlockPylonStructure extends Block {
 			int dx = x+dir.offsetX;
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
-			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-16, y-16, z-16, x+16, y+16, z+16);
+			blocks.recursiveAddWithBounds(world, dx, dy, dz, this, x-16, y-32, z-16, x+16, y+32, z+16);
 		}
 
 		int mx = blocks.getMidX();
@@ -306,6 +307,11 @@ public class BlockPylonStructure extends Block {
 			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
 		}
 
+		te = world.getTileEntity(mx, my+23, mz);
+		if (te instanceof TileEntityCrystalBroadcaster) {
+			((TileEntityCrystalBroadcaster)te).validateStructure();
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -332,7 +338,7 @@ public class BlockPylonStructure extends Block {
 	void triggerAddCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
-		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-16, z-16, x+16, y+16, z+16);
+		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-32, z-16, x+16, y+32, z+16);
 
 		int mx = blocks.getMidX();
 		int my = blocks.getMinY(); //intentionally bottom
@@ -373,6 +379,11 @@ public class BlockPylonStructure extends Block {
 		te = world.getTileEntity(mx, my+5, mz);
 		if (te instanceof TileEntityCloakingTower) {
 			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
+		}
+
+		te = world.getTileEntity(mx, my+23, mz);
+		if (te instanceof TileEntityCrystalBroadcaster) {
+			((TileEntityCrystalBroadcaster)te).validateStructure();
 		}
 
 		for (int k = 0; k < 6; k++) {

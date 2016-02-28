@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
@@ -161,7 +162,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
 		float dmg = e instanceof EntityPlayer ? 10 : Math.max(4, e.getHealth()/2);
-		e.attackEntityFrom(ChromatiCraft.pylon, dmg);
+		e.attackEntityFrom(ChromatiCraft.pylonDamage[CrystalElement.WHITE.ordinal()], dmg);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURATTACK.ordinal(), this, 192, e.getEntityId());

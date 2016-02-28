@@ -14,28 +14,28 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 
 
-public class EnchantmentWeaponAOE extends ChromaticEnchantment {
+public class EnchantmentAggroMask extends ChromaticEnchantment {
 
-	public EnchantmentWeaponAOE(int id) {
+	public EnchantmentAggroMask(int id) {
 		super(id, EnumEnchantmentType.weapon);
 	}
 
 	@Override
 	public int getMaxLevel() {
-		return 5;
-	}
-
-	public static double getRadius(int level) {
-		return 1.5D+level/2D;
-	}
-
-	public static double getDamageFactor(int level, double dist, double radius) {
-		return Math.min(1, 1D-Math.pow(dist/radius-level/40D, level));
+		return 2;
 	}
 
 	@Override
 	public boolean canApply(ItemStack is) {
 		return EnumEnchantmentType.weapon.canEnchantItem(is.getItem()) || EnumEnchantmentType.bow.canEnchantItem(is.getItem());
+	}
+
+	public static boolean hidePigmanSpreadDamage(int level) {
+		return level >= 1;
+	}
+
+	public static boolean hideDirectDamage(int level) {
+		return level >= 2;
 	}
 
 }

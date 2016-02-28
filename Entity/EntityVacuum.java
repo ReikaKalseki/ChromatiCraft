@@ -187,7 +187,8 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 						int dz = z+k;
 						if (y >= 0 && y <= 255) {
 							Block b = worldObj.getBlock(dx, dy, dz);
-							if (this.canMove(b, worldObj, dx, dy, dz)) {
+							int meta = worldObj.getBlockMetadata(dx, dy, dz);
+							if (this.canMove(b, meta, worldObj, dx, dy, dz)) {
 								EntityFallingBlock e = new EntityTumblingBlock(worldObj, dx, dy, dz, b, worldObj.getBlockMetadata(dx, dy, dz));
 								e.field_145812_b = -10000;
 								e.field_145813_c = false;
@@ -206,10 +207,10 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 		}
 	}
 
-	private boolean canMove(Block b, World world, int x, int y, int z) {
+	private boolean canMove(Block b, int meta, World world, int x, int y, int z) {
 		if (b.blockHardness < 0)
 			return false;
-		if (b.getPlayerRelativeBlockHardness(firingPlayer, world, x, y, z) < 0)
+		if (ReikaBlockHelper.isUnbreakable(world, x, y, z, b, meta, firingPlayer))
 			return false;
 		if (b.isAir(world, x, y, z))
 			return false;

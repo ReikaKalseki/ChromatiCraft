@@ -58,7 +58,7 @@ public abstract class HighCoreRecipe extends PylonRecipe implements ShardGroupin
 		this.addAuxItem(Items.diamond, -4, 0);
 		this.addAuxItem(Items.ender_pearl, 4, 0);
 		this.addAuxItem(Items.emerald, 0, -4);
-		this.addAuxItem(Items.firework_charge, 0, 4);
+		this.addAuxItem(Items.gunpowder, 0, 4);
 
 		this.addRune(primary, rune1.xCoord, rune1.yCoord, rune1.zCoord);
 		this.addRune(primary, rune2.xCoord, rune2.yCoord, rune2.zCoord);
