@@ -19,6 +19,9 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
+import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
@@ -77,21 +80,49 @@ public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
 		if (t.isPlayerSufficientTier(world, x, y, z, Minecraft.getMinecraft().thePlayer)) {
 			Tessellator v5 = Tessellator.instance;
 			int meta = world.getBlockMetadata(x, y, z);
+			v5.setColorOpaque(255, 255, 255);
 			if (renderPass == 0) {
-				v5.setColorOpaque(255, 255, 255);
 				v5.setBrightness(b.getMixedBrightnessForBlock(world, x, y, z));
-				rb.drawCrossedSquares(t.getBacking(meta), x, y, z, 1);
-				v5.setBrightness(240);
-				rb.drawCrossedSquares(t.getOverlay(meta), x, y, z, 1);
+				if (TieredPlants.list[meta] == TieredPlants.POD) {
+					rb.setRenderBoundsFromBlock(b);
+					rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
+				}
+				else if (TieredPlants.list[meta] == TieredPlants.ROOT) {
+					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, t.getBacking(meta), v5, rb, 0.0625, 1);
+				}
+				else {
+					rb.drawCrossedSquares(t.getBacking(meta), x, y, z, 1);
+				}
 				return true;
-			}/*
+			}
 			else if (renderPass == 1) {
-				IIcon ico = ChromaIcons.CENTER.getIcon();
-				BlendMode.ADDITIVEDARK.apply();
-				rb.drawCrossedSquares(ico, x, y, z, 1);
-				BlendMode.DEFAULT.apply();
+				v5.setBrightness(240);
+				IIcon ico = t.getOverlay(meta);
+				if (TieredPlants.list[meta] == TieredPlants.POD) {
+					rb.setRenderBoundsFromBlock(b);
+					rb.unlockBlockBounds();
+					double d = ReikaRandomHelper.getRandomPlusMinus(0.03125, 0.03125);
+					rb.renderMaxX += d;
+					rb.renderMaxY += d;
+					rb.renderMaxZ += d;
+					rb.renderMinX -= d;
+					rb.renderMinY -= d;
+					rb.renderMinZ -= d;
+					rb.renderFaceXNeg(b, x, y, z, ico);
+					rb.renderFaceYNeg(b, x, y, z, ico);
+					rb.renderFaceZNeg(b, x, y, z, ico);
+					rb.renderFaceXPos(b, x, y, z, ico);
+					rb.renderFaceYPos(b, x, y, z, ico);
+					rb.renderFaceZPos(b, x, y, z, ico);
+				}
+				else if (TieredPlants.list[meta] == TieredPlants.ROOT) {
+					ReikaRenderHelper.renderCropTypeTex(world, x, y, z, ico, v5, rb, 0.0625, 1);
+				}
+				else {
+					rb.drawCrossedSquares(ico, x, y, z, 1);
+				}
 				return true;
-			}*/
+			}
 		}
 		return false;
 	}

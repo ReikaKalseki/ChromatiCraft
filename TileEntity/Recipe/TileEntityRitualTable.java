@@ -115,6 +115,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 				if (tickPlayerOut > 50) {
 					this.terminateRitual();
 				}
+				return;
 			}
 		}
 

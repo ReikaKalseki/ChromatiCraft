@@ -63,6 +63,12 @@
 	<plant_desert>
 		This bush gives off a powerful aura - no doubt it will be critical in constructing beacons of your own.
 	</plant_desert>
+	<plant_pod>
+		This pod is full of gently glowing beans. Likely not a foodstuff, it may well have other uses.
+	</plant_pod>
+	<plant_root>
+		This root strengthens and enriches the tree on which it grows. Perhaps you can put it to a similar use.
+	</plant_root>
 	<rainbowleaf>
 		Never before have you seen a tree like this. With leaves of every color of the rainbow, there must be more to this tree than meets the eye.
 	</rainbowleaf>

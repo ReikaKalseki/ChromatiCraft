@@ -54,6 +54,8 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
+	private EntityPlayer craftingPlayer;
+
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
 		required.addTag(CrystalElement.BLACK, 2500);
@@ -125,6 +127,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 			if (world.isRemote) {
 				this.craftParticles(world, x, y, z);
 			}
+			craftingPlayer = null;
 		}
 	}
 
@@ -183,7 +186,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 	}
 
 	private boolean canCraft() {
-		return ReikaItemHelper.matchStacks(inv[0], ChromaStacks.rawCrystal) && ProgressStage.ALLOY.isPlayerAtStage(this.getPlacer());
+		return ReikaItemHelper.matchStacks(inv[0], ChromaStacks.rawCrystal) && craftingPlayer != null && ProgressStage.ALLOY.isPlayerAtStage(craftingPlayer);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -259,6 +262,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 		if (inv[0] != null)
 			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
 		inv[0] = item != null ? item.copy() : null;
+		craftingPlayer = ep;
 		this.markDirty();
 		return null;
 	}
@@ -275,6 +279,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 						craftingTick = 0;
 						inv[0] = ReikaItemHelper.getSizedItemStack(is, has+add);
 						is.stackSize -= add;
+						craftingPlayer = ReikaItemHelper.getDropper(ei);
 						this.syncAllData(true);
 						if (is.stackSize <= 0)
 							return true;

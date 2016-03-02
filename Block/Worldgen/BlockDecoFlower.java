@@ -54,6 +54,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -218,7 +219,22 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	@Override
 	public ArrayList<ItemStack> onSheared(ItemStack item, IBlockAccess world, int x, int y, int z, int fortune) {
-		return ReikaJavaLibrary.makeListFrom(new ItemStack(this, 1, world.getBlockMetadata(x, y, z)));
+		int meta = world.getBlockMetadata(x, y, z);
+		Flowers f = Flowers.list[meta];
+		ItemStack is = new ItemStack(this, 1, meta);
+		if (world instanceof World) { //Why is this IBA? This is NOT a renderer!
+			if (f == Flowers.VOIDREED) {
+				int dy = y+1;
+				while (world.getBlock(x, dy, z) == this && world.getBlockMetadata(x, dy, z) == meta) {
+					dy++;
+				}
+				for (int i = dy-1; i > y; i--) {
+					((World)world).setBlock(x, y, z, Blocks.air);
+					ReikaItemHelper.dropItem((World)world, x+0.5, i+0.5, z+0.5, is);
+				}
+			}
+		}
+		return ReikaJavaLibrary.makeListFrom(is.copy());
 	}
 
 	@Override

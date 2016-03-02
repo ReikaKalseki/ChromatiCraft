@@ -73,6 +73,10 @@ public class ItemTieredResource extends ItemChromaMulti implements TieredItem {
 				return TieredOres.SPACERIFT.level;
 			case 20:
 				return ProgressStage.DESERTSTRUCT;
+			case 21:
+				return TieredPlants.POD.level;
+			case 22:
+				return TieredPlants.ROOT.level;
 			default:
 				return null;
 		}

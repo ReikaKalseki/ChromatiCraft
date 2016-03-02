@@ -305,7 +305,9 @@ public class ChromaAspectManager {
 				Aspect.ORDER,
 				Aspect.ENERGY,
 				Aspect.PLANT,
-				Aspect.EXCHANGE
+				Aspect.EXCHANGE,
+				Aspect.LIGHT,
+				Aspect.GREED
 		};
 
 		for (int i = 0; i < TieredOres.list.length; i++) {

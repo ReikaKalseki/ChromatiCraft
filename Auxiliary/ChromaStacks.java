@@ -83,6 +83,8 @@ public class ChromaStacks {
 	public static final ItemStack resocrystal 		= ChromaItems.TIERED.getStackOfMetadata(18);
 	public static final ItemStack spaceDust 		= ChromaItems.TIERED.getStackOfMetadata(19);
 	public static final ItemStack desertLoot 		= ChromaItems.TIERED.getStackOfMetadata(20);
+	public static final ItemStack glowbeans	 		= ChromaItems.TIERED.getStackOfMetadata(21);
+	public static final ItemStack boostroot	 		= ChromaItems.TIERED.getStackOfMetadata(22);
 
 	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);

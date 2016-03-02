@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.SoundEnum;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public enum ChromaSounds implements SoundEnum {
@@ -128,13 +129,14 @@ public enum ChromaSounds implements SoundEnum {
 		this.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, vol, pitch);
 	}
 
-	public void playSoundAtBlockNoAttenuation(TileEntity te, float vol, float pitch) {
+	public void playSoundAtBlockNoAttenuation(TileEntity te, float vol, float pitch, int broadcast) {
 		if (te.worldObj.isRemote)
 			return;
 		double x = te.xCoord+0.5;
 		double y = te.yCoord+0.5;
 		double z = te.zCoord+0.5;
-		ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);
+		//ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);
+		ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, this, te.worldObj, x, y, z, vol, pitch, false, broadcast);
 	}
 
 	public void playSoundAtBlock(TileEntity te) {

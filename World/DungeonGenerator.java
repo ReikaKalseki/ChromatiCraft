@@ -389,6 +389,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 						TileEntityMobSpawner te = (TileEntityMobSpawner)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
 						te.func_145881_a().activatingRangeFromPlayer = 8;
 						te.func_145881_a().maxNearbyEntities = 16;
+						te.func_145881_a().maxSpawnDelay = 400;
 						ReikaSpawnerHelper.setMobSpawnerMob(te, (String)EntityList.classToStringMapping.get(EntityCreeper.class));
 					}
 				}

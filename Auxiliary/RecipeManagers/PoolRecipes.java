@@ -177,6 +177,20 @@ public class PoolRecipes {
 
 	}
 
+	public Collection<PoolRecipe> getRecipesForItem(ItemStack is) {
+		Collection<PoolRecipe> c = recipes.get(is);
+		return c != null ? Collections.unmodifiableCollection(c) : new ArrayList();
+	}
+
+	public boolean isCompatibleWith(ItemStack is) {
+		Collection<PoolRecipe> c = recipes.get(is);
+		for (PoolRecipe r : c) {
+			if (r.inputs.containsKey(is))
+				return true;
+		}
+		return false;
+	}
+
 	public Collection<PoolRecipe> getAllPoolRecipes() {
 		return Collections.unmodifiableCollection(ReikaJavaLibrary.getCompoundCollection(recipes.values()));
 	}

@@ -60,6 +60,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPylonTurboCharger extends TileEntityChromaticBase implements BreakAction, OwnedTile {
 
+	public static final int EFFECT_RANGE = 256;
+
 	public static final int RITUAL_LENGTH = 2400;
 
 	private int revTick = 0;
@@ -148,7 +150,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			double vy = dy/dd*v;
 			double vz = dz/dd*v;
 
-			float s = (float)ReikaRandomHelper.getRandomBetween(6, 9);
+			float s = ReikaRandomHelper.getRandomBetween(6, 9);
 
 			EntityFX fx = new EntityCenterBlurFX(te.getColor(), world, px, py, pz, vx, vy, vz).setScale(s);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -312,7 +314,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			TileEntityPylonTurboCharger tile = (TileEntityPylonTurboCharger)c.getTileEntity(world);
 			tile.ritualTick = 0;
 		}
-		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 1, 1);
+		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 1, 1, EFFECT_RANGE);
 		isComplete = false;
 		ritualTick = 0;
 		revTick = 0;
@@ -341,7 +343,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	}
 
 	private void doCompleteParticles() {
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOCOMPLETE.ordinal(), this, 64);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOCOMPLETE.ordinal(), this, EFFECT_RANGE);
 	}
 
 	private void doEvent(World world, int x, int y, int z, EventType type) {
@@ -358,7 +360,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 			case JETS:
 				if (jetTick%4 == 0)
-					ChromaSounds.INFUSE.playSoundAtBlockNoAttenuation(this.getPylon(world, x, y, z), 0.5F, 0.5F);
+					ChromaSounds.INFUSE.playSoundAtBlockNoAttenuation(this.getPylon(world, x, y, z), 0.5F, 0.5F, EFFECT_RANGE);
 				break;
 			case PARTICLEBURST:
 				//this.rockScreen(6);
@@ -388,11 +390,11 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				break;
 		}
 
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOEVENT.ordinal(), this, 128, type.ordinal(), dat);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOEVENT.ordinal(), this, EFFECT_RANGE, type.ordinal(), dat);
 	}
 
 	private void doFailParticles(boolean hasPylon) {
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOFAIL.ordinal(), this, 64, hasPylon ? 1 : 0);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOFAIL.ordinal(), this, EFFECT_RANGE, hasPylon ? 1 : 0);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -561,7 +563,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 					double vy = dy/dd*v;
 					double vz = dz/dd*v;
 
-					float s = (float)ReikaRandomHelper.getRandomBetween(3, 6);
+					float s = ReikaRandomHelper.getRandomBetween(3, 6);
 
 					EntityFX fx = new EntityLaserFX(te.getColor(), world, px, py, pz, vx, vy, vz).setScale(s);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -615,7 +617,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 					coords.add(c);
 
 					int l = 10+rand.nextInt(50);
-					float s = (float)ReikaRandomHelper.getRandomBetween(2, 6);
+					float s = ReikaRandomHelper.getRandomBetween(2, 6);
 					float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.125, 0.0625);
 					EntityFX fx = new EntityRuneFX(world, dx, y-1-s/4F, dz, 0, 0.125, 0, te.getColor()).setGravity(g).setLife(l).setScale(s);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -637,7 +639,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			ep.attackEntityFrom(new DamageSource("fx").setDamageBypassesArmor().setDamageIsAbsolute().setDamageAllowedInCreativeMode(), 0.00001F);
 		}
 
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOSTART.ordinal(), this, 64);
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONTURBOSTART.ordinal(), this, EFFECT_RANGE);
 	}
 
 	@SideOnly(Side.CLIENT)

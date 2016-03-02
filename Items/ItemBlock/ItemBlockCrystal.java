@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -68,7 +69,7 @@ public class ItemBlockCrystal extends ItemBlock {
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
 		String name = ChromaBlocks.getEntryByID(field_150939_a).getMultiValuedName(is.getItemDamage());
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+		if (DragonAPICore.hasGameLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			name = this.obfuscateIf(is, name);
 		return name;
 	}

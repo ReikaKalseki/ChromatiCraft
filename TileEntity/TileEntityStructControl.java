@@ -255,7 +255,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 		monumentCount = 0;
 		monumentTick = 50;
 		triggeredMonument = false;
-		ChromaSounds.ERROR.playSoundAtBlockNoAttenuation(this, 1, 0.75F);
+		ChromaSounds.ERROR.playSoundAtBlockNoAttenuation(this, 1, 0.75F, Integer.MAX_VALUE);
 	}
 
 	@Override

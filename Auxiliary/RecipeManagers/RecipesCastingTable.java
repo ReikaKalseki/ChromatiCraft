@@ -583,9 +583,9 @@ public class RecipesCastingTable {
 
 	public void addPostLoadRecipes() {
 		if (ModList.THAUMCRAFT.isLoaded()) {
-			ItemStack is = ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem();
+			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 4);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
-			this.addRecipe(new CastingRecipe(is, sr));
+			this.addModdedRecipe(new CastingRecipe(is, sr));
 		}
 
 		for (Object o : Item.itemRegistry.getKeys()) {

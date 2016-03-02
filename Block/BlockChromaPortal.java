@@ -102,7 +102,7 @@ public class BlockChromaPortal extends Block {
 							ReikaSoundHelper.broadcastSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, 1, 1);
 						}
 						else {
-							ChromaSounds.GOTODIM.playSoundAtBlock(te, 1, 1);
+							ChromaSounds.GOTODIM.playSoundAtBlockNoAttenuation(te, 1, 1, 32);
 							ReikaSoundHelper.playSound(ChromaSounds.GOTODIM, ChromatiCraft.packetChannel, ep.worldObj, 0, 1024, 0, 1, 1, false);
 						}
 					}

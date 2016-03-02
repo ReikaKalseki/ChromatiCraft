@@ -30,6 +30,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -41,16 +42,19 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.RotaryCraft.API.ItemFetcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public final class BlockTieredPlant extends BlockChromaTiered implements IPlantable, LoadRegistry {
 
-	public static final int ARR_LENGTH = 5;
+	public static final int ARR_LENGTH = 7;
 
 	private final IIcon[] front_icons = new IIcon[ARR_LENGTH];
 	private final IIcon[] back_icons = new IIcon[ARR_LENGTH];
@@ -68,7 +72,9 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 		CAVE(ProgressStage.RUNEUSE, 0xffffff),
 		LILY(ProgressStage.CHARGE, 0xff00ff),
 		BULB(ProgressStage.MULTIBLOCK, 0x00ffff),
-		DESERT(ProgressStage.PYLON, 0xffcc33);
+		DESERT(ProgressStage.PYLON, 0xffcc33),
+		POD(ProgressStage.ALLOY, 0x827C1F),
+		ROOT(ProgressStage.TURBOCHARGE, 0x871D00);
 
 		public final ProgressStage level;
 		public final int color;
@@ -136,16 +142,80 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 						}
 					}
 					break;
+				case POD: {
+					x = ReikaMathLibrary.bitRound(x, 4)+7+rand.nextInt(2);
+					z = ReikaMathLibrary.bitRound(z, 4)+7+rand.nextInt(2);
+					Coordinate c = ReikaWorldHelper.findTreeNear(world, x, world.getTopSolidOrLiquidBlock(x, z), z, 7);
+					if (c != null) {
+						int ymin = c.yCoord;
+						int ymax = c.yCoord;
+						Coordinate c2 = c;
+						while (ReikaBlockHelper.isWood(c2.getBlock(world), c2.getBlockMetadata(world))) {
+							c2 = c2.offset(0, -1, 0);
+							ymin--;
+						}
+						c2 = c;
+						while (ReikaBlockHelper.isWood(c2.getBlock(world), c2.getBlockMetadata(world))) {
+							c2 = c2.offset(0, 1, 0);
+							ymax++;
+						}
+						ymax--;
+						ymin++;
+						int gy = ReikaRandomHelper.getRandomBetween(ymin, ymax);
+						for (ForgeDirection dir : ReikaDirectionHelper.getRandomOrderedDirections(true)) {
+							c2 = new Coordinate(c.xCoord, gy, c.zCoord).offset(dir, 1);
+							if (c2.softBlock(world)) {
+								return c2;
+							}
+						}
+					}
+					break;
+				}
+				case ROOT: {
+					x = ReikaMathLibrary.bitRound(x, 4)+7+rand.nextInt(2);
+					z = ReikaMathLibrary.bitRound(z, 4)+7+rand.nextInt(2);
+					Coordinate c = ReikaWorldHelper.findTreeNear(world, x, world.getTopSolidOrLiquidBlock(x, z), z, 7);
+					if (c != null) {
+						while (ReikaBlockHelper.isWood(c.getBlock(world), c.getBlockMetadata(world))) {
+							c = c.offset(0, -1, 0);
+						}
+						c = c.offset(0, 1, 0);
+						for (ForgeDirection dir : ReikaDirectionHelper.getRandomOrderedDirections(true)) {
+							Coordinate c2 = c.offset(dir, 1);
+							if (c2.softBlock(world)) {
+								return c2;
+							}
+						}
+					}
+					break;
+				}
 			}
 			return null;
 		}
 
 		public int getGenerationCount() {
-			return this == LILY ? 1 : 2;
+			switch(this) {
+				case POD:
+					return 6;
+				case ROOT:
+					return 3;
+				case LILY:
+					return 1;
+				default:
+					return 2;
+			}
 		}
 
 		public int getGenerationChance() {
-			return this == CAVE ? 2 : 5;
+			switch(this) {
+				case CAVE:
+					return 2;
+				case POD:
+				case ROOT:
+					return 4;
+				default:
+					return 5;
+			}
 		}
 
 		public Block getBlock() {
@@ -167,8 +237,42 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 				case LILY: return ChromaStacks.elementDust.copy();
 				case BULB: return ChromaStacks.resonanceDust.copy();
 				case DESERT: return ChromaStacks.beaconDust.copy();
+				case POD: return ChromaStacks.glowbeans.copy();
+				case ROOT: return ChromaStacks.boostroot.copy();
 			}
 			return null;
+		}
+	}
+
+	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+		int meta = world.getBlockMetadata(x, y, z);
+		TieredPlants p = TieredPlants.list[meta];
+		if (p == TieredPlants.POD) {
+			float maxX = 0.75F;
+			float maxY = 0.75F;
+			float maxZ = 0.75F;
+			float minX = 0.25F;
+			float minY = 0.25F;
+			float minZ = 0.25F;
+
+			if (ReikaBlockHelper.isWood(world, x, y-1, z))
+				minY = 0;
+			if (ReikaBlockHelper.isWood(world, x, y+1, z))
+				maxY = 1;
+			if (ReikaBlockHelper.isWood(world, x-1, y, z))
+				minX = 0;
+			if (ReikaBlockHelper.isWood(world, x+1, y, z))
+				maxX = 1;
+			if (ReikaBlockHelper.isWood(world, x, y, z-1))
+				minZ = 0;
+			if (ReikaBlockHelper.isWood(world, x, y, z+1))
+				maxZ = 1;
+
+			this.setBlockBounds(minX, minY, minZ, maxX, maxY, maxZ);
+		}
+		else {
+			this.setBlockBounds(0, 0, 0, 1, 1, 1);
 		}
 	}
 
@@ -215,6 +319,12 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 				break;
 			case DESERT:
 				n = (1+fortune*fortune)+2*rand.nextInt(5);
+				break;
+			case POD:
+				n = 2+rand.nextInt(1+fortune*3/2);
+				break;
+			case ROOT:
+				n = 1+rand.nextInt(1+fortune)/2;
 				break;
 		}
 		for (int i = 0; i < n; i++) {
@@ -263,12 +373,12 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 	@Override
 	public boolean canRenderInPass(int pass) {
 		ChromaClient.plant.renderPass = pass;
-		return pass <= 0;
+		return pass <= 1;
 	}
 
 	@Override
 	public int getRenderBlockPass() {
-		return 0;
+		return 1;
 	}
 
 	@Override
@@ -314,6 +424,14 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 					double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
 					EntityBlurFX fx = new EntityBlurFX(world, px, y+0.75, pz, 0, 0, 0).setColor(255, gr, 0).setGravity(-g).setScale(2);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					break;
+				}
+				case 5: {
+
+					break;
+				}
+				case 6: {
+
 					break;
 				}
 			}
@@ -366,6 +484,10 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 				return b == Blocks.water || b == Blocks.flowing_water;
 			case DESERT:
 				return b == Blocks.sand;
+			case POD:
+				return ReikaBlockHelper.isWood(b, meta);
+			case ROOT:
+				return b == Blocks.grass || b == Blocks.dirt;
 		}
 		return false;
 	}
@@ -400,10 +522,13 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			case FLOWER:
 			case LILY:
 			case DESERT:
+			case ROOT:
 				return this.canPlaceBlockOn(world, x, y-1, z, p);
 			case BULB:
 			case CAVE:
 				return this.canPlaceBlockOn(world, x, y+1, z, p);
+			case POD:
+				return this.canPlaceBlockOn(world, x, y+1, z, p) || this.canPlaceBlockOn(world, x+1, y, z, p) || this.canPlaceBlockOn(world, x-1, y, z, p) || this.canPlaceBlockOn(world, x, y, z+1, p) || this.canPlaceBlockOn(world, x, y, z-1, p);
 		}
 		return false;
 	}
@@ -421,6 +546,9 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 				return EnumPlantType.Water;
 			case DESERT:
 				return EnumPlantType.Desert;
+			case ROOT:
+			case POD:
+				return EnumPlantType.Plains;
 		}
 		return null;
 	}
