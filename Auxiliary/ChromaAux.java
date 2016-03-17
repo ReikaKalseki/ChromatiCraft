@@ -14,10 +14,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
+import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
@@ -27,17 +32,23 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.Fluid;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -179,7 +190,7 @@ public class ChromaAux {
 	}
 
 	public static boolean requiresSpecialSpawnEnforcement(EntityLiving e) {
-		String name = e.getClass().getName().toLowerCase();
+		String name = e.getClass().getName().toLowerCase(Locale.ENGLISH);
 		return name.contains("lycanite");
 	}
 
@@ -228,11 +239,11 @@ public class ChromaAux {
 		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn
 	}
 
-	public static MultiMap<DecimalPosition, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
-		MultiMap<DecimalPosition, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
+	public static MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
+		MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
 		for (CrystalTarget t : c) {
 			DecimalPosition loc = new DecimalPosition(t.location).offset(t.offsetX, t.offsetY, t.offsetZ);
-			map.addValue(loc, t.color);
+			map.addValue(new ImmutablePair(loc, t.endWidth), t.color);
 		}
 		return map;
 	}
@@ -314,14 +325,102 @@ public class ChromaAux {
 			li.add(CrystalElement.BLUE);
 		if (fluid.getDensity() > 4000)
 			li.add(CrystalElement.RED);
-		if (fluid.getName().toLowerCase().contains("oil"))
+		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("oil"))
 			li.add(CrystalElement.BROWN);
-		if (fluid.getName().toLowerCase().contains("fuel"))
+		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("fuel"))
 			li.add(CrystalElement.YELLOW);
-		if (fluid.getName().toLowerCase().contains("xp") || fluid == ChromatiCraft.chroma)
+		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("xp") || fluid == ChromatiCraft.chroma)
 			li.add(CrystalElement.PURPLE);
-		if (fluid.getName().toLowerCase().contains("bio") || fluid.getName().toLowerCase().contains("honey"))
+		if (fluid.getName().toLowerCase(Locale.ENGLISH).contains("bio") || fluid.getName().toLowerCase(Locale.ENGLISH).contains("honey"))
 			li.add(CrystalElement.GREEN);
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
+	}
+
+	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int count) {
+		int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
+		int n = PlayerElementBuffer.instance.getChargeInefficiency(player);
+		int drain = add*n;
+		int energy = te.getEnergy(e);
+		if (drain > energy) {
+			drain = energy;
+			add = drain/n;
+		}
+		if (te.canConduct() && te.allowCharging(player, e) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
+			te.onUsedBy(player, e);
+			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
+				te.drain(e, drain);
+			PlayerElementBuffer.instance.checkUpgrade(player, true);
+			ProgressStage.CHARGE.stepPlayerTo(player);
+			if (te instanceof TileEntityCrystalPylon)
+				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
+			if (player.worldObj.isRemote) {
+				//this.spawnParticles(player, e);
+				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public static List<AxisAlignedBB> interceptEntityCollision(Entity e, AxisAlignedBB box) {
+		if (e instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)e)) {
+			return AbilityHelper.instance.getNoclipBlockBoxes((EntityPlayer)e);
+		}
+		else {
+			return getSurrogateCollidingAABBs(e, box);//e.worldObj.getCollidingBoundingBoxes(e, box);
+		}
+	}
+
+	public static List<AxisAlignedBB> getSurrogateCollidingAABBs(Entity ep, AxisAlignedBB box) {
+		ArrayList<AxisAlignedBB> li = new ArrayList();
+
+		int i = MathHelper.floor_double(box.minX);
+		int j = MathHelper.floor_double(box.maxX + 1.0D);
+		int k = MathHelper.floor_double(box.minY);
+		int l = MathHelper.floor_double(box.maxY + 1.0D);
+		int i1 = MathHelper.floor_double(box.minZ);
+		int j1 = MathHelper.floor_double(box.maxZ + 1.0D);
+
+		for (int k1 = i; k1 < j; ++k1) {
+			for (int l1 = i1; l1 < j1; ++l1) {
+				if (ep.worldObj.blockExists(k1, 64, l1)) {
+					for (int i2 = k - 1; i2 < l; ++i2) {
+						Block block;
+
+						if (k1 >= -30000000 && k1 < 30000000 && l1 >= -30000000 && l1 < 30000000) {
+							block = ep.worldObj.getBlock(k1, i2, l1);
+						}
+						else {
+							block = Blocks.stone;
+						}
+
+						block.addCollisionBoxesToList(ep.worldObj, k1, i2, l1, box, li, ep);
+					}
+				}
+			}
+		}
+
+		double d0 = 0.25D;
+		List<Entity> list = ep.worldObj.getEntitiesWithinAABBExcludingEntity(ep, box.expand(d0, d0, d0));
+
+		for (Entity e : list) {
+			AxisAlignedBB box2 = e.getBoundingBox();
+
+			if (box2 != null && box2.intersectsWith(box)) {
+				li.add(box2);
+			}
+
+			box2 = ep.getCollisionBox(e);
+
+			if (box2 != null && box2.intersectsWith(box)) {
+				li.add(box2);
+			}
+		}
+
+		return li;
+	}
+
+	public static boolean applyNoclipPhase(EntityPlayer ep) {
+		return ep.noClip || Chromabilities.ORECLIP.enabledOn(ep);
 	}
 }

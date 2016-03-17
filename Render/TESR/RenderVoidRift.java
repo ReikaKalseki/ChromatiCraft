@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -21,13 +20,15 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class RenderVoidRift extends ChromaRenderBase {
+
+	private double[] wave = new double[2];
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
@@ -57,18 +58,13 @@ public class RenderVoidRift extends ChromaRenderBase {
 		Integer[] colors = new Integer[4];
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
-			int dx = te.xCoord+dir.offsetX;
-			int dy = te.yCoord+dir.offsetY;
-			int dz = te.zCoord+dir.offsetZ;
-			Block b = te.worldObj.getBlock(dx, dy, dz);
-			int meta = te.worldObj.getBlockMetadata(dx, dy, dz);
-			if (b != te.getBlockType()) {
+			BlockKey b = te.getAt(dir.offsetX, dir.offsetZ);
+			if (b.blockID != te.getBlockType()) {
 				colors[i-2] = e.getColor();
 			}
-			else if (meta != e.ordinal()) {
+			else if (b.metadata != e.ordinal()) {
 				//blend colors
-				CrystalElement e2 = CrystalElement.elements[meta];
+				CrystalElement e2 = CrystalElement.elements[b.metadata];
 				colors[i-2] = ReikaColorAPI.mixColors(e.getColor(), e2.getColor(), 0.5F);
 			}
 		}
@@ -102,49 +98,63 @@ public class RenderVoidRift extends ChromaRenderBase {
 					double t = tick/200D;
 					double r = 0.03125;
 
-					double[] a;
-
 					int y = te.yCoord+k;
 					switch(ForgeDirection.VALID_DIRECTIONS[i+2]) {
 						case NORTH:
-							a = this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord);
-							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : a[0], k+1, te.hasAt(-1, -1) ? 0 : a[1], u, v);
-							a = this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord);
-							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-a[0], k+1, te.hasAt(1, -1) ? 0 : a[1], du, v);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord) : new double[]{0, 0};
-							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-a[0], k,  te.hasAt(1, -1) ? 0 : a[1], du, dv);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord, y, te.zCoord) : new double[]{0, 0};
-							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : a[0], k,  te.hasAt(-1, -1) ? 0 : a[1], u, dv);
+							this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord);
+							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : wave[0], k+1, te.hasAt(-1, -1) ? 0 : wave[1], u, v);
+							this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord);
+							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-wave[0], k+1, te.hasAt(1, -1) ? 0 : wave[1], du, v);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord);
+							else this.resetWave();
+							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-wave[0], k,  te.hasAt(1, -1) ? 0 : wave[1], du, dv);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord, y, te.zCoord);
+							else this.resetWave();
+							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : wave[0], k,  te.hasAt(-1, -1) ? 0 : wave[1], u, dv);
 							break;
 						case SOUTH:
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord, y, te.zCoord+1) : new double[]{0, 0};
-							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : a[0], k,  te.hasAt(-1, 1) ? 1 : 1-a[1], u, dv);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord+1) : new double[]{0, 0};
-							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-a[0], k, te.hasAt(1, 1) ? 1 : 1-a[1], du, dv);
-							a = this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord+1);
-							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-a[0], k+1, te.hasAt(1, 1) ? 1 : 1-a[1], du, v);
-							a = this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord+1);
-							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : a[0], k+1, te.hasAt(-1, 1) ? 1 : 1-a[1], u, v);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord, y, te.zCoord+1);
+							else this.resetWave();
+							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : wave[0], k,  te.hasAt(-1, 1) ? 1 : 1-wave[1], u, dv);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord+1);
+							else this.resetWave();
+							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-wave[0], k, te.hasAt(1, 1) ? 1 : 1-wave[1], du, dv);
+							this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord+1);
+							v5.addVertexWithUV(colors[ForgeDirection.EAST.ordinal()-2] == null ? 1 : 1-wave[0], k+1, te.hasAt(1, 1) ? 1 : 1-wave[1], du, v);
+							this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord+1);
+							v5.addVertexWithUV(colors[ForgeDirection.WEST.ordinal()-2] == null ? 0 : wave[0], k+1, te.hasAt(-1, 1) ? 1 : 1-wave[1], u, v);
 							break;
 						case EAST:
-							a = this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord);
-							v5.addVertexWithUV(te.hasAt(1, -1) ? 1 : 1-a[0], k+1, colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : a[1], u, v);
-							a = this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord+1);
-							v5.addVertexWithUV(te.hasAt(1, 1) ? 1 : 1-a[0], k+1, colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-a[1], du, v);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord+1) : new double[]{0, 0};
-							v5.addVertexWithUV(te.hasAt(1, 1) ? 1 : 1-a[0], k,  colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-a[1], du, dv);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord) : new double[]{0, 0};
-							v5.addVertexWithUV(te.hasAt(1, -1) ? 1 : 1-a[0], k,  colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : a[1], u, dv);
+							this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord);
+							v5.addVertexWithUV(te.hasAt(1, -1) ? 1 : 1-wave[0], k+1, colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : wave[1], u, v);
+							this.calcWave(te, t, r, te.xCoord+1, y+1, te.zCoord+1);
+							v5.addVertexWithUV(te.hasAt(1, 1) ? 1 : 1-wave[0], k+1, colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-wave[1], du, v);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord+1);
+							else this.resetWave();
+							v5.addVertexWithUV(te.hasAt(1, 1) ? 1 : 1-wave[0], k,  colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-wave[1], du, dv);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord+1, y, te.zCoord);
+							else this.resetWave();
+							v5.addVertexWithUV(te.hasAt(1, -1) ? 1 : 1-wave[0], k,  colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : wave[1], u, dv);
 							break;
 						case WEST:
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord, y, te.zCoord) : new double[]{0, 0};
-							v5.addVertexWithUV(te.hasAt(-1, -1) ? 0 : a[0], k,  colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : a[1], u, dv);
-							a = k > 1 ? this.calcWave(te, t, r, te.xCoord, y, te.zCoord+1) : new double[]{0, 0};
-							v5.addVertexWithUV(te.hasAt(-1, 1) ? 0 : a[0], k,  colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-a[1], du, dv);
-							a = this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord+1);
-							v5.addVertexWithUV(te.hasAt(-1, 1) ? 0 : a[0], k+1, colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-a[1], du, v);
-							a = this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord);
-							v5.addVertexWithUV(te.hasAt(-1, -1) ? 0 : a[0], k+1, colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : a[1], u, v);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord, y, te.zCoord);
+							else this.resetWave();
+							v5.addVertexWithUV(te.hasAt(-1, -1) ? 0 : wave[0], k,  colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : wave[1], u, dv);
+							if (k > 1)
+								this.calcWave(te, t, r, te.xCoord, y, te.zCoord+1);
+							else this.resetWave();
+							v5.addVertexWithUV(te.hasAt(-1, 1) ? 0 : wave[0], k,  colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-wave[1], du, dv);
+							this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord+1);
+							v5.addVertexWithUV(te.hasAt(-1, 1) ? 0 : wave[0], k+1, colors[ForgeDirection.SOUTH.ordinal()-2] == null ? 1 : 1-wave[1], du, v);
+							this.calcWave(te, t, r, te.xCoord, y+1, te.zCoord);
+							v5.addVertexWithUV(te.hasAt(-1, -1) ? 0 : wave[0], k+1, colors[ForgeDirection.NORTH.ordinal()-2] == null ? 0 : wave[1], u, v);
 							break;
 						default:
 							break;
@@ -188,7 +198,24 @@ public class RenderVoidRift extends ChromaRenderBase {
 		}
 	}
 
-	private double[] calcWave(TileEntityVoidRift te, double t, double r, int x, int y, int z) {
-		return new double[]{r*Math.sin(y+t)+r*Math.cos(y+t/3D), r*Math.sin(y+t)+r*Math.cos(y+t/3D)};
+	private void calcWave(TileEntityVoidRift te, double t, double r, int x, int y, int z) {
+		wave[0] = r*approxSin(y+t)+r*approxCos(y+t/3D);
+		wave[1] = r*approxSin(y+t)+r*approxCos(y+t/3D);
+	}
+
+	private static double approxSin(double ang) {
+		ang = (ang%(2*Math.PI))-Math.PI;
+		if (ang < 0)
+			return -(1.27323954*ang+0.405284735*ang*ang);
+		else
+			return -(1.27323954*ang-0.405284735*ang*ang);
+	}
+
+	private static double approxCos(double ang) {
+		return approxSin(ang+Math.PI/2);
+	}
+
+	private void resetWave() {
+		wave[0] = wave[1] = 0;
 	}
 }

@@ -14,6 +14,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.FluidEmitterChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 
+@Deprecated
 public class TileEntityAuraLiquifier extends FluidEmitterChromaticBase {
 
 	@Override

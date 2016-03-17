@@ -19,11 +19,14 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -35,16 +38,19 @@ import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.EntityLockMotionController;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -156,11 +162,11 @@ public class ChromaFX {
 	}
 
 	public static void createPylonChargeBeam(ChargingPoint te, EntityPlayer ep, double dist, CrystalElement e) {
-		//WorldLocation loc = new WorldLocation(ep);
+		Coordinate loc = te.getChargeParticleOrigin(ep, e);
 		//te.addTarget(loc, te.getColor(), ep.posX-loc.xCoord, ep.posY+ep.getEyeHeight()-loc.yCoord, ep.posZ-loc.zCoord);
-		int sx = te.getX();
-		int sy = te.getY();
-		int sz = te.getZ();
+		int sx = loc.xCoord;
+		int sy = loc.yCoord;
+		int sz = loc.zCoord;
 
 		double dx = ep.posX-sx-0.5;
 		double dy = ep.posY-0.125-sy-0.5;
@@ -183,8 +189,10 @@ public class ChromaFX {
 		double vy = dy2/dd*v;
 		double vz = dz2/dd*v;
 
-		float s = (float)(1.75+0.5*Math.sin(Math.toRadians(dist*360)));
-		Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(e, te.getWorld(), x, y, z, vx, vy, vz).setScale(s).setNoSlowdown().setLife((int)dd*10));
+		float s = (float)(1.875+0.5*Math.sin(Math.toRadians(dist*360)));
+		MotionController m = new EntityLockMotionController(ep, 0.03125/8, 0.125*4, 0.875);
+		EntityFX fx = new EntityBlurFX(e, te.getWorld(), x, y, z, 0, 0, 0).setScale(s).setNoSlowdown().setLife((int)dd*10).setMotionController(m);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	public static void killPylonChargeBeam(TileEntityCrystalPylon te, EntityPlayer ep) {
@@ -203,39 +211,41 @@ public class ChromaFX {
 		return ReikaColorAPI.mixColors(c1, c2, 1-f);
 	}
 
-	public static void drawLeyLineParticles(World world, int x, int y, int z, Collection<CrystalTarget> li) {
+	public static void drawLeyLineParticles(World world, int x, int y, int z, double r, Collection<CrystalTarget> li) {
 		if (!li.isEmpty()) {
 			double t = (System.currentTimeMillis()/600D)%360+2; //+2 to compensate for particle delay
 			t /= 30D;
 
-			MultiMap<DecimalPosition, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+			MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
 
-			for (DecimalPosition pos : map.keySet()) {
+			for (ImmutablePair<DecimalPosition, Double> pos : map.keySet()) {
 				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 				int clr = getBlendedColorFromElementList(lc, t, 0.125);
 				int p = Minecraft.getMinecraft().gameSettings.particleSetting;
 				if (rand.nextInt(1+p*2) == 0) {
-					double dx = pos.xCoord-x-0.5;
-					double dy = pos.yCoord-y-0.5;
-					double dz = pos.zCoord-z-0.5;
+					double dx = pos.left.xCoord-x-0.5;
+					double dy = pos.left.yCoord-y-0.5;
+					double dz = pos.left.zCoord-z-0.5;
 					double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 					double dr = rand.nextDouble();
+					float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.right));
+					//ReikaJavaLibrary.pConsole(dr+" @ "+r+" > "+pos.right+" = "+s);
 					double px = dx*dr+x+0.5;
 					double py = dy*dr+y+0.5;
 					double pz = dz*dr+z+0.5;
-					EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(15).setColor(clr);
+					EntityLaserFX fx = new EntityLaserFX(CrystalElement.WHITE, world, px, py, pz).setScale(s).setColor(clr);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
 			}
 		}
 	}
 
-	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li) {
+	public static void drawEnergyTransferBeams(WorldLocation src, double r, Collection<CrystalTarget> li) {
 		if (!li.isEmpty()) {
 			double t = (System.currentTimeMillis()/600D)%360;
 			t /= 30D;
 			byte sides = 6;
-			double r = 0.35;//+0.025*Math.sin(t*12);
+			//double r = 0.35;//+0.025*Math.sin(t*12);
 			drawEnergyTransferBeams(src, li, r, sides, t);
 		}
 	}
@@ -251,12 +261,12 @@ public class ChromaFX {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
 
-			MultiMap<DecimalPosition, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+			MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
 
-			for (DecimalPosition pos : map.keySet()) {
+			for (ImmutablePair<DecimalPosition, Double> pos : map.keySet()) {
 				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 				int clr = getBlendedColorFromElementList(lc, tick, 0.125);
-				drawEnergyTransferBeam(src, pos, clr, r, sides, tick);
+				drawEnergyTransferBeam(src, pos.left, clr, r, pos.right, sides, tick);
 			}
 
 			//BlendMode.DEFAULT.apply();
@@ -267,11 +277,11 @@ public class ChromaFX {
 		}
 	}
 
-	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r, byte sides, double tick) {
-		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r, sides, tick);
+	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r1, double r2, byte sides, double tick) {
+		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r1, r2, sides, tick);
 	}
 
-	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r, byte sides, double tick) {
+	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r1, double r2, byte sides, double tick) {
 		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
 		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		Tessellator v5 = Tessellator.instance;
@@ -291,11 +301,13 @@ public class ChromaFX {
 		v5.setColorOpaque_I(color);
 		v5.setBrightness(240);
 		for (int i = 0; i <= sides; i++) {
-			double f11 = r*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
-			double f12 = r*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f11a = r1*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f12a = r1*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f11b = r2*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
+			double f12b = r2*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
 			double f13 = i % sides * 1 / sides;
-			v5.addVertexWithUV(f11, f12, 0, tick, tick+1);
-			v5.addVertexWithUV(f11, f12, f8, tick+1, tick);
+			v5.addVertexWithUV(f11a, f12a, 0, tick, tick+1);
+			v5.addVertexWithUV(f11b, f12b, f8, tick+1, tick);
 		}
 
 		v5.draw();
@@ -419,6 +431,38 @@ public class ChromaFX {
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doGrowthWandParticles(World world, int x, int y, int z) {
+		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		double vy = ReikaRandomHelper.getRandomPlusMinus(0.1875, 0.0625);
+		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
+		EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(1).setLife(20).setGravity(0.25F);
+		fx.noClip = true;
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doGluonClientside(World world, int e1, int e2) {
+		EntityBallLightning src = (EntityBallLightning)world.getEntityByID(e1);
+		EntityBallLightning tgt = (EntityBallLightning)world.getEntityByID(e2);
+		if (src == null || tgt == null) {
+			//ChromatiCraft.logger.debug("Null ball lightning to receive effect???");
+			return;
+		}
+		Vec3 vec = ReikaVectorHelper.getVec2Pt(src.posX, src.posY, src.posZ, tgt.posX, tgt.posY, tgt.posZ);
+		double lenv = vec.lengthVector();
+		for (float i = 0; i <= lenv; i += 0.125) {
+			double f = i/lenv;
+			double ddx = src.posX-vec.xCoord*f;
+			double ddy = src.posY-vec.yCoord*f;
+			double ddz = src.posZ-vec.zCoord*f;
+			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
+			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
+		}
+		src.doBoltClient(tgt);
+		tgt.doBoltClient(src);
 	}
 
 }

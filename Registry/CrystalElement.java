@@ -11,7 +11,10 @@ package Reika.ChromatiCraft.Registry;
 
 import java.awt.Color;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -63,6 +66,7 @@ public enum CrystalElement {
 	public static final CrystalElement[] elements = values();
 	private static final MultiMap<Integer, CrystalElement> levelMap = new MultiMap(new MultiMap.HashSetFactory());
 	private static final HashMap<String, CrystalElement> nameMap = new HashMap();
+	private static final HashMap<CrystalElement, Integer> colorMap = new HashMap();
 
 	private CrystalElement(String n, int rgb, EnumChatFormatting c) {
 		color = ReikaDyeHelper.getColorFromDamage(this.ordinal());
@@ -157,7 +161,7 @@ public enum CrystalElement {
 		animatedFace = ico.registerIcon("chromaticraft:runes/frontpng/tile"+this.ordinal()+"_0");
 		engraving = ico.registerIcon("chromaticraft:runes/engraved/tile"+this.ordinal()+"_0");
 		outline = ico.registerIcon("chromaticraft:runes/outline/tile"+this.ordinal()+"_0");
-		overbright = ico.registerIcon("chromaticraft:crystal/overbright/bloom_"+this.name().toLowerCase());
+		overbright = ico.registerIcon("chromaticraft:crystal/overbright/bloom_"+this.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -216,6 +220,7 @@ public enum CrystalElement {
 			int lvl = e.getLevel();
 			levelMap.addValue(lvl, e);
 			nameMap.put(e.displayName, e);
+			colorMap.put(e, e.getColor());
 		}
 	}
 
@@ -233,6 +238,10 @@ public enum CrystalElement {
 
 	public static CrystalElement getByName(String s) {
 		return nameMap.get(s);
+	}
+
+	public static Map<CrystalElement, Integer> getColorMap() {
+		return Collections.unmodifiableMap(colorMap);
 	}
 
 }

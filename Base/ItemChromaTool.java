@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 
 
@@ -24,6 +25,11 @@ public abstract class ItemChromaTool extends ItemChromaBasic {
 	@Override
 	protected final CreativeTabs getCreativePage() {
 		return ChromatiCraft.tabChromaTools;
+	}
+
+	@Override
+	public String getTexture(ItemStack is) {
+		return "/Reika/ChromatiCraft/Textures/Items/items_tool.png";
 	}
 
 }

@@ -34,7 +34,7 @@
 		</desc>
 		<note>
 			Needs to scan the area after being placed
-			Requires:
+			Base Cost per block:
 			%s
 		</note>
 	</telepump>
@@ -44,7 +44,7 @@
 		</desc>
 		<note>
 			Needs to scan the area after being placed, and can be triggered with the manipulator
-			Requires:
+			Base Cost per block:
 			%s
 		</note>
 	</miner>
@@ -58,12 +58,20 @@
 	</reprogrammer>
 	<repeater>
 		<desc>
-			The transmission range of a Crystal Pylon is limited to %d blocks, and its beams are blocked by just about anything aside from air and glass; this means that unless you built your base next to one of every pylon - a dangerous endeavour - you need some way to relay the signal. This is exactly the function of a repeater, which can repeat a signal and do so around obstacles. However, repeaters do incur a small signal attenuation, so optimizing the path is a good idea.
+			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, and were prone to often violent failure as they were used. In hindsight, wood was a monumentally foolish material to choose. Clearly the crystal you have used so much of would be a better choice. A rune to focus the color would improve them even better, though that would mean restricting it to only one color of transmission. You may find a way around that too...later.
 		</desc>
 		<note>
 			Range: %d blocks receiving and transmitting
 		</note>
 	</repeater>
+	<weakrepeater>
+		<desc>
+			The transmission range of a Crystal Pylon is limited to %d blocks, and its beams are blocked by just about anything aside from air and glass; this means that unless you built your base next to one of every pylon - a dangerous endeavour - you need some way to relay the signal. This is exactly the function of a repeater, which can repeat a signal and do so around obstacles. However, repeaters do incur a small signal attenuation, so optimizing the path is a good idea. This is only a first attempt at such repeaters, and as a result its quality is...questionable. Surely you will need to improve your designs with experience.
+		</desc>
+		<note>
+			Range: %d blocks receiving and transmitting
+		</note>
+	</weakrepeater>
 	<rift>
 		<desc>
 			Transporting things long-distance or between dimensions is one of the most annoying tasks you have to face; whether you built a structure in another world because of fear of a destructive failure or you are trying to transport a fluid from a source thousands of blocks away to your base, you often find yourself stymied by an inability to bridge the gap. Now, however, you can tie two disparate locations in the world together - no matter the distance or differences in dimension - and transport items, fluids, redstone, power of all kinds, and more through a link to the void.

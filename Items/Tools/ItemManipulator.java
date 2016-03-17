@@ -23,8 +23,6 @@ import thaumcraft.api.IScribeTools;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.nodes.INode;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -42,6 +40,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -149,6 +148,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+		if (t == ChromaTiles.LUMENWIRE) {
+			TileEntityLumenWire ir = (TileEntityLumenWire)tile;
+			ir.cycleMode();
+			return true;
+		}
 
 		if (t == ChromaTiles.FENCE) {
 			TileEntityCrystalFence te = (TileEntityCrystalFence)tile;
@@ -210,18 +214,18 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		}
 
 		if (t == ChromaTiles.STRUCTCONTROL) {
-			if (!world.isRemote) {
-				if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
-					TileEntityStructControl te = (TileEntityStructControl)tile;
-					if (te.isMonument()) {
-						te.triggerMonument();
-						ChromaSounds.USE.playSoundAtBlock(te);
-					}
-				}
-				else {
-					ChromaSounds.ERROR.playSoundAtBlock(tile);
+			//if (!world.isRemote) {
+			if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
+				TileEntityStructControl te = (TileEntityStructControl)tile;
+				if (te.isMonument()) {
+					if (te.triggerMonument(ep))
+						ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
 				}
 			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(tile);
+			}
+			//}
 			return true;
 		}
 
@@ -236,6 +240,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				}
 			}
 			else if (!world.isRemote) {
+				te.triggerConnectionRender();
 				if (te.checkConnectivity()) {
 					CrystalElement e = te.getActiveColor();
 					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
@@ -254,6 +259,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (t == ChromaTiles.REPEATER) {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
+			te.triggerConnectionRender();
 			if (ep.isSneaking()) {
 				if (te.isPlacer(ep)) {
 					//world.setBlock(x, y, z, Blocks.air);
@@ -348,35 +354,10 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 				if (te instanceof ChargingPoint) {
 					ChargingPoint cp = (ChargingPoint)te;
-					this.chargeFromPylon(player, cp, cp.getDeliveredColor(player, world, x, y, z), count);
+					ChromaAux.chargePlayerFromPylon(player, cp, cp.getDeliveredColor(player, world, x, y, z), count);
 				}
 			}
 		}
-	}
-
-	private boolean chargeFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int count) {
-		int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
-		int drain = add*4;
-		int energy = te.getEnergy(e);
-		if (drain > energy) {
-			drain = energy;
-			add = drain/4;
-		}
-		if (te.canConduct() && te.allowCharging(player, e) && add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
-			te.onUsedBy(player, e);
-			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
-				te.drain(e, drain);
-			PlayerElementBuffer.instance.checkUpgrade(player, true);
-			ProgressStage.CHARGE.stepPlayerTo(player);
-			if (te instanceof TileEntityCrystalPylon)
-				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
-			if (player.worldObj.isRemote) {
-				//this.spawnParticles(player, e);
-				ChromaFX.createPylonChargeBeam(te, player, (count%20)/20D, e);
-			}
-			return true;
-		}
-		return false;
 	}
 
 	@SideOnly(Side.CLIENT)

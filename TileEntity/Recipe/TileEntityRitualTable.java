@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -55,9 +56,18 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	private int tickPlayerOut = 0;
 	private boolean playerSteppedIn = false;
 
+	private boolean isEnhanced;
+
+	private EntityPlayer ritualPlayer;
+
 	@Override
 	public void onPathBroken(CrystalFlow p, FlowFail f) {
 		//this.killRitual();
+	}
+
+	@Override
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.ENERGYEXPLORE;
 	}
 
 	@Override
@@ -91,8 +101,8 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			this.requestEnergyDifference(tag);
 		}
 
-		EntityPlayer ep = placer != null && !placer.isEmpty() ? world.getPlayerEntityByName(placer) : null;
-		if (ep == null) {
+		EntityPlayer ep = ritualPlayer;
+		if (ep == null || world.func_152378_a(ep.getPersistentID()) == null) {
 			tickNoPlayer++;
 			if (tickNoPlayer > 200) {
 				this.terminateRitual();
@@ -160,6 +170,15 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		if (abilityTick <= 0) {
 			this.giveAbility(ep);
 			energy.subtract(tag);
+
+			/*
+			EntityPlayer ep2 = this.getPlacer();
+			if (ep2 != null && !ReikaPlayerAPI.isFake(ep2)) {
+				if (ProgressStage.CTM.isPlayerAtStage(ep2)) {
+					isEnhanced = true;
+				}
+			}
+			 */
 		}
 	}
 
@@ -208,7 +227,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 		if (canTick) {
 			Minecraft mc = Minecraft.getMinecraft();
-			if (mc.thePlayer.getCommandSenderName().equals(this.getPlacerName())) {
+			if (mc.thePlayer.getCommandSenderName().equals(ritualPlayer.getCommandSenderName())) {
 				mc.gameSettings.thirdPersonView = 2;
 				mc.thePlayer.rotationYaw = this.getTicksExisted()%360;
 				mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw-35;
@@ -263,6 +282,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 			this.requestEnergyDifference(tag);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
+			ritualPlayer = ep;
 			playerSteppedIn = false;
 			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;
@@ -283,6 +303,8 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		NBT.setBoolean("struct", hasStructure);
 		NBT.setInteger("atick", abilityTick);
 		NBT.setString("ability", ability != null ? ability.getID() : "null");
+
+		NBT.setBoolean("enhance", isEnhanced);
 	}
 
 	@Override
@@ -293,11 +315,13 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		abilityTick = NBT.getInteger("atick");
 		String a = NBT.getString("ability");
 		ability = a != null && !a.isEmpty() && !a.equals("null") ? Chromabilities.getAbility(a) : null;
+
+		isEnhanced = NBT.getBoolean("enhance");
 	}
 
 	@Override
 	public int maxThroughput() {
-		return 200;
+		return isEnhanced ? 2500 : 200;
 	}
 
 	@Override
@@ -368,6 +392,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	public boolean onlyAllowOwnersToUse() {
 		return true;
+	}
+
+	@Override
+	public int getIconState(int side) {
+		return isEnhanced ? 1 : 0;
 	}
 
 }

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -240,7 +241,7 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 		if (te instanceof TileEntityRFDistributor)
 			return te.yCoord < yCoord;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
-			String s = c.getName().toLowerCase();
+			String s = c.getName().toLowerCase(Locale.ENGLISH);
 			if (s.contains("conduit") || ReikaStringParser.containsWord(s, "duct") || s.contains("cable") || s.contains("pipepower") || ReikaStringParser.containsWord(s, "wire")) {
 				blacklist.add(c);
 				return false;

@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.UUID;
+
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -66,6 +69,24 @@ public class BlockStructureDataStorage extends BlockContainer {
 		protected void onRightClick(EntityPlayer ep, int s) {
 			if (data != null)
 				data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s);
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound NBT) {
+			super.readFromNBT(NBT);
+
+			if (NBT.hasKey("uid")) {
+				UUID uid = UUID.fromString(NBT.getString("uid"));
+				this.loadData(DimensionStructureGenerator.getGeneratorByID(uid));
+			}
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound NBT) {
+			super.writeToNBT(NBT);
+
+			if (data != null)
+				NBT.setString("uid", data.getUUID().toString());
 		}
 
 	}

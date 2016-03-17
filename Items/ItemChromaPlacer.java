@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
+import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
@@ -186,6 +187,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.AURAPOINT) {
 			((TileEntityAuraPoint)te).savePoint();
 		}
+		if (m == ChromaTiles.DIMENSIONCORE) {
+			((TileEntityDimensionCore)te).prime(true);
+		}
 		if (m == ChromaTiles.REPEATER || m == ChromaTiles.COMPOUND) {
 			if (!ep.isSneaking()) {
 				((TileEntityCrystalRepeater)te).findFirstValidSide();
@@ -301,6 +305,10 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (r.isRepeater() && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted")) {
 			li.add(EnumChatFormatting.GOLD+"Turbocharged");
+		}
+		if (r == ChromaTiles.DIMENSIONCORE && is.stackTagCompound != null) {
+			CrystalElement e = CrystalElement.elements[is.stackTagCompound.getInteger("color")];
+			li.add("Color: "+e.displayName);
 		}
 		if (is.stackTagCompound != null && r.isLumenTile()) {
 			ElementTagCompound tag = ElementTagCompound.createFromNBT(is.stackTagCompound.getCompoundTag("energy"));

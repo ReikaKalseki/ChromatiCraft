@@ -77,7 +77,7 @@ public class CrystalFurnaceHandler extends TemplateRecipeHandler {
 
 	@Override
 	public String getGuiTexture() {
-		return "/Reika/ChromatiCraft/Textures/GUIs/furnace.png";
+		return "/Reika/ChromatiCraft/Textures/GUIs/furnace2.png";
 	}
 
 	@Override

@@ -104,6 +104,10 @@ public class GuiMachineDescription extends GuiDescription {
 				a = b = -0.875;
 				GL11.glTranslated(0, -0.3, 0);
 			}
+			if (m == ChromaTiles.LUMENWIRE) {
+				a = b = -1.25;
+				GL11.glTranslated(0, -0.5, 0);
+			}
 			if (m == ChromaTiles.PERSONAL) {
 				double s = 0.75;
 				GL11.glScaled(s, s, s);

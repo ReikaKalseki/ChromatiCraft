@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -268,7 +269,7 @@ public class CrystalBees {
 		}
 
 		private BasicBee(String name, String latin, Speeds s, Life l, Flowering f, Fertility f2, Territory a, int color, EnumTemperature t) {
-			super(name, "bee."+name.toLowerCase(), latin, "Reika", new BeeTraits());
+			super(name, "bee."+name.toLowerCase(Locale.ENGLISH), latin, "Reika", new BeeTraits());
 			traits.speed = s;
 			traits.lifespan = l;
 			traits.flowering = f;
@@ -342,7 +343,7 @@ public class CrystalBees {
 		public final CrystalElement color;
 
 		public CrystalEffect(CrystalElement color) {
-			super("effect.cavecrystal."+color.name().toLowerCase(), color.displayName);
+			super("effect.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName);
 			this.color = color;
 		}
 
@@ -386,7 +387,7 @@ public class CrystalBees {
 		private final FlowerProviderCrystal provider;
 
 		public CrystalAllele(CrystalElement color) {
-			super("flower.cavecrystal."+color.name().toLowerCase(), color.displayName);
+			super("flower.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName);
 			this.color = color;
 			provider = new FlowerProviderCrystal(color);
 		}
@@ -402,7 +403,7 @@ public class CrystalBees {
 		public final CrystalElement color;
 
 		private FlowerProviderCrystal(CrystalElement color) {
-			super(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal(), color.name().toLowerCase());
+			super(ChromaBlocks.CRYSTAL.getBlockInstance(), color.ordinal(), color.name().toLowerCase(Locale.ENGLISH));
 			this.color = color;
 		}
 
@@ -505,7 +506,7 @@ public class CrystalBees {
 		public final EnumHumidity humidity;
 
 		public CrystalBee(CrystalElement color, BeeTraits traits) {
-			super(color.displayName+" Crystal", "bee.crystal."+color.name().toLowerCase(), "Vitreus "+color.displayName, "Reika");
+			super(color.displayName+" Crystal", "bee.crystal."+color.name().toLowerCase(Locale.ENGLISH), "Vitreus "+color.displayName, "Reika");
 			this.color = color;
 			speed = traits.speed;
 			fertility = traits.fertility;

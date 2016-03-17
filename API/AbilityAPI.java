@@ -84,6 +84,9 @@ public class AbilityAPI {
 		/** Does the ability perform its actions clientside? */
 		public boolean actOnClient();
 
+		/** If the energy cost for this ability is per-tick as opposed to on-trigger or on-toggle. Usually true. */
+		public boolean costsPerTick();
+
 	}
 
 	static {

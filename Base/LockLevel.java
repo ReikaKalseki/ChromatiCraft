@@ -41,6 +41,8 @@ public abstract class LockLevel extends StructurePiece implements Comparable<Loc
 
 	private final EnumMap<LockColor, CrystalElement> shuffleMap = new EnumMap(LockColor.class);
 
+	public boolean isSolved = false;
+
 	protected LockLevel(LocksGenerator s, BlockLockKey.LockChannel level) {
 		super(s);
 		this.level = level;

@@ -921,7 +921,10 @@ public class ChromaOverlays {
 			}
 			v5.setColorOpaque_I(color);
 			v5.setBrightness(240);
-			double dr = r*PlayerElementBuffer.instance.getPlayerContent(ep, e)/PlayerElementBuffer.instance.getElementCap(ep);
+			int amt = PlayerElementBuffer.instance.getPlayerContent(ep, e);
+			int cap = PlayerElementBuffer.instance.getElementCap(ep);
+			double b = 2;
+			double dr = r*Math.pow((double)amt/cap, 0.675);
 			for (double a = min; a <= max; a += 2) {
 				double x = ox+dr*Math.cos(Math.toRadians(a));
 				double y = oy+dr*Math.sin(Math.toRadians(a));

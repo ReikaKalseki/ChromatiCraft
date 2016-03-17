@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -85,6 +86,11 @@ public class AltarGenerator extends DimensionStructureGenerator {
 	@Override
 	public StructureData createDataStorage() {
 		return null;
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		return false;
 	}
 
 }

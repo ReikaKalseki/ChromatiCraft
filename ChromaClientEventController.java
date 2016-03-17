@@ -12,6 +12,7 @@ package Reika.ChromatiCraft;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -43,9 +44,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
+import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -68,6 +71,8 @@ import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.GUI.GuiAuraPouch;
+import Reika.ChromatiCraft.GUI.GuiInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -95,13 +100,17 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GameFinishedLoadingEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
@@ -145,6 +154,180 @@ public class ChromaClientEventController {
 		else {
 			textureLoadingComplete = true;
 		}
+	}
+	/*
+	@SubscribeEvent
+	public void makeSomeBlocksOpaque(ClientLoginEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer) && evt.newLogin) {
+			AbilityHelper.instance.onNoClipEnable();
+		}
+	}
+
+	@SubscribeEvent
+	public void makeSomeBlocksOpaque(ClientDisconnectionFromServerEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			AbilityHelper.instance.onNoClipDisable();
+		}
+	}
+
+	@SubscribeEvent
+	public void makeSomeBlocksOpaque(SinglePlayerLogoutEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			AbilityHelper.instance.onNoClipDisable();
+		}
+	}
+	 */
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyOreXRay(GetMouseoverEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (Chromabilities.ORECLIP.enabledOn(ep)) {
+			Vec3 vec = Vec3.createVectorHelper(ep.posX, (ep.posY + 1.62) - ep.yOffset, ep.posZ);
+			Vec3 vec2 = ep.getLook(1.0F);
+			double reach = Minecraft.getMinecraft().playerController.getBlockReachDistance();
+			Vec3 vec3 = vec.addVector(vec2.xCoord*reach, vec2.yCoord*reach, vec2.zCoord*reach);
+			MovingObjectPosition hit = AbilityHelper.instance.doOreClipRayTrace(Minecraft.getMinecraft().theWorld, vec, vec3, false);
+			evt.newLook = hit != null && hit.typeOfHit == MovingObjectType.BLOCK ? hit : new MovingObjectPosition(0, 0, 0, 0, Vec3.createVectorHelper(0, 0, 0), false);//new MovingObjectPosition(ep);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyOreXRay(RenderBlockOverlayEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent
+	public void applyOreXRay(RenderBlockAtPosEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			Block b = evt.block;
+			int meta = evt.world.getBlockMetadata(evt.xCoord, evt.yCoord, evt.zCoord);
+			if (!AbilityHelper.instance.isBlockOreclippable(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, b, meta)) {
+				//Tessellator.instance.setColorRGBA_I(b.colorMultiplier(evt.world, evt.xCoord, evt.yCoord, evt.zCoord), 96);
+				/*
+					for (int i = 0; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						Tessellator.instance.setBrightness(240);
+						IIcon ico = b.getIcon(i, meta);
+						if (b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i)) {
+							switch(dir) {
+								case DOWN:
+									evt.render.renderFaceYNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								case UP:
+									evt.render.renderFaceYPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								case WEST:
+									evt.render.renderFaceXNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								case EAST:
+									evt.render.renderFaceXPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								case NORTH:
+									evt.render.renderFaceZNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								case SOUTH:
+									evt.render.renderFaceZPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				 */
+				evt.setCanceled(true);
+			}
+			else {
+				//evt.render.setRenderAllFaces(true);
+
+				if (evt.block.canRenderInPass(evt.renderPass)) {
+					int type = b.getRenderType();
+					if (type == 0 || type == ChromatiCraft.proxy.oreRender) {
+						evt.render.enableAO = false;
+						Tessellator.instance.setBrightness(240);
+						Tessellator.instance.setColorRGBA_I(0xffffff, 255);
+						for (int i = 0; i < 6; i++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+							Tessellator.instance.setBrightness(240);
+							IIcon ico = evt.render.getIconSafe(b.getIcon(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, i));
+							boolean side = b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
+							double o = side ? 0.001 : 0;
+							if ((side || (dir == ForgeDirection.UP && evt.yCoord == 0)) || b != Blocks.bedrock) {
+								switch(dir) {
+									case DOWN:
+										Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
+										evt.render.renderFaceYNeg(evt.block, evt.xCoord, evt.yCoord-o, evt.zCoord, ico);
+										break;
+									case UP:
+										Tessellator.instance.setColorOpaque_F(1, 1, 1);
+										evt.render.renderFaceYPos(evt.block, evt.xCoord, evt.yCoord+o, evt.zCoord, ico);
+										break;
+									case WEST:
+										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+										evt.render.renderFaceXNeg(evt.block, evt.xCoord-o, evt.yCoord, evt.zCoord, ico);
+										break;
+									case EAST:
+										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+										evt.render.renderFaceXPos(evt.block, evt.xCoord+o, evt.yCoord, evt.zCoord, ico);
+										break;
+									case NORTH:
+										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+										evt.render.renderFaceZNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord-o, ico);
+										break;
+									case SOUTH:
+										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+										evt.render.renderFaceZPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord+o, ico);
+										break;
+									default:
+										break;
+								}
+							}
+						}
+					}
+				}
+				//evt.setCanceled(true);
+				//evt.setResult(Result.ALLOW);
+			}
+		}
+	}
+	/*
+	@SubscribeEvent
+	public void makeWorldTranslucentA(RenderWorldEvent.Pre evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+		}
+	}
+
+	@SubscribeEvent
+	public void makeWorldTranslucentB(RenderWorldEvent.Post evt) {
+		if (Chromabilities.ORECLIP.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			GL11.glPopAttrib();
+		}
+	}
+	 */
+	@SubscribeEvent
+	public void clearSavedGui(ClientLoginEvent evt) {
+		ChromaBookGui.lastGui = null;
+	}
+
+	@SubscribeEvent
+	public void stopSwapOutofGUIItem(HotbarKeyEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		ItemStack is = ep.inventory.getStackInSlot(evt.hotbarSlot);
+		if (ChromaItems.AURAPOUCH.matchWith(is) && evt.gui instanceof GuiAuraPouch) {
+			evt.setCanceled(true);
+		}
+		if (ChromaItems.LINK.matchWith(is) && evt.gui instanceof GuiInventoryLinker) {
+			evt.setCanceled(true);
+		}
+		/*
+		if (ChromaItems.HELP.matchWith(is) && evt.gui instanceof ChromaBookGui) {
+			evt.setCanceled(true);
+		}
+		 */
 	}
 
 	@SubscribeEvent
@@ -216,8 +399,8 @@ public class ChromaClientEventController {
 	public void ensureMusic(SoundVolumeEvent evt) {
 		if (evt.sound instanceof CustomMusic) {
 			CustomMusic cm = (CustomMusic)evt.sound;
-			if (cm.path.toLowerCase().contains("chromaticraft") && cm.path.contains(MusicLoader.instance.musicPath)) {
-				evt.volume = Math.max(0.02F, Minecraft.getMinecraft().gameSettings.getSoundLevel(ChromaClient.chromaCategory));
+			if (cm.path.toLowerCase(Locale.ENGLISH).contains("chromaticraft") && cm.path.contains(MusicLoader.instance.musicPath)) {
+				evt.volume = Math.max(0.05F, Minecraft.getMinecraft().gameSettings.getSoundLevel(ChromaClient.chromaCategory));
 			}
 		}
 	}
@@ -239,12 +422,15 @@ public class ChromaClientEventController {
 	public void crystalPitchDing(PlaySoundEvent17 evt) {
 		if (evt.sound instanceof EnumSound) {
 			EnumSound es = (EnumSound)evt.sound;
-			if (es.sound == ChromaSounds.DING) {
-				if (es.getPitch() > 2) {
-					evt.result = new EnumSound(ChromaSounds.DING_HI, es.posX, es.posY, es.posZ, es.volume, es.pitch/4F, es.attenuate);
-				}
-				else if (es.getPitch() < 0.5) {
-					evt.result = new EnumSound(ChromaSounds.DING_LO, es.posX, es.posY, es.posZ, es.volume, es.pitch*4F, es.attenuate);
+			if (es.sound instanceof ChromaSounds) {
+				ChromaSounds c = (ChromaSounds)es.sound;
+				if (c.hasWiderPitchRange()) {
+					if (es.getPitch() > 2) {
+						evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/4F, es.attenuate);
+					}
+					else if (es.getPitch() < 0.5) {
+						evt.result = new EnumSound(c.getDownshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch*4F, es.attenuate);
+					}
 				}
 			}
 		}
@@ -858,7 +1044,7 @@ public class ChromaClientEventController {
 					GL11.glPopMatrix();
 					Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
 					if (b != null && b != Blocks.air) {
-						IIcon ico = b.getIcon(1, Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z));
+						IIcon ico = b.getIcon(Minecraft.getMinecraft().theWorld, x, y, z, 1);
 						if (ico != null) {
 							float u = ico.getMinU();
 							float v = ico.getMinV();

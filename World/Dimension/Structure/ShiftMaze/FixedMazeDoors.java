@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -111,7 +112,8 @@ public class FixedMazeDoors extends StructurePiece {
 	}
 
 	private void generateDoor(ChunkSplicedGenerationCache world, int x, int y, int z, int ch) {
-		world.setTileEntity(x, y, z, ChromaBlocks.DOOR.getBlockInstance(), 0, new DoorCallback(ids[ch]));
+		world.setTileEntity(x, y, z, ChromaBlocks.DOOR.getBlockInstance(), BlockChromaDoor.getMetadata(false, false, true, true), new DoorCallback(ids[ch]));
+		((ShiftMazeGenerator)parent).addEndingDoorLocation(x, y, z);
 	}
 
 	private static class LootChestCallback implements TileCallback {
@@ -147,7 +149,7 @@ public class FixedMazeDoors extends StructurePiece {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityChromaDoor) {
-				((TileEntityChromaDoor)te).bindUUID(uid);
+				((TileEntityChromaDoor)te).bindUUID(null, uid, 0);
 			}
 		}
 

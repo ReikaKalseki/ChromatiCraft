@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -82,6 +83,8 @@ import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
+import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
+import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -179,7 +182,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (c.hasBlockRender()) {
 				for (int k = 0; k < 6; k++) {
 					String s = k == 0 ? "bottom" : k == 1 ? "top" : "side";
-					String path = c.name().toLowerCase()+"_"+s;
+					String path = c.name().toLowerCase(Locale.ENGLISH)+"_"+s;
 					icons[c.getBlockMetadata()][k][0] = ico.registerIcon("chromaticraft:tile/"+path);
 					icons[c.getBlockMetadata()][k][1] = ico.registerIcon("chromaticraft:tile/"+path+"_variant");
 				}
@@ -196,9 +199,36 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
+		TileEntity te = world.getTileEntity(x, y, z);
 		if (t == ChromaTiles.WINDOW) {
-			((TileEntityTransportWindow)world.getTileEntity(x, y, z)).validateStructure();
+			((TileEntityTransportWindow)te).validateStructure();
 		}
+		else if (t.isSidePlaced()) {
+			boolean flag = ((SidePlacedTile)te).checkLocationValidity();
+			if (!flag) {
+				((SidePlacedTile)te).drop();
+			}
+		}
+	}
+
+	@Override
+	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int s) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+		if (c.suppliesRedstone()) {
+			return ((RedstoneTile)te).getStrongPower(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s].getOpposite());
+		}
+		return 0;
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int s) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+		if (c.suppliesRedstone()) {
+			return ((RedstoneTile)te).getWeakPower(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[s].getOpposite());
+		}
+		return 0;
 	}
 
 	@Override

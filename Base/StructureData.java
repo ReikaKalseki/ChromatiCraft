@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.UUID;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -34,6 +36,10 @@ public abstract class StructureData {
 
 	public void onTileTick(TileEntityStructureDataStorage te) {
 
+	}
+
+	public final UUID getUUID() {
+		return generator.id;
 	}
 
 }

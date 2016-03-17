@@ -31,6 +31,11 @@ public class LumenTurretDamage extends CustomStringDamageSource {
 	}
 
 	@Override
+	public Entity getEntity() {
+		return player;
+	}
+
+	@Override
 	public boolean isMagicDamage()
 	{
 		return true;

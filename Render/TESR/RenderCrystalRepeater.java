@@ -153,6 +153,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			//ReikaJavaLibrary.pConsole(c);
 			if (c != null) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glEnable(GL11.GL_LINE_STIPPLE);
 				GL11.glLineWidth(6);
 				GL11.glLineStipple(24, (short)0xAAAA);
@@ -190,6 +192,8 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 				if (ReikaMathLibrary.py3d(x-te.xCoord, y-te.yCoord, z-te.zCoord) <= te.getSendRange()) {
 					if (PylonFinder.lineOfSight(Minecraft.getMinecraft().theWorld, te.xCoord, te.yCoord, te.zCoord, x, y, z)) {
 						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glDisable(GL11.GL_LIGHTING);
+						GL11.glDisable(GL11.GL_TEXTURE_2D);
 						GL11.glEnable(GL11.GL_LINE_STIPPLE);
 						GL11.glLineWidth(6);
 						GL11.glLineStipple(24, (short)0xAAAA);

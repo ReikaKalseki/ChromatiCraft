@@ -268,11 +268,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				double rx = x+0.5+r*Math.cos(ang);
 				double ry = y;
 				double rz = z+0.5+r*Math.sin(ang);
-				double dd = ReikaMathLibrary.py3d(rx, ry, rz);
-				double v = 64;
-				double vx = v*(x+0.5-rx)/dd;
-				double vy = 0.0125+v*(y+0.5-ry)/dd;
-				double vz = v*(z+0.5-rz)/dd;
+				double v = 0.0625;
+				double vx = v*(x+0.5-rx);
+				double vy = 0.0125+v*(y+0.5-ry);
+				double vz = v*(z+0.5-rz);
 				EntityGlobeFX fx = new EntityGlobeFX(world, rx, ry, rz, vx, vy, vz);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}

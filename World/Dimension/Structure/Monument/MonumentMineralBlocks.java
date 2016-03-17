@@ -34,7 +34,7 @@ public class MonumentMineralBlocks {
 		blockChance.put(Blocks.glowstone, 35);
 		blockChance.put(Blocks.emerald_block, 67);
 		blockChance.put(Blocks.gold_block, 25);
-		blockChance.put(ChromaBlocks.CHROMA.getBlockInstance(), 30);
+		blockChance.put(ChromaBlocks.CHROMA.getBlockInstance(), 50);
 	}
 
 	public void generate(ChunkSplicedGenerationCache world, Random r, int i, int j, int k) {

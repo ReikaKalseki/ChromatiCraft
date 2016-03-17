@@ -31,12 +31,12 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Interfaces.Item.IndexedItemSprites;
+import Reika.DragonAPI.Interfaces.Item.MultisheetItem;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ItemChromaBasic extends Item implements IndexedItemSprites {
+public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 
 	protected Random par5Random = new Random();
 
@@ -98,8 +98,11 @@ public abstract class ItemChromaBasic extends Item implements IndexedItemSprites
 
 	@Override
 	public String getTexture(ItemStack is) {
-		int i = this.getItemSpriteIndex(is)/256;
-		return i > 0 ? "/Reika/ChromatiCraft/Textures/Items/items"+i+".png" : "/Reika/ChromatiCraft/Textures/Items/items.png";
+		return "/Reika/ChromatiCraft/Textures/Items/items_resource.png";
+	}
+
+	public final String getSpritesheet(ItemStack is) {
+		return this.getTexture(is);
 	}
 
 	@Override

@@ -67,8 +67,13 @@ public class ContainerInventoryLinker extends Container {
 			inventory.setInventorySlotContents(slot, is);
 			return held;
 		}
-		else
-			return super.slotClick(slot, par2, par3, ep);
+		else if (slot >= width*height+27) {
+			ItemStack in = ep.inventory.getStackInSlot(slot-width*height-27);
+			if (ChromaItems.LINK.matchWith(in)) {
+				return ep.inventory.getItemStack();
+			}
+		}
+		return super.slotClick(slot, par2, par3, ep);
 	}
 
 	@Override
@@ -100,7 +105,7 @@ public class ContainerInventoryLinker extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
 	{
-		return this.getSlot(0).getStack();
+		return null;
 	}
 
 }

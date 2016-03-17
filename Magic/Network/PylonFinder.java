@@ -340,7 +340,7 @@ public class PylonFinder {
 			}
 		}
 		if (exception)
-			throw new IllegalStateException("How did a non-receiver tile get put in the network here?");
+			throw new IllegalStateException("How did a non-receiver tile ("+te+") get put in the network here ("+loc+")?");
 		else
 			return null;
 	}
@@ -351,7 +351,7 @@ public class PylonFinder {
 			return (CrystalTransmitter)te;
 		}
 		if (exception)
-			throw new IllegalStateException("How did a non-transmitter tile get put in the network here?");
+			throw new IllegalStateException("How did a non-transmitter tile ("+te+") get put in the network here ("+loc+")?");
 		else
 			return null;
 	}
@@ -362,7 +362,7 @@ public class PylonFinder {
 			return (CrystalSource)te;
 		}
 		if (exception)
-			throw new IllegalStateException("How did a non-source tile get put in the network here?");
+			throw new IllegalStateException("How did a non-source tile ("+te+") get put in the network here ("+loc+")?");
 		else
 			return null;
 	}
@@ -379,7 +379,7 @@ public class PylonFinder {
 			}
 		}
 		if (exception)
-			throw new IllegalStateException("How did a non-network tile get put in the network here?");
+			throw new IllegalStateException("How did a non-network tile ("+te+") get put in the network here ("+loc+")?");
 		else
 			return null;
 	}

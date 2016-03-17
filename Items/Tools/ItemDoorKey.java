@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class ItemDoorKey extends ItemChromaTool {
@@ -36,8 +37,8 @@ public class ItemDoorKey extends ItemChromaTool {
 			TileEntityChromaDoor te = (TileEntityChromaDoor)world.getTileEntity(x, y, z);
 			if (!world.isRemote) {
 				UUID uid = this.getUID(is);
-				if (ep.isSneaking() && te.isOwner(ep)) {
-					te.bindUUID(uid);
+				if (ep.isSneaking()) {
+					te.bindUUID(ep, uid, is.getItemDamage());
 				}
 				else if (te.canOpen(ep, uid)) {
 					te.openClick();
@@ -53,6 +54,11 @@ public class ItemDoorKey extends ItemChromaTool {
 		return false;
 	}
 
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		ReikaItemHelper.toggleDamageBit(is, 0);
+		return is;
+	}
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {

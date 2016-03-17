@@ -32,7 +32,7 @@ public abstract class CrystalTransmitterRender extends ChromaRenderBase {
 			CrystalTransmitterBase te = (CrystalTransmitterBase)tile;
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
-			ChromaFX.drawEnergyTransferBeams(new WorldLocation(te), te.getTargets());
+			ChromaFX.drawEnergyTransferBeams(new WorldLocation(te), te.getOutgoingBeamRadius(), te.getTargets());
 			GL11.glPopMatrix();
 		}
 	}

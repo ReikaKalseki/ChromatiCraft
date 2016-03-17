@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Auxiliary.Command;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -95,7 +96,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			case "abilities":
 			case "ability": {
 				try {
-					Ability a = Chromabilities.getAbility(args[1].toLowerCase());
+					Ability a = Chromabilities.getAbility(args[1].toLowerCase(Locale.ENGLISH));
 					if (set)
 						Chromabilities.give(ep, a);
 					else
@@ -141,6 +142,11 @@ public class ProgressModifyCommand extends DragonCommandBase {
 							Chromabilities.removeFromPlayer(ep, c);
 					}
 				}
+				if (args[1].equals("all") || args[1].equals("dimstruct")) {
+					for (int i = 0; i < 16; i++) {
+						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, false);
+					}
+				}
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression reset for "+ep.getCommandSenderName());
 				break;
 			}
@@ -153,6 +159,11 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					for (Ability c : Chromabilities.getAbilities()) {
 						if (!Chromabilities.playerHasAbility(ep, c))
 							Chromabilities.give(ep, c);
+					}
+				}
+				if (args[1].equals("all") || args[1].equals("dimstruct")) {
+					for (int i = 0; i < 16; i++) {
+						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, false);
 					}
 				}
 				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression maximized for "+ep.getCommandSenderName());
@@ -179,9 +190,11 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
 					Collection<ProgressStage> c = ProgressionManager.instance.getStagesFor(ep);
 					Collection<CrystalElement> c2 = ProgressionManager.instance.getColorsFor(ep);
-					Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);
 					sendChatToSender(ics, "Progress for "+ep.getCommandSenderName()+":\n"+c.toString());
 					sendChatToSender(ics, "Elements for "+ep.getCommandSenderName()+":\n"+c2.toString());
+				}
+				if (args[1].equals("all") || args[1].equals("dimstruct")) {
+					Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);
 					sendChatToSender(ics, "Structure Flags for "+ep.getCommandSenderName()+":\n"+c3.toString());
 				}
 				break;
@@ -199,7 +212,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 		catch (IllegalArgumentException e) {
 
 		}
-		return CrystalElement.getByName(ReikaStringParser.capFirstChar(s.toLowerCase()));
+		return CrystalElement.getByName(ReikaStringParser.capFirstChar(s.toLowerCase(Locale.ENGLISH)));
 	}
 
 	@Override

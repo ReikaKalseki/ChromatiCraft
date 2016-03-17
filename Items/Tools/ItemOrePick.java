@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -74,7 +75,7 @@ public class ItemOrePick extends ItemChromaTool implements ToolSprite {
 
 	@Override
 	public int getHarvestLevel(ItemStack stack, String toolClass) {
-		return toolClass.toLowerCase().contains("pick") ? 2 : super.getHarvestLevel(stack, toolClass);
+		return toolClass.toLowerCase(Locale.ENGLISH).contains("pick") ? 2 : super.getHarvestLevel(stack, toolClass);
 	}
 
 	@Override

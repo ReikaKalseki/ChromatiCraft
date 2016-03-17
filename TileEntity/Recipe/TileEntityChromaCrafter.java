@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -31,6 +41,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
+@Strippable(value={"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityChromaCrafter extends InventoriedRelayPowered implements IFluidHandler, ItemOnRightClick, OwnedTile, InertIInv, IPipeConnection {
 
 	public static final int CRAFTING_DURATION = 300;

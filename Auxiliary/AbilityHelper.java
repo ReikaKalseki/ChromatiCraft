@@ -38,8 +38,12 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.WorldServer;
@@ -55,6 +59,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -84,7 +89,11 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -125,6 +134,8 @@ public class AbilityHelper {
 
 	public static final AbilityHelper instance = new AbilityHelper();
 
+	//private int savedAOSetting;
+
 	private static final Random rand = new Random();
 
 	private AbilityHelper() {
@@ -147,6 +158,11 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.LASER, ProgressStage.TURBOCHARGE);
 		progressMap.addValue(Chromabilities.FIRERAIN, ProgressStage.NETHER);
 		progressMap.addValue(Chromabilities.FIRERAIN, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.KEEPINV, ProgressStage.DIMENSION);
+		progressMap.addValue(Chromabilities.ORECLIP, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.DOUBLECRAFT, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.CTM);
 
 		for (TileXRays x : TileXRays.values()) {
 			xRayMap.put(x.tileClass, x);
@@ -743,7 +759,8 @@ public class AbilityHelper {
 
 	public static enum TileXRays {
 		SPAWNERS(TileEntityMobSpawner.class, Blocks.mob_spawner, 0x224466),
-		CHESTS(TileEntityChest.class, 0xC17C32);
+		CHESTS(TileEntityChest.class, 0xC17C32),
+		LOOTCHESTS(TileEntityLootChest.class, 0x303030);
 
 		public final Class tileClass;
 		private final Block texture;
@@ -992,6 +1009,280 @@ public class AbilityHelper {
 
 	public void resetDoubleJump(EntityPlayer ep) {
 		doubleJumps.remove(ep.getUniqueID());
+	}
+
+	public void onNoClipDisable(EntityPlayer ep) {
+		ReikaJavaLibrary.pConsole("Noclip off");
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			this.clientNoClipDisable();
+	}
+
+	public void onNoClipEnable(EntityPlayer ep) {
+		ReikaJavaLibrary.pConsole("Noclip on");
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			this.clientNoClipEnable();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void clientNoClipDisable() {
+		//Minecraft.getMinecraft().gameSettings.ambientOcclusion = savedAOSetting;
+		//Minecraft.getMinecraft().thePlayer.removePotionEffect(Potion.nightVision.id);
+		ReikaRenderHelper.rerenderAllChunks();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void clientNoClipEnable() {
+		//savedAOSetting = Minecraft.getMinecraft().gameSettings.ambientOcclusion;
+		//Minecraft.getMinecraft().gameSettings.ambientOcclusion = 0;
+		ReikaRenderHelper.rerenderAllChunks();
+	}
+
+	public boolean isBlockOreclippable(IBlockAccess world, int x, int y, int z, Block b, int meta) {
+		if (b == Blocks.stone || b == Blocks.grass || b == Blocks.dirt || b == Blocks.sandstone || b == Blocks.sand || b == Blocks.gravel)
+			return false;
+		if (b == Blocks.netherrack || b == Blocks.end_stone)
+			return false;
+		if (b == Blocks.bedrock)
+			return y == 0;
+		if (ReikaBlockHelper.isLeaf(b, meta) || ReikaBlockHelper.isWood(b, meta))
+			return false;
+		if (RailcraftHandler.Blocks.QUARRIED.match(b, meta) || RailcraftHandler.Blocks.ABYSSAL.match(b, meta))
+			return false;
+		return !b.isReplaceableOreGen(Minecraft.getMinecraft().theWorld, x, y, z, Blocks.stone);
+	}
+
+	public ArrayList<AxisAlignedBB> getNoclipBlockBoxes(EntityPlayer ep) {
+		ArrayList<AxisAlignedBB> li = new ArrayList();
+
+		AxisAlignedBB box = ep.boundingBox.addCoord(ep.motionX, ep.motionY, ep.motionZ);
+
+		int i = MathHelper.floor_double(box.minX);
+		int j = MathHelper.floor_double(box.maxX + 1.0D);
+		int k = MathHelper.floor_double(box.minY);
+		int l = MathHelper.floor_double(box.maxY + 1.0D);
+		int i1 = MathHelper.floor_double(box.minZ);
+		int j1 = MathHelper.floor_double(box.maxZ + 1.0D);
+
+		for (int k1 = i; k1 < j; ++k1) {
+			for (int l1 = i1; l1 < j1; ++l1) {
+				if (ep.worldObj.blockExists(k1, 64, l1)) {
+					for (int i2 = k - 1; i2 < l; ++i2) {
+						Block block;
+
+						if (k1 >= -30000000 && k1 < 30000000 && l1 >= -30000000 && l1 < 30000000) {
+							block = ep.worldObj.getBlock(k1, i2, l1);
+						}
+						else {
+							block = Blocks.stone;
+						}
+
+						if (this.isBlockOreclippable(ep.worldObj, k1, i2, l1, block, ep.worldObj.getBlockMetadata(k1, i2, l1)))
+							block.addCollisionBoxesToList(ep.worldObj, k1, i2, l1, box, li, ep);
+					}
+				}
+			}
+		}
+
+		double d0 = 0.25D;
+		List<Entity> list = ep.worldObj.getEntitiesWithinAABBExcludingEntity(ep, box.expand(d0, d0, d0));
+
+		for (Entity e : list) {
+			AxisAlignedBB box2 = e.getBoundingBox();
+
+			if (box2 != null && box2.intersectsWith(box)) {
+				li.add(box2);
+			}
+
+			box2 = ep.getCollisionBox(e);
+
+			if (box2 != null && box2.intersectsWith(box)) {
+				li.add(box2);
+			}
+		}
+
+		return li;
+	}
+
+	public MovingObjectPosition doOreClipRayTrace(World world, Vec3 vec1, Vec3 vec2, boolean liq) {
+		if (!Double.isNaN(vec1.xCoord) && !Double.isNaN(vec1.yCoord) && !Double.isNaN(vec1.zCoord)) {
+			if (!Double.isNaN(vec2.xCoord) && !Double.isNaN(vec2.yCoord) && !Double.isNaN(vec2.zCoord)) {
+
+				int i = MathHelper.floor_double(vec2.xCoord);
+				int j = MathHelper.floor_double(vec2.yCoord);
+				int k = MathHelper.floor_double(vec2.zCoord);
+				int l = MathHelper.floor_double(vec1.xCoord);
+				int i1 = MathHelper.floor_double(vec1.yCoord);
+				int j1 = MathHelper.floor_double(vec1.zCoord);
+
+				Block block = world.getBlock(l, i1, j1);
+				int k1 = world.getBlockMetadata(l, i1, j1);
+
+				if (block.canCollideCheck(k1, liq) && AbilityHelper.instance.isBlockOreclippable(world, l, i1, j1, block, k1)) {
+					MovingObjectPosition movingobjectposition = block.collisionRayTrace(world, l, i1, j1, vec1, vec2);
+
+					if (movingobjectposition != null) {
+						return movingobjectposition;
+					}
+				}
+
+				MovingObjectPosition movingobjectposition2 = null;
+				k1 = 200;
+
+				while (k1-- >= 0) {
+					if (Double.isNaN(vec1.xCoord) || Double.isNaN(vec1.yCoord) || Double.isNaN(vec1.zCoord)) {
+						return null;
+					}
+
+					if (l == i && i1 == j && j1 == k) {
+						return null;
+					}
+
+					boolean flag6 = true;
+					boolean flag3 = true;
+					boolean flag4 = true;
+					double d0 = 999.0D;
+					double d1 = 999.0D;
+					double d2 = 999.0D;
+
+					if (i > l) {
+						d0 = l + 1.0D;
+					}
+					else if (i < l) {
+						d0 = l + 0.0D;
+					}
+					else {
+						flag6 = false;
+					}
+
+					if (j > i1) {
+						d1 = i1 + 1.0D;
+					}
+					else if (j < i1) {
+						d1 = i1 + 0.0D;
+					}
+					else {
+						flag3 = false;
+					}
+
+					if (k > j1) {
+						d2 = j1 + 1.0D;
+					}
+					else if (k < j1) {
+						d2 = j1 + 0.0D;
+					}
+					else {
+						flag4 = false;
+					}
+
+					double d3 = 999.0D;
+					double d4 = 999.0D;
+					double d5 = 999.0D;
+					double d6 = vec2.xCoord - vec1.xCoord;
+					double d7 = vec2.yCoord - vec1.yCoord;
+					double d8 = vec2.zCoord - vec1.zCoord;
+
+					if (flag6) {
+						d3 = (d0 - vec1.xCoord) / d6;
+					}
+
+					if (flag3) {
+						d4 = (d1 - vec1.yCoord) / d7;
+					}
+
+					if (flag4) {
+						d5 = (d2 - vec1.zCoord) / d8;
+					}
+
+					boolean flag5 = false;
+					byte b0;
+
+					if (d3 < d4 && d3 < d5) {
+						if (i > l)
+						{
+							b0 = 4;
+						}
+						else
+						{
+							b0 = 5;
+						}
+
+						vec1.xCoord = d0;
+						vec1.yCoord += d7 * d3;
+						vec1.zCoord += d8 * d3;
+					}
+					else if (d4 < d5) {
+						if (j > i1) {
+							b0 = 0;
+						}
+						else {
+							b0 = 1;
+						}
+
+						vec1.xCoord += d6 * d4;
+						vec1.yCoord = d1;
+						vec1.zCoord += d8 * d4;
+					}
+					else {
+						if (k > j1)
+						{
+							b0 = 2;
+						}
+						else
+						{
+							b0 = 3;
+						}
+
+						vec1.xCoord += d6 * d5;
+						vec1.yCoord += d7 * d5;
+						vec1.zCoord = d2;
+					}
+
+					Vec3 vec32 = Vec3.createVectorHelper(vec1.xCoord, vec1.yCoord, vec1.zCoord);
+					l = (int)(vec32.xCoord = MathHelper.floor_double(vec1.xCoord));
+
+					if (b0 == 5) {
+						--l;
+						++vec32.xCoord;
+					}
+
+					i1 = (int)(vec32.yCoord = MathHelper.floor_double(vec1.yCoord));
+
+					if (b0 == 1) {
+						--i1;
+						++vec32.yCoord;
+					}
+
+					j1 = (int)(vec32.zCoord = MathHelper.floor_double(vec1.zCoord));
+
+					if (b0 == 3) {
+						--j1;
+						++vec32.zCoord;
+					}
+
+					Block block1 = world.getBlock(l, i1, j1);
+					int l1 = world.getBlockMetadata(l, i1, j1);
+
+					if (block1.canCollideCheck(l1, liq) && AbilityHelper.instance.isBlockOreclippable(world, l, i1, j1, block1, l1)) {
+						MovingObjectPosition movingobjectposition1 = block1.collisionRayTrace(world, l, i1, j1, vec1, vec2);
+
+						if (movingobjectposition1 != null) {
+							return movingobjectposition1;
+						}
+					}
+					else {
+						movingobjectposition2 = new MovingObjectPosition(l, i1, j1, b0, vec1, false);
+					}
+				}
+
+				return null;
+			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return null;
+		}
 	}
 
 }

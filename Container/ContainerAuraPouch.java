@@ -97,6 +97,12 @@ public class ContainerAuraPouch extends Container {
 			}
 			return super.slotClick(slot, button, par3, ep);
 		}
+		else if (slot >= ItemAuraPouch.SIZE+27) {
+			ItemStack in = ep.inventory.getStackInSlot(slot-ItemAuraPouch.SIZE-27);
+			if (ChromaItems.AURAPOUCH.matchWith(in)) {
+				return ep.inventory.getItemStack();
+			}
+		}
 		return super.slotClick(slot, button, par3, ep);
 	}
 

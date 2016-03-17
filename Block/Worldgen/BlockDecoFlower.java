@@ -222,6 +222,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		int meta = world.getBlockMetadata(x, y, z);
 		Flowers f = Flowers.list[meta];
 		ItemStack is = new ItemStack(this, 1, meta);
+		ReikaJavaLibrary.pConsole(world);
 		if (world instanceof World) { //Why is this IBA? This is NOT a renderer!
 			if (f == Flowers.VOIDREED) {
 				int dy = y+1;

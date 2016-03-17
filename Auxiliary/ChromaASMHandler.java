@@ -74,6 +74,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			CHUNKPOPLN("net.minecraft.world.gen.ChunkProviderServer", "ms"),
 			//WORLDLIGHT("net.minecraft.world.World", "ahb"),
 			//WORLDLIGHT2("net.minecraft.world.ChunkCache", "ahr"),
+			//ENTITYCOLLISION("net.minecraft.entity.Entity", "sa"),
+			COLLISIONBOXES("net.minecraft.world.World", "ahb"),
+			ENTITYPUSHOUT("net.minecraft.client.entity.EntityPlayerSP", "blk")
 			;
 
 			private final String obfName;
@@ -217,7 +220,65 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						break;
 					}
 					 */
+					/*
+					case ENTITYCOLLISION: {
+						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_72945_a" : "getCollidingBoundingBoxes";
+						String sig = "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;)Ljava/util/List;";
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_70091_d", "moveEntity", "(DDD)V");
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+								MethodInsnNode min = (MethodInsnNode)ain;
+								if (min.owner.contains("World") && min.name.equals(func) && min.desc.equals(sig)) {
 
+									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+									min.name = "interceptEntityCollision";
+									//min.desc = sig;
+									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
+
+									//Remove ALOAD 0 and GETFIELD worldObj
+									AbstractInsnNode world = ReikaASMHelper.getLastInsnBefore(m.instructions, m.instructions.indexOf(min), Opcodes.GETFIELD, "net/minecraft/entity/Entity", "worldObj", "Lnet/minecraft/world/World;");
+									AbstractInsnNode end = world;
+									AbstractInsnNode start = end.getPrevious();
+									/*
+									ArrayList<AbstractInsnNode> li = new ArrayList();
+									for (int k = m.instructions.indexOf(start); k <= m.instructions.indexOf(end); k++) {
+										li.add(m.instructions.get(k));
+									}
+									li.add(min);
+									ReikaJavaLibrary.pConsole(ReikaASMHelper.clearString(li));
+					 *//*
+									ReikaASMHelper.deleteFrom(m.instructions, start, end);
+								}
+							}
+						}
+					}
+					ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+					break;
+					  */
+					case COLLISIONBOXES: {
+						String sig = "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;)Ljava/util/List;";
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_72945_a", "getCollidingBoundingBoxes", sig);
+						if (m.attrs != null)
+							m.attrs.clear();
+						if (m.localVariables != null)
+							m.localVariables.clear();
+						m.instructions.clear();
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "interceptEntityCollision", sig, false));
+						m.instructions.add(new InsnNode(Opcodes.ARETURN));
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
+					case ENTITYPUSHOUT: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_145771_j", "func_145771_j", "(DDD)Z");
+						AbstractInsnNode ain = ReikaASMHelper.getFirstOpcode(m.instructions, Opcodes.GETFIELD);
+						m.instructions.insert(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "applyNoclipPhase", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
+						m.instructions.remove(ain);
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
 				}
 
 				ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS/* | ClassWriter.COMPUTE_FRAMES*/);

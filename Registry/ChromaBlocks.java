@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
@@ -141,7 +142,7 @@ public enum ChromaBlocks implements BlockEnum {
 	PYLONSTRUCT(BlockPylonStructure.class,		ItemBlockMultiType.class,		"block.pylon"),
 	PYLON(BlockCrystalPylon.class,				ItemBlockMultiType.class,		"crystal.pylon"),
 	TANK(BlockCrystalTank.class,												"crystal.tank"),
-	FENCE(BlockCrystalFence.class,												"crystal.fencerelay"),
+	FENCE(BlockCrystalFence.class,												"chroma.fencerelay"),
 	TIEREDPLANT(BlockTieredPlant.class,			ItemBlockChromaTiered.class,	"chroma.tieredplant"),
 	TIEREDORE(BlockTieredOre.class,				ItemBlockChromaTiered.class,	"chroma.tieredore"),
 	DECOPLANT(BlockDecoPlant.class, 			ItemBlockChromaFlower.class, 	"Chromatic Plant 2"),
@@ -183,7 +184,8 @@ public enum ChromaBlocks implements BlockEnum {
 	LIGHT(BlockEtherealLight.class,												"chroma.light"),
 	STORAGE(BlockMultiStorage.class,											"chroma.storageblock"),
 	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower"),
-	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass");
+	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass"),
+	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3");
 
 	private Class blockClass;
 	private String blockName;
@@ -367,14 +369,14 @@ public enum ChromaBlocks implements BlockEnum {
 			case RELAY:
 				return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
 			case DIMGEN:
-				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase());
+				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDeco.DimDecoTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case DIMGENTILE:
-				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase());
+				return StatCollector.translateToLocal("chromablock.dimgen."+BlockDimensionDecoTile.DimDecoTileTypes.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case LOCKKEY:
 			case HOVER:
 				return this.getBasicName();
 			case DECOFLOWER:
-				return StatCollector.translateToLocal("chroma.flower."+BlockDecoFlower.Flowers.list[meta].name().toLowerCase());
+				return StatCollector.translateToLocal("chroma.flower."+BlockDecoFlower.Flowers.list[meta].name().toLowerCase(Locale.ENGLISH));
 			default:
 				return "";
 		}

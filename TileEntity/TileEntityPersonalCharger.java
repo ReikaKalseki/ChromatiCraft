@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -41,6 +43,11 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	@Override
 	protected int getCooldownLength() {
 		return 800;
+	}
+
+	@Override
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.ENERGYEXPLORE;
 	}
 
 	@Override
@@ -238,6 +245,11 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	@SideOnly(Side.CLIENT)
 	public int getRenderColor() {
 		return this.getColor().getColor();
+	}
+
+	@Override
+	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e) {
+		return new Coordinate(this);
 	}
 
 }

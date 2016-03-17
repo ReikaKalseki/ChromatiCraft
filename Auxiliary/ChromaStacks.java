@@ -10,7 +10,9 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class ChromaStacks {
@@ -133,6 +135,17 @@ public class ChromaStacks {
 	public static final ItemStack waterCap		= ChromaItems.MODINTERACT.getStackOfMetadata(2);
 	public static final ItemStack endCap		= ChromaItems.MODINTERACT.getStackOfMetadata(3);
 	public static final ItemStack chromaCap		= ChromaItems.MODINTERACT.getStackOfMetadata(4);
+
+	public static final ItemStack turboRepeater = getTurboRepeater(ChromaTiles.REPEATER);
+	public static final ItemStack turboMultiRepeater = getTurboRepeater(ChromaTiles.COMPOUND);
+	public static final ItemStack turboBroadcastRepeater = getTurboRepeater(ChromaTiles.BROADCAST);
+
+	private static ItemStack getTurboRepeater(ChromaTiles c) {
+		ItemStack is = c.getCraftedProduct();
+		is.stackTagCompound = new NBTTagCompound();
+		is.stackTagCompound.setBoolean("boosted", true);
+		return is;
+	}
 
 	public static ItemStack getShard(CrystalElement e) {
 		return ChromaItems.SHARD.getStackOfMetadata(e.ordinal());

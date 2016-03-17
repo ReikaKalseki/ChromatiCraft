@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -90,9 +92,10 @@ public enum ChromaResearch implements ProgressElement {
 	USINGRUNES("Crafting With Runes",	ChromaBlocks.RUNE.getStackOfMetadata(1),				ResearchLevel.RUNECRAFT, 	ProgressStage.RUNEUSE),
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	DIMENSION2("A Volatile World",		ChromaBlocks.GLOWSAPLING.getStackOf(),					ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
-	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressStage.CTM),
+	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
+	TURBOREPEATER("Repeater Turbocharging", ChromaStacks.turboRepeater,							ResearchLevel.ENDGAME,		ProgressStage.TURBOCHARGE),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
-	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.ENDGAME,		ProgressStage.CTM),
+	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.CTM,		ProgressStage.CTM),
 	SELFCHARGE("Energy Internalization",ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
 	MYSTPAGE("World Authoring",			new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
 	ENCHANTING("Crystal Enchanting",	new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
@@ -105,14 +108,14 @@ public enum ChromaResearch implements ProgressElement {
 	ACCEL(			ChromaTiles.ACCELERATOR, 	ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
 	TANK(			ChromaTiles.TANK, 			ResearchLevel.PYLONCRAFT),
-	COMPOUND(		ChromaTiles.COMPOUND, 		ResearchLevel.NETWORKING),
+	COMPOUND(		ChromaTiles.COMPOUND, 		ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 	CHARGER(		ChromaTiles.CHARGER, 		ResearchLevel.PYLONCRAFT),
 	LILY(			ChromaTiles.HEATLILY, 		ResearchLevel.RUNECRAFT),
 	TICKER(			ChromaTiles.TICKER, 		ResearchLevel.MULTICRAFT),
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
-	MINER(			ChromaTiles.MINER, 			ResearchLevel.ENDGAME,			ProgressStage.CTM),
+	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM,			ProgressStage.CTM),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.MULTICRAFT),
@@ -139,9 +142,9 @@ public enum ChromaResearch implements ProgressElement {
 	MEDISTRIB(		ChromaTiles.MEDISTRIBUTOR,	ResearchLevel.MULTICRAFT),
 	WINDOW(			ChromaTiles.WINDOW,			ResearchLevel.MULTICRAFT),
 	RFDISTRIB(		ChromaTiles.RFDISTRIBUTOR,	ResearchLevel.RUNECRAFT),
-	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
+	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
 	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
-	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.CTM),
+	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	TURRET(			ChromaTiles.TURRET,			ResearchLevel.BASICCRAFT,		ProgressStage.KILLMOB),
 	BROADCAST(		ChromaTiles.BROADCAST,		ResearchLevel.NETWORKING),
 	CLOAKING(		ChromaTiles.CLOAKING,		ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
@@ -153,6 +156,9 @@ public enum ChromaResearch implements ProgressElement {
 	COBBLEGEN(		ChromaTiles.COBBLEGEN,		ResearchLevel.RUNECRAFT),
 	PLANTACCEL(		ChromaTiles.PLANTACCEL,		ResearchLevel.RUNECRAFT),
 	CROPSPEED(		ChromaTiles.CROPSPEED,		ResearchLevel.RUNECRAFT),
+	WEAKREPEATER(	ChromaTiles.WEAKREPEATER,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON, ProgressStage.MAKECHROMA),
+	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.BASICCRAFT,		ProgressStage.MAKECHROMA),
+	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -208,6 +214,7 @@ public enum ChromaResearch implements ProgressElement {
 	OWNERKEY(			ChromaItems.SHARE,			ResearchLevel.BASICCRAFT),
 	//FLUIDWAND(			ChromaItems.FLUIDWAND,		ResearchLevel.RUNECRAFT,	ProgressStage.OCEAN),
 	CRYSTALCELL(		ChromaItems.CRYSTALCELL,	ResearchLevel.MULTICRAFT,	ProgressStage.CHARGE),
+	PURIFY(				ChromaItems.PURIFY,			ResearchLevel.ENDGAME,		ProgressStage.RAINBOWLEAF, ProgressStage.ALLOY),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -240,7 +247,7 @@ public enum ChromaResearch implements ProgressElement {
 	LIFEPOINT(		Chromabilities.LIFEPOINT),
 	DEATHPROOF(		Chromabilities.DEATHPROOF),
 	SHOCKWAVE(		Chromabilities.SHOCKWAVE),
-	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.ENDGAME),
+	WARPLOC(		Chromabilities.TELEPORT,					ResearchLevel.CTM),
 	LEECH(			Chromabilities.LEECH),
 	FLOAT(			Chromabilities.FLOAT),
 	SPAWNERSEE(		Chromabilities.SPAWNERSEE,					ResearchLevel.ENDGAME),
@@ -248,8 +255,13 @@ public enum ChromaResearch implements ProgressElement {
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
 	DIMPING(		Chromabilities.DIMPING,						ResearchLevel.ENDGAME),
 	DASH(			Chromabilities.DASH),
-	LASERBILITY(	Chromabilities.LASER,						ResearchLevel.ENDGAME),
-	FIRERAIN(		Chromabilities.FIRERAIN,					ResearchLevel.ENDGAME),
+	LASERBILITY(	Chromabilities.LASER,						ResearchLevel.CTM),
+	FIRERAIN(		Chromabilities.FIRERAIN,					ResearchLevel.CTM),
+	KEEPINV(		Chromabilities.KEEPINV,						ResearchLevel.ENDGAME),
+	ORECLIP(		Chromabilities.ORECLIP,						ResearchLevel.CTM),
+	DOUBLECRAFT(	Chromabilities.DOUBLECRAFT,					ResearchLevel.CTM),
+	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.CTM),
+	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.CTM),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -266,9 +278,12 @@ public enum ChromaResearch implements ProgressElement {
 	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
 	DESERT(			ChromaStructures.Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
 	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
-	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.PYLONCRAFT,		ProgressStage.CHARGE),
+	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	BROADCASTER(	ChromaStructures.Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
 	CLOAKTOWER(		ChromaStructures.Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
+	BOOSTTREE(		ChromaStructures.Structures.TREE_BOOSTED,14,ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
+	BEACONSTRUCT(	ChromaStructures.Structures.PROTECT,	6,ResearchLevel.ENDGAME),
+	MINIREPEATER(	ChromaStructures.Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
 	;
 
 	private final ItemStack iconItem;
@@ -370,7 +385,11 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	private ChromaResearch(Structures s, int meta, ResearchLevel r, ProgressStage... p) {
-		iconItem = new ItemStack(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), 1, meta);
+		this(s, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), meta, r, p);
+	}
+
+	private ChromaResearch(Structures s, Block b, int meta, ResearchLevel r, ProgressStage... p) {
+		iconItem = new ItemStack(b, 1, meta);
 		pageTitle = s.getDisplayName();
 		progress = p;
 		level = r;
@@ -487,13 +506,31 @@ public enum ChromaResearch implements ProgressElement {
 			return;
 		}
 		else if (this == NODENET) {
-			ItemStack is = ThaumItemHelper.BlockEntry.NODEPLACER.getItem();
+			ItemStack is = ThaumItemHelper.BlockEntry.NODE.getItem();
 			GL11.glPushMatrix();
 			double s = 2;
 			GL11.glTranslated(x-8, y-6, 0);
 			GL11.glScaled(s, s, 1);
 			ReikaGuiAPI.instance.drawItemStack(ri, is, 0, 0);
 			GL11.glPopMatrix();
+			return;
+		}
+		else if (this == TURBO) {
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			ReikaTextureHelper.bindTerrainTexture();
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glRotated(0, 0, 0, 1);
+			int ds = 4;
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-ds, y-ds, ChromaIcons.TURBO.getIcon(), 16+ds*2, 16+ds*2);
+
+			ds = -1;
+			float f = 0.5F;
+			GL11.glColor4f(f, f, f, f);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-ds, y-ds, ChromaIcons.RADIATE.getIcon(), 16+ds*2, 16+ds*2);
+			GL11.glColor4f(1, 1, 1, 1);
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
 			return;
 		}
 		else if (this == APIRECIPES) {
@@ -539,9 +576,13 @@ public enum ChromaResearch implements ProgressElement {
 				if (!ReikaItemHelper.collectionContainsItemStack(ico, cr.getOutput()))
 					ico.add(cr.getOutput());
 			}
+			for (CastingRecipe cr : RecipesCastingTable.instance.getAllModdedItemRecipes()) {
+				if (!ReikaItemHelper.collectionContainsItemStack(ico, cr.getOutput()))
+					ico.add(cr.getOutput());
+			}
 			if (!ico.isEmpty()) {
 				int idx = (int)((System.currentTimeMillis()/400)%ico.size());
-				ReikaGuiAPI.instance.drawItemStack(ri, ico.get(idx), x, y);
+				ReikaGuiAPI.instance.drawItemStack(ri, ReikaItemHelper.getSizedItemStack(ico.get(idx), 1), x, y);
 			}
 			else {
 				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.NOENTER.getIcon(), 16, 16);
@@ -616,6 +657,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == APIRECIPES)
 			return true;
+		if (this == TURBOREPEATER)
+			return true;
 		if (this.isMachine() || this.isTool())
 			return true;
 		if (this == GROUPS)
@@ -676,6 +719,13 @@ public enum ChromaResearch implements ProgressElement {
 	public ArrayList<ItemStack> getItemStacks() {
 		if (this.isMachine())
 			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
+		if (this == TURBOREPEATER) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(ChromaStacks.turboRepeater);
+			li.add(ChromaStacks.turboMultiRepeater);
+			li.add(ChromaStacks.turboBroadcastRepeater);
+			return li;
+		}
 		if (this == STORAGE) {
 			ArrayList<ItemStack> li = new ArrayList();
 			for (int i = 0; i < ChromaItems.STORAGE.getNumberMetadatas(); i++) {
@@ -892,7 +942,19 @@ public enum ChromaResearch implements ProgressElement {
 
 	public ArrayList<CastingRecipe> getCraftingRecipes() {
 		if (this == APIRECIPES) {
-			return new ArrayList(RecipesCastingTable.instance.getAllAPIRecipes());
+			HashSet<CastingRecipe> li = new HashSet();
+			li.addAll(RecipesCastingTable.instance.getAllAPIRecipes());
+			li.addAll(RecipesCastingTable.instance.getAllModdedItemRecipes());
+			return new ArrayList(li);
+		}
+		if (this == TURBOREPEATER) {
+			ArrayList<CastingRecipe> li = new ArrayList();
+			for (CastingRecipe cr : RecipesCastingTable.instance.getAllRecipes()) {
+				if (cr instanceof RepeaterTurboRecipe) {
+					li.add(cr);
+				}
+			}
+			return li;
 		}
 		if (!this.isCrafting())
 			return new ArrayList();
@@ -982,8 +1044,8 @@ public enum ChromaResearch implements ProgressElement {
 			return item.isDummiedOut();
 		if (ability != null)
 			return ability.isDummiedOut();
-		if (this == APIRECIPES && RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && DragonAPICore.hasGameLoaded()) //only hide display
-			return true;
+		if (this == APIRECIPES && DragonAPICore.hasGameLoaded()) //only hide display
+			return RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && RecipesCastingTable.instance.getAllModdedItemRecipes().isEmpty();
 		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
 			return true;
 		if (this == BEES)
@@ -1057,16 +1119,21 @@ public enum ChromaResearch implements ProgressElement {
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
 			if (!r.isDummiedOut()) {
-				Collection<ItemStack> c = r.getItemStacks();
-				if (c != null) {
-					for (ItemStack is : c) {
-						if (is != null && is.getItem() != null)
-							itemMap.put(is, r);
+				try {
+					Collection<ItemStack> c = r.getItemStacks();
+					if (c != null) {
+						for (ItemStack is : c) {
+							if (is != null && is.getItem() != null)
+								itemMap.put(is, r);
+						}
+					}
+					Collection<CastingRecipe> crc = r.getCraftingRecipes();
+					for (CastingRecipe cr : crc) {
+						cr.setFragment(r);
 					}
 				}
-				Collection<CastingRecipe> crc = r.getCraftingRecipes();
-				for (CastingRecipe cr : crc) {
-					cr.setFragment(r);
+				catch (Exception e) {
+					throw new RegistrationException(ChromatiCraft.instance, "Could not initialize Info Fragment '"+r+"'!", e);
 				}
 			}
 		}

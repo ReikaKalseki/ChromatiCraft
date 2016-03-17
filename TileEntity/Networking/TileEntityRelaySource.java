@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
@@ -27,6 +28,11 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	@Override
 	protected int getCooldownLength() {
 		return 200;
+	}
+
+	@Override
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.ENERGYEXPLORE;
 	}
 
 	@Override

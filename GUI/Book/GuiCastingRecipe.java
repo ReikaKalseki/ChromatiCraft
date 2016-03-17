@@ -208,6 +208,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 			}
 		}
 		if (subpage == 3) {
+			/*
 			ElementTagCompound tag = ((PylonRecipe)this.getActiveRecipe()).getRequiredAura();
 			int i = 0;
 			Collection<CrystalElement> set = tag.elementSet();
@@ -223,6 +224,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 				fontRendererObj.drawString(s2, x2, y, color);
 				i++;
 			}
+			 */
 		}
 	}
 

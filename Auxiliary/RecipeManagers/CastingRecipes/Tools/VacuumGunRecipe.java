@@ -36,10 +36,9 @@ public class VacuumGunRecipe extends PylonRecipe {
 
 		this.addAuxItem("stickWood", 0, 4);
 
-		this.addAuraRequirement(CrystalElement.BLACK, 20000);
-		this.addAuraRequirement(CrystalElement.GRAY, 5000);
-		this.addAuraRequirement(CrystalElement.WHITE, 12000);
-		this.addAuraRequirement(CrystalElement.LIME, 50000);
+		this.addAuraRequirement(CrystalElement.BLACK, 10000);
+		this.addAuraRequirement(CrystalElement.LIME, 20000);
+		this.addAuraRequirement(CrystalElement.PINK, 40000);
 	}
 
 }

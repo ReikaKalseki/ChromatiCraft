@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.Locale;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -32,7 +34,7 @@ public class GuiAbilityDesc extends GuiDescription {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		leftX = (width - xSize) / 2;
 		topY = (height - ySize) / 2;
-		String s = "Textures/Ability/"+page.getAbility().name().toLowerCase()+".png";
+		String s = "Textures/Ability/"+page.getAbility().name().toLowerCase(Locale.ENGLISH)+".png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
 		GL11.glPushMatrix();
 		double d = 50/256D;

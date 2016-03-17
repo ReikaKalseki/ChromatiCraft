@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.command.ICommandSender;
@@ -424,7 +425,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		MULTICRAFT(),
 		NETWORKING(),
 		PYLONCRAFT(),
-		ENDGAME();
+		ENDGAME(),
+		CTM();
 
 		public static final ResearchLevel[] levelList = values();
 
@@ -464,13 +466,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.MULTIBLOCK);
 				case ENDGAME:
 					return RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
+				case CTM:
+					return ProgressStage.CTM.isPlayerAtStage(ep);
 				default:
 					return false;
 			}
 		}
 
 		public String getDisplayName() {
-			return StatCollector.translateToLocal("chromaresearch."+this.name().toLowerCase());
+			return StatCollector.translateToLocal("chromaresearch."+this.name().toLowerCase(Locale.ENGLISH));
 		}
 
 		public ResearchLevel pre() {
@@ -510,9 +514,9 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		@Override
 		public void processCommand(ICommandSender ics, String[] args) {
 			EntityPlayer ep = this.getCommandSenderAsPlayer(ics);
-			if (args[0].toLowerCase().equals("fragments"))
+			if (args[0].toLowerCase(Locale.ENGLISH).equals("fragments"))
 				ChromatiCraft.logger.log("Next fragments for "+ep.getCommandSenderName()+": "+instance.getNextResearchesFor(ep, true));
-			if (args[0].toLowerCase().equals("level"))
+			if (args[0].toLowerCase(Locale.ENGLISH).equals("level"))
 				instance.checkForUpgrade(ep, true);
 		}
 

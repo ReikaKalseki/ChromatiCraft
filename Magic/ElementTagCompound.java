@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -95,6 +96,14 @@ public final class ElementTagCompound {
 	/** Map.keySet() */
 	public Collection<CrystalElement> elementSet() {
 		return Collections.unmodifiableSet(data.keySet());
+	}
+
+	public Proportionality getProportionality() {
+		Proportionality p = new Proportionality();
+		for (CrystalElement e : data.keySet()) {
+			p.addValue(e, data.get(e));
+		}
+		return p;
 	}
 
 	public void addTag(ElementTagCompound tag) {

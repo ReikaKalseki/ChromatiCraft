@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -40,7 +41,7 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
 
 	@Override
 	public int getHarvestLevel(ItemStack stack, String toolClass) {
-		return toolClass.toLowerCase().contains("pick") ? 3 : super.getHarvestLevel(stack, toolClass);
+		return toolClass.toLowerCase(Locale.ENGLISH).contains("pick") ? Math.max(3, Items.diamond_pickaxe.getHarvestLevel(stack, toolClass)) : super.getHarvestLevel(stack, toolClass);
 	}
 
 	@Override

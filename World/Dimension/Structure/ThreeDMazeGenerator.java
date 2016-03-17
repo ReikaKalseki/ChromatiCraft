@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -437,6 +438,11 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	@Override
 	public StructureData createDataStorage() {
 		return null;
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		return true; //No idea how to check this
 	}
 
 	/** Takes the coordinate within the maze, not actual block coords! */

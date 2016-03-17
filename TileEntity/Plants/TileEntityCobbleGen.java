@@ -297,7 +297,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 		else {
 			g = -g;
 			int dy = y-1;
-			while (world.getBlock(x, dy, z).isAir(world, x, dy, z))
+			while (dy > 0 && world.getBlock(x, dy, z).isAir(world, x, dy, z))
 				dy--;
 			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(activeRecipe.output);
 			CrystalElement e = tag != null && !tag.isEmpty() ? ReikaJavaLibrary.getRandomCollectionEntry(tag.elementSet()) : null;

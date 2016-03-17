@@ -147,7 +147,7 @@ public class ItemMagicRegistry {
 		this.addElement(Blocks.web, CrystalElement.LIME, 1);
 		this.addElement(Items.flint, CrystalElement.BROWN, 1);
 		this.addElement(Items.string, CrystalElement.GREEN, 1);
-		this.addElement(Items.magma_cream, CrystalElement.ORANGE, 4);
+		this.addElement(Items.magma_cream, CrystalElement.ORANGE, 3);
 		this.addElement(Items.magma_cream, CrystalElement.RED, 4);
 		this.addElement(Items.magma_cream, CrystalElement.GREEN, 1);
 		this.addElement(Items.slime_ball, CrystalElement.CYAN, 2);

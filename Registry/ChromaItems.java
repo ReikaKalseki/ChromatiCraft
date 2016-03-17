@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Registry;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
@@ -51,6 +52,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.ItemOreSilker;
 import Reika.ChromatiCraft.Items.Tools.ItemOwnerKey;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
+import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
@@ -88,53 +90,54 @@ public enum ChromaItems implements ItemEnum {
 	TOOL(32, false,			"chroma.tool",			ItemManipulator.class),
 	SHARD(64, true, 		"crystal.shard", 		ItemCrystalShard.class),
 	POTION(0, true, 		"crystal.potion", 		ItemCrystalPotion.class),
-	CLUSTER(336, true, 		"crystal.cluster", 		ItemCluster.class),
+	CLUSTER(80, true, 		"crystal.cluster", 		ItemCluster.class),
 	PENDANT(96, true, 		"crystal.pendant", 		ItemPendant.class),
 	PENDANT3(112, true, 	"crystal.pendant3", 	ItemPendant.class),
 	SEED(128, true, 		"crystal.seeds", 		ItemCrystalSeeds.class),
 	ENDERCRYSTAL(0, true, 	"chroma.endercrystal", 	ItemEnderCrystal.class),
 	DYE(48, true,			"dye.item", 			ItemCrystalBasic.class),
-	EXCAVATOR(33, false,	"chroma.excavator",		ItemExcavationWand.class),
+	EXCAVATOR(80, false,	"chroma.excavator",		ItemExcavationWand.class),
 	VACUUMGUN(8, false,		"chroma.vac",			ItemVacuumGun.class),
-	CRAFTING(256, true,		"chroma.craft",			ItemChromaCrafting.class),
+	CRAFTING(0, true,		"chroma.craft",			ItemChromaCrafting.class),
 	LENS(144, true,			"chroma.lens",			ItemCrystalBasic.class),
 	STORAGE(2, true,		"chroma.storage",		ItemStorageCrystal.class),
 	LINKTOOL(3, false,		"chroma.linker",		ItemConnector.class),
 	BERRY(176, true,		"chroma.berry",			ItemChromaBerry.class),
 	FINDER(4, false,		"chroma.finder",		ItemPylonFinder.class),
-	TIERED(384, true,		"chroma.tiered",		ItemTieredResource.class),
+	TIERED(128, true,		"chroma.tiered",		ItemTieredResource.class),
 	ELEMENTAL(192, true,	"chroma.elemental",		ItemElementalStone.class),
-	TRANSITION(34, false,	"chroma.transition",	ItemTransitionWand.class),
+	TRANSITION(81, false,	"chroma.transition",	ItemTransitionWand.class),
 	HELP(5, false,			"chroma.helpitem",		ItemChromaBook.class),
 	WARP(7, true,			"chroma.warp",			ItemWarpProofer.class, ModList.THAUMCRAFT),
-	MISC(480, true,			"chroma.misc",			ItemChromaMisc.class),
+	MISC(224, true,			"chroma.misc",			ItemChromaMisc.class),
 	FRAGMENT(9, true,		"chroma.fragment",		ItemInfoFragment.class),
-	DUPLICATOR(35, false,	"chroma.duplicator",	ItemDuplicationWand.class),
-	TELEPORT(36, false,		"chroma.teleport",		ItemMobilityWand.class),
-	BUILDER(37,	false,		"chroma.builder",		ItemBuilderWand.class),
-	CAPTURE(38, false,		"chroma.capture",		ItemCaptureWand.class),
+	DUPLICATOR(82, false,	"chroma.duplicator",	ItemDuplicationWand.class),
+	TELEPORT(83, false,		"chroma.teleport",		ItemMobilityWand.class),
+	BUILDER(84,	false,		"chroma.builder",		ItemBuilderWand.class),
+	CAPTURE(85, false,		"chroma.capture",		ItemCaptureWand.class),
 	VOIDCELL(10, false,		"chroma.aecell",		ItemVoidStorage.class, ModList.APPENG),
-	MODINTERACT(432, true,	"chroma.modinteract",	ItemChromaMisc.class),
+	MODINTERACT(176, true,	"chroma.modinteract",	ItemChromaMisc.class),
 	MULTITOOL(25, false,	"chroma.multitool",		ItemMultiTool.class),
-	SHOO(39, false,			"chroma.shoo",			ItemShooWand.class),
+	SHOO(86, false,			"chroma.shoo",			ItemShooWand.class),
 	OREPICK(27, false,		"chroma.orepick",		ItemOrePick.class),
 	ORESILK(26, false,		"chroma.oresilk",		ItemOreSilker.class),
 	AURAPOUCH(29, false,	"chroma.aurapouch",		ItemAuraPouch.class),
-	GROWTH(40, false,		"chroma.growth",		ItemGrowthWand.class),
+	GROWTH(87, false,		"chroma.growth",		ItemGrowthWand.class),
 	//REMOTETERM(11, false,	"chroma.terminal",		ItemRemoteTerminal.class, ModList.APPENG),
 	BULKMOVER(12, false,	"chroma.bulkmove",		ItemBulkMover.class),
 	CHAINGUN(13, false,		"chroma.chaingun",		ItemChainGun.class),
-	HOVERWAND(41, false,	"chroma.hover",			ItemFlightWand.class),
-	DIMGEN(304, true,		"chroma.dimgen",		ItemDimGen.class),
+	HOVERWAND(88, false,	"chroma.hover",			ItemFlightWand.class),
+	DIMGEN(48, true,		"chroma.dimgen",		ItemDimGen.class),
 	SPLASHGUN(14, false,	"chroma.splashgun",		ItemSplashGun.class),
 	KEY(15,	false,			"chroma.key",			ItemDoorKey.class),
 	CARD(31, false,			"chroma.card",			ItemCrystalCard.class),
 	SHARE(30, false,		"chroma.share",			ItemOwnerKey.class),
-	RESET(42, false,		"chroma.reset",			ItemResetWand.class),
-	COLOREDMOD(512, true, 	"chroma.colormod", 		ItemColoredModInteract.class),
-	//FLUIDWAND(43, false,	"chroma.fluid",			ItemFluidWand.class),
-	LIGHTWAND(44, false,	"chroma.lightwand",		ItemLightWand.class),
+	RESET(89, false,		"chroma.reset",			ItemResetWand.class),
+	COLOREDMOD(0, true, 	"chroma.colormod", 		ItemColoredModInteract.class),
+	//FLUIDWAND(90, false,	"chroma.fluid",			ItemFluidWand.class),
+	LIGHTWAND(91, false,	"chroma.lightwand",		ItemLightWand.class),
 	CRYSTALCELL(22, false,	"chroma.crystalcell",	ItemCrystalCell.class, ModList.APPENG),
+	PURIFY(33, true,		"chroma.purify",		ItemPurifyCrystal.class),
 	;
 
 	private final int index;
@@ -154,8 +157,7 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	private ChromaItems(int tex, boolean sub, String n, Class <?extends Item> iCl, ModList api) {
-		index = tex%256;
-		texturesheet = tex/256;
+		index = tex;
 		hasSubtypes = sub;
 		name = n;
 		itemClass = iCl;
@@ -275,6 +277,8 @@ public enum ChromaItems implements ItemEnum {
 				return pre+this.getBasicName();
 			case DIMGEN:
 				return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
+			case PURIFY:
+				return this.getBasicName();
 			default:
 				break;
 		}
@@ -288,7 +292,7 @@ public enum ChromaItems implements ItemEnum {
 	}
 
 	public String getUnlocalizedName() {
-		return ReikaStringParser.stripSpaces(name).toLowerCase();
+		return ReikaStringParser.stripSpaces(name).toLowerCase(Locale.ENGLISH);
 	}
 
 	public Item getItemInstance() {
@@ -305,10 +309,6 @@ public enum ChromaItems implements ItemEnum {
 
 	public boolean isCreativeOnly() {
 		return false;
-	}
-
-	public int getTextureSheet() {
-		return texturesheet;
 	}
 
 	public int getNumberMetadatas() {
@@ -359,6 +359,8 @@ public enum ChromaItems implements ItemEnum {
 				return 180;
 			case DIMGEN:
 				return BlockDimensionDeco.DimDecoTypes.list.length;
+			case PURIFY:
+				return ItemPurifyCrystal.CHARGE_STATES;
 			default:
 				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

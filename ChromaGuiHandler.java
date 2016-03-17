@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalBrewer;
 import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
+import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
@@ -60,7 +61,6 @@ import Reika.ChromatiCraft.GUI.Book.GuiProgressStages;
 import Reika.ChromatiCraft.GUI.Book.GuiRitual;
 import Reika.ChromatiCraft.GUI.Book.GuiStructure;
 import Reika.ChromatiCraft.GUI.Book.GuiToolDescription;
-import Reika.ChromatiCraft.GUI.Tile.GuiAspectFormer;
 import Reika.ChromatiCraft.GUI.Tile.GuiBiomeChanger;
 import Reika.ChromatiCraft.GUI.Tile.GuiCastingAuto;
 import Reika.ChromatiCraft.GUI.Tile.GuiCrystalMusic;
@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalBrewer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalCharger;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalFurnace;
+import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiEnchantDecomposer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiInventoryTicker;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemCollector;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiItemFabricator;
@@ -85,6 +86,7 @@ import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiTelePump;
 import Reika.ChromatiCraft.ModInterface.ContainerMEDistributor;
 import Reika.ChromatiCraft.ModInterface.ContainerPatternCache;
 import Reika.ChromatiCraft.ModInterface.ContainerRemoteTerminal;
+import Reika.ChromatiCraft.ModInterface.GuiAspectFormer;
 import Reika.ChromatiCraft.ModInterface.GuiMEDistributor;
 import Reika.ChromatiCraft.ModInterface.GuiPatternCache;
 import Reika.ChromatiCraft.ModInterface.GuiRemoteTerminal;
@@ -106,6 +108,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
@@ -170,6 +173,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerPatternCache(player, (TileEntityPatternCache)te);
 				if (te instanceof TileEntityItemInserter)
 					return new ContainerItemInserter(player, (TileEntityItemInserter)te);
+				if (te instanceof TileEntityEnchantDecomposer)
+					return new ContainerEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -260,6 +265,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiPatternCache(player, (TileEntityPatternCache)te);
 				if (te instanceof TileEntityItemInserter)
 					return new GuiItemInserter(player, (TileEntityItemInserter)te);
+				if (te instanceof TileEntityEnchantDecomposer)
+					return new GuiEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

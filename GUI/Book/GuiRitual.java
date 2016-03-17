@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.Locale;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -16,13 +18,16 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 
 public class GuiRitual extends GuiBookSection {
 
@@ -48,7 +53,7 @@ public class GuiRitual extends GuiBookSection {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		leftX = (width - xSize) / 2;
 		topY = (height - ySize) / 2;
-		String s = "Textures/Ability/"+ability.name().toLowerCase()+".png";
+		String s = "Textures/Ability/"+ability.name().toLowerCase(Locale.ENGLISH)+".png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
 		GL11.glPushMatrix();
 		double d = 50/256D;
@@ -57,16 +62,54 @@ public class GuiRitual extends GuiBookSection {
 		this.drawTexturedModalRect((int)((leftX+103)/d), (int)((topY+11)/d), 0, 0, 256, 256);
 		GL11.glPopMatrix();
 
+
 		ElementTagCompound tag = AbilityHelper.instance.getElementsFor(ability);
+		Proportionality p = tag.getProportionality();
+		/*
 		int i = 0;
 		for (CrystalElement e : tag.elementSet()) {
 			String s1 = String.format("%s:", e.displayName);
 			String s2 = String.format("%d Lumens", tag.getValue(e));
 			int color = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
+			p.addValue(e, tag.getValue(e));
+			colors.put(e, e.getColor());
 			fontRendererObj.drawString(s1, leftX+descX+3, topY+descY-5+(fontRendererObj.FONT_HEIGHT+2)*i, color);
 			fontRendererObj.drawString(s2, leftX+descX+3+56, topY+descY-5+(fontRendererObj.FONT_HEIGHT+2)*i, color);
 			i++;
 		}
+
+		if (tag.tagCount() <= 8) {
+			int r = 40;
+			int dx = leftX+descX+192;
+			int dy = topY+descY+38;
+			p.renderAsPie(dx, dy, r, 0, colors);
+			ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
+		}
+		 */
+		double r = 57.5;
+		int dx = leftX+descX+184;
+		int dy = topY+descY+52;
+		p.renderAsPie(dx, dy, r, System.identityHashCode(ability), CrystalElement.getColorMap());
+		//ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
+		int tot = tag.getTotalEnergy();
+		int h = fontRendererObj.FONT_HEIGHT*3/2;
+		fontRendererObj.drawSplitString("Total Energy:", leftX+descX+3+40, topY+descY-5-9, 80, 0xffffff);
+		fontRendererObj.drawSplitString(String.valueOf(tot), leftX+descX+3+40, topY+descY-5-9+h, 80, 0xffffff);
+		fontRendererObj.drawSplitString("Lumens", leftX+descX+3+40, topY+descY-5-9+h*2, 80, 0xffffff);
+
+		int frac = (int)(125*Math.pow((double)tot/AbilityRituals.instance.getMaxAbilityTotalCost(), 0.5));
+
+		ReikaTextureHelper.bindTerrainTexture();
+		BlendMode.ADDITIVEDARK.apply();
+		for (int i = 0; i < 4; i++)
+			api.drawTexturedModelRectFromIcon(leftX+descX+11, topY+descY+108-frac+3, ChromaIcons.RIFT.getIcon(), 16, frac+6);
+		BlendMode.DEFAULT.apply();
+
+		s = "Textures/GUIs/Handbook/misc.png";
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+		api.drawTexturedModalRect(dx-(int)Math.ceil(r), dy-(int)Math.ceil(r), 0, 0, (int)(r*2), (int)(r*2));
+
+		api.drawTexturedModalRect(leftX+descX+1, topY+descY+108-frac, 0, 118, 36, 7);
 	}
 
 	@Override

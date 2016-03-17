@@ -27,11 +27,15 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -126,6 +130,47 @@ public class ChromaBookData {
 
 				ChromaFX.drawFillBar(e, x, y1, w, h2, energy/(float)max);
 			}
+
+			/*
+			if (tag.tagCount() <= 8) {
+				int r = 40;
+				int dx = posX+192;
+				int dy = posY+140;
+				p.renderAsPie(dx, dy, r, 0, colors);
+				ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
+			}
+			 */
+
+			Proportionality p = tag.getProportionality();
+			FontRenderer f = ChromaFontRenderer.FontType.LEXICON.renderer;
+
+			int px = posX+8;
+			int py = posY+88;
+
+			double r = 57.5;
+			int dx = px+184;
+			int dy = py+56;
+			p.renderAsPie(dx, dy, r, System.identityHashCode(c), CrystalElement.getColorMap());
+			//ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
+			int tot = tag.getTotalEnergy();
+			int h = f.FONT_HEIGHT*3/2;
+			f.drawSplitString("Total Energy:", px+3+40, py-5+3, 80, 0xffffff);
+			f.drawSplitString(String.valueOf(tot), px+3+40, py-5+3+h, 80, 0xffffff);
+			f.drawSplitString("Lumens", px+3+40, py-5+3+h*2, 80, 0xffffff);
+
+			int frac = (int)(117*Math.pow((double)tot/RecipesCastingTable.instance.getMaxRecipeTotalEnergyCost(), 0.5));
+
+			ReikaTextureHelper.bindTerrainTexture();
+			BlendMode.ADDITIVEDARK.apply();
+			for (int i = 0; i < 4; i++)
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(px+11, py+108-frac+3, ChromaIcons.RIFT.getIcon(), 16, frac+6);
+			BlendMode.DEFAULT.apply();
+
+			String s = "Textures/GUIs/Handbook/misc.png";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+			ReikaGuiAPI.instance.drawTexturedModalRect(dx-(int)Math.ceil(r), dy-(int)Math.ceil(r), 0, 0, (int)(r*2), (int)(r*2));
+
+			ReikaGuiAPI.instance.drawTexturedModalRect(px+1, py+108-frac, 0, 118, 36, 7);
 		}
 	}
 

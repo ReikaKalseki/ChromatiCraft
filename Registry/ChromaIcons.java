@@ -66,7 +66,8 @@ public enum ChromaIcons {
 	REGIONS("regions"),
 	CAUSTICS("caustics"),
 	CAUSTICS_GENTLE("caustics-g"),
-	OVALS("oval-rings");
+	OVALS("oval-rings"),
+	WEAKREPEATER("weakrepeater");
 
 	private IIcon icon;
 	private final String iconName;

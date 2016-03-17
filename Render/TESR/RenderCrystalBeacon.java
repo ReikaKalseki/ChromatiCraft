@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -39,10 +40,8 @@ public class RenderCrystalBeacon extends ChromaRenderBase {
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
 		this.renderModel(te, model);
-		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
+		if ((te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1 && te.hasStructure()) || StructureRenderer.isRenderingTiles()) {
 			this.renderGlow(te, par2, par4, par6, par8);
-		}
-		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			this.renderOrb(te);
 			this.renderFire(te);
 		}

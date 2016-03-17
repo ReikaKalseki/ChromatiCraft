@@ -16,10 +16,12 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.MotionController;
+import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -49,6 +51,8 @@ public class EntityBlurFX extends EntityFX {
 	private boolean additiveBlend = true;
 
 	private MotionController motionController;
+	private PositionController positionController;
+	private ColorController colorController;
 
 	public EntityBlurFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);
@@ -166,6 +170,16 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setPositionController(PositionController m) {
+		positionController = m;
+		return this;
+	}
+
+	public EntityBlurFX setColorController(ColorController m) {
+		colorController = m;
+		return this;
+	}
+
 	@Override
 	public void onUpdate() {
 
@@ -261,6 +275,18 @@ public class EntityBlurFX extends EntityFX {
 			motionY = motionController.getMotionY(this);
 			motionZ = motionController.getMotionZ(this);
 			motionController.update(this);
+		}
+		if (positionController != null) {
+			posX = positionController.getPositionX(this);
+			posY = positionController.getPositionY(this);
+			posZ = positionController.getPositionZ(this);
+			if (positionController != motionController) //prevent double update
+				positionController.update(this);
+		}
+
+		if (colorController != null) {
+			this.setColor(colorController.getColor(this));
+			colorController.update(this);
 		}
 	}
 

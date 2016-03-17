@@ -49,6 +49,8 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
+import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications;
+import Reika.DragonAPI.Auxiliary.Trackers.CrashNotifications.CrashNotification;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -84,9 +86,28 @@ public class CrystalNetworker implements TickHandler {
 	private final ArrayList<NotifiedNetworkTile> notifyCache = new ArrayList();
 	//private final Collection<ChunkRequest> pathfindingChunkRequests = new ConcurrentLinkedQueue();
 
+
 	private CrystalNetworker() {
 		MinecraftForge.EVENT_BUS.register(this);
 		ModularLogger.instance.addLogger(ChromatiCraft.instance, NBT_TAG);
+		CrashNotifications.instance.addNotification(ConcurrentModificationException.class, new CMENote());
+	}
+
+	private static class CMENote implements CrashNotification {
+
+		@Override
+		public String getLabel() {
+			return "Crystal Network CME";
+		}
+
+		@Override
+		public String addMessage(Throwable crash) {
+			if (ReikaJavaLibrary.exceptionMentions(crash, CrystalNetworker.class))
+				return "This CME was thrown during crystal network pathfinding, and is likely the result of MC being multithreaded or otherwise optimized by mods like Optifine and FastCraft. Do not report this unless you can reproduce it with only ChromatiCraft.";
+			else
+				return null;
+		}
+
 	}
 
 	@SubscribeEvent
@@ -247,15 +268,15 @@ public class CrystalNetworker implements TickHandler {
 		return false;
 	}
 
-	public boolean findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
+	public CrystalSource findSourceWithX(CrystalReceiver r, CrystalElement e, int amount, int range, boolean consume) {
 		EntityPlayer ep = r.getPlacerUUID() != null ? r.getWorld().func_152378_a(r.getPlacerUUID()) : null;
 		CrystalPath p = new PylonFinder(e, r, ep).findPylonWith(amount);
 		if (p != null) {
 			if (consume)
 				p.transmitter.drain(e, amount);
-			return true;
+			return p.transmitter;
 		}
-		return false;
+		return null;
 	}
 
 	public boolean hasFlowTo(CrystalReceiver r, CrystalElement e, World world) {
@@ -285,6 +306,8 @@ public class CrystalNetworker implements TickHandler {
 						if (amt > 0) {
 							int add = p.receiver.receiveElement(p.element, amt);
 							p.transmitter.drain(p.element, amt);
+							if (add > 0)
+								p.tickRepeaters(add);
 							if (p.isComplete()) {
 								p.resetTiles();
 								it.remove();

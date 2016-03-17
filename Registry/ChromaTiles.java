@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
@@ -36,7 +37,6 @@ import Reika.ChromatiCraft.TileEntity.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
-import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityMultiStorage;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
@@ -55,6 +56,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
@@ -73,6 +75,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityAccelerationPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
@@ -81,6 +84,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCropSpeedPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityEnchantDecomposer;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityInventoryTicker;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
@@ -99,6 +103,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
+import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -174,7 +179,10 @@ public enum ChromaTiles implements TileEnum {
 	COBBLEGEN("chroma.cobblegen",		ChromaBlocks.DECOPLANT,		TileEntityCobbleGen.class,			2),
 	PLANTACCEL("chroma.plantaccel",		ChromaBlocks.DECOPLANT,		TileEntityAccelerationPlant.class,	3),
 	CROPSPEED("chroma.cropspeed",		ChromaBlocks.DECOPLANT,		TileEntityCropSpeedPlant.class,		4),
-	CHROMACRAFTER("chroma.chcrafter",	ChromaBlocks.TILEMODELLED2,	TileEntityChromaCrafter.class,		15);
+	CHROMACRAFTER("chroma.chcrafter",	ChromaBlocks.TILEMODELLED2,	TileEntityChromaCrafter.class,		15),
+	WEAKREPEATER("chroma.weakrepeater",	ChromaBlocks.PYLON,			TileEntityWeakRepeater.class,		9, "RenderWeakRepeater"),
+	ENCHANTDECOMP("chroma.enchantdecomp",ChromaBlocks.TILEMODELLED3,TileEntityEnchantDecomposer.class,	0, "RenderEnchantDecomposer"),
+	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire");
 
 	private final Class tile;
 	private final String name;
@@ -259,6 +267,9 @@ public enum ChromaTiles implements TileEnum {
 				//case ITEMRIFT:
 			case HOLOGRAM:
 			case ESSENTIARELAY:
+			case WEAKREPEATER:
+			case ENCHANTDECOMP:
+			case FABRICATOR:
 				return true;
 			default:
 				return false;
@@ -490,6 +501,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.5;
 			case TURRET:
 				return 0.625;
+			case ENCHANTDECOMP:
+				return 0.5625;
 			default:
 				return 1;
 		}
@@ -517,6 +530,7 @@ public enum ChromaTiles implements TileEnum {
 			case REPEATER:
 			case COMPOUND:
 			case BROADCAST:
+			case WEAKREPEATER:
 				return 0;
 			case CHARGER:
 				return 29;
@@ -600,10 +614,19 @@ public enum ChromaTiles implements TileEnum {
 		switch(this) {
 			case GLOWFIRE:
 			case ESSENTIARELAY:
+			case LUMENWIRE:
 				return true;
 			default:
 				return false;
 		}
+	}
+
+	public boolean providesCustomHitbox() {
+		return CustomHitbox.class.isAssignableFrom(tile);
+	}
+
+	public boolean suppliesRedstone() {
+		return RedstoneTile.class.isAssignableFrom(tile);
 	}
 
 }

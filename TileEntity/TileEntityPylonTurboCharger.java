@@ -219,7 +219,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			}
 
 			if ((RITUAL_LENGTH-ritualTick)%200 == 0) {
-				ChromaSounds.PYLONBOOSTRITUAL.playSoundAtBlock(this, 0.75F, 1);
+				ChromaSounds.PYLONBOOSTRITUAL.playSoundAtBlockNoAttenuation(this, 0.75F, 1, EFFECT_RANGE);
 			}
 
 			if (skyTick > 0) {
@@ -273,8 +273,8 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 		ritualTick = 0;
 		skyTick = 0;
 		jetTick = 0;
-		ChromaSounds.PYLONTURBO.playSoundAtBlock(this, 2, 1);
-		ChromaSounds.PYLONTURBO.playSoundAtBlock(this, 2, 1);
+		ChromaSounds.PYLONTURBO.playSoundAtBlockNoAttenuation(this, 2, 1, EFFECT_RANGE);
+		ChromaSounds.PYLONTURBO.playSoundAtBlockNoAttenuation(this, 2, 1, EFFECT_RANGE);
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		te.enhance();
 
@@ -303,6 +303,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			te.disenhance();
 			te.drain(te.getColor(), te.getEnergy(te.getColor())*4/5);
 			te.enhancing = false;
+			te.destroyPowerCrystals(ReikaRandomHelper.getInverseLinearRandom(4));
 		}
 		this.doFailParticles(te != null);
 		for (int i = 0; i < Location.list.length; i++) {
@@ -691,7 +692,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				boolean hasAuxiliaries = this.checkForArrangement(world, x, y, z);
 				if (hasAuxiliaries) {
 					this.startRitual(world, x, y, z, ep);
-					ChromaSounds.PYLONBOOSTSTART.playSoundAtBlock(this, 1, 1);
+					ChromaSounds.PYLONBOOSTSTART.playSoundAtBlockNoAttenuation(this, 1, 1, EFFECT_RANGE);
 					return true;
 				}
 			}
@@ -708,7 +709,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 	private boolean checkPylon(World world, int x, int y, int z) {
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		if (te != null) {
-			return !te.isEnhanced() && te.getEnergy(te.getColor()) >= (TileEntityCrystalPylon.MAX_ENERGY*3/4) && te.canConduct() && te.getBoosterCrystals(world, x, y+8, z).size() == 8;
+			return !te.isEnhanced() && te.getEnergy(te.getColor()) >= (TileEntityCrystalPylon.MAX_ENERGY*3/4) && te.canConduct() && te.getBoosterCrystals(world, x, y+8, z, true).size() == 8;
 		}
 		return false;
 	}

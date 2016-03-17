@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.Connectable;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
@@ -306,6 +307,17 @@ public class TileEntityItemRift extends TileEntityChromaticBase implements Screw
 	@Override
 	public boolean isEmitting() {
 		return isEmitting;
+	}
+
+	@Override
+	public boolean checkLocationValidity() {
+		WorldLocation loc = this.getAdjacentLocation(this.getFacing());
+		return loc.getBlock().isSideSolid(worldObj, loc.xCoord, loc.yCoord, loc.zCoord, this.getFacing().getOpposite());
+	}
+
+	public void drop() {
+		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
+		this.delete();
 	}
 
 }

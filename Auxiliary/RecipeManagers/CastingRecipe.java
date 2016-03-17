@@ -250,7 +250,7 @@ public class CastingRecipe implements APICastingRecipe {
 
 	/** This is "per ItemStack", and is number of cycles (so total crafted number = amt crafted * this) */
 	public int getPenaltyThreshold() {
-		return this instanceof CoreRecipe ? Integer.MAX_VALUE : this.getTypicalCraftedAmount()*3/4;
+		return this instanceof CoreRecipe ? Integer.MAX_VALUE : Math.max(1, this.getTypicalCraftedAmount()*3/4);
 	}
 
 	/** Return zero to make all over-threshold yield zero XP */

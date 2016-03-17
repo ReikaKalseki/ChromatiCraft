@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalFuse;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -42,6 +44,7 @@ import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -64,6 +67,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	protected boolean hasMultiblock;
 	private int depth = -1;
 	private boolean isTurbo = false;
+	private boolean enhancedStructure = false;
 
 	private CrystalElement surgeColor;
 	private int surgeTicks = 0;
@@ -90,6 +94,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			}
 		}
 
+		if (world.isRemote && this.canConduct() && this.isTurbocharged() && this.isEnhancedStructure()) {
+			this.doEnhancedStructureParticles(world, x, y, z);
+		}
+
 		if (surgeTicks > 0) {
 			surgeTicks--;
 			if (surgeTicks == 0) {
@@ -98,6 +106,50 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			if (world.isRemote) {
 				this.doSurgingParticles(world, x, y, z);
 			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doEnhancedStructureParticles(World world, int x, int y, int z) {
+		double d = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
+		if (d < 1024 && (d < 256 || ReikaRandomHelper.doWithChance(100*256/d))) {
+			int c = this.getActiveColor().getColor();
+			double v = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+			ForgeDirection dir = facing.getOpposite();
+			double vx = v*dir.offsetX;
+			double vy = v*dir.offsetY;
+			double vz = v*dir.offsetZ;
+			double dx = x+rand.nextDouble();
+			double dy = y+rand.nextDouble();
+			double dz = z+rand.nextDouble();
+			switch(dir) {
+				case EAST:
+					dx = x+1;
+					break;
+				case WEST:
+					dx = x;
+					break;
+				case NORTH:
+					dz = z;
+					break;
+				case SOUTH:
+					dz = z+1;
+					break;
+				case UP:
+					dy = y+1;
+					break;
+				case DOWN:
+					dy = y;
+					break;
+				default:
+					break;
+			}
+			float s = 1+rand.nextFloat();
+
+			EntityFX fx = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz).setColor(c).setNoSlowdown().setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz, vx, vy, vz).setColor(0xffffff).setNoSlowdown().setScale(s/2.5F).lockTo(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 		}
 	}
 
@@ -130,6 +182,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public final void validateStructure() {
 		hasMultiblock = this.checkForStructure();
+		enhancedStructure = hasMultiblock && this.isTurbocharged() && this.checkEnhancedStructure();
 		if (!hasMultiblock) {
 			CrystalNetworker.instance.breakPaths(this);
 		}
@@ -150,10 +203,18 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			int dz = z+dir.offsetZ*i;
 			Block id = world.getBlock(dx, dy, dz);
 			int meta = world.getBlockMetadata(dx, dy, dz);
-			if (id != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != 0)
+			int m2 = (i == 3 && this.isTurbocharged()) ? StoneTypes.RESORING.ordinal() : 0;
+			if (id != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || (meta != 0 && meta != m2))
 				return false;
 		}
 		return true;
+	}
+
+	protected boolean checkEnhancedStructure() {
+		int dx = xCoord+facing.offsetX*3;
+		int dy = yCoord+facing.offsetY*3;
+		int dz = zCoord+facing.offsetZ*3;
+		return worldObj.getBlockMetadata(dx, dy, dz) == StoneTypes.RESORING.ordinal();
 	}
 
 	public void redirect(int side) {
@@ -179,6 +240,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		hasMultiblock = NBT.getBoolean("multi");
 		depth = NBT.getInteger("depth");
 		isTurbo = NBT.getBoolean("turbo");
+		enhancedStructure = NBT.getBoolean("enhance");
 
 		surgeTicks = NBT.getInteger("surge");
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
@@ -194,6 +256,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("depth", depth);
 		NBT.setBoolean("turbo", isTurbo);
+		NBT.setBoolean("enhance", enhancedStructure);
 
 		NBT.setInteger("surge", surgeTicks);
 		if (surgeColor != null)
@@ -204,9 +267,13 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return isTurbo;
 	}
 
+	public final boolean isEnhancedStructure() {
+		return enhancedStructure;
+	}
+
 	@Override
 	public int maxThroughput() {
-		return this.isTurbocharged() ? 8000 : 1000;
+		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 12000 :  8000) : 1000;
 	}
 
 	@Override
@@ -250,7 +317,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
-	public boolean needsLineOfSight() {
+	public final boolean needsLineOfSight() {
 		return true;
 	}
 
@@ -286,14 +353,24 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	@Override
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.NETWORKING;
+	}
+
+	@Override
 	public final void drop() {
 		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
-
+		if (!this.shouldDrop())
+			return;
 		ItemStack is = this.getTile().getCraftedProduct();
 		is.stackTagCompound = new NBTTagCompound();
 		this.getTagsToWriteToStack(is.stackTagCompound);
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
 		this.delete();
+	}
+
+	protected boolean shouldDrop() {
+		return true;
 	}
 
 	public final boolean canDrop(EntityPlayer ep) {
@@ -325,7 +402,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@SideOnly(Side.CLIENT)
 	/** Does not use the crystal network since is clientside. */
-	private final HashSet<WorldLocation> getConnectableTilesForRender() {
+	private final HashSet<WorldLocation> getConnectableTilesForRender(float ptick) {
 		HashSet<WorldLocation> c = new HashSet();
 		int r = Math.max(this.getReceiveRange(), this.getSendRange());
 		for (int i = -r; i <= r; i++) {
@@ -379,7 +456,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	private void startSurge(CrystalElement e) {
-		ChromaSounds.REPEATERSURGE.playSoundAtBlock(this, 1, 1);
+		ChromaSounds.REPEATERSURGE.playSoundAtBlockNoAttenuation(this, 1, 1, 1024);
 		surgeTicks = 55;
 		surgeColor = e;
 		this.syncAllData(false);
@@ -446,6 +523,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		}
 		ChromaSounds.POWERDOWN.playSoundAtBlock(world, x, y, z);
 		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.glass);
+	}
+
+	public void onTransfer(CrystalElement e, int amt) {
+
 	}
 
 }

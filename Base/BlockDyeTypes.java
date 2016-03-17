@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -47,7 +48,7 @@ public abstract class BlockDyeTypes extends Block {
 			for (int k = 0; k < this.subIconCount(i); k++) {
 				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
 				String folder = this.getIconFolder();
-				String append = this.useNamedIcons() ? dye.colorNameNoSpaces.toLowerCase() : "tile"+i+"_"+k;
+				String append = this.useNamedIcons() ? dye.colorNameNoSpaces.toLowerCase(Locale.ENGLISH) : "tile"+i+"_"+k;
 				String path = folder != null && !folder.isEmpty() ? base+folder+append : base+append;
 				icons[i][k] = ico.registerIcon(path);
 			}

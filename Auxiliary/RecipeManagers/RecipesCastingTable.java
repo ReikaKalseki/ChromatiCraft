@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -30,6 +31,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
@@ -95,6 +97,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Crystal
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalFurnaceRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalLaserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.CrystalTankRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchantDecompRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EnchanterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.EssentiaRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FabricatorRecipe;
@@ -110,6 +113,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampCon
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenBroadcastRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTurretRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenWireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
@@ -126,6 +130,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Spawner
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TransportWindowRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WeakRepeaterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraCleanerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraPouchRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BreakerRecipe;
@@ -143,6 +148,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OrePick
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OreSilkerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.OwnerKeyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PurifyCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.PylonFinderRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeHoverWand;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.RecipeItemMover;
@@ -156,6 +162,7 @@ import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -180,9 +187,13 @@ public class RecipesCastingTable {
 
 	private final HashMap<RecipeType, OneWayList<CastingRecipe>> recipes = new HashMap();
 	private final OneWayList<CastingRecipe> APIrecipes = new OneWayList();
+	private final ArrayList<CastingRecipe> moddedItemRecipes = new ArrayList();
 
 	private int maxID = 0;
 	private final HashBiMap<Integer, CastingRecipe> recipeIDs;
+
+	private int maxEnergyCost = 0;
+	private int maxTotalEnergyCost = 0;
 
 	private RecipesCastingTable() {
 		recipeIDs = HashBiMap.create();
@@ -459,7 +470,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new DuplicationWandRecipe(ChromaItems.DUPLICATOR.getStackOf(), ChromaStacks.voidCore));
 
 		if (ModList.APPENG.isLoaded()) {
-			this.addRecipe(new VoidStorageRecipe(ChromaItems.VOIDCELL.getStackOf(), ChromaStacks.voidCoreHigh));
+			this.addRecipe(new VoidStorageRecipe(ChromaItems.VOIDCELL.getStackOf(), ChromaStacks.voidCore));
 			this.addRecipe(new CrystalCellRecipe(ChromaItems.CRYSTALCELL.getStackOf(), ChromaStacks.crystalFocus));
 		}
 
@@ -478,9 +489,6 @@ public class RecipesCastingTable {
 		this.addRecipe(new RelaySourceRecipe(ChromaTiles.RELAYSOURCE.getCraftedProduct(), ChromaStacks.crystalFocus));
 
 		this.addRecipe(new ItemCollectorRecipe(ChromaTiles.ITEMCOLLECTOR.getCraftedProduct(), ChromaStacks.voidCore));
-
-		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.REPEATER));
-		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.COMPOUND));
 
 		this.addRecipe(new PortalRecipe(ChromaBlocks.PORTAL.getStackOf(), ChromaStacks.voidCoreHigh, repeater));
 
@@ -529,7 +537,7 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sns", "non", "sns", 's', ChromaItems.SHARD.getAnyMetaStack(), 'n', Blocks.noteblock, 'o', Items.clock);
 		this.addRecipe(new MusicRecipe(is, sr));
 
-		this.addRecipe(new PylonTurboRecipe(ChromaTiles.PYLONTURBO.getCraftedProduct(), new ItemStack(Items.diamond), repeater));
+		this.addRecipe(new PylonTurboRecipe(ChromaTiles.PYLONTURBO.getCraftedProduct(), ChromaStacks.crystalStar, repeater));
 
 		is = ChromaTiles.TURRET.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " g ", "gsg", " b ", 's', ChromaItems.SHARD.getStackOf(CrystalElement.PINK), 'g', Items.glowstone_dust, 'b', new ItemStack(block));
@@ -579,6 +587,28 @@ public class RecipesCastingTable {
 		is = ChromaTiles.INSERTER.getCraftedProduct();
 		sr = new ShapedOreRecipe(is, "dsd", "cec", "rcr", 's', ChromaStacks.limeShard, 'd', ChromaStacks.teleDust, 'c', "cobblestone", 'r', Items.redstone, 'e', Items.ender_pearl);
 		this.addRecipe(new ItemInserterRecipe(is, sr));
+
+		is = ChromaTiles.WEAKREPEATER.getCraftedProduct();
+		sr = new ShapedOreRecipe(is, "wgw", "scs", "wrw", 'r', Items.glowstone_dust, 'g', ChromaStacks.beaconDust, 'w', "plankWood", 's', "stickWood", 'c', ChromaItems.BUCKET.getStackOfMetadata(0));
+		this.addRecipe(new WeakRepeaterRecipe(is, sr));
+
+		is = ChromaTiles.ENCHANTDECOMP.getCraftedProduct();
+		sr = new ShapedOreRecipe(is, "sgs", "GbG", "ccc", 'G', Blocks.glass, 'b', Items.bucket, 'g', Blocks.glowstone, 's', ChromaItems.SHARD.getAnyMetaStack(), 'c', "stone");
+		this.addRecipe(new EnchantDecompRecipe(is, sr));
+
+		is = ChromaTiles.LUMENWIRE.getCraftedProduct();
+		sr = new ShapedOreRecipe(is, " s ", "OGO", "ccc", 'O', Blocks.obsidian, 'G', Items.glowstone_dust, 's', ChromaItems.SHARD.getStackOf(CrystalElement.BLUE), 'c', "cobblestone");
+		this.addRecipe(new LumenWireRecipe(is, sr));
+
+		this.addRecipe(new PurifyCrystalRecipe(ChromaItems.PURIFY.getStackOf(), ChromaStacks.iridChunk));
+
+		this.addSpecialRecipes();
+	}
+
+	private void addSpecialRecipes() {
+		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.REPEATER, 5000));
+		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.COMPOUND, 12500));
+		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.BROADCAST, 30000));
 	}
 
 	public void addPostLoadRecipes() {
@@ -607,9 +637,18 @@ public class RecipesCastingTable {
 		}
 		li.add(r);
 
+		if (!r.getClass().getName().contains("CastingRecipes.Special") && !ReikaItemHelper.getRegistrantMod(r.getOutput()).equals(ModList.CHROMATICRAFT.modLabel))
+			moddedItemRecipes.add(r);
+
 		recipeIDs.put(maxID, r);
 		maxID++;
 		//ChromaResearchManager.instance.register(r);
+
+		if (r instanceof PylonRecipe) {
+			ElementTagCompound tag = ((PylonRecipe)r).getRequiredAura();
+			maxEnergyCost = Math.max(maxEnergyCost, tag.getMaximumValue());
+			maxTotalEnergyCost = Math.max(maxTotalEnergyCost, tag.getTotalEnergy());
+		}
 	}
 
 	public void addModdedRecipe(CastingRecipe r) {
@@ -619,6 +658,10 @@ public class RecipesCastingTable {
 
 	public List<CastingRecipe> getAllAPIRecipes() {
 		return Collections.unmodifiableList(APIrecipes);
+	}
+
+	public List<CastingRecipe> getAllModdedItemRecipes() {
+		return Collections.unmodifiableList(moddedItemRecipes);
 	}
 
 	public CastingRecipe getRecipe(TileEntityCastingTable table, ArrayList<RecipeType> type) {
@@ -683,13 +726,13 @@ public class RecipesCastingTable {
 	public static boolean playerHasCrafted(EntityPlayer ep, RecipeType type) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
-		return cast.getBoolean(type.name().toLowerCase());
+		return cast.getBoolean(type.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	public static void setPlayerHasCrafted(EntityPlayer ep, RecipeType type) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
-		cast.setBoolean(type.name().toLowerCase(), true);
+		cast.setBoolean(type.name().toLowerCase(Locale.ENGLISH), true);
 		nbt.setTag("castingprog", cast);
 	}
 
@@ -712,8 +755,11 @@ public class RecipesCastingTable {
 	public void reload() {
 		ChromatiCraft.logger.log("Reloading casting recipes.");
 		recipes.clear();
+		moddedItemRecipes.clear();
 		recipeIDs.clear();
 		maxID = 0;
+		maxEnergyCost = 0;
+		maxTotalEnergyCost = 0;
 
 		this.loadRecipes();
 		this.addPostLoadRecipes();
@@ -726,6 +772,14 @@ public class RecipesCastingTable {
 		MinecraftForge.EVENT_BUS.post(new CastingRecipesReloadEvent());
 
 		ChromatiCraft.logger.log("Finished reloading casting recipes.");
+	}
+
+	public int getMaxRecipeEnergyCost() {
+		return maxEnergyCost;
+	}
+
+	public int getMaxRecipeTotalEnergyCost() {
+		return maxTotalEnergyCost;
 	}
 
 }

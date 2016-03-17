@@ -253,7 +253,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	public abstract int getPotionLevel(CrystalElement e);
 
 	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
-		if (CrystalPotionController.shouldBeHostile(e.worldObj)) {
+		if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
 			switch(color) {
 				case ORANGE:
 					e.setFire(2);

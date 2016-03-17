@@ -19,28 +19,35 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -61,9 +68,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	private boolean hasMultiblock = false;
 
+	private boolean enhanced = false;
+	private boolean hadEnhancedProgress = false;
+
 	public static final int BASE = 1000;
 	public static final int RATIO = 4000;
 	public static final int POWER = 3;
+	public static final int POWER_TURBO = 4;
 
 	static {
 		addOrigin(CrystalElement.WHITE, 	new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
@@ -224,20 +235,48 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (!targets.isEmpty() && world.isRemote) {
-			//this.spawnBeamParticles(world, x, y, z);
-			ChromaFX.drawLeyLineParticles(world, x, y, z, targets);
+		if (world.isRemote) {
+			if (!targets.isEmpty()) {
+				//this.spawnBeamParticles(world, x, y, z);
+				ChromaFX.drawLeyLineParticles(world, x, y, z, this.getOutgoingBeamRadius(), targets);
+			}
 		}
 
-		if (!world.isRemote && this.canConduct()) {
-			if (rand.nextInt(150) == 0)
-				this.grow();
+		//ChromaStructures.getTreeStructure(world, x, y, z).place();
 
-			if (rand.nextInt(100) == 0) {
-				for (int i = 0; i < CrystalElement.elements.length; i++) {
-					CrystalElement e = CrystalElement.elements[i];
-					if (this.getRemainingSpace(e) > 0) {
-						this.requestEnergy(e, this.getRemainingSpace(e));
+		if (this.canConduct()) {
+			if (!world.isRemote) {
+				if (rand.nextInt(150) == 0)
+					this.grow();
+
+				if (DragonAPICore.debugtest) {
+					for (int i = 0; i < 64; i++)
+						this.grow();
+				}
+
+				if (rand.nextInt(100) == 0) {
+					for (int i = 0; i < CrystalElement.elements.length; i++) {
+						CrystalElement e = CrystalElement.elements[i];
+						if (this.getRemainingSpace(e) > 0) {
+							this.requestEnergy(e, this.getRemainingSpace(e));
+						}
+					}
+				}
+			}
+
+			for (EntityPlayer ep : this.getOwners(false)) {
+				if (Chromabilities.RECHARGE.enabledOn(ep)) {
+					if (ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 2048) {
+						CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
+						if (this.getEnergy(e) > 0) {
+							int cap = PlayerElementBuffer.instance.getElementCap(ep);
+							int space = cap-PlayerElementBuffer.instance.getPlayerContent(ep, e);
+							if (space > 0) {
+								int amt = Math.min(this.getEnergy(e), Math.min(space, Math.max(cap/24/8, 1+rand.nextInt(Math.max(1, space/4*4)))));
+								//ReikaJavaLibrary.pConsole(e+":"+amt);
+								ChromaAux.chargePlayerFromPylon(ep, this, e, amt);
+							}
+						}
 					}
 				}
 			}
@@ -278,6 +317,13 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			this.onBreakMultiblock();
 		}
 		hasMultiblock = flag;
+		EntityPlayer ep = this.getPlacer();
+		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+			hadEnhancedProgress = ProgressStage.CTM.isPlayerAtStage(ep);
+		}
+		enhanced = hasMultiblock && hadEnhancedProgress && ChromaStructures.getBoostedTreeStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		for (int i = 0; i < 16; i++)
+			this.clamp(CrystalElement.elements[i]);
 		this.syncAllData(true);
 	}
 
@@ -380,7 +426,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int maxThroughput() {
-		return 1000;
+		return this.isEnhanced() ? 20000 : 1000;
 	}
 
 	@Override
@@ -401,16 +447,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	private int getStorageForStep(CrystalElement e, int step) {
-		return BASE+ReikaMathLibrary.intpow2(step, POWER)*RATIO;
-	}
-
-	/*
-	private float getSize(CrystalElement e) {
-		return growth.get(e)+(float)steps.get(e)/TileEntityPowerTreeAux.MAX_GROWTH;
-	}
-	 */
-	private int getMaxRadius() {
-		return 5;
+		return BASE+ReikaMathLibrary.intpow2(step, (this.isEnhanced() ? POWER_TURBO : POWER))*RATIO;
 	}
 
 	@Override
@@ -425,7 +462,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public int getTransmissionStrength() {
-		return 100;
+		return this.isEnhanced() ? 1000 : 100;
+	}
+
+	public boolean isEnhanced() {
+		return enhanced;
 	}
 
 	@Override
@@ -444,8 +485,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz) {
-		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz);
+	public final void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w) {
+		CrystalTarget tg = new CrystalTarget(loc, e, dx, dy, dz, w);
 		if (!worldObj.isRemote) {
 			if (!targets.contains(tg))
 				targets.add(tg);
@@ -456,7 +497,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public final void removeTarget(WorldLocation loc, CrystalElement e) {
 		if (!worldObj.isRemote) {
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
-			targets.remove(new CrystalTarget(loc, e));
+			targets.remove(new CrystalTarget(loc, e, 0));
 			this.onTargetChanged();
 			//ReikaJavaLibrary.pConsole(this+":"+targets.size()+":"+targets);
 		}
@@ -484,6 +525,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.readSyncTag(NBT);
 
 		hasMultiblock = NBT.getBoolean("multi");
+
+		enhanced = NBT.getBoolean("boosted");
 	}
 
 	@Override
@@ -491,6 +534,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("multi", hasMultiblock);
+
+		NBT.setBoolean("boosted", enhanced);
 	}
 
 	@Override
@@ -508,6 +553,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		for (int i = 0; i < num; i++) {
 			targets.add(CrystalTarget.readFromNBT("target"+i, NBT));
 		}
+
+		hadEnhancedProgress = NBT.getBoolean("progress");
 	}
 
 	@Override
@@ -523,6 +570,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		NBT.setInteger("targetcount", targets.size());
 		for (int i = 0; i < targets.size(); i++)
 			targets.get(i).writeToNBT("target"+i, NBT);
+
+		NBT.setBoolean("progress", hadEnhancedProgress);
 	}
 
 	public void onBreakLeaf(World world, int x, int y, int z, CrystalElement e) {
@@ -610,6 +659,32 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public CrystalElement getDeliveredColor(EntityPlayer ep, World world, int clickX, int clickY, int clickZ) {
 		return CrystalElement.elements[world.getBlockMetadata(clickX, clickY, clickZ)];
+	}
+
+	@Override
+	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e) {
+		ArrayList<Coordinate> li = locations.get(e);
+		int step = growth.get(e);
+		return step == 0 ? new Coordinate(this) : li.get(Math.min(step-1, rand.nextInt(li.size()))).offset(xCoord, yCoord, zCoord);
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		if (this.hasMultiBlock()) {
+			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord-1, xCoord+2, yCoord+1, zCoord+1);
+			if (this.isEnhanced()) {
+				box = box.expand(7, 7, 7).offset(0, -6, 0);
+			}
+			return box;
+		}
+		else {
+			return super.getRenderBoundingBox();
+		}
+	}
+
+	@Override
+	public double getMaxRenderDistanceSquared() {
+		return super.getMaxRenderDistanceSquared()*4;
 	}
 
 }

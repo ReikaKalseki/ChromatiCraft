@@ -44,9 +44,14 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 
 	private final MusicPuzzleBlocks blocks;
 
-	public MusicPuzzle(DimensionStructureGenerator s, int len) {
+	private final int index;
+
+	public boolean isSolved = false;
+
+	public MusicPuzzle(DimensionStructureGenerator s, int len, int idx) {
 		super(s);
 		length = len;
+		index = idx;
 
 		blocks = new MusicPuzzleBlocks();
 	}
@@ -146,7 +151,7 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 	@Override
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileMusicMemory) {
-			((TileMusicMemory)te).program(this);
+			((TileMusicMemory)te).program(this, index);
 		}
 	}
 

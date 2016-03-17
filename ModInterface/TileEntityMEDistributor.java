@@ -86,28 +86,28 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 
 		private long countItems(MESystemReader net, ItemStack is) {
 			switch(this) {
-			case EXACT:
-				return net.getItemCount(is);
-			case FUZZY:
-				return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false);
-			case FUZZYORE:
-				return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true);
-			case FUZZYNBT:
-				return net.getFuzzyItemCountIgnoreNBT(is, FuzzyMode.IGNORE_ALL, true);
+				case EXACT:
+					return net.getItemCount(is);
+				case FUZZY:
+					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false);
+				case FUZZYORE:
+					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true);
+				case FUZZYNBT:
+					return net.getFuzzyItemCountIgnoreNBT(is, FuzzyMode.IGNORE_ALL, true);
 			}
 			return 0;
 		}
 
-		private long removeItems(MESystemReader net, ItemStack is) {
+		private long removeItems(MESystemReader net, ItemStack is, boolean simulate) {
 			switch(this) {
-			case EXACT:
-				return net.removeItem(is, false);
-			case FUZZY:
-				return net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, false);
-			case FUZZYORE:
-				return net.removeItemFuzzy(is, false, FuzzyMode.IGNORE_ALL, true);
-			case FUZZYNBT:
-				return net.removeItemFuzzyIgnoreNBT(is, false, FuzzyMode.IGNORE_ALL, true);
+				case EXACT:
+					return net.removeItem(is, simulate);
+				case FUZZY:
+					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, false);
+				case FUZZYORE:
+					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true);
+				case FUZZYNBT:
+					return net.removeItemFuzzyIgnoreNBT(is, simulate, FuzzyMode.IGNORE_ALL, true);
 			}
 			return 0;
 		}
@@ -199,10 +199,12 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	}
 
 	private void transferItem(ItemStack is, IInventory ii, MatchMode mode) {
-		int rem = (int)mode.removeItems(network, is);
+		int rem = (int)mode.removeItems(network, is, true);
 		if (rem > 0) {
 			is.stackSize = Math.min(rem, is.stackSize);
-			ReikaInventoryHelper.addToIInv(is, ii);
+			if (ReikaInventoryHelper.addToIInv(is, ii)) {
+				mode.removeItems(network, is, false);
+			}
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
 		}
 	}
@@ -356,6 +358,15 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	@Override
 	public void placeOnSide(int s) {
 		this.setBlockMetadata(s);
+	}
+
+	public boolean checkLocationValidity() {
+		return true;
+	}
+
+	public void drop() {
+		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
+		this.delete();
 	}
 
 }

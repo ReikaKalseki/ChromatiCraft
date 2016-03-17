@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -126,7 +127,7 @@ public class MystPages {
 
 		@Override
 		public String identifier() {
-			return "chrc_"+this.name().toLowerCase();
+			return "chrc_"+this.name().toLowerCase(Locale.ENGLISH);
 		}
 
 		@Override
@@ -190,7 +191,7 @@ public class MystPages {
 		}
 
 		public String getID() {
-			return "chrc_"+this.name().toLowerCase();
+			return "chrc_"+this.name().toLowerCase(Locale.ENGLISH);
 		}
 	}
 }

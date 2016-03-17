@@ -176,6 +176,8 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 			case DESERT: {
 				int y = world.getTopSolidOrLiquidBlock(x, z);
+				if (world.getBlock(x, y-1, z) != Blocks.sand)
+					return false;
 
 				y -= 8;
 				Block b = world.getBlock(x, y, z);

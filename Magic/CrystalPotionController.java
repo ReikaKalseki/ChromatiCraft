@@ -21,6 +21,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
@@ -70,7 +71,9 @@ public class CrystalPotionController {
 		nethermap.put(color, pot);
 	}
 
-	public static boolean shouldBeHostile(World world) {
+	public static boolean shouldBeHostile(EntityLivingBase e, World world) {
+		if (e instanceof EntityPlayer && ItemPurifyCrystal.isActive((EntityPlayer)e))
+			return false;
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return true;
 		return world.provider.isHellWorld;
@@ -87,6 +90,8 @@ public class CrystalPotionController {
 			if (has.getDuration() > eff.getDuration())
 				return false;
 		}
+		if (e instanceof EntityPlayer && ItemPurifyCrystal.isActive((EntityPlayer)e))
+			return !ReikaPotionHelper.isBadEffect(pot);
 		if (!(e instanceof EntityPlayer)) {
 			return e.worldObj.provider.isHellWorld ? !ReikaPotionHelper.isBadEffect(pot) : true;
 		}

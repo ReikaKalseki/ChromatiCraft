@@ -169,4 +169,9 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		return true;
 	}
 
+	@Override
+	public String getTexture(ItemStack is) {
+		return "/Reika/ChromatiCraft/Textures/Items/items_tool.png";
+	}
+
 }

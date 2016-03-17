@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class WorldGenFissure extends ChromaWorldGenerator {
@@ -118,8 +119,21 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		Block b = world.getBlock(x, y, z);
 		//if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
 		//return rand.nextBoolean();
-		if (b instanceof BlockStructureShield && world.getBlockMetadata(x, y, z) >= 8)
+		int meta = world.getBlockMetadata(x, y, z);
+		if (b instanceof BlockStructureShield && meta >= 8)
 			return false;
+		if (b.getBlockHardness(world, x, y, z) < 0)
+			return false;
+		if (b instanceof SemiUnbreakable) {
+			if (((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
+				return false;
+		}
+		if (b == ChromaBlocks.RUNE.getBlockInstance())
+			return false;
+		ChromaBlocks cb = ChromaBlocks.getEntryByID(b);
+		if (cb != null && cb.isDimensionStructureBlock()) {
+			return false;
+		}
 		return true;
 	}
 

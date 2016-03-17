@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -50,15 +51,15 @@ public class ChromaHelpData {
 		this.addKey(ChromaBlocks.RUNE, "rune");
 
 		for (int i = 0; i < TieredOres.list.length; i++) {
-			this.addKey(ChromaBlocks.TIEREDORE, i, "ore_"+TieredOres.list[i].name().toLowerCase());
+			this.addKey(ChromaBlocks.TIEREDORE, i, "ore_"+TieredOres.list[i].name().toLowerCase(Locale.ENGLISH));
 		}
 
 		for (int i = 0; i < TieredPlants.list.length; i++) {
-			this.addKey(ChromaBlocks.TIEREDPLANT, i, "plant_"+TieredPlants.list[i].name().toLowerCase());
+			this.addKey(ChromaBlocks.TIEREDPLANT, i, "plant_"+TieredPlants.list[i].name().toLowerCase(Locale.ENGLISH));
 		}
 
 		for (int i = 0; i < Flowers.list.length; i++) {
-			this.addKey(ChromaBlocks.DECOFLOWER, i, "flower_"+Flowers.list[i].name().toLowerCase());
+			this.addKey(ChromaBlocks.DECOFLOWER, i, "flower_"+Flowers.list[i].name().toLowerCase(Locale.ENGLISH));
 		}
 	}
 

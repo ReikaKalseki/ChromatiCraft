@@ -34,9 +34,13 @@ public final class AbilityRituals {
 	private static Collection<WorldLocation> tables = new ArrayList();
 
 	private int maxCost = 0;
+	private int maxTotalCost = 0;
 
 	private AbilityRituals() {
+		this.addRituals();
+	}
 
+	private void addRituals() {
 		AbilityRitual rit = new AbilityRitual(Chromabilities.REACH);
 		rit.addAura(CrystalElement.LIME, 20000);
 		rit.addAura(CrystalElement.PURPLE, 5000);
@@ -134,6 +138,7 @@ public final class AbilityRituals {
 		rit.addAura(CrystalElement.LIME, 100000);
 		rit.addAura(CrystalElement.BLACK, 75000);
 		rit.addAura(CrystalElement.PURPLE, 25000);
+		rit.addAura(CrystalElement.GRAY, 40000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.FLOAT);
@@ -157,9 +162,9 @@ public final class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.DIMPING);
-		rit.addAura(CrystalElement.BLUE, 20000);
-		rit.addAura(CrystalElement.BLACK, 50000);
-		rit.addAura(CrystalElement.LIME, 25000);
+		rit.addAura(CrystalElement.BLUE, 40000);
+		rit.addAura(CrystalElement.BLACK, 100000);
+		rit.addAura(CrystalElement.LIME, 75000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.RANGEDBOOST);
@@ -176,22 +181,67 @@ public final class AbilityRituals {
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.LASER);
-		rit.addAura(CrystalElement.PINK, 25000);
-		rit.addAura(CrystalElement.BLUE, 50000);
-		rit.addAura(CrystalElement.BLACK, 15000);
-		rit.addAura(CrystalElement.YELLOW, 100000);
+		rit.addAura(CrystalElement.PINK, 360000);
+		rit.addAura(CrystalElement.BLUE, 270000);
+		rit.addAura(CrystalElement.BLACK, 90000);
+		rit.addAura(CrystalElement.YELLOW, 720000);
 		this.addRitual(rit);
 
 		rit = new AbilityRitual(Chromabilities.FIRERAIN);
-		rit.addAura(CrystalElement.PINK, 25000);
-		rit.addAura(CrystalElement.BLACK, 25000);
-		rit.addAura(CrystalElement.ORANGE, 60000);
+		rit.addAura(CrystalElement.PINK, 270000);
+		rit.addAura(CrystalElement.BLACK, 120000);
+		rit.addAura(CrystalElement.ORANGE, 480000);
+		rit.addAura(CrystalElement.CYAN, 60000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.KEEPINV);
+		rit.addAura(CrystalElement.LIGHTGRAY, 30000);
+		rit.addAura(CrystalElement.BLACK, 20000);
+		rit.addAura(CrystalElement.PINK, 60000);
+		rit.addAura(CrystalElement.RED, 120000);
+		rit.addAura(CrystalElement.WHITE, 40000);
+		rit.addAura(CrystalElement.MAGENTA, 80000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.ORECLIP);
+		rit.addAura(CrystalElement.BLACK, 90000);
+		rit.addAura(CrystalElement.BLUE, 90000);
+		rit.addAura(CrystalElement.LIME, 600000);
+		rit.addAura(CrystalElement.LIGHTGRAY, 90000);
+		rit.addAura(CrystalElement.PURPLE, 270000);
+		rit.addAura(CrystalElement.BROWN, 360000);
+		rit.addAura(CrystalElement.CYAN, 90000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.DOUBLECRAFT);
+		rit.addAura(CrystalElement.BLACK, 180000);
+		rit.addAura(CrystalElement.GRAY, 450000);
+		rit.addAura(CrystalElement.PURPLE, 900000);
+		rit.addAura(CrystalElement.BROWN, 240000);
+		rit.addAura(CrystalElement.LIGHTBLUE, 60000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.RECHARGE);
+		rit.addAura(CrystalElement.BLACK, 90000);
+		rit.addAura(CrystalElement.YELLOW, 120000);
+		rit.addAura(CrystalElement.LIME, 120000);
+		rit.addAura(CrystalElement.PURPLE, 90000);
+		rit.addAura(CrystalElement.WHITE, 40000);
+		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.GROWAURA);
+		rit.addAura(CrystalElement.BLACK, 120000);
+		rit.addAura(CrystalElement.MAGENTA, 270000);
+		rit.addAura(CrystalElement.GREEN, 180000);
+		rit.addAura(CrystalElement.RED, 120000);
+		rit.addAura(CrystalElement.GRAY, 60000);
 		this.addRitual(rit);
 	}
 
 	private void addRitual(AbilityRitual ar) {
 		data.put(ar.ability, ar);
 		maxCost = Math.max(maxCost, ar.maxCost);
+		maxTotalCost = Math.max(maxTotalCost, ar.totalCost);
 	}
 
 	public void addRitual(Ability a, HashMap<CrystalElementProxy, Integer> elements) {
@@ -240,12 +290,24 @@ public final class AbilityRituals {
 		return maxCost;
 	}
 
+	public int getMaxAbilityTotalCost() {
+		return maxTotalCost;
+	}
+	/*
+	public void reload() {
+		maxCost = 0;
+		maxTotalCost = 0;
+		data.clear();
+		this.addRituals();
+	}
+	 */
 	private static class AbilityRitual {
 
 		private final ElementTagCompound energy = new ElementTagCompound();
 		public final int duration;
 		public final Ability ability;
 		private int maxCost;
+		private int totalCost;
 
 		private AbilityRitual(Ability c) {
 			ability = c;
@@ -256,6 +318,7 @@ public final class AbilityRituals {
 			energy.addTag(e, amt);
 
 			maxCost = Math.max(maxCost, amt);
+			totalCost += amt;
 		}
 
 		public ElementTagCompound getRequiredAura() {

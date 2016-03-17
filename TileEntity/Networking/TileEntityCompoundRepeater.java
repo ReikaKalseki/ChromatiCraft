@@ -16,6 +16,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -79,27 +80,45 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public int maxThroughput() {
-		return this.isTurbocharged() ? 10000 : 1000;
+		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 20000 : 12000) : 1000;
 	}
 
 	@Override
 	public int getSignalDegradation() {
-		return this.isTurbocharged() ? 2 : 20;
+		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 1 : 2) : 20;
 	}
 
 	@Override
 	protected boolean checkForStructure() {
 		for (int i = 1; i <= 5; i++) {
-			if (i != 0) {
-				int dx = xCoord+facing.offsetX*i;
-				int dy = yCoord+facing.offsetY*i;
-				int dz = zCoord+facing.offsetZ*i;
-				Block b = worldObj.getBlock(dx, dy, dz);
-				int meta = worldObj.getBlockMetadata(dx, dy, dz);
-				int m2 = i == 3 ? 13 : i == 1 || i == 5 ? 12 : facing.offsetY == 0 ? 1 : 2;
-				if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != m2) {
-					return false;
-				}
+			int dx = xCoord+facing.offsetX*i;
+			int dy = yCoord+facing.offsetY*i;
+			int dz = zCoord+facing.offsetZ*i;
+			Block b = worldObj.getBlock(dx, dy, dz);
+			int meta = worldObj.getBlockMetadata(dx, dy, dz);
+			int m2 = i == 3 ? 13 : i == 1 || i == 5 ? 12 : this.getColumnBeam();
+			int m2b = m2 == this.getColumnBeam() && this.isTurbocharged() ? StoneTypes.list[m2].getGlowingVariant().ordinal() : m2;
+			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || (meta != m2 && meta != m2b)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private int getColumnBeam() {
+		return facing.offsetY == 0 ? 1 : 2;
+	}
+
+	@Override
+	protected boolean checkEnhancedStructure() {
+		for (int i = 2; i <= 4; i += 2) {
+			int dx = xCoord+facing.offsetX*i;
+			int dy = yCoord+facing.offsetY*i;
+			int dz = zCoord+facing.offsetZ*i;
+			Block b = worldObj.getBlock(dx, dy, dz);
+			int meta = worldObj.getBlockMetadata(dx, dy, dz);
+			if (b != ChromaBlocks.PYLONSTRUCT.getBlockInstance() || meta != StoneTypes.list[this.getColumnBeam()].getGlowingVariant().ordinal()) {
+				return false;
 			}
 		}
 		return true;

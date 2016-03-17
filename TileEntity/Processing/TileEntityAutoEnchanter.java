@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,11 +89,11 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is, selected.keySet());
+		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is);
 	}
 
-	private boolean areEnchantsValid(ItemStack is, Collection<Enchantment> c) {
-		for (Enchantment e : c) {
+	private boolean areEnchantsValid(ItemStack is) {
+		for (Enchantment e : selected.keySet()) {
 			if (is.getItem() == Items.book) {
 				if (!e.isAllowedOnBooks()) {
 					return false;
@@ -103,6 +102,9 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			else if (!e.canApply(is)) {
 				return false;
 			}
+
+			if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
+				return false;
 		}
 		return true;
 	}
@@ -110,6 +112,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	private void applyEnchants() {
 		if (inv[0].getItem() == Items.book)
 			inv[0] = new ItemStack(Items.enchanted_book);
+		ReikaEnchantmentHelper.removeEnchantments(inv[0], selected.keySet());
 		ReikaEnchantmentHelper.applyEnchantments(inv[0], selected);
 		tank.removeLiquid(this.getConsumedChroma());
 	}

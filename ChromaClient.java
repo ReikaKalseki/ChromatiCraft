@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystalFenceRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlassRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
@@ -89,6 +90,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.PlayerSpecificRenderer;
 import Reika.DragonAPI.Instantiable.IO.SoundLoader;
 import Reika.DragonAPI.Instantiable.Rendering.ForcedTextureArmorModel;
 import Reika.DragonAPI.Instantiable.Rendering.ItemSpriteSheetRenderer;
+import Reika.DragonAPI.Instantiable.Rendering.MultiSheetItemRenderer;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -96,11 +98,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ChromaClient extends ChromaCommon {
 
-	public static final ItemSpriteSheetRenderer[] items = {
-		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items.png"),
-		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items2.png"),
-		new ItemSpriteSheetRenderer(ChromatiCraft.instance, ChromatiCraft.class, "Textures/Items/items3.png"),
-	};
+	public static final ItemSpriteSheetRenderer items = new MultiSheetItemRenderer(ChromatiCraft.instance, ChromatiCraft.class);
 
 	//public static final ItemMachineRenderer machineItems = new ItemMachineRenderer();
 
@@ -111,6 +109,7 @@ public class ChromaClient extends ChromaCommon {
 
 	private static final CrystalRenderer crystal = new CrystalRenderer();
 	private static final RuneRenderer rune = new RuneRenderer();
+	private static final CrystallineStoneRenderer crystalstone = new CrystallineStoneRenderer();
 	private static final TankBlockRenderer tank = new TankBlockRenderer();
 	private static final PowerTreeRenderer tree = new PowerTreeRenderer();
 	private static final LampRenderer lamp = new LampRenderer();
@@ -240,6 +239,9 @@ public class ChromaClient extends ChromaCommon {
 		runeRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(runeRender, rune);
 
+		crystalStoneRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(crystalStoneRender, crystalstone);
+
 		tankRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(tankRender, tank);
 
@@ -321,7 +323,7 @@ public class ChromaClient extends ChromaCommon {
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems c = ChromaItems.itemList[i];
 			if (!c.isPlacer() && c != ChromaItems.POTION)
-				MinecraftForgeClient.registerItemRenderer(ChromaItems.itemList[i].getItemInstance(), items[ChromaItems.itemList[i].getTextureSheet()]);
+				MinecraftForgeClient.registerItemRenderer(ChromaItems.itemList[i].getItemInstance(), items);
 		}
 	}
 

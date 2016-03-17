@@ -17,6 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
@@ -111,6 +112,8 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 				return ChromaIcons.TRANSPARENT.getIcon();
 			case 8:
 				return ChromaIcons.BROADCAST.getIcon();
+			case 9:
+				return ChromaIcons.WEAKREPEATER.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}
@@ -137,6 +140,39 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			return !((TileEntityStructControl)te).isBreakable();
 		}
 		return false;
+	}
+	/*
+	@Override
+	public int getFlammability(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.WEAKREPEATER ? Blocks.planks.getFlammability(world, x, y, z, face) : 0;
+	}
+
+	@Override
+	public boolean isFlammable(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		return this.getFlammability(world, x, y, z, face) > 0;
+	}
+
+	@Override
+	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.WEAKREPEATER ? Blocks.planks.getFireSpreadSpeed(world, x, y, z, face) : 0;
+	}
+	 */
+	@Override
+	public boolean isFireSource(World world, int x, int y, int z, ForgeDirection side) {
+		return ChromaTiles.getTile(world, x, y, z) == ChromaTiles.WEAKREPEATER && side == ForgeDirection.UP;
+	}
+
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
+		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
+		switch(c) {
+			case REPEATER:
+			case COMPOUND:
+			case WEAKREPEATER:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

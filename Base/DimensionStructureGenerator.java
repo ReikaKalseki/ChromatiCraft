@@ -223,6 +223,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		return this.hasCore();
 	}
 
+	public abstract boolean hasBeenSolved(World world);
+
 	@Override
 	public final String toString() {
 		return this.getClass().getSimpleName()+" @ "+this.getCentralBlockCoords()+" (E = "+this.getEntryLocation()+")";
@@ -280,13 +282,14 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		public static final DimensionStructureType[] types = values();
 
 		private final HashMap<UUID, DimensionStructureGenerator> generators = new HashMap();
+		private static final HashMap<UUID, DimensionStructureType> generatorTypes = new HashMap();
 
 		private DimensionStructureType(Class<? extends DimensionStructureGenerator> c, String s) {
 			generatorClass = c;
 			desc = s;
 
 			//Test
-			DimensionStructureGenerator gen = this.createGenerator();
+			DimensionStructureGenerator gen = this.createGenerator(false);
 			gen.startCalculate(CrystalElement.WHITE, 0, 0, new Random());
 			gennedCore = gen.isComplete();
 			gen.clear();
@@ -305,11 +308,19 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			return generator;
 		}
 		 */
+
 		public DimensionStructureGenerator createGenerator() {
+			return this.createGenerator(true);
+		}
+
+		private DimensionStructureGenerator createGenerator(boolean doCache) {
 			try {
 				DimensionStructureGenerator generator = (DimensionStructureGenerator)generatorClass.newInstance();
 				generator.structureType = this;
-				generators.put(generator.id, generator);
+				if (doCache) {
+					generators.put(generator.id, generator);
+					generatorTypes.put(generator.id, generator.getType());
+				}
 				return generator;
 			}
 			catch (Exception e) {
@@ -346,6 +357,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			return Collections.unmodifiableCollection(generators.keySet());
 		}
 
+	}
+
+	public static DimensionStructureGenerator getGeneratorByID(UUID uid) {
+		DimensionStructureType type = DimensionStructureType.generatorTypes.get(uid);
+		return type != null ? type.generators.get(uid) : null;
 	}
 
 	public static class DynamicPieceLocation {

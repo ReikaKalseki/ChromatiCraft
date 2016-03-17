@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Book;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -40,8 +41,12 @@ import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockChoiceHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.BlockRenderHook;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.EntityRender;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 public class GuiStructure extends GuiBookSection {
 
@@ -55,7 +60,7 @@ public class GuiStructure extends GuiBookSection {
 		super(ChromaGuis.STRUCTURE, ep, r, 256, 220, false);
 
 		array = page.getStructure().getStructureForDisplay();
-		if (page.name().toLowerCase().contains("casting")) {
+		if (page.name().toLowerCase(Locale.ENGLISH).contains("casting")) {
 			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
 			if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
 				for (int i = -4; i <= 4; i += 2) {
@@ -70,8 +75,8 @@ public class GuiStructure extends GuiBookSection {
 				}
 			}
 		}
-		if (page == ChromaResearch.TREE) {
-			array.setBlock(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
+		if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
+			array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
 		}
 		if (page == ChromaResearch.INFUSION) {
 			array.setBlock(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getBlock(), ChromaTiles.INFUSER.getBlockMetadata());
@@ -95,8 +100,22 @@ public class GuiStructure extends GuiBookSection {
 		else if (page == ChromaResearch.CLOAKTOWER) {
 			render.addOverride(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getCraftedProduct());
 		}
-		else if (page == ChromaResearch.TREE) {
-			render.addOverride(array.getMinX()+1, array.getMinY()+12, array.getMinZ()+2, ChromaTiles.POWERTREE.getCraftedProduct());
+		else if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
+			render.addOverride(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.BEACONSTRUCT) {
+			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.BEACON.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.MINIREPEATER) {
+			//render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.WEAKREPEATER.getCraftedProduct());
+			render.addBlockHook(Blocks.log, new LogRenderHook());
+			render.addBlockHook(Blocks.log2, new LogRenderHook());
+			for (int i = 0; i < ModWoodList.woodList.length; i++) {
+				ModWoodList tree = ModWoodList.woodList[i];
+				if (tree.exists()) {
+					render.addBlockHook(tree.getBlock(), new LogRenderHook());
+				}
+			}
 		}
 		else if (page == ChromaResearch.PORTALSTRUCT) {
 			render.addOverride(new ItemStack(Blocks.bedrock), ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1));
@@ -113,6 +132,19 @@ public class GuiStructure extends GuiBookSection {
 
 		if (page != ChromaResearch.CAVERN) {
 			render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
+		}
+
+		if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
+			for (int i = -4; i <= 4; i += 2) {
+				for (int k = -4; k <= 4; k += 2) {
+					if (i != 0 || k != 0) {
+						int dx = array.getMidX()+i;
+						int dz = array.getMidZ()+k;
+						int dy = array.getMinY()+1+(Math.abs(i) != 4 && Math.abs(k) != 4 ? 0 : 1);
+						render.addOverride(dx, dy, dz, ChromaTiles.STAND.getCraftedProduct());
+					}
+				}
+			}
 		}
 
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());
@@ -224,7 +256,7 @@ public class GuiStructure extends GuiBookSection {
 			else if (page == ChromaResearch.PORTALSTRUCT && Block.getBlockFromItem(is.getItem()) == Blocks.bedrock) {
 				is2 = ChromaItems.ENDERCRYSTAL.getStackOfMetadata(1);
 			}
-			else if (page == ChromaResearch.TREE && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.PYLON.getBlockInstance()) {
+			else if ((page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.PYLON.getBlockInstance()) {
 				is2 = ChromaTiles.POWERTREE.getCraftedProduct();
 			}
 			else if (page == ChromaResearch.CLOAKTOWER && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.TILEMODELLED2.getBlockInstance()) {
@@ -288,6 +320,23 @@ public class GuiStructure extends GuiBookSection {
 		@Override
 		public ItemStack getBlock(Coordinate pos, int meta) {
 			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick()).asItemStack();
+		}
+
+	}
+
+	private static class LogRenderHook implements BlockChoiceHook {
+
+		@Override
+		public ItemStack getBlock(Coordinate pos, int meta) {
+			ArrayList<TreeType> li = ReikaJavaLibrary.makeListFromArray(ReikaTreeHelper.treeList);
+			for (int i = 0; i < ModWoodList.woodList.length; i++) {
+				ModWoodList tree = ModWoodList.woodList[i];
+				if (tree.exists()) {
+					li.add(tree);
+				}
+			}
+			int tick = (int)((System.currentTimeMillis()/1000)%li.size());
+			return li.get(tick).getItem();
 		}
 
 	}

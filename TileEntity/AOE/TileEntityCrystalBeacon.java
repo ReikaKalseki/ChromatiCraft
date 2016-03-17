@@ -14,8 +14,11 @@ import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -24,6 +27,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -34,7 +38,9 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	public static final int RATIO = 100;
 	public static final int POWER = 2;
-	public static final int MAXRANGE = 32;
+	public static final int MAXRANGE = 64;
+
+	private boolean hasStructure;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -47,9 +53,42 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		if (world.isRemote)
 			this.spawnParticles(world, x, y, z);
 
-		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+		if (!world.isRemote && hasStructure && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		this.validateStructure();
+		WorldLocation loc = new WorldLocation(this);
+		if (!cache.contains(loc))
+			cache.add(loc);
+	}
+
+	public void validateStructure() {
+		hasStructure = ChromaStructures.getProtectionBeaconStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
+		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
+		this.syncAllData(false);
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return this.hasStructure() ? ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(6, 4, 6) : super.getRenderBoundingBox();
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		hasStructure = NBT.getBoolean("struct");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("struct", hasStructure);
 	}
 
 	private void checkAndRequest() {
@@ -90,12 +129,18 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	}
 
 	private boolean prevent(float dmg) {
-		int amt = (int)(RATIO*Math.pow(dmg, POWER));
-		if (energy.containsAtLeast(CrystalElement.RED, amt)) {
-			this.drainEnergy(CrystalElement.RED, amt);
-			return true;
+		if (this.hasStructure()) {
+			int amt = (int)(RATIO*Math.pow(dmg, POWER));
+			if (energy.containsAtLeast(CrystalElement.RED, amt)) {
+				this.drainEnergy(CrystalElement.RED, amt);
+				return true;
+			}
 		}
 		return false;
+	}
+
+	public boolean hasStructure() {
+		return hasStructure;
 	}
 
 	@Override
@@ -121,13 +166,6 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 	@Override
 	public int getMaxStorage(CrystalElement e) {
 		return 250000;
-	}
-
-	@Override
-	protected void onFirstTick(World world, int x, int y, int z) {
-		WorldLocation loc = new WorldLocation(this);
-		if (!cache.contains(loc))
-			cache.add(loc);
 	}
 
 	@Override

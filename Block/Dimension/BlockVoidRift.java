@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -93,6 +94,8 @@ public class BlockVoidRift extends Block {
 
 		public static final int HEIGHT = 16;
 
+		private BlockKey[][] blockCache = new BlockKey[3][3];
+
 		@Override
 		public boolean canUpdate() {
 			return false;//true;
@@ -153,11 +156,16 @@ public class BlockVoidRift extends Block {
 		}
 
 		public boolean hasAt(int dx, int dz) {
-			return this.hasAt(dx, 0, dz);
+			return this.getAt(dx, dz).blockID == this.getBlockType();// && worldObj.getBlockMetadata(xCoord+dx, yCoord+dy, zCoord+dz) == this.getBlockMetadata();
 		}
 
-		public boolean hasAt(int dx, int dy, int dz) {
-			return worldObj.getBlock(xCoord+dx, yCoord+dy, zCoord+dz) == this.getBlockType();// && worldObj.getBlockMetadata(xCoord+dx, yCoord+dy, zCoord+dz) == this.getBlockMetadata();
+		public BlockKey getAt(int dx, int dz) {
+			BlockKey bk = blockCache[dx+1][dz+1];
+			if (bk == null) {
+				bk = BlockKey.getAt(worldObj, xCoord+dx, yCoord, zCoord+dz);
+				blockCache[dx+1][dz+1] = bk;
+			}
+			return bk;
 		}
 
 	}

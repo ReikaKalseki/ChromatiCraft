@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,6 +38,7 @@ import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -257,7 +259,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			}
 		}
 
-		if (rand.nextInt(32000) == 0 && !newAspectWeight.isEmpty()) {
+		if (rand.nextInt(8000) == 0 && !newAspectWeight.isEmpty()) {
 			AspectList al = node.getAspectsBase();
 			Aspect a = newAspectWeight.getRandomEntry();
 			newAspectWeight.remove(a);
@@ -273,7 +275,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		ElementTagCompound tag = this.getTagValue(a);
 		boolean flag = true;
 		for (CrystalElement e : tag.elementSet()) {
-			flag &= CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true);
+			flag &= CrystalNetworker.instance.findSourceWithX(this, e, NEW_ASPECT_COST, this.getReceiveRange(), true) != null;
 		}
 		if (flag) {
 			base.add(a, 1);
@@ -281,7 +283,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			baseVis.addTag(this.getTagValue(a));
 			this.playSound("thaumcraft:hhon");
 			this.playSound("thaumcraft:hhoff");
-			ReikaPacketHelper.sendStringPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.NEWASPECTNODE.ordinal(), (TileEntity)node, 32, a.getName().toLowerCase());
+			ReikaPacketHelper.sendStringPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.NEWASPECTNODE.ordinal(), (TileEntity)node, 32, a.getName().toLowerCase(Locale.ENGLISH));
 			return true;
 		}
 		return false;
@@ -595,12 +597,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e) {
 		return null;
 	}
-	/*
+
 	@Override
 	public double getIncomingBeamRadius() {
-		return 0.125;
+		return 0.0875;
 	}
-	 */
 
 	@Override
 	public boolean existsInWorld() {
@@ -615,6 +616,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public String toString() {
 		return ReikaThaumHelper.aspectsToString(node.getAspectsBase())+" @ "+location;
+	}
+
+	@Override
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.ENDGAME;
 	}
 
 }

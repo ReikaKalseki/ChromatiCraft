@@ -17,6 +17,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Recipe.ItemCollision;
@@ -50,6 +51,12 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 
 	@Override
 	public AxisAlignedBB getSelectedBoundingBoxFromPool(World world, int x, int y, int z) {
+		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
+		if (m != null && m.providesCustomHitbox()) {
+			AxisAlignedBB box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
+			this.setBounds(box, x, y, z);
+			return box;
+		}
 		AxisAlignedBB box = this.getCollisionBoundingBoxFromPool(world, x, y, z);
 		return box != null ? box : ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.4, 0.4, 0.4);
 	}
@@ -59,8 +66,13 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m == null)
 			return ReikaAABBHelper.getBlockAABB(x, y, z);
-		if (m.isIntangible())
+		if (m.isIntangible()) {
+			if (m.providesCustomHitbox()) {
+				AxisAlignedBB box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
+				this.setBounds(box, x, y, z);
+			}
 			return null;
+		}
 		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
 		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
 		//if (te.isFlipped) {

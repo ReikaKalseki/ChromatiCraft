@@ -206,16 +206,22 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	public void markOpenGate(World world, int structIndex) {
 		gateCodes[structIndex]--;
+		genOrder.get(structIndex).isSolved = this.isGateOpen(structIndex);
 		this.updateTiles(world, -1);
 	}
 
 	public void markClosedGate(World world, int structIndex) {
 		gateCodes[structIndex]++;
+		genOrder.get(structIndex).isSolved = false;
 		this.updateTiles(world, -1);
 	}
 
 	public boolean isOpen(CrystalElement e, int structIndex) {
 		return keyCodes[structIndex][e.ordinal()] > 0 || whiteLock[structIndex] > 0;
+	}
+
+	public boolean isGateOpen(int structIndex) {
+		return gateCodes[structIndex] == 0;
 	}
 
 	public void openColor(CrystalElement e, World world, int structIndex) {
@@ -227,7 +233,6 @@ public class LocksGenerator extends DimensionStructureGenerator {
 			keyCodes[structIndex][e.ordinal()]++;
 		}
 		//ReikaJavaLibrary.pConsole(Arrays.deepToString(keyCodes));
-		ReikaJavaLibrary.pConsole(e+":"+structIndex);
 		this.updateTiles(world, -1);
 	}
 
@@ -263,7 +268,7 @@ public class LocksGenerator extends DimensionStructureGenerator {
 		for (Coordinate loc : lockCache) {
 			TileEntityColorLock te = (TileEntityColorLock)loc.getTileEntity(world);
 			if (te == null) {
-				ReikaJavaLibrary.pConsole("Colored lock @ "+loc+" in DIM"+world.provider.dimensionId+" has no TileEntity!!");
+				ChromatiCraft.logger.logError("Colored lock @ "+loc+" in DIM"+world.provider.dimensionId+" has no TileEntity!!");
 				Block b = loc.getBlock(world);
 				ReikaJavaLibrary.pConsole("Present block ID: "+Block.getIdFromBlock(b)+" = "+b.getClass());
 				//loc.setBlock(world, Blocks.brick_block);
@@ -278,5 +283,15 @@ public class LocksGenerator extends DimensionStructureGenerator {
 
 	public void addLock(int x, int y, int z) {
 		lockCache.add(new Coordinate(x, y, z));
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		for (LockLevel l : genOrder) {
+			if (!l.isSolved) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

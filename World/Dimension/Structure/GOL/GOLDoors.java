@@ -40,7 +40,7 @@ public class GOLDoors extends StructurePiece {
 
 		z += 4;
 
-		this.generateExit(world, x+GOLGenerator.SIZE, y, z, b, mc, ml);
+		this.generateExit(world, x+GOLGenerator.SIZE+1, y, z, b, mc, ml);
 	}
 
 	private void generateEntrance(ChunkSplicedGenerationCache world, int x, int y, int z, Block b, int mc, int ml) {
@@ -247,7 +247,7 @@ public class GOLDoors extends StructurePiece {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityChromaDoor) {
-				((TileEntityChromaDoor)te).bindUUID(id);
+				((TileEntityChromaDoor)te).bindUUID(null, id, 0);
 			}
 		}
 

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Locale;
+
 import net.minecraft.world.gen.structure.MapGenStructure;
 
 public abstract class ChromaStructureBase extends MapGenStructure {
@@ -19,7 +21,7 @@ public abstract class ChromaStructureBase extends MapGenStructure {
 
 	@Override
 	public final String func_143025_a() {
-		return this.getClass().getSimpleName().toLowerCase();
+		return this.getClass().getSimpleName().toLowerCase(Locale.ENGLISH);
 	}
 
 }

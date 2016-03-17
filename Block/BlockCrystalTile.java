@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -61,7 +62,8 @@ public class BlockCrystalTile extends BlockChromaTile {
 				for (int i = 0; i < 4; i++)
 					li.add(ChromaStacks.blueShard);
 			case GUARDIAN:
-				li.add(ChromaStacks.crystalStar);
+				if (ReikaRandomHelper.doWithChance(25))
+					li.add(ChromaStacks.crystalStar);
 				break;
 			case DIMENSIONCORE:
 				if (ReikaRandomHelper.doWithChance(25))
@@ -140,17 +142,21 @@ public class BlockCrystalTile extends BlockChromaTile {
 		else {
 			boolean silk = EnchantmentHelper.getSilkTouchModifier(ep);
 			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
-			if (silk || !c.needsSilkTouch()) {
-				ItemStack is = c.getCraftedProduct();
-				if (c.hasNBTVariants()) {
-					NBTTagCompound nbt = new NBTTagCompound();
-					((NBTTile)te).getTagsToWriteToStack(nbt);
-					is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
+			if (!te.isUnHarvestable()) {
+				if (te instanceof TileEntityWeakRepeater && !((TileEntityWeakRepeater)te).hasRemainingLife())
+					return;
+				if (silk || !c.needsSilkTouch()) {
+					ItemStack is = c.getCraftedProduct();
+					if (c.hasNBTVariants()) {
+						NBTTagCompound nbt = new NBTTagCompound();
+						((NBTTile)te).getTagsToWriteToStack(nbt);
+						is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
+					}
+					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
 				}
-				ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
-			}
-			else {
-				ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, this.getPieces(world, x, y, z));
+				else {
+					ReikaItemHelper.dropItems(world, x+0.5, y+0.5, z+0.5, this.getPieces(world, x, y, z));
+				}
 			}
 		}
 	}

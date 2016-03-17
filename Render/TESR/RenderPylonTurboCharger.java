@@ -120,7 +120,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 						GL11.glTranslated(0, i, 0);
 						DecimalPosition p1 = new DecimalPosition(te);
 						DecimalPosition p2 = new DecimalPosition(te).offset(0, h, 0);
-						ChromaFX.drawEnergyTransferBeam(p1, p2, te.getPylon(te.worldObj, te.xCoord, te.yCoord, te.zCoord).getColor().getColor(), 0.35, (byte)6, t);
+						ChromaFX.drawEnergyTransferBeam(p1, p2, te.getPylon(te.worldObj, te.xCoord, te.yCoord, te.zCoord).getColor().getColor(), 0.35, 0.35, (byte)6, t);
 						GL11.glPopMatrix();
 					}
 

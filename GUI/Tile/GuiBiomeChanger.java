@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Tile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -203,7 +204,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		Collection<BiomeGenBase> c = TileEntityBiomePainter.getValidBiomes();
 		String code = search.getText();
 		for (BiomeGenBase out : c) {
-			if (code == null || code.isEmpty() || (out.biomeName != null && out.biomeName.toLowerCase().startsWith(code.toLowerCase()))) {
+			if (code == null || code.isEmpty() || (out.biomeName != null && out.biomeName.toLowerCase(Locale.ENGLISH).startsWith(code.toLowerCase(Locale.ENGLISH)))) {
 				visibleBiomes.add(out);
 			}
 		}

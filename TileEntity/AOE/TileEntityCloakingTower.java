@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.TileEntity;
+package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -209,7 +209,7 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 		for (WorldLocation loc : cache) {
 			if (loc.getDistanceTo(ep) <= MAXRANGE) {
 				TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity();
-				if (te.isPlacer(ep) && te.isActive()) {
+				if (te.isOwnedByPlayer(ep) && te.isActive()) {
 					return true;
 				}
 			}

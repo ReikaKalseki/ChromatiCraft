@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
@@ -68,7 +69,7 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 	private void generatePuzzles(Random rand) {
 		for (int i = 0; i < LENGTH; i++) {
 			int len = this.getPuzzleLength(i);
-			MusicPuzzle m = new MusicPuzzle(this, len);
+			MusicPuzzle m = new MusicPuzzle(this, len, i);
 			MelodyPrefab p = null;
 			if (usedPrefabs.size() < prefabs.size() && rand.nextInt(5) == 0) {
 				p = this.getRandomPrefab(rand, len*5/2);
@@ -119,6 +120,16 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 	@Override
 	public StructureData createDataStorage() {
 		return new MusicStructureData(this);
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		for (MusicPuzzle m : puzzles) {
+			if (!m.isSolved) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	static {
@@ -200,6 +211,10 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 			return o instanceof MelodyPrefab && ((MelodyPrefab)o).notes.equals(notes);
 		}
 
+	}
+
+	public void completePuzzle(int structureIndex) {
+		puzzles.get(structureIndex).isSolved = true;
 	}
 
 }

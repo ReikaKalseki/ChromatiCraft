@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,7 +45,7 @@ public class RedecorateCommand extends DragonCommandBase {
 			return;
 		}
 		int r = Integer.parseInt(args[0]);
-		ChromaDecorator d = ChromatiCraft.getDecorator(args[1].toLowerCase());
+		ChromaDecorator d = ChromatiCraft.getDecorator(args[1].toLowerCase(Locale.ENGLISH));
 		if (d == null) {
 			this.sendChatToSender(ics, EnumChatFormatting.RED+"Unrecognized decorator.");
 			return;

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import net.minecraft.block.Block;
@@ -26,9 +27,12 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
@@ -38,11 +42,15 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 
-public class BlockPylonStructure extends Block {
+public class BlockPylonStructure extends Block implements ConnectedTextureGlass {
+
+	private final ArrayList<Integer> allDirs = new ArrayList();
 
 	private final IIcon[][] icons = new IIcon[16][16];
+	private final IIcon[] edges = new IIcon[10];
 
 	private final int[] variants = ReikaArrayHelper.getArrayOf(1, 16);
 
@@ -73,6 +81,47 @@ public class BlockPylonStructure extends Block {
 		public boolean needsSilkTouch() {
 			return this == GLOWCOL || this == GLOWBEAM || this == FOCUS;
 		}
+
+		public boolean isBeam() {
+			return this == BEAM || this == GLOWBEAM;
+		}
+
+		public boolean isColumn() {
+			return this == COLUMN || this == GLOWCOL;
+		}
+
+		public boolean glows() {
+			return this == GLOWCOL || this == GLOWBEAM || this == FOCUS || this == RESORING || this == STABILIZER || this == MULTICHROMIC;
+		}
+
+		public boolean isConnectedTexture() {
+			return this == SMOOTH && ChromaOptions.CONNECTEDCRYSTALSTONE.getState();
+		}
+
+		public int getBrightRenderPass() {
+			switch(this) {
+				case RESORING:
+				case GLOWCOL:
+				case GLOWBEAM:
+				case FOCUS:
+					return 1;
+				default:
+					return 0;
+			}
+		}
+
+		public StoneTypes getGlowingVariant() {
+			switch(this) {
+				case BEAM:
+					return GLOWBEAM;
+				case COLUMN:
+					return GLOWCOL;
+				case FOCUSFRAME:
+					return FOCUS;
+				default:
+					return null;
+			}
+		}
 	}
 
 	public BlockPylonStructure(Material mat) {
@@ -81,16 +130,52 @@ public class BlockPylonStructure extends Block {
 		this.setResistance(12);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 
-		variants[0] = 3;
-		variants[6] = 4;
-		variants[15] = 2;
+		allDirs.add(5); //5 at beginning (bottom layer)
+		for (int i = 1; i < 10; i++) {
+			if (i != 5)
+				allDirs.add(i);
+		}
+
+		variants[StoneTypes.BEAM.ordinal()] = 3;
+		variants[StoneTypes.GLOWBEAM.ordinal()] = 3;
+
+		variants[StoneTypes.CORNER.ordinal()] = 4;
+		variants[StoneTypes.RESORING.ordinal()] = 2;
+
+		for (int i = 0; i < StoneTypes.list.length; i++) {
+			StoneTypes s = StoneTypes.list[i];
+			if (s.glows()) {
+				variants[i] *= 2;
+			}
+		}
 	}
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
+		int idx = this.getIconIndex(s, meta);
 		if (s < 2 && meta < 6)
-			return icons[0][0];
-		return icons[meta][0];
+			return icons[0][idx];
+		return icons[meta][idx];
+	}
+
+	private int getIconIndex(int s, int meta) {
+		return 0;
+	}
+
+	@Override
+	public int getRenderType() {
+		return ChromatiCraft.proxy.crystalStoneRender;
+	}
+
+	@Override
+	public int getRenderBlockPass() {
+		return 1;
+	}
+
+	@Override
+	public boolean canRenderInPass(int pass) {
+		CrystallineStoneRenderer.renderPass = pass;
+		return pass <= 1;
 	}
 
 	private boolean loadXmasTextures() {
@@ -100,85 +185,164 @@ public class BlockPylonStructure extends Block {
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
-		int meta = iba.getBlockMetadata(x, y, z);
-		if (meta == 15 && s <= 1) {
-			if (iba.getBlock(x+1, y, z) == this && iba.getBlockMetadata(x+1, y, z) == meta)
-				return icons[meta][0];
-			if (iba.getBlock(x-1, y, z) == this && iba.getBlockMetadata(x-1, y, z) == meta)
-				return icons[meta][0];
+		int meta = this.getWrappedMeta(s, iba.getBlockMetadata(x, y, z));
+		int idx = this.getIconIndex(iba, x, y, z, s, meta);
+		return idx >= 0 ? icons[meta][idx] : super.getIcon(iba, x, y, z, s);
+	}
 
-			if (iba.getBlock(x, y, z+1) == this && iba.getBlockMetadata(x, y, z+1) == meta)
-				return icons[meta][1];
-			if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
-				return icons[meta][1];
+	private int getWrappedMeta(int s, int meta) {
+		StoneTypes m = StoneTypes.list[meta];
+		if (m.isBeam() && s <= 1) {
+			return StoneTypes.BEAM.ordinal();
 		}
-		if ((meta == 1 || meta == 4) && s <= 1) {
-			if (iba.getBlock(x+1, y, z) == this && iba.getBlockMetadata(x+1, y, z) == meta)
-				return icons[0][2];
-			if (iba.getBlock(x-1, y, z) == this && iba.getBlockMetadata(x-1, y, z) == meta)
-				return icons[0][2];
+		if (m.isColumn() && s <= 1) {
+			return StoneTypes.COLUMN.ordinal();
+		}
+		return meta;
+	}
 
-			if (iba.getBlock(x, y, z+1) == this && iba.getBlockMetadata(x, y, z+1) == meta)
-				return icons[0][1];
-			if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
-				return icons[0][1];
+	private int getIconIndex(IBlockAccess iba, int x, int y, int z, int s, int meta) {
+		StoneTypes m = StoneTypes.list[meta];
+		if (m == StoneTypes.RESORING) {
+			if (s <= 1) {
+				if (iba.getBlock(x+1, y, z) == this && iba.getBlockMetadata(x+1, y, z) == meta)
+					return 0;
+				if (iba.getBlock(x-1, y, z) == this && iba.getBlockMetadata(x-1, y, z) == meta)
+					return 0;
+				if (iba.getBlock(x, y, z+1) == this && iba.getBlockMetadata(x, y, z+1) == meta)
+					return 1;
+				if (iba.getBlock(x, y, z-1) == this && iba.getBlockMetadata(x, y, z-1) == meta)
+					return 1;
+			}
+			if (iba.getBlock(x, y+1, z) == this && iba.getBlockMetadata(x, y+1, z) == meta) {
+				return 1;
+			}
+			if (iba.getBlock(x, y-1, z) == this && iba.getBlockMetadata(x, y-1, z) == meta) {
+				return 1;
+			}
+			boolean flag = true;
+			boolean flag2 = false;
+			boolean flag3 = false;
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (iba.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ) == this) {
+					if (iba.getBlockMetadata(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ) == meta) {
+						flag = false;
+					}
+					if (dir.offsetY == 0) {
+						flag2 = true;
+						if (dir.offsetZ == 0) {
+							flag3 = true;
+						}
+					}
+				}
+			}
+			if (flag && flag2) {
+				if (s > 1 || flag3) {
+					return 1;
+				}
+			}
 		}
-		if (meta == 6) {
+		if (m.isBeam() && s <= 1) {
+			if (iba.getBlock(x+1, y, z) == this && this.getWrappedMeta(s, iba.getBlockMetadata(x+1, y, z)) == meta)
+				return 2;
+			if (iba.getBlock(x-1, y, z) == this && this.getWrappedMeta(s, iba.getBlockMetadata(x-1, y, z)) == meta)
+				return 2;
+
+			if (iba.getBlock(x, y, z+1) == this && this.getWrappedMeta(s, iba.getBlockMetadata(x, y, z+1)) == meta)
+				return 1;
+			if (iba.getBlock(x, y, z-1) == this && this.getWrappedMeta(s, iba.getBlockMetadata(x, y, z-1)) == meta)
+				return 1;
+		}
+		if (m == StoneTypes.CORNER) {
 			switch(s) {
 				case 0:
 				case 1:
 					if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][0];
+						return 0;
 					if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][1];
+						return 1;
 					if (iba.getBlock(x+1, y, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][3];
+						return 3;
 					if (iba.getBlock(x-1, y, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][2];
+						return 2;
 					break;
 				case 2:
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
-						return icons[meta][1];
+						return 1;
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
-						return icons[meta][0];
+						return 0;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
-						return icons[meta][2];
+						return 2;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
-						return icons[meta][3];
+						return 3;
 					break;
 				case 3:
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x+1, y, z) == this)
-						return icons[meta][0];
+						return 0;
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x-1, y, z) == this)
-						return icons[meta][1];
+						return 1;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x+1, y, z) == this)
-						return icons[meta][3];
+						return 3;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x-1, y, z) == this)
-						return icons[meta][2];
+						return 2;
 					break;
 				case 4:
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][0];
+						return 0;
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][1];
+						return 1;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][3];
+						return 3;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][2];
+						return 2;
 					break;
 				case 5:
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][1];
+						return 1;
 					if (iba.getBlock(x, y-1, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][0];
+						return 0;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z+1) == this)
-						return icons[meta][2];
+						return 2;
 					if (iba.getBlock(x, y+1, z) == this && iba.getBlock(x, y, z-1) == this)
-						return icons[meta][3];
+						return 3;
 					break;
 			}
 		}
-		return super.getIcon(iba, x, y, z, s);
+		return -1;
+	}
+
+	public IIcon getBrightOverlay(IBlockAccess iba, int x, int y, int z, int s) {
+		int meta = iba.getBlockMetadata(x, y, z);
+		switch(StoneTypes.list[meta]) {
+			case FOCUS:
+			case GLOWBEAM:
+			case GLOWCOL:
+				if (s <= 1)
+					return null;
+			case MULTICHROMIC:
+			case RESORING:
+			case STABILIZER:
+				return icons[meta][variants[meta]/2+Math.max(0, this.getIconIndex(iba, x, y, z, s, meta))];
+			default:
+				return null;
+		}
+	}
+
+	public IIcon getBrightOverlay(int meta, int s) {
+		switch(StoneTypes.list[meta]) {
+			case FOCUS:
+			case GLOWBEAM:
+			case GLOWCOL:
+				if (s <= 1)
+					return null;
+			case MULTICHROMIC:
+			case RESORING:
+			case STABILIZER:
+				return icons[meta][variants[meta]/2+Math.max(0, this.getIconIndex(s, meta))];
+			default:
+				return null;
+		}
 	}
 
 	@Override
@@ -186,13 +350,17 @@ public class BlockPylonStructure extends Block {
 		for (int i = 0; i < 16; i++) {
 			for (int k = 0; k < variants[i]; k++) {
 				String suff = k > 0 ? String.valueOf(i+"-"+(k+1)) : String.valueOf(i);
-				if (i == 2 || i == 3) {
+				if (StoneTypes.list[i].isColumn()) {
 					if (this.loadXmasTextures()) {
 						suff = suff+"_xm";
 					}
 				}
 				icons[i][k] = ico.registerIcon("chromaticraft:pylon/block_"+suff);
 			}
+		}
+
+		for (int i = 0; i < 10; i++) {
+			edges[i] = ico.registerIcon("chromaticraft:pylon/connected/side_"+i);
 		}
 	}
 
@@ -312,6 +480,11 @@ public class BlockPylonStructure extends Block {
 			((TileEntityCrystalBroadcaster)te).validateStructure();
 		}
 
+		te = world.getTileEntity(mx, my+1, mz);
+		if (te instanceof TileEntityCrystalBeacon) {
+			((TileEntityCrystalBeacon)te).validateStructure();
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -322,7 +495,7 @@ public class BlockPylonStructure extends Block {
 			}
 		}
 
-		te = world.getTileEntity(blocks.getMinX()+1, blocks.getMaxY()+1, blocks.getMaxZ()-1);
+		te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
 		if (te instanceof TileEntityPowerTree) {
 			((TileEntityPowerTree)te).validateStructure();
 		}
@@ -386,6 +559,11 @@ public class BlockPylonStructure extends Block {
 			((TileEntityCrystalBroadcaster)te).validateStructure();
 		}
 
+		te = world.getTileEntity(mx, my+1, mz);
+		if (te instanceof TileEntityCrystalBeacon) {
+			((TileEntityCrystalBeacon)te).validateStructure();
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -396,10 +574,102 @@ public class BlockPylonStructure extends Block {
 			}
 		}
 
-		te = world.getTileEntity(blocks.getMinX()+1, blocks.getMaxY()+1, blocks.getMaxZ()-1);
+		te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
 		if (te instanceof TileEntityPowerTree) {
 			((TileEntityPowerTree)te).validateStructure();
 		}
+	}
+
+	public ArrayList<Integer> getEdgesForFace(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
+		ArrayList<Integer> li = new ArrayList();
+		li.addAll(allDirs);
+		int meta = world.getBlockMetadata(x, y, z);
+
+		if (face.offsetX != 0) { //test YZ
+			//sides; removed if have adjacent on side
+			if (this.connectTo(world, x, y, z+1, meta))
+				li.remove(new Integer(2));
+			if (this.connectTo(world, x, y, z-1, meta))
+				li.remove(new Integer(8));
+			if (this.connectTo(world, x, y+1, z, meta))
+				li.remove(new Integer(4));
+			if (this.connectTo(world, x, y-1, z, meta))
+				li.remove(new Integer(6));
+
+			//Corners; only removed if have adjacent on side AND corner
+			if (this.connectTo(world, x, y+1, z+1, meta) && !li.contains(4) && !li.contains(2))
+				li.remove(new Integer(1));
+			if (this.connectTo(world, x, y-1, z-1, meta) && !li.contains(6) && !li.contains(8))
+				li.remove(new Integer(9));
+			if (this.connectTo(world, x, y+1, z-1, meta) && !li.contains(4) && !li.contains(8))
+				li.remove(new Integer(7));
+			if (this.connectTo(world, x, y-1, z+1, meta) && !li.contains(2) && !li.contains(6))
+				li.remove(new Integer(3));
+		}
+		if (face.offsetY != 0) { //test XZ
+			//sides; removed if have adjacent on side
+			if (this.connectTo(world, x, y, z+1, meta))
+				li.remove(new Integer(2));
+			if (this.connectTo(world, x, y, z-1, meta))
+				li.remove(new Integer(8));
+			if (this.connectTo(world, x+1, y, z, meta))
+				li.remove(new Integer(4));
+			if (this.connectTo(world, x-1, y, z, meta))
+				li.remove(new Integer(6));
+
+			//Corners; only removed if have adjacent on side AND corner
+			if (this.connectTo(world, x+1, y, z+1, meta) && !li.contains(4) && !li.contains(2))
+				li.remove(new Integer(1));
+			if (this.connectTo(world, x-1, y, z-1, meta) && !li.contains(6) && !li.contains(8))
+				li.remove(new Integer(9));
+			if (this.connectTo(world, x+1, y, z-1, meta) && !li.contains(4) && !li.contains(8))
+				li.remove(new Integer(7));
+			if (this.connectTo(world, x-1, y, z+1, meta) && !li.contains(2) && !li.contains(6))
+				li.remove(new Integer(3));
+		}
+		if (face.offsetZ != 0) { //test XY
+			//sides; removed if have adjacent on side
+			if (this.connectTo(world, x, y+1, z, meta))
+				li.remove(new Integer(4));
+			if (this.connectTo(world, x, y-1, z, meta))
+				li.remove(new Integer(6));
+			if (this.connectTo(world, x+1, y, z, meta))
+				li.remove(new Integer(2));
+			if (this.connectTo(world, x-1, y, z, meta))
+				li.remove(new Integer(8));
+
+			//Corners; only removed if have adjacent on side AND corner
+			if (this.connectTo(world, x+1, y+1, z, meta) && !li.contains(2) && !li.contains(4))
+				li.remove(new Integer(1));
+			if (this.connectTo(world, x-1, y-1, z, meta) && !li.contains(8) && !li.contains(6))
+				li.remove(new Integer(9));
+			if (this.connectTo(world, x+1, y-1, z, meta) && !li.contains(2) && !li.contains(6))
+				li.remove(new Integer(3));
+			if (this.connectTo(world, x-1, y+1, z, meta) && !li.contains(4) && !li.contains(8))
+				li.remove(new Integer(7));
+		}
+		return li;
+	}
+
+	private boolean connectTo(IBlockAccess world, int x, int y, int z, int meta) {
+		if (world.getBlock(x, y, z) == this && world.getBlockMetadata(x, y, z) == meta)
+			return true;
+		if (world.getBlock(x, y, z) == ChromaBlocks.RUNE.getBlockInstance())
+			return true;
+		return false;
+	}
+
+	public IIcon getIconForEdge(IBlockAccess world, int x, int y, int z, int edge) {
+		return edges[edge];
+	}
+
+	public IIcon getIconForEdge(int itemMeta, int edge) {
+		return edges[edge];
+	}
+
+	@Override
+	public boolean renderCentralTextureForItem(int meta) {
+		return true;
 	}
 
 }

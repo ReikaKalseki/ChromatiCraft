@@ -340,7 +340,8 @@ public class EssentiaNetwork {
 		}
 
 		public void update(World world, int x, int y, int z) {
-			this.doParticles(world, x, y, z);
+			if (world.isRemote)
+				this.doParticles(world, x, y, z);
 		}
 
 		@SideOnly(Side.CLIENT)
@@ -353,6 +354,7 @@ public class EssentiaNetwork {
 			}
 		}
 
+		@SideOnly(Side.CLIENT)
 		public static void sendParticle(World world, int x1, int x2, int y1, int y2, int z1, int z2, String asp, int amt) {
 			Aspect a = Aspect.getAspect(asp);
 			int l = 100;

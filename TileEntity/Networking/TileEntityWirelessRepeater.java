@@ -27,6 +27,11 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
+	public void onTransfer(CrystalElement e, int amt) {
+
+	}
+
+	@Override
 	public int getReceiveRange() {
 		return 24;
 	}

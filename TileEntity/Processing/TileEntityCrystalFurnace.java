@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Processing;
 
+import java.util.Locale;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -88,7 +90,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 
 	@Override
 	public int getSizeInventory() {
-		return 3;
+		return 2;
 	}
 
 	@Override
@@ -161,7 +163,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	public static int getMultiplyRate(ItemStack in, ItemStack out) {
 		if (ChromaBlocks.PYLONSTRUCT.match(out))
 			return 1;
-		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase().contains("cobblestone"))
+		else if (in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("cobblestone"))
 			return 1;
 		else if (ModList.GEOSTRATA.isLoaded() && RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())) != null) {
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))

@@ -15,6 +15,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -39,7 +40,7 @@ public class ItemMobilityWand extends ItemWandBase {
 			int x = mov.blockX+dir.offsetX;
 			int y = mov.blockY+dir.offsetY;
 			int z = mov.blockZ+dir.offsetZ;
-			if (this.isValidTarget(world, x, y, z)) {
+			if (Chromabilities.ORECLIP.enabledOn(ep) || this.isValidTarget(world, x, y, z)) {
 				if (!world.isRemote) {
 					this.drainPlayer(ep, this.getUsageFactor(ep.posX, ep.posY, ep.posZ, x, y, z));
 				}

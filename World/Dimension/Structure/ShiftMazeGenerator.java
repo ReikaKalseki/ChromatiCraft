@@ -18,9 +18,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.DataStorage.ShiftMazeData;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.FixedMaze;
@@ -72,6 +74,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	public static final int MAX_SIZE_Z = getWidth();
 
 	private final HashSet<Coordinate> locks = new HashSet();
+	private final ArrayList<Coordinate> endDoors = new ArrayList();
 
 	private static final ArrayList<ForgeDirection> dirs = ReikaJavaLibrary.makeListFrom(ForgeDirection.EAST, ForgeDirection.WEST, ForgeDirection.NORTH, ForgeDirection.SOUTH);
 
@@ -517,6 +520,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		nextDir = null;
 
 		locks.clear();
+		endDoors.clear();
 	}
 
 	public void addDoorState(int x, int z, int state) {
@@ -529,6 +533,19 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	public Collection<Coordinate> getLocks() {
 		return Collections.unmodifiableCollection(locks);
+	}
+
+	public void addEndingDoorLocation(int x, int y, int z) {
+		endDoors.add(new Coordinate(x, y, z));
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		for (Coordinate c : endDoors) {
+			if (!BlockChromaDoor.isOpen(world, c.xCoord, c.yCoord, c.zCoord))
+				return false;
+		}
+		return true;
 	}
 
 	@Override

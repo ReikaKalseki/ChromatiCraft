@@ -27,8 +27,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
-import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
+import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -117,8 +117,11 @@ public class BlockMusicMemory extends BlockContainer {
 
 		private int correctIndex = -1;
 
-		public void program(MusicPuzzle m) {
+		private int structureIndex;
+
+		public void program(MusicPuzzle m, int idx) {
 			keys = m.getMelody();
+			structureIndex = idx;
 		}
 
 		public void ping(MusicKey key) {
@@ -157,6 +160,7 @@ public class BlockMusicMemory extends BlockContainer {
 			}
 			 */
 			((TileEntityChromaDoor)worldObj.getTileEntity(xCoord, yCoord, dz)).open(-1);
+			this.getGenerator().completePuzzle(structureIndex);
 		}
 
 		private void resetCorrect() {
@@ -239,6 +243,8 @@ public class BlockMusicMemory extends BlockContainer {
 			}
 
 			NBT.setTag("keys", li);
+
+			NBT.setInteger("idx", structureIndex);
 		}
 
 		@Override
@@ -251,6 +257,8 @@ public class BlockMusicMemory extends BlockContainer {
 				int idx = ((NBTTagInt)o).func_150287_d();
 				keys.add(MusicKey.getByIndex(idx));
 			}
+
+			structureIndex = NBT.getInteger("idx");
 		}
 
 		@Override

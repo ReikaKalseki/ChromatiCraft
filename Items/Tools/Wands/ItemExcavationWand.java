@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
@@ -56,8 +57,8 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		return Integer.MAX_VALUE;
 	}
 
-	public static boolean spreadOn(World world, Block b) {
-		return b != Blocks.stone && b != Blocks.netherrack && b != Blocks.end_stone;
+	public static boolean spreadOn(World world, int x, int y, int z, Block b, int meta) {
+		return b != Blocks.stone && b != Blocks.netherrack && b != Blocks.end_stone && !(world.getTileEntity(x, y, z) instanceof CrystalNetworkTile);
 	}
 
 	@Override
@@ -108,10 +109,14 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
 			if (exists) {
-				return this.sufficientEnergy(ep) && (world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)ep));
+				return this.sufficientEnergy(ep) && this.canBreakBlock(world, x, y, z, id, meta, ep);
 			}
 		}
 		return false;
+	}
+
+	private boolean canBreakBlock(World world, int x, int y, int z, Block id, int meta, EntityPlayer ep) {
+		return (world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)ep)) && this.spreadOn(world, x, y, z, id, meta);
 	}
 
 	@Override

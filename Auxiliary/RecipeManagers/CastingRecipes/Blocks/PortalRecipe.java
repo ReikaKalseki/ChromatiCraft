@@ -61,10 +61,10 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 		this.addAuxItem(Items.ender_eye, 0, -4);
 
 		this.addAuxItem(ChromaStacks.complexIngot, -4, -4);
-		this.addAuxItem(ChromaStacks.complexIngot, 4, -4);
+		this.addAuxItem(ChromaStacks.complexIngot, 4, 4);
 
 		this.addAuxItem(Blocks.beacon, -4, 4);
-		this.addAuxItem(Blocks.beacon, 4, 4);
+		this.addAuxItem(Blocks.beacon, 4, -4);
 
 		this.addAuxItem(Blocks.end_stone, -2, -4);
 		this.addAuxItem(Blocks.end_stone, 4, -2);
@@ -78,7 +78,7 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			this.addAuraRequirement(e, e.isPrimary() ? 100000 : 50000);
+			this.addAuraRequirement(e, e.isPrimary() ? 120000 : 60000);
 			this.addRuneRingRune(e);
 		}
 		this.addRunes(repeater.getRunes());

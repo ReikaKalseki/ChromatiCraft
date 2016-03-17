@@ -19,12 +19,12 @@ public interface EnergyBeamRenderer {
 
 	public Collection<CrystalTarget> getTargets();
 
-	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz);
+	public void addTarget(WorldLocation loc, CrystalElement e, double dx, double dy, double dz, double w);
 
 	public void removeTarget(WorldLocation loc, CrystalElement e);
 
 	public void clearTargets(boolean unload);
 
-	//public double getOutgoingBeamRadius();
+	public double getOutgoingBeamRadius();
 
 }

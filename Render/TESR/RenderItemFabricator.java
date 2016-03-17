@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -39,7 +40,7 @@ public class RenderItemFabricator extends ChromaRenderBase {
 		GL11.glPushMatrix();
 		GL11.glTranslated(par2, par4, par6);
 		this.renderModel(te, model);
-		if (te.isInWorld())
+		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1)
 			this.renderItem(te, par8);
 		GL11.glPopMatrix();
 	}

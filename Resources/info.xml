@@ -34,8 +34,11 @@
 		Pylons transmit energy in concentrated beams, which you have come to call ley lines (no relation to the similarly named phenomena those with poor reasoning skills attribute to extraterrestrial construction projects and spontaneous combustion of people). These beams have a maximum range, and additionally are blocked by anything even remotely opaque.
 	</leylines>
 	<turbo>
-		With your ever-larger crystal network and your increasing load on your pylons, even a full ring of power crystals is insufficient to keep your energy flowing. Similarly, you outstripped the throughput of your repeaters long ago, and they are becoming an increasingly tight bottleneck on your network. If you can somehow enhance the power of the pylons and repeaters, it would be most convenient. Such an event would likely be very energetic, so isolation from the rest of the network could be a good idea.
+		With your ever-larger crystal network and your increasing load on your pylons, even a full ring of power crystals is insufficient to keep your energy flowing. You need another way to improve them, possibly with a corresponding enhancement structure and ritual. Such an event would likely be very energetic, so isolation from the rest of the network could be a good idea.
 	</turbo>
+	<turborepeater>
+		Long ago, you outstripped the throughput of your repeaters, and they are becoming an increasingly tight bottleneck on your network. If you can somehow enhance their power, it would be most convenient.
+	</turborepeater>
 	<dimension>
 		A fiery nightmare. An eldritch island ruled by a giant dragon. This world you have come to call your home is far from the only one in existence, but each of the others is alien and hostile. While they have proved bountiful with resources you no doubt need, they are inhospitable and useless aside from their raw materials. Another world must be the key, a world where the different colors of crystal energy flow naturally, unbounded by the corrupting influence of other forces. Maybe there will be secrets here, too.
 	</dimension>

@@ -162,9 +162,11 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
-				if (r.silkTouch) {
+				if (r.silkTouch && ReikaBlockHelper.attemptSilkTouch(world, x, y, z)) {
 					li.clear();
-					li.add(ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta, true));
+					ItemStack is = ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta, r.player, true);
+					if (is != null)
+						li.add(is);
 				}
 				for (ItemStack is : li) {
 					r.drops.add(is);

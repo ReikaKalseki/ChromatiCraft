@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -188,7 +189,7 @@ public class TileEntityAccelerator extends TileEntityChromaticBase implements NB
 		Acceleration a = actions.get(c);
 		if (a != null)
 			return a;
-		String s = c.getSimpleName().toLowerCase();
+		String s = c.getSimpleName().toLowerCase(Locale.ENGLISH);
 		if (s.contains("conduit") || s.contains("wire") || s.contains("cable")) { //almost always part of a network object
 			actions.put(c, blacklistKey);
 			return blacklistKey;

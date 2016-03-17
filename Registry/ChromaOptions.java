@@ -61,12 +61,12 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
 	RIFTLOAD("World Rifts Chunkload", false),
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
-	NETHERPENDANT("Advanced Pendants Apply Nether Effects", true),
 	FORCEG1GC("Force Java 8 to use G1GC To Prevent Crashes - Disabling this disables some content", true),
 	PROGRESSNOTIFY("Notify players of progress gains", true),
 	CAVELIGHTERRANGE("Cave Lighter Range", 128),
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
-	BIOMEFX("Biome FX", true);
+	BIOMEFX("Biome FX", true),
+	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false);
 
 	private String label;
 	private boolean defaultState;

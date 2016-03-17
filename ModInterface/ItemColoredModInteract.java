@@ -22,6 +22,11 @@ public class ItemColoredModInteract extends ItemChromaMulti {
 		super(tex);
 	}
 
+	@Override
+	public final String getTexture(ItemStack is) {
+		return "/Reika/ChromatiCraft/Textures/Items/items_colormod.png";
+	}
+
 	public static enum ColoredModItems {
 		COMB(ModList.FORESTRY);
 

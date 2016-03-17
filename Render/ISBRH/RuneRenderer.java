@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -139,12 +140,18 @@ public class RuneRenderer implements ISimpleBlockRenderingHandler {
 		IIcon ico = CrystalElement.elements[meta].getFaceRune();
 		v5.setBrightness(240);
 		v5.setColorOpaque_F(255, 255, 255);
-		rb.renderFaceYNeg(b, x, y, z, ico);
-		rb.renderFaceYPos(b, x, y, z, ico);
-		rb.renderFaceZNeg(b, x, y, z, ico);
-		rb.renderFaceZPos(b, x, y, z, ico);
-		rb.renderFaceXNeg(b, x, y, z, ico);
-		rb.renderFaceXPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+			rb.renderFaceYNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+			rb.renderFaceYPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+			rb.renderFaceZNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+			rb.renderFaceZPos(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+			rb.renderFaceXNeg(b, x, y, z, ico);
+		if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+			rb.renderFaceXPos(b, x, y, z, ico);
 		return true;
 	}
 

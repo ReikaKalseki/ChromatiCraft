@@ -42,6 +42,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 	private ArrayList<Coordinate> initialActive = new ArrayList();
 
 	private Coordinate door;
+	private boolean solved = false;
 
 	private static int getSize() {
 		switch(ChromaOptions.getStructureDifficulty()) {
@@ -60,8 +61,8 @@ public class GOLGenerator extends DimensionStructureGenerator {
 		posY = 30+rand.nextInt(40);
 		floorY = posY+1;
 
-		for (int i = -SIZE; i < SIZE; i++) {
-			for (int k = -SIZE; k < SIZE; k++) {
+		for (int i = -SIZE; i <= SIZE; i++) {
+			for (int k = -SIZE; k <= SIZE; k++) {
 				int dx = x+i;
 				int dz = z+k;
 				this.placeTile(dx, dz, false);
@@ -74,23 +75,23 @@ public class GOLGenerator extends DimensionStructureGenerator {
 		}
 
 		for (int k = -1; k <= ROOM_HEIGHT+1; k++) {
-			for (int i = -SIZE-1; i <= SIZE; i++) {
+			for (int i = -SIZE-1; i <= SIZE+1; i++) {
 				int m = (Math.abs(k%8) == Math.abs(i%8)) ? BlockType.LIGHT.metadata : BlockType.CLOAK.metadata;
 				world.setBlock(x+i, floorY+k, z-SIZE-1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
-				world.setBlock(x+i, floorY+k, z+SIZE, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
+				world.setBlock(x+i, floorY+k, z+SIZE+1, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
 				world.setBlock(x-SIZE-1, floorY+k, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
-				world.setBlock(x+SIZE, floorY+k, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
+				world.setBlock(x+SIZE+1, floorY+k, z+i, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
 			}
 		}
 
 		world.setTileEntity(posX-SIZE-3, floorY+1, posZ, ChromaBlocks.GOLCONTROL.getBlockInstance(), 0, new GOLTileCallback(this, false));
 
 		new GOLDoors(this).generate(world, x, floorY+1, z-8);
-		new GOLLoot(this).generate(world, x+SIZE+1, floorY-1, z-3);
+		new GOLLoot(this).generate(world, x+SIZE+1+1, floorY-1, z-3);
 
 		this.addDynamicStructure(new GOLEntrance(this), x-SIZE-1-8, z-8);
 
-		door = new Coordinate(x+SIZE, floorY+1, z);
+		door = new Coordinate(x+SIZE+1, floorY+1, z);
 	}
 
 	@Override
@@ -155,6 +156,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 	protected void clearCaches() {
 		initialActive.clear();
 		door = null;
+		solved = false;
 	}
 
 	public void clearTiles() {
@@ -163,29 +165,49 @@ public class GOLGenerator extends DimensionStructureGenerator {
 
 	public void checkConditions(World world) {
 		int num = 0;
-		for (int i = -SIZE; i < SIZE; i++) {
-			for (int k = -SIZE; k < SIZE; k++) {
+		int tot = 0;
+		for (int i = -SIZE; i <= SIZE; i++) {
+			for (int k = -SIZE; k <= SIZE; k++) {
 				int dx = posX+i;
 				int dz = posZ+k;
-				Coordinate c = new Coordinate(posX, floorY+ROOM_HEIGHT, posZ);
+				Coordinate c = new Coordinate(dx, floorY+ROOM_HEIGHT, dz);
 				if (c.getBlock(world) == ChromaBlocks.GOL.getBlockInstance()) {
 					if (c.getBlockMetadata(world) == 3) {
 						num++;
 					}
+					tot++;
 				}
 			}
 		}
-		int min = (int)((SIZE*2+1)*(SIZE*2+1)*1F/*0.9F*/);
+		float f = 1;
+		switch(ChromaOptions.getStructureDifficulty()) {
+			case 1:
+				f = 0.8F;
+				break;
+			case 2:
+				f = 0.875F;
+				break;
+			case 3:
+				f = 0.925F;
+				break;
+		}
+		int min = (int)((SIZE*2+1)*(SIZE*2+1)*f);
 		if (num >= min) {
 			TileEntity te = door.getTileEntity(world);
 			if (te instanceof TileEntityChromaDoor) {
-				((TileEntityChromaDoor)te).open(0);
+				((TileEntityChromaDoor)te).open(-1);
 			}
 			ChromaSounds.CAST.playSoundAtBlock(world, door.xCoord-SIZE*2-3, door.yCoord, door.zCoord, 2, 1);
+			solved = true;
 		}
 		else {
 			ChromaSounds.ERROR.playSoundAtBlock(world, door.xCoord-SIZE*2-3, door.yCoord, door.zCoord, 2, 1);
 		}
+	}
+
+	@Override
+	public boolean hasBeenSolved(World world) {
+		return solved;
 	}
 
 }

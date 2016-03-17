@@ -15,6 +15,7 @@ import java.util.EnumSet;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -23,6 +24,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import paulscode.sound.StreamThread;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
@@ -48,8 +50,16 @@ public class ChromaDimensionTicker implements TickHandler {
 
 	private int musicCooldown;
 
+	@SideOnly(Side.CLIENT)
+	private ISound currentMusic;
+
 	private ChromaDimensionTicker() {
 
+	}
+
+	@SideOnly(Side.CLIENT)
+	public ISound getCurrentMusic() {
+		return currentMusic;
 	}
 
 	@SubscribeEvent
@@ -89,25 +99,26 @@ public class ChromaDimensionTicker implements TickHandler {
 	@SideOnly(Side.CLIENT)
 	private void playMusic() {
 		if (Minecraft.getMinecraft().theWorld != null && Minecraft.getMinecraft().theWorld.provider.dimensionId == dimID) {
-			SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
-			StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
-			if (th == null || !th.isAlive()) {
-				sh.stopSounds();
-				ReikaSoundHelper.restartStreamingSystem(sh);
-			}
-			for (CustomMusic s : music) {
+			if (!MonumentCompletionRitual.areRitualsRunning()) {
+				SoundHandler sh = Minecraft.getMinecraft().getSoundHandler();
+				StreamThread th = ReikaSoundHelper.getStreamingThread(sh);
+				if (th == null || !th.isAlive()) {
+					sh.stopSounds();
+					ReikaSoundHelper.restartStreamingSystem(sh);
+				}
 				//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
-				if (sh.isSoundPlaying(s)) {
+				if (currentMusic != null && sh.isSoundPlaying(currentMusic)) {
 					return;
 				}
+				if (musicCooldown > 0) {
+					musicCooldown--;
+					return;
+				}
+				CustomMusic s = music.get(rand.nextInt(music.size()));
+				s.play(sh);
+				currentMusic = s;
+				musicCooldown = 300+rand.nextInt(900);
 			}
-			if (musicCooldown > 0) {
-				musicCooldown--;
-				return;
-			}
-			CustomMusic s = music.get(rand.nextInt(music.size()));
-			s.play(sh);
-			musicCooldown = 300+rand.nextInt(900);
 		}
 	}
 

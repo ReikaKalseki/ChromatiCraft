@@ -39,11 +39,15 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager.ForceChunkEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -87,6 +91,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -104,11 +109,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.TileEntity.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
@@ -126,10 +131,12 @@ import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntityAboutToRayTraceEvent;
+import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
+import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
@@ -173,6 +180,55 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	public void applyNoclipRaytrace(GetPlayerLookEvent evt) {
+		if (Chromabilities.ORECLIP.enabledOn(evt.entityPlayer)) {
+			MovingObjectPosition hit = AbilityHelper.instance.doOreClipRayTrace(evt.entityPlayer.worldObj, evt.playerVec, evt.auxVec, false);
+			evt.newLook = hit != null && hit.typeOfHit == MovingObjectType.BLOCK ? hit : new MovingObjectPosition(0, 0, 0, 0, Vec3.createVectorHelper(0, 0, 0), false);//new MovingObjectPosition(ep);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyNoclipFallProtection(LivingFallEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)evt.entityLiving)) {
+			evt.setCanceled(true);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void applyDimensionFallProtection(LivingFallEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (evt.entityLiving.ticksExisted < 1200) {
+				evt.setCanceled(true);
+			}
+			else {
+				evt.distance = (Math.min(evt.distance, Math.max(1, 0.5F*MathHelper.sqrt_float(evt.distance))));
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyKeepInv(PlayerKeepInventoryEvent evt) {
+		//String tag = "cc_keepinv";
+		//NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(evt.entityPlayer);
+		if (Chromabilities.KEEPINV.enabledOn(evt.entityPlayer)) {
+			//nbt.setBoolean(tag, true);
+			evt.setResult(Result.ALLOW);
+		}
+		/*
+		else if (nbt.getBoolean(tag)) {
+			//nbt.setBoolean(tag, false);
+			//evt.setResult(Result.ALLOW);
+		}
+		 */
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void stopPearlGlitch(EnderTeleportEvent evt) {
+		if (evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+			evt.setCanceled(true);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void applyAggroMask(PigZombieAggroSpreadEvent evt) {
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
@@ -188,7 +244,7 @@ public class ChromaticEventManager {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void applyAggroMask(AttackAggroEvent evt) {
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
@@ -204,8 +260,8 @@ public class ChromaticEventManager {
 		}
 	}
 
-	@SubscribeEvent
-	public void applyUseRepair(EnderAttackTPEvent evt) {
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyEnderLock(EnderAttackTPEvent evt) {
 		DamageSource src = evt.source;
 		if (src.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)src.getEntity();
@@ -352,8 +408,11 @@ public class ChromaticEventManager {
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
 		if (ChromaItems.EXCAVATOR.matchWith(is)) {
 			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency, is) == 1) {
-				evt.newSpeed = 2*evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z); //force same speed on everything, even superhard blocks
-				evt.setCanceled(false);
+				float h = evt.block.getBlockHardness(evt.entityPlayer.worldObj, evt.x, evt.y, evt.z);
+				if (h > 0) {
+					evt.newSpeed = 2*h; //force same speed on everything, even superhard blocks
+					evt.setCanceled(false);
+				}
 			}
 		}
 	}
@@ -739,12 +798,14 @@ public class ChromaticEventManager {
 					e.printStackTrace();
 				}
 				for (EntityItem ei : evt.entityLiving.capturedDrops) {
-					ItemStack is = ei.getEntityItem();
-					if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, ei))) {
+						ItemStack is = ei.getEntityItem();
+						if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
 
-					}
-					else {
-						evt.entityLiving.worldObj.spawnEntityInWorld(ei);
+						}
+						else {
+							evt.entityLiving.worldObj.spawnEntityInWorld(ei);
+						}
 					}
 				}
 				evt.entityLiving.capturedDrops.clear();
@@ -752,10 +813,17 @@ public class ChromaticEventManager {
 				evt.entityLiving.capturedDrops.addAll(li);
 				Iterator<EntityItem> it = evt.drops.iterator();
 				while (it.hasNext()) {
-					ItemStack is = it.next().getEntityItem();
-					if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
-						it.remove();
+					EntityItem ei = it.next();
+					if (!MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, ei))) {
+						ItemStack is = ei.getEntityItem();
+						if (ReikaInventoryHelper.addToIInv(is, ep.inventory)) {
+							it.remove();
+						}
 					}
+				}
+				if (evt.entityLiving instanceof EntityLiving) {
+					ep.addExperience(((EntityLiving)evt.entityLiving).experienceValue);
+					((EntityLiving)evt.entityLiving).experienceValue = 0;
 				}
 			}
 		}
@@ -1067,7 +1135,7 @@ public class ChromaticEventManager {
 	public void carryPotionEffect(AttackEntityEvent ev) {
 		EntityPlayer ep = ev.entityPlayer;
 		Entity tg = ev.target;
-		if (tg instanceof EntityLivingBase) {
+		if (tg instanceof EntityLivingBase && !(ItemPurifyCrystal.isActive(ep) && tg instanceof EntityLivingBase && ReikaEntityHelper.isHostile((EntityLivingBase)tg))) {
 			EntityLivingBase elb = (EntityLivingBase)tg;
 			this.parseInventoryForPendantCarry(ev, elb, ep.inventory.mainInventory, null);
 		}
@@ -1121,7 +1189,7 @@ public class ChromaticEventManager {
 				val = 5;
 			if (e instanceof EntityDragon)
 				val = 10000;
-			if (CrystalPotionController.shouldBeHostile(e.worldObj)) {
+			if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
 				if (e instanceof EntityLiving)
 					((EntityLiving)e).experienceValue = 0;
 				else if (e instanceof EntityPlayer) {

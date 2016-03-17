@@ -88,6 +88,7 @@ public class CrystalMusicManager {
 		sourceElements.addValue(this.isMinorKey(e) ? m.getMinorThird() : m.getMajorThird(), e);
 		sourceElements.addValue(m.getFifth(), e);
 		sourceElements.addValue(m.getOctave(), e);
+		//ReikaJavaLibrary.pConsole("Loaded Notes "+m+"/"+(this.isMinorKey(e) ? m.getMinorThird() : m.getMajorThird())+"/"+m.getFifth()+"/"+m.getOctave()+" for color "+e);
 	}
 
 	public int getBasePitch(CrystalElement e) {
@@ -114,6 +115,25 @@ public class CrystalMusicManager {
 		MusicKey key = baseKeys.get(e);
 		double base = this.getDingPitchScale(e);
 		return base*key.getOctave().getRatio(key);
+	}
+
+	public int getIntervalFor(CrystalElement e, MusicKey key) {
+		MusicKey base = baseKeys.get(e);
+		if (base == key) {
+			return 0;
+		}
+		else if ((this.isMinorKey(e) ? base.getMinorThird() : base.getMajorThird()) == key) {
+			return 1;
+		}
+		else if (base.getFifth() == key) {
+			return 2;
+		}
+		else if (base.getOctave() == key) {
+			return 3;
+		}
+		else {
+			return -1;
+		}
 	}
 
 	public double getDingPitchScale(CrystalElement e) {
@@ -146,7 +166,7 @@ public class CrystalMusicManager {
 	}
 
 	public boolean isMinorKey(CrystalElement e) {
-		if (e == CrystalElement.CYAN || e == CrystalElement.ORANGE)
+		if (e == CrystalElement.CYAN || e == CrystalElement.ORANGE || e == CrystalElement.GREEN || e == CrystalElement.LIGHTGRAY || e == CrystalElement.GRAY)
 			return true;
 		return CrystalPotionController.isBadPotion(e);
 	}

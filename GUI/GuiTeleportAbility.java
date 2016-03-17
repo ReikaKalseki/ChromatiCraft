@@ -50,7 +50,6 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 
 	public GuiTeleportAbility(EntityPlayer ep) {
 		player = ep;
-		points.addAll(AbilityHelper.instance.getTeleportLocations(ep));
 	}
 
 	public void playButtonSound(GuiButton b) {
@@ -85,6 +84,8 @@ public class GuiTeleportAbility extends GuiScreen implements CustomSoundGui {
 			newLabel.setFocused(false);
 			newLabel.setMaxStringLength(24);
 		}
+		points.clear();
+		points.addAll(AbilityHelper.instance.getTeleportLocations(player));
 	}
 
 	@Override

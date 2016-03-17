@@ -68,6 +68,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	private final NonEuclidLayer6 layer6 = new NonEuclidLayer6();
 
 	private UUID door;
+	private Coordinate doorLoc;
 
 	private final HashSet<Coordinate> portals = new HashSet();
 
@@ -244,7 +245,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 		DoorCallback doorCallback = new DoorCallback(door);
 
-		int m = BlockChromaDoor.getMetadata(false, false, true, false);
+		int m = BlockChromaDoor.getMetadata(false, false, true, true);
 
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
 		for (int d = -1; d <= 1; d++) {
@@ -252,6 +253,8 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 			world.setTileEntity(x+d*left.offsetX, y+1, z+d*left.offsetZ, b, m, doorCallback);
 			world.setTileEntity(x+d*left.offsetX, y+2, z+d*left.offsetZ, b, m, doorCallback);
 		}
+
+		doorLoc = new Coordinate(x, y, z);
 	}
 
 	@Override
@@ -272,6 +275,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 	@Override
 	protected void clearCaches() {
 		door = null;
+		doorLoc = null;
 		portals.clear();
 		criteria.clear();
 		actions.clear();
@@ -296,6 +300,11 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		return criteria.get(new Coordinate(x, y, z));
 	}
 
+	@Override
+	public boolean hasBeenSolved(World world) {
+		return BlockChromaDoor.isOpen(world, doorLoc.xCoord, doorLoc.yCoord, doorLoc.zCoord);
+	}
+
 	private static class WindowPlace implements TileCallback {
 
 		private final ForgeDirection direction;
@@ -314,7 +323,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 				((TileEntityTransportWindow)te).renderTexture = false;
 				((TileEntityTransportWindow)te).setUnmineable(true);
 
-				if (other.getBlock(world) == Blocks.air)
+				if (other.getBlock(world) != ChromaTiles.WINDOW.getBlock() || other.getBlockMetadata(world) != ChromaTiles.WINDOW.getBlockMetadata())
 					other.setBlock(world, ChromaTiles.WINDOW.getBlock(), ChromaTiles.WINDOW.getBlockMetadata());
 				TileEntity te2 = other.getTileEntity(world);
 				if (te2 instanceof TileEntityTransportWindow) {
@@ -382,7 +391,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityChromaDoor) {
-				((TileEntityChromaDoor)te).bindUUID(uid);
+				((TileEntityChromaDoor)te).bindUUID(null, uid, 0);
 			}
 		}
 

@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
@@ -80,6 +81,14 @@ public class CompoundRepeaterRecipe extends MultiBlockCastingRecipe implements E
 		super.onCrafted(te, ep);
 
 		ProgressStage.REPEATER.stepPlayerTo(ep);
+	}
+
+	@Override
+	public NBTTagCompound handleNBTResult(TileEntityCastingTable te, EntityPlayer ep, NBTTagCompound tag) {
+		if (tag == null)
+			tag = new NBTTagCompound();
+		tag.setBoolean("boosted", false);
+		return tag;
 	}
 
 }

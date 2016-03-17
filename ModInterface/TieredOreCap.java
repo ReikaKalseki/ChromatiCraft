@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
@@ -43,7 +44,7 @@ public class TieredOreCap extends WandCap {
 
 	@SideOnly(Side.CLIENT)
 	private static void registerTexture(TieredOres t, WandCap cap) {
-		cap.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase()+".png"));
+		cap.setTexture(DirectResourceManager.getResource("Reika/ChromatiCraft/Textures/Wands/cap_"+t.name().toLowerCase(Locale.ENGLISH)+".png"));
 	}
 
 	private TieredOreCap(TieredOres t) {

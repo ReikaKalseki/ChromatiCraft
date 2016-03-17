@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic.Interfaces;
 import java.util.UUID;
 
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public interface CrystalNetworkTile {
@@ -40,5 +41,7 @@ public interface CrystalNetworkTile {
 	public UUID getUniqueID();
 
 	public UUID getPlacerUUID();
+
+	public ResearchLevel getResearchTier();
 
 }

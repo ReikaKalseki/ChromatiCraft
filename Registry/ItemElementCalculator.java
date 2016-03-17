@@ -123,7 +123,7 @@ public class ItemElementCalculator {
 			ChromatiCraft.logger.debug("Recipe contains its own output, possibly recursively.");
 			return empty.copy();
 		}
-		//ChromatiCraft.logger.log("Fetching element calculation data for "+is);
+		ChromatiCraft.logger.debug("Fetching element calculation data for "+is);
 		ElementTagCompound tag = cache.get(is);
 		if (tag == null) {
 			tag = this.calculateTag(is);
@@ -456,7 +456,7 @@ public class ItemElementCalculator {
 				}
 			}
 		}
-		//ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
+		ChromatiCraft.logger.debug("Calculated for "+is+" ("+is.getDisplayName()+"): "+tag);
 		currentCalculation.remove(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 		return tag;
 	}

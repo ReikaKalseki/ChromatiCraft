@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 
 public abstract class TileEntityCrystalBase extends TileEntityChromaticBase implements CrystalNetworkTile {
 
@@ -114,6 +115,10 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 
 	public void onPathConnected(CrystalPath p) {
 
+	}
+
+	public ResearchLevel getResearchTier() {
+		return ResearchLevel.PYLONCRAFT;
 	}
 
 }

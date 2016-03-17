@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.Locale;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -23,7 +25,7 @@ import buildcraft.api.transport.IPipeTile.PipeType;
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public abstract class FluidReceiverChromaticBase extends TileEntityChromaticBase implements IFluidHandler, IPipeConnection {
 
-	protected final HybridTank tank = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase()), this.getCapacity());
+	protected final HybridTank tank = new HybridTank(ReikaStringParser.stripSpaces(this.getTEName().toLowerCase(Locale.ENGLISH)), this.getCapacity());
 
 	public abstract int getCapacity();
 

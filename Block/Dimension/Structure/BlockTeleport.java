@@ -207,11 +207,14 @@ public class BlockTeleport extends Block implements IWailaDataProvider {
 					ChromatiCraft.logger.logError("Could not teleport "+e+"; null destination!");
 				return;
 			}
-			Collection<TriggerCriteria> criteria = this.getGenerator().getCriteria(xCoord, yCoord, zCoord);
-			if (criteria != null) {
-				for (TriggerCriteria c : criteria) {
-					if (!c.isValid(e, this))
-						return;
+			NonEuclideanGenerator g = this.getGenerator();
+			if (g != null) {
+				Collection<TriggerCriteria> criteria = g.getCriteria(xCoord, yCoord, zCoord);
+				if (criteria != null) {
+					for (TriggerCriteria c : criteria) {
+						if (!c.isValid(e, this))
+							return;
+					}
 				}
 			}
 			long time = worldObj.getTotalWorldTime();

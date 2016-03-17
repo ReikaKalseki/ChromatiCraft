@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -33,6 +35,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -44,6 +47,8 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 @Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
@@ -55,7 +60,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		super(mat);
 
 		this.setResistance(600000);
-		this.setHardness(3);
+		//this.setHardness(3);
+		this.setBlockUnbreakable();
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 	}
 
@@ -67,7 +73,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	@Override
 	public float getPlayerRelativeBlockHardness(EntityPlayer ep, World world, int x, int y, int z) {
 		TileEntityChromaDoor te = (TileEntityChromaDoor)world.getTileEntity(x, y, z);
-		return (!te.isOwned() || te.isOwner(ep)) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
+		return te.isOwner(ep) ? super.getPlayerRelativeBlockHardness(ep, world, x, y, z) : -1;
 	}
 
 	@Override
@@ -87,18 +93,22 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		return getBitflag(iba, x, y, z, 4);
 	}
 
+	public static boolean stayOpen(IBlockAccess iba, int x, int y, int z) {
+		return getBitflag(iba, x, y, z, 8);
+	}
+
 	/**
 	 * 1 = open
 	 * 2 = damage
 	 * 4 = one-use
-	 * 8 = ?
+	 * 8 = stay-open
 	 */
 	private static boolean getBitflag(IBlockAccess iba, int x, int y, int z, int bit) {
 		return (iba.getBlockMetadata(x, y, z) & bit) == 1;
 	}
 
-	public static int getMetadata(boolean open, boolean damage, boolean oneuse, boolean blank) {
-		return (open ? 1 : 0) | (damage ? 2 : 0) | (oneuse ? 4 : 0) | (blank ? 8 : 0);
+	public static int getMetadata(boolean open, boolean damage, boolean oneuse, boolean stay) {
+		return (open ? 1 : 0) | (damage ? 2 : 0) | (oneuse ? 4 : 0) | (stay ? 8 : 0);
 	}
 
 	@Override
@@ -168,11 +178,18 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
-		if (!this.isOpen(world, x, y, z) && this.dealDamage(world, x, y, z)) {
-			e.attackEntityFrom(DamageSource.magic, 5F);
-			ReikaEntityHelper.knockbackEntityFromPos(x+0.5, y+0.5, z+0.5, e, 2);
-			e.addVelocity(0, 0.03125, 0);
-			ChromaSounds.DISCHARGE.playSoundAtBlock(world, x, y, z, 0.5F, 2F);
+		if (!this.isOpen(world, x, y, z)) {
+			TileEntityChromaDoor te = (TileEntityChromaDoor)world.getTileEntity(x, y, z);
+			/*
+			if (te.autoOpen) {
+				te.open(20);
+			}
+			else */if (this.dealDamage(world, x, y, z)) {
+				e.attackEntityFrom(DamageSource.magic, 5F);
+				ReikaEntityHelper.knockbackEntityFromPos(x+0.5, y+0.5, z+0.5, e, 2);
+				e.addVelocity(0, 0.03125, 0);
+				ChromaSounds.DISCHARGE.playSoundAtBlock(world, x, y, z, 0.5F, 2F);
+			}
 		}
 	}
 
@@ -266,14 +283,41 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		return tag;
 	}
 
-	public static class TileEntityChromaDoor extends TileEntity {
+	public static class TileEntityChromaDoor extends TileEntity implements SneakPop {
 
 		private UUID uid;
 		private UUID placer;
+		private boolean autoOpen;
+
+		@Override
+		public void updateEntity() {
+			if (!worldObj.isRemote && autoOpen && !isOpen(worldObj, xCoord, yCoord, zCoord)) {
+				if (worldObj.getBlock(xCoord, yCoord-1, zCoord) != this.getBlockType()) {
+					EntityPlayer ep = worldObj.func_152378_a(placer);
+					if (ep != null) {
+						if (Math.abs(ep.posY-yCoord) < 1 && ep.getDistanceSq(xCoord+0.5, yCoord, zCoord+0.5) < 9) {
+							double dx = xCoord+0.5-ep.posX;
+							double dz = zCoord+0.5-ep.posZ;
+							double ang1 = ReikaPhysicsHelper.cartesianToPolar(dx, 0, dz)[2];
+							//double mx = ep.motionX;
+							//double mz = ep.motionZ;
+							//double ang2 = ReikaPhysicsHelper.cartesianToPolar(mx, 0, mz)[2];
+							double ang2 = ep.rotationYaw+180;
+							//ReikaJavaLibrary.pConsole(mx+", "+mz, zCoord == 778);
+							//ReikaJavaLibrary.pConsole(ang1+":"+ang2, zCoord == 778);
+
+							if (true || ReikaMathLibrary.approxr(ang1, ang2, 5)) {
+								this.open(20);
+							}
+						}
+					}
+				}
+			}
+		}
 
 		@Override
 		public boolean canUpdate() {
-			return false;
+			return true;
 		}
 
 		public boolean isOwner(EntityPlayer ep) {
@@ -296,7 +340,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 			this.setStates(true);
 			ChromaSounds.ITEMSTAND.playSoundAtBlock(this, 1, 2F);
 			ChromaSounds.ITEMSTAND.playSoundAtBlock(this, 1, 1F);
-			if (delay > 0)
+			if (delay > 0 && !BlockChromaDoor.stayOpen(worldObj, xCoord, yCoord, zCoord))
 				worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, this.getBlockType(), delay);
 		}
 
@@ -306,12 +350,16 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		}
 
 		private void setStates(boolean open) {
-			StructuredBlockArray b = new StructuredBlockArray(worldObj);
-			b.recursiveAddWithBounds(worldObj, xCoord, yCoord, zCoord, this.getBlockType(), xCoord-8, yCoord-8, zCoord-8, xCoord+8, yCoord+8, zCoord+8);
-			for (Coordinate c : b.keySet()) {
+			for (Coordinate c : this.getDoorBlocks()) {
 				if (matchUIDs(this, (TileEntityChromaDoor)c.getTileEntity(worldObj)))
 					c.setBlockMetadata(worldObj, open ? 1 : 0);
 			}
+		}
+
+		private Collection<Coordinate> getDoorBlocks() {
+			StructuredBlockArray b = new StructuredBlockArray(worldObj);
+			b.recursiveAddWithBounds(worldObj, xCoord, yCoord, zCoord, this.getBlockType(), xCoord-8, yCoord-8, zCoord-8, xCoord+8, yCoord+8, zCoord+8);
+			return b.keySet();
 		}
 
 		private static boolean matchUIDs(TileEntityChromaDoor te1, TileEntityChromaDoor te2) {
@@ -322,8 +370,14 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 			return te1.uid.equals(te2.uid);
 		}
 
-		public void bindUUID(UUID id) {
-			uid = id;
+		public void bindUUID(EntityPlayer ep, UUID id, int flags) {
+			for (Coordinate c : this.getDoorBlocks()) {
+				TileEntityChromaDoor te = (TileEntityChromaDoor)c.getTileEntity(worldObj);
+				if (ep == null || te.isOwner(ep)) {
+					te.uid = id;
+					te.autoOpen = (flags & 1) > 0;
+				}
+			}
 		}
 
 		public void setPlacer(EntityPlayer ep) {
@@ -338,6 +392,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 				NBT.setString("uid", uid.toString());
 			if (placer != null)
 				NBT.setString("ep", placer.toString());
+
+			NBT.setBoolean("auto", autoOpen);
 		}
 
 		@Override
@@ -348,6 +404,19 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 				uid = UUID.fromString(NBT.getString("uid"));
 			if (NBT.hasKey("ep"))
 				placer = UUID.fromString(NBT.getString("ep"));
+
+			autoOpen = NBT.getBoolean("auto");
+		}
+
+		@Override
+		public void drop() {
+			this.getBlockType().dropBlockAsItem(worldObj, xCoord, yCoord, zCoord, 0, 0);
+			worldObj.setBlock(xCoord, yCoord, zCoord, Blocks.air);
+		}
+
+		@Override
+		public boolean canDrop(EntityPlayer ep) {
+			return this.isOwner(ep);
 		}
 
 	}

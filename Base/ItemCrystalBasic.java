@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class ItemCrystalBasic extends ItemChromaMulti {
@@ -20,5 +21,10 @@ public class ItemCrystalBasic extends ItemChromaMulti {
 	@Override
 	public int getNumberTypes() {
 		return CrystalElement.elements.length;
+	}
+
+	@Override
+	public String getTexture(ItemStack is) {
+		return "/Reika/ChromatiCraft/Textures/Items/items_color.png";
 	}
 }

@@ -28,7 +28,7 @@ public class GOLEntrance extends DynamicStructurePiece {
 	@Override
 	public void generate(World world, int x, int z) {
 		Block b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
-		int top = world.getTopSolidOrLiquidBlock(x, z);
+		int top = this.findTop(world, x, z);
 		int ms = BlockType.STONE.metadata;
 		int mg = BlockType.GLASS.metadata;
 		int ml = BlockType.LIGHT.metadata;
@@ -73,6 +73,15 @@ public class GOLEntrance extends DynamicStructurePiece {
 		}
 
 		int r2 = 6;
+
+		for (int dy = top; dy < top+6; dy++) {
+			for (int i = -r2; i <= r2; i++) {
+				for (int k = -r2; k <= r2; k++) {
+					world.setBlock(x+i, dy, z+k, Blocks.air);
+				}
+			}
+		}
+
 		for (int i = 0; i < 6; i++) {
 			int dy = top+i;
 			int m = i == 5 ? BlockType.LIGHT.metadata : BlockType.STONE.metadata;
@@ -107,6 +116,22 @@ public class GOLEntrance extends DynamicStructurePiece {
 		}
 
 		parent.offsetEntry(-10, 0);
+	}
+
+	private int findTop(World world, int x, int z) {
+		int top = -1;
+		for (int i = -2; i <= 2; i++) {
+			for (int k = -2; k <= 2; k++) {
+				int dx = x+i;
+				int dz = z+k;
+				int loc = world.getTopSolidOrLiquidBlock(dx, dz);
+				while (!world.getBlock(dx, loc, dz).isAir(world, dx, loc, dz))
+					loc++;
+				loc--;
+				top = Math.max(top, loc);
+			}
+		}
+		return top;
 	}
 
 	private void generatePrefab(World world, int x, int y, int z, Block b, int ms, int mg, int ml) {

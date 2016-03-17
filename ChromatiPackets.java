@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -25,7 +23,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import thaumcraft.api.aspects.Aspect;
@@ -33,6 +30,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
@@ -53,7 +51,6 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
-import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -73,8 +70,8 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
@@ -105,17 +102,12 @@ import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
-import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromatiPackets implements PacketHandler {
 
@@ -385,11 +377,11 @@ public class ChromatiPackets implements PacketHandler {
 					ChromaResearch r = ChromaResearch.researchList[data[0]];
 					ReikaInventoryHelper.findAndDecrStack(Items.paper, -1, ep.inventory.mainInventory);
 					ReikaInventoryHelper.findAndDecrStack(ReikaItemHelper.inksac, ep.inventory.mainInventory);
-					ItemStack is = ItemInfoFragment.getItem(r);
 					ItemChromaBook book = (ItemChromaBook)ep.getCurrentEquippedItem().getItem();
-					ArrayList<ItemStack> li = book.getItemList(ep.getCurrentEquippedItem());
-					li.add(is);
+					ArrayList<ChromaResearch> li = book.getItemList(ep.getCurrentEquippedItem());
+					li.add(r);
 					book.setItems(ep.getCurrentEquippedItem(), li);
+					book.recoverFragment(ep, r);
 					break;
 				}
 				case BIOMEPAINT: {
@@ -402,7 +394,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				}
 				case GLUON: {
-					this.doGluonClientside(world, data);
+					ChromaFX.doGluonClientside(world, data[0], data[1]);
 					break;
 				}
 				case AURAPOUCH: {
@@ -439,7 +431,7 @@ public class ChromatiPackets implements PacketHandler {
 					AbilityHelper.instance.removeWarpPoint(stringdata, ep);
 					break;
 				case GROWTH:
-					this.doGrowthParticles(world, data);
+					ChromaFX.doGrowthWandParticles(world, data[0], data[1], data[2]);
 					break;
 				case PROGRESSNOTE:
 					ChromaResearchManager.instance.notifyPlayerOfProgression(ep, ChromaResearchManager.instance.getProgressForID(data[0]));
@@ -563,10 +555,16 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityLumenTurret)tile).doAttackParticles(data[0]);
 					break;
 				case MONUMENTCOMPLETE:
-					((TileEntityStructControl)tile).completeMonumentClient(world, x, y, z);
+					MonumentCompletionRitual.completeMonumentClient(world, data[0], data[1], data[2]);
+					break;
+				case RESETMONUMENT:
+					MonumentCompletionRitual.resetSettings(world, data[0], data[1], data[2]);
 					break;
 				case MONUMENTEVENT:
-					((TileEntityStructControl)tile).triggerMonumentEventClient(world, x, y, z);
+					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3], data[4]);
+					break;
+				case MONUMENTEND:
+					((TileEntityStructControl)tile).endMonumentRitual();
 					break;
 				case DASH:
 					ChromaFX.doDashParticles(world, (EntityPlayer)world.getEntityByID(data[0]), data[0] != ep.getEntityId());
@@ -639,6 +637,16 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityCaveLighter)tile).doCompletionParticles();
 					break;
 				}
+				case POWERCRYSDESTROY: {
+					((TileEntityChromaCrystal)tile).doDestroyParticles(world, x, y, z);
+					break;
+				}
+				/*
+				case PYLONJAR: {
+					((TileEntityChromaCrystal)tile).doDestroyParticles(world, x, y, z);
+					break;
+				}
+				 */
 			}
 		}
 		catch (NullPointerException e) {
@@ -647,41 +655,6 @@ public class ChromatiPackets implements PacketHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void doGrowthParticles(World world, int[] data) {
-		int x = data[0];
-		int y = data[1];
-		int z = data[2];
-		double vx = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-		double vy = ReikaRandomHelper.getRandomPlusMinus(0.1875, 0.0625);
-		double vz = ReikaRandomHelper.getRandomPlusMinus(0, 0.0625);
-		EntityFX fx = new EntityBlurFX(world, x+0.5, y+0.125, z+0.5, vx, vy, vz).setColor(0, 192, 0).setScale(1).setLife(20).setGravity(0.25F);
-		fx.noClip = true;
-		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void doGluonClientside(World world, int[] data) {
-		EntityBallLightning src = (EntityBallLightning)world.getEntityByID(data[0]);
-		EntityBallLightning tgt = (EntityBallLightning)world.getEntityByID(data[1]);
-		if (src == null || tgt == null) {
-			//ChromatiCraft.logger.debug("Null ball lightning to receive effect???");
-			return;
-		}
-		Vec3 vec = ReikaVectorHelper.getVec2Pt(src.posX, src.posY, src.posZ, tgt.posX, tgt.posY, tgt.posZ);
-		double lenv = vec.lengthVector();
-		for (float i = 0; i <= lenv; i += 0.125) {
-			double f = i/lenv;
-			double ddx = src.posX-vec.xCoord*f;
-			double ddy = src.posY-vec.yCoord*f;
-			double ddz = src.posZ-vec.zCoord*f;
-			int c = ReikaColorAPI.mixColors(tgt.getRenderColor(), src.getRenderColor(), (float)f);
-			Minecraft.getMinecraft().effectRenderer.addEffect(new EntityBlurFX(world, ddx, ddy, ddz).setColor(c).setLife(8));
-		}
-		src.doBoltClient(tgt);
-		tgt.doBoltClient(src);
 	}
 
 }

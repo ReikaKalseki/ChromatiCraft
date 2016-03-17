@@ -22,7 +22,6 @@ import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.DragonAPI.Exception.WTFException;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 
 public class ContainerBookPages extends Container {
@@ -49,18 +48,10 @@ public class ContainerBookPages extends Container {
 
 		ItemStack tool = player.getCurrentEquippedItem();
 		ItemChromaBook iil = (ItemChromaBook)tool.getItem();
-		ArrayList<ItemStack> li = iil.getItemList(tool);
-		for (ItemStack is : li) {
-			ChromaResearch r = ItemInfoFragment.getResearch(is);
-			if (r == null) {
-				ChromatiCraft.logger.logError("Null research item {"+is.stackTagCompound+"} in the book?!");
-				continue;
-			}
+		ArrayList<ChromaResearch> li = iil.getItemList(tool);
+		for (ChromaResearch r : li) {
 			int idx = ChromaResearch.getAllObtainableFragments().indexOf(r);
-			if (idx < 0) {
-				throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment '"+r+"' in the book!?!", true);
-			}
-			inventory.setInventorySlotContents(idx, is);
+			inventory.setInventorySlotContents(idx, ItemInfoFragment.getItem(r));
 		}
 
 		this.onCraftMatrixChanged(inventory);
@@ -70,11 +61,11 @@ public class ContainerBookPages extends Container {
 	public void onCraftMatrixChanged(IInventory ii) {
 		super.onCraftMatrixChanged(ii);
 
-		ArrayList<ItemStack> li = new ArrayList();
+		ArrayList<ChromaResearch> li = new ArrayList();
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (in != null) {
-				li.add(in);
+				li.add(ItemInfoFragment.getResearch(in));
 			}
 		}
 
@@ -124,6 +115,12 @@ public class ContainerBookPages extends Container {
 
 	@Override
 	public ItemStack slotClick(int slot, int par2, int par3, EntityPlayer ep) {
+		int diff = slot-ChromaResearch.getAllObtainableFragments().size();
+		if (diff >= 0 && diff < 36) {
+			if (ChromaItems.HELP.matchWith(ep.inventory.getStackInSlot(diff))) {
+				return ep.inventory.getItemStack();
+			}
+		}
 		return super.slotClick(slot, par2, par3, ep);
 	}
 
@@ -141,11 +138,11 @@ public class ContainerBookPages extends Container {
 	public void onContainerClosed(EntityPlayer ep) {
 		super.onContainerClosed(ep);
 
-		ArrayList<ItemStack> li = new ArrayList();
+		ArrayList<ChromaResearch> li = new ArrayList();
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (in != null) {
-				li.add(in);
+				li.add(ItemInfoFragment.getResearch(in));
 			}
 		}
 

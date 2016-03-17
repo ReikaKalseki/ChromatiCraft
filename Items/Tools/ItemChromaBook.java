@@ -10,10 +10,12 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,11 +25,13 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
-import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Exception.WTFException;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -100,12 +104,11 @@ public class ItemChromaBook extends ItemChromaTool {
 		GuiNavigation.resetOffset();
 	}
 
-	public void setItems(ItemStack is, ArrayList<ItemStack> li) {
+	public void setItems(ItemStack is, ArrayList<ChromaResearch> li) {
 		if (is == null || is.getItem() != this)
 			return;
 		NBTTagList list = new NBTTagList();
-		for (ItemStack in : li) {
-			ChromaResearch r = ItemInfoFragment.getResearch(in);
+		for (ChromaResearch r : li) {
 			if (r != null) {
 				NBTTagString tag = new NBTTagString(r.name());
 				list.appendTag(tag);
@@ -116,15 +119,28 @@ public class ItemChromaBook extends ItemChromaTool {
 		is.stackTagCompound.setTag("pages", list);
 	}
 
-	public ArrayList<ItemStack> getItemList(ItemStack tool) {
-		ArrayList<ItemStack> li = new ArrayList();
+	public ArrayList<ChromaResearch> getItemList(ItemStack tool) {
+		ArrayList<ChromaResearch> li = new ArrayList();
 		if (tool == null || tool.getItem() != this)
 			return li;
 		if (tool.stackTagCompound != null) {
 			NBTTagList list = tool.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID);
-			for (Object o : list.tagList) {
-				NBTTagString tag = (NBTTagString)o;
-				li.add(ItemInfoFragment.getItem(ChromaResearch.valueOf(tag.func_150285_a_())));
+			Iterator<NBTTagString> it = list.tagList.iterator();
+			while (it.hasNext()) {
+				NBTTagString tag = it.next();
+				String s = tag.func_150285_a_();
+				ChromaResearch r = ChromaResearch.getByName(s);
+				if (r == null) {
+					ChromatiCraft.logger.logError("Null research item {"+s+"} in the book?!");
+					it.remove();
+					continue;
+				}
+				int idx = ChromaResearch.getAllObtainableFragments().indexOf(r);
+				if (idx < 0) {
+					it.remove();
+					throw new WTFException("How did you get a parent (OR NONEXISTENT) fragment '"+r+"' in the book!?!", true);
+				}
+				li.add(r);
 			}
 		}
 		return li;
@@ -160,6 +176,32 @@ public class ItemChromaBook extends ItemChromaTool {
 		if (is.stackTagCompound == null || !is.stackTagCompound.hasKey("pages"))
 			return 0;
 		return is.stackTagCompound.getTagList("pages", NBTTypes.STRING.ID).tagCount();
+	}
+
+	public static void recoverFragment(EntityPlayer ep, ChromaResearch r) {
+		boolean cr = ep.capabilities.isCreativeMode;
+		ItemStack[] inv = ep.inventory.mainInventory;
+		int ink = cr ? -1 : checkForInk(inv);
+		if (cr || ink >= 0) {
+			int paper = cr ? -1 : ReikaInventoryHelper.locateInInventory(Items.paper, inv);
+			if (cr || paper >= 0) {
+				ReikaInventoryHelper.decrStack(paper, inv);
+				ReikaInventoryHelper.decrStack(ink, inv);
+			}
+		}
+	}
+
+	public static int checkForInk(ItemStack[] inv) {
+		for (int i = 0; i < inv.length; i++) {
+			ItemStack in = inv[i];
+			if (in != null) {
+				if (ReikaItemHelper.matchStacks(in, ReikaItemHelper.inksac))
+					return i;
+				else if (ReikaItemHelper.isInOreTag(in, "dyeBlack"))
+					return i;
+			}
+		}
+		return -1;
 	}
 
 }

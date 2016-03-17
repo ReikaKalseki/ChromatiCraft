@@ -38,9 +38,9 @@ public class IridescentCrystalRecipe extends PylonRecipe {
 		this.addAuxItem(Blocks.glowstone, 2, -2);
 		this.addAuxItem(Blocks.glowstone, -2, -2);
 
-		this.addAuraRequirement(CrystalElement.YELLOW, 5000);
-		this.addAuraRequirement(CrystalElement.BLACK, 10000);
-		this.addAuraRequirement(CrystalElement.PURPLE, 5000);
+		this.addAuraRequirement(CrystalElement.YELLOW, 15000);
+		this.addAuraRequirement(CrystalElement.BLACK, 25000);
+		this.addAuraRequirement(CrystalElement.PURPLE, 10000);
 	}
 
 	@Override

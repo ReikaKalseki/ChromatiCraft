@@ -23,8 +23,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -141,6 +143,10 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
 				return false;
 			if (b == ChromaBlocks.CRYSTAL.getBlockInstance())
+				return false;
+			int mx = ChunkProviderChroma.getMonumentGenerator().getPosX();
+			int mz = ChunkProviderChroma.getMonumentGenerator().getPosZ();
+			if (ReikaMathLibrary.py3d(x-mx, 0, z-mz) < 100)
 				return false;
 		}
 		return true;

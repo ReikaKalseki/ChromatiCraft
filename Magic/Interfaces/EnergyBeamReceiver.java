@@ -17,6 +17,6 @@ public interface EnergyBeamReceiver {
 
 	public ImmutableTriple<Double, Double, Double> getTargetRenderOffset(CrystalElement e);
 
-	//public double getIncomingBeamRadius();
+	public double getIncomingBeamRadius();
 
 }

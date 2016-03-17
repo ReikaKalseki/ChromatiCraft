@@ -26,27 +26,20 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
-import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.MystCraftHandler;
-import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -248,13 +241,13 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public int getFireSpreadSpeed(IBlockAccess world, int x, int y, int z, ForgeDirection face) {
 		if (world instanceof World)
-			this.addInstability((World)world, x, y, z); //make burning the tree add the instability back
+			RainbowTreeEffects.addInstability((World)world, x, y, z); //make burning the tree add the instability back
 		return 180;
 	}
 
 	@Override
 	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion e) {
-		this.addInstability(world, x, y, z); //make exploding the tree add the instability back
+		RainbowTreeEffects.addInstability(world, x, y, z); //make exploding the tree add the instability back
 	}
 
 	@Override
@@ -289,132 +282,7 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 			}
 		}*/
 
-		if (!world.isRemote) {
-			if (ModList.THAUMCRAFT.isLoaded()) {
-				if (rand.nextInt(25) == 0)
-					this.fightTaint(world, x, y, z);
-				if (rand.nextInt(20) == 0)
-					this.fightEerie(world, x, y, z);
-				if (rand.nextInt(10) == 0)
-					this.convertPureNodeMagic(world, x, y, z);
-			}
-			if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
-				if (rand.nextInt(20) == 0)
-					this.fightInstability(world, x, y, z);
-				if (rand.nextInt(10) == 0)
-					this.fightDecay(world, x, y, z);
-			}
-			if (ChromaOptions.RAINBOWSPREAD.getState() && rand.nextInt(50) == 0 && world.getBiomeGenForCoords(x, z) == ChromatiCraft.rainbowforest)
-				this.convertToRainbowForest(world, x, y, z);
-		}
-	}
-
-	private void fightDecay(World world, int x, int y, int z) {
-		if (MystCraftHandler.getInstance().decayID != null) {
-			int rx = ReikaRandomHelper.getRandomPlusMinus(x, 64);
-			int rz = ReikaRandomHelper.getRandomPlusMinus(z, 64);
-			ReikaChunkHelper.removeBlocksFromChunk(world, rx, rz, MystCraftHandler.getInstance().decayID, -1);
-		}
-	}
-
-	private void fightInstability(World world, int x, int y, int z) {
-		ReikaMystcraftHelper.decrInstabilityForAge(world, 1);
-	}
-
-	private void addInstability(World world, int x, int y, int z) {
-		ReikaMystcraftHelper.addInstabilityForAge(world, (short)1);
-	}
-
-	private void convertPureNodeMagic(World world, int x, int y, int z) {
-		int rx = ReikaRandomHelper.getRandomPlusMinus(x, 64);
-		int rz = ReikaRandomHelper.getRandomPlusMinus(z, 64);
-
-		if (world.checkChunksExist(rx, 0, rz, rx, 255, rz)) {
-			int r = 3;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = rx+i;
-					int dz = rz+k;
-					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-					int id = biome.biomeID;
-					if (id == ThaumIDHandler.Biomes.MAGICFOREST.getID()) {
-						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
-						if (natural != null && ChromatiCraft.isRainbowForest(natural)) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void fightEerie(World world, int x, int y, int z) {
-		int rx = ReikaRandomHelper.getRandomPlusMinus(x, 32);
-		int rz = ReikaRandomHelper.getRandomPlusMinus(z, 32);
-
-		if (world.checkChunksExist(rx, 0, rz, rx, 255, rz)) {
-			int r = 3;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = rx+i;
-					int dz = rz+k;
-					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-					int id = biome.biomeID;
-					if (id == ThaumIDHandler.Biomes.EERIE.getID()) {
-						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
-						if (natural != null) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void fightTaint(World world, int x, int y, int z) {
-		int rx = ReikaRandomHelper.getRandomPlusMinus(x, 32);
-		int rz = ReikaRandomHelper.getRandomPlusMinus(z, 32);
-
-		if (world.checkChunksExist(rx, 0, rz, rx, 255, rz)) {
-			int r = 3;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = rx+i;
-					int dz = rz+k;
-					BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-					int id = biome.biomeID;
-					if (id == ThaumIDHandler.Biomes.TAINT.getID()) {
-						//ReikaJavaLibrary.pConsole(dx+", "+dz, Side.CLIENT);
-						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
-						if (natural != null) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void convertToRainbowForest(World world, int x, int y, int z) {
-		int rx = ReikaRandomHelper.getRandomPlusMinus(x, 32);
-		int rz = ReikaRandomHelper.getRandomPlusMinus(z, 32);
-
-		if (world.checkChunksExist(rx, 0, rz, rx, 255, rz)) {
-			int r = 3;
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					int dx = rx+i;
-					int dz = rz+k;
-					if (!TileEntityBiomeReverter.stopConversion(world, dx, dz)) {
-						BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
-						int id = biome.biomeID;
-						if (id != ChromatiCraft.rainbowforest.biomeID) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest);
-						}
-					}
-				}
-			}
-		}
+		RainbowTreeEffects.doRainbowTreeEffects(world, x, y, z, 1, 1, r, true);
 	}
 
 	@Override

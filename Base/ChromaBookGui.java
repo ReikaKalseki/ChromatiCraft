@@ -66,8 +66,6 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 
 	protected final ChromaGuis guiType;
 
-	//public static GuiPosition saveLocation = null;
-
 	public static ChromaBookGui lastGui = null;
 
 	private final RegionMap<AuxButton> auxButtons = new RegionMap();

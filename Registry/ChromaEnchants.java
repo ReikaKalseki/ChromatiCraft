@@ -1,4 +1,15 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
+
+import java.util.Locale;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.StatCollector;
@@ -44,7 +55,7 @@ public enum ChromaEnchants implements EnchantmentEnum {
 
 	@Override
 	public String getUnlocalizedName() {
-		return "chroma."+this.name().toLowerCase();
+		return "chroma."+this.name().toLowerCase(Locale.ENGLISH);
 	}
 
 	@Override

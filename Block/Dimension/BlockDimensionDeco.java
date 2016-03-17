@@ -59,6 +59,8 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 
 	public BlockDimensionDeco(Material mat) {
 		super(mat);
+		this.setResistance(5);
+		this.setHardness(0.75F);
 	}
 
 	@Override

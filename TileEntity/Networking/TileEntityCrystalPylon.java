@@ -18,6 +18,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
@@ -77,8 +78,11 @@ import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.RotaryCraft.TileEntities.Weaponry.TileEntityEMP;
 import cpw.mods.fml.relauncher.Side;
@@ -213,6 +217,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 
+		if (!world.getBlock(x, y-1, z).isAir(world, x, y-1, z) && ReikaWorldHelper.isBlockEncased(world, x, y, z, null)) { //Someone attempting to jar
+			this.doJarRejection(world, x, y, z);
+			//ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONJAR.ordinal(), this, 128);
+		}
+
 		long diff = 1;//world.getTotalWorldTime()-lastWorldTick;
 		lastWorldTick = world.getTotalWorldTime();
 
@@ -269,11 +278,86 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		}
 	}
 
+	private void doJarRejection(World world, int x, int y, int z) {
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				for (int k = -1; k <= 1; k++) {
+					if (i != 0 || j != 0 || k != 0) {
+						int dx = x+i;
+						int dy = y+j;
+						int dz = z+k;
+						ReikaSoundHelper.playBreakSound(world, dx, dy, dz, world.getBlock(dx, dy, dz));
+						world.setBlock(dx, dy, dz, Blocks.air);
+					}
+				}
+			}
+		}
+		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.explode", 2, 0.5F);
+		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.explode", 2, 1);
+		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.explode", 2, 2);
+		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 2, 0.5F, 64);
+		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 2, 1F, 64);
+		ChromaSounds.DISCHARGE.playSoundAtBlockNoAttenuation(this, 2, 2F, 64);
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(16, 16, 16);
+		List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+		for (EntityLivingBase e : li) {
+			double dx = e.posX-x-0.5;
+			double dy = e.posY-y-0.5;
+			double dz = e.posZ-z-0.5;
+			double dd = ReikaMathLibrary.py3d(dx, dy, dz);
+			double v = 10;
+			double vy = 3;
+			e.addVelocity(v*dx/dd, vy+0*Math.max(v*dy/dd, vy), v*dz/dd);
+			e.fallDistance = 250;
+			if (e instanceof EntityPlayer) {
+				((EntityPlayer)e).capabilities.allowFlying = false;
+				((EntityPlayer)e).capabilities.isFlying = false;
+			}
+		}
+		if (!world.isRemote) {
+			int n = 8+rand.nextInt(12);
+			for (int i = 0; i < n; i++) {
+				int rx = ReikaRandomHelper.getRandomPlusMinus(x, 12);
+				int ry = ReikaRandomHelper.getRandomPlusMinus(y, 4);
+				int rz = ReikaRandomHelper.getRandomPlusMinus(z, 12);
+				ReikaWorldHelper.ignite(world, rx, ry, rz);
+			}
+			if (rand.nextBoolean())
+				this.destroyPowerCrystals(1);
+		}
+		else
+			this.doJarRejectionParticles(world, x, y, z);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doJarRejectionParticles(World world, int x, int y, int z) {
+		ReikaParticleHelper.EXPLODE.spawnAroundBlockWithOutset(world, x, y, z, 0, 0, 0, 16, 0.25);
+		for (int i = 0; i < 256; i++) {
+			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, -90+rand.nextDouble()*180);
+			fx.setColor(color.getColor()).setScale(2+rand.nextFloat()*8).setLife(40+rand.nextInt(120));
+			fx.particleVelocity = 0.5;
+			fx.angleVelocity *= 2;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		for (int i = 0; i < 16; i++) {
+			this.spawnLightning(world, x, y, z);
+		}
+	}
+
 	@SideOnly(Side.CLIENT)
 	private void spawnLightning(World world, int x, int y, int z) {
 		EntityBallLightningFX e = new EntityBallLightningFX(world, x+0.5, y+0.5, z+0.5, color);
 		e.setVelocity(0.125, rand.nextInt(360), 0);
 		Minecraft.getMinecraft().effectRenderer.addEffect(e);
+	}
+
+	public void destroyPowerCrystals(int n) {
+		ArrayList<TileEntityChromaCrystal> crys = this.getBoosterCrystals(worldObj, xCoord, yCoord, zCoord, false);
+		for (int i = 0; i < n && !crys.isEmpty(); i++) {
+			int idx = rand.nextInt(crys.size());
+			crys.get(idx).destroy();
+			crys.remove(idx);
+		}
 	}
 
 	private void charge(World world, int x, int y, int z, int max, int ticks) {
@@ -287,8 +371,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			energyStep--;
 
 		int a = ticks;
-		if (energy <= max) {
-			ArrayList<TileEntityChromaCrystal> blocks = this.getBoosterCrystals(world, x, y, z);
+		if (energy < max) {
+			ArrayList<TileEntityChromaCrystal> blocks = this.getBoosterCrystals(world, x, y, z, true);
 			int c = this.isEnhanced() ? 3 : 2;
 			for (int i = 0; i < blocks.size(); i++) {
 				energy += a;
@@ -306,8 +390,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			if (blocks.size() == 8) {
 				ProgressStage.POWERCRYSTAL.stepPlayerTo(blocks.get(0).getPlacer());
 			}
-			if (world.isRemote && !blocks.isEmpty())
+			if (world.isRemote && !blocks.isEmpty()) {
 				this.spawnRechargeParticles(world, x, y, z, blocks);
+			}
 		}
 
 		energy = Math.min(energy, this.getCapacity());
@@ -368,14 +453,14 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		return blocks;
 	}
 
-	public ArrayList<TileEntityChromaCrystal> getBoosterCrystals(World world, int x, int y, int z) {
+	public ArrayList<TileEntityChromaCrystal> getBoosterCrystals(World world, int x, int y, int z, boolean matchOwner) {
 		ArrayList<TileEntityChromaCrystal> li = new ArrayList();
 		EntityPlayer owner = null;
 		for (Coordinate c : crystalPositions) {
 			if (ChromaTiles.getTile(world, x+c.xCoord, y+c.yCoord, z+c.zCoord) == ChromaTiles.CRYSTAL) {
 				TileEntityChromaCrystal te = (TileEntityChromaCrystal)world.getTileEntity(x+c.xCoord, y+c.yCoord, z+c.zCoord); {
 					EntityPlayer ep = te.getPlacer();
-					if (ep != null && (owner == null || ep == owner)) {
+					if (!matchOwner || (ep != null && (owner == null || ep == owner))) {
 						if (owner == null)
 							owner = ep;
 						li.add(te);
@@ -847,6 +932,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		enhancing = false;
 		energy = Math.min(energy, this.getMaxStorage(color));
 		this.syncAllData(true);
+	}
+
+	@Override
+	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e) {
+		return new Coordinate(this);
 	}
 
 }

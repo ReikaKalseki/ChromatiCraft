@@ -49,6 +49,8 @@ public enum ChromaSounds implements SoundEnum {
 	DRONE("drone2"),
 	PORTAL("portal2"),
 	ORB("orb"),
+	ORB_HI("orb_hi"),
+	ORB_LO("orb_lo"),
 	GOTODIM("todim"),
 	OVERLOAD("discharge2"),
 	PYLONFLASH("pylonboost"),
@@ -58,7 +60,10 @@ public enum ChromaSounds implements SoundEnum {
 	DASH("dash"),
 	REPEATERSURGE("repeatersurge"),
 	FIRE("fire"),
-	LASER("laser");
+	LASER("laser"),
+	MONUMENT("monument"),
+	MONUMENTRAY("monumentray"),
+	MONUMENTCOMPLETE("monumentcomplete");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -130,13 +135,14 @@ public enum ChromaSounds implements SoundEnum {
 	}
 
 	public void playSoundAtBlockNoAttenuation(TileEntity te, float vol, float pitch, int broadcast) {
-		if (te.worldObj.isRemote)
+		this.playSoundAtBlockNoAttenuation(te.worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, vol, pitch, broadcast);
+	}
+
+	public void playSoundAtBlockNoAttenuation(World world, double x, double y, double z, float vol, float pitch, int broadcast) {
+		if (world.isRemote)
 			return;
-		double x = te.xCoord+0.5;
-		double y = te.yCoord+0.5;
-		double z = te.zCoord+0.5;
 		//ReikaSoundHelper.playSound(this, ChromatiCraft.packetChannel, te.worldObj, x, y, z, vol/* *this.getModulatedVolume()*/, pitch, false);
-		ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, this, te.worldObj, x, y, z, vol, pitch, false, broadcast);
+		ReikaPacketHelper.sendSoundPacket(ChromatiCraft.packetChannel, this, world, x, y, z, vol, pitch, false, broadcast);
 	}
 
 	public void playSoundAtBlock(TileEntity te) {
@@ -180,6 +186,42 @@ public enum ChromaSounds implements SoundEnum {
 
 	@Override
 	public boolean attenuate() {
-		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE;
+		return this != GOTODIM && this != PYLONTURBO && this != PYLONFLASH && this != PYLONBOOSTRITUAL && this != PYLONBOOSTSTART && this != REPEATERSURGE && this != MONUMENT && this != MONUMENTRAY;
+	}
+
+	public boolean hasWiderPitchRange() {
+		return this == DING || this == ORB;
+	}
+
+	public ChromaSounds getUpshiftedPitch() {
+		if (this == DING)
+			return DING_HI;
+		if (this == ORB)
+			return ORB_HI;
+		return this;
+	}
+
+	public ChromaSounds getDownshiftedPitch() {
+		if (this == DING)
+			return DING_LO;
+		if (this == ORB)
+			return ORB_LO;
+		return this;
+	}
+
+	@Override
+	public boolean preload() {
+		switch(this) {
+			case MONUMENT:
+			case CRAFTING:
+			case INFUSION:
+			case ABILITY:
+			case GOTODIM:
+			case PYLONBOOSTRITUAL:
+			case REPEATERSURGE:
+				return true;
+			default:
+				return false;
+		}
 	}
 }

@@ -15,6 +15,8 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -45,20 +47,23 @@ public class CrystalFlow extends CrystalPath {
 		super.initialize();
 		//nodes.getFirst().getTileEntity().NOT A TILE
 		WorldLocation locs = nodes.get(nodes.size()-2);
-		ImmutableTriple<Double, Double, Double> offset = PylonFinder.getReceiverAt(locs, true).getTargetRenderOffset(element);
+		CrystalReceiver r = PylonFinder.getReceiverAt(locs, true);
+		ImmutableTriple<Double, Double, Double> offset = r.getTargetRenderOffset(element);
 		double sx = offset != null ? offset.left : 0;
 		double sy = offset != null ? offset.middle : 0;
 		double sz = offset != null ? offset.right : 0;
-		PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true).addTarget(locs, element, sx, sy, sz);
+		CrystalSource src = PylonFinder.getSourceAt(nodes.get(nodes.size()-1), true);
+		src.addTarget(locs, element, sx, sy, sz, r.getIncomingBeamRadius());
 		for (int i = 1; i < nodes.size()-1; i++) {
 			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
 			if (te instanceof CrystalTransmitter) {
 				WorldLocation tg = nodes.get(i-1);
-				offset = PylonFinder.getReceiverAt(tg, true).getTargetRenderOffset(element);
+				r = PylonFinder.getReceiverAt(tg, true);
+				offset = r.getTargetRenderOffset(element);
 				double dx = offset != null ? offset.left : 0;
 				double dy = offset != null ? offset.middle : 0;
 				double dz = offset != null ? offset.right : 0;
-				((CrystalTransmitter)te).addTarget(tg, element, dx, dy, dz);
+				((CrystalTransmitter)te).addTarget(tg, element, dx, dy, dz, r.getIncomingBeamRadius());
 			}/*
 			if (te instanceof CrystalReceiver) {
 				WorldLocation src = nodes.get(i+1);
@@ -121,6 +126,15 @@ public class CrystalFlow extends CrystalPath {
 
 	private int getDrainThisTick() {
 		return Math.min(Math.min(maxFlow, transmitter.maxThroughput()), remainingAmount);
+	}
+
+	public void tickRepeaters(int amt) {
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof CrystalRepeater) {
+				((CrystalRepeater)te).onTransfer(element, amt);
+			}
+		}
 	}
 
 }

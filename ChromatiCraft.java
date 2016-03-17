@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import mekanism.api.MekanismAPI;
@@ -65,7 +66,6 @@ import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Command.ChromabilityCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
@@ -303,7 +303,7 @@ public class ChromatiCraft extends DragonAPIMod {
 				}
 				else {
 					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes when using some ChromatiCraft content.";
-					msg += " Your pack developer has chosen to disable forcing the argument, but some content will be inaccessible to prevent crashes.";
+					msg += " Your pack developer has chosen to disable forcing the argument, but some content will be inaccessible to prevent crashes. You can add the argument to override the config.";
 					ChromatiCraft.logger.logError(msg);
 					proxy.logPopupWarning(msg);
 					dimensionLoadable = false;
@@ -616,7 +616,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private static void addRerunnableDecorator(ChromaDecorator d, int wt) {
 		RetroGenController.instance.addHybridGenerator(d, wt, ChromaOptions.RETROGEN.getState());
-		decorators.put(d.getCommandID().toLowerCase(), d);
+		decorators.put(d.getCommandID().toLowerCase(Locale.ENGLISH), d);
 	}
 
 	private void addEntities() {
@@ -884,7 +884,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new GuardianCommand());
 		evt.registerServerCommand(new ProgressModifyCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
-		evt.registerServerCommand(new ChromabilityCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
 		evt.registerServerCommand(new ChromaResearchDebugCommand());
 		evt.registerServerCommand(new StructureGenCommand());
@@ -971,7 +970,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private void addTileEntities() {
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
-			String label = "CC"+ChromaTiles.TEList[i].getUnlocalizedName().toLowerCase().replaceAll("\\s","");
+			String label = "CC"+ChromaTiles.TEList[i].getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","");
 			GameRegistry.registerTileEntity(ChromaTiles.TEList[i].getTEClass(), label);
 			ReikaJavaLibrary.initClass(ChromaTiles.TEList[i].getTEClass());
 		}

@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.GUI.Tile;
+package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;

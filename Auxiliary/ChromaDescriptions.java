@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.Language;
@@ -43,6 +44,7 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
@@ -182,8 +184,8 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : machinetabs) {
 			ChromaTiles m = h.getMachine();
-			String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase()+DESC_SUFFIX);
-			String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase()+NOTE_SUFFIX);
+			String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+DESC_SUFFIX);
+			String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+NOTE_SUFFIX);
 			desc = String.format(desc, machineData.get(m));
 			aux = String.format(aux, machineNotes.get(m));
 
@@ -210,13 +212,13 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : blocktabs) {
-			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase());
+			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, blockData.get(h.getBlock()));
 			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : tooltabs) {
-			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase());
+			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, itemData.get(h));
 			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
 				notes.put(h, ((ItemWandBase)h.getItem().getItemInstance()).generateUsageData());
@@ -225,30 +227,30 @@ public final class ChromaDescriptions {
 		}
 
 		for (ChromaResearch h : resourcetabs) {
-			String desc = resources.getValueAtNode("resource:"+h.name().toLowerCase());
+			String desc = resources.getValueAtNode("resource:"+h.name().toLowerCase(Locale.ENGLISH));
 			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : structuretabs) {
-			String desc = structures.getValueAtNode("structure:"+h.name().toLowerCase());
+			String desc = structures.getValueAtNode("structure:"+h.name().toLowerCase(Locale.ENGLISH));
 			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : infotabs) {
-			String desc = infos.getValueAtNode("info:"+h.name().toLowerCase());
+			String desc = infos.getValueAtNode("info:"+h.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, miscData.get(h));
 			addEntry(h, desc);
 		}
 
 		for (ChromaResearch h : abilitytabs) {
 			Chromabilities a = h.getAbility();
-			String desc = abilities.getValueAtNode("ability:"+a.name().toLowerCase());
+			String desc = abilities.getValueAtNode("ability:"+a.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, abilityData.get(a));
 			abilityText.put(a, desc);
 		}
 
 		for (CrystalElement e : CrystalElement.elements) {
-			String desc = elements.getValueAtNode("elements:"+e.name().toLowerCase());
+			String desc = elements.getValueAtNode("elements:"+e.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, elementData.get(e));
 			elementText.put(e, desc);
 		}
@@ -262,9 +264,9 @@ public final class ChromaDescriptions {
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {
 			ProgressStage p = ProgressStage.list[i];
-			String title = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":title");
-			String hint = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":hint");
-			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase()+":reveal");
+			String title = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":title");
+			String hint = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":hint");
+			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":reveal");
 			progressText.put(p, new ProgressNote(title.replaceAll("\\n", ""), hint.replaceAll("\\n", ""), desc.replaceAll("\\n", "")));
 		}
 	}
@@ -315,7 +317,7 @@ public final class ChromaDescriptions {
 	}
 
 	private static void loadNumericalData() {
-		addData(ChromaTiles.REPEATER, TileEntityCrystalPylon.RANGE);
+		addData(ChromaTiles.WEAKREPEATER, TileEntityCrystalPylon.RANGE);
 		addData(ChromaTiles.LASER, TileEntityCrystalLaser.MAX_RANGE);
 		addData(ChromaTiles.BEACON, CrystalElement.RED.displayName);
 		addData(ChromaTiles.LIGHTER, CrystalElement.BLUE.displayName);
@@ -326,6 +328,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
 		//addNotes(ChromaTiles.REPROGRAMMER, TileEntitySpawnerReprogrammer.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.REPEATER, TileEntityCrystalRepeater.RANGE);
+		addNotes(ChromaTiles.WEAKREPEATER, TileEntityWeakRepeater.WEAK_RANGE);
 		addNotes(ChromaTiles.TANK, TileEntityCrystalTank.FACTOR/1000, TileEntityCrystalTank.MAXCAPACITY/1000);
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		//addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());

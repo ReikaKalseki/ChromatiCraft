@@ -38,7 +38,6 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiFragmentRecovery extends ChromaBookGui {
 
@@ -92,31 +91,15 @@ public class GuiFragmentRecovery extends ChromaBookGui {
 		if (r != null) {
 			boolean cr = player.capabilities.isCreativeMode;
 			ItemStack[] inv = player.inventory.mainInventory;
-			int ink = cr ? -1 : this.checkForInk(inv);
+			int ink = cr ? -1 : ItemChromaBook.checkForInk(inv);
 			if (cr || ink >= 0) {
 				int paper = cr ? -1 : ReikaInventoryHelper.locateInInventory(Items.paper, inv);
 				if (cr || paper >= 0) {
 					this.giveResearch(r);
-					ReikaInventoryHelper.decrStack(paper, inv);
-					ReikaInventoryHelper.decrStack(ink, inv);
-					//Minecraft.getMinecraft().thePlayer.playSound("random.click", 2, 1);
-					ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 				}
 			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.33F, 1);
 		}
-	}
-
-	private int checkForInk(ItemStack[] inv) {
-		for (int i = 0; i < inv.length; i++) {
-			ItemStack in = inv[i];
-			if (in != null) {
-				if (ReikaItemHelper.matchStacks(in, ReikaItemHelper.inksac))
-					return i;
-				else if (ReikaItemHelper.isInOreTag(in, "dyeBlack"))
-					return i;
-			}
-		}
-		return -1;
 	}
 
 	@Override

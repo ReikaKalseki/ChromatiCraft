@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -58,7 +59,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
@@ -71,6 +74,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
@@ -86,6 +90,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -101,6 +106,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
+import Reika.ReactorCraft.Entities.EntityRadiation;
 
 import com.google.common.collect.HashBiMap;
 
@@ -134,7 +140,13 @@ public enum Chromabilities implements Ability {
 	DIMPING(null, false),
 	DASH(Phase.END, false),
 	LASER(null, true),
-	FIRERAIN(Phase.START, true);
+	FIRERAIN(Phase.START, true),
+	KEEPINV(null, false),
+	ORECLIP(Phase.START, true),
+	DOUBLECRAFT(null, true),
+	GROWAURA(Phase.END, true),
+	RECHARGE(null, false),
+	MEINV(null, false);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -192,7 +204,7 @@ public enum Chromabilities implements Ability {
 	}
 
 	public String getDisplayName() {
-		return StatCollector.translateToLocal("chromability."+this.name().toLowerCase());
+		return StatCollector.translateToLocal("chromability."+this.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	public String getDescription() {
@@ -228,14 +240,33 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static ElementTagCompound getTickCost(Ability c) {
-		if (c.isTickBased()) {
+		if (c.isTickBased() || c.costsPerTick()) {
 			return AbilityHelper.instance.getUsageElementsFor(c);
 		}
 
-		if (c == HEALTH || c == PYLON || c == LEECH || c == DEATHPROOF || c == BREADCRUMB || c == SPAWNERSEE || c == REACH || c == RANGEDBOOST)
-			return AbilityHelper.instance.getUsageElementsFor(c);
-
 		return null;
+	}
+
+	public boolean costsPerTick() {
+		switch(this) {
+			case HEALTH:
+			case PYLON:
+			case LEECH:
+			case DEATHPROOF:
+			case BREADCRUMB:
+			case SPAWNERSEE:
+			case REACH:
+			case RANGEDBOOST:
+			case FIRERAIN:
+			case KEEPINV:
+			case DASH:
+			case ORECLIP:
+			case GROWAURA:
+			case RECHARGE:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	public void apply(EntityPlayer ep) {
@@ -262,6 +293,11 @@ public enum Chromabilities implements Ability {
 			case FIRERAIN:
 				this.tickFireRain(ep);
 				break;
+			case GROWAURA:
+				this.doGrowthAura(ep);
+				break;
+			case ORECLIP:
+				setNoclipState(ep, true);
 			default:
 				break;
 		}
@@ -316,6 +352,14 @@ public enum Chromabilities implements Ability {
 				return true;
 			case LASER:
 				return doLaserPulse(ep);
+			case ORECLIP:
+				if (this.enabledOn(ep)) {
+					AbilityHelper.instance.onNoClipEnable(ep);
+				}
+				else {
+					AbilityHelper.instance.onNoClipDisable(ep);
+				}
+				return true;
 			default:
 				return false;
 		}
@@ -342,12 +386,15 @@ public enum Chromabilities implements Ability {
 		if (a == LIFEPOINT)
 			use.scale(5);
 		if (a == DIMPING)
-			use.scale(250);
+			use.scale(125);
 		if (a == LASER)
 			use.scale(800);
 
 		boolean flag = enabledOn(ep, a) || a.isPureEventDriven();
 		setToPlayer(ep, !flag, a);
+		if (flag) {
+			a.onRemoveFromPlayer(ep);
+		}
 
 		if (a == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, !flag && data > 0);
@@ -497,6 +544,9 @@ public enum Chromabilities implements Ability {
 			this.setPlayerMaxHealth(ep, 0);
 		else if (this == MAGNET)
 			AbilityHelper.instance.setNoClippingMagnet(ep, false);
+		else if (this == ORECLIP) {
+			setNoclipState(ep, false);
+		}
 	}
 
 	private static void tickFireRain(EntityPlayer ep) {
@@ -588,7 +638,7 @@ public enum Chromabilities implements Ability {
 							boolean flag = false;
 							if ((0.5+0.5*world.rand.nextDouble())*d < r*(0.5+world.rand.nextDouble()*0.5)) {
 								if (ReikaBlockHelper.isOre(b, meta)) {
-									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta, false);
+									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta, ep, false);
 									ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(is);
 									if (out != null) {
 										out = out.copy();
@@ -661,6 +711,57 @@ public enum Chromabilities implements Ability {
 			EntityFX fx = new EntityBlurFX(ep.worldObj, px, dy, pz).setColor(0xffffff).setScale(16).setLife(120).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	private static void doGrowthAura(EntityPlayer ep) {
+		int x = MathHelper.floor_double(ep.posX);
+		int y = MathHelper.floor_double(ep.posY);
+		int z = MathHelper.floor_double(ep.posZ);
+		if (ep.worldObj.isRemote) {
+			doGrowthAuraParticles(ep, x, y, z);
+		}
+		else {
+			RainbowTreeEffects.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, ep.worldObj.rand, false);
+			for (int i = 0; i < 8; i++) {
+				int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);
+				int dz = ReikaRandomHelper.getRandomPlusMinus(z, 8);
+				int dy = ReikaRandomHelper.getRandomPlusMinus(y, 2);
+				ReikaWorldHelper.fertilizeAndHealBlock(ep.worldObj, dx, dy, dz);
+				ep.worldObj.getBlock(dx, dy, dz).updateTick(ep.worldObj, dx, dy, dz, ep.worldObj.rand);
+			}
+			if (ModList.REACTORCRAFT.isLoaded() && ep.worldObj.rand.nextInt(40) == 0) {
+				cleanRadiation(ep);
+			}
+		}
+	}
+
+	@ModDependent(ModList.REACTORCRAFT)
+	private static void cleanRadiation(EntityPlayer ep) {
+		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 8);
+		for (EntityRadiation e : ((List<EntityRadiation>)ep.worldObj.getEntitiesWithinAABB(EntityRadiation.class, box))) {
+			e.clean();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void doGrowthAuraParticles(EntityPlayer ep, int x, int y, int z) {
+		for (int i = 0; i < 4; i++)
+			ChromaFX.doGrowthWandParticles(ep.worldObj, ReikaRandomHelper.getRandomPlusMinus(x, 4), y-1, ReikaRandomHelper.getRandomPlusMinus(z, 4));
+		for (int i = 0; i < 6; i++) {
+			//for (double a = 0; a < 360; a += 12.5) {
+			double a = ep.worldObj.rand.nextDouble()*360;
+			double r = ReikaRandomHelper.getRandomPlusMinus(2, 0.5);
+			float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
+			float s = 1.5F+ep.worldObj.rand.nextFloat();
+			double dx = ep.posX+r*Math.cos(Math.toRadians(a));
+			double dy = ep.posY-1.62;
+			double dz = ep.posZ+r*Math.sin(Math.toRadians(a));
+			int c = CrystalElement.MAGENTA.getColor();
+			int l = 20+ep.worldObj.rand.nextInt(20);
+			EntityFX fx = new EntityBlurFX(ep.worldObj, dx, dy, dz).setGravity(g).setScale(s).setColor(c).setLife(l).setRapidExpand().setIcon(ChromaIcons.CENTER);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		//}
 	}
 
 	private static void doDimensionPing(EntityPlayer ep) {
@@ -1024,7 +1125,9 @@ public enum Chromabilities implements Ability {
 		boolean nrg = PlayerElementBuffer.instance.playerHas(ep, cost);
 		boolean flag = false;
 		if (nrg && ReikaPlayerAPI.playerCanBreakAt(world, toDel, ep) && ReikaPlayerAPI.playerCanBreakAt(world, moved, ep)) {
-			for (ItemStack is : toDel.getAllDroppedItems(world, 0, ep)) {
+			BlockArray toDrop = BlockArray.getIntersectedBox(toDel, moved);
+			toDrop.setWorld(world);
+			for (ItemStack is : toDrop.getAllDroppedItems(world, 0, ep)) {
 				ReikaPlayerAPI.addOrDropItem(is, ep);
 			}
 			toDel.clearArea();
@@ -1105,6 +1208,86 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
+	private static void setNoclipState(EntityPlayer ep, boolean set) {
+		//ep.noClip = set;// && ((ep.capabilities.allowFlying && ep.capabilities.isFlying) || ep.isSneaking() || KeyWatcher.instance.isKeyDown(ep, Key.JUMP));
+		/*if (ep.noClip) {
+			ep.moveEntity(-ep.motionX, -ep.motionY, -ep.motionZ);
+			List<AxisAlignedBB> li = ep.worldObj.getCollidingBoundingBoxes(ep, ep.boundingBox.addCoord(ep.motionX, ep.motionY, ep.motionZ));//AbilityHelper.instance.getNoclipBlockBoxes(ep);
+			//ReikaJavaLibrary.pConsole(locs);
+
+			double d6 = ep.motionX;
+			double d7 = ep.motionY;
+			double d8 = ep.motionZ;
+
+			AxisAlignedBB epbox = ep.boundingBox;//.addCoord(ep.motionX, ep.motionY, ep.motionZ);
+
+			//ReikaJavaLibrary.pConsole("S: "+epbox+"+"+li+"="+(li.isEmpty() ? false : li.get(0).intersectsWith(epbox))+" & "+ep.motionY, Side.SERVER);
+
+			for (AxisAlignedBB box : li) {
+				ep.motionY = box.calculateYOffset(box, ep.motionY);
+			}
+
+			epbox.offset(0.0D, ep.motionY, 0.0D);
+
+			if (!ep.field_70135_K && d7 != ep.motionY) {
+				ep.motionZ = 0.0D;
+				ep.motionY = 0.0D;
+				ep.motionX = 0.0D;
+			}
+
+			boolean flag1 = ep.onGround || d7 != ep.motionY && d7 < 0.0D;
+			int j;
+
+			for (AxisAlignedBB box : li) {
+				ep.motionX = box.calculateXOffset(box, ep.motionX);
+			}
+
+			epbox.offset(ep.motionX, 0.0D, 0.0D);
+
+			if (!ep.field_70135_K && d6 != ep.motionX) {
+				ep.motionZ = 0.0D;
+				ep.motionY = 0.0D;
+				ep.motionX = 0.0D;
+			}
+
+			for (AxisAlignedBB box : li) {
+				ep.motionZ = box.calculateZOffset(box, ep.motionZ);
+			}
+
+			epbox.offset(0.0D, 0.0D, ep.motionZ);
+
+			if (!ep.field_70135_K && d8 != ep.motionZ) {
+				ep.motionZ = 0.0D;
+				ep.motionY = 0.0D;
+				ep.motionX = 0.0D;
+			}
+
+			ep.posX = (epbox.minX + epbox.maxX) / 2.0D;
+			ep.posY = epbox.minY + ep.yOffset - ep.ySize;
+			ep.posZ = (epbox.minZ + epbox.maxZ) / 2.0D;
+			ep.isCollidedHorizontally = d6 != ep.motionX || d8 != ep.motionZ;
+			ep.isCollidedVertically = d7 != ep.motionY;
+			ep.onGround = d7 != ep.motionY && d7 < 0.0D;
+			ep.isCollided = ep.isCollidedHorizontally || ep.isCollidedVertically;
+			//ep.updateFallState(ep.motionY, ep.onGround);
+
+			if (d6 != ep.motionX) {
+				ep.motionX = 0.0D;
+			}
+
+			if (d7 != ep.motionY) {
+				ep.motionY = 0.0D;
+			}
+
+			if (d8 != ep.motionZ) {
+				ep.motionZ = 0.0D;
+			}
+
+
+			//ReikaJavaLibrary.pConsole("E: "+epbox+"+"+li+"="+(li.isEmpty() ? false : li.get(0).intersectsWith(epbox))+" & "+ep.motionY, Side.SERVER);
+		}*/
+	}
+
 	private static void convertBufferToLP(EntityPlayer ep, int data) {
 		ep.heal(data); //undo damage dealt
 		PlayerElementBuffer.instance.removeFromPlayer(ep, TileEntityLifeEmitter.getLumensPerHundredLP());
@@ -1156,7 +1339,7 @@ public enum Chromabilities implements Ability {
 
 	@Override
 	public String getID() {
-		return this.name().toLowerCase();
+		return this.name().toLowerCase(Locale.ENGLISH);
 	}
 
 	@Override

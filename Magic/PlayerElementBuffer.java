@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -149,7 +150,7 @@ public class PlayerElementBuffer {
 	public boolean setElementCap(EntityPlayer ep, int cap, boolean notify) {
 		NBTTagCompound tag = this.getTag(ep);
 		int prev = this.getElementCap(ep);
-		int val = Math.min(cap, 400000);
+		int val = Math.min(cap, this.getPlayerMaximumCap(ep));
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
@@ -163,6 +164,14 @@ public class PlayerElementBuffer {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		}
 		return flag;
+	}
+
+	public int getPlayerMaximumCap(EntityPlayer ep) {
+		return ProgressStage.CTM.isPlayerAtStage(ep) ? 2400000 : 400000;
+	}
+
+	public int getChargeInefficiency(EntityPlayer ep) {
+		return ProgressStage.CTM.isPlayerAtStage(ep) ? 1 : ProgressStage.DIMENSION.isPlayerAtStage(ep) ? 2 : 4;
 	}
 
 	private void sendUpgradePacket(EntityPlayerMP ep) {

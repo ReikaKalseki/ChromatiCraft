@@ -17,7 +17,6 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.Chromabilities;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -51,11 +50,6 @@ public class ChromabilityHandler implements TickHandler {
 				}
 			}
 		}
-		if (DragonAPICore.debugtest)
-			for (Ability c : Chromabilities.getAbilities()) {
-				if (!Chromabilities.playerHasAbility(ep, c))
-					Chromabilities.give(ep, c);
-			}
 	}
 
 	@Override

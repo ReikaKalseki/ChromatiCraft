@@ -52,6 +52,12 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	}
 
 	@Override
+	public final int getLightValue(IBlockAccess world, int x, int y, int z)
+	{
+		return 15;
+	}
+
+	@Override
 	public IIcon getIcon(int s, int meta) {
 		renderPass = 1;
 		this.setLightLevel(1);
