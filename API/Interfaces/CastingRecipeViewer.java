@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.API.CastingAPI;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -96,8 +98,8 @@ public class CastingRecipeViewer {
 	/** Multiblock (Item Casting Stand, 5x5 grid) recipes */
 	public static interface MultiRecipe extends RuneRecipe {
 
-		/** The item input locations. The list is of relative XZ coords, with a given itemstack or list thereof (OreDict).  */
-		public Map<List<Integer>, List<ItemStack>> getInputItems();
+		/** The item input locations. The list is of relative XZ coords, with a given itemstack or set thereof (OreDict).  */
+		public Map<List<Integer>, Set<KeyedItemStack>> getInputItems();
 
 		/** The central item. */
 		public ItemStack getMainInput();

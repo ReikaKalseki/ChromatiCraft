@@ -10,8 +10,6 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import net.minecraft.client.gui.FontRenderer;
@@ -30,19 +28,14 @@ import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Base.GuiBookSection;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
-import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -155,13 +148,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2;
-		try {
-			this.drawAuxData(posX, posY);
-		}
-		catch (Exception e) {
-			ReikaChatHelper.write(Arrays.toString(e.getStackTrace()));
-			e.printStackTrace();
-		}
+		this.drawAuxData(posX, posY);
 	}
 
 	protected void drawAuxData(int posX, int posY) {

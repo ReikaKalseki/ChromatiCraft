@@ -22,6 +22,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.IScribeTools;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.nodes.INode;
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
@@ -65,6 +67,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -215,16 +218,20 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (t == ChromaTiles.STRUCTCONTROL) {
 			//if (!world.isRemote) {
+			ChromatiCraft.logger.debug("Right clicked struct control. Side="+FMLCommonHandler.instance().getEffectiveSide());
 			if (ProgressStage.CTM.playerHasPrerequisites(ep)) {
+				ChromatiCraft.logger.debug("Player has CTM prereqs. Side="+FMLCommonHandler.instance().getEffectiveSide());
 				TileEntityStructControl te = (TileEntityStructControl)tile;
 				if (te.isMonument()) {
-					if (te.triggerMonument(ep))
+					ChromatiCraft.logger.debug("Tile is a monument. Side="+FMLCommonHandler.instance().getEffectiveSide());
+					if (te.triggerMonument(ep)) {
+						ChromatiCraft.logger.debug("Monument triggered. Side="+FMLCommonHandler.instance().getEffectiveSide());
 						ChromaSounds.USE.playSoundAtBlockNoAttenuation(te, 1, 1, 128);
+						return true;
+					}
 				}
 			}
-			else {
-				ChromaSounds.ERROR.playSoundAtBlock(tile);
-			}
+			ChromaSounds.ERROR.playSoundAtBlock(tile);
 			//}
 			return true;
 		}
@@ -309,6 +316,12 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 						((INode)tile).takeFromContainer(asp, 1);
 					}
 				}
+			}
+		}
+
+		if (ModList.APPENG.isLoaded()) {
+			if (InterfaceCache.GRIDHOST.instanceOf(tile)) {
+				AbilityHelper.instance.saveMESystemLocation(ep, tile, s);
 			}
 		}
 

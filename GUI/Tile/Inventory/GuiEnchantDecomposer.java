@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fluids.Fluid;
 
 import org.lwjgl.opengl.GL11;
 
@@ -52,6 +53,13 @@ public class GuiEnchantDecomposer extends GuiChromaBase {
 				api.drawTooltipAt(fontRendererObj, s, mx-32, my);
 			}
 			i++;
+		}
+
+		if (api.isMouseInBox(j+125, j+157, k+18, k+66)) {
+			int level = tile.getChromaLevel();
+			Fluid f = ChromatiCraft.chroma;
+			String s = String.format("%s: %d/%d", f.getLocalizedName(), level, 6000);
+			api.drawTooltipAt(fontRendererObj, s, mx-32, my);
 		}
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

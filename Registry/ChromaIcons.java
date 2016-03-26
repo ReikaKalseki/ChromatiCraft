@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Registry;
 
+import java.util.Calendar;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
@@ -32,7 +34,7 @@ public enum ChromaIcons {
 	LASER("laser_2"),
 	LASEREND("laser_end_2"),
 	BIGFLARE("bigflare"),
-	ROUNDFLARE("roundflare"),
+	ROUNDFLARE(loadAprilTextures() ? "smileflare" : "roundflare"),
 	RINGS("ringrow_fade"),
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
@@ -53,6 +55,7 @@ public enum ChromaIcons {
 	GLOWFRAMEDOT_TRANS("glowframe_dot2"),
 	ALLCOLORS("allcolors"),
 	NODE("node"),
+	NODE2("node2"),
 	TURBO("turbo"),
 	TRIDOT("tridot-strip"),
 	PURPLESPIN("purplespin"),
@@ -91,10 +94,82 @@ public enum ChromaIcons {
 		return "chromaticraft:icons/"+iconName;
 	}
 
+	/*
+	private void register(IIconRegister ico) {
+		String s = this.getIconName();
+		//icon = ico.registerIcon(s);
+		icon = new HardPathIcon(s).register((TextureMap)ico);
+	}
+
+	private String getIconName() {
+		return "Reika/ChromatiCraft/Textures/Icons/Animated/"+iconName+".png";
+	}
+	 */
+
+	private static boolean loadAprilTextures() {
+		Calendar c = Calendar.getInstance();
+		return c.get(Calendar.MONTH) == Calendar.APRIL && c.get(Calendar.DAY_OF_MONTH) <= 2;
+	}
+
+	private static boolean loadXmasTextures() {
+		Calendar c = Calendar.getInstance();
+		return c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 23;
+	}
+
 	public static void registerAll(TextureMap ico) {
 		for (int i = 0; i < iconList.length; i++) {
 			ChromaIcons c = iconList[i];
 			c.register(ico);
+		}
+	}
+
+	public boolean allowTextureModification() {
+		switch(this) {
+			case QUESTION:
+			case FRAME:
+			case GLOWFRAME:
+			case GLOWFRAMEDOT:
+			case GLOWFRAME_TRANS:
+			case GLOWFRAMEDOT_TRANS:
+			case BASICFADE:
+			case BASICFADE_FAST:
+			case REPEATER:
+			case MULTIREPEATER:
+			case BROADCAST:
+			case WEAKREPEATER:
+			case SPARKLEPARTICLE:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public boolean isTransparent() {
+		switch(this) {
+			case BASICFADE:
+			case BASICFADE_FAST:
+			case FRAME:
+			case BATTERY:
+			case REPEATER:
+			case MULTIREPEATER:
+			case BROADCAST:
+			case WEAKREPEATER:
+			case SPARKLEPARTICLE:
+			case TRANSPARENT:
+			case GUARDIANOUTER:
+			case GUARDIANMIDDLE:
+			case GLOWFRAME_TRANS:
+			case GLOWFRAMEDOT_TRANS:
+			case PURPLESPIN:
+			case TRANSFADE:
+			case CHROMA:
+			case NOENTER:
+			case CHECK:
+			case DIAMOND:
+			case QUESTION:
+				return true;
+			default:
+				return false;
 		}
 	}
 

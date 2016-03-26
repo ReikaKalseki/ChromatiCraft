@@ -134,11 +134,11 @@ public class ItemChromaPlacer extends Item implements ISize {
 					return false;
 				}
 			}
-			else if (m != ChromaTiles.COBBLEGEN && (!world.getBlock(x, y-1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)) {
+			else if (m == ChromaTiles.CROPSPEED && world.getBlock(x, y-1, z) != Blocks.farmland && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)
+				return false;
+			else if ((m != ChromaTiles.COBBLEGEN && m != ChromaTiles.CROPSPEED) && (!world.getBlock(x, y-1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)) {
 				return false;
 			}
-			if (m == ChromaTiles.CROPSPEED && world.getBlock(x, y-1, z) != Blocks.farmland && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)
-				return false;
 		}
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
 			return false;

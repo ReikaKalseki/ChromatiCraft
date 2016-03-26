@@ -73,9 +73,11 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 				return false;
 		}
 		this.renderDir(v5, dir, 0, 0, 0, w, h);
-		v5.setColorRGBA_I(0xffffff, 255);
-		v5.setBrightness(240);
-		this.renderConnectivity(v5, ((TileEntityLumenRelay)world.getTileEntity(x, y, z)).getInput(), dir);
+		if (renderPass == 1) {
+			v5.setColorRGBA_I(0xffffff, 255);
+			v5.setBrightness(240);
+			this.renderConnectivity(v5, ((TileEntityLumenRelay)world.getTileEntity(x, y, z)).getInput(), dir);
+		}
 
 		v5.addTranslation(-x, -y, -z);
 		return true;

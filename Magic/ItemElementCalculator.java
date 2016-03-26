@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Registry;
+package Reika.ChromatiCraft.Magic;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,8 +40,11 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
-import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -55,6 +58,9 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class ItemElementCalculator {
 
 	public static final ItemElementCalculator instance = new ItemElementCalculator();
+
+	private static final int MAX_DEPTH = 40;
+
 	private final ItemHashMap<ElementTagCompound> cache = new ItemHashMap();
 
 	private final Collection<ItemInOutHandler> handlers = new ArrayList();
@@ -117,16 +123,22 @@ public class ItemElementCalculator {
 	}
 
 	public ElementTagCompound getValueForItem(ItemStack is) {
+		return this.getValueForItem(is, 0);
+	}
+
+	private ElementTagCompound getValueForItem(ItemStack is, int step) {
 		if (is == null)
 			return empty.copy();
 		if (!currentCalculation.isEmpty() && currentCalculation.contains(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true))) {
 			ChromatiCraft.logger.debug("Recipe contains its own output, possibly recursively.");
 			return empty.copy();
 		}
-		ChromatiCraft.logger.debug("Fetching element calculation data for "+is);
+		//ChromatiCraft.logger.debug("Fetching element calculation data for "+is);
 		ElementTagCompound tag = cache.get(is);
 		if (tag == null) {
-			tag = this.calculateTag(is);
+			if (step > MAX_DEPTH)
+				return empty.copy();
+			tag = this.calculateTag(is, step);
 			cache.put(is, tag);
 		}
 		tag = tag.copy();
@@ -138,22 +150,22 @@ public class ItemElementCalculator {
 		return tag;
 	}
 
-	private ElementTagCompound getFromVanillaCrafting(ItemStack is) {
+	private ElementTagCompound getFromVanillaCrafting(ItemStack is, int step) {
 		ArrayList<IRecipe> li = ReikaRecipeHelper.getAllRecipesByOutput(CraftingManager.getInstance().getRecipeList(), is);
 		ElementTagCompound tag = new ElementTagCompound();
 		for (IRecipe ir : li) {
-			tag.addButMinimizeWith(this.getIRecipeTotal(ir));
+			tag.addButMinimizeWith(this.getIRecipeTotal(ir, step+1));
 		}
 		return tag;
 	}
 
-	private ElementTagCompound getFromVanillaSmelting(ItemStack is) {
+	private ElementTagCompound getFromVanillaSmelting(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		for (Object o : FurnaceRecipes.smelting().getSmeltingList().keySet()) {
 			ItemStack in = (ItemStack)o;
 			ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(in);
 			if (ReikaItemHelper.matchStacks(is, out)) {
-				ElementTagCompound tag2 = this.getValueForItem(in);
+				ElementTagCompound tag2 = this.getValueForItem(in, step+1);
 				tag2.addValueToColor(CrystalElement.ORANGE, 1);
 				tag.addButMinimizeWith(tag2);
 			}
@@ -161,7 +173,7 @@ public class ItemElementCalculator {
 		return tag;
 	}
 
-	private ElementTagCompound getFromChromaCasting(ItemStack is) {
+	private ElementTagCompound getFromChromaCasting(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		ArrayList<CastingRecipe> li = RecipesCastingTable.instance.getAllRecipesMaking(is);
 		for (CastingRecipe c : li) {
@@ -173,7 +185,7 @@ public class ItemElementCalculator {
 	}
 
 	@ModDependent(ModList.ROTARYCRAFT)
-	private ElementTagCompound getFromRCWorktable(ItemStack is) {
+	private ElementTagCompound getFromRCWorktable(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		List<WorktableRecipe> li = WorktableRecipes.getInstance().getRecipeListCopy();
 		for (WorktableRecipe wr : li) {
@@ -185,7 +197,7 @@ public class ItemElementCalculator {
 	}
 
 	@ModDependent(ModList.THERMALEXPANSION)
-	private ElementTagCompound getFromTE3(ItemStack is) {
+	private ElementTagCompound getFromTE3(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		try {
 			Object[] pulv = (Object[])getPulverizer.invoke(null);
@@ -197,36 +209,36 @@ public class ItemElementCalculator {
 			for (int i = 0; i < pulv.length; i++) {
 				Object r = pulv[i];
 				if (ReikaItemHelper.matchStacks(is, (ItemStack)pulverizerOut1.get(r)) || ReikaItemHelper.matchStacks(is, (ItemStack)pulverizerOut2.get(r))) {
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)pulverizerIn.get(r)));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)pulverizerIn.get(r), step+1));
 				}
 			}
 
 			for (int i = 0; i < sawm.length; i++) {
 				Object r = sawm[i];
 				if (ReikaItemHelper.matchStacks(is, (ItemStack)sawmillOut1.get(r)) || ReikaItemHelper.matchStacks(is, (ItemStack)sawmillOut2.get(r))) {
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)sawmillIn.get(r)));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)sawmillIn.get(r), step+1));
 				}
 			}
 
 			for (int i = 0; i < smelt.length; i++) {
 				Object r = smelt[i];
 				if (ReikaItemHelper.matchStacks(is, (ItemStack)smelterOut1.get(r)) || ReikaItemHelper.matchStacks(is, (ItemStack)smelterOut2.get(r))) {
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)smelterIn1.get(r)));
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)smelterIn2.get(r)));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)smelterIn1.get(r), step+1));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)smelterIn2.get(r), step+1));
 				}
 			}
 
 			for (int i = 0; i < transp1.length; i++) {
 				Object r = transp1[i];
 				if (ReikaItemHelper.matchStacks(is, (ItemStack)transposerOut.get(r))) {
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)transposerIn.get(r)));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)transposerIn.get(r), step+1));
 				}
 			}
 
 			for (int i = 0; i < transp2.length; i++) {
 				Object r = transp2[i];
 				if (ReikaItemHelper.matchStacks(is, (ItemStack)transposerOut.get(r))) {
-					tag.addButMinimizeWith(this.getValueForItem((ItemStack)transposerIn.get(r)));
+					tag.addButMinimizeWith(this.getValueForItem((ItemStack)transposerIn.get(r), step+1));
 				}
 			}
 		}
@@ -237,7 +249,7 @@ public class ItemElementCalculator {
 	}
 
 	@ModDependent(ModList.THAUMCRAFT)
-	private ElementTagCompound getFromThaumCraft(ItemStack is) {
+	private ElementTagCompound getFromThaumCraft(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		try {
 			List li = ThaumcraftApi.getCraftingRecipes();
@@ -248,7 +260,7 @@ public class ItemElementCalculator {
 						Object[] in = sr.getInput();
 						for (int i = 0; i < in.length; i++) {
 							Object o2 = in[i];
-							tag.addButMinimizeWith(this.getTagForItemOrList(o2));
+							tag.addButMinimizeWith(this.getTagForItemOrList(o2, step+1));
 						}
 						tag.addValueToColor(CrystalElement.BLACK, 1);
 						for (Aspect a : sr.aspects.aspects.keySet()) {
@@ -263,7 +275,7 @@ public class ItemElementCalculator {
 					if (ReikaItemHelper.matchStacks(sr.getRecipeOutput(), is)) {
 						ArrayList<Object> in = sr.getInput();
 						for (Object o2 : in) {
-							tag.addButMinimizeWith(this.getTagForItemOrList(o2));
+							tag.addButMinimizeWith(this.getTagForItemOrList(o2, step+1));
 						}
 						tag.addValueToColor(CrystalElement.BLACK, 1);
 						for (Aspect a : sr.aspects.aspects.keySet()) {
@@ -276,7 +288,7 @@ public class ItemElementCalculator {
 				else if (o instanceof CrucibleRecipe) {
 					CrucibleRecipe cr = (CrucibleRecipe)o;
 					if (ReikaItemHelper.matchStacks(cr.getRecipeOutput(), is)) {
-						tag.addButMinimizeWith(this.getTagForItemOrList(cr.catalyst));
+						tag.addButMinimizeWith(this.getTagForItemOrList(cr.catalyst, step+1));
 						tag.addValueToColor(CrystalElement.BLACK, 1);
 						for (Aspect a : cr.aspects.aspects.keySet()) {
 							ElementTagCompound asp = ChromaAspectManager.instance.getElementCost(a, 0);
@@ -288,11 +300,11 @@ public class ItemElementCalculator {
 				else if (o instanceof InfusionRecipe) {
 					InfusionRecipe ir = (InfusionRecipe)o;
 					if (ir.getRecipeOutput() instanceof ItemStack && ReikaItemHelper.matchStacks((ItemStack)ir.getRecipeOutput(), is)) {
-						tag.addButMinimizeWith(this.getValueForItem(ir.getRecipeInput()));
+						tag.addButMinimizeWith(this.getValueForItem(ir.getRecipeInput(), step+1));
 						ItemStack[] parts = ir.getComponents();
 						for (int i = 0; i < parts.length; i++) {
 							ItemStack in = parts[i];
-							tag.addButMinimizeWith(this.getValueForItem(in));
+							tag.addButMinimizeWith(this.getValueForItem(in, step+1));
 						}
 						tag.addValueToColor(CrystalElement.BLACK, 2);
 						for (Aspect a : ir.getAspects().aspects.keySet()) {
@@ -312,7 +324,7 @@ public class ItemElementCalculator {
 
 	/*
 	@ModDependent(ModList.BCSILICON)
-	private ElementTagCompound getFromBCLasers(ItemStack is) {
+	private ElementTagCompound getFromBCLasers(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		try {
 			TileAssemblyTable fakeTable = new TileAssemblyTable();
@@ -343,7 +355,7 @@ public class ItemElementCalculator {
 	 */
 	/*
 	@ModDependent(ModList.TINKERER)
-	private ElementTagCompound getFromTinkerTable(ItemStack is) {
+	private ElementTagCompound getFromTinkerTable(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		try {
 			for (tconstruct.library.crafting.CastingRecipe cr : TConstructRegistry.instance.getTableCasting().getCastingRecipes()) {
@@ -394,7 +406,7 @@ public class ItemElementCalculator {
 	 */
 	/*
 	@ModDependent(ModList.APPENG)
-	private ElementTagCompound getFromAECrafting(ItemStack is) {
+	private ElementTagCompound getFromAECrafting(ItemStack is, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		try {
 			for (InscriberRecipe ir : Inscribe.RECIPES) {
@@ -420,7 +432,7 @@ public class ItemElementCalculator {
 
 	//In case of multiple recipes, need to take cheapest tag of each color possible, as risk exploit otherwise
 	//check : Crafting, Smelting, TE3 machines, BC laser table, ChromatiCraft manufacture, TiC, Thaumcraft
-	private ElementTagCompound calculateTag(ItemStack is) {
+	private ElementTagCompound calculateTag(ItemStack is, int step) {
 		ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(is);
 		if (tag != null)
 			return tag; //Basic registry overrides anything else
@@ -428,15 +440,15 @@ public class ItemElementCalculator {
 		tag = new ElementTagCompound();
 		currentCalculation.add(new KeyedItemStack(is).setIgnoreNBT(true).setSimpleHash(true));
 
-		tag.addButMinimizeWith(this.getFromVanillaCrafting(is));
-		tag.addButMinimizeWith(this.getFromVanillaSmelting(is));
-		tag.addButMinimizeWith(this.getFromChromaCasting(is));
+		tag.addButMinimizeWith(this.getFromVanillaCrafting(is, step));
+		tag.addButMinimizeWith(this.getFromVanillaSmelting(is, step));
+		tag.addButMinimizeWith(this.getFromChromaCasting(is, step));
 		if (ModList.ROTARYCRAFT.isLoaded())
-			tag.addButMinimizeWith(this.getFromRCWorktable(is));
+			tag.addButMinimizeWith(this.getFromRCWorktable(is, step));
 		if (ModList.THERMALEXPANSION.isLoaded())
-			tag.addButMinimizeWith(this.getFromTE3(is));
+			tag.addButMinimizeWith(this.getFromTE3(is, step));
 		if (ModList.THAUMCRAFT.isLoaded())
-			tag.addButMinimizeWith(this.getFromThaumCraft(is));
+			tag.addButMinimizeWith(this.getFromThaumCraft(is, step));
 		if (ModList.BCSILICON.isLoaded())
 			;//tag.addButMinimizeWith(this.getFromBCLasers(is));
 		if (ModList.TINKERER.isLoaded())
@@ -447,7 +459,7 @@ public class ItemElementCalculator {
 			Collection<ItemStack> c = h.getInputItemsFor(is);
 			if (c != null && !c.isEmpty()) {
 				for (ItemStack in : c)
-					tag.addButMinimizeWith(this.getValueForItem(in));
+					tag.addButMinimizeWith(this.getValueForItem(in, step));
 				Collection<CrystalElementProxy> c2 = h.getBonusElements();
 				if (c2 != null && !c2.isEmpty()) {
 					for (CrystalElementProxy e : c2) {
@@ -462,12 +474,16 @@ public class ItemElementCalculator {
 	}
 
 	public ElementTagCompound getIRecipeTotal(IRecipe ir) {
+		return this.getIRecipeTotal(ir, 0);
+	}
+
+	private ElementTagCompound getIRecipeTotal(IRecipe ir, int step) {
 		ElementTagCompound tag = new ElementTagCompound();
 		if (ir instanceof ShapedRecipes) {
 			ShapedRecipes sr = (ShapedRecipes)ir;
 			for (int k = 0; k < sr.recipeItems.length; k++) {
 				ItemStack in = sr.recipeItems[k];
-				ElementTagCompound value = this.getValueForItem(in);
+				ElementTagCompound value = this.getValueForItem(in, step+1);
 				tag.addButMinimizeWith(value);
 			}
 		}
@@ -475,7 +491,7 @@ public class ItemElementCalculator {
 			ShapelessRecipes sr = (ShapelessRecipes)ir;
 			for (int k = 0; k < sr.recipeItems.size(); k++) {
 				ItemStack in = (ItemStack)sr.recipeItems.get(k);
-				ElementTagCompound value = this.getValueForItem(in);
+				ElementTagCompound value = this.getValueForItem(in, step+1);
 				tag.addButMinimizeWith(value);
 			}
 		}
@@ -483,7 +499,7 @@ public class ItemElementCalculator {
 			ShapedOreRecipe sr = (ShapedOreRecipe)ir;
 			for (int k = 0; k < sr.getInput().length; k++) {
 				Object in = sr.getInput()[k];
-				ElementTagCompound value = this.getTagForItemOrList(in);
+				ElementTagCompound value = this.getTagForItemOrList(in, step);
 				tag.addButMinimizeWith(value);
 			}
 		}
@@ -491,26 +507,26 @@ public class ItemElementCalculator {
 			ShapelessOreRecipe sr = (ShapelessOreRecipe)ir;
 			for (int k = 0; k < sr.getInput().size(); k++) {
 				Object in = sr.getInput().get(k);
-				ElementTagCompound value = this.getTagForItemOrList(in);
+				ElementTagCompound value = this.getTagForItemOrList(in, step);
 				tag.addButMinimizeWith(value);
 			}
 		}
 		return tag;
 	}
 
-	private ElementTagCompound getTagForItemOrList(Object in) {
+	private ElementTagCompound getTagForItemOrList(Object in, int step) {
 		if (in instanceof ItemStack)
-			return this.getValueForItem((ItemStack)in);
+			return this.getValueForItem((ItemStack)in, step+1);
 		else if (in instanceof Block)
-			return this.getValueForItem(new ItemStack((Block)in));
+			return this.getValueForItem(new ItemStack((Block)in), step+1);
 		else if (in instanceof Item)
-			return this.getValueForItem(new ItemStack((Item)in));
+			return this.getValueForItem(new ItemStack((Item)in), step+1);
 		else if (in instanceof ArrayList) {
 			ArrayList li = (ArrayList)in;
 			ElementTagCompound tag = new ElementTagCompound();
 			for (int i = 0; i < li.size(); i++) {
 				ItemStack is = (ItemStack)li.get(i);
-				ElementTagCompound value = this.getValueForItem(is);
+				ElementTagCompound value = this.getValueForItem(is, step+1);
 				tag.addButMinimizeWith(value);
 			}
 			return tag;

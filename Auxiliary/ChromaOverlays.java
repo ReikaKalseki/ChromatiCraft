@@ -107,6 +107,8 @@ public class ChromaOverlays {
 	private int washout;
 	private CrystalElement washoutColor;
 
+	private static final double FRONT_TRANSLATE = 930;
+
 	private ChromaOverlays() {
 
 	}
@@ -133,6 +135,8 @@ public class ChromaOverlays {
 
 	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
 	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glPushMatrix();
 		tick++;
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		ItemStack is = ep.getCurrentEquippedItem();
@@ -164,12 +168,18 @@ public class ChromaOverlays {
 			else if (ChromaItems.TRANSITION.matchWith(is)) {
 				this.renderTransitionHUD(ep, evt.resolution, is);
 			}
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderAbilityStatus(ep, gsc);
+			GL11.glPopMatrix();
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
 				this.renderPylonAura(ep, gsc);
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderProgressOverlays(ep, gsc);
 			this.renderPingOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
+			GL11.glPopMatrix();
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			this.renderCustomCrosshair(evt);
@@ -177,6 +187,8 @@ public class ChromaOverlays {
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
 		}
+		GL11.glPopMatrix();
+		GL11.glPopAttrib();
 	}
 
 	public boolean isWashoutActive() {
@@ -431,7 +443,7 @@ public class ChromaOverlays {
 
 				GL11.glEnable(GL11.GL_LIGHTING);
 
-				ReikaGuiAPI.instance.drawItemStack(itemRender, fr, p.getIcon(), x+4, dy+4);
+				p.renderIcon(itemRender, fr, x+4, dy+4);
 
 			}
 
@@ -797,7 +809,7 @@ public class ChromaOverlays {
 			v5.addVertexWithUV(x+16, y+0, 0, 1, 0);
 			v5.addVertexWithUV(x+0, y+0, 0, 0, 0);
 			v5.draw();
-			ElementTagCompound tag = Chromabilities.getTickCost(c);
+			ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
 			if (tag != null) {
 				ReikaTextureHelper.bindTerrainTexture();
 				int k = 0;

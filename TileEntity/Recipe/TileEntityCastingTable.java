@@ -33,7 +33,6 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.ItemMatch;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -61,6 +60,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -603,12 +603,16 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 			inv[9].stackTagCompound = activeRecipe.handleNBTResult(this, craftingPlayer, inv[9].stackTagCompound);
 			MinecraftForge.EVENT_BUS.post(new CastingEvent(this, activeRecipe, craftingPlayer, inv[9].copy()));
+			int push = inv[9].stackSize;
 			for (int i = 0; i < 6; i++) {
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
 				if (te instanceof IInventory) {
-					if (ReikaInventoryHelper.addToIInv(inv[9], (IInventory)te)) {
-						inv[9] = null;
-						break;
+					int amt = Math.min(inv[9].getMaxStackSize(), push);
+					if (ReikaInventoryHelper.addToIInv(ReikaItemHelper.getSizedItemStack(inv[9], amt), (IInventory)te)) {
+						ReikaInventoryHelper.decrStack(9, this, amt);
+						push -= amt;
+						if (push <= 0)
+							break;
 					}
 				}
 			}
@@ -844,6 +848,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		super.getTagsToWriteToStack(NBT);
 		NBT.setInteger("lvl", this.getTier().ordinal());
 		NBT.setInteger("xp", tableXP);
+		NBT.setBoolean("enhance", isEnhanced);
 
 		this.writeRecipes(NBT);
 	}
@@ -857,6 +862,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					int lvl = is.stackTagCompound.getInteger("lvl");
 					tier = RecipeType.typeList[lvl];
 					tableXP = is.stackTagCompound.getInteger("xp");
+					isEnhanced = is.stackTagCompound.getBoolean("enhance");
 				}
 			}
 		}

@@ -149,6 +149,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return 5;
 		if (e == Enchantment.respiration)
 			return 5;
+		if (e == Enchantment.power)
+			return 10;
+		if (e == Enchantment.sharpness)
+			return 10;
 		return e.getMaxLevel();
 	}
 

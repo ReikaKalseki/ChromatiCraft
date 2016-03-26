@@ -39,7 +39,7 @@ public class ChromabilityHandler implements TickHandler {
 				if (Chromabilities.canPlayerExecuteAt(ep, c))
 					c.apply(ep);
 				if (ReikaRandomHelper.doWithChance(0.002)) { //was 0.0002
-					ElementTagCompound tag = Chromabilities.getTickCost(c);
+					ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
 					if (tag != null) {
 						if (PlayerElementBuffer.instance.playerHas(ep, tag))
 							PlayerElementBuffer.instance.removeFromPlayer(ep, tag);

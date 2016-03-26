@@ -107,7 +107,6 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ChromaResearchDebugCommand;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -581,13 +580,13 @@ public class ChromatiCraft extends DragonAPIMod {
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];
 			if (!ir.isDummiedOut() && ir != ChromaItems.TOOL) {
-				SensitiveItemRegistry.instance.registerItem(ir.getItemInstance());
+				SensitiveItemRegistry.instance.registerItem(this, ir.getItemInstance(), false);
 			}
 		}
 
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 			ChromaBlocks ir = ChromaBlocks.blockList[i];
-			SensitiveItemRegistry.instance.registerItem(ir.getBlockInstance());
+			SensitiveItemRegistry.instance.registerItem(this, ir.getBlockInstance(), false);
 		}
 
 		if (MTInteractionManager.isMTLoaded()) {
@@ -885,7 +884,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ProgressModifyCommand());
 		evt.registerServerCommand(new NetworkLoggerCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
-		evt.registerServerCommand(new ChromaResearchDebugCommand());
 		evt.registerServerCommand(new StructureGenCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());

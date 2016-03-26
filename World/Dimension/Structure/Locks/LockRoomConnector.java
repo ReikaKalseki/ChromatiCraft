@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.common.util.ForgeDirection;

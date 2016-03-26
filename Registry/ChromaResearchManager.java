@@ -19,7 +19,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 
-import net.minecraft.command.ICommandSender;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -39,15 +40,18 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
-import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 import com.google.common.collect.HashBiMap;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public final class ChromaResearchManager implements ResearchRegistry {
 
@@ -499,37 +503,14 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 		@Override
 		//@SideOnly(Side.CLIENT)
-		public ItemStack getIcon() {
-			return ChromaItems.FRAGMENT.getStackOf();
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+			ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaItems.FRAGMENT.getStackOf(), x, y);
 		}
 
 		@Override
 		public String getFormatting() {
 			return EnumChatFormatting.BOLD.toString();
 		}
-	}
-
-	public static class ChromaResearchDebugCommand extends DragonCommandBase {
-
-		@Override
-		public void processCommand(ICommandSender ics, String[] args) {
-			EntityPlayer ep = this.getCommandSenderAsPlayer(ics);
-			if (args[0].toLowerCase(Locale.ENGLISH).equals("fragments"))
-				ChromatiCraft.logger.log("Next fragments for "+ep.getCommandSenderName()+": "+instance.getNextResearchesFor(ep, true));
-			if (args[0].toLowerCase(Locale.ENGLISH).equals("level"))
-				instance.checkForUpgrade(ep, true);
-		}
-
-		@Override
-		public String getCommandString() {
-			return "chromaresearchdebug";
-		}
-
-		@Override
-		protected boolean isAdminOnly() {
-			return true;
-		}
-
 	}
 
 	private static final class ChromaResearchComparator implements Comparator<ChromaResearch> {
@@ -561,8 +542,9 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		//@SideOnly(Side.CLIENT)
 		public String getShortDesc();
 
-		//@SideOnly(Side.CLIENT)
-		public ItemStack getIcon();
+		@SideOnly(Side.CLIENT)
+		//public ItemStack getIcon();
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y);
 
 		//@SideOnly(Side.CLIENT)
 		public String getFormatting();

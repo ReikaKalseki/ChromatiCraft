@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -53,8 +55,10 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -193,9 +197,9 @@ public class ProgressionManager implements ProgressRegistry {
 			return ChromaDescriptions.getProgressText(this).reveal;
 		}
 
-		//@SideOnly(Side.CLIENT)
-		public ItemStack getIcon() {
-			return icon.copy();
+		@SideOnly(Side.CLIENT)
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+			ReikaGuiAPI.instance.drawItemStack(ri, fr, icon, x, y);
 		}
 
 		public boolean isGatedAfter(ProgressStage p) {
@@ -587,7 +591,8 @@ public class ProgressionManager implements ProgressRegistry {
 			else {
 				playerMap.remove(ep.getCommandSenderName(), s);
 			}
-			this.updateChunks(ep);
+			if (notify)
+				this.updateChunks(ep);
 		}
 	}
 
@@ -595,10 +600,12 @@ public class ProgressionManager implements ProgressRegistry {
 		NBTTagList li = this.getNBTList(ep);
 		li.tagList.clear();
 		Collection<ProgressStage> c = playerMap.remove(ep.getCommandSenderName());
-		if (ep instanceof EntityPlayerMP) {
-			EntityPlayerMP emp = (EntityPlayerMP)ep;
-			for (ProgressStage p : c) {
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), emp, p.ordinal(), 0);
+		if (notify) {
+			if (ep instanceof EntityPlayerMP) {
+				EntityPlayerMP emp = (EntityPlayerMP)ep;
+				for (ProgressStage p : c) {
+					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.GIVEPROGRESS.ordinal(), emp, p.ordinal(), 0);
+				}
 			}
 		}
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(MAIN_NBT_TAG, li);
@@ -608,7 +615,8 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 		if (ep instanceof EntityPlayerMP)
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-		this.updateChunks(ep);
+		if (notify)
+			this.updateChunks(ep);
 	}
 
 	public void maxPlayerProgression(EntityPlayer ep, boolean notify) {
@@ -638,7 +646,8 @@ public class ProgressionManager implements ProgressRegistry {
 				this.checkPlayerColors(ep);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			this.updateChunks(ep);
+			if (notify)
+				this.updateChunks(ep);
 			if (disc && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
 		}
@@ -652,11 +661,11 @@ public class ProgressionManager implements ProgressRegistry {
 		ProgressStage.ALLCOLORS.stepPlayerTo(ep);
 	}
 
-	private void updateChunks(EntityPlayer ep) {
+	public void updateChunks(EntityPlayer ep) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			ReikaRenderHelper.rerenderAllChunks();
 		else
-			ReikaPacketHelper.sendUpdatePacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), ep.worldObj, 0, 0, 0);
+			ReikaPacketHelper.sendUpdatePacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), 0, 0, 0, new PacketTarget.PlayerTarget((EntityPlayerMP)ep));
 	}
 
 	public boolean hasPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e) {
@@ -696,9 +705,9 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		@Override
-		//@SideOnly(Side.CLIENT)
-		public ItemStack getIcon() {
-			return ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal());
+		@SideOnly(Side.CLIENT)
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+			ReikaGuiAPI.instance.drawItemStack(ri, fr, ChromaBlocks.RUNE.getStackOfMetadata(color.ordinal()), x, y);
 		}
 
 		@Override
@@ -744,12 +753,12 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 
 		@Override
-		//@SideOnly(Side.CLIENT)
-		public ItemStack getIcon() {
+		@SideOnly(Side.CLIENT)
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
 			ItemStack is = ChromaTiles.DIMENSIONCORE.getCraftedProduct();
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("color", color.ordinal());
-			return is;
+			ReikaGuiAPI.instance.drawItemStack(ri, fr, is, x, y);
 		}
 
 		@Override
@@ -857,7 +866,8 @@ public class ProgressionManager implements ProgressRegistry {
 				this.checkPlayerStructures(ep);
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
-			this.updateChunks(ep);
+			if (notify)
+				this.updateChunks(ep);
 			if (set && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
 		}

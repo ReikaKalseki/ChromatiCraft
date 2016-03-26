@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -146,6 +147,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -177,6 +179,14 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyNoclipSuffocationPrevention(LivingHurtEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)evt.entityLiving) && evt.source == DamageSource.inWall) {
+			evt.ammount = 0;
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent
@@ -504,7 +514,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent
 	public void keepReachMiningFast(net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed evt) {
-		if (evt.entityPlayer.isInWater() || !evt.entityPlayer.onGround) {
+		if (evt.entityPlayer.isInsideOfMaterial(Material.water) || !evt.entityPlayer.onGround) {
 			if (Chromabilities.REACH.enabledOn(evt.entityPlayer)) {
 				evt.newSpeed *= 5;
 			}
@@ -946,7 +956,7 @@ public class ChromaticEventManager {
 			if (is != null) {
 				if (is.getItem() == BloodMagicHandler.getInstance().orbID || BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
 					if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
-						ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT);
+						ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
 						tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
 						if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
 							Chromabilities.LIFEPOINT.trigger(ep, 3);
@@ -1197,21 +1207,27 @@ public class ChromaticEventManager {
 				}
 			}
 			else {
+				int orbs = 0;
 				if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOfMetadata(meta), ep.inventory, false)) {
-					for (int i = 0; i < 3; i++) {
-						double px = e.posX;
-						double pz = e.posZ;
-						EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
-						if (!e.worldObj.isRemote)
-							e.worldObj.spawnEntityInWorld(xp);
-					}
+					orbs = 3;
 				}
 				else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOfMetadata(meta), ep.inventory, false)) {
-					double px = e.posX;
-					double pz = e.posZ;
-					EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
-					if (!e.worldObj.isRemote)
-						e.worldObj.spawnEntityInWorld(xp);
+					orbs = 1;
+				}
+
+				if (orbs > 0) {
+					if (Chromabilities.RANGEDBOOST.enabledOn(ep)) {
+						ep.addExperience(val*orbs);
+					}
+					else {
+						for (int i = 0; i < orbs; i++) {
+							double px = ReikaRandomHelper.getRandomPlusMinus(e.posX, 0.125);
+							double pz = ReikaRandomHelper.getRandomPlusMinus(e.posZ, 0.125);
+							EntityXPOrb xp = new EntityXPOrb(e.worldObj, px, e.posY, pz, val);
+							if (!e.worldObj.isRemote)
+								e.worldObj.spawnEntityInWorld(xp);
+						}
+					}
 				}
 			}
 		}

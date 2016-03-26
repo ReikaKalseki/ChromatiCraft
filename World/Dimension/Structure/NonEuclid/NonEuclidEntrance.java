@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.NonEuclid;
 
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;

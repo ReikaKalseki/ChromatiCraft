@@ -120,7 +120,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 				playerSteppedIn = true;
 				tickPlayerOut = 0;
 			}
-			else {
+			else if (playerSteppedIn) {
 				tickPlayerOut++;
 				if (tickPlayerOut > 50) {
 					this.terminateRitual();
@@ -267,6 +267,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		//make something bad happen
 		abilitySoundTick = 2000;
 		abilityTick = 0;
+		playerSteppedIn = false;
 		ability = null;
 		if (worldObj.isRemote) {
 			GameSettings gs = Minecraft.getMinecraft().gameSettings;
@@ -277,12 +278,12 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	public boolean triggerRitual(EntityPlayer ep) {
 		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isOwnedByPlayer(ep)) {
+			ritualPlayer = ep;
 			if (worldObj.isRemote)
 				return true;
 			ElementTagCompound tag = AbilityRituals.instance.getAura(ability);
 			this.requestEnergyDifference(tag);
 			abilityTick = AbilityRituals.instance.getDuration(ability);
-			ritualPlayer = ep;
 			playerSteppedIn = false;
 			ChromaSounds.USE.playSoundAtBlock(this);
 			return true;

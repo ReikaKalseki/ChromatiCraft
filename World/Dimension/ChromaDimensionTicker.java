@@ -17,6 +17,7 @@ import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -91,6 +92,12 @@ public class ChromaDimensionTicker implements TickHandler {
 				if (!music.isEmpty())
 					this.playMusic();
 				break;
+			case PLAYER:
+				EntityPlayer ep = (EntityPlayer)tickData[0];
+				if (ep.worldObj.provider.dimensionId == dimID) {
+
+				}
+				break;
 			default:
 				break;
 		}
@@ -137,7 +144,7 @@ public class ChromaDimensionTicker implements TickHandler {
 
 	@Override
 	public EnumSet<TickType> getType() {
-		return EnumSet.of(TickType.WORLD, TickType.CLIENT);
+		return EnumSet.of(TickType.WORLD, TickType.CLIENT, TickType.PLAYER);
 	}
 
 	@Override

@@ -116,6 +116,7 @@ public enum ChromaPackets {
 	LIGHTERDELTAY(1),
 	LIGHTEREND(),
 	POWERCRYSDESTROY(),
+	PARTICLESPAWNER(),
 	//PYLONJAR(),
 	;
 

@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -43,11 +44,11 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -60,6 +61,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
+import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -68,20 +70,28 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Instantiable.Event.PostItemUseEvent;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ItemSizeTextEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -89,10 +99,17 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
+import appeng.api.networking.IGridHost;
+import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
@@ -118,11 +135,11 @@ public class AbilityHelper {
 
 	private final PlayerMap<HashMap<String, WarpPoint>> teleports = new PlayerMap();
 
-	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap();
+	private final MultiMap<Ability, ProgressStage> progressMap = new MultiMap(new HashSetFactory());
 
 	private final HashMap<Ability, ElementTagCompound> tagMap = new HashMap();
 
-	private final HashMap<Class, TileXRays> xRayMap = new HashMap();
+	private final HashMap<Class, AbilityXRays> xRayMap = new HashMap();
 
 	private final PlayerMap<PlayerPath> playerPaths = new PlayerMap();
 
@@ -136,7 +153,12 @@ public class AbilityHelper {
 
 	//private int savedAOSetting;
 
+	public boolean isNoClipEnabled;
+
 	private static final Random rand = new Random();
+
+	private final PlayerMap<ItemStack> refillItem = new PlayerMap();
+	private static final String AE_LOC_TAG = "AELoc";
 
 	private AbilityHelper() {
 		List<Ability> li = Chromabilities.getAbilities();
@@ -163,14 +185,15 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.DOUBLECRAFT, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
 
-		for (TileXRays x : TileXRays.values()) {
-			xRayMap.put(x.tileClass, x);
+		for (AbilityXRays x : AbilityXRays.values()) {
+			xRayMap.put(x.objectClass, x);
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	public TileXRays getTileEntityXRay(TileEntity te) {
+	public AbilityXRays getAbilityXRay(Object te) {
 		return xRayMap.get(te.getClass());
 	}
 
@@ -608,7 +631,7 @@ public class AbilityHelper {
 		HashMap<String, WarpPoint> c = teleports.get(ep);
 		if (c != null) {
 			WarpPoint wp = c.get(s);
-			if (ep != null) {
+			if (wp != null && wp.canTeleportPlayer(ep)) {
 				wp.teleportPlayerTo(ep);
 			}
 		}
@@ -664,8 +687,16 @@ public class AbilityHelper {
 		}
 
 		private void teleportPlayerTo(EntityPlayer ep) {
+			ReikaEntityHelper.transferEntityToDimension(ep, location.dimensionID);
 			ep.setPositionAndUpdate(location.xCoord+0.5, location.yCoord+0.25, location.zCoord+0.5);
 			ep.playSound("mob.endermen.portal", 1, 1);
+		}
+
+		public boolean canTeleportPlayer(EntityPlayer ep) {
+			int dim = ep.worldObj.provider.dimensionId;
+			if (location.dimensionID == ExtraChromaIDs.DIMID.getValue() || dim == ExtraChromaIDs.DIMID.getValue())
+				return dim == location.dimensionID;
+			return true;
 		}
 
 	}
@@ -735,10 +766,20 @@ public class AbilityHelper {
 		return tagMap.get(a).copy();
 	}
 
-	public ElementTagCompound getUsageElementsFor(Ability c) {
+	public ElementTagCompound getUsageElementsFor(Ability c, EntityPlayer ep) {
 		ElementTagCompound ret = tagMap.get(c).copy().scale(0.0008F); //was 0.0008F //was 0.0002F
 		if (c == Chromabilities.FIRERAIN)
 			ret.scale(12.5F);
+		else if (c == Chromabilities.ORECLIP)
+			ret.scale(20);
+		else if (c == Chromabilities.DOUBLECRAFT)
+			ret.scale(7.5F);
+		else if (this.getProgressFor(c).contains(ProgressStage.CTM))
+			ret.scale(5);
+		else if (this.getProgressFor(c).contains(ProgressStage.DIMENSION))
+			ret.scale(2.5F);
+		if (ItemEfficiencyCrystal.isActive(ep))
+			ret.power(0.75);
 		return ret;
 	}
 
@@ -753,20 +794,21 @@ public class AbilityHelper {
 		return true;
 	}
 
-	public Collection<ProgressStage> getProgressFor(Chromabilities c) {
+	public Collection<ProgressStage> getProgressFor(Ability c) {
 		return Collections.unmodifiableCollection(progressMap.get(c));
 	}
 
-	public static enum TileXRays {
+	public static enum AbilityXRays {
 		SPAWNERS(TileEntityMobSpawner.class, Blocks.mob_spawner, 0x224466),
 		CHESTS(TileEntityChest.class, 0xC17C32),
-		LOOTCHESTS(TileEntityLootChest.class, 0x303030);
+		LOOTCHESTS(TileEntityLootChest.class, 0x303030),
+		CHESTCARTS(EntityMinecartChest.class, 0xC17C32);
 
-		public final Class tileClass;
+		public final Class objectClass;
 		private final Block texture;
 		public final int highlightColor;
 
-		private TileXRays(Class t, int c) {
+		private AbilityXRays(Class t, int c) {
 			this(t, null, c);
 		}
 
@@ -774,9 +816,9 @@ public class AbilityHelper {
 			return texture != null ? texture.blockIcon : null;
 		}
 
-		private TileXRays(Class t, Block tex, int c) {
+		private AbilityXRays(Class t, Block tex, int c) {
 			texture = tex;
-			tileClass = t;
+			objectClass = t;
 			highlightColor = c;
 		}
 	}
@@ -975,6 +1017,92 @@ public class AbilityHelper {
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DASH.ordinal(), new PacketTarget.RadiusTarget(ep, 24), ep.getEntityId());
 	}
 
+	@SubscribeEvent
+	public void saveUsedStack(PlayerInteractEvent evt) {
+		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
+		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer) && is != null && is.stackSize == is.getMaxStackSize()) {
+			refillItem.put(evt.entityPlayer, is.copy());
+		}
+		else {
+			refillItem.remove(evt.entityPlayer);
+		}
+	}
+
+	@SubscribeEvent
+	public void refillUsedStack(PostItemUseEvent evt) {
+		this.refillUsedStack(evt.entityPlayer, evt.getItem());
+	}
+
+	private void refillUsedStack(EntityPlayer ep, ItemStack is) {
+		ItemStack was = refillItem.remove(ep);
+		if (was != null) {
+			int slot =  ep.inventory.currentItem;
+			ItemStack now = is;
+			if (ReikaItemHelper.matchStacks(was, now) && now.stackSize < now.getMaxStackSize()) {
+				int amt = now.getMaxStackSize()-now.stackSize;
+				int ret = this.requestItem(ep, was, amt);
+				if (ret > 0) {
+					now.stackSize += ret;
+					ep.inventory.mainInventory[slot] = now.copy();
+				}
+			}
+		}
+	}
+
+	@ModDependent(ModList.APPENG)
+	private int requestItem(EntityPlayer ep, ItemStack is, int amt) {
+		MESystemReader me = this.getMESystem(ep);
+		return me != null ? (int)me.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false) : 0;
+	}
+
+	private MESystemReader getMESystem(EntityPlayer ep) {
+		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(AE_LOC_TAG);
+		if (nbt == null || nbt.hasNoTags())
+			return null;
+		Coordinate c = Coordinate.readTag(nbt);
+		if (c == null) {
+			return null;
+		}
+		TileEntity te = c.getTileEntity(ep.worldObj);
+		if (te instanceof IGridHost) {
+			IGridHost ih = (IGridHost)te;
+			IGridNode n = ih.getGridNode(ForgeDirection.VALID_DIRECTIONS[nbt.getInteger("dir")]);
+			MESystemReader me = new MESystemReader(n, SourceType.MACHINE);
+			return me;
+		}
+		return null;
+	}
+
+	public void saveMESystemLocation(EntityPlayer ep, TileEntity te, int s) {
+		NBTTagCompound NBT = new NBTTagCompound();
+		Coordinate c = new Coordinate(te);
+		c.writeToTag(NBT);
+		NBT.setInteger("dir", s);
+		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(AE_LOC_TAG, NBT);
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void useMEItemCount(ItemSizeTextEvent evt) {
+		if (Chromabilities.MEINV.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			ItemStack is = evt.getItem();
+			if (is.stackSize == 64) {
+				MESystemReader me = this.getMESystem(Minecraft.getMinecraft().thePlayer);
+				if (me != null) {
+					long amt = me.getItemCount(is);
+					if (amt < 1000) {
+						evt.newString = String.valueOf(amt);
+					}
+					else {
+						double base = ReikaMathLibrary.getThousandBase(amt);
+						int n = 2-(int)Math.log10(base);
+						evt.newString = String.format("%."+n+"f%s", base, ReikaEngLibrary.getSIPrefix(amt));
+					}
+				}
+			}
+		}
+	}
+
 	private static class ResetWalkSpeedEvent implements ScheduledEvent {
 
 		private final EntityPlayer player;
@@ -1012,13 +1140,11 @@ public class AbilityHelper {
 	}
 
 	public void onNoClipDisable(EntityPlayer ep) {
-		ReikaJavaLibrary.pConsole("Noclip off");
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			this.clientNoClipDisable();
 	}
 
 	public void onNoClipEnable(EntityPlayer ep) {
-		ReikaJavaLibrary.pConsole("Noclip on");
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			this.clientNoClipEnable();
 	}
@@ -1037,7 +1163,7 @@ public class AbilityHelper {
 		ReikaRenderHelper.rerenderAllChunks();
 	}
 
-	public boolean isBlockOreclippable(IBlockAccess world, int x, int y, int z, Block b, int meta) {
+	public boolean isBlockOreclippable(World world, int x, int y, int z, Block b, int meta) {
 		if (b == Blocks.stone || b == Blocks.grass || b == Blocks.dirt || b == Blocks.sandstone || b == Blocks.sand || b == Blocks.gravel)
 			return false;
 		if (b == Blocks.netherrack || b == Blocks.end_stone)
@@ -1048,7 +1174,9 @@ public class AbilityHelper {
 			return false;
 		if (RailcraftHandler.Blocks.QUARRIED.match(b, meta) || RailcraftHandler.Blocks.ABYSSAL.match(b, meta))
 			return false;
-		return !b.isReplaceableOreGen(Minecraft.getMinecraft().theWorld, x, y, z, Blocks.stone);
+		if (ChiselBlockHandler.isWorldgenBlock(b, meta))
+			return false;
+		return !b.isReplaceableOreGen(world, x, y, z, Blocks.stone);
 	}
 
 	public ArrayList<AxisAlignedBB> getNoclipBlockBoxes(EntityPlayer ep) {

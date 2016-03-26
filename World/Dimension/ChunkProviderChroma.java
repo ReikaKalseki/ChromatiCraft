@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
@@ -193,6 +194,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		decorators.add(new WorldGenFireJet());
 		decorators.add(new WorldGenMiniAltar());
 		decorators.add(new WorldGenMiasma());
+		decorators.add(new WorldGenTerrainCrystal());
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {

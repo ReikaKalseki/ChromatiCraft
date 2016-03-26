@@ -132,41 +132,51 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				break;
 			}
 			case "reset": {
-				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression"))
+				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
 					ProgressionManager.instance.resetPlayerProgression(ep, false);
-				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research"))
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression reset for "+ep.getCommandSenderName());
+				}
+				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research")) {
 					ChromaResearchManager.instance.resetPlayerResearch(ep, false);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Fragments reset for "+ep.getCommandSenderName());
+				}
 				if (args[1].equals("all") || args[1].equals("ability") || args[1].equals("abilities")) {
 					for (Ability c : Chromabilities.getAbilities()) {
 						if (!Chromabilities.playerHasAbility(ep, c))
 							Chromabilities.removeFromPlayer(ep, c);
 					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Abilities reset for "+ep.getCommandSenderName());
 				}
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					for (int i = 0; i < 16; i++) {
 						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], false, false);
 					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct reset for "+ep.getCommandSenderName());
 				}
-				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression reset for "+ep.getCommandSenderName());
 				break;
 			}
 			case "maximize": {
-				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression"))
+				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
 					ProgressionManager.instance.maxPlayerProgression(ep, false);
-				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research"))
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression maximized for "+ep.getCommandSenderName());
+				}
+				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research")) {
 					ChromaResearchManager.instance.maxPlayerResearch(ep, false);
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Fragments maximized for "+ep.getCommandSenderName());
+				}
 				if (args[1].equals("all") || args[1].equals("ability") || args[1].equals("abilities")) {
 					for (Ability c : Chromabilities.getAbilities()) {
 						if (!Chromabilities.playerHasAbility(ep, c))
 							Chromabilities.give(ep, c);
 					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Abilities maximized for "+ep.getCommandSenderName());
 				}
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					for (int i = 0; i < 16; i++) {
 						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, false);
 					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct maximized for "+ep.getCommandSenderName());
 				}
-				this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Progression maximized for "+ep.getCommandSenderName());
 				break;
 			}
 			case "debug": {
@@ -203,6 +213,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				this.sendChatToSender(ics, EnumChatFormatting.RED+" Unrecognized progress action/type '"+args[0]+"'.");
 				break;
 		}
+		ProgressionManager.instance.updateChunks(ep);
 	}
 
 	private CrystalElement getColor(String s) {

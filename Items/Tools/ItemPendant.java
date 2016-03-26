@@ -26,6 +26,9 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 
 public class ItemPendant extends ItemCrystalBasic {
 
+	private static final String TAG = "last_kuropend";
+	private static final String TAG2 = "last_kuropend2";
+
 	public ItemPendant(int tex) {
 		super(tex);
 		hasSubtypes = true;
@@ -44,7 +47,10 @@ public class ItemPendant extends ItemCrystalBasic {
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer) e;
 			CrystalElement color = CrystalElement.elements[is.getItemDamage()];
-			if (color != CrystalElement.PURPLE) {
+			if (color == CrystalElement.BLACK) {
+				e.getEntityData().setLong(this.isEnhanced() ? TAG2 : TAG, world.getTotalWorldTime());
+			}
+			else if (color != CrystalElement.PURPLE) {
 				int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
 				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
 				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
@@ -54,6 +60,14 @@ public class ItemPendant extends ItemCrystalBasic {
 			if (ChromaOptions.NOPARTICLES.getState())
 				ReikaEntityHelper.setNoPotionParticles(ep);
 		}
+	}
+
+	public static boolean isKuroPendantActive(EntityPlayer ep) {
+		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG) < 20;
+	}
+
+	public static boolean isEnhancedKuroPendantActive(EntityPlayer ep) {
+		return ep.worldObj.getTotalWorldTime()-ep.getEntityData().getLong(TAG2) < 20;
 	}
 
 	public boolean isEnhanced() {

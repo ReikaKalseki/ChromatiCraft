@@ -19,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public final class ElementTagCompound {
 
@@ -199,10 +198,10 @@ public final class ElementTagCompound {
 		return this;
 	}
 
-	public ElementTagCompound power(int power) {
+	public ElementTagCompound power(double power) {
 		for (CrystalElement e : data.keySet()) {
 			int amt = data.get(e);
-			amt = ReikaMathLibrary.intpow2(amt, power);
+			amt = Math.max(1, (int)Math.pow(amt, power));
 			this.setTag(e, amt);
 		}
 		return this;

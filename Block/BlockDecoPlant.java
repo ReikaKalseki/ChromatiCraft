@@ -157,7 +157,7 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 			case 4: {
 				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.1875*2);
 				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875*2);
-				double ry = y+0.25+r.nextDouble()*0.75+0.5;
+				double ry = y+0.25+r.nextDouble()*0.75;
 				ReikaParticleHelper.spawnColoredParticleAt(world, rx, ry, rz, 1, 0, 0);
 				break;
 			}

@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
@@ -28,6 +29,7 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
 
@@ -71,15 +73,33 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			b.silkTouch = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch, itemstack) > 0;
 			b.drops = !ep.capabilities.isCreativeMode;
 			b.fortune = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.fortune, itemstack);
+			if (ep.isSneaking())
+				b.extraSpread = true;
 			if (ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.field_151369_A, itemstack) > 0) { //lure
 				b.dropInventory = ep.inventory;
 			}
+			b.taxiCabDistance = true;
 			b.player = ep;
 			Block bk = ep.worldObj.getBlock(x, y, z);
 			if (bk == Blocks.lit_redstone_ore)
 				b.addBlock(new BlockKey(Blocks.redstone_ore));
 			else if (bk == Blocks.redstone_ore)
 				b.addBlock(new BlockKey(Blocks.lit_redstone_ore));
+			else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
+				for (int i = 0; i < 16; i++) {
+					b.addBlock(new BlockKey(bk, i));
+				}
+			}
+			else if (bk == TwilightForestHandler.BlockEntry.NAGASTONE.getBlock()) {
+				for (int i = 0; i < 16; i++) {
+					b.addBlock(new BlockKey(bk, i));
+				}
+			}
+			else if (bk == TwilightForestHandler.BlockEntry.AURORA.getBlock()) {
+				for (int i = 0; i < 16; i++) {
+					b.addBlock(new BlockKey(bk, i));
+				}
+			}
 			breakers.put(b.hashCode(), ep);
 		}
 		return true;

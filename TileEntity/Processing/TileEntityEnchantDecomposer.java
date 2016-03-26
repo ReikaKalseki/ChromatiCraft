@@ -45,9 +45,11 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
+	public static final int CAPACITY = 6000;
+
 	public int processTimer;
 
-	private final HybridTank tank = new HybridTank("enchantdecomp", 6000);
+	private final HybridTank tank = new HybridTank("enchantdecomp", CAPACITY);
 
 	private EntityItem entity;
 
@@ -277,6 +279,10 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 
 	public EntityItem getEntityItem() {
 		return entity;
+	}
+
+	public int getChromaLevel() {
+		return tank.getLevel();
 	}
 
 }

@@ -152,14 +152,14 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 			}
 		}
 
-		if (activeTick > 0) {
-			if (activeTick == 1) {
-				this.toggle(world, x, y, z, false);
-			}
-			activeTick--;
-		}
-
 		if (connection != null) {
+			if (activeTick > 0) {
+				if (activeTick == 1) {
+					this.toggle(world, x, y, z, false);
+				}
+				activeTick--;
+			}
+
 			if (world.isRemote) {
 				this.doConnectionParticles(world, x, y, z);
 				if (this.isActive()) {
@@ -171,6 +171,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 					this.toggle(world, x, y, z, true);
 				}
 			}
+		}
+		else {
+			activeTick = 0;
 		}
 	}
 
@@ -360,7 +363,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 
 	private void disconnect(boolean callOther) {
 		if (connection != null && callOther) {
-			((TileEntityLumenWire)connection.getTileEntity(worldObj)).disconnect(false);
+			TileEntityLumenWire te = (TileEntityLumenWire)connection.getTileEntity(worldObj);
+			if (te != null)
+				te.disconnect(false);
 		}
 		connection = null;
 		connectionUID = null;

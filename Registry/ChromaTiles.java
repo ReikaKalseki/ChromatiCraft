@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityMultiStorage;
+import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
@@ -182,7 +183,8 @@ public enum ChromaTiles implements TileEnum {
 	CHROMACRAFTER("chroma.chcrafter",	ChromaBlocks.TILEMODELLED2,	TileEntityChromaCrafter.class,		15),
 	WEAKREPEATER("chroma.weakrepeater",	ChromaBlocks.PYLON,			TileEntityWeakRepeater.class,		9, "RenderWeakRepeater"),
 	ENCHANTDECOMP("chroma.enchantdecomp",ChromaBlocks.TILEMODELLED3,TileEntityEnchantDecomposer.class,	0, "RenderEnchantDecomposer"),
-	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire");
+	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire"),
+	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner");
 
 	private final Class tile;
 	private final String name;
@@ -270,6 +272,7 @@ public enum ChromaTiles implements TileEnum {
 			case WEAKREPEATER:
 			case ENCHANTDECOMP:
 			case FABRICATOR:
+			case PARTICLES:
 				return true;
 			default:
 				return false;
@@ -358,6 +361,8 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean hasSneakActions() {
+		if (this == STAND)
+			return true;
 		return false;
 	}
 
@@ -615,6 +620,7 @@ public enum ChromaTiles implements TileEnum {
 			case GLOWFIRE:
 			case ESSENTIARELAY:
 			case LUMENWIRE:
+			case PARTICLES:
 				return true;
 			default:
 				return false;

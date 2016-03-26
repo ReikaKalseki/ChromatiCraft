@@ -58,7 +58,9 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 			return box;
 		}
 		AxisAlignedBB box = this.getCollisionBoundingBoxFromPool(world, x, y, z);
-		return box != null ? box : ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.4, 0.4, 0.4);
+		box = box != null ? box : ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.375, 0.375, 0.375);
+		this.setBounds(box, x, y, z);
+		return box;
 	}
 
 	@Override

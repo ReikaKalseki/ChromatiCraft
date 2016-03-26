@@ -303,7 +303,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 			te.disenhance();
 			te.drain(te.getColor(), te.getEnergy(te.getColor())*4/5);
 			te.enhancing = false;
-			te.destroyPowerCrystals(ReikaRandomHelper.getInverseLinearRandom(4));
+			te.destroyPowerCrystals(1+ReikaRandomHelper.getInverseLinearRandom(4));
 		}
 		this.doFailParticles(te != null);
 		for (int i = 0; i < Location.list.length; i++) {
@@ -803,7 +803,10 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				Coordinate c = location.position.negate().offset(xCoord, yCoord, zCoord);
 				TileEntity te = c.getTileEntity(worldObj);
 				if (te instanceof TileEntityPylonTurboCharger) {
-					((TileEntityPylonTurboCharger)te).failRitual(worldObj, te.xCoord, te.yCoord, te.zCoord);
+					TileEntityPylonTurboCharger tc = ((TileEntityPylonTurboCharger)te);
+					TileEntityCrystalPylon tp = tc.getPylon(tc.worldObj, tc.xCoord, tc.yCoord, tc.zCoord);
+					if (tp == null || tp.isEnhanced())
+						tc.failRitual(worldObj, te.xCoord, te.yCoord, te.zCoord);
 				}
 			}
 			else {

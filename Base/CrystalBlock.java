@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
@@ -149,7 +150,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 
 		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
 			if (rand.nextInt(3) == 0)
-				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), x, y, z, new PacketTarget.ServerTarget());
 		}
 	}
 
@@ -165,7 +166,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 
 		if (this.shouldGiveEffects(e) && this.performEffect(e)) {
 			if (e != CrystalElement.PURPLE && e != CrystalElement.BROWN) //prevent exploit
-				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), world, x, y, z);
+				ReikaPacketHelper.sendUpdatePacket(ChromatiCraft.packetChannel, ChromaPackets.CRYSTALEFFECT.ordinal(), x, y, z, new PacketTarget.ServerTarget());
 		}
 		return false;
 	}

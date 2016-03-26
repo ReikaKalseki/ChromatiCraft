@@ -9,9 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
@@ -21,7 +23,7 @@ import Reika.DragonAPI.DragonAPICore;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile {
+public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile, NBTTile {
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
 
@@ -136,6 +138,18 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 
 	public final ElementTagCompound getEnergy() {
 		return energy.copy();
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		energy.writeToNBT("energy", NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return;
+		energy.readFromNBT("energy", is.stackTagCompound);
 	}
 
 }

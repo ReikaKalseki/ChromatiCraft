@@ -74,6 +74,10 @@ public class CrystalPotionController {
 	public static boolean shouldBeHostile(EntityLivingBase e, World world) {
 		if (e instanceof EntityPlayer && ItemPurifyCrystal.isActive((EntityPlayer)e))
 			return false;
+		return isWorldHostile(world);
+	}
+
+	public static boolean isWorldHostile(World world) {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return true;
 		return world.provider.isHellWorld;

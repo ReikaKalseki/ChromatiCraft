@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
+import java.util.HashSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
@@ -22,10 +24,10 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.DragonAPI.ModList;
@@ -33,6 +35,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -47,7 +50,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 
 	private InertItem item;
 	private Coordinate tile;
-	private int clickTick = 0;
+
+	private static final HashSet<WorldLocation> spreadSet = new HashSet();
 
 	@Override
 	public int getSizeInventory() {
@@ -72,8 +76,6 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 				this.spawnItemParticles(world, x, y, z);
 			}
 		}
-		if (clickTick > 0)
-			clickTick--;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -92,10 +94,6 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 			EntityFX fx = new EntityBlurFX(world, rx, ry, rz, 0, 0, 0).setColor(r, g, b).setGravity(gv).setLife(l);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
-	}
-
-	private boolean recentClicked() {
-		return clickTick > 0;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -148,6 +146,12 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		}
 		  */
 
+		if (!spreadSet.isEmpty() && !worldObj.isRemote) {
+			ItemStack ret = spreadItems(ep, item);
+			spreadSet.clear();
+			return ret;
+		}
+
 		if (inv[0] == null) {
 			if (item == null)
 				return null;
@@ -174,10 +178,40 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		if (item != null && item.stackSize <= 0)
 			item = null;
 
-		clickTick = 10;
 		ChromaSounds.ITEMSTAND.playSoundAtBlock(this);
 		return item;
 	}
+
+	public void spreadItemWith(EntityPlayer ep, ItemStack is) {
+		//if (is != null) {
+		//if (inv[0] == null || ReikaItemHelper.matchStacks(is, inv[0])) {
+		if (inv[0] == null)
+			spreadSet.add(new WorldLocation(this));
+		//}
+		//spreadItems(ep, is);
+		//}
+	}
+
+	private static ItemStack spreadItems(EntityPlayer ep, ItemStack is) {
+		int n = spreadSet.size();
+		int amt = is.stackSize;
+		for (WorldLocation loc : spreadSet) {
+			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
+			if (te.inv[0] != null)
+				amt += te.inv[0].stackSize;
+		}
+		int div = amt/n;
+		int left = amt-div*n;
+		//ReikaJavaLibrary.pConsole(amt+" by "+n+", = "+div+" leaving "+left);
+		for (WorldLocation loc : spreadSet) {
+			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
+			te.inv[0] = ReikaItemHelper.getSizedItemStack(is, div);
+			ChromaSounds.ITEMSTAND.playSoundAtBlock(te);
+			te.syncAllData(true);
+		}
+		return ReikaItemHelper.getSizedItemStack(is, left);
+	}
+
 	/*
 	@Override
 	public void onHit(World world, int x, int y, int z, EntityPlayer ep) {

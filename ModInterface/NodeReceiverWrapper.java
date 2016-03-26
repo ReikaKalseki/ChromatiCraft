@@ -241,6 +241,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (tick >= DELAY && fulltick >= MIN_DELAY) {
 			ElementTagCompound req = new ElementTagCompound();
 			for (Aspect a : node.getAspectsBase().aspects.keySet()) {
+				if (a == null) //WHY, AZANOR!?
+					continue;
 				int space = node.getAspectsBase().getAmount(a)-node.getAspects().getAmount(a);
 				//if (space > 0)
 				//	ReikaJavaLibrary.pConsole(a.getName()+":"+space+":"+this.getTagValue(a).scale(space*space));

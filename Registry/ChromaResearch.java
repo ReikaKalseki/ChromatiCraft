@@ -20,6 +20,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -142,7 +143,7 @@ public enum ChromaResearch implements ProgressElement {
 	MEDISTRIB(		ChromaTiles.MEDISTRIBUTOR,	ResearchLevel.MULTICRAFT),
 	WINDOW(			ChromaTiles.WINDOW,			ResearchLevel.MULTICRAFT),
 	RFDISTRIB(		ChromaTiles.RFDISTRIBUTOR,	ResearchLevel.RUNECRAFT),
-	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
+	PERSONAL(		ChromaTiles.PERSONAL,		ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
 	MUSIC(			ChromaTiles.MUSIC,			ResearchLevel.BASICCRAFT),
 	PYLONTURBO(		ChromaTiles.PYLONTURBO,		ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	TURRET(			ChromaTiles.TURRET,			ResearchLevel.BASICCRAFT,		ProgressStage.KILLMOB),
@@ -159,6 +160,7 @@ public enum ChromaResearch implements ProgressElement {
 	WEAKREPEATER(	ChromaTiles.WEAKREPEATER,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON, ProgressStage.MAKECHROMA),
 	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.BASICCRAFT,		ProgressStage.MAKECHROMA),
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
+	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -215,6 +217,7 @@ public enum ChromaResearch implements ProgressElement {
 	//FLUIDWAND(			ChromaItems.FLUIDWAND,		ResearchLevel.RUNECRAFT,	ProgressStage.OCEAN),
 	CRYSTALCELL(		ChromaItems.CRYSTALCELL,	ResearchLevel.MULTICRAFT,	ProgressStage.CHARGE),
 	PURIFY(				ChromaItems.PURIFY,			ResearchLevel.ENDGAME,		ProgressStage.RAINBOWLEAF, ProgressStage.ALLOY),
+	EFFICIENCY(			ChromaItems.EFFICIENCY,			ResearchLevel.CTM),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -262,6 +265,7 @@ public enum ChromaResearch implements ProgressElement {
 	DOUBLECRAFT(	Chromabilities.DOUBLECRAFT,					ResearchLevel.CTM),
 	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.CTM),
 	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.CTM),
+	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -472,8 +476,8 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public ItemStack getIcon() {
-		return this.getTabIcon();
+	public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+		this.drawTabIcon(ri, x, y);
 	}
 
 	@SideOnly(Side.CLIENT)

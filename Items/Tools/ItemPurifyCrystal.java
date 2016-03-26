@@ -20,18 +20,25 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Instantiable.Orbit;
+import Reika.DragonAPI.Instantiable.OrbitMotionController;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -43,7 +50,7 @@ public class ItemPurifyCrystal extends ItemChromaTool {
 
 	private static final String TAG = "last_purify";
 	public static final int CHARGE_STATES = 4;
-	public static final int MAX_CHARGE = 216000*4; //12h
+	public static final int MAX_CHARGE = 216000*12; //3h in the Nether, 36h in the overworld
 
 	public ItemPurifyCrystal(int index) {
 		super(index);
@@ -62,10 +69,34 @@ public class ItemPurifyCrystal extends ItemChromaTool {
 	}
 
 	@Override
-	public void onUpdate(ItemStack is, World world, Entity e, int par4, boolean par5) {
+	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
 		if (e instanceof EntityPlayer) {
-			e.getEntityData().setLong(TAG, world.getTotalWorldTime());
-			removeCharge(is, 1);
+			//if (CrystalPotionController.isWorldHostile(world)) {
+			if (this.getCharge(is) > 0) {
+				e.getEntityData().setLong(TAG, world.getTotalWorldTime());
+				removeCharge(is, CrystalPotionController.isWorldHostile(world) ? 12 : 1);
+				if (world.isRemote) {
+					this.doHeldFX(is, e);
+				}
+			}
+			//}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doHeldFX(ItemStack is, Entity e) {
+		if (itemRand.nextInt(2*4) == 0) {
+			double r = 2.5;
+			double ec = 0;//0.4+0.4*Math.sin(Math.toRadians(e.ticksExisted));
+			double i = e.ticksExisted*4;//.ticksExisted%2 == 0 ? 60 : -60;
+			double raan = 0;//(e.ticksExisted%2 == 0 ? 180 : 0)+RenderManager.instance.playerViewY;
+			Orbit o = new Orbit(r, ec, i, raan, 0, 0);
+			OrbitMotionController p = new OrbitMotionController(o, e.posX, e.posY, e.posZ).trackEntity(e);
+			p.thetaSpeed = ReikaRandomHelper.getRandomBetween(1.5, 5);
+			int l = 60+itemRand.nextInt(120);
+			float s = (float)ReikaRandomHelper.getRandomPlusMinus(1, 0.25);
+			EntityFX fx = new EntityBlurFX(e.worldObj, e.posX, e.posY, e.posZ).setPositionController(p).setLife(l).setIcon(ChromaIcons.CENTER).setScale(s);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 
@@ -94,6 +125,7 @@ public class ItemPurifyCrystal extends ItemChromaTool {
 					if (loc.getBlock() == ChromaBlocks.CHROMA.getBlockInstance() && loc.getBlockMetadata() == 0)
 						amt *= 1.5;
 					this.addCharge(is, amt);
+					ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
 					//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));
 				}
 			}
@@ -159,7 +191,7 @@ public class ItemPurifyCrystal extends ItemChromaTool {
 	private static void setCharge(ItemStack is, int amt) {
 		if (is.stackTagCompound == null)
 			is.stackTagCompound = new NBTTagCompound();
-		is.stackTagCompound.setInteger("charge", amt);
+		is.stackTagCompound.setInteger("charge", MathHelper.clamp_int(amt, 0, MAX_CHARGE));
 		is.setItemDamage(Math.round((CHARGE_STATES-1)*getCharge(is)/(float)MAX_CHARGE));
 	}
 

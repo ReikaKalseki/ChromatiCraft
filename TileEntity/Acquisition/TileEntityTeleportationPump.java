@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
@@ -49,7 +50,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
 	private HashMap<Fluid, ArrayList<FluidSource>> fluids = new HashMap();
-	private HashMap<Fluid, Integer> counts = new HashMap();
+	private CountMap<Fluid> counts = new CountMap();
 
 	private Fluid selected = null;
 
@@ -148,8 +149,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		}
 	}
 
-	public Map<Fluid, Integer> getFluidCount() {
-		return Collections.unmodifiableMap(counts);
+	public Set<Fluid> getFluids() {
+		return Collections.unmodifiableSet(counts.keySet());
 	}
 
 	public int getFluidCount(Fluid f) {
@@ -259,12 +260,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	private void decrFluid(int rem, Fluid f) {
-		Integer i = counts.get(f);
-		int amt = i != null ? i.intValue() : 0;
-		if (amt > rem)
-			counts.put(f, amt-rem);
-		else
-			counts.remove(i);
+		counts.increment(f, -rem);
 		//ReikaJavaLibrary.pConsole(counts.get(f));
 	}
 
@@ -287,10 +283,10 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		if (li == null) {
 			li = new ArrayList();
 			fluids.put(f, li);
-			counts.put(f, 0);
+			counts.set(f, 0);
 		}
 		li.add(new FluidSource(x, y, z, fs));
-		counts.put(f, counts.get(f)+fs.amount);
+		counts.increment(f, fs.amount);
 		//ReikaJavaLibrary.pConsole("Found "+fs.amount+" of "+f.getName()+" @ "+x+", "+y+", "+z+", now have "+counts.get(f)+" mB");
 	}
 
@@ -353,7 +349,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			String s = (String)o;
 			Fluid f = FluidRegistry.getFluid(s);
 			if (f != null) {
-				counts.put(f, tag.getInteger(s));
+				counts.set(f, tag.getInteger(s));
 			}
 		}
 		//ReikaJavaLibrary.pConsole(counts);

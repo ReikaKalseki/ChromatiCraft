@@ -197,6 +197,8 @@ public class ChromaAux {
 	public static void doPylonAttack(CrystalElement color, EntityLivingBase e, float amt, boolean taperNew) {
 		ChromaSounds.DISCHARGE.playSound(e.worldObj, e.posX, e.posY, e.posZ, 1, 1);
 
+		final float originalAmt = amt;
+
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.SHOCK.stepPlayerTo(ep);
@@ -224,13 +226,13 @@ public class ChromaAux {
 
 		e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], amt);
 
-		if (e.getHealth() > last-amt) {
-			if (amt >= last) { //kill
+		if (e.getHealth() > Math.max(0, last-originalAmt)) {
+			if (originalAmt >= last) { //kill
 				e.setHealth(0.1F);
 				e.attackEntityFrom(ChromatiCraft.pylonDamage[color.ordinal()], Float.MAX_VALUE);
 			}
 			else
-				e.setHealth(last-amt);
+				e.setHealth(last-originalAmt);
 		}
 	}
 
@@ -362,16 +364,16 @@ public class ChromaAux {
 		return false;
 	}
 
-	public static List<AxisAlignedBB> interceptEntityCollision(Entity e, AxisAlignedBB box) {
+	public static List<AxisAlignedBB> interceptEntityCollision(World world, Entity e, AxisAlignedBB box) {
 		if (e instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)e)) {
 			return AbilityHelper.instance.getNoclipBlockBoxes((EntityPlayer)e);
 		}
 		else {
-			return getSurrogateCollidingAABBs(e, box);//e.worldObj.getCollidingBoundingBoxes(e, box);
+			return getSurrogateCollidingAABBs(world, e, box);//e.worldObj.getCollidingBoundingBoxes(e, box);
 		}
 	}
 
-	public static List<AxisAlignedBB> getSurrogateCollidingAABBs(Entity ep, AxisAlignedBB box) {
+	public static List<AxisAlignedBB> getSurrogateCollidingAABBs(World world, Entity ep, AxisAlignedBB box) {
 		ArrayList<AxisAlignedBB> li = new ArrayList();
 
 		int i = MathHelper.floor_double(box.minX);
@@ -383,25 +385,25 @@ public class ChromaAux {
 
 		for (int k1 = i; k1 < j; ++k1) {
 			for (int l1 = i1; l1 < j1; ++l1) {
-				if (ep.worldObj.blockExists(k1, 64, l1)) {
+				if (world.blockExists(k1, 64, l1)) {
 					for (int i2 = k - 1; i2 < l; ++i2) {
 						Block block;
 
 						if (k1 >= -30000000 && k1 < 30000000 && l1 >= -30000000 && l1 < 30000000) {
-							block = ep.worldObj.getBlock(k1, i2, l1);
+							block = world.getBlock(k1, i2, l1);
 						}
 						else {
 							block = Blocks.stone;
 						}
 
-						block.addCollisionBoxesToList(ep.worldObj, k1, i2, l1, box, li, ep);
+						block.addCollisionBoxesToList(world, k1, i2, l1, box, li, ep);
 					}
 				}
 			}
 		}
 
 		double d0 = 0.25D;
-		List<Entity> list = ep.worldObj.getEntitiesWithinAABBExcludingEntity(ep, box.expand(d0, d0, d0));
+		List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(ep, box.expand(d0, d0, d0));
 
 		for (Entity e : list) {
 			AxisAlignedBB box2 = e.getBoundingBox();

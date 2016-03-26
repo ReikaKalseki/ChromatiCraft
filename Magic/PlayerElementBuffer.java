@@ -9,20 +9,21 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Magic;
 
-import java.util.HashMap;
+import java.util.UUID;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Command.DragonCommandBase;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -33,7 +34,7 @@ public class PlayerElementBuffer {
 
 	public static final PlayerElementBuffer instance = new PlayerElementBuffer();
 
-	private final HashMap<EntityPlayer, Integer> recentUpgrades = new HashMap();
+	private final CountMap<UUID> recentUpgrades = new CountMap();
 
 	private static final String NBT_TAG = "CrystalBuffer";
 
@@ -42,20 +43,11 @@ public class PlayerElementBuffer {
 	}
 
 	public float getAndDecrUpgradeTick(EntityPlayer ep) {
-		Integer val = recentUpgrades.get(ep);
-		if (val == null)
-			return 0;
-		else {
-			int tick = val.intValue();
-			tick--;
-			if (tick == 0) {
-				recentUpgrades.remove(ep);
-			}
-			else {
-				recentUpgrades.put(ep, tick);
-			}
-			return tick/2000F;
-		}
+		UUID id = ep.getUniqueID();
+		int get = recentUpgrades.get(id);
+		if (get > 0)
+			recentUpgrades.increment(id, -1);
+		return get/2000F;
 	}
 
 	private NBTTagCompound getTag(EntityPlayer ep) {
@@ -112,15 +104,64 @@ public class PlayerElementBuffer {
 		if (ep.capabilities.isCreativeMode)
 			return;
 
-		if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOf(CrystalElement.BLACK), ep.inventory, false))
+		if (ItemPendant.isEnhancedKuroPendantActive(ep))
 			amt = Math.max(1, (int)(amt*0.5F));
-		else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOf(CrystalElement.BLACK), ep.inventory, false))
+		else if (ItemPendant.isKuroPendantActive(ep))
 			amt = Math.max(1, (int)(amt*0.8F));
 
 		NBTTagCompound tag = this.getTag(ep);
 		int has = tag.getInteger(e.name());
-		has -= amt;
-		tag.setInteger(e.name(), Math.max(0, has));
+		tag.setInteger(e.name(), Math.max(0, has-amt));
+		this.checkAndWarnPlayer(ep, e, has);
+	}
+
+	private void checkAndWarnPlayer(EntityPlayer ep, CrystalElement e, int prev) {
+		float f1 = prev/(float)this.getElementCap(ep);
+		float f2 = this.getPlayerContent(ep, e)/(float)this.getElementCap(ep);
+		//ReikaJavaLibrary.pConsole(f1+">"+f2+" @ "+e, Side.SERVER);
+		this.warnPlayer(ep, e, f1, f2);
+	}
+
+	private void warnPlayer(EntityPlayer ep, CrystalElement e, float f1, float f2) {
+		if (f2 < f1) {
+			int s1 = -1;
+			int s2 = -1;
+			if (f1 < 0.015625) {
+				s1 = 0;
+			}
+			else if (f1 < 0.03125) {
+				s1 = 1;
+			}
+			else if (f1 < 0.0625) {
+				s1 = 2;
+			}
+			if (f2 < 0.015625) {
+				s2 = 0;
+			}
+			else if (f2 < 0.03125) {
+				s2 = 1;
+			}
+			else if (f2 < 0.0625) {
+				s2 = 2;
+			}
+			//ReikaJavaLibrary.pConsole(s1+","+s2, Side.SERVER);
+			if (s1 != s2) {
+				ChromaSounds snd = null;
+				switch (s2) {
+					case 0:
+						snd = ChromaSounds.BUFFERWARNING;
+						break;
+					case 1:
+						snd = ChromaSounds.BUFFERWARNING_LOW;
+						break;
+					case 2:
+						snd = ChromaSounds.BUFFERWARNING_EMPTY;
+						break;
+				}
+				if (snd != null)
+					snd.playSound(ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e));
+			}
+		}
 	}
 
 	public void removeFromPlayer(EntityPlayer player, ElementTagCompound tag) {
@@ -155,7 +196,7 @@ public class PlayerElementBuffer {
 		boolean flag = val > prev;
 		if (flag) {
 			ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
-			recentUpgrades.put(ep, 2000);
+			recentUpgrades.set(ep.getUniqueID(), 2000);
 			if (ep instanceof EntityPlayerMP)
 				this.sendUpgradePacket((EntityPlayerMP)ep);
 		}
@@ -185,7 +226,7 @@ public class PlayerElementBuffer {
 
 	@SideOnly(Side.CLIENT)
 	public void upgradePlayerOnClient(EntityPlayer ep) {
-		recentUpgrades.put(ep, 2000);
+		recentUpgrades.set(ep.getUniqueID(), 2000);
 	}
 
 	public boolean canPlayerAccept(EntityPlayer ep, CrystalElement e, int amt) {

@@ -22,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -76,6 +77,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
+import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
@@ -103,6 +105,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -125,6 +128,7 @@ public class ChromatiPackets implements PacketHandler {
 		double dy = 0;
 		double dz = 0;
 		String stringdata = null;
+		NBTTagCompound NBT = null;
 		UUID id = null;
 		//System.out.print(packet.length);
 		try {
@@ -210,6 +214,9 @@ public class ChromatiPackets implements PacketHandler {
 						data[i] = inputStream.readInt();
 					break;
 				case NBT:
+					control = inputStream.readInt();
+					pack = ChromaPackets.getPacket(control);
+					NBT = ((DataPacket)packet).asNBT();
 					break;
 				case STRINGINT:
 					stringdata = packet.readString();
@@ -640,6 +647,10 @@ public class ChromatiPackets implements PacketHandler {
 				case POWERCRYSDESTROY: {
 					((TileEntityChromaCrystal)tile).doDestroyParticles(world, x, y, z);
 					break;
+				}
+				case PARTICLESPAWNER: {
+					Coordinate c = Coordinate.readFromNBT("loc", NBT);
+					((TileEntityParticleSpawner)c.getTileEntity(world)).particles.readFromNBT(NBT);
 				}
 				/*
 				case PYLONJAR: {

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze;
 
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;

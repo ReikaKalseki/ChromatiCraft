@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -27,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -112,13 +114,25 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	public void loadPylonLocations(NBTTagCompound NBT) {
 		NBTTagList li = NBT.getTagList(NBT_TAG, NBTTypes.COMPOUND.ID);
-		for (NBTTagCompound tag : (List<NBTTagCompound>)li.tagList) {
+		Iterator<NBTTagCompound> it = li.tagList.iterator();
+		while (it.hasNext()) {
+			NBTTagCompound tag = it.next();
 			WorldLocation loc = WorldLocation.readFromNBT("pos", tag);
 			CrystalElement e = CrystalElement.elements[tag.getInteger("color")];
-			this.addLocation(loc, e);
+			if (this.validateCachedLocation(loc, e)) {
+				this.addLocation(loc, e);
+			}
+			else {
+				it.remove();
+			}
 		}
 		NBT.setTag(NBT_TAG, li);
 		//ChromatiCraft.logger.log("["+FMLCommonHandler.instance().getEffectiveSide()+"] Loaded pylons from "+li+": "+colorCache);
+	}
+
+	private boolean validateCachedLocation(WorldLocation loc, CrystalElement e) {
+		TileEntity te = loc.getTileEntity();
+		return te instanceof TileEntityCrystalPylon && ((TileEntityCrystalPylon)te).getColor() == e;
 	}
 
 	public void sendDimensionCacheToPlayer(EntityPlayerMP ep, int dim) {
@@ -145,14 +159,14 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
-		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
+		ChromatiCraft.logger.debug("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
 		colorCache.clear();
 	}
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
-		//ReikaJavaLibrary.pConsole("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
+		ChromatiCraft.logger.debug("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
 		colorCache.clear();
 	}
 

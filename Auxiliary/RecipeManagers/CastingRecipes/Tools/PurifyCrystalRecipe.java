@@ -81,7 +81,7 @@ public class PurifyCrystalRecipe extends PylonRecipe {
 
 	@Override
 	public int getExperience() {
-		return 6*super.getExperience();
+		return 3*super.getExperience();
 	}
 
 }

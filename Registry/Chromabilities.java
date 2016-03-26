@@ -146,7 +146,7 @@ public enum Chromabilities implements Ability {
 	DOUBLECRAFT(null, true),
 	GROWAURA(Phase.END, true),
 	RECHARGE(null, false),
-	MEINV(null, false);
+	MEINV(null, false, ModList.APPENG);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -235,13 +235,13 @@ public enum Chromabilities implements Ability {
 		return dependency != null && !dependency.isLoaded();
 	}
 
-	public ElementTagCompound getTickCost() {
-		return getTickCost(this);
+	public ElementTagCompound getTickCost(EntityPlayer ep) {
+		return this.getTickCost(this, ep);
 	}
 
-	public static ElementTagCompound getTickCost(Ability c) {
+	public static ElementTagCompound getTickCost(Ability c, EntityPlayer ep) {
 		if (c.isTickBased() || c.costsPerTick()) {
-			return AbilityHelper.instance.getUsageElementsFor(c);
+			return AbilityHelper.instance.getUsageElementsFor(c, ep);
 		}
 
 		return null;
@@ -263,6 +263,7 @@ public enum Chromabilities implements Ability {
 			case ORECLIP:
 			case GROWAURA:
 			case RECHARGE:
+			case MEINV:
 				return true;
 			default:
 				return false;
@@ -352,14 +353,6 @@ public enum Chromabilities implements Ability {
 				return true;
 			case LASER:
 				return doLaserPulse(ep);
-			case ORECLIP:
-				if (this.enabledOn(ep)) {
-					AbilityHelper.instance.onNoClipEnable(ep);
-				}
-				else {
-					AbilityHelper.instance.onNoClipDisable(ep);
-				}
-				return true;
 			default:
 				return false;
 		}
@@ -374,7 +367,7 @@ public enum Chromabilities implements Ability {
 		}
 
 		ProgressStage.ABILITY.stepPlayerTo(ep);
-		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a);
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
 		if (a == HEALTH)
 			use.scale(10);
 		if (a == SHIFT)
@@ -614,7 +607,7 @@ public enum Chromabilities implements Ability {
 			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(px, py, pz, px, py, pz).expand(64, 32, 64);
 			List<EntityLiving> li = world.getEntitiesWithinAABB(EntityLiving.class, box);
 			for (EntityLiving e : li) {
-				e.attackEntityFrom(DamageSource.causeIndirectMagicDamage(e, ep), Integer.MAX_VALUE);
+				e.attackEntityFrom(new ReikaEntityHelper.WrappedDamageSource(ChromatiCraft.pylonDamage[CrystalElement.BLUE.ordinal()], ep), Integer.MAX_VALUE);
 			}
 			double r = ReikaRandomHelper.getRandomPlusMinus(10D, 2D);
 			double h = ReikaRandomHelper.getRandomBetween(r, r*4);
@@ -1121,7 +1114,7 @@ public enum Chromabilities implements Ability {
 		moved.offset(dir, dist);
 
 		int factor = (int)(Math.pow((box.getVolume()-air), 1.5)*dist/4D);
-		ElementTagCompound cost = AbilityHelper.instance.getUsageElementsFor(SHIFT).scale(factor);
+		ElementTagCompound cost = AbilityHelper.instance.getUsageElementsFor(SHIFT, ep).scale(factor);
 		boolean nrg = PlayerElementBuffer.instance.playerHas(ep, cost);
 		boolean flag = false;
 		if (nrg && ReikaPlayerAPI.playerCanBreakAt(world, toDel, ep) && ReikaPlayerAPI.playerCanBreakAt(world, moved, ep)) {
@@ -1209,6 +1202,15 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void setNoclipState(EntityPlayer ep, boolean set) {
+		if (AbilityHelper.instance.isNoClipEnabled != set) {
+			AbilityHelper.instance.isNoClipEnabled = set;
+			if (set) {
+				AbilityHelper.instance.onNoClipEnable(ep);
+			}
+			else {
+				AbilityHelper.instance.onNoClipDisable(ep);
+			}
+		}
 		//ep.noClip = set;// && ((ep.capabilities.allowFlying && ep.capabilities.isFlying) || ep.isSneaking() || KeyWatcher.instance.isKeyDown(ep, Key.JUMP));
 		/*if (ep.noClip) {
 			ep.moveEntity(-ep.motionX, -ep.motionY, -ep.motionZ);
@@ -1294,7 +1296,7 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static boolean canPlayerExecuteAt(EntityPlayer ep, Ability a) {
-		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a);
+		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
 		return PlayerElementBuffer.instance.playerHas(ep, use) && a.canPlayerExecuteAt(ep);
 	}
 

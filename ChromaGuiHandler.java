@@ -68,6 +68,7 @@ import Reika.ChromatiCraft.GUI.Tile.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.Tile.GuiEnderTNT;
 import Reika.ChromatiCraft.GUI.Tile.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiLampController;
+import Reika.ChromatiCraft.GUI.Tile.GuiParticleSpawner;
 import Reika.ChromatiCraft.GUI.Tile.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiRitualTable;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiAutoEnchanter;
@@ -99,6 +100,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -267,6 +269,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiItemInserter(player, (TileEntityItemInserter)te);
 				if (te instanceof TileEntityEnchantDecomposer)
 					return new GuiEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
+				if (te instanceof TileEntityParticleSpawner)
+					return new GuiParticleSpawner(player, (TileEntityParticleSpawner)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

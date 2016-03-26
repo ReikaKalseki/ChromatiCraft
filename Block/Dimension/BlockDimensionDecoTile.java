@@ -51,6 +51,15 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			return false;
 		}
 
+		public boolean isCollideable() {
+			switch(this) {
+				case FIREJET:
+					return true;
+				default:
+					return false;
+			}
+		}
+
 		public IIcon getOverlay() {
 			return icons[1][this.ordinal()];
 		}
@@ -110,7 +119,7 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(x, y, z);
-		return DimDecoTileTypes.list[meta].hasBlockRender() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
+		return DimDecoTileTypes.list[meta].isCollideable() ? ReikaAABBHelper.getBlockAABB(x, y, z) : null;
 	}
 
 	public static class DimensionDecoTile extends TileEntity {
@@ -135,8 +144,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 				int meta = this.getBlockMetadata();
 
 				switch(DimDecoTileTypes.list[meta]) {
-				case FIREJET:
-					break;
+					case FIREJET:
+						break;
 				}
 
 				if (worldObj.isRemote)
@@ -150,17 +159,17 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 		@SideOnly(Side.CLIENT)
 		private void spawnParticles(DimDecoTileTypes t) {
 			switch(t) {
-			case FIREJET: {
-				if (worldObj.rand.nextBoolean()) {
-					double vy = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.01);
-					int r = worldObj.rand.nextInt(256);
-					int g = worldObj.rand.nextInt(256);
-					int b = worldObj.rand.nextInt(256);
-					EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0).setRapidExpand().setScale(4).setColor(r, g, b);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				case FIREJET: {
+					if (worldObj.rand.nextBoolean()) {
+						double vy = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.01);
+						int r = worldObj.rand.nextInt(256);
+						int g = worldObj.rand.nextInt(256);
+						int b = worldObj.rand.nextInt(256);
+						EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0).setRapidExpand().setScale(4).setColor(r, g, b);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+					break;
 				}
-				break;
-			}
 			}
 		}
 

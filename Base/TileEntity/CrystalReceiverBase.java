@@ -34,15 +34,18 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		checkTimer.update();
+
+		long time = world.getTotalWorldTime();
+		boolean flag = lastRequestDecrTime != time;
+		if (flag)
+			checkTimer.update();
 
 		if (receiveCooldown > 0) {
-			long time = world.getTotalWorldTime();
-			if (lastRequestDecrTime != time) {
+			if (flag) {
 				receiveCooldown--;
 			}
-			lastRequestDecrTime = time;
 		}
+		lastRequestDecrTime = time;
 
 		if (DragonAPICore.debugtest && !world.isRemote) {
 			CrystalElement e = CrystalElement.randomElement();

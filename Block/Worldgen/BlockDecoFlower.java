@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -47,6 +48,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -200,9 +202,13 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 	public void updateTick(World world, int x, int y, int z, Random rand) {
 		if (!this.checkAndDropBlock(world, x, y, z)) {
 			int meta = world.getBlockMetadata(x, y, z);
-			if (Flowers.list[meta].grow(world, x, y, z, this, rand)) {
+			Coordinate c = Flowers.list[meta].grow(world, x, y, z, this, rand);
+			if (c != null) {
+				c.setBlock(world, this, meta);
 				ReikaSoundHelper.playBreakSound(world, x, y, z, this, 1, 1);
+				ReikaSoundHelper.playBreakSound(world, c.xCoord, c.yCoord, c.zCoord, this, 1, 1);
 				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, x, y, z, Block.getIdFromBlock(this), meta);
+				ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.BREAKPARTICLES.ordinal(), world, c.xCoord, c.yCoord, c.zCoord, Block.getIdFromBlock(this), meta);
 			}
 		}
 	}
@@ -314,21 +320,21 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 			}
 		}
 
-		public boolean grow(World world, int x, int y, int z, Block b, Random rand) {
+		public Coordinate grow(World world, int x, int y, int z, Block b, Random rand) {
 			switch(this) {
 				case ENDERFLOWER:
 				case SANOBLOOM: {
 					int n = this.onActiveGrass(world, x, y, z) ? 8 : 32;
 					if (rand.nextInt(n) > 0)
-						return false;
+						return null;
 					if (this == ENDERFLOWER && rand.nextInt(12) > 0)
-						return false;
+						return null;
 					for (int i = 2; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 						int dx = x+dir.offsetX;
 						int dz = z+dir.offsetZ;
 						if (this.matchAt(world, dx, y, dz))
-							return false;
+							return null;
 					}
 					int rx = ReikaRandomHelper.getRandomPlusMinus(x, 4);
 					int rz = ReikaRandomHelper.getRandomPlusMinus(z, 4);
@@ -337,10 +343,9 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					while (world.getBlock(rx, ry-1, rz).isAir(world, rx, ry, rz) && ry > 0)
 						ry--;
 					if (Math.abs(oy-ry) <= 12 && world.getBlock(rx, ry, rz).isAir(world, rx, ry, rz) && this.canPlantAt(world, rx, ry, rz)) {
-						world.setBlock(rx, ry, rz, b, this.ordinal(), 3);
-						return true;
+						return new Coordinate(rx, ry, rz);
 					}
-					return false;
+					return null;
 				}
 				case LUMALILY:
 				case RESOCLOVER: {
@@ -356,20 +361,19 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 							c++;
 					}
 					if (c >= 2)
-						return false;
+						return null;
 					else if (c == 1 && rand.nextBoolean())
-						return false;
+						return null;
 					if (rand.nextInt(n) == 0) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[2+rand.nextInt(4)];
 						int dx = x+dir.offsetX;
 						int dz = z+dir.offsetZ;
 						Block idb = world.getBlock(dx, y-1, dz);
 						if (world.getBlock(dx, y, dz).isAir(world, dx, y, dz) && (idb == Blocks.grass || idb == Blocks.dirt)) {
-							world.setBlock(dx, y, dz, b, this.ordinal(), 3);
-							return true;
+							return new Coordinate(dx, y, dz);
 						}
 					}
-					return false;
+					return null;
 				}
 				case FLOWIVY: {
 					if (rand.nextInt(3) == 0) {
@@ -382,11 +386,10 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 						int dy = y+dir.offsetY;
 						int dz = z+dir.offsetZ;
 						if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz) && this.canPlantAt(world, dx, dy, dz)) {
-							world.setBlock(dx, dy, dz, b, this.ordinal(), 3);
-							return true;
+							return new Coordinate(dx, dy, dz);
 						}
 					}
-					return false;
+					return null;
 				}
 				case VOIDREED: {
 					int n = this.isChromaPool(world, x, y, z) ? 20 : 40;
@@ -401,15 +404,14 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 								h++;
 							}
 							if (h < rand.nextInt(7)) { //slower as taller
-								world.setBlock(x, y+1, z, b, this.ordinal(), 3);
-								return true;
+								return new Coordinate(x, y+1, z);
 							}
 						}
 					}
-					return false;
+					return null;
 				}
 			}
-			return false;
+			return null;
 		}
 
 		public boolean canPlantAt(World world, int x, int y, int z) {
@@ -479,16 +481,40 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					break;
 				}
 				case FLOWIVY: {
-					double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.5);
-					double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
-					double dy = y+0.5+r.nextFloat()*0.25F;
-					int l = 60+r.nextInt(120);
-					float s = 1+r.nextFloat()*1.5F;
-					int c = ReikaColorAPI.mixColors(0x00ff00, 0xa0ffa0, r.nextFloat());
-					EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, dx, dy, dz, 0, -90).setLife(l).setScale(s).setColor(c).setIcon(ChromaIcons.CENTER);
-					fx.angleVelocity = 0.25;
-					fx.freedom = 70;
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					boolean flag = (x+y+z)%6 == 0 && Minecraft.getMinecraft().theWorld.rand.nextBoolean();
+					if (!flag) {
+						HashSet<ForgeDirection> solid = new HashSet();
+						for (int i = 0; i < 6; i++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+							if (world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ).getMaterial() == Material.rock) {
+								solid.add(dir);
+								solid.add(dir.getOpposite());
+							}
+						}
+						if (solid.size() < 6) {
+							for (int i = 0; i < 6; i++) {
+								ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+								if (!solid.contains(dir)) {
+									if (!this.matchAt(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ)) {
+										flag = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+					if (flag) {
+						double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.5);
+						double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
+						double dy = y+0.5+r.nextFloat()*0.25F;
+						int l = 60+r.nextInt(120);
+						float s = 1+r.nextFloat()*1.5F;
+						int c = ReikaColorAPI.mixColors(0x00ff00, 0xa0ffa0, r.nextFloat());
+						EntityFloatingSeedsFX fx = (EntityFloatingSeedsFX)new EntityFloatingSeedsFX(world, dx, dy, dz, 0, -90).setLife(l).setScale(s).setColor(c).setIcon(ChromaIcons.CENTER);
+						fx.angleVelocity = 0.25;
+						fx.freedom = 70;
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 					break;
 				}
 				case LUMALILY: {

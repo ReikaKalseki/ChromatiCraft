@@ -264,9 +264,10 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						if (m.localVariables != null)
 							m.localVariables.clear();
 						m.instructions.clear();
+						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 0));
 						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 1));
 						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 2));
-						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "interceptEntityCollision", sig, false));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "interceptEntityCollision", "(Lnet/minecraft/world/World;Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;)Ljava/util/List;", false));
 						m.instructions.add(new InsnNode(Opcodes.ARETURN));
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;

@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.World.Dimension.Generators;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -23,6 +22,7 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
@@ -47,7 +47,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		}
 
 		int color = rand.nextInt(16);
-		HashMap<Coordinate, Integer> columns = new HashMap();
+		CountMap<Coordinate> columns = new CountMap();
 
 		for (ForgeDirection dir : dirs) {
 			int l = 12;
@@ -66,7 +66,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 		return true;
 	}
 
-	private void cut(Random rand, World world, int x, int y, int z, double w, int my, int dist, int len, ArrayList<ForgeDirection> follow, HashMap<Coordinate, Integer> columns, int color) {
+	private void cut(Random rand, World world, int x, int y, int z, double w, int my, int dist, int len, ArrayList<ForgeDirection> follow, CountMap<Coordinate> columns, int color) {
 		for (int dy = my; dy <= y+12; dy++) {
 
 			int r = (int)(w*Math.sqrt(1+(dy-my)/4D));
@@ -87,9 +87,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2, rand)) {
 								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
 								Coordinate c = new Coordinate(dx2, 0, dz2);
-								Integer get = columns.get(c);
-								int h = get != null ? get.intValue() : 0;
-								columns.put(c, Math.max(dy2+1, h));
+								columns.set(c, Math.max(dy2+1, columns.get(c)));
 							}
 						}
 					}

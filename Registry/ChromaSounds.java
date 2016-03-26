@@ -63,7 +63,10 @@ public enum ChromaSounds implements SoundEnum {
 	LASER("laser"),
 	MONUMENT("monument"),
 	MONUMENTRAY("monumentray"),
-	MONUMENTCOMPLETE("monumentcomplete");
+	MONUMENTCOMPLETE("monumentcomplete"),
+	BUFFERWARNING("buffer_warning"),
+	BUFFERWARNING_LOW("buffer_warning2"),
+	BUFFERWARNING_EMPTY("buffer_warning3");
 
 	public static final ChromaSounds[] soundList = values();
 
@@ -72,8 +75,6 @@ public enum ChromaSounds implements SoundEnum {
 	private static final String SOUND_PREFIX = "Reika.ChromatiCraft.Sounds.";
 	private static final String SOUND_DIR = "Sounds/";
 	private static final String SOUND_EXT = ".ogg";
-	private static final String MUSIC_FOLDER = "music/";
-	private static final String MUSIC_PREFIX = "music.";
 
 	private final String path;
 	private final String name;
@@ -92,7 +93,7 @@ public enum ChromaSounds implements SoundEnum {
 	}
 
 	public float getSoundVolume() {
-		float vol = 1;//ConfigRegistry.MACHINEVOLUME.getFloat(); //config float
+		float vol = 1;
 		if (vol < 0)
 			vol = 0;
 		if (vol > 1)

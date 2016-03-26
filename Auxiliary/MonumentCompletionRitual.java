@@ -307,6 +307,8 @@ public class MonumentCompletionRitual {
 	}
 
 	private boolean doMineralChecks() {
+		if (world.isRemote)
+			return true;
 		MonumentGenerator gen = ChunkProviderChroma.getMonumentGenerator();
 		Map<Coordinate, Block> map = gen.getMineralBlocks();
 		for (Coordinate c : map.keySet()) {

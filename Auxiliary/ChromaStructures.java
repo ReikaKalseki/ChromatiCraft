@@ -2272,25 +2272,25 @@ public class ChromaStructures {
 				array.setBlock(x+8, dy, z-2, b2, meta2);
 
 				if (meta3 != meta2) {
-					array.addBlock(x-2, dy, z-8, b2, meta2);
-					array.addBlock(x-6, dy, z-8, b2, meta2);
-					array.addBlock(x+2, dy, z-8, b2, meta2);
-					array.addBlock(x+6, dy, z-8, b2, meta2);
+					array.addBlock(x-2, dy, z-8, b2, meta3);
+					array.addBlock(x-6, dy, z-8, b2, meta3);
+					array.addBlock(x+2, dy, z-8, b2, meta3);
+					array.addBlock(x+6, dy, z-8, b2, meta3);
 
-					array.addBlock(x-2, dy, z+8, b2, meta2);
-					array.addBlock(x-6, dy, z+8, b2, meta2);
-					array.addBlock(x+2, dy, z+8, b2, meta2);
-					array.addBlock(x+6, dy, z+8, b2, meta2);
+					array.addBlock(x-2, dy, z+8, b2, meta3);
+					array.addBlock(x-6, dy, z+8, b2, meta3);
+					array.addBlock(x+2, dy, z+8, b2, meta3);
+					array.addBlock(x+6, dy, z+8, b2, meta3);
 
-					array.addBlock(x-8, dy, z-2, b2, meta2);
-					array.addBlock(x-8, dy, z-6, b2, meta2);
-					array.addBlock(x-8, dy, z+2, b2, meta2);
-					array.addBlock(x-8, dy, z+6, b2, meta2);
+					array.addBlock(x-8, dy, z-2, b2, meta3);
+					array.addBlock(x-8, dy, z-6, b2, meta3);
+					array.addBlock(x-8, dy, z+2, b2, meta3);
+					array.addBlock(x-8, dy, z+6, b2, meta3);
 
-					array.addBlock(x+8, dy, z+6, b2, meta2);
-					array.addBlock(x+8, dy, z+2, b2, meta2);
-					array.addBlock(x+8, dy, z-6, b2, meta2);
-					array.addBlock(x+8, dy, z-2, b2, meta2);
+					array.addBlock(x+8, dy, z+6, b2, meta3);
+					array.addBlock(x+8, dy, z+2, b2, meta3);
+					array.addBlock(x+8, dy, z-6, b2, meta3);
+					array.addBlock(x+8, dy, z-2, b2, meta3);
 				}
 			}
 		}

@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemConnector;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalCard;
 import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
+import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
@@ -138,6 +139,8 @@ public enum ChromaItems implements ItemEnum {
 	LIGHTWAND(91, false,	"chroma.lightwand",		ItemLightWand.class),
 	CRYSTALCELL(22, false,	"chroma.crystalcell",	ItemCrystalCell.class, ModList.APPENG),
 	PURIFY(33, true,		"chroma.purify",		ItemPurifyCrystal.class),
+	EFFICIENCY(37, false,	"chroma.efficiency",	ItemEfficiencyCrystal.class),
+	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class);
 	;
 
 	private final int index;
@@ -278,7 +281,10 @@ public enum ChromaItems implements ItemEnum {
 			case DIMGEN:
 				return StatCollector.translateToLocal(ChromaNames.dimGenNames[meta]);
 			case PURIFY:
+			case EFFICIENCY:
 				return this.getBasicName();
+				//case FADETORCH:
+				//	return this.getBasicName();
 			default:
 				break;
 		}
@@ -361,6 +367,8 @@ public enum ChromaItems implements ItemEnum {
 				return BlockDimensionDeco.DimDecoTypes.list.length;
 			case PURIFY:
 				return ItemPurifyCrystal.CHARGE_STATES;
+				//case FADETORCH:
+				//	return ItemFadingTorch.STATES;
 			default:
 				throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" has subtypes but the number was not specified!");
 		}

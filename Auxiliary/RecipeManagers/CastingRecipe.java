@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +37,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -43,14 +45,15 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
 import Reika.DragonAPI.Instantiable.Recipe.RecipePattern;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -442,8 +445,8 @@ public class CastingRecipe implements APICastingRecipe {
 			return Collections.unmodifiableMap(inputs);
 		}
 
-		public final Map<List<Integer>, List<ItemStack>> getInputItems() {
-			HashMap<List<Integer>, List<ItemStack>> map = new HashMap();
+		public final Map<List<Integer>, Set<KeyedItemStack>> getInputItems() {
+			HashMap<List<Integer>, Set<KeyedItemStack>> map = new HashMap();
 			for (List<Integer> li : inputs.keySet()) {
 				map.put(li, inputs.get(li).getItemList());
 			}
@@ -555,7 +558,9 @@ public class CastingRecipe implements APICastingRecipe {
 		public ElementTagCompound getInputElements() {
 			ElementTagCompound tag = super.getInputElements();
 			for (ItemMatch is : inputs.values()) {
-				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is.items.get(0)));
+				for (KeyedItemStack ks : is.getItemList()) {
+					tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(ks.getItemStack()));
+				}
 			}
 			return tag;
 		}
@@ -565,7 +570,9 @@ public class CastingRecipe implements APICastingRecipe {
 			Collection<ItemStack> c = new ArrayList();
 			c.add(main);
 			for (ItemMatch m : inputs.values()) {
-				c.addAll(m.items);
+				for (KeyedItemStack ks : m.getItemList()) {
+					c.add(ks.getItemStack());
+				}
 			}
 			return c;
 		}
@@ -694,84 +701,6 @@ public class CastingRecipe implements APICastingRecipe {
 		@Override
 		public int compare(CastingRecipe o1, CastingRecipe o2) {
 			return o1.getOutput().getDisplayName().compareToIgnoreCase(o2.getOutput().getDisplayName());
-		}
-
-	}
-
-	public static class ItemMatch {
-
-		private ArrayList<ItemStack> items = new ArrayList();
-
-		public ItemMatch(ItemStack is) {
-			items.add(is);
-		}
-
-		public ItemMatch(String s) {
-			items.addAll(OreDictionary.getOres(s));
-			if (items.isEmpty())
-				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an OreDict tag with no registered items!");
-		}
-
-		public ItemMatch(Collection<ItemStack> c) {
-			items.addAll(c);
-			if (items.isEmpty())
-				throw new RegistrationException(ChromatiCraft.instance, "This recipe uses an list with no items!");
-		}
-
-		public ItemMatch copy() {
-			return new ItemMatch(items);
-		}
-
-		public boolean match(ItemStack is) {
-			for (ItemStack in : items) {
-				if (ReikaItemHelper.matchStacks(in, is) && (in.stackTagCompound == null || ItemStack.areItemStackTagsEqual(in, is))) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@SideOnly(Side.CLIENT)
-		public ItemStack getCycledItem() {
-			return items.get((int)((System.currentTimeMillis()/2000+Math.abs(this.hashCode()))%items.size())).copy();
-		}
-
-		public List<ItemStack> getItemList() {
-			return Collections.unmodifiableList(items);
-		}
-
-		@Override
-		public String toString() {
-			return items.toString();
-		}
-
-		@Override
-		public int hashCode() {
-			return items.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o instanceof ItemMatch) {
-				ItemMatch m = (ItemMatch)o;
-				if (m.items.size() == items.size()) {
-					for (ItemStack is : items) {
-						if (ReikaItemHelper.listContainsItemStack(m.items, is, false)) {
-
-						}
-						else {
-							return false;
-						}
-					}
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-			else {
-				return false;
-			}
 		}
 
 	}

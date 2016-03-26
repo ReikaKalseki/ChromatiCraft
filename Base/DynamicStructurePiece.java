@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+
 import net.minecraft.world.World;
 
 public abstract class DynamicStructurePiece extends StructureElement {

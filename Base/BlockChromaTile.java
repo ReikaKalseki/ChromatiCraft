@@ -252,10 +252,17 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			ReikaChatHelper.write("Your tool has shattered into a dozen pieces.");
 			return true;
 		}
-		if (ep.isSneaking() && !m.hasSneakActions())
+		if (ep.isSneaking() && !m.hasSneakActions()) {
 			return false;
+		}
 		if (is != null && ChromaItems.isRegistered(is) && ChromaItems.getEntry(is).overridesRightClick(is)) {
 			return false;
+		}
+
+		if (m == ChromaTiles.STAND && ep.isSneaking() && is == null) {
+			if (!world.isRemote)
+				((TileEntityItemStand)te).spreadItemWith(ep, is);
+			return true;
 		}
 
 		if (te instanceof ItemOnRightClick) {

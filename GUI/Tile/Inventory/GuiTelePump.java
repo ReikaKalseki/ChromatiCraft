@@ -42,7 +42,7 @@ public class GuiTelePump extends GuiChromaBase {
 		super(new ContainerTelePump(ep, tile), ep, tile);
 		player = ep;
 		pump = tile;
-		list.addAll(tile.getFluidCount().keySet());
+		list.addAll(tile.getFluids());
 		xSize = 194;
 		ySize = 168;
 	}

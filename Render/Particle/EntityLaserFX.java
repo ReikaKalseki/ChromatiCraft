@@ -69,7 +69,7 @@ public class EntityLaserFX extends EntityFX {
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{
 		v5.draw();
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Particle/64x.png");
+		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/Particle/64x.png");
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glColor4f(1, 1, 1, 1);
 		v5.startDrawingQuads();

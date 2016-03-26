@@ -29,12 +29,12 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ItemElementCalculator;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Instantiable.AttractiveMotionController;
@@ -268,7 +268,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 
 	@SideOnly(Side.CLIENT)
 	private void doRecipeParticles(World world, int x, int y, int z) {
-		if (activeRecipe == null)
+		if (activeRecipe == null || primaryLocation == null || secondaryLocation == null)
 			return;
 		double px = ReikaRandomHelper.getRandomPlusMinus(primaryLocation.xCoord+0.5, 0.35);
 		double pz = ReikaRandomHelper.getRandomPlusMinus(primaryLocation.zCoord+0.5, 0.35);
