@@ -22,7 +22,9 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 
@@ -79,6 +81,8 @@ public class CrystalPotionController {
 
 	public static boolean isWorldHostile(World world) {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
+			return true;
+		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.HOSTILE.existsInWorld(world))
 			return true;
 		return world.provider.isHellWorld;
 	}

@@ -20,12 +20,16 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -38,6 +42,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -59,6 +64,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -424,5 +430,31 @@ public class ChromaAux {
 
 	public static boolean applyNoclipPhase(EntityPlayer ep) {
 		return ep.noClip || Chromabilities.ORECLIP.enabledOn(ep);
+	}
+
+	public static AxisAlignedBB getInterceptedCollisionBox(Entity e, World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		if (b == ChromaBlocks.SELECTIVEGLASS.getBlockInstance() && (e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile)) {
+			if (BlockSelectiveGlass.canEntityPass(world, x, y, z, e)) {
+				return null;
+			}
+		}
+		else if ((e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile) && AbilityHelper.instance.canProjectilePenetrateBlock(world, x, y, z, b, e)) {
+			return null;
+		}
+		return b.getCollisionBoundingBoxFromPool(world, x, y, z);
+	}
+
+	public static MovingObjectPosition getInterceptedRaytrace(Entity e, Vec3 vec1, Vec3 vec2) {
+		return getInterceptedRaytrace(e, vec1, vec2, false, false, false);
+	}
+
+	public static MovingObjectPosition getInterceptedRaytrace(Entity e, Vec3 vec1, Vec3 vec2, boolean b1, boolean b2, boolean b3) {
+		if (e instanceof IProjectile || e instanceof EntityFireball || e instanceof CustomProjectile) {
+			if (AbilityHelper.instance.canProjectilePenetrateBlocks(e)) {
+				return AbilityHelper.instance.getProjectileRayTrace(e, vec1, vec2, b1, b2, b3);
+			}
+		}
+		return e.worldObj.func_147447_a(vec1, vec2, b1, b2, b3);
 	}
 }

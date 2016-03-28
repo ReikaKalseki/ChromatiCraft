@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -272,7 +273,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				this.spawnLightning(world, x, y, z);
 			}
 
-			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(24000) == 0 && this.isChunkLoaded()) {
+			if (!world.isRemote && ChromaOptions.BALLLIGHTNING.getState() && energy >= this.getCapacity()/2 && rand.nextInt(8000) == 0 && this.isChunkLoaded()) {
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 		}
@@ -659,8 +660,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public boolean drain(CrystalElement e, int amt) {
 		if (e == color && energy >= amt && amt > 0) {
+			if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.LOSSY.existsInWorld(worldObj))
+				amt = amt*3/2;
 			energy -= amt;
-			if (energy == 0) {
+			energy = Math.max(energy, 0);
+			if (energy <= 0) {
 				MinecraftForge.EVENT_BUS.post(new PylonDrainedEvent(this));
 			}
 			return true;

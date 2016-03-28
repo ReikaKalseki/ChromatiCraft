@@ -482,7 +482,7 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 
 	@Override
 	public int getStrongPower(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
-		return this.isActive() ? 15 : 0;
+		return activeTick > 1 ? 15 : 0;
 	}
 
 	@Override

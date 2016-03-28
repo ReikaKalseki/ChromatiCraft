@@ -159,6 +159,7 @@ import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
@@ -544,10 +545,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			}
 		}
 
-		if (ModList.MYSTCRAFT.isLoaded()) {
-			MystPages.registerPages();
-		}
-
 		ReikaJavaLibrary.initClass(ChromaLuaMethods.class);
 
 		//ReikaEEHelper.blacklistRegistry(ChromaBlocks.blockList);
@@ -576,6 +573,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()));
 		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()));
 		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()));
+
+
+		if (ModList.MYSTCRAFT.isLoaded()) {
+			ReikaMystcraftHelper.registerPageRegistry(MystPages.instance);
+		}
 
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
 			ChromaItems ir = ChromaItems.itemList[i];

@@ -23,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -146,7 +147,8 @@ public enum Chromabilities implements Ability {
 	DOUBLECRAFT(null, true),
 	GROWAURA(Phase.END, true),
 	RECHARGE(null, false),
-	MEINV(null, false, ModList.APPENG);
+	MEINV(null, false, ModList.APPENG),
+	MOBSEEK(null, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -264,6 +266,7 @@ public enum Chromabilities implements Ability {
 			case GROWAURA:
 			case RECHARGE:
 			case MEINV:
+			case MOBSEEK:
 				return true;
 			default:
 				return false;

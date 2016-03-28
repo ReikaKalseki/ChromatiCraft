@@ -10,8 +10,6 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -21,10 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -32,7 +27,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 
@@ -41,11 +35,6 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 
 	private final ArrayList<Integer> allDirs = new ArrayList();
 	private final IIcon[] edges = new IIcon[10];
-
-	//public static Entity collidingEntity;
-
-	private static final HashMap<Coordinate, Entity> collidingEntities = new HashMap();
-	private static long lastEntityCull = -1;
 
 	public BlockSelectiveGlass(Material mat) {
 		super(mat);
@@ -57,15 +46,6 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 		this.setResistance(7.5F);
 		this.setHardness(1);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
-	}
-
-	public static void addEntityCheckPos(Coordinate c, Entity e) {
-		long t = e.worldObj.getTotalWorldTime();
-		if (t-lastEntityCull > 100) {
-			collidingEntities.clear();
-			lastEntityCull = t;
-		}
-		collidingEntities.put(c, e);
 	}
 
 	@Override
@@ -93,7 +73,7 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 	public int getRenderType() {
 		return ChromatiCraft.proxy.selectiveRender;
 	}
-
+	/*
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		AxisAlignedBB ret = null;
@@ -128,7 +108,7 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 		collidingEntities.remove(c);
 		return super.collisionRayTrace(world, x, y, z, vec1, vec2);
 	}
-
+	 */
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
 		if (!this.canEntityPass(world, x, y, z, e)) {
@@ -136,7 +116,7 @@ public class BlockSelectiveGlass extends Block implements ConnectedTextureGlass 
 		}
 	}
 
-	private boolean canEntityPass(World world, int x, int y, int z, Entity e) {
+	public static boolean canEntityPass(World world, int x, int y, int z, Entity e) {
 		if (e instanceof EntityThrowable) {
 			return ((EntityThrowable)e).getThrower() instanceof EntityPlayer;
 		}

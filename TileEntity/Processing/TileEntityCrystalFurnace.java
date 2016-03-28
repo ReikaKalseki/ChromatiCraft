@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 import java.util.Locale;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -42,6 +43,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.RockTypes;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 import buildcraft.api.transport.IPipeConnection;
@@ -155,6 +157,12 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 			}
 		}
 		else if (in.getItem() instanceof ItemFood) {
+			tag.scale(0.5F);
+		}
+		else if (ReikaItemHelper.matchStackWithBlock(in, Blocks.log) || ReikaItemHelper.matchStackWithBlock(in, Blocks.log2)) {
+			tag.scale(0.75F);
+		}
+		else if (ModWoodList.isModWood(in)) {
 			tag.scale(0.75F);
 		}
 		return tag.scale((float)Math.pow(getMultiplyRate(in, out)/2F, 2));

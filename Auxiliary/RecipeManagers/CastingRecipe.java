@@ -538,6 +538,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
+		@SideOnly(Side.CLIENT)
 		public ItemHashMap<Integer> getItemCounts() {
 			ItemHashMap<Integer> map = new ItemHashMap();
 			ItemStack[] items = this.getArrayForDisplay();

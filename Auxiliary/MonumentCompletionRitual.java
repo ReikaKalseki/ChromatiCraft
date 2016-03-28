@@ -185,6 +185,7 @@ public class MonumentCompletionRitual {
 	//A big block of hack
 	@SideOnly(Side.CLIENT)
 	private static void setCameraPosition(EntityPlayer ep, double cx, double cy, double cz, double cxPrev, double cyPrev, double czPrev, double yaw, double yawPrev, double pitch, double pitchPrev, boolean setPos, boolean setAngs) {
+		ChromatiCraft.logger.debug("Moving "+ep.getCommandSenderName()+" camera to "+cx+","+cy+","+cz+" @ "+yaw+" / "+pitch);
 		RenderManager rm = RenderManager.instance;
 		if (setPos) {
 			RenderManager.renderPosX = cx;

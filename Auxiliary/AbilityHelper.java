@@ -64,6 +64,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -1409,6 +1410,247 @@ public class AbilityHelper {
 			}
 		}
 		else {
+			return null;
+		}
+	}
+
+	public boolean canProjectilePenetrateBlocks(Entity e) {
+		return ReikaEntityHelper.getShootingEntity(e) instanceof EntityPlayer;
+	}
+
+	public boolean canProjectilePenetrateBlock(World world, int x, int y, int z, Block b, Entity e) {
+		return this.canProjectilePenetrateBlocks(e) && !this.isBlockSolidToProjectiles(world, x, y, z, b, e);
+	}
+
+	private boolean isBlockSolidToProjectiles(World world, int x, int y, int z, Block b, Entity e) {
+		if (b == ChromaBlocks.SELECTIVEGLASS.getBlockInstance())
+			return false;
+		if (ReikaBlockHelper.isLeaf(world, x, y, z) || ReikaBlockHelper.isWood(world, x, y, z))
+			return !this.isEntityFiredByMobSeek(e);
+		if (b == Blocks.red_mushroom_block || b == Blocks.brown_mushroom_block)
+			return !this.isEntityFiredByMobSeek(e);
+		if (b == Blocks.waterlily)
+			return !this.isEntityFiredByMobSeek(e);
+		if (b == Blocks.fence)
+			return !this.isEntityFiredByMobSeek(e);
+		if (b == Blocks.iron_bars)
+			return !this.isEntityFiredByMobSeek(e);
+		return true;
+	}
+
+	private boolean isEntityFiredByMobSeek(Entity e) {
+		Entity s = ReikaEntityHelper.getShootingEntity(e);
+		return s instanceof EntityPlayer && Chromabilities.MOBSEEK.enabledOn((EntityPlayer)s);
+	}
+
+	public MovingObjectPosition getProjectileRayTrace(Entity e, Vec3 vec1, Vec3 vec2, boolean b1, boolean b2, boolean b3) {
+		World world = e.worldObj;
+		if (!Double.isNaN(vec1.xCoord) && !Double.isNaN(vec1.yCoord) && !Double.isNaN(vec1.zCoord)) {
+			if (!Double.isNaN(vec2.xCoord) && !Double.isNaN(vec2.yCoord) && !Double.isNaN(vec2.zCoord)) {
+				int i = MathHelper.floor_double(vec2.xCoord);
+				int j = MathHelper.floor_double(vec2.yCoord);
+				int k = MathHelper.floor_double(vec2.zCoord);
+				int l = MathHelper.floor_double(vec1.xCoord);
+				int i1 = MathHelper.floor_double(vec1.yCoord);
+				int j1 = MathHelper.floor_double(vec1.zCoord);
+				Block block = world.getBlock(l, i1, j1);
+				int k1 = world.getBlockMetadata(l, i1, j1);
+
+				if ((!b2 || block.getCollisionBoundingBoxFromPool(world, l, i1, j1) != null) && block.canCollideCheck(k1, b1) && this.isBlockSolidToProjectiles(world, l, i1, j1, block, e)) {
+					MovingObjectPosition movingobjectposition = block.collisionRayTrace(world, l, i1, j1, vec1, vec2);
+
+					if (movingobjectposition != null) {
+						return movingobjectposition;
+					}
+				}
+
+				MovingObjectPosition movingobjectposition2 = null;
+				k1 = 200;
+
+				while (k1-- >= 0)
+				{
+					if (Double.isNaN(vec1.xCoord) || Double.isNaN(vec1.yCoord) || Double.isNaN(vec1.zCoord))
+					{
+						return null;
+					}
+
+					if (l == i && i1 == j && j1 == k)
+					{
+						return b3 ? movingobjectposition2 : null;
+					}
+
+					boolean flag6 = true;
+					boolean flag3 = true;
+					boolean flag4 = true;
+					double d0 = 999.0D;
+					double d1 = 999.0D;
+					double d2 = 999.0D;
+
+					if (i > l)
+					{
+						d0 = l + 1.0D;
+					}
+					else if (i < l)
+					{
+						d0 = l + 0.0D;
+					}
+					else
+					{
+						flag6 = false;
+					}
+
+					if (j > i1)
+					{
+						d1 = i1 + 1.0D;
+					}
+					else if (j < i1)
+					{
+						d1 = i1 + 0.0D;
+					}
+					else
+					{
+						flag3 = false;
+					}
+
+					if (k > j1)
+					{
+						d2 = j1 + 1.0D;
+					}
+					else if (k < j1)
+					{
+						d2 = j1 + 0.0D;
+					}
+					else
+					{
+						flag4 = false;
+					}
+
+					double d3 = 999.0D;
+					double d4 = 999.0D;
+					double d5 = 999.0D;
+					double d6 = vec2.xCoord - vec1.xCoord;
+					double d7 = vec2.yCoord - vec1.yCoord;
+					double d8 = vec2.zCoord - vec1.zCoord;
+
+					if (flag6)
+					{
+						d3 = (d0 - vec1.xCoord) / d6;
+					}
+
+					if (flag3)
+					{
+						d4 = (d1 - vec1.yCoord) / d7;
+					}
+
+					if (flag4)
+					{
+						d5 = (d2 - vec1.zCoord) / d8;
+					}
+
+					boolean flag5 = false;
+					byte b0;
+
+					if (d3 < d4 && d3 < d5)
+					{
+						if (i > l)
+						{
+							b0 = 4;
+						}
+						else
+						{
+							b0 = 5;
+						}
+
+						vec1.xCoord = d0;
+						vec1.yCoord += d7 * d3;
+						vec1.zCoord += d8 * d3;
+					}
+					else if (d4 < d5)
+					{
+						if (j > i1)
+						{
+							b0 = 0;
+						}
+						else
+						{
+							b0 = 1;
+						}
+
+						vec1.xCoord += d6 * d4;
+						vec1.yCoord = d1;
+						vec1.zCoord += d8 * d4;
+					}
+					else
+					{
+						if (k > j1)
+						{
+							b0 = 2;
+						}
+						else
+						{
+							b0 = 3;
+						}
+
+						vec1.xCoord += d6 * d5;
+						vec1.yCoord += d7 * d5;
+						vec1.zCoord = d2;
+					}
+
+					Vec3 vec32 = Vec3.createVectorHelper(vec1.xCoord, vec1.yCoord, vec1.zCoord);
+					l = (int)(vec32.xCoord = MathHelper.floor_double(vec1.xCoord));
+
+					if (b0 == 5)
+					{
+						--l;
+						++vec32.xCoord;
+					}
+
+					i1 = (int)(vec32.yCoord = MathHelper.floor_double(vec1.yCoord));
+
+					if (b0 == 1)
+					{
+						--i1;
+						++vec32.yCoord;
+					}
+
+					j1 = (int)(vec32.zCoord = MathHelper.floor_double(vec1.zCoord));
+
+					if (b0 == 3)
+					{
+						--j1;
+						++vec32.zCoord;
+					}
+
+					Block block1 = world.getBlock(l, i1, j1);
+					int l1 = world.getBlockMetadata(l, i1, j1);
+
+					if (!b2 || block1.getCollisionBoundingBoxFromPool(world, l, i1, j1) != null)
+					{
+						if (block1.canCollideCheck(l1, b1) && this.isBlockSolidToProjectiles(world, l, i1, j1, block1, e))
+						{
+							MovingObjectPosition movingobjectposition1 = block1.collisionRayTrace(world, l, i1, j1, vec1, vec2);
+
+							if (movingobjectposition1 != null)
+							{
+								return movingobjectposition1;
+							}
+						}
+						else
+						{
+							movingobjectposition2 = new MovingObjectPosition(l, i1, j1, b0, vec1, false);
+						}
+					}
+				}
+
+				return b3 ? movingobjectposition2 : null;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
 			return null;
 		}
 	}

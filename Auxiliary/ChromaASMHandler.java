@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,10 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			//WORLDLIGHT2("net.minecraft.world.ChunkCache", "ahr"),
 			//ENTITYCOLLISION("net.minecraft.entity.Entity", "sa"),
 			COLLISIONBOXES("net.minecraft.world.World", "ahb"),
-			ENTITYPUSHOUT("net.minecraft.client.entity.EntityPlayerSP", "blk")
+			ENTITYPUSHOUT("net.minecraft.client.entity.EntityPlayerSP", "blk"),
+			RAYTRACEHOOK1("net.minecraft.entity.projectile.EntityArrow", "zc"),
+			RAYTRACEHOOK2("net.minecraft.entity.projectile.EntityThrowable", "zk"),
+			RAYTRACEHOOK3("net.minecraft.entity.projectile.EntityFireball", "ze"),
 			;
 
 			private final String obfName;
@@ -277,6 +281,59 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						AbstractInsnNode ain = ReikaASMHelper.getFirstOpcode(m.instructions, Opcodes.GETFIELD);
 						m.instructions.insert(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "applyNoclipPhase", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
 						m.instructions.remove(ain);
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
+					case RAYTRACEHOOK1:
+					case RAYTRACEHOOK2:
+					case RAYTRACEHOOK3: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_70071_h_", "onUpdate", "()V");
+
+						String func1 = FMLForgePlugin.RUNTIME_DEOBF ? "func_149668_a" : "getCollisionBoundingBoxFromPool";
+						String func2 = FMLForgePlugin.RUNTIME_DEOBF ? "func_72933_a" : "rayTraceBlocks";
+						String func3 = FMLForgePlugin.RUNTIME_DEOBF ? "func_147447_a" : "func_147447_a";
+
+						String world = FMLForgePlugin.RUNTIME_DEOBF ? "field_70170_p" : "worldObj";
+
+						for (int i = 0; i < m.instructions.size(); i++) {
+							AbstractInsnNode ain = m.instructions.get(i);
+							if (ain.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+								MethodInsnNode min = (MethodInsnNode)ain;
+								if (min.name.equals(func1)) {
+									VarInsnNode pre = (VarInsnNode)ReikaASMHelper.getLastNonZeroALOADBefore(m.instructions, i);
+									//m.instructions.remove(pre);
+									pre.var = 0;
+									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
+									li.add(0, "Lnet/minecraft/entity/Entity;");
+									min.desc = ReikaASMHelper.compileSignature(li);
+									min.name = "getInterceptedCollisionBox";
+									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
+								}
+								else if (min.name.equals(func2)) {
+									AbstractInsnNode pre = ReikaASMHelper.getLastFieldRefBefore(m.instructions, i, world);
+									m.instructions.remove(pre);
+									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
+									li.add(0, "Lnet/minecraft/entity/Entity;");
+									min.desc = ReikaASMHelper.compileSignature(li);
+									min.name = "getInterceptedRaytrace";
+									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
+								}
+								else if (min.name.equals(func3)) {
+									AbstractInsnNode pre = ReikaASMHelper.getLastFieldRefBefore(m.instructions, i, world);
+									m.instructions.remove(pre);
+									min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+									ArrayList<String> li = ReikaASMHelper.parseMethodSignature(min);
+									li.add(0, "Lnet/minecraft/entity/Entity;");
+									min.desc = ReikaASMHelper.compileSignature(li);
+									min.name = "getInterceptedRaytrace";
+									ReikaASMHelper.changeOpcode(min, Opcodes.INVOKESTATIC);
+								}
+							}
+						}
+
+						//ReikaJavaLibrary.pConsole(ReikaASMHelper.clearString(m.instructions));
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
 					}

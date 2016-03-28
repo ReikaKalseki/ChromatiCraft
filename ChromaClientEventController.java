@@ -125,7 +125,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.SoundVolumeEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
-import Reika.DragonAPI.Interfaces.MachineRegistryBlock;
+import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -541,6 +541,91 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
+	public void renderMobsThroughWalls(EntityRenderEvent evt) {
+		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			if (evt.entity instanceof EntityLivingBase) {
+				Entity te = evt.entity;
+				GL11.glPushMatrix();
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				ReikaRenderHelper.disableEntityLighting();
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.DEFAULT.apply();
+				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+				GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+
+				Tessellator v5 = Tessellator.instance;
+
+				RenderManager.instance.getEntityRenderObject(te).doRender(te, 0, 0, 0, evt.partialTickTime, 0);
+
+				/*
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				int a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
+				int c = ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
+
+				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+
+				double mx = box.minX;
+				double px = box.maxX;
+				double my = box.minY;
+				double py = box.maxY;
+				double mz = box.minZ;
+				double pz = box.maxZ;
+
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(mx, my, mz);
+				v5.addVertex(px, my, mz);
+				v5.addVertex(px, my, pz);
+				v5.addVertex(mx, my, pz);
+				v5.draw();
+
+				v5.startDrawing(GL11.GL_LINE_LOOP);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(mx, py, mz);
+				v5.addVertex(px, py, mz);
+				v5.addVertex(px, py, pz);
+				v5.addVertex(mx, py, pz);
+				v5.draw();
+
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(mx, my, mz);
+				v5.addVertex(mx, py, mz);
+				v5.draw();
+
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(px, my, mz);
+				v5.addVertex(px, py, mz);
+				v5.draw();
+
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(px, my, pz);
+				v5.addVertex(px, py, pz);
+				v5.draw();
+
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setColorRGBA_I(c, a);
+				v5.addVertex(mx, my, pz);
+				v5.addVertex(mx, py, pz);
+				v5.draw();
+
+				 */
+
+				ReikaRenderHelper.enableEntityLighting();
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+				GL11.glPopMatrix();
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void renderSpawners(EntityRenderEvent evt) {
 		if (evt.entity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
 			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.entity);
@@ -563,11 +648,7 @@ public class ChromaClientEventController {
 				int a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
 				int c = tx.highlightColor;//0xffffff;
 
-				AxisAlignedBB box = te.boundingBox;
-				if (box == null || true)
-					box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
-				else
-					box = box.offset(-te.posX, -te.posY, -te.posZ).expand(0.25, 0.25, 0.25);
+				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
 
 				double mx = box.minX;
 				double px = box.maxX;

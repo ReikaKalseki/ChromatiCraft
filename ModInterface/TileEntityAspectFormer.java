@@ -180,4 +180,9 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		return selected != null ? this.getCost() : null;
 	}
 
+	@Override
+	public double getIncomingBeamRadius() {
+		return 0.25;
+	}
+
 }

@@ -19,6 +19,7 @@ import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.MystcraftPageRegistry;
 
 import com.xcompwiz.mystcraft.api.hook.SymbolValuesAPI;
 import com.xcompwiz.mystcraft.api.hook.WordAPI;
@@ -31,9 +32,15 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class MystPages {
+public class MystPages implements MystcraftPageRegistry {
 
-	public static void registerPages() {
+	public static final MystPages instance = new MystPages();
+
+	private MystPages() {
+
+	}
+
+	public void register() {
 		for (int i = 0; i < Symbols.list.length; i++) {
 			Symbols p = Symbols.list[i];
 			WordAPI api = ReikaMystcraftHelper.getAPI(APISegment.WORD, 1);
@@ -43,9 +50,9 @@ public class MystPages {
 
 		for (int i = 0; i < Pages.list.length; i++) {
 			Pages p = Pages.list[i];
-			ReikaMystcraftHelper.registerAgeSymbol(p);
 			ReikaMystcraftHelper.setPageRank(p, p.itemRank);
 			ReikaMystcraftHelper.setRandomAgeWeight(p, p.randomWeight);
+			ReikaMystcraftHelper.registerAgeSymbol(p);
 			ChromatiCraft.logger.log("Registering custom MystCraft page '"+p.name+"'");
 		}
 
@@ -66,7 +73,11 @@ public class MystPages {
 		ORES("Chroma Ores", 			10, 	3, 0.75F,		Symbols.MATERIAL, Symbols.MINERAL),
 		CRYSTALS("Cave Crystals", 		80, 	2, 0.5F,		Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
 		TREES("Dye Trees", 				5, 		1, 1F,			Symbols.HERBAL, Symbols.ENERGY),
-		DENSE("Dense Generation", 		400, 	6, 0.03125F,	Symbols.UPGRADE);
+		DENSE("Dense Generation", 		400, 	6, 0.03125F,	Symbols.UPGRADE),
+		LOSSY("Lumen Loss",				-80,	4, 0.0625F,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
+		BUFFERDRAIN("Energy Drain",		-150,	4, 0.125F,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
+		HOSTILE("Hostile Aura",			-40,	5, 0.03125F,	Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
+		CORRUPTED("Corrupted Aura",		-400,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION);
 
 		public final String name;
 		public final int instability;
@@ -122,7 +133,7 @@ public class MystPages {
 
 		@Override
 		public int instabilityModifier(int count) {
-			return count*instability;
+			return count == 1 ? instability : 0;
 		}
 
 		@Override
@@ -166,8 +177,9 @@ public class MystPages {
 		MATERIAL("material"),
 		MINERAL("mineral"),
 		HERBAL("herbal"),
-		UPGRADE("upgrade");
-
+		UPGRADE("upgrade"),
+		PLAYER("player"),
+		INVERSION("invert");
 		//private final String texture;
 
 		private final DrawableWord word;

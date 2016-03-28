@@ -218,6 +218,7 @@ public enum ChromaResearch implements ProgressElement {
 	CRYSTALCELL(		ChromaItems.CRYSTALCELL,	ResearchLevel.MULTICRAFT,	ProgressStage.CHARGE),
 	PURIFY(				ChromaItems.PURIFY,			ResearchLevel.ENDGAME,		ProgressStage.RAINBOWLEAF, ProgressStage.ALLOY),
 	EFFICIENCY(			ChromaItems.EFFICIENCY,			ResearchLevel.CTM),
+	KILLAURA(			ChromaItems.KILLAURAGUN,	ResearchLevel.ENDGAME),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -266,6 +267,7 @@ public enum ChromaResearch implements ProgressElement {
 	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.CTM),
 	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.CTM),
 	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
+	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),

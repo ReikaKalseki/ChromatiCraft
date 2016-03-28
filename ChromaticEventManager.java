@@ -11,7 +11,6 @@ package Reika.ChromatiCraft;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -85,7 +84,6 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
-import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
@@ -100,6 +98,7 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -127,11 +126,10 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
+import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
-import Reika.DragonAPI.Instantiable.Event.EntityAboutToRayTraceEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
@@ -148,15 +146,16 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
@@ -182,10 +181,27 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void applyCorruptedAura(BlockTickEvent evt) {
+		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.CORRUPTED.existsInWorld(evt.world) && ReikaRandomHelper.doWithChance(10)) {
+			BiomeGenBase b = evt.world.getBiomeGenForCoords(evt.xCoord, evt.zCoord);
+			if (ChromatiCraft.isRainbowForest(b)) {
+				BiomeGenBase b2 = BiomeGenBase.desert;
+				if (ModList.THAUMCRAFT.isLoaded()) {
+					int id = ThaumIDHandler.Biomes.TAINT.getID();
+					if (id >= 0)
+						b2 = BiomeGenBase.biomeList[id];
+				}
+				ReikaWorldHelper.setBiomeForXZ(evt.world, evt.xCoord, evt.zCoord, b2);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void applyNoclipSuffocationPrevention(LivingHurtEvent evt) {
 		if (evt.entityLiving instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)evt.entityLiving) && evt.source == DamageSource.inWall) {
 			evt.ammount = 0;
 			evt.setCanceled(true);
+			ChromatiCraft.logger.debug("Prevented suffocation damage when noclipping");
 		}
 	}
 
@@ -335,16 +351,6 @@ public class ChromaticEventManager {
 					}
 					applyingAOE = false;
 				}
-			}
-		}
-	}
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void notifySelectiveGlass(EntityAboutToRayTraceEvent evt) {
-		HashSet<Coordinate> li = ReikaVectorHelper.getCoordsAlongVector(evt.startPos.xCoord, evt.startPos.yCoord, evt.startPos.zCoord, evt.endPos.xCoord, evt.endPos.yCoord, evt.endPos.zCoord);
-		for (Coordinate c : li) {
-			if (c.getBlock(evt.entity.worldObj) == ChromaBlocks.SELECTIVEGLASS.getBlockInstance()) {
-				BlockSelectiveGlass.addEntityCheckPos(c, evt.entity);
 			}
 		}
 	}

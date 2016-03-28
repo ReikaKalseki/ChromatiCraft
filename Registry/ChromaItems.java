@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
+import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
 import Reika.ChromatiCraft.Items.Tools.ItemMultiTool;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
@@ -140,7 +141,8 @@ public enum ChromaItems implements ItemEnum {
 	CRYSTALCELL(22, false,	"chroma.crystalcell",	ItemCrystalCell.class, ModList.APPENG),
 	PURIFY(33, true,		"chroma.purify",		ItemPurifyCrystal.class),
 	EFFICIENCY(37, false,	"chroma.efficiency",	ItemEfficiencyCrystal.class),
-	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class);
+	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class),
+	KILLAURAGUN(38, false,	"chroma.killauragun",	ItemKillAuraGun.class),
 	;
 
 	private final int index;

@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
@@ -150,8 +151,8 @@ public class ChromaOverlays {
 			}
 		}
 
+		int gsc = evt.resolution.getScaleFactor();
 		if (evt.type == ElementType.HELMET) {
-			int gsc = evt.resolution.getScaleFactor();
 			if (ChromaItems.TOOL.matchWith(is)) {
 				if (!holding)
 					this.syncBuffer(ep);
@@ -174,15 +175,18 @@ public class ChromaOverlays {
 			GL11.glPopMatrix();
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
 				this.renderPylonAura(ep, gsc);
+			this.renderPingOverlays(ep, gsc);
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderProgressOverlays(ep, gsc);
-			this.renderPingOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
 			GL11.glPopMatrix();
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
 			this.renderCustomCrosshair(evt);
+		}
+		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.KILLAURAGUN.matchWith(is)) {
+			this.renderKillAuraCrosshair(evt, gsc);
 		}
 		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
 			this.renderBoostedHealthBar(evt, ep);
@@ -516,6 +520,7 @@ public class ChromaOverlays {
 	}
 
 	private void renderPylonAura(EntityPlayer ep, int gsc) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		String tex = "Textures/aura-bar-half-grid.png";//ChromaOptions.SMALLAURA.getState() ? "Textures/aura-bar-quarter.png" : "Textures/aura-bar-half.png";
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, tex);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -560,10 +565,11 @@ public class ChromaOverlays {
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
+		GL11.glPopAttrib();
 	}
 
 	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {
-		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/crosshair.png");
+		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/crosshair.png");
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		Tessellator v5 = Tessellator.instance;
@@ -583,6 +589,69 @@ public class ChromaOverlays {
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_BLEND);
 		evt.setCanceled(true);
+	}
+
+	private void renderKillAuraCrosshair(RenderGameOverlayEvent.Pre evt, int gsc) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ADDITIVEDARK.apply();
+		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+		Tessellator v5 = Tessellator.instance;
+		double w = Minecraft.getMinecraft().displayWidth/gsc;
+		double h = Minecraft.getMinecraft().displayHeight/gsc;
+		double z = -1000;
+
+		int n = 4;
+		int tick = ItemKillAuraGun.getUseTick();
+		double t = (double)n*tick/ItemKillAuraGun.CHARGE_TIME;
+		//t++; //basic frame
+		int p = MathHelper.ceiling_double_int(t);
+		int m = (int)t;
+
+		//ReikaJavaLibrary.pConsole(t+">"+m+">"+p);
+
+		for (int i = -1; i <= p; i++) {
+			GL11.glPushMatrix();
+			double a = 0;
+			if (i == 1 || i == -1) {
+				int t2 = ItemKillAuraGun.getUnboundedUseTick();
+				if (t2 > ItemKillAuraGun.CHARGE_TIME) {
+					t2 = ItemKillAuraGun.CHARGE_TIME+t2%ItemKillAuraGun.CHARGE_TIME;
+				}
+				a = -Math.pow(t2*0.5, 2);
+			}
+			if (a != 0) {
+				GL11.glTranslated(w/2, h/2, 0);
+				GL11.glRotated(a, 0, 0, 1);
+				GL11.glTranslated(-w/2, -h/2, 0);
+			}
+			String i2 = String.valueOf(i);
+			if (i == -1)
+				i2 = "0b";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/killlaura_"+i2+".png");
+			int alpha = 255;
+			float f = (float)(t-m);
+			//ReikaJavaLibrary.pConsole(i <= m ? (i+">"+1) : (i+">"+f));
+			int color = i <= m ? 0xffffff : ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, f);
+			v5.startDrawingQuads();
+			v5.setBrightness(240);
+			v5.setColorRGBA_I(color, alpha);
+			v5.addVertexWithUV(0, h, z, 0, 1);
+			v5.addVertexWithUV(w, h, z, 1, 1);
+			v5.addVertexWithUV(w, 0, z, 1, 0);
+			v5.addVertexWithUV(0, 0, z, 0, 0);
+			v5.draw();
+			GL11.glPopMatrix();
+		}
+
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
+		BlendMode.DEFAULT.apply();
+		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
+
+		evt.setCanceled(true);
+		GL11.glPopAttrib();
 	}
 
 	private void renderBoostedHealthBar(RenderGameOverlayEvent.Pre evt, EntityPlayer ep) {

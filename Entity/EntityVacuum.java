@@ -35,6 +35,7 @@ import Reika.DragonAPI.Instantiable.EntityTumblingBlock;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SelectiveMovable;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -44,7 +45,7 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
+public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, CustomProjectile {
 
 	public static final int ACTIVATION_TIME = 60;
 
@@ -297,6 +298,11 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData {
 	@Override
 	public void readSpawnData(ByteBuf buf) {
 		lifespan = buf.readInt();
+	}
+
+	@Override
+	public Entity getFiringEntity() {
+		return firingPlayer;
 	}
 
 }

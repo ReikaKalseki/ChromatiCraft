@@ -66,7 +66,9 @@ public enum ChromaSounds implements SoundEnum {
 	MONUMENTCOMPLETE("monumentcomplete"),
 	BUFFERWARNING("buffer_warning"),
 	BUFFERWARNING_LOW("buffer_warning2"),
-	BUFFERWARNING_EMPTY("buffer_warning3");
+	BUFFERWARNING_EMPTY("buffer_warning3"),
+	KILLAURA("killaura"),
+	KILLAURA_CHARGE("killaura_charge");
 
 	public static final ChromaSounds[] soundList = values();
 

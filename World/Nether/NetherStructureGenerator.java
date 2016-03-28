@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -187,7 +188,7 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 				int dz = z+k;
 				if (ReikaMathLibrary.py3d(i, 0, k) <= r+0.5) {
 					int dy = 127;
-					while (!world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
+					while (!this.isCountedAsAir(world, dx, dy, dz)) {
 						if (ReikaMathLibrary.py3d(i, 0, k) < r-0.5) {
 							world.setBlock(dx, dy, dz, Blocks.air);
 						}
@@ -224,6 +225,11 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 		}
 
 		return true;
+	}
+
+	private boolean isCountedAsAir(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		return b.isAir(world, x, y, z) || b.getMaterial() == Material.plants;
 	}
 
 	@Override
