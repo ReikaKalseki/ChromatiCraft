@@ -9,28 +9,39 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity;
 
+import java.util.Collection;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityChromaCrystal extends TileEntityChromaticBase implements OwnedTile {
+public class TileEntityChromaCrystal extends TileEntityChromaticBase implements OwnedTile, BreakAction {
 
 	private int omega;
 	private int torque;
 	private long power;
+
+	private Coordinate pylonLocation;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -40,6 +51,26 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase implements 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		if (!world.isRemote)
+			pylonLocation = this.findPylonLocation(world, x, y, z);
+		this.syncAllData(true);
+	}
+
+	private Coordinate findPylonLocation(World world, int x, int y, int z) {
+		if (world.getBlock(x, y-1, z) != ChromaBlocks.RUNE.getBlockInstance())
+			return null;
+		CrystalElement e = CrystalElement.elements[world.getBlockMetadata(x, y-1, z)];
+		Collection<TileEntityCrystalPylon> c = CrystalNetworker.instance.getNearbyPylons(world, x, y, z, e, 8, false);
+		for (TileEntityCrystalPylon te : c) {
+			if (te.isValidPowerCrystal(this)) {
+				return new Coordinate(te);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -74,6 +105,30 @@ public class TileEntityChromaCrystal extends TileEntityChromaticBase implements 
 			fx.particleVelocity = 0.125;
 			fx.freedom *= 2;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound NBT) {
+		super.writeToNBT(NBT);
+
+		if (pylonLocation != null)
+			pylonLocation.writeToNBT("pylon", NBT);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		if (NBT.hasKey("pylon"))
+			pylonLocation = Coordinate.readFromNBT("pylon", NBT);
+	}
+
+	@Override
+	public void breakBlock() {
+		if (pylonLocation != null) {
+			TileEntityCrystalPylon te = (TileEntityCrystalPylon)pylonLocation.getTileEntity(worldObj);
+			te.onPowerCrystalBreak(this);
 		}
 	}
 }

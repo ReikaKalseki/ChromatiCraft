@@ -298,6 +298,7 @@ public class EssentiaNetwork {
 				}
 			}
 		}
+		//ReikaJavaLibrary.pConsole(aspect.getName()+":"+sum);
 		return sum;
 	}
 
@@ -340,11 +341,9 @@ public class EssentiaNetwork {
 		}
 
 		public void update(World world, int x, int y, int z) {
-			if (world.isRemote)
-				this.doParticles(world, x, y, z);
+			this.doParticles(world, x, y, z);
 		}
 
-		@SideOnly(Side.CLIENT)
 		private void doParticles(World world, int x, int y, int z) {
 			for (int i = 0; i < path.size()-1; i++) {
 				WorldLocation loc1 = path.get(i);

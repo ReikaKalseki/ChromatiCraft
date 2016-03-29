@@ -94,7 +94,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			double px = xCoord+rand.nextDouble();//+0.5;
 			double py = yCoord+rand.nextDouble();//0.5;
 			double pz = zCoord+rand.nextDouble();//0.5;
-			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(worldObj, px, py, pz, angs[2]+180, angs[1]-90);
+			EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(worldObj, px, py, pz, -angs[2]+270, angs[1]-90);
 			fx.angleVelocity = 2.5;
 			fx.particleVelocity = v;
 			fx.freedom = 10;

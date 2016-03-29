@@ -171,7 +171,8 @@ public class ItemKillAuraGun extends ItemChromaTool {
 			this.doChargingParticles(ep, count);
 			useTick = count;
 		}
-		ChromaSounds.KILLAURA_CHARGE.playSound(ep, 0.25F+2F*count/CHARGE_TIME, MathHelper.clamp_float(0.5F, 2F*count/CHARGE_TIME, 2F));
+		if (!ep.worldObj.isRemote)
+			ChromaSounds.KILLAURA_CHARGE.playSound(ep, 0.25F+2F*count/CHARGE_TIME, MathHelper.clamp_float(0.5F, 2F*count/CHARGE_TIME, 2F));
 		/*
 		if (count >= CHARGE_TIME-1) {
 			useTick = 0;

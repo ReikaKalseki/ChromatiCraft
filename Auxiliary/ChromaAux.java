@@ -357,7 +357,6 @@ public class ChromaAux {
 			te.onUsedBy(player, e);
 			if (PlayerElementBuffer.instance.addToPlayer(player, e, add))
 				te.drain(e, drain);
-			PlayerElementBuffer.instance.checkUpgrade(player, true);
 			ProgressStage.CHARGE.stepPlayerTo(player);
 			if (te instanceof TileEntityCrystalPylon)
 				ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);

@@ -160,7 +160,8 @@ public class BlockMusicMemory extends BlockContainer {
 			}
 			 */
 			((TileEntityChromaDoor)worldObj.getTileEntity(xCoord, yCoord, dz)).open(-1);
-			this.getGenerator().completePuzzle(structureIndex);
+			if (!worldObj.isRemote)
+				this.getGenerator().completePuzzle(structureIndex);
 		}
 
 		private void resetCorrect() {

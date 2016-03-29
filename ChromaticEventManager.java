@@ -865,7 +865,6 @@ public class ChromaticEventManager {
 					int s = 4+rand.nextInt(8);
 					ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
 					PlayerElementBuffer.instance.addToPlayer(ep, tag);
-					PlayerElementBuffer.instance.checkUpgrade(ep, true);
 				}
 			}
 		}

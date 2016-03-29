@@ -347,7 +347,6 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 				player.getEntityData().removeTag("CrystalBuffer");
 			else {
 				PlayerElementBuffer.instance.addToPlayer(player, CrystalElement.elements[count%16], PlayerElementBuffer.instance.getElementCap(player));
-				PlayerElementBuffer.instance.checkUpgrade(player, true);
 			}
 		}
 

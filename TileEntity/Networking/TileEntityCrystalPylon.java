@@ -16,13 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
@@ -54,6 +57,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -470,6 +474,46 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 		}
 		return li;
+	}
+
+	public boolean isValidPowerCrystal(TileEntityChromaCrystal te) {
+		return crystalPositions.contains(new Coordinate(te).offset(-xCoord, -yCoord, -zCoord));
+	}
+
+	public void onPowerCrystalBreak(TileEntityChromaCrystal te) {
+		this.disenhance();
+		this.drain(color, energy/4);
+		worldObj.addWeatherEffect(new EntityLightningBolt(worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5));
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(24, 16, 24);
+		List<EntityLivingBase> li = worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
+		for (EntityLivingBase e : li) {
+			if (e instanceof EntityPlayer) {
+				if (((EntityPlayer)e).capabilities.isCreativeMode) {
+					e.attackEntityFrom(DamageSource.outOfWorld, 0.001F);
+				}
+				else {
+					float amt = Math.max(5, Math.min(e.getHealth()-4, e.getMaxHealth()*0.75F));
+					ChromaAux.doPylonAttack(color, e, amt, false);
+				}
+			}
+			else {
+				e.attackEntityFrom(DamageSource.magic, 0); //only appear to hurt
+			}
+		}
+		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PYLONCRYSTALBREAK.ordinal(), this, 64);
+		this.syncAllData(true);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void doPowerCrystalBreakFX(World world, int x, int y, int z) {
+		int n = 24+rand.nextInt(32);
+		for (int i = 0; i < n; i++) {
+			float s = 1+rand.nextFloat()*2;
+			int l = 30+rand.nextInt(50);
+			EntityFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, rand.nextDouble()*360).setColor(color.getColor()).setScale(s).setLife(l).setIcon(ChromaIcons.NODE2);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		ReikaSoundHelper.playClientSound(ChromaSounds.DISCHARGE, x+0.5, y+0.5, z+0.5, 1, 1, false);
 	}
 
 	@SideOnly(Side.CLIENT)

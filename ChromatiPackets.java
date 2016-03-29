@@ -295,9 +295,11 @@ public class ChromatiPackets implements PacketHandler {
 				case BUFFERSET:
 					PlayerElementBuffer.instance.setPlayerCapOnClient(ep, data[0]);
 					break;
+					/*
 				case BUFFERINC:
 					PlayerElementBuffer.instance.upgradePlayerOnClient(ep);
 					break;
+					 */
 				case TELEPUMP:
 					((TileEntityTeleportationPump)tile).setTargetedFluid(data[0]);
 					break;
@@ -658,6 +660,9 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				}
 				 */
+				case PYLONCRYSTALBREAK: {
+					((TileEntityCrystalPylon)tile).doPowerCrystalBreakFX(world, x, y, z);
+				}
 			}
 		}
 		catch (NullPointerException e) {

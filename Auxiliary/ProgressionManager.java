@@ -663,7 +663,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 	public void updateChunks(EntityPlayer ep) {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			ReikaRenderHelper.rerenderAllChunks();
+			ReikaRenderHelper.rerenderAllChunksLazily();
 		else
 			ReikaPacketHelper.sendUpdatePacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), 0, 0, 0, new PacketTarget.PlayerTarget((EntityPlayerMP)ep));
 	}

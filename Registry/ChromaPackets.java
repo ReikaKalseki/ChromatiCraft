@@ -22,7 +22,7 @@ public enum ChromaPackets {
 	PYLONATTACK(6),
 	ABILITYCHOOSE(1),
 	BUFFERSET(1),
-	BUFFERINC(1),
+	//BUFFERINC(1),
 	TELEPUMP(1),
 	//TRANSMIT(3),
 	ASPECT(),
@@ -118,6 +118,7 @@ public enum ChromaPackets {
 	POWERCRYSDESTROY(),
 	PARTICLESPAWNER(),
 	//PYLONJAR(),
+	PYLONCRYSTALBREAK(),
 	;
 
 	public final int numInts;

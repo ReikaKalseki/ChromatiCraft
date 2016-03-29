@@ -15,6 +15,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -84,6 +85,8 @@ public class PlayerElementBuffer {
 		int has = tag.getInteger(e.name());
 		int val = Math.min(has+amt, this.getElementCap(ep));
 		tag.setInteger(e.name(), val);
+		//this.checkUpgrade(ep, true);
+		this.setElementCap(ep, this.calcElementCap(ep), true);
 		return val > has;
 	}
 
@@ -183,11 +186,11 @@ public class PlayerElementBuffer {
 	public double getPlayerFraction(EntityPlayer ep, CrystalElement e) {
 		return (double)this.getPlayerContent(ep, e)/this.getElementCap(ep);
 	}
-
+	/*
 	public boolean upgradeCap(EntityPlayer ep) {
 		return this.setElementCap(ep, this.getElementCap(ep)*4, true);
 	}
-
+	 */
 	public boolean setElementCap(EntityPlayer ep, int cap, boolean notify) {
 		NBTTagCompound tag = this.getTag(ep);
 		int prev = this.getElementCap(ep);
@@ -195,16 +198,22 @@ public class PlayerElementBuffer {
 		tag.setInteger("cap", val);
 		boolean flag = val > prev;
 		if (flag) {
-			ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 1, 1);
+			if (cap%2 == 0)
+				ChromaSounds.CRAFTDONE.playSound(ep.worldObj, ep.posX, ep.posY, ep.posZ, 0.1F, 0.5F);
 			recentUpgrades.set(ep.getUniqueID(), 2000);
-			if (ep instanceof EntityPlayerMP)
-				this.sendUpgradePacket((EntityPlayerMP)ep);
+			//if (ep instanceof EntityPlayerMP)
+			//	this.sendUpgradePacket((EntityPlayerMP)ep);
 		}
 		if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERSET.ordinal(), (EntityPlayerMP)ep, val);
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		}
 		return flag;
+	}
+
+	private int calcElementCap(EntityPlayer ep) {
+		int amt = this.getPlayerTotalEnergy(ep);
+		return MathHelper.clamp_int((int)(Math.min(amt*0.8, 4*Math.pow(amt, 0.75))), 24, this.getPlayerMaximumCap(ep));
 	}
 
 	public int getPlayerMaximumCap(EntityPlayer ep) {
@@ -214,21 +223,21 @@ public class PlayerElementBuffer {
 	public int getChargeInefficiency(EntityPlayer ep) {
 		return ProgressStage.CTM.isPlayerAtStage(ep) ? 1 : ProgressStage.DIMENSION.isPlayerAtStage(ep) ? 2 : 4;
 	}
-
+	/*
 	private void sendUpgradePacket(EntityPlayerMP ep) {
 		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BUFFERINC.ordinal(), ep, 0);
 	}
-
+	 */
 	@SideOnly(Side.CLIENT)
 	public void setPlayerCapOnClient(EntityPlayer ep, int cap) {
 		this.setElementCap(ep, cap, false);
 	}
-
+	/*
 	@SideOnly(Side.CLIENT)
 	public void upgradePlayerOnClient(EntityPlayer ep) {
 		recentUpgrades.set(ep.getUniqueID(), 2000);
 	}
-
+	 */
 	public boolean canPlayerAccept(EntityPlayer ep, CrystalElement e, int amt) {
 		return this.getPlayerContent(ep, e)+amt <= this.getElementCap(ep);
 	}
@@ -240,7 +249,7 @@ public class PlayerElementBuffer {
 	public boolean isMaxedWithin(EntityPlayer player, CrystalElement e, float frac) {
 		return this.getPlayerContent(player, e) >= this.getElementCap(player)*(1-frac);
 	}
-
+	/*
 	public boolean checkUpgrade(EntityPlayer player, boolean doUpgrade) {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -249,7 +258,7 @@ public class PlayerElementBuffer {
 		}
 		return doUpgrade ? this.upgradeCap(player) : true;
 	}
-
+	 */
 	public boolean hasElement(EntityPlayer ep, CrystalElement e) {
 		return this.getPlayerContent(ep, e) > 0;
 	}

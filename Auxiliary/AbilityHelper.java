@@ -90,7 +90,6 @@ import Reika.DragonAPI.Instantiable.Event.PostItemUseEvent;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.ItemSizeTextEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -101,8 +100,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaEngLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
@@ -1082,13 +1079,15 @@ public class AbilityHelper {
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(AE_LOC_TAG, NBT);
 	}
 
+	/*ME systems cannot be read clientside
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void useMEItemCount(ItemSizeTextEvent evt) {
-		if (Chromabilities.MEINV.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (Chromabilities.MEINV.enabledOn(ep)) {
 			ItemStack is = evt.getItem();
-			if (is.stackSize == 64) {
-				MESystemReader me = this.getMESystem(Minecraft.getMinecraft().thePlayer);
+			if (is.stackSize == 64 && is != ep.inventory.getItemStack()) {
+				MESystemReader me = this.getMESystem(ep);
 				if (me != null) {
 					long amt = me.getItemCount(is);
 					if (amt < 1000) {
@@ -1103,6 +1102,7 @@ public class AbilityHelper {
 			}
 		}
 	}
+	 */
 
 	private static class ResetWalkSpeedEvent implements ScheduledEvent {
 
