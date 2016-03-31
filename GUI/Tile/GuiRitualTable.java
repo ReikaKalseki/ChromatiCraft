@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class GuiRitualTable extends GuiChromability {
 
@@ -28,6 +29,9 @@ public class GuiRitualTable extends GuiChromability {
 	public GuiRitualTable(EntityPlayer ep, TileEntityRitualTable te) {
 		super(ep);
 		tile = te;
+
+		ySize = 224;
+		ReikaJavaLibrary.pConsole(tile);
 	}
 
 	@Override
@@ -36,7 +40,7 @@ public class GuiRitualTable extends GuiChromability {
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		String tex = "Textures/GUIs/ability.png";
+		String tex = "Textures/GUIs/ability3.png";
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+8, k+8, 50, 50, 0, 193, tex, ChromatiCraft.class, this));
 	}
 
@@ -54,6 +58,16 @@ public class GuiRitualTable extends GuiChromability {
 			return;
 		}
 		super.actionPerformed(b);
+	}
+
+	@Override
+	protected String getBackTexture(Ability a) {
+		return Chromabilities.playerHasAbility(player, a) ? "Textures/GUIs/ability3.png" : "Textures/GUIs/ability4.png";
+	}
+
+	@Override
+	protected String getButtonTexture() {
+		return "Textures/GUIs/ability3.png";
 	}
 
 }

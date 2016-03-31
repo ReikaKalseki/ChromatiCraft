@@ -25,6 +25,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -36,7 +37,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntityItemCollector extends InventoriedRelayPowered implements LocationCached {
+public class TileEntityItemCollector extends InventoriedRelayPowered implements NBTTile, LocationCached {
 
 	private int experience = 0;
 	public boolean canIntake = false;
@@ -276,6 +277,17 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
+		this.saveFilter(NBT);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound NBT) {
+		super.readFromNBT(NBT);
+
+		this.readFilter(NBT);
+	}
+
+	private void saveFilter(NBTTagCompound NBT) {
 		NBTTagCompound fil = new NBTTagCompound();
 		for (int i = 0; i < filter.length; i++) {
 			ItemStack is = filter[i];
@@ -288,10 +300,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		NBT.setTag("filter", fil);
 	}
 
-	@Override
-	public void readFromNBT(NBTTagCompound NBT) {
-		super.readFromNBT(NBT);
-
+	private void readFilter(NBTTagCompound NBT) {
 		filter = new ItemStack[filter.length];
 		NBTTagCompound fil = NBT.getCompoundTag("filter");
 		for (int i = 0; i < filter.length; i++) {
@@ -302,6 +311,18 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 				filter[i] = is;
 			}
 		}
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+		this.saveFilter(NBT);
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+		if (is.stackTagCompound == null)
+			return;
+		this.readFilter(is.stackTagCompound);
 	}
 
 	@Override

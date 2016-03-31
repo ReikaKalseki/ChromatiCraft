@@ -522,7 +522,7 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new RecipeHoverWand(ChromaItems.HOVERWAND.getStackOf(), ChromaStacks.voidCore));
 
-		if (PowerTypes.RF.exists()) {
+		if (PowerTypes.RF.isLoaded()) {
 			is = ChromaTiles.RFDISTRIBUTOR.getCraftedProduct();
 			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "rir", "iGi", "rir", 'i', Items.iron_ingot, 'r', Blocks.redstone_block, 'G', Blocks.glowstone);
 			this.addRecipe(new RFDistributorRecipe(is, sr));

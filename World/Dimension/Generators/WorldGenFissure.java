@@ -87,7 +87,9 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2, rand)) {
 								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
 								Coordinate c = new Coordinate(dx2, 0, dz2);
-								columns.put(c, Math.max(dy2+1, columns.get(c)));
+								Integer get = columns.get(c);
+								int h = get != null ? get.intValue() : 0;
+								columns.put(c, Math.max(dy2+1, h));
 							}
 						}
 					}

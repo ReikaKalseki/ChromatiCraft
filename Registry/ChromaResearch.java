@@ -29,6 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
@@ -38,7 +39,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -58,9 +58,12 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
+import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
+import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
@@ -270,26 +273,26 @@ public enum ChromaResearch implements ProgressElement {
 	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
 
 	STRUCTUREDESC("Structures", ""),
-	PYLON(			ChromaStructures.Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
-	CASTING1(		ChromaStructures.Structures.CASTING1,	0,	ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
-	CASTING2(		ChromaStructures.Structures.CASTING2,	1,	ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
-	CASTING3(		ChromaStructures.Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
-	RITUAL	(		ChromaStructures.Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	INFUSION(		ChromaStructures.Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
-	TREE(			ChromaStructures.Structures.TREE,		14,	ResearchLevel.PYLONCRAFT,		ProgressStage.LINK),
-	REPEATERSTRUCT(	ChromaStructures.Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
-	COMPOUNDSTRUCT(	ChromaStructures.Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
-	CAVERN(			ChromaStructures.Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
-	BURROW(			ChromaStructures.Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
-	OCEAN(			ChromaStructures.Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
-	DESERT(			ChromaStructures.Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
-	PORTALSTRUCT(	ChromaStructures.Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
-	MINIPYLON(		ChromaStructures.Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
-	BROADCASTER(	ChromaStructures.Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
-	CLOAKTOWER(		ChromaStructures.Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
-	BOOSTTREE(		ChromaStructures.Structures.TREE_BOOSTED,14,ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
-	BEACONSTRUCT(	ChromaStructures.Structures.PROTECT,	6,ResearchLevel.ENDGAME),
-	MINIREPEATER(	ChromaStructures.Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
+	PYLON(			Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
+	CASTING1(		Structures.CASTING1,	0,	ResearchLevel.BASICCRAFT,		ProgressStage.CRYSTALS),
+	CASTING2(		Structures.CASTING2,	1,	ResearchLevel.RUNECRAFT,		ProgressStage.RUNEUSE),
+	CASTING3(		Structures.CASTING3,	2,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	RITUAL	(		Structures.RITUAL,		7,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	INFUSION(		Structures.INFUSION,	12,	ResearchLevel.MULTICRAFT,		ProgressStage.CHROMA),
+	TREE(			Structures.TREE,		14,	ResearchLevel.PYLONCRAFT,		ProgressStage.LINK),
+	REPEATERSTRUCT(	Structures.REPEATER,	0,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.RUNEUSE),
+	COMPOUNDSTRUCT(	Structures.COMPOUND,	13,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	CAVERN(			Structures.CAVERN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.CAVERN),
+	BURROW(			Structures.BURROW,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.BURROW),
+	OCEAN(			Structures.OCEAN,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.OCEAN),
+	DESERT(			Structures.DESERT,		0,	ResearchLevel.RAWEXPLORE,		ProgressStage.DESERTSTRUCT),
+	PORTALSTRUCT(	Structures.PORTAL,		0,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
+	MINIPYLON(		Structures.PERSONAL,	9,	ResearchLevel.CHARGESELF,		ProgressStage.CHARGE),
+	BROADCASTER(	Structures.BROADCAST,	15,	ResearchLevel.NETWORKING,		ProgressStage.MULTIBLOCK),
+	CLOAKTOWER(		Structures.CLOAKTOWER,	3,	ResearchLevel.MULTICRAFT,		ProgressStage.KILLMOB),
+	BOOSTTREE(		Structures.TREE_BOOSTED,14,	ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
+	BEACONSTRUCT(	Structures.PROTECT,		6,	ResearchLevel.ENDGAME),
+	MINIREPEATER(	Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
 	;
 
 	private final ItemStack iconItem;
@@ -474,6 +477,9 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ENDERCRYS) {
 			return item.getStackOfMetadata(1);
 		}
+		if (iconItem.stackTagCompound == null)
+			iconItem.stackTagCompound = new NBTTagCompound();
+		iconItem.stackTagCompound.setBoolean("tooltip", true);
 		return iconItem;
 	}
 
@@ -1054,17 +1060,27 @@ public enum ChromaResearch implements ProgressElement {
 			return RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && RecipesCastingTable.instance.getAllModdedItemRecipes().isEmpty();
 		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
 			return true;
-		if (this == BEES)
-			return !ModList.FORESTRY.isLoaded();
-		if (this == RFDISTRIB)
-			return !PowerTypes.RF.exists();
-		if (this == BALLLIGHTNING)
-			return !ChromaOptions.BALLLIGHTNING.getState();
-		if (this == NODENET)
-			return !ModList.THAUMCRAFT.isLoaded();
-		if (this == MYSTPAGE)
-			return !ModList.MYSTCRAFT.isLoaded();
+		Dependency dep = this.getDependency();
+		if (dep != null && !dep.isLoaded())
+			return true;
 		return false;
+	}
+
+	public Dependency getDependency() {
+		switch(this) {
+			case BEES:
+				return ModList.FORESTRY;
+			case RFDISTRIB:
+				return PowerTypes.RF;
+			case BALLLIGHTNING:
+				return ChromaOptions.BALLLIGHTNING;
+			case NODENET:
+				return ModList.THAUMCRAFT;
+			case MYSTPAGE:
+				return ModList.MYSTCRAFT;
+			default:
+				return null;
+		}
 	}
 
 	@Override
@@ -1139,7 +1155,13 @@ public enum ChromaResearch implements ProgressElement {
 					}
 				}
 				catch (Exception e) {
-					throw new RegistrationException(ChromatiCraft.instance, "Could not initialize Info Fragment '"+r+"'!", e);
+					Dependency dep = r.getDependency();
+					if (dep != null && !(dep instanceof ConfigList)) {
+						throw new InstallationException(ChromatiCraft.instance, "Another mod/API, '"+dep.getDisplayName()+"' is an incompatible version. Update both mods if possible, or if updating "+dep.getDisplayName()+" caused this, revert to the previous version.");
+					}
+					else {
+						throw new RegistrationException(ChromatiCraft.instance, "Could not initialize Info Fragment '"+r+"'!", e);
+					}
 				}
 			}
 		}

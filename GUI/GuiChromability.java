@@ -75,7 +75,7 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		int h = ySize-14;
 		int out = xSize/2;//+60;
 
-		String tex = "Textures/GUIs/ability.png";
+		String tex = this.getButtonTexture();
 		buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class, this));
 
@@ -87,23 +87,27 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		}*/
 	}
 
+	protected String getButtonTexture() {
+		return "Textures/GUIs/ability.png";
+	}
+
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		switch(b.id) {
-		case 0:
-			if (dx == 0 && index > 0) {
-				//index--;
-				dx++;
-				this.markButtons(false);
-			}
-			break;
-		case 1:
-			if (dx == 0 && index < abilities.size()-1) {
-				//index++;
-				dx--;
-				this.markButtons(false);
-			}
-			break;
+			case 0:
+				if (dx == 0 && index > 0) {
+					//index--;
+					dx++;
+					this.markButtons(false);
+				}
+				break;
+			case 1:
+				if (dx == 0 && index < abilities.size()-1) {
+					//index++;
+					dx--;
+					this.markButtons(false);
+				}
+				break;
 		}
 		//this.initGui();
 	}
@@ -150,7 +154,7 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		for (int i = min; i <= max; i++) {
 			int a = j+i*width+dx;
 			Ability ca = abilities.get(index+i);
-			String s = Chromabilities.playerHasAbility(player, ca) ? "Textures/GUIs/ability.png" : "Textures/GUIs/ability2.png";
+			String s = this.getBackTexture(ca);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
 			//GL11.glEnable(GL11.GL_BLEND);
 			this.drawTexturedModalRect(a, k, 0, 0, xSize, ySize);
@@ -192,6 +196,10 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 				fontRendererObj.drawSplitString(desc, j+dx+fx+width, k+fy, xSize-fx*2, 0xffffff);
 			}
 		}
+	}
+
+	protected String getBackTexture(Ability a) {
+		return Chromabilities.playerHasAbility(player, a) ? "Textures/GUIs/ability.png" : "Textures/GUIs/ability2.png";
 	}
 
 	private void drawPreview(Ability c, int j, int k) {

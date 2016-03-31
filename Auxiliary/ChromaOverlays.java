@@ -108,7 +108,7 @@ public class ChromaOverlays {
 	private int washout;
 	private CrystalElement washoutColor;
 
-	private static final double FRONT_TRANSLATE = 930;
+	static final double FRONT_TRANSLATE = 930;
 
 	private ChromaOverlays() {
 

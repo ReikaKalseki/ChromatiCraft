@@ -14,9 +14,10 @@ import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
 import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
 import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
+import Reika.DragonAPI.Interfaces.Registry.Dependency;
 
 
-public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig {
+public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig, Dependency {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),
@@ -207,6 +208,16 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			default:
 				return false;
 		}
+	}
+
+	@Override
+	public boolean isLoaded() {
+		return this.getState();
+	}
+
+	@Override
+	public String getDisplayName() {
+		return label;
 	}
 
 }

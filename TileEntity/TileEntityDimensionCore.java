@@ -59,7 +59,6 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -79,7 +78,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	private static final EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, HashSet<CrystalElement>> beams = new EnumMap(CrystalElement.class);
-	private static final ArrayList<ImmutablePair<CrystalElement, Integer>>[] melody = new ArrayList[2];
+	private static final ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>>[] melody = new ArrayList[2];
 
 	private boolean primed = false;
 
@@ -227,13 +226,16 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		Collection<CrystalElement> c = CrystalMusicManager.instance.getColorsWithKey(key);
 		if (c.isEmpty())
 			throw new RegistrationException(ChromatiCraft.instance, "No such color for note "+key);
-		CrystalElement e = ReikaJavaLibrary.getRandomCollectionEntry(c);
-		int idx = CrystalMusicManager.instance.getIntervalFor(e, key);
-		if (idx == -1) {
-			throw new RegistrationException(ChromatiCraft.instance, "No such index for note "+key+" for color "+e);
+		ArrayList<ImmutablePair<CrystalElement, Integer>> li = new ArrayList();
+		for (CrystalElement e : c) {
+			int idx = CrystalMusicManager.instance.getIntervalFor(e, key);
+			if (idx == -1) {
+				throw new RegistrationException(ChromatiCraft.instance, "No such index for note "+key+" for color "+e);
+			}
+			li.add(new ImmutablePair(e, idx));
 		}
 		//ReikaJavaLibrary.pConsole("Generating "+e+":"+idx+" for "+track+" / "+key);
-		melody[track].add(new ImmutablePair(e, idx));
+		melody[track].add(li);
 	}
 
 	private static void addColor(CrystalElement e, int x, int y, int z) {
@@ -357,8 +359,9 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 		int sp = 8;
 		long tick = world.getTotalWorldTime(); //this.getTicksExisted();
 		if (tick%sp == 0) {
-			ArrayList<ImmutablePair<CrystalElement, Integer>> li = melody[(ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length];
-			ImmutablePair<CrystalElement, Integer> p = li.get((int)((tick/sp)%li.size()));
+			ArrayList<ArrayList<ImmutablePair<CrystalElement, Integer>>> song = melody[(ChunkProviderChroma.getMonumentGenerator().hashCode() ^ Minecraft.getMinecraft().hashCode())%melody.length];
+			ArrayList<ImmutablePair<CrystalElement, Integer>> li = song.get((int)((tick/sp)%song.size()));
+			ImmutablePair<CrystalElement, Integer> p = li.get(rand.nextInt(li.size()));
 			if (p.left == color) {
 				Coordinate cc = this.getCenter();
 				TileEntity tile = cc.getTileEntity(world);

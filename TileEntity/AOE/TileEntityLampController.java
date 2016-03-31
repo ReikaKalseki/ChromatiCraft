@@ -55,9 +55,9 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 		private boolean isValid() {
 			switch(this) {
 				case RFSTORAGE:
-					return PowerTypes.RF.exists();
+					return PowerTypes.RF.isLoaded();
 				case SHAFTPOWER:
-					return PowerTypes.ROTARYCRAFT.exists();
+					return PowerTypes.ROTARYCRAFT.isLoaded();
 				default:
 					return true;
 			}
@@ -158,7 +158,7 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	}
 
 	private boolean hasAdjacentRF() {
-		if (!PowerTypes.RF.exists()) {
+		if (!PowerTypes.RF.isLoaded()) {
 			return false;
 		}
 		for (int i = 0; i < 6; i++) {

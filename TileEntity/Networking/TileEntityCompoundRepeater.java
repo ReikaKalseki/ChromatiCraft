@@ -149,6 +149,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 		return e != null ? CrystalNetworker.instance.getConnectivity(e, worldObj, xCoord, yCoord, zCoord, this.getReceiveRange()) : null;
 	}*/
 
+	/*
 	@Override
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
 		if (!worldObj.isRemote) {
@@ -157,6 +158,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 			CrystalNetworker.instance.makeRequest(this, p.getColor(), 15000, this.getReceiveRange());
 		}
 	}
+	 */
 
 	@Override
 	public void setSignalDepth(CrystalElement e, int d) {

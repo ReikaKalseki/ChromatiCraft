@@ -199,13 +199,14 @@ public class ChromaRecipes {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {
 				CrystalElement color = CrystalElement.elements[i];
 				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(i);
-				ItemStack in = ItemColoredModInteract.ColoredModItems.COMB.getItem(color);
+				ItemStack comb = ItemColoredModInteract.ColoredModItems.COMB.getItem(color);
+				OreDictionary.registerOre("beeComb", comb);
 				if (ModList.ROTARYCRAFT.isLoaded()) {
-					RecipeInterface.centrifuge.addAPIRecipe(in, null, 0, shard, 2.5F);
+					RecipeInterface.centrifuge.addAPIRecipe(comb, null, 0, shard, 2.5F);
 				}
 				Map<ItemStack, Float> map = new HashMap();
 				map.put(shard, 0.005F);
-				RecipeManagers.centrifugeManager.addRecipe(20, in, map);
+				RecipeManagers.centrifugeManager.addRecipe(20, comb, map);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -26,6 +27,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -36,6 +38,7 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SelectiveMovable;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -217,11 +220,11 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, 
 			return false;
 		if (b instanceof SemiUnbreakable)
 			return !((SemiUnbreakable)b).isUnbreakable(world, x, y, z, world.getBlockMetadata(x, y, z));
-		if (ReikaBlockHelper.isLiquid(b))
-			return world.getBlockMetadata(x, y, z) == 0;
-		if (b instanceof SelectiveMovable)
-			return ((SelectiveMovable)b).canMove(world, x, y, z);
-		return true;
+		if (ReikaBlockHelper.isLiquid(b) && world.getBlockMetadata(x, y, z) != 0)
+			return false;
+		if (b instanceof SelectiveMovable && !((SelectiveMovable)b).canMove(world, x, y, z))
+			return false;
+		return world.isRemote || ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, x, y, z, (EntityPlayerMP)firingPlayer);
 	}
 
 	private void suck(Entity e) {

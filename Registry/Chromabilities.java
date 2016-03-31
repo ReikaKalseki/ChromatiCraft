@@ -23,7 +23,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -529,8 +528,15 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static void removeFromPlayer(EntityPlayer ep, Ability a) {
-		setToPlayer(ep, false, a);
+		NBTTagCompound nbt = ep.getEntityData();
+		NBTTagCompound abilities = nbt.getCompoundTag(NBT_TAG);
+		if (abilities == null) {
+			abilities = new NBTTagCompound();
+		}
+		abilities.removeTag(a.getID());
 		a.onRemoveFromPlayer(ep);
+		if (ep instanceof EntityPlayerMP)
+			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 	}
 
 	public void onRemoveFromPlayer(EntityPlayer ep) {

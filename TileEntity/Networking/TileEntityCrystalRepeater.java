@@ -47,7 +47,6 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -308,6 +307,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return e != null ? CrystalNetworker.instance.getConnectivity(e, this) : null;
 	}
 
+	/*
 	public void onRelayPlayerCharge(EntityPlayer player, TileEntityCrystalPylon p) {
 		if (!worldObj.isRemote) {
 			if (!player.capabilities.isCreativeMode && !Chromabilities.PYLON.enabledOn(player) && rand.nextInt(60) == 0)
@@ -315,6 +315,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			CrystalNetworker.instance.makeRequest(this, p.getColor(), 100, this.getReceiveRange(), 1);
 		}
 	}
+	 */
 
 	@Override
 	public final boolean needsLineOfSight() {

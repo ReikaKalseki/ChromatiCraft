@@ -653,6 +653,7 @@ public class ChromatiPackets implements PacketHandler {
 				case PARTICLESPAWNER: {
 					Coordinate c = Coordinate.readFromNBT("loc", NBT);
 					((TileEntityParticleSpawner)c.getTileEntity(world)).particles.readFromNBT(NBT);
+					break;
 				}
 				/*
 				case PYLONJAR: {
@@ -662,6 +663,7 @@ public class ChromatiPackets implements PacketHandler {
 				 */
 				case PYLONCRYSTALBREAK: {
 					((TileEntityCrystalPylon)tile).doPowerCrystalBreakFX(world, x, y, z);
+					break;
 				}
 			}
 		}

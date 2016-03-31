@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
@@ -18,8 +19,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -27,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -40,15 +42,19 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 			return false;
 		int n = 4+rand.nextInt(9);
 		for (int i = 0; i < n; i++) {
-			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 16);
-			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 16);
-			int dy = ReikaRandomHelper.getRandomPlusMinus(h, 6);
+			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 24);
+			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 24);
+			int dy = ReikaRandomHelper.getRandomPlusMinus(h, 12);
 			int s = 3+rand.nextInt(6);
 			float f = (float)ReikaRandomHelper.getRandomPlusMinus(1.5D, 0.5D);
 			TerrainCrystal t = new TerrainCrystal(s, f);
 			t.hasTreasure = rand.nextInt(18) == 0;
 			t.hasCore = rand.nextInt(6) == 0;
 			t.hasPool = rand.nextInt(3) == 0;
+			t.hasResource = !t.hasTreasure && !t.hasCore && !t.hasPool && rand.nextInt(3) == 0;
+
+			if (rand.nextInt(4) == 0)
+				t.heightExponent = ReikaRandomHelper.getRandomBetween(0.25, rand.nextBoolean() ? 1.5 : 2D); //0.5 is a hemispherical bottom; 2 is pointed
 
 			if (rand.nextInt(8) == 0) {
 				t.stone = new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal());
@@ -116,7 +122,7 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 			}
 		}
 
-		ChromatiCraft.logger.log("Generated @ "+x+", "+z);
+		//ChromatiCraft.logger.log("Generated @ "+x+", "+z);
 
 		return true;
 	}
@@ -149,10 +155,12 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 
 		private final int size;
 		private final float heightFactor;
+		private double heightExponent = 1;
 
 		private boolean hasCore = false;
 		private boolean hasPool = false;
 		private boolean hasTreasure = false;
+		private boolean hasResource = false;
 
 		private BlockKey top = new BlockKey(Blocks.grass);
 		private BlockKey stone = new BlockKey(Blocks.stone);
@@ -167,7 +175,9 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 		public FilledBlockArray generate(World world, int x, int y, int z) {
 			FilledBlockArray arr = new FilledBlockArray(world);
 			int dy = y;
-			float r = size;
+			double r = size;
+			double mh = size*heightFactor;
+			int h = 0;
 			while (r > 0) {
 				int dr = MathHelper.ceiling_double_int(r);
 				for (int i = -dr; i <= dr; i++) {
@@ -181,16 +191,39 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 								b = core;
 							if (hasPool && d < dr-1 && dy == y)
 								b = pool;
-							arr.setBlock(dx, dy, dz, b.blockID, b.metadata);
+							arr.setBlock(dx, dy, dz, b);
 						}
 					}
 				}
-				r -= 1F/heightFactor;
+				h++;
+				r = size*Math.pow(1-h/mh, heightExponent);
 				dy--;
 			}
 
 			if (hasTreasure) {
 				arr.setBlock(x, y-size/2, z, ChromaBlocks.LOOTCHEST.getBlockInstance());
+			}
+
+			if (hasResource) {
+				int y2 = y-size/2;
+				arr.setBlock(x, y2, z, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x, y2+1, z, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x, y2-1, z, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x+1, y2, z, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x-1, y2, z, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x, y2, z+1, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+				arr.setBlock(x, y2, z-1, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LATTICE.ordinal());
+			}
+
+			if (hasCore) {
+				HashSet<Coordinate> set = new HashSet();
+				for (Coordinate c : arr.keySet()) {
+					if (c.yCoord == arr.getMinY())
+						set.add(c);
+				}
+				for (Coordinate c : set) {
+					arr.setBlock(c.xCoord, c.yCoord, c.zCoord, stone);
+				}
 			}
 
 			return arr;

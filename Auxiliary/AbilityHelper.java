@@ -184,6 +184,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
+		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.CTM);
 
 		for (AbilityXRays x : AbilityXRays.values()) {
 			xRayMap.put(x.objectClass, x);
@@ -1162,6 +1163,18 @@ public class AbilityHelper {
 		//savedAOSetting = Minecraft.getMinecraft().gameSettings.ambientOcclusion;
 		//Minecraft.getMinecraft().gameSettings.ambientOcclusion = 0;
 		ReikaRenderHelper.rerenderAllChunks();
+	}
+
+	@SubscribeEvent
+	public void resetNoclip(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.entityLiving;
+			if (Chromabilities.ORECLIP.enabledOn(ep)) {
+				Chromabilities.ORECLIP.setToPlayer(ep, false);
+				isNoClipEnabled = false;
+				this.onNoClipDisable(ep);
+			}
+		}
 	}
 
 	public boolean isBlockOreclippable(World world, int x, int y, int z, Block b, int meta) {

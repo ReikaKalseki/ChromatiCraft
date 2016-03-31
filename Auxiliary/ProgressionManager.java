@@ -129,6 +129,7 @@ public class ProgressionManager implements ProgressRegistry {
 		KILLMOB(new ItemStack(Items.skull, 1, 4)),
 		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
+		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
 		;
 
 		private final ItemStack icon;
@@ -246,6 +247,9 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.LINK, 		ProgressStage.REPEATER);
 
+		progressMap.addParent(ProgressStage.USEENERGY, 	ProgressStage.PYLON);
+		progressMap.addParent(ProgressStage.USEENERGY, 	ProgressStage.RUNEUSE);
+
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.PYLON);
 		progressMap.addParent(ProgressStage.CHARGE, 	ProgressStage.CRYSTALS);
 
@@ -266,15 +270,16 @@ public class ProgressionManager implements ProgressRegistry {
 		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.RUNEUSE);
 		//progressMap.addParent(ProgressStage.CHROMA, 	ProgressStage.MULTIBLOCK);
 
-		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.SHARDCHARGE);
-		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.MULTIBLOCK);
-		progressMap.addParent(ProgressStage.ALLOY, ProgressStage.CHROMA);
+		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
+		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
 
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
 
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.USEENERGY);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 

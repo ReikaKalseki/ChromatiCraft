@@ -70,6 +70,9 @@ public class ChromaHelpHUD {
 					flag = ((BlockTieredResource)block).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, posX, posY, posZ, ep);
 				}
 				int gsc = evt.resolution.getScaleFactor();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, 0, ChromaOverlays.FRONT_TRANSLATE);
 				this.openPanel();
 				this.renderPanel(gsc);
 				if (this.isPanelOpen()) {
@@ -77,6 +80,8 @@ public class ChromaHelpHUD {
 					if (flag && recalc)
 						ChromaHelpData.instance.markDiscovered(ep, block, metadata);
 				}
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
 			}
 			//last_look = look;
 			last_text = text;

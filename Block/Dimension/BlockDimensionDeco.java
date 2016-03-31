@@ -36,7 +36,9 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	public static enum DimDecoTypes implements DecoType {
 		MIASMA(),
 		FLOATSTONE(),
-		AQUA();
+		AQUA(),
+		LIFEWATER(),
+		LATTICE();
 
 		public static DimDecoTypes[] list = values();
 

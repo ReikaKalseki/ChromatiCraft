@@ -29,6 +29,7 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Interfaces.ASMEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
@@ -68,7 +69,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 		private static final HashMap<String, ClassPatch> classes = new HashMap();
 
-		private static enum ClassPatch {
+		private static enum ClassPatch implements ASMEnum {
 			ENDPROVIDER("net.minecraft.world.gen.ChunkProviderEnd", "ara"),
 			REACHDIST("net.minecraft.client.multiplayer.PlayerControllerMP", "bje"),
 			//CHARWIDTH("Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer"), //Thank you, Optifine T_T
@@ -97,7 +98,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 				deobfName = deobf;
 			}
 
-			private byte[] apply(byte[] data) {
+			public byte[] apply(byte[] data) {
 				ClassNode cn = new ClassNode();
 				ClassReader classReader = new ClassReader(data);
 				classReader.accept(cn, 0);
@@ -278,7 +279,12 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 					case ENTITYPUSHOUT: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_145771_j", "func_145771_j", "(DDD)Z");
+						if (ReikaASMHelper.checkForClass("api.player.forge.PlayerAPITransformer")) {
+							m = ReikaASMHelper.getMethodByName(cn, "localPushOutOfBlocks", "(DDD)Z"); //Try his method instead
+						}
 						AbstractInsnNode ain = ReikaASMHelper.getFirstOpcode(m.instructions, Opcodes.GETFIELD);
+						if (ain == null)
+							ReikaASMHelper.throwConflict(this, cn, m, "Could not find field lookup");
 						m.instructions.insert(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "applyNoclipPhase", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
 						m.instructions.remove(ain);
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");

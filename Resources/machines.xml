@@ -463,6 +463,70 @@
 
 		</note>
 	</broadcast>
+	<enchantdecomp>
+		<desc>
+			Rather starving, you made a box of netting and wood and plopped it in a pond, hoping to catch fish over time. However, the world is apparently determined to see you starve, as all you have obtained is an endless series of - weakly - enchanted bows and boots. They are too close to the end of their life to be useful, but the weak magic of the enchantments might be able to be put to good use.
+		</desc>
+		<note>
+
+		</note>
+	</enchantdecomp>
+	<lumenwire>
+		<desc>
+			You took three steps into a ruined, overgrown stone structure deep in the jungle and were rewarded with an arrow to the face. Primitive as they might be, tripwires are an effective trap or other detector. However, they are just that - primitive. Not all constructions are amenable to redstone connectivity, and you would far prefer something a bit more visually appealing.
+		</desc>
+		<note>
+
+		</note>
+	</lumenwire>
+	<particles>
+		<desc>
+			Almost every construct you make seems to give off clouds of glowing particles. Given their visual appeal, it would be quite pleasant to be able to summon them at will, especially if able to control their appearance.
+		</desc>
+		<note>
+
+		</note>
+	</particles>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
 	<name>
 		<desc>
 

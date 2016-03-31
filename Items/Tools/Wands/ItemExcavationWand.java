@@ -60,7 +60,13 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 	}
 
 	public static boolean spreadOn(World world, int x, int y, int z, Block b, int meta) {
-		return b != Blocks.stone && b != Blocks.netherrack && b != Blocks.end_stone && !(world.getTileEntity(x, y, z) instanceof CrystalNetworkTile);
+		if (world.provider.isSurfaceWorld() && b == Blocks.stone)
+			return false;
+		if (world.provider.isHellWorld && b == Blocks.netherrack)
+			return false;
+		if (world.provider.dimensionId == 1 && b == Blocks.end_stone)
+			return false;
+		return !(world.getTileEntity(x, y, z) instanceof CrystalNetworkTile);
 	}
 
 	@Override

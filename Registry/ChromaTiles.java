@@ -20,11 +20,14 @@ import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
@@ -633,6 +636,22 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean suppliesRedstone() {
 		return RedstoneTile.class.isAssignableFrom(tile);
+	}
+
+	public boolean isPylonPowered() {
+		return CrystalReceiver.class.isAssignableFrom(tile);
+	}
+
+	public boolean isRelayPowered() {
+		return TileEntityRelayPowered.class.isAssignableFrom(tile);
+	}
+
+	public boolean isChargedCrystalPowered() {
+		return ChargedCrystalPowered.class.isAssignableFrom(tile);
+	}
+
+	public boolean isWirelessPowered() {
+		return false;//WirelessPowered.class.isAssignableFrom(tile);
 	}
 
 }

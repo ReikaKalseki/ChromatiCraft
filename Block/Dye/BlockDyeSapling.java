@@ -27,6 +27,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockDyeSapling extends BlockSapling {
 
@@ -82,6 +84,7 @@ public class BlockDyeSapling extends BlockSapling {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ico)
 	{
 		icon = ico.registerIcon("ChromatiCraft:dye/sapling");

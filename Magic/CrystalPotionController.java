@@ -169,8 +169,6 @@ public class CrystalPotionController {
 	public static boolean isPotionModifier(CrystalElement color) {
 		if (color == CrystalElement.BLACK)
 			return true;
-		if (color == CrystalElement.BROWN)
-			return true;
 		if (color == CrystalElement.PURPLE)
 			return true;
 		return false;

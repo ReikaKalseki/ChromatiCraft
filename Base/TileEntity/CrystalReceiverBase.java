@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
@@ -79,6 +80,9 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		boolean flag = false;
 		if (amt > 0) {
 			flag = CrystalNetworker.instance.makeRequest(this, e, amount, this.getReceiveRange());
+		}
+		if (flag) {
+			ProgressStage.USEENERGY.stepPlayerTo(this.getPlacer());
 		}
 		return flag;
 	}

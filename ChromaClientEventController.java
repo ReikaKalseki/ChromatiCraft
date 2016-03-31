@@ -271,7 +271,7 @@ public class ChromaClientEventController {
 			}
 			else {
 				//evt.render.setRenderAllFaces(true);
-				ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord+" for pass "+evt.renderPass+": "+b.canRenderInPass(evt.renderPass));
+				//ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord+" for pass "+evt.renderPass+": "+b.canRenderInPass(evt.renderPass));
 				if (b.canRenderInPass(evt.renderPass)) {
 					int type = b.getRenderType();
 					if (type == 0 || type == ChromatiCraft.proxy.oreRender || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube()) {
@@ -1369,9 +1369,12 @@ public class ChromaClientEventController {
 				int x = evt.target.blockX;
 				int y = evt.target.blockY;
 				int z = evt.target.blockZ;
+				BlockKey bk = BlockKey.getAt(world, x, y, z);
+
+				if (!ItemExcavationWand.spreadOn(world, x, y, z, bk.blockID, bk.metadata))
+					return;
 
 				Coordinate loc = new Coordinate(x, y, z);
-				BlockKey bk = BlockKey.getAt(world, x, y, z);
 				boolean sp = Minecraft.getMinecraft().thePlayer.isSneaking();
 
 				if (!loc.equals(excavatorOverlayOrigin) || !bk.equals(excavatorOverlayBlock) || (excavatorOverlaySpread != sp)) {

@@ -75,27 +75,27 @@
 	<laser>
 		From a particularly obnoxious mountain range to mazes of near-impenetrable stone, you often find your path blocked. Recalling that "The best solution to a problem is usually the easiest one", it would be optimal to simply obliterate the obstacle. Unsurprisingly, this also kills everything in a large area, but its utility for that is limited unless you like living in a smoldering moonscape. Maybe, though, it could be used to kill that abomination below the bedrock...the proper word is "toast".
 	</laser>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
-	<name>
-
-	</name>
+	<keepinv>
+		One of the greatest frustrations of death is that everything on your person scatters on the ground. Even worse is when you return to find a zombie trying on your armor, or that half of it fell into a nearby water stream...that OF COURSE ends in a lava pit. Being able to retain your items on death would be of utmost convenience.
+	</keepinv>
+	<oreclip>
+		The annoying thing about ores is that they are buried in solid rock, and can take vast quantities of time to find. Some claim to have devised ways to be able to make the ores show themselves through the rock, or make the rock itself invisible (and usually pay for it with exile). You will do one better, and combine that with the ability to also pass through it as well. As you may imagine, this will be neither easy nor inexpensive.
+	</oreclip>
+	<doublecraft>
+		Crafting would be so much more convenient if it had higher yields. To that end, you have devised a way to increase the yield of nearly every recipe available, doubling the usefulness of your resources. However, you have yet to devise how to extend this power to your digital creations.
+	</doublecraft>
+	<growaura>
+		You have previously devised ways to combat the corruption that infects your world, but reverting the damage is often time-consuming and requires direct manual input. Remembering that the rainbow trees accomplish this effect naturally, you wonder if you can imbue yourself with a similar capability.
+	</growaura>
+	<meinv>
+		Few things are more irritating than deciding to build a structure, then having to return home 15 times because you cannot carry enough materials. You have that near-infinite storage system, but its wireless capabilities, if they work at all - a rare occurrence - are expensive and difficult to use. Much better would be to somehow unify whatever you hold with what might be in the system.
+	</meinv>
+	<mobseek>
+		A mob radar is all well and good, until its warning of a nearby creeper is useless because the mob is hiding in a patch of trees. Going into the forest is a very bad idea, as it entails putting oneself in danger; being able to see - and shoot - the mobs through solid surfaces would be far better.
+	</mobseek>
+	<recharge>
+		You have better things to do than fly around to your pylons draining energy from them, or flail your manipulator at your lumen tree. If you could get your tree to refill your energy buffers automatically, that would be far simpler.
+	</recharge>
 	<name>
 
 	</name>

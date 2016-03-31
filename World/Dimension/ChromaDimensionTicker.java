@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Auxiliary.Trackers.RemoteAssetLoader.RemoteAssetsDownloadCompleteEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -47,7 +48,7 @@ public class ChromaDimensionTicker implements TickHandler {
 
 	public final int dimID = ExtraChromaIDs.DIMID.getValue();
 	private final Collection<Ticket> tickets = new ArrayList();
-	private final ArrayList<CustomMusic> music = new ArrayList();
+	private final ArrayList<DimensionMusic> music = new ArrayList();
 
 	private int musicCooldown;
 
@@ -69,7 +70,7 @@ public class ChromaDimensionTicker implements TickHandler {
 		Collection<String> li = MusicLoader.instance.getMusicFiles();
 		ChromatiCraft.logger.log(li.size()+" music tracks available for the dimension: "+li);
 		for (String path : li) {
-			CustomMusic mus = new CustomMusic(path);
+			DimensionMusic mus = new DimensionMusic(path, path.substring(0, path.length()-4).endsWith("_c"));
 			music.add(mus);
 			DirectResourceManager.getInstance().registerCustomPath(mus.path, ChromaClient.chromaCategory, true);
 		}
@@ -121,7 +122,10 @@ public class ChromaDimensionTicker implements TickHandler {
 					musicCooldown--;
 					return;
 				}
-				CustomMusic s = music.get(rand.nextInt(music.size()));
+				DimensionMusic s = music.get(rand.nextInt(music.size()));
+				while (!s.canPlay(Minecraft.getMinecraft().thePlayer)) {
+					s = music.get(rand.nextInt(music.size()));
+				}
 				s.play(sh);
 				currentMusic = s;
 				musicCooldown = 300+rand.nextInt(900);
@@ -155,6 +159,22 @@ public class ChromaDimensionTicker implements TickHandler {
 	@Override
 	public String getLabel() {
 		return "Chroma Dimension Tag";
+	}
+
+	private static class DimensionMusic extends CustomMusic {
+
+		private final boolean isCompletionGated;
+
+		private DimensionMusic(String path, boolean b) {
+			super(path);
+
+			isCompletionGated = b;
+		}
+
+		public final boolean canPlay(EntityPlayer ep) {
+			return isCompletionGated ? ProgressStage.CTM.isPlayerAtStage(ep) : true;
+		}
+
 	}
 
 }
