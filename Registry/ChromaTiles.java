@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockCrystalTile;
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
@@ -64,6 +65,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -80,6 +82,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityAccelerationPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
@@ -187,7 +190,9 @@ public enum ChromaTiles implements TileEnum {
 	WEAKREPEATER("chroma.weakrepeater",	ChromaBlocks.PYLON,			TileEntityWeakRepeater.class,		9, "RenderWeakRepeater"),
 	ENCHANTDECOMP("chroma.enchantdecomp",ChromaBlocks.TILEMODELLED3,TileEntityEnchantDecomposer.class,	0, "RenderEnchantDecomposer"),
 	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire"),
-	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner");
+	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner"),
+	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3/*, "RenderWirelessSource"*/),
+	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/);
 
 	private final Class tile;
 	private final String name;
@@ -651,7 +656,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isWirelessPowered() {
-		return false;//WirelessPowered.class.isAssignableFrom(tile);
+		return TileEntityWirelessPowered.class.isAssignableFrom(tile);
 	}
 
 }

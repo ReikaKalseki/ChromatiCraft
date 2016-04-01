@@ -601,8 +601,8 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
-	public CrystalNetworkTile getNearestTileOfType(CrystalNetworkTile te, Class<? extends CrystalNetworkTile> type, int range) {
-		CrystalNetworkTile ret = null;
+	public <T extends CrystalNetworkTile> T getNearestTileOfType(CrystalNetworkTile te, Class<T> type, int range) {
+		T ret = null;
 		double dist = Double.POSITIVE_INFINITY;
 		HashSet<WorldLocation> rem = new HashSet();
 		WorldLocation loc = PylonFinder.getLocation(te);
@@ -621,7 +621,7 @@ public class CrystalNetworker implements TickHandler {
 					double d = tile.getDistanceSqTo(te.getX(), te.getY(), te.getZ());
 					if (d <= range*range && d < dist) {
 						dist = d;
-						ret = tile;
+						ret = (T)tile;
 					}
 				}
 			}
@@ -632,12 +632,12 @@ public class CrystalNetworker implements TickHandler {
 		return ret;
 	}
 
-	public Collection<CrystalNetworkTile> getNearTilesOfType(CrystalNetworkTile te, Class<? extends CrystalNetworkTile> type, int range) {
+	public <T extends CrystalNetworkTile> Collection<T> getNearTilesOfType(CrystalNetworkTile te, Class<T> type, int range) {
 		return this.getNearTilesOfType(te.getWorld(), te.getX(), te.getY(), te.getZ(), type, range);
 	}
 
-	public Collection<CrystalNetworkTile> getNearTilesOfType(World world, int x, int y, int z, Class<? extends CrystalNetworkTile> type, int range) {
-		Collection<CrystalNetworkTile> ret = new ArrayList();
+	public <T extends CrystalNetworkTile> Collection<T> getNearTilesOfType(World world, int x, int y, int z, Class<T> type, int range) {
+		Collection<T> ret = new ArrayList();
 		HashSet<WorldLocation> rem = new HashSet();
 		WorldLocation loc = new WorldLocation(world, x, y, z);
 		for (WorldLocation c : tiles.getAllLocationsNear(loc, range)) {
@@ -651,7 +651,7 @@ public class CrystalNetworker implements TickHandler {
 				if (type.isAssignableFrom(tile.getClass())) {
 					double d = tile.getDistanceSqTo(x, y, z);
 					if (d <= range*range) {
-						ret.add(tile);
+						ret.add((T)tile);
 					}
 				}
 			}

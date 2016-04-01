@@ -102,7 +102,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 		buttonList.add(new CustomSoundImagedGuiButton(3, j+40, k+32, 10, 10, 90, 16, tex, ChromatiCraft.class, this));
 		buttonList.add(new CustomSoundImagedGuiButton(2, j+40, k+42, 10, 10, 90, 26, tex, ChromatiCraft.class, this));
 
-		buttonList.add(new CustomSoundImagedGuiButton(4, j+28, k+37, 10, 10, 90, 66, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(4, j+28, k+32, 10, 10, 90, 66, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(5, j+28, k+42, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
@@ -156,6 +157,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 			case 4:
 				if (this.getRecipe() != null)
 					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), tile, RecipesCastingTable.instance.getIDForRecipe(this.getRecipe()), number);
+				break;
+
+			case 5:
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
 				break;
 		}
 	}

@@ -67,6 +67,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
@@ -321,6 +322,12 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (m == ChromaTiles.MUSIC && is != null && is.getItem() instanceof MusicDataItem) {
 			TileEntityCrystalMusic mus = (TileEntityCrystalMusic)te;
 			mus.setTrack(((MusicDataItem)is.getItem()).getMusic(is));
+			return true;
+		}
+
+		if (m == ChromaTiles.HOVERPAD) {
+			TileEntityHoverPad ir = (TileEntityHoverPad)te;
+			ir.toggleMode();
 			return true;
 		}
 

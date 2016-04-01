@@ -21,12 +21,10 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-//Have structure be like a cell tower, with multiple of these (one per color) on it
-//min range (between two towers) 192, will not work at all if another tower within 128
 public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile {
 
-	public static int INTERFERENCE_RANGE = 128;
-	public static int MIN_RANGE = 192;
+	public static int INTERFERENCE_RANGE = 384;
+	public static int MIN_RANGE = 512;
 	public static int BROADCAST_RANGE = 4096;
 
 	private boolean interfered;

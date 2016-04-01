@@ -683,4 +683,9 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return f;
 	}
 
+	@Override
+	public boolean usesColor(CrystalElement e) {
+		return required.contains(e);
+	}
+
 }

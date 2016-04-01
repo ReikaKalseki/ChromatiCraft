@@ -151,11 +151,19 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 			return true;
 		}
+
 		if (t == ChromaTiles.LUMENWIRE) {
 			TileEntityLumenWire ir = (TileEntityLumenWire)tile;
 			ir.cycleMode();
 			return true;
 		}
+		/*
+		if (t == ChromaTiles.HOVERPAD) {
+			TileEntityHoverPad ir = (TileEntityHoverPad)tile;
+			ir.toggleMode();
+			return true;
+		}
+		 */
 
 		if (t == ChromaTiles.FENCE) {
 			TileEntityCrystalFence te = (TileEntityCrystalFence)tile;

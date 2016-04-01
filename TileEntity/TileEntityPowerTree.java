@@ -29,11 +29,14 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -54,7 +57,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile {
+public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile, WirelessSource {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, Integer> yOffsets = new EnumMap(CrystalElement.class);
@@ -685,6 +688,21 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	@Override
 	public double getMaxRenderDistanceSquared() {
 		return super.getMaxRenderDistanceSquared()*4;
+	}
+
+	@Override
+	public boolean canTransmitTo(TileEntityWirelessPowered te) {
+		return this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= 1024 && PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord);
+	}
+
+	@Override
+	public boolean request(CrystalElement e, int amt) {
+		int has = energy.getValue(e);
+		if (has >= amt) {
+			this.drain(e, amt);
+			return true;
+		}
+		return false;
 	}
 
 }

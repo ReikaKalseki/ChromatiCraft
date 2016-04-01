@@ -1018,6 +1018,8 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void saveUsedStack(PlayerInteractEvent evt) {
+		if (evt.entityPlayer.worldObj.isRemote)
+			return;
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
 		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer) && is != null && is.stackSize == is.getMaxStackSize()) {
 			refillItem.put(evt.entityPlayer, is.copy());
@@ -1029,6 +1031,8 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void refillUsedStack(PostItemUseEvent evt) {
+		if (evt.entityPlayer.worldObj.isRemote)
+			return;
 		this.refillUsedStack(evt.entityPlayer, evt.getItem());
 	}
 

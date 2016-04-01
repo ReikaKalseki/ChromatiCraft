@@ -170,7 +170,8 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		ElementTagCompound tag = new ElementTagCompound();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			tag.setTag(e, this.getMaxStorage(e));
+			if (this.isConductingElement(e))
+				tag.setTag(e, this.getMaxStorage(e));
 		}
 		return tag;
 	}

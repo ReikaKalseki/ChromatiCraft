@@ -97,6 +97,10 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 				break;
 			case AQUA:
 				break;
+			case LIFEWATER:
+				break;
+			case LATTICE:
+				break;
 		}
 	}
 
@@ -357,6 +361,10 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 				}
 				break;
 			}
+			case LIFEWATER:
+				break;
+			case LATTICE:
+				break;
 		}
 	}
 

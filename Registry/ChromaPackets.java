@@ -59,6 +59,7 @@ public enum ChromaPackets {
 	BULKNUMBER(1),
 	CASTAUTOUPDATE(7),
 	AUTORECIPE(2),
+	AUTOCANCEL(),
 	CHAINGUNHURT(1),
 	CHAINGUNEND(1),
 	METRANSFER(2),
@@ -119,6 +120,7 @@ public enum ChromaPackets {
 	PARTICLESPAWNER(),
 	//PYLONJAR(),
 	PYLONCRYSTALBREAK(),
+	WIRELESS(5),
 	;
 
 	public final int numInts;

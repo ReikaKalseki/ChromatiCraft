@@ -440,17 +440,17 @@
 			More so than expected, but also far more valuable.
 		</reveal>
 	</turbocharge>
-	<name>
+	<useenergy>
 		<title>
-
+			Lumen Harnessing
 		</title>
 		<hint>
-
+			If pylons are a source of energy, does that mean they can be used?
 		</hint>
 		<reveal>
-
+			Yes, and the myriad constructs powered by them offer great utility.
 		</reveal>
-	</name>
+	</useenergy>
 	<name>
 		<title>
 

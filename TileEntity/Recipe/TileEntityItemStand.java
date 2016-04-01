@@ -147,7 +147,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		  */
 
 		if (!spreadSet.isEmpty() && !worldObj.isRemote) {
-			ItemStack ret = item == null ? null : spreadItems(ep, item);
+			ItemStack ret = item == null && spreadSet.contains(new WorldLocation(this)) ? null : spreadItems(ep, item);
 			spreadSet.clear();
 			return ret;
 		}

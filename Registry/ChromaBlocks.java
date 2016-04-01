@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Block.BlockEnderTNT;
 import Reika.ChromatiCraft.Block.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
+import Reika.ChromatiCraft.Block.BlockHoverPad;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
 import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.BlockMultiStorage;
@@ -185,7 +186,8 @@ public enum ChromaBlocks implements BlockEnum {
 	STORAGE(BlockMultiStorage.class,											"chroma.storageblock"),
 	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower"),
 	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass"),
-	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3");
+	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
+	PAD(BlockHoverPad.class,													"chroma.hoverpad");
 
 	private Class blockClass;
 	private String blockName;

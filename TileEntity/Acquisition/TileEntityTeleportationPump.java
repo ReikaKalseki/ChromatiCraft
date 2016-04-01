@@ -364,6 +364,11 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return f;
 	}
 
+	@Override
+	public boolean usesColor(CrystalElement e) {
+		return required.contains(e);
+	}
+
 	private static class FluidSource {
 
 		private final Coordinate location;

@@ -83,10 +83,13 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 		ElementTagCompound tag = new ElementTagCompound();
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			tag.setTag(e, this.getEnergy(e));
+			if (this.usesColor(e))
+				tag.setTag(e, this.getEnergy(e));
 		}
 		return tag;
 	}
+
+	public abstract boolean usesColor(CrystalElement e);
 
 	public abstract boolean canExtractItem(int slot, ItemStack is, int side);
 	public abstract boolean isItemValidForSlot(int slot, ItemStack is);

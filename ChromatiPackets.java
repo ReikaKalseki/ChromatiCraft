@@ -40,6 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
@@ -469,6 +470,9 @@ public class ChromatiPackets implements PacketHandler {
 					CastingRecipe cr = data[0] >= 0 ? RecipesCastingTable.instance.getRecipeByID(data[0]) : null;
 					((TileEntityCastingAuto)tile).setRecipe(cr, data[1]);
 					break;
+				case AUTOCANCEL:
+					((TileEntityCastingAuto)tile).cancelCrafting();
+					break;
 				case CHAINGUNHURT:
 					EntityChainGunShot.doDamagingParticles(data[0]);
 					break;
@@ -663,6 +667,10 @@ public class ChromatiPackets implements PacketHandler {
 				 */
 				case PYLONCRYSTALBREAK: {
 					((TileEntityCrystalPylon)tile).doPowerCrystalBreakFX(world, x, y, z);
+					break;
+				}
+				case WIRELESS: {
+					((TileEntityWirelessPowered)tile).doEnergyRequestClient(world, x, y, z, data[0], data[1], data[2], CrystalElement.elements[data[3]], data[4]);
 					break;
 				}
 			}

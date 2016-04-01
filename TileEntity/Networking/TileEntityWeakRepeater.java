@@ -87,20 +87,25 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 		}
 		else {
 			if (ReikaRandomHelper.doWithChance(Math.pow(eolTicks/320D, 0.5))) {
-				double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
-				double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1);
-				double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
-				float s = 2+rand.nextFloat()*5;
-				CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
-				int l = 10+rand.nextInt(10);
-				EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s).setLife(l).setIcon(ChromaIcons.TURBO);
-				EntityFX fxb = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s/1.125F).setLife(l).setIcon(ChromaIcons.TURBO);
-				EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(0x000000).setScale(s/2.5F).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).setLife(l);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fxb);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+				this.doDestroyingFXClient(world, x, y, z);
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doDestroyingFXClient(World world, int x, int y, int z) {
+		double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 1);
+		double dy = ReikaRandomHelper.getRandomPlusMinus(y+0.5, 1);
+		double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 1);
+		float s = 2+rand.nextFloat()*5;
+		CrystalElement e = CrystalElement.elements[(this.getTicksExisted()/16)%16];
+		int l = 10+rand.nextInt(10);
+		EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s).setLife(l).setIcon(ChromaIcons.TURBO);
+		EntityFX fxb = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(e.getColor()).setScale(s/1.125F).setLife(l).setIcon(ChromaIcons.TURBO);
+		EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz).setRapidExpand().setColor(0x000000).setScale(s/2.5F).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).setLife(l);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fxb);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 	}
 
 	@SideOnly(Side.CLIENT)

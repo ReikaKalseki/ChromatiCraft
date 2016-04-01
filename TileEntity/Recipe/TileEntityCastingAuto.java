@@ -458,6 +458,11 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		recipesToGo = amt;
 	}
 
+	public void cancelCrafting() {
+		recipe = null;
+		recipesToGo = 0;
+	}
+
 	@Override
 	public int getReceiveRange() {
 		return 16;

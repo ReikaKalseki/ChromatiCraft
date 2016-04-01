@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
@@ -751,6 +752,8 @@ public class ChromaOverlays {
 				int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
 				int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
 
+				double oa = System.identityHashCode(te)+2*((TileEntityBase)te).getTicksExisted();
+
 				int n = tag.tagCount();
 				int i = 0;
 				for (CrystalElement e : tag.elementSet()) {
@@ -766,8 +769,8 @@ public class ChromaOverlays {
 					v5.setColorOpaque_I(color);
 					v5.setBrightness(240);
 					for (double a = min; a <= max; a += 2) {
-						double x = ox+r*Math.cos(Math.toRadians(a));
-						double y = oy+r*Math.sin(Math.toRadians(a));
+						double x = ox+r*Math.cos(Math.toRadians(oa+a));
+						double y = oy+r*Math.sin(Math.toRadians(oa+a));
 						//ReikaJavaLibrary.pConsole(x+", "+y);
 						v5.addVertex(x, y, 0);
 						v5.addVertex(ox, oy, 0);
@@ -780,8 +783,8 @@ public class ChromaOverlays {
 					v5.setBrightness(240);
 					double dr = Math.min(r, r*lt.getEnergy(e)/maxe);
 					for (double a = min; a <= max; a += 2) {
-						double x = ox+dr*Math.cos(Math.toRadians(a));
-						double y = oy+dr*Math.sin(Math.toRadians(a));
+						double x = ox+dr*Math.cos(Math.toRadians(oa+a));
+						double y = oy+dr*Math.sin(Math.toRadians(oa+a));
 						//ReikaJavaLibrary.pConsole(x+", "+y);
 						v5.addVertex(x, y, 0);
 						v5.addVertex(ox, oy, 0);
@@ -797,8 +800,8 @@ public class ChromaOverlays {
 					v5.setColorOpaque_I(0x000000);
 					v5.setBrightness(240);
 					for (double a = 0; a < 360; a += 360D/n) {
-						double x = ox+rb*Math.cos(Math.toRadians(a));
-						double y = oy+rb*Math.sin(Math.toRadians(a));
+						double x = ox+rb*Math.cos(Math.toRadians(oa+a));
+						double y = oy+rb*Math.sin(Math.toRadians(oa+a));
 						//ReikaJavaLibrary.pConsole(x+", "+y);
 						v5.addVertex(x, y, 0);
 						v5.addVertex(ox, oy, 0);
@@ -810,8 +813,8 @@ public class ChromaOverlays {
 				v5.setColorOpaque_I(0x000000);
 				v5.setBrightness(240);
 				for (double a = 0; a <= 360; a += 5) {
-					double x = ox+r*Math.cos(Math.toRadians(a));
-					double y = oy+r*Math.sin(Math.toRadians(a));
+					double x = ox+r*Math.cos(Math.toRadians(oa+a));
+					double y = oy+r*Math.sin(Math.toRadians(oa+a));
 					//ReikaJavaLibrary.pConsole(x+", "+y);
 					v5.addVertex(x, y, 0);
 				}
@@ -823,8 +826,8 @@ public class ChromaOverlays {
 					v5.setColorRGBA_I(0x000000, 180);
 					v5.setBrightness(240);
 					for (double a = 0; a < 360; a += 360D/n) {
-						double x = ox+rb*Math.cos(Math.toRadians(a));
-						double y = oy+rb*Math.sin(Math.toRadians(a));
+						double x = ox+rb*Math.cos(Math.toRadians(oa+a));
+						double y = oy+rb*Math.sin(Math.toRadians(oa+a));
 						//ReikaJavaLibrary.pConsole(x+", "+y);
 						v5.addVertex(x, y, 0);
 						v5.addVertex(ox, oy, 0);
@@ -836,8 +839,8 @@ public class ChromaOverlays {
 				v5.setColorRGBA_I(0x000000, 180);
 				v5.setBrightness(240);
 				for (double a = 0; a <= 360; a += 5) {
-					double x = ox+r*Math.cos(Math.toRadians(a));
-					double y = oy+r*Math.sin(Math.toRadians(a));
+					double x = ox+r*Math.cos(Math.toRadians(oa+a));
+					double y = oy+r*Math.sin(Math.toRadians(oa+a));
 					//ReikaJavaLibrary.pConsole(x+", "+y);
 					v5.addVertex(x, y, 0);
 				}

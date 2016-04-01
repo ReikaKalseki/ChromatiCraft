@@ -35,7 +35,8 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (DragonAPICore.debugtest && !world.isRemote) {
 			CrystalElement e = CrystalElement.randomElement();
-			energy.addValueToColor(e, 500);
+			if (this.isAcceptingColor(e))
+				energy.addValueToColor(e, 500);
 		}
 
 		if (!world.isRemote) {

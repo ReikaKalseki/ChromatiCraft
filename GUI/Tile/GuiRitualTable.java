@@ -31,7 +31,6 @@ public class GuiRitualTable extends GuiChromability {
 		tile = te;
 
 		ySize = 224;
-		ReikaJavaLibrary.pConsole(tile);
 	}
 
 	@Override
