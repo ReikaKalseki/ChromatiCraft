@@ -14,6 +14,7 @@ import java.util.Calendar;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
+import Reika.DragonAPI.DragonOptions;
 
 public enum ChromaIcons {
 
@@ -27,6 +28,7 @@ public enum ChromaIcons {
 	GLOWSECTION("glowsections"),
 	RADIATE("plant_glow"),
 	FLARE("flare"),
+	RINGFLARE("flare4"),
 	REPEATER("repeater"),
 	MULTIREPEATER("multirepeater"),
 	BROADCAST("broadcaster"),
@@ -39,6 +41,9 @@ public enum ChromaIcons {
 	RIFT("rift"),
 	RIFTHALO("rift_halo"),
 	FADE("fade"),
+	FADE_GENTLE("fade_gentle"),
+	FADE_STAR("fade_star"),
+	FADE_RAY("fade_ray"),
 	TRANSFADE("transfade"),
 	CENTER("centerblur3"),
 	CHROMA("chroma_particle"),
@@ -107,6 +112,8 @@ public enum ChromaIcons {
 	 */
 
 	private static boolean loadAprilTextures() {
+		if (!DragonOptions.APRIL.getState())
+			return false;
 		Calendar c = Calendar.getInstance();
 		return c.get(Calendar.MONTH) == Calendar.APRIL && c.get(Calendar.DAY_OF_MONTH) <= 2;
 	}

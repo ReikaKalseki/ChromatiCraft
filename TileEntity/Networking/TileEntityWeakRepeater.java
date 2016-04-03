@@ -87,7 +87,8 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 		}
 		else {
 			if (ReikaRandomHelper.doWithChance(Math.pow(eolTicks/320D, 0.5))) {
-				this.doDestroyingFXClient(world, x, y, z);
+				if (world.isRemote)
+					this.doDestroyingFXClient(world, x, y, z);
 			}
 		}
 	}

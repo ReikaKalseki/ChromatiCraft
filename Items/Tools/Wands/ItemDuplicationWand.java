@@ -122,7 +122,12 @@ public class ItemDuplicationWand extends ItemWandBase {
 	private void removeFromInventory(EntityPlayer ep, StructuredBlockArray blocks) {
 		ItemHashMap<Integer> items = blocks.getItems();
 		this.performMappings(items);
+		//if (!ep.worldObj.isRemote && Chromabilities.MEINV.enabledOn(ep)) {
+		//	AbilityHelper.instance.removeFromPlayerME(ep, items);
+		//}
+		//else {
 		ReikaInventoryHelper.removeFromInventory(items, ep.inventory);
+		//}
 	}
 
 	private void performMappings(ItemHashMap<Integer> items) {

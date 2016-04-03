@@ -11,17 +11,21 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
+import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-
+//Make TESR render bounds as lines (think prelude)
 public class TileEntityHoverPad extends TileEntityChromaticBase {
 
 	private HoverMode mode = HoverMode.HOVER;
@@ -34,25 +38,41 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote) {
-			this.spawnParticles(world, x, y, z);
-		}
-		else {
+		if (hoverBox != null) {
+			if (world.isRemote) {
+				this.spawnParticles(world, x, y, z);
+			}
+			//else {
 			List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, hoverBox);
 			for (EntityPlayer ep : li) {
-				ep.motionY = mode.fallVelocity;
+				if (!ep.isSneaking() && !ep.onGround && !ep.capabilities.isFlying) {
+					ep.motionY = mode.fallVelocity;//+0.03125/2.5;
+					ep.velocityChanged = true;
+					float v = 0.15F;
+					float v2 = 0;
+					if (KeyWatcher.instance.isKeyDown(ep, Key.LEFT))
+						v2 = v/2;
+					else if (KeyWatcher.instance.isKeyDown(ep, Key.RIGHT))
+						v2 = v/2;
+					ep.moveFlying(v2, v, v);
+				}
 			}
+			//}
 		}
 	}
 
 	private int getParticleRate() {
-		return mode == HoverMode.HOVER ? 1 : 4;
+		int base = mode == HoverMode.HOVER ? 1 : 4;
+		base *= 4*Math.sqrt(ReikaAABBHelper.getVolume(hoverBox)/480D);
+		return base;
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		hoverBox = this.calculateBox(world, x, y, z);
-		this.initParticleVectors();
+		ReikaJavaLibrary.pConsole(hoverBox);
+		if (hoverBox != null)
+			this.initParticleVectors();
 	}
 
 	private AxisAlignedBB calculateBox(World world, int x, int y, int z) {
@@ -62,13 +82,15 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 		}
 		Block bk = world.getBlock(x, dy, z);
 		if (bk != ChromaBlocks.PAD.getBlockInstance())
-			return ReikaAABBHelper.getBlockAABB(x, dy, z);
+			return null;
 		BlockArray b = new BlockArray();
 		b.recursiveAddWithBounds(world, x, dy, z, ChromaBlocks.PAD.getBlockInstance(), x-32, x+32, dy, dy, z-32, z+32);
 		HashSet<Coordinate> set = new HashSet(b.keySet());
 		for (int i = 1; i < 16; i++) {
 			for (Coordinate c : set) {
-				b.addBlockCoordinate(x, dy+i, z);
+				bk = world.getBlock(c.xCoord, c.yCoord+i, c.zCoord);
+				if (bk.isAir(world, c.xCoord, c.yCoord+i, c.zCoord))
+					b.addBlockCoordinate(c.xCoord, c.yCoord+i, c.zCoord);
 			}
 		}
 		b.shaveToCube();
@@ -85,9 +107,12 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 				particleY[i] = ReikaRandomHelper.getRandomBetween(hoverBox.minY, hoverBox.maxY);
 				particleZ[i] = ReikaRandomHelper.getRandomBetween(hoverBox.minZ, hoverBox.maxZ);
 			}
-			float s = 1+rand.nextFloat();
-			int l = 60+rand.nextInt(40);
-			EntityFX fx = new EntityBlurFX(world, particleX[i], particleY[i], particleZ[i]).setGravity(mode.particleGravity*1.5F).setColor(mode.particleColor).setRapidExpand().setLife(l).setScale(s);
+			float s = 1.5F;//+rand.nextFloat();
+			int l = 25;//60+rand.nextInt(40);
+			float g = 0;//mode.particleGravity*1.5F;
+			int c = mode.particleColor;
+			double v = -mode.particleGravity*2;
+			EntityFX fx = new EntityBlurFX(world, particleX[i], particleY[i], particleZ[i], 0, v, 0).setGravity(g).setColor(c).setLife(l).setScale(s).setIcon(ChromaIcons.FADE_GENTLE);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
@@ -126,9 +151,9 @@ public class TileEntityHoverPad extends TileEntityChromaticBase {
 
 	public static enum HoverMode {
 
-		RISE(0x00ff00, -0.0625F, 0.03125),
+		RISE(0x00ff00, -0.0625F, 0.1875),
 		HOVER(0xffff00, 0F, 0),
-		FALL(0xff0000, 0.0625F, -0.03125);
+		FALL(0xff0000, 0.0625F, -0.1875);
 
 		public final int particleColor;
 		public final float particleGravity;

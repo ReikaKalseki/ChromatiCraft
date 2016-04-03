@@ -52,6 +52,7 @@ public class AuraPouchRecipe extends MultiBlockCastingRecipe {
 		this.addRune(CrystalElement.WHITE, -4, -1, 2);
 		this.addRune(CrystalElement.BLACK, -4, -1, -2);
 		this.addRune(CrystalElement.LIGHTGRAY, 4, -1, 2);
+		this.addRune(CrystalElement.PURPLE, 4, -1, -2);
 	}
 
 }

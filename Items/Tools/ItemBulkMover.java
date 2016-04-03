@@ -145,7 +145,7 @@ public class ItemBulkMover extends ItemChromaTool {
 
 		@Override
 		public int drawItems(ItemStack is, int max) {
-			return (int)me.removeItem(ReikaItemHelper.getSizedItemStack(is, max), false);
+			return (int)me.removeItem(ReikaItemHelper.getSizedItemStack(is, max), false, true);
 		}
 
 	}

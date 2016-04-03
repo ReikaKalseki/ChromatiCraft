@@ -86,6 +86,10 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 	private void renderConnectivity(Tessellator v5, ForgeDirection in, ForgeDirection face) {
 		double w = 0.1875;
 		double h = 0.25;
+
+		if (face.offsetX+face.offsetY+face.offsetZ < 0)
+			h = h-0.125;
+
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			IIcon ico = ChromaIcons.GLOWFRAME_TRANS.getIcon();
@@ -96,6 +100,7 @@ public class RelayRenderer implements ISimpleBlockRenderingHandler {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
+
 			switch(dir) {
 				case EAST:
 					v5.addVertexWithUV(h*face.offsetX+0.5+w, h*face.offsetY+0.5-w, h*face.offsetZ+0.5-w, u, v);

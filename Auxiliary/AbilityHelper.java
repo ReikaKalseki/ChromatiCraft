@@ -51,6 +51,7 @@ import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
@@ -79,17 +80,19 @@ import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Instantiable.Event.PlayerHasItemEvent;
 import Reika.DragonAPI.Instantiable.Event.PostItemUseEvent;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
+import Reika.DragonAPI.Instantiable.Event.RemovePlayerItemEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -109,6 +112,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -341,6 +345,14 @@ public class AbilityHelper {
 			}
 		}
 
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onPlayerLogin(ClientLoginEvent evt) {
+		if (evt.newLogin) {
+			LoginApplier.instance.onPlayerLogin(evt.player);
+		}
 	}
 
 	public static class LoginApplier implements PlayerTracker {
@@ -1055,18 +1067,18 @@ public class AbilityHelper {
 	@ModDependent(ModList.APPENG)
 	private int requestItem(EntityPlayer ep, ItemStack is, int amt) {
 		MESystemReader me = this.getMESystem(ep);
-		return me != null ? (int)me.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false) : 0;
+		return me != null ? (int)me.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false, true) : 0;
 	}
 
 	private MESystemReader getMESystem(EntityPlayer ep) {
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep).getCompoundTag(AE_LOC_TAG);
 		if (nbt == null || nbt.hasNoTags())
 			return null;
-		Coordinate c = Coordinate.readTag(nbt);
+		WorldLocation c = WorldLocation.readTag(nbt);
 		if (c == null) {
 			return null;
 		}
-		TileEntity te = c.getTileEntity(ep.worldObj);
+		TileEntity te = c.getTileEntity();
 		if (te instanceof IGridHost) {
 			IGridHost ih = (IGridHost)te;
 			IGridNode n = ih.getGridNode(ForgeDirection.VALID_DIRECTIONS[nbt.getInteger("dir")]);
@@ -1078,8 +1090,8 @@ public class AbilityHelper {
 
 	public void saveMESystemLocation(EntityPlayer ep, TileEntity te, int s) {
 		NBTTagCompound NBT = new NBTTagCompound();
-		Coordinate c = new Coordinate(te);
-		c.writeToTag(NBT);
+		WorldLocation c = new WorldLocation(te);
+		c.writeToNBT(NBT);
 		NBT.setInteger("dir", s);
 		ReikaPlayerAPI.getDeathPersistentNBT(ep).setTag(AE_LOC_TAG, NBT);
 	}
@@ -1108,6 +1120,60 @@ public class AbilityHelper {
 		}
 	}
 	 */
+
+	@SubscribeEvent
+	public void rerouteStackToMESystem(EntityItemPickupEvent evt) {
+		if (evt.entityPlayer.worldObj.isRemote)
+			return;
+		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
+			ItemStack is = evt.item.getEntityItem();
+			for (int i = 0; i < 9; i++) {
+				ItemStack in = evt.entityPlayer.inventory.mainInventory[i];
+				if (ReikaItemHelper.matchStacks(is, in) && in.stackSize == in.getMaxStackSize()) {
+					MESystemReader me = this.getMESystem(evt.entityPlayer);
+					if (me != null) {
+						int left = (int)me.addItem(is, false);
+						if (left > 0) {
+							is.stackSize = left;
+						}
+						else {
+							evt.item.setDead();
+							evt.setCanceled(true);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void delegateStackCheck(PlayerHasItemEvent evt) {
+		if (evt.entityPlayer.worldObj.isRemote)
+			return;
+		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
+			MESystemReader me = this.getMESystem(evt.entityPlayer);
+			if (me != null) {
+				if (me.getItemCount(evt.getItem(), true) > 0) {
+					evt.setResult(Result.ALLOW);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void delegateStackDecr(RemovePlayerItemEvent evt) {
+		if (evt.entityPlayer.worldObj.isRemote)
+			return;
+		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
+			MESystemReader me = this.getMESystem(evt.entityPlayer);
+			if (me != null) {
+				int rem = (int)me.removeItem(evt.getItem(), false, true);
+				if (rem == evt.getItem().stackSize) {
+					evt.setCanceled(true);
+				}
+			}
+		}
+	}
 
 	private static class ResetWalkSpeedEvent implements ScheduledEvent {
 

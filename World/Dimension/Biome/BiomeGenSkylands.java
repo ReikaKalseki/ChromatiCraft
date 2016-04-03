@@ -7,16 +7,15 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World.Dimension;
+package Reika.ChromatiCraft.World.Dimension.Biome;
 
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 
+public class BiomeGenSkylands extends ChromaDimensionBiome {
 
-public class BiomeGenIslands extends ChromaDimensionBiome {
-
-	public BiomeGenIslands(int id) {
+	public BiomeGenSkylands(int id) {
 		super(id);
-		this.setBiomeName("Islands");
+		this.setBiomeName("Skylands");
 	}
 
 }

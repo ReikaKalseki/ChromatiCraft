@@ -27,7 +27,6 @@ import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -174,10 +173,7 @@ public class ItemBuilderWand extends ItemWandBase {
 		world.setBlock(x, y, z, b, m, 3);
 		if (!ep.capabilities.isCreativeMode) {
 			this.drainPlayer(ep);
-			int slot = ReikaInventoryHelper.locateInInventory(b, m, ep.inventory.mainInventory);
-			if (slot != -1) {
-				ReikaInventoryHelper.decrStack(slot, ep.inventory.mainInventory);
-			}
+			ReikaPlayerAPI.findAndDecrItem(ep, b, m);
 		}
 		return true;
 	}

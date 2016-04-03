@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.AOE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
@@ -171,8 +172,25 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 	@Override
 	public void linkTo(World world, int x, int y, int z) {
-		if (world.provider.dimensionId == worldObj.provider.dimensionId)
-			this.addCoordinate(x, y, z);
+		if (world.provider.dimensionId == worldObj.provider.dimensionId) {
+			if (this.isLinkable(world, x, y, z)) {
+				this.addCoordinate(x, y, z);
+			}
+		}
+	}
+
+	private boolean isLinkable(World world, int x, int y, int z) {
+		TileEntity te = world.getTileEntity(x, y, z);
+		if (te == null)
+			return true;
+		String c = te.getClass().getName().toLowerCase(Locale.ENGLISH);
+		if (c.endsWith("manualkineticgenerator"))
+			return false;
+		if (c.endsWith("engineclockwork") && c.contains("forestry"))
+			return false;
+		if (c.endsWith("crank") && c.contains("appeng"))
+			return false;
+		return true;
 	}
 
 	private void addCoordinate(int x, int y, int z) {

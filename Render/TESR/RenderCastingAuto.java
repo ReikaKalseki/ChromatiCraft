@@ -39,6 +39,7 @@ public class RenderCastingAuto extends ChromaRenderBase {
 
 		if (MinecraftForgeClient.getRenderPass() == 1 || !te.isInWorld()) {
 
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 			GL11.glEnable(GL11.GL_BLEND);
@@ -62,6 +63,7 @@ public class RenderCastingAuto extends ChromaRenderBase {
 				GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 			GL11.glPopMatrix();
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glPopAttrib();
 
 		}
 	}

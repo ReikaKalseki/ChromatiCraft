@@ -17,6 +17,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
+import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
+import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaSkyRenderer;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

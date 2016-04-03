@@ -36,8 +36,10 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiCastingAuto extends GuiChromaBase {
@@ -162,6 +164,20 @@ public class GuiCastingAuto extends GuiChromaBase {
 			case 5:
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), tile);
 				break;
+		}
+	}
+
+	@Override
+	protected void keyTyped(char c, int key) {
+		super.keyTyped(c, key);
+
+		if (key == Keyboard.KEY_END) {
+			index = visible.size()-1;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
+		}
+		else if (key == Keyboard.KEY_HOME) {
+			index = 0;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
 		}
 	}
 

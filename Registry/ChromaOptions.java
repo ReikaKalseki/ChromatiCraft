@@ -14,10 +14,11 @@ import Reika.DragonAPI.Interfaces.Configuration.BooleanConfig;
 import Reika.DragonAPI.Interfaces.Configuration.DecimalConfig;
 import Reika.DragonAPI.Interfaces.Configuration.IntegerConfig;
 import Reika.DragonAPI.Interfaces.Configuration.MatchingConfig;
+import Reika.DragonAPI.Interfaces.Configuration.UserSpecificConfig;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 
 
-public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig, Dependency {
+public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig, MatchingConfig, UserSpecificConfig, Dependency {
 
 	NOISE("Lamp Noises", true),
 	NETHER("Nether Crystals", true),
@@ -218,6 +219,34 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	@Override
 	public String getDisplayName() {
 		return label;
+	}
+
+	@Override
+	public boolean isUserSpecific() {
+		switch(this) {
+			case RETROGEN:
+			case NOISE:
+			case NOPARTICLES:
+			case BLOCKPARTICLES:
+			case ANIMALSPAWN:
+			case ENDERCOLORING:
+			case DYNAMICHANDBOOK:
+			case ENDEREFFECT:
+			case FLATGEN:
+			case KEYBINDABILITY:
+			case PIELOC:
+			case DELEND:
+			case STRUCTDIFFICULTY:
+			case PYLONLOAD:
+			case SHORTPATH:
+				//case FORCEG1GC:
+			case PROGRESSNOTIFY:
+			case BIOMEFX:
+			case CONNECTEDCRYSTALSTONE:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 }

@@ -87,13 +87,13 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		private long countItems(MESystemReader net, ItemStack is) {
 			switch(this) {
 				case EXACT:
-					return net.getItemCount(is);
+					return net.getItemCount(is, true);
 				case FUZZY:
-					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false);
+					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false, true);
 				case FUZZYORE:
-					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true);
+					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true, true);
 				case FUZZYNBT:
-					return net.getFuzzyItemCountIgnoreNBT(is, FuzzyMode.IGNORE_ALL, true);
+					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true, false);
 			}
 			return 0;
 		}
@@ -101,13 +101,13 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 		private long removeItems(MESystemReader net, ItemStack is, boolean simulate) {
 			switch(this) {
 				case EXACT:
-					return net.removeItem(is, simulate);
+					return net.removeItem(is, simulate, true);
 				case FUZZY:
-					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, false);
+					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, false, true);
 				case FUZZYORE:
-					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true);
+					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true, true);
 				case FUZZYNBT:
-					return net.removeItemFuzzyIgnoreNBT(is, simulate, FuzzyMode.IGNORE_ALL, true);
+					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true, false);
 			}
 			return 0;
 		}

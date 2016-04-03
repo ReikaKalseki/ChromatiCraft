@@ -414,6 +414,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case CONSOLE:
 			case LIGHT:
 			case SELECTIVEGLASS:
+			case PAD:
 				return false;
 			default:
 				return true;

@@ -752,7 +752,8 @@ public class ChromaOverlays {
 				int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-ar-8;
 				int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-ar-8;
 
-				double oa = System.identityHashCode(te)+2*((TileEntityBase)te).getTicksExisted();
+				int hash = System.identityHashCode(te);
+				double oa = hash+2*((TileEntityBase)te).getTicksExisted()*(hash%2 == 0 ? 1 : -1);
 
 				int n = tag.tagCount();
 				int i = 0;

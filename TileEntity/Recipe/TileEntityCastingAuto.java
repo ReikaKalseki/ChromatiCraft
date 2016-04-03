@@ -189,7 +189,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				}
 			}
 			else if (recipe == null || recipesToGo == 0) {
-				this.setRecipe(null, 0);
+				this.cancelCrafting();
 			}
 		}
 	}
@@ -403,10 +403,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		if (DragonAPICore.debugtest)
 			return ReikaItemHelper.getSizedItemStack(li.get(0), amt);
 
+		ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients+" / "+network);
+
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false);
+					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound == null);
 					if (rem > 0) {
 						ItemStack ret = ReikaItemHelper.getSizedItemStack(is, rem);
 						ret.setItemDamage(0);
@@ -414,7 +416,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 					}
 				}
 				else {
-					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false);
+					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false, is.stackTagCompound != null);
 					if (rem > 0)
 						return ReikaItemHelper.getSizedItemStack(is, rem);
 				}
@@ -459,8 +461,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	}
 
 	public void cancelCrafting() {
-		recipe = null;
-		recipesToGo = 0;
+		this.setRecipe(null, 0);
 	}
 
 	@Override

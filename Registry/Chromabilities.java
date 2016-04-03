@@ -1219,6 +1219,7 @@ public enum Chromabilities implements Ability {
 			else {
 				AbilityHelper.instance.onNoClipDisable(ep);
 			}
+			ChromatiCraft.logger.debug("Noclip state changed to "+set);
 		}
 		//ep.noClip = set;// && ((ep.capabilities.allowFlying && ep.capabilities.isFlying) || ep.isSneaking() || KeyWatcher.instance.isKeyDown(ep, Key.JUMP));
 		/*if (ep.noClip) {

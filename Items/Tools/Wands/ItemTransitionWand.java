@@ -157,10 +157,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
 				this.drainPlayer(r.player);
-				int slot = ReikaInventoryHelper.locateInInventory(r.place, r.placeM, r.player.inventory.mainInventory);
-				if (slot != -1) {
-					ReikaInventoryHelper.decrStack(slot, r.player.inventory.mainInventory);
-				}
+				ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM);
 				world.setBlock(x, y, z, r.place, r.placeM, 3);
 				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);

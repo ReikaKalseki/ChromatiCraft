@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -50,6 +51,18 @@ public class ItemConnector extends ItemChromaTool {
 		}
 		else if (te instanceof Linkable) {
 			return this.tryConnection((Linkable)te, world, x, y, z, is, ep);
+		}
+		else if (te instanceof NBTCopyable) {
+			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("NBT_transfer")) {
+				((NBTCopyable)te).readCopyableData(is.stackTagCompound.getCompoundTag("NBT_transfer"));
+			}
+			else {
+				if (is.stackTagCompound == null)
+					is.stackTagCompound = new NBTTagCompound();
+				NBTTagCompound tag = new NBTTagCompound();
+				((NBTCopyable)te).writeCopyableData(tag);
+				is.stackTagCompound.setTag("NBT_transfer", tag);
+			}
 		}
 		else if (te instanceof LinkerCallback) {
 			is.stackTagCompound = new NBTTagCompound();

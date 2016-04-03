@@ -23,13 +23,14 @@ import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
+import Reika.DragonAPI.Interfaces.TileEntity.NBTCopyable;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityParticleSpawner extends TileEntityChromaticBase implements GuiController {
+public class TileEntityParticleSpawner extends TileEntityChromaticBase implements GuiController, NBTCopyable {
 
 	public ParticleDefinition particles = new ParticleDefinition();
 
@@ -75,6 +76,17 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		super.readFromNBT(NBT);
 
 		particles.readFromNBT(NBT);
+	}
+
+	@Override
+	public void writeCopyableData(NBTTagCompound NBT) {
+		particles.writeToNBT(NBT);
+	}
+
+	@Override
+	public void readCopyableData(NBTTagCompound NBT) {
+		particles.readFromNBT(NBT);
+		this.syncAllData(true);
 	}
 
 	public static class ParticleDefinition {
@@ -149,7 +161,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			NBT.setBoolean("collide", particleCollision);
 			NBT.setBoolean("rapid", rapidExpand);
 
-			NBT.setInteger("icon", particleIcon.ordinal());
+			NBT.setString("icon", particleIcon.name());
 
 			NBTTagCompound tag = new NBTTagCompound();
 			particleRate.writeToNBT(tag);
@@ -182,7 +194,13 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			particleCollision = NBT.getBoolean("collide");
 			rapidExpand = NBT.getBoolean("rapid");
 
-			particleIcon = ChromaIcons.iconList[NBT.getInteger("icon")];
+			try {
+				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));
+			}
+			catch (IllegalArgumentException e) {
+				ChromatiCraft.logger.logError("Tried to load invalid particle type '"+NBT.getString("icon")+"' from NBT.");
+				e.printStackTrace();
+			}
 
 			NBTTagCompound tag = NBT.getCompoundTag("rate");
 			particleRate = BoundedValue.readFromNBT(tag);
