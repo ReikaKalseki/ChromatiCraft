@@ -95,7 +95,7 @@ public class ItemChromaBook extends ItemChromaTool {
 		}
 	}
 
-	private static boolean isCreative(ItemStack is) {
+	public static boolean isCreative(ItemStack is) {
 		return ChromaItems.HELP.matchWith(is) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("creative");
 	}
 

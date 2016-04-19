@@ -13,16 +13,22 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class WorldGenMoonPool extends ChromaWorldGenerator {
+
+	public WorldGenMoonPool(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
@@ -112,7 +118,7 @@ public class WorldGenMoonPool extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.004F;
 	}
 

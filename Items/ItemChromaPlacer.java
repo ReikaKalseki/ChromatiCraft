@@ -40,11 +40,10 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
-import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -140,6 +139,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 				return false;
 			}
 		}
+		if (m == ChromaTiles.ADJACENCY) { //prevent place of old item
+			return false;
+		}
 		if (!ep.canPlayerEdit(x, y, z, 0, is))
 			return false;
 		if (!m.allowFakePlacer() && ReikaPlayerAPI.isFake(ep))
@@ -180,10 +182,6 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m.isSidePlaced()) {
 			((SidePlacedTile)te).placeOnSide(side);
 		}
-		/*
-		if (m == ChromaTiles.ACCELERATOR) {
-			((TileEntityAccelerator)te).setTier(is);
-		}*/
 		if (m == ChromaTiles.AURAPOINT) {
 			((TileEntityAuraPoint)te).savePoint();
 		}
@@ -239,8 +237,8 @@ public class ItemChromaPlacer extends Item implements ISize {
 			ChromaTiles c = ChromaTiles.TEList[i];
 			if (c.isAvailableInCreativeInventory()) {
 				ItemStack item = new ItemStack(par1, 1, i);
-				if (c == ChromaTiles.ACCELERATOR) {
-					for (int k = 0; k <= TileEntityAccelerator.MAX_TIER; k++) {
+				if (c == ChromaTiles.METEOR) {
+					for (int k = 0; k < 3; k++) {
 						ItemStack item2 = item.copy();
 						item2.stackTagCompound = new NBTTagCompound();
 						item2.stackTagCompound.setInteger("tier", k);
@@ -255,7 +253,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 						par3List.add(item2);
 					}
 				}
-				else if (c.isRepeater()) {
+				else if (c.isRepeater() && c != ChromaTiles.WEAKREPEATER) {
 					par3List.add(item);
 					ItemStack item2 = item.copy();
 					item2.stackTagCompound = new NBTTagCompound();
@@ -294,11 +292,8 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (r == ChromaTiles.GUARDIAN) {
 			li.add(String.format("Protects a radius-%d area", TileEntityGuardianStone.RANGE));
 		}
-		if (r == ChromaTiles.ACCELERATOR && is.stackTagCompound != null) {
-			li.add("Accelerates time by "+(TileEntityAccelerator.getAccelFromTier(is.stackTagCompound.getInteger("tier"))+1)+"x");
-			li.add("for TileEntities adjacent to it.");
-			long max = TileEntityAccelerator.MAX_LAG/1000000;
-			li.add(EnumChatFormatting.GOLD+"Admin Note:"+EnumChatFormatting.WHITE+" Will not cause more than "+max+"ms lag.");
+		if (r == ChromaTiles.ADJACENCY) {
+			li.add(EnumChatFormatting.GOLD+"This item is deprecated! Craft it into the new version!");
 		}
 		if (r == ChromaTiles.ASPECTJAR && is.stackTagCompound != null && ModList.THAUMCRAFT.isLoaded()) {
 			li.addAll(TileEntityAspectJar.parseNBT(is.stackTagCompound));
@@ -310,7 +305,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 			CrystalElement e = CrystalElement.elements[is.stackTagCompound.getInteger("color")];
 			li.add("Color: "+e.displayName);
 		}
-		if (is.stackTagCompound != null && r.isLumenTile()) {
+		if (is.stackTagCompound != null && is.stackTagCompound.hasKey("energy") && r.isLumenTile()) {
 			ElementTagCompound tag = ElementTagCompound.createFromNBT(is.stackTagCompound.getCompoundTag("energy"));
 			StringBuilder sb = new StringBuilder();
 			sb.append("{");

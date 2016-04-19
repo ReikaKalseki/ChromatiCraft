@@ -52,7 +52,9 @@ public enum ChromaPackets {
 	DELTELEPORT(),
 	GROWTH(3),
 	PROGRESSNOTE(1),
-	PORTALRECIPE(4),
+	PORTALRECIPE(1),
+	PYLONTURBORECIPE(1),
+	REPEATERTURBORECIPE(1),
 	HEATLAMP(1),
 	WANDCHARGE(16),
 	BULKITEM(2),
@@ -121,6 +123,8 @@ public enum ChromaPackets {
 	//PYLONJAR(),
 	PYLONCRYSTALBREAK(),
 	WIRELESS(5),
+	METEORIMPACT(1),
+	ORECREATE(2),
 	;
 
 	public final int numInts;

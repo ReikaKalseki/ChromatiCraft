@@ -145,6 +145,7 @@ public class GuiStructure extends GuiBookSection {
 					}
 				}
 			}
+			render.addOverride(new ItemStack(ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata()), ChromaTiles.STAND.getCraftedProduct());
 		}
 
 		render.addRenderHook(ChromaTiles.PYLON.getCraftedProduct(), new PylonRenderHook());

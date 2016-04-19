@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.T
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;

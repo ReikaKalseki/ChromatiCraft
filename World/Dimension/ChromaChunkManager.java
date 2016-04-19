@@ -14,15 +14,11 @@ import java.util.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
-import net.minecraft.world.gen.NoiseGeneratorOctaves;
-import Reika.ChromatiCraft.ChromatiCraft;
+import net.minecraft.world.gen.layer.IntCache;
 
 public class ChromaChunkManager extends WorldChunkManager {
 
 	private final Random rand = new Random();
-
-	private final NoiseGeneratorOctaves noiseGen = new NoiseGeneratorOctaves(rand, 24);
-	private double[] noiseData;
 
 	public ChromaChunkManager(World world) {
 		super(world.getSeed(), world.getWorldInfo().getTerrainType());
@@ -37,7 +33,7 @@ public class ChromaChunkManager extends WorldChunkManager {
 		//double d = Math.abs(noiseData[rand.nextInt(noiseData.length)]);
 		//d /= 8000D;
 		//CrystalElement e = CrystalElement.elements[(16+(int)(d%16))%16];
-		return ChromatiCraft.rainbowforest;//BiomeGenBase.biomeList[e.ordinal()];//ChromatiCraft.enderforest;
+		return BiomeDistributor.getBiome(x, z);//ChromatiCraft.rainbowforest;//BiomeGenBase.biomeList[e.ordinal()];//ChromatiCraft.enderforest;
 	}
 
 	@Override
@@ -49,9 +45,9 @@ public class ChromaChunkManager extends WorldChunkManager {
 	@Override
 	public BiomeGenBase[] getBiomesForGeneration(BiomeGenBase[] data, int cx, int cz, int w, int l)
 	{
+		IntCache.resetIntCache();
 		int n = w*l;
-		if (data == null || data.length < n)
-		{
+		if (data == null || data.length < n) {
 			data = new BiomeGenBase[n];
 		}
 

@@ -17,10 +17,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
@@ -28,8 +30,12 @@ public class WorldGenCrystalPit extends ChromaWorldGenerator {
 
 	private static final CrystalElement[][] colors = new CrystalElement[4][4];
 
+	public WorldGenCrystalPit(DimensionGenerators g) {
+		super(g);
+	}
+
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.00625F;
 	}
 

@@ -44,8 +44,8 @@ public class BlockCrystalRune extends BlockDyeTypes implements SemiUnbreakable {
 
 	public BlockCrystalRune(Material par2Material) {
 		super(par2Material);
-		blockHardness = 2;
-		blockResistance = 5;
+		this.setHardness(3);
+		this.setResistance(12);
 	}
 
 	@Override

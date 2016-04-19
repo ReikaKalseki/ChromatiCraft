@@ -58,9 +58,6 @@ public class BlockCrystalTile extends BlockChromaTile {
 		if (c == null)
 			return li;
 		switch (c) {
-			case ACCELERATOR:
-				for (int i = 0; i < 4; i++)
-					li.add(ChromaStacks.blueShard);
 			case GUARDIAN:
 				if (ReikaRandomHelper.doWithChance(25))
 					li.add(ChromaStacks.crystalStar);
@@ -146,7 +143,7 @@ public class BlockCrystalTile extends BlockChromaTile {
 				if (te instanceof TileEntityWeakRepeater && !((TileEntityWeakRepeater)te).hasRemainingLife())
 					return;
 				if (silk || !c.needsSilkTouch()) {
-					ItemStack is = c.getCraftedProduct();
+					ItemStack is = this.getHarvestedItemStack(world, x, y, z, meta, c);
 					if (c.hasNBTVariants()) {
 						NBTTagCompound nbt = new NBTTagCompound();
 						((NBTTile)te).getTagsToWriteToStack(nbt);
@@ -159,6 +156,10 @@ public class BlockCrystalTile extends BlockChromaTile {
 				}
 			}
 		}
+	}
+
+	private ItemStack getHarvestedItemStack(World world, int x, int y, int z, int meta, ChromaTiles c) {
+		return c.getCraftedProduct();
 	}
 
 	@Override

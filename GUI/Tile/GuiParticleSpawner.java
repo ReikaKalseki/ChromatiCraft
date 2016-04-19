@@ -22,8 +22,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
-import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner.VariableValue;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner.VariableValue;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
@@ -98,6 +98,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			case REGIONS:
 			case WEAKREPEATER:
 			case LATTICE:
+			case GLOWFRAME_TRANS:
+			case GLOWFRAMEDOT_TRANS:
 				return false;
 			default:
 				return true;

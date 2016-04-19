@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -38,11 +39,13 @@ public class BlockEtherealLight extends Block {
 		this.setResistance(3600000F);
 		this.setHardness(0);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
+		this.setTickRandomly(true);
 	}
 
 	public static enum Flags {
 		MINEABLE(),
-		PARTICLES();
+		PARTICLES(),
+		DECAY();
 
 		public boolean isPresent(World world, int x, int y, int z) {
 			return this.isPresent(world.getBlockMetadata(x, y, z));
@@ -69,12 +72,20 @@ public class BlockEtherealLight extends Block {
 
 	@Override
 	public void updateTick(World world, int x, int y, int z, Random r) {
+		if (Flags.DECAY.isPresent(world, x, y, z))
+			world.setBlock(x, y, z, Blocks.air);
+	}
 
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z) {
+		if (Flags.DECAY.isPresent(world, x, y, z))
+			world.scheduleBlockUpdate(x, y, z, this, 20);
 	}
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block n) {
-
+		if (Flags.DECAY.isPresent(world, x, y, z))
+			world.setBlock(x, y, z, Blocks.air);
 	}
 
 	@Override

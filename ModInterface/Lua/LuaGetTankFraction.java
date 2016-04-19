@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.ModInterface.Lua;
 
 import net.minecraft.tileentity.TileEntity;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 import dan200.computercraft.api.lua.LuaException;
 

@@ -35,7 +35,6 @@ import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
-import Reika.ChromatiCraft.Magic.ElementTag;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -107,7 +106,7 @@ public class CastingRecipe implements APICastingRecipe {
 
 	}
 
-	public ChromaSounds getSoundOverride(int craftSoundTimer) {
+	public ChromaSounds getSoundOverride(TileEntityCastingTable te, int craftSoundTimer) {
 		return null;
 	}
 
@@ -596,16 +595,12 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected CastingRecipe addAuraRequirement(CrystalElement e, int amt) {
-			return this.addAuraRequirement(new ElementTag(e, amt));
-		}
-
-		protected CastingRecipe addAuraRequirement(ElementTag e) {
-			elements.maximizeWith(e);
+			elements.addValueToColor(e, amt);
 			return this;
 		}
 
 		protected CastingRecipe addAuraRequirement(ElementTagCompound e) {
-			elements.maximizeWith(e);
+			elements.add(e);
 			return this;
 		}
 

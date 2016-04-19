@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -45,7 +47,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv, IPipeConnection {
+public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv, IPipeConnection, OperationInterval {
 
 	private InertItem item;
 
@@ -55,6 +57,8 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private EntityPlayer craftingPlayer;
+
+	private static final int DURATION = 608;
 
 	static {
 		required.addTag(CrystalElement.PURPLE, 500);
@@ -71,6 +75,9 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 		else {
 			craftingTick = 0;
 		}
+
+		if (DragonAPICore.debugtest)
+			ChromaStructures.getInfusionStructure(world, x, y, z).place();
 	}
 
 	@Override
@@ -175,7 +182,7 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 
 		if (this.canCraft()) {
 			if (craftingTick == 0)
-				craftingTick = 608;
+				craftingTick = DURATION;
 		}
 		else {
 			if (craftingTick > 0) {
@@ -298,6 +305,16 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 	@ModDependent(ModList.BCTRANSPORT)
 	public ConnectOverride overridePipeConnection(PipeType type, ForgeDirection with) {
 		return ConnectOverride.DISCONNECT;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return 1F-craftingTick/(float)DURATION;
+	}
+
+	@Override
+	public OperationState getState() {
+		return this.canCraft() ? hasStructure ? OperationState.RUNNING : OperationState.PENDING : OperationState.INVALID;
 	}
 
 }

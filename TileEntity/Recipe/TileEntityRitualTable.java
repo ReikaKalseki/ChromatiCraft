@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
@@ -45,7 +46,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile, OperationInterval {
 
 	private boolean hasStructure = false;
 	private int abilityTick = 0;
@@ -398,6 +399,16 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	public int getIconState(int side) {
 		return isEnhanced ? 1 : 0;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return ability == null ? 0 : 1-abilityTick/(float)AbilityRituals.instance.getDuration(ability);
+	}
+
+	@Override
+	public OperationState getState() {
+		return ability != null ? (energy.containsAtLeast(AbilityRituals.instance.getAura(ability)) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

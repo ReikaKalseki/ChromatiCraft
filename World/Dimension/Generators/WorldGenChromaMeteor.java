@@ -15,7 +15,9 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -29,8 +31,12 @@ public class WorldGenChromaMeteor extends ChromaWorldGenerator {
 
 	private static final WeightedRandom<BlockKey> basicOres = new WeightedRandom();
 
+	public WorldGenChromaMeteor(DimensionGenerators g) {
+		super(g);
+	}
+
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.002F;
 	}
 

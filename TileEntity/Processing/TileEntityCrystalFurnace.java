@@ -25,6 +25,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -50,7 +51,7 @@ import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection {
+public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval {
 
 	private static final ElementTagCompound smelt = new ElementTagCompound();
 
@@ -312,6 +313,16 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 	@Override
 	public int getIconState(int side) {
 		return side > 1 && this.canSmelt() ? 1 : 0;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return !this.canSmelt() ? 0 : smeltTimer/(float)(Math.max(1, this.getSmeltTime()));
+	}
+
+	@Override
+	public OperationState getState() {
+		return inv[0] != null && FurnaceRecipes.smelting().getSmeltingResult(inv[0]) != null ? (energy.containsAtLeast(smelt) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

@@ -16,19 +16,25 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 public class WorldGenMiniAltar extends ChromaWorldGenerator {
 
+	public WorldGenMiniAltar(DimensionGenerators g) {
+		super(g);
+	}
+
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.025F;
 	}
 

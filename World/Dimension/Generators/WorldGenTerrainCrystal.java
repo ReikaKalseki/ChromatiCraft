@@ -19,6 +19,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -26,6 +27,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -33,6 +35,10 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
+
+	public WorldGenTerrainCrystal(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
@@ -147,7 +153,7 @@ public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.005F;
 	}
 

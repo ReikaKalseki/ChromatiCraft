@@ -14,12 +14,18 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WorldGenFloatstone extends ChromaWorldGenerator {
+
+	public WorldGenFloatstone(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
@@ -41,7 +47,7 @@ public class WorldGenFloatstone extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.02F;
 	}
 

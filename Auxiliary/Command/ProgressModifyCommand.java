@@ -35,8 +35,9 @@ public class ProgressModifyCommand extends DragonCommandBase {
 	@Override
 	public void processCommand(ICommandSender ics, String[] args) {
 		EntityPlayer caller = this.getCommandSenderAsPlayer(ics);
-		if (!caller.capabilities.isCreativeMode) {
-			this.sendChatToSender(ics, EnumChatFormatting.RED+"This command can only be called from players in creative mode.");
+
+		if (args.length < 2) {
+			this.sendChatToSender(ics, EnumChatFormatting.RED+"Invalid arguments. Use /"+this.getCommandString()+" <player> [action] [entry] [set].");
 			return;
 		}
 
@@ -52,6 +53,10 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			return;
 		}
 		EntityPlayer ep = args.length == 4 ? ReikaPlayerAPI.getPlayerByNameAnyWorld(args[0]) : this.getCommandSenderAsPlayer(ics);
+		if (!ep.capabilities.isCreativeMode && !ReikaPlayerAPI.isReika(caller) && ep != caller) {
+			this.sendChatToSender(ics, EnumChatFormatting.RED+"This command can only be called from players in creative mode.");
+			return;
+		}
 		if (args.length == 4)
 			args = Arrays.copyOfRange(args, 1, args.length);
 		boolean set = Boolean.valueOf(args[2]);

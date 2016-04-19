@@ -563,8 +563,17 @@ public enum Chromabilities implements Ability {
 			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 128);
 			int dy = world.getTopSolidOrLiquidBlock(dx, dz);
 			ReikaWorldHelper.ignite(world, dx, dy, dz);
-			if (ModWoodList.getModWoodFromLeaf(world.getBlock(dx, dy, dz), world.getBlockMetadata(dx, dy, dz)) == ModWoodList.DARKWOOD) {
-				world.setBlock(dx, dy, dz, Blocks.fire);
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					for (int k = -1; k <= 1; k++) {
+						int ddx = dx+i;
+						int ddy = dy+j;
+						int ddz = dz+k;
+						if (ModWoodList.getModWoodFromLeaf(world.getBlock(ddx, ddy, ddz), world.getBlockMetadata(ddx, ddy, ddz)) == ModWoodList.DARKWOOD) {
+							world.setBlock(ddx, ddy, ddz, Blocks.fire);
+						}
+					}
+				}
 			}
 			/*
 			if (world.rand.nextInt(20) == 0) {
@@ -1130,7 +1139,7 @@ public enum Chromabilities implements Ability {
 			BlockArray toDrop = BlockArray.getIntersectedBox(toDel, moved);
 			toDrop.setWorld(world);
 			for (ItemStack is : toDrop.getAllDroppedItems(world, 0, ep)) {
-				ReikaPlayerAPI.addOrDropItem(is, ep);
+				//ReikaPlayerAPI.addOrDropItem(is, ep);
 			}
 			toDel.clearArea();
 			moved.place();

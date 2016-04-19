@@ -63,8 +63,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	PYLONLOAD("Pylons Chunkload Selves Once Used", true),
 	RIFTLOAD("World Rifts Chunkload", false),
 	SHORTPATH("Make Pylon pathfinding attempt shortest path - can be intensive", true),
-	FORCEG1GC("Force Java 8 to use G1GC To Prevent Crashes - Disabling this disables some content", true),
 	PROGRESSNOTIFY("Notify players of progress gains", true),
+	PROGRESSNOTIFY_SELF("Notify players via chat of their own progress gains", false),
 	CAVELIGHTERRANGE("Cave Lighter Range", 128),
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
 	BIOMEFX("Biome FX", true),
@@ -198,7 +198,6 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	@Override
 	public boolean enforceMatch() {
 		switch(this) {
-			case FORCEG1GC:
 			case GUARDIAN:
 			case RAINBOWSPREAD:
 			case EASYFRAG:
@@ -224,23 +223,13 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	@Override
 	public boolean isUserSpecific() {
 		switch(this) {
-			case RETROGEN:
 			case NOISE:
 			case NOPARTICLES:
 			case BLOCKPARTICLES:
-			case ANIMALSPAWN:
 			case ENDERCOLORING:
 			case DYNAMICHANDBOOK:
-			case ENDEREFFECT:
-			case FLATGEN:
 			case KEYBINDABILITY:
 			case PIELOC:
-			case DELEND:
-			case STRUCTDIFFICULTY:
-			case PYLONLOAD:
-			case SHORTPATH:
-				//case FORCEG1GC:
-			case PROGRESSNOTIFY:
 			case BIOMEFX:
 			case CONNECTEDCRYSTALSTONE:
 				return true;

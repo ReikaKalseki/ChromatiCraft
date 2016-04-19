@@ -19,6 +19,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaSkyRenderer;
+import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaWeatherRenderer;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,26 +107,40 @@ public class WorldProviderChroma extends WorldProvider {
 	}
 
 	@Override
-	public void calculateInitialWeather()
-	{
-
+	public void calculateInitialWeather() {
+		/*
+		worldObj.getWorldInfo().setRaining(true);
+		if (worldObj.isRemote)
+			worldObj.setRainStrength(0.25F);
+		 */
 	}
 
 	@Override
-	public void updateWeather()
-	{
-
+	public void updateWeather() {
+		/*
+		worldObj.getWorldInfo().setRaining(true); //always raining, but most biomes do not render it
+		if (worldObj.isRemote)
+			worldObj.setRainStrength(0.25F);
+		 */
 	}
 
 	@Override
-	public long getSeed()
-	{
+	public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+		return false;
+	}
+
+	@Override
+	public boolean canSnowAt(int x, int y, int z, boolean checkLight) {
+		return false;
+	}
+
+	@Override
+	public long getSeed() {
 		return worldObj.getWorldInfo().getSeed();
 	}
 
 	@Override
-	public long getWorldTime()
-	{
+	public long getWorldTime() {
 		return worldObj.getWorldInfo().getWorldTime();
 	}
 
@@ -183,7 +198,7 @@ public class WorldProviderChroma extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getWeatherRenderer()
 	{
-		return super.getWeatherRenderer();
+		return ChromaWeatherRenderer.instance;
 	}
 
 	@Override

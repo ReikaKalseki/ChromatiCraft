@@ -33,13 +33,6 @@ public class ChromaAspectMapper {
 
 	private ChromaAspectMapper() {
 
-		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.AURA, 6);
-		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.CRYSTAL, 4);
-		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.ENERGY, 4);
-		this.addAspect(ChromaTiles.ACCELERATOR, Aspect.TRAVEL, 4);
-		if (Aspect.getAspect("tempus") != null)
-			this.addAspect(ChromaTiles.ACCELERATOR, Aspect.getAspect("tempus"), 8);
-
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.ARMOR, 12);
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.AURA, 6);
 		this.addAspect(ChromaTiles.GUARDIAN, Aspect.LIGHT, 4);

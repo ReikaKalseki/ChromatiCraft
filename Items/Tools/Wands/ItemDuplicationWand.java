@@ -43,7 +43,9 @@ import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -57,6 +59,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Registry.BlockRegistry;
@@ -219,7 +222,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 					}
 				}
 			}
-			if (add.getSize() < MAX_SIZE) {
+			if (add.getSize() < MAX_SIZE || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
 				Coordinate c = centers.get(s);
 				add.offset(-c.xCoord, -c.yCoord, -c.zCoord);
 				add.copyTo(all);
@@ -406,8 +409,14 @@ public class ItemDuplicationWand extends ItemWandBase {
 		}
 
 		private void place(World world) {
-			if (block == Blocks.air || block instanceof BlockAir)
-				ReikaSoundHelper.playBreakSound(world, coord.xCoord, coord.yCoord, coord.zCoord, coord.getBlock(world));
+			if (block == Blocks.air || block instanceof BlockAir) {
+				Block b2 = coord.getBlock(world);
+				if (b2 == Blocks.air) {
+					ChromaSounds.ERROR.playSoundAtBlock(world, coord.xCoord, coord.yCoord, coord.zCoord, 0.25F, 2F);
+				}
+				else
+					ReikaSoundHelper.playBreakSound(world, coord.xCoord, coord.yCoord, coord.zCoord, b2);
+			}
 			else
 				ReikaSoundHelper.playPlaceSound(world, coord.xCoord, coord.yCoord, coord.zCoord, block);
 

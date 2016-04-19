@@ -22,7 +22,7 @@ public class AcceleratorBlacklist {
 
 	static {
 		try {
-			tile = Class.forName("Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator");
+			tile = Class.forName("Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator");
 			add = tile.getMethod("blacklistTile", Class.class);
 		}
 		catch (ClassNotFoundException e) {

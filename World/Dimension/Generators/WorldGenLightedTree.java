@@ -9,27 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.DragonAPI.Interfaces.Registry.TreeType;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
 public class WorldGenLightedTree extends ChromaWorldGenerator {
 
-	public static final LightedTreeType treeType = new LightedTreeType();
+	public WorldGenLightedTree(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
-		return 0.5F;
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
+		return biome.biomeType == Biomes.PLAINS ? 0.05F : 0.5F;
 	}
 
 	@Override
@@ -551,64 +551,6 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 		private static void placeLeaf(World world, int x, int y, int z, Random rand) {
 			if (world.getBlock(x, y, z).canBeReplacedByLeaves(world, x, y, z))
 				world.setBlock(x, y, z, ChromaBlocks.GLOWLEAF.getBlockInstance(), rand.nextInt(5), 3);
-		}
-
-	}
-
-	public static class LightedTreeType implements TreeType {
-
-		private LightedTreeType() {
-
-		}
-
-		@Override
-		public ItemStack getItem() {
-			return ChromaBlocks.GLOWLOG.getStackOf();
-		}
-
-		@Override
-		public Block getLogID() {
-			return ChromaBlocks.GLOWLOG.getBlockInstance();
-		}
-
-		@Override
-		public Block getLeafID() {
-			return ChromaBlocks.GLOWLEAF.getBlockInstance();
-		}
-
-		@Override
-		public Block getSaplingID() {
-			return null;
-		}
-
-		@Override
-		public List<Integer> getLogMetadatas() {
-			return Arrays.asList(0, 4, 8);
-		}
-
-		@Override
-		public List<Integer> getLeafMetadatas() {
-			return Arrays.asList(0);
-		}
-
-		@Override
-		public boolean canBePlacedSideways() {
-			return true;
-		}
-
-		@Override
-		public ItemStack getBasicLeaf() {
-			return ChromaBlocks.GLOWLEAF.getStackOfMetadata(ReikaRandomHelper.getSafeRandomInt(5));
-		}
-
-		@Override
-		public boolean exists() {
-			return true;
-		}
-
-		@Override
-		public int getSaplingMeta() {
-			return 0;
 		}
 
 	}

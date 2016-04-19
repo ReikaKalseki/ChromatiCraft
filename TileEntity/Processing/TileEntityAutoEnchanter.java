@@ -22,12 +22,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 
-public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered {
+public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval {
 
 	private HashMap<Enchantment, Integer> selected = new HashMap();
 
@@ -62,7 +63,11 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean canProgress() {
-		return inv[0] != null && this.isValid(inv[0]) && this.getChroma() >= this.getConsumedChroma() && this.enchanting();
+		return this.isValid(inv[0]) && this.hasSufficientChroma() && this.enchanting();
+	}
+
+	private boolean hasSufficientChroma() {
+		return this.getChroma() >= this.getConsumedChroma();
 	}
 
 	private boolean enchanting() {
@@ -89,7 +94,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is);
+		return is != null && (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is);
 	}
 
 	private boolean areEnchantsValid(ItemStack is) {
@@ -115,6 +120,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		ReikaEnchantmentHelper.removeEnchantments(inv[0], selected.keySet());
 		ReikaEnchantmentHelper.applyEnchantments(inv[0], selected);
 		tank.removeLiquid(this.getConsumedChroma());
+		this.syncAllData(true);
 	}
 
 	private int getConsumedChroma() {
@@ -249,6 +255,16 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	@Override
 	public boolean canReceiveFrom(ForgeDirection from) {
 		return true;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return !this.canProgress() ? 0 : progress.getFraction();
+	}
+
+	@Override
+	public OperationState getState() {
+		return this.isValid(inv[0]) && this.enchanting() ? (this.hasSufficientChroma() ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -29,7 +30,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
+public class TileEntityItemFabricator extends InventoriedCrystalReceiver implements OperationInterval {
 
 	public int progress = 0;
 
@@ -235,6 +236,11 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 		return new ImmutableTriple(dx, dy, dz);
 	}
 
+	@Override
+	public double getIncomingBeamRadius() {
+		return 0.25;
+	}
+
 	public EntityItem getEntityItem() {
 		return entity;
 	}
@@ -247,6 +253,16 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver {
 	@Override
 	public double getMaxRenderDistanceSquared() {
 		return super.getMaxRenderDistanceSquared()*4;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return recipe == null ? 0 : 1F-craftingTick/(float)recipe.duration;
+	}
+
+	@Override
+	public OperationState getState() {
+		return recipe == null ? OperationState.INVALID : (energy.containsAtLeast(recipe.energy) ? OperationState.RUNNING : OperationState.PENDING);
 	}
 
 }

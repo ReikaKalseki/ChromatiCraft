@@ -290,6 +290,21 @@ public class ChromaAux {
 			}
 		}
 	}
+
+	public static void notifyServerPlayers(EntityPlayer ep, ProgressElement p) {
+		String sg = EnumChatFormatting.GOLD+ep.getCommandSenderName()+EnumChatFormatting.RESET+" has learned something new: "+p.getFormatting()+p.getTitle();
+		WorldServer[] ws = DimensionManager.getWorlds();
+		for (int i = 0; i < ws.length; i++) {
+			for (EntityPlayer ep2 : ((List<EntityPlayer>)ws[i].playerEntities)) {
+				if (ep2 != ep) {
+					ReikaChatHelper.sendChatToPlayer(ep2, sg);
+				}
+				else {
+					ReikaChatHelper.sendChatToPlayer(ep2, "You have learned something new: "+p.getFormatting()+p.getTitle());
+				}
+			}
+		}
+	}
 	/*
 	public static int overrideLightValue(IBlockAccess world, int x, int y, int z, int val) {
 		world = Minecraft.getMinecraft().theWorld;

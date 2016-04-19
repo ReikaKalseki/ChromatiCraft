@@ -28,11 +28,10 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		ChromaTiles c = ChromaTiles.getTile(world, x, y, z);
 		switch(c) {
-		case ACCELERATOR:
-		case AURAPOINT:
-			return null;
-		default:
-			return this.getBlockAABB(x, y, z);
+			case AURAPOINT:
+				return null;
+			default:
+				return this.getBlockAABB(x, y, z);
 		}
 	}
 
@@ -43,16 +42,12 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 		AxisAlignedBB box = this.getBlockAABB(x, y, z);
 		double r = 0;
 		switch(c) {
-		case ACCELERATOR:
-			r = 0.3125;
-			box = this.getBlockAABB(x, y, z).contract(r, r, r);
-			break;
-		case AURAPOINT:
-			r = 0.125;
-			box = this.getBlockAABB(x, y, z).contract(r, r, r);
-			break;
-		default:
-			break;
+			case AURAPOINT:
+				r = 0.125;
+				box = this.getBlockAABB(x, y, z).contract(r, r, r);
+				break;
+			default:
+				break;
 		}
 		this.setBounds(box, x, y, z);
 		return box;
@@ -61,11 +56,10 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 	@Override
 	public IIcon getIcon(int s, int meta) {
 		switch(meta) {
-		case 0:
-		case 1:
-			return ChromaIcons.TRANSPARENT.getIcon();
-		case 2:
-			return ChromaIcons.GLOWFRAME_TRANS.getIcon();
+			case 1:
+				return ChromaIcons.TRANSPARENT.getIcon();
+			case 2:
+				return ChromaIcons.GLOWFRAME_TRANS.getIcon();
 		}
 		return Blocks.stone.getIcon(0, 0);
 	}

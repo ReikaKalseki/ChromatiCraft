@@ -212,9 +212,12 @@ public class BlockLumenRelay extends Block implements IWailaDataProvider {
 		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[meta];
 		TileEntityLumenRelay te = (TileEntityLumenRelay)world.getTileEntity(x, y, z);
 		CrystalElement e = te.isMulti ? CrystalElement.randomElement() : te.color;
-		double dx = x+0.5+dir.offsetX*0.25;
-		double dy = y+0.5+dir.offsetY*0.25;
-		double dz = z+0.5+dir.offsetZ*0.25;
+		double h = 0.25;
+		if (dir.offsetX+dir.offsetY+dir.offsetZ < 0)
+			h = h-0.125;
+		double dx = x+0.5+dir.offsetX*h;
+		double dy = y+0.5+dir.offsetY*h;
+		double dz = z+0.5+dir.offsetZ*h;
 		EntityFX fx = new EntityCenterBlurFX(e, world, dx, dy, dz, 0, 0, 0).setScale(2+r.nextFloat()*2);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}

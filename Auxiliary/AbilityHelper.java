@@ -93,6 +93,7 @@ import Reika.DragonAPI.Instantiable.Event.RemovePlayerItemEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -115,6 +116,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -355,6 +357,16 @@ public class AbilityHelper {
 		}
 	}
 
+	@SubscribeEvent
+	public void clearLexiconCache(SinglePlayerLogoutEvent evt) {
+		isNoClipEnabled = false;
+	}
+
+	@SubscribeEvent
+	public void clearLexiconCache(ClientDisconnectionFromServerEvent evt) {
+		isNoClipEnabled = false;
+	}
+
 	public static class LoginApplier implements PlayerTracker {
 
 		public static final LoginApplier instance = new LoginApplier();
@@ -373,7 +385,7 @@ public class AbilityHelper {
 
 		@Override
 		public void onPlayerLogout(EntityPlayer player) {
-
+			AbilityHelper.instance.isNoClipEnabled = false;
 		}
 
 		@Override
@@ -1033,7 +1045,7 @@ public class AbilityHelper {
 		if (evt.entityPlayer.worldObj.isRemote)
 			return;
 		ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
-		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer) && is != null && is.stackSize == is.getMaxStackSize()) {
+		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer) && is != null && is.stackSize == is.getMaxStackSize() && is.stackSize > 1) {
 			refillItem.put(evt.entityPlayer, is.copy());
 		}
 		else {

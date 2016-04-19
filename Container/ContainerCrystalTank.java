@@ -11,7 +11,7 @@ package Reika.ChromatiCraft.Container;
 
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 

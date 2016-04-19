@@ -25,6 +25,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.InfusionRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.LegacyTileAcceleratorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -83,6 +84,8 @@ public class ChromaRecipes {
 				ThermalRecipeHelper.addPulverizerRecipe(shard, ChromaStacks.crystalPowder, 1000);
 			}
 		}
+
+		GameRegistry.addRecipe(new LegacyTileAcceleratorRecipe());
 
 		loadSmelting();
 	}

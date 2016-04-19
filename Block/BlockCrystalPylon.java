@@ -23,10 +23,10 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -169,7 +169,7 @@ public class BlockCrystalPylon extends BlockCrystalTile implements ProgressionTr
 			case REPEATER:
 			case COMPOUND:
 			case WEAKREPEATER:
-				return true;
+				return dir == ForgeDirection.UP;
 			default:
 				return false;
 		}

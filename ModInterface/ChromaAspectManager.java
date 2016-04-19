@@ -178,6 +178,7 @@ public class ChromaAspectManager {
 			ItemStack lumenleaf = new ItemStack(ChromaBlocks.POWERTREE.getBlockInstance(), 1, i);
 			ItemStack pendant = ChromaItems.PENDANT.getStackOf(dye);
 			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOf(dye);
+			ItemStack acc = ChromaItems.ADJACENCY.getStackOfMetadata(i);
 			List<Aspect> li = new ArrayList();
 			li.addAll(aspectsColor.getForward(dye));
 			li.addAll(aspectsThematic.getForward(dye));
@@ -209,6 +210,11 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(pendant3, Aspect.CRYSTAL, 8);
 			ReikaThaumHelper.addAspects(pendant, Aspect.TOOL, 8);
 			ReikaThaumHelper.addAspects(pendant3, Aspect.TOOL, 8);
+			ReikaThaumHelper.addAspects(acc, Aspect.LIGHT, 4);
+			ReikaThaumHelper.addAspects(acc, Aspect.AURA, 6);
+			ReikaThaumHelper.addAspects(acc, Aspect.CRYSTAL, 4);
+			ReikaThaumHelper.addAspects(acc, Aspect.ENERGY, 4);
+			ReikaThaumHelper.addAspects(acc, Aspect.TRAVEL, 4);
 			for (Aspect a : li) {
 				ReikaThaumHelper.addAspects(shard, a, 2);
 				ReikaThaumHelper.addAspects(bshard, a, 5);
@@ -221,6 +227,7 @@ public class ChromaAspectManager {
 				ReikaThaumHelper.addAspects(lumenleaf, a, 8);
 				ReikaThaumHelper.addAspects(pendant, a, 12);
 				ReikaThaumHelper.addAspects(pendant3, a, 24);
+				ReikaThaumHelper.addAspects(acc, a, 8);
 			}
 		}
 

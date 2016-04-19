@@ -34,7 +34,7 @@ public class ChromaNames {
 		"chromacraft.chassis2", "chromacraft.chassis3", "chromacraft.ingot2", "chromacraft.ingot3", "chromacraft.ingot4", "chromacraft.ingot5",
 		"chromacraft.ingot6", "chromacraft.ingot7", "chromacraft.ingot8", "chromacraft.hivoid", "chromacraft.hitransformcore",
 		"chromacraft.hienergycore", "chromacraft.teledust", "chromacraft.icydust", "chromacraft.energydust", "chromacraft.etherberries",
-		"chromacraft.voiddust", "chromacraft.livingessence"
+		"chromacraft.voiddust", "chromacraft.livingessence", "chromacraft.lumencore", "chromacraft.glowchunk"
 	};
 
 	public static final String[] tieredNames = {
@@ -46,7 +46,8 @@ public class ChromaNames {
 	};
 
 	public static final String[] dimGenNames = {
-		"chromaitem.dimgen.miasma", "chromaitem.dimgen.floatstone", "chromaitem.dimgen.aqua", "chromaitem.dimgen.lifewater", "chromaitem.dimgen.tubes"
+		"chromaitem.dimgen.miasma", "chromaitem.dimgen.floatstone", "chromaitem.dimgen.aqua", "chromaitem.dimgen.lifewater", "chromaitem.dimgen.tubes",
+		"chromaitem.dimgen.geode", "chromaitem.dimgen.crysleaf"
 	};
 
 	public static final String[] storageNames = {

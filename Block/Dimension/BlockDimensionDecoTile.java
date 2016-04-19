@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -27,9 +29,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -60,8 +66,8 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 			}
 		}
 
-		public IIcon getOverlay() {
-			return icons[1][this.ordinal()];
+		public List<IIcon> getIcons(int pass) {
+			return pass == 0 ? ReikaJavaLibrary.makeListFrom(icons[1][this.ordinal()]) : new ArrayList();
 		}
 	}
 
@@ -162,10 +168,28 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 				case FIREJET: {
 					if (worldObj.rand.nextBoolean()) {
 						double vy = ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.01);
-						int r = worldObj.rand.nextInt(256);
-						int g = worldObj.rand.nextInt(256);
-						int b = worldObj.rand.nextInt(256);
-						EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0).setRapidExpand().setScale(4).setColor(r, g, b);
+						int c = ReikaColorAPI.getModifiedHue(0xff0000, (int)((DragonAPICore.getLaunchTime()+(xCoord+yCoord+zCoord)*8)%360));
+						ChromaIcons ico = ChromaIcons.FADE;
+						switch(Math.abs(System.identityHashCode(this)%6)) {
+							case 0:
+								break;
+							case 1:
+								ico = ChromaIcons.FADE_RAY;
+								break;
+							case 2:
+								ico = ChromaIcons.CLOUDGROUP;
+								break;
+							case 3:
+								ico = ChromaIcons.TRIDOT;
+								break;
+							case 4:
+								ico = ChromaIcons.BIGFLARE;
+								break;
+							case 5:
+								ico = ChromaIcons.NODE2;
+								break;
+						}
+						EntityFX fx = new EntityBlurFX(worldObj, xCoord+0.5, yCoord+0.9, zCoord+0.5, 0, vy, 0).setRapidExpand().setScale(4).setColor(c).setIcon(ico);
 						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 					}
 					break;

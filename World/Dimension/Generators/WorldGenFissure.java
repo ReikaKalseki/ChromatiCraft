@@ -19,14 +19,20 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class WorldGenFissure extends ChromaWorldGenerator {
+
+	public WorldGenFissure(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
@@ -138,7 +144,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.01F;
 	}
 

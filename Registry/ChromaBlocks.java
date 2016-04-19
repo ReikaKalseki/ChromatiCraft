@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.BlockChromaTile;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
+import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
@@ -187,7 +188,8 @@ public enum ChromaBlocks implements BlockEnum {
 	DECOFLOWER(BlockDecoFlower.class,			ItemBlockDecoFlower.class,		"chroma.decoflower"),
 	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass"),
 	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
-	PAD(BlockHoverPad.class,													"chroma.hoverpad");
+	PAD(BlockHoverPad.class,													"chroma.hoverpad"),
+	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade");
 
 	private Class blockClass;
 	private String blockName;

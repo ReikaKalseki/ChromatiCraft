@@ -30,6 +30,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -41,10 +42,13 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -64,6 +68,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -97,6 +102,11 @@ public class CrystalBees {
 	protected static BasicBee crystal;
 	protected static BasicBee purity;
 
+	protected static AdvancedBee chroma;
+	protected static AdvancedBee lumen;
+	protected static AdvancedBee aura;
+	protected static AdvancedBee multi;
+
 	protected static Fertility superFertility;
 	protected static Territory superTerritory;
 	protected static Speeds superSpeed;
@@ -105,6 +115,14 @@ public class CrystalBees {
 	protected static Life blinkLife;
 	//protected static IAlleleTolerance anyTemperature; green
 	//protected static IAlleleTolerance anyHumidity; gray
+
+	private static MultiAllele multiFlower;
+
+	private static ColorBlendList chromaColor;
+	private static ColorBlendList auraColor;
+	private static ColorBlendList lumenColor;
+	private static ColorBlendList[] crystalColors;
+	private static ColorBlendList multiColor;
 
 	private static final IErrorState conditionalsUnavailable = new IErrorState() {
 
@@ -151,6 +169,28 @@ public class CrystalBees {
 
 	static {
 		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_TAG);
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			loadColorData();
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void loadColorData() {
+		chromaColor = new ColorBlendList(5F, ChromaFX.getChromaColorTiles());
+		auraColor = new ColorBlendList(18F, 0xffff00, 0xffffff, 0x000000, 0x8000ff, 0xff0000);
+		lumenColor = new ColorBlendList(10F, 0x0000ff, 0xffffff, 0x22aaff);
+		crystalColors = new ColorBlendList[16];
+		multiColor = new ColorBlendList(20F);
+
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int c = e.getColor();
+			int c1 = ReikaColorAPI.mixColors(c, 0x000000, 0.5F);
+			int c2 = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);
+			crystalColors[i] = new ColorBlendList(40F, c, c, c, c1, c, c, c, c2);
+			multiColor.addColor(c);
+		}
 	}
 
 	public static void register() {
@@ -175,6 +215,8 @@ public class CrystalBees {
 			beeMap.put(color, bee);
 		}
 
+		multiFlower = new MultiAllele();
+
 		ForestryAPI.errorStateRegistry.registerErrorState(conditionalsUnavailable);
 
 		protective = new BasicBee("Protective", "Vitreus Auxilium", Speeds.SLOWER, Life.ELONGATED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, 0xFF5993);
@@ -191,6 +233,16 @@ public class CrystalBees {
 		hostile.register();
 		crystal.register();
 		purity.register();
+
+		chroma = new AdvancedBee("Iridescent", "Auram Stellans", Speeds.SLOWER, Life.NORMAL, Flowering.SLOWEST, Fertility.NORMAL, Territory.DEFAULT, chromaColor, EnumTemperature.COLD, ProgressStage.ALLOY);
+		multi = new AdvancedBee("Polychromatic", "Pigmentum Pluralis", Speeds.SLOWEST, Life.ELONGATED, Flowering.AVERAGE, Fertility.LOW, Territory.DEFAULT, multiColor, EnumTemperature.WARM, ProgressStage.CTM);
+		aura = new AdvancedBee("Radiant", "Auram Pharus", Speeds.SLOW, Life.LONG, Flowering.SLOW, Fertility.NORMAL, Territory.DEFAULT, auraColor, EnumTemperature.ICY, ProgressStage.CTM);
+		lumen = new AdvancedBee("Luminescent", "Auram Ardens", Speeds.NORMAL, Life.SHORTENED, Flowering.SLOWER, Fertility.NORMAL, Territory.DEFAULT, lumenColor, EnumTemperature.NORMAL, ProgressStage.DIMENSION);
+
+		chroma.register();
+		multi.register();
+		lumen.register();
+		aura.register();
 
 		addBreeding(CrystalElement.RED, CrystalElement.YELLOW, CrystalElement.ORANGE);
 		addBreeding(CrystalElement.WHITE, CrystalElement.GREEN, CrystalElement.LIME);
@@ -215,6 +267,11 @@ public class CrystalBees {
 		hostile.addBreeding("Demonic", crystal, 10);
 		luminous.addBreeding("Ended", purity, 5);
 
+		chroma.addBreeding(beeMap.get(CrystalElement.PURPLE), beeMap.get(CrystalElement.WHITE), 5);
+		lumen.addBreeding(beeMap.get(CrystalElement.BLUE), beeMap.get(CrystalElement.BLACK), 5);
+		aura.addBreeding(lumen, beeMap.get(CrystalElement.YELLOW), 3);
+		multi.addBreeding(aura, chroma, 2);
+
 		protective.addProduct(new ItemStack(Blocks.obsidian), 2);
 		hostile.addProduct(new ItemStack(Items.gunpowder), 4);
 		luminous.addProduct(new ItemStack(Items.glowstone_dust), 5);
@@ -223,6 +280,16 @@ public class CrystalBees {
 		luminous.addProduct(Combs.HONEY.getItem(), 10);
 		crystal.addProduct(ChromaStacks.crystalPowder, 5);
 		purity.addProduct(new ItemStack(Items.ghast_tear), 1);
+
+		chroma.addSpecialty(ChromaStacks.iridCrystal, 2);
+		lumen.addSpecialty(ChromaStacks.lumaDust, 2);
+		aura.addSpecialty(ChromaStacks.echoCrystal, 2);
+		for (int i = 0; i < 16; i++) {
+			multi.addSpecialty(ChromaStacks.getChargedShard(CrystalElement.elements[i]), 4);
+			ItemStack is = ChromaItems.BERRY.getStackOfMetadata(i);
+			multi.addProduct(is, 20);
+			FlowerProviderMulti.conditions.put(is, new RainbowTreeCheck());
+		}
 
 		GameRegistry.registerWorldGenerator(HiveGenerator.instance, -5);
 	}
@@ -260,7 +327,58 @@ public class CrystalBees {
 		cb.addBreeding(p1, p2, 8);
 	}
 
-	private static final class BasicBee extends TraitsBee {
+	private static class AdvancedBee extends BasicBee {
+
+		private final ColorBlendList colorList;
+		private final ProgressionCheck progress;
+
+		private AdvancedBee(String name, String latin, Speeds s, Life l, Flowering f, Fertility f2, Territory a, ColorBlendList c, EnumTemperature t, ProgressStage p) {
+			super(name, latin, s, l, f, f2, a, 0xffffff, t);
+			colorList = c;
+			progress = new ProgressionCheck(p);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Hybridized from the crystal bees, these bees are mysterious and have unknown but surely significant beneficial effects.";
+		}
+
+		@Override
+		public boolean isJubilant(IBeeGenome ibg, IBeeHousing ibh) {
+			World world = ibh.getWorld();
+			int x = ibh.getCoordinates().posX;
+			int y = ibh.getCoordinates().posY;
+			int z = ibh.getCoordinates().posZ;
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			if (ep != null) {
+				return progress.check(world, x, y, z, ibg, ibh);
+			}
+			return false;
+		}
+
+		@Override
+		public boolean hasEffect() {
+			return true;
+		}
+
+		@Override
+		public IAllele getEffectAllele() {
+			return Effect.NONE.getAllele();
+		}
+
+		@Override
+		public IAllele getFlowerAllele() {
+			return this == multi ? multiFlower : super.getFlowerAllele();
+		}
+
+		@Override
+		public int getOutlineColor() {
+			return colorList.getColor(DragonAPICore.getSystemTimeAsInt()/30D);
+		}
+
+	}
+
+	private static class BasicBee extends TraitsBee {
 
 		public final int outline;
 
@@ -298,7 +416,7 @@ public class CrystalBees {
 
 		@Override
 		public String getDescription() {
-			return "These bees do nothing on their own, but perhaps they could be purified into something stronger.";
+			return "These bees do little on their own, but perhaps they could be purified into something stronger.";
 		}
 
 		@Override
@@ -396,6 +514,107 @@ public class CrystalBees {
 		public IFlowerProvider getProvider() {
 			return provider;
 		}
+	}
+
+	private static final class MultiAllele extends BasicGene implements IAlleleFlowers {
+
+		private final FlowerProviderMulti provider;
+
+		public MultiAllele() {
+			super("flower.rainbowleaf", "Rainbow Leaves");
+			provider = new FlowerProviderMulti();
+		}
+
+		@Override
+		public IFlowerProvider getProvider() {
+			return provider;
+		}
+	}
+
+	public static class FlowerProviderMulti extends BasicFlowerProvider {
+
+		private static final ItemHashMap<ProductCondition> conditions = new ItemHashMap();
+
+		private FlowerProviderMulti() {
+			super(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 0, "Rainbow Leaves");
+		}
+
+		@Override
+		public String getDescription() {
+			return "Shimmering, multicolored leaves";
+		}
+
+		@Override
+		public ItemStack[] affectProducts(World world, IIndividual individual, int x, int y, int z, ItemStack[] products) {
+			IBeeGenome ibg = ((IBee)individual).getGenome();
+			IAlleleBeeSpecies bee1 = ibg.getPrimary();
+			IAlleleBeeSpecies bee2 = ibg.getSecondary();
+			IBeeHousing ibh = (IBeeHousing)world.getTileEntity(x, y, z);
+			ArrayList<ItemStack> li = ReikaJavaLibrary.makeListFromArray(products);
+			ModularLogger.instance.log(LOGGER_TAG, "Flower provider "+this.getDescription()+" affecting products "+li+" for "+bee1.getName()+"; map="+conditions);
+			Iterator<ItemStack> it = li.iterator();
+			while (it.hasNext()) {
+				ItemStack is = it.next();
+				ProductCondition c = conditions.get(is);
+				ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+": "+c);
+				if (c != null) {
+					boolean flag = false;
+					if (bee1.getUID().equals(bee2.getUID())) {
+						if (bee1.getUID().equals(multi.getUID())) {
+							if (this.areConditionalsAvailable(world, x, y, z, ibg, ibh)) {
+								ibh.getErrorLogic().setCondition(false, conditionalsUnavailable);
+								if (c.check(world, x, y, z, ibg, ibh)) {
+									ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+" passed.");
+									flag = true;
+								}
+							}
+							else {
+								ModularLogger.instance.log(LOGGER_TAG, "Conditionals unavailable. Removing.");
+								ibh.getErrorLogic().setCondition(true, conditionalsUnavailable);
+							}
+						}
+					}
+					if (!flag) {
+						ModularLogger.instance.log(LOGGER_TAG, "Check for "+is.getDisplayName()+" failed. Removing.");
+						it.remove();
+					}
+				}
+			}
+			ItemStack[] ret = li.toArray(new ItemStack[li.size()]);
+			return ret;
+		}
+
+		private boolean areConditionalsAvailable(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			if (!(ibg.getFlowerProvider() instanceof FlowerProviderMulti))
+				return false;
+			if (rand.nextFloat() > ibg.getSpeed())
+				return false;
+			if (ibg.getFlowering() < Flowering.AVERAGE.getAllele().getValue())
+				return false;
+			if (!ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z))) {
+				if (rand.nextInt(2) > 0) {
+					return false;
+				}
+			}
+			if (!ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)))
+				return false;
+
+			if (rand.nextInt(3) > 0)
+				return true;
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			if (ep != null) {
+				return ProgressStage.DIMENSION.isPlayerAtStage(ep);
+			}
+			return false;
+		}
+
+		/*
+		@Override
+		public ItemStack[] getItemStacks() {
+			return new ItemStack[]{new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, color.ordinal())};
+		}
+		 */
+
 	}
 
 	public static class FlowerProviderCrystal extends BasicFlowerProvider {
@@ -528,12 +747,17 @@ public class CrystalBees {
 				case BLACK:
 					this.addConditionalProduct(ChromaStacks.auraDust, 5, true, new ProgressionCheck(TieredPlants.FLOWER.level));
 					break;
+				case RED:
+					this.addSpecialty(ChromaStacks.etherBerries, 5);
+					break;
 				case GREEN:
 					this.addSpecialty(ForestryHandler.Combs.SILKY.getItem(), 10);
+					this.addSpecialty(ChromaStacks.livingEssence, 5);
 					break;
 				case PURPLE:
 					if (ModList.TINKERER.isLoaded())
 						this.addSpecialty(BerryTypes.XP.getStack(), 3);
+					this.addSpecialty(ChromaStacks.voidDust, 10);
 					break;
 				case BROWN: {
 					ArrayList<ItemStack> li = OreDictionary.getOres("nuggetIron");
@@ -543,12 +767,13 @@ public class CrystalBees {
 				}
 				case ORANGE:
 					this.addSpecialty(new ItemStack(Items.blaze_powder), 10);
+					this.addConditionalProduct(ChromaStacks.fireEssence, 5, true, new ProgressionCheck(TieredOres.FIRESTONE.level));
 					break;
 				case BLUE:
 					this.addConditionalProduct(ChromaStacks.beaconDust, 5, true, new ProgressionCheck(TieredPlants.DESERT.level));
 					break;
 				case YELLOW:
-					this.addSpecialty(new ItemStack(Items.redstone), 10);
+					this.addSpecialty(ChromaStacks.energyPowder, 5);
 					break;
 				case WHITE:
 					this.addConditionalProduct(ChromaStacks.purityDust, 5, true, new ProgressionCheck(TieredPlants.CAVE.level));
@@ -558,6 +783,12 @@ public class CrystalBees {
 					break;
 				case LIME:
 					this.addConditionalProduct(ChromaStacks.spaceDust, 5, true, new ProgressionCheck(TieredOres.SPACERIFT.level));
+					break;
+				case GRAY:
+					this.addSpecialty(ChromaStacks.teleDust, 5);
+					break;
+				case LIGHTGRAY:
+					this.addSpecialty(ChromaStacks.icyDust, 5);
 					break;
 				default:
 					break;
@@ -711,7 +942,7 @@ public class CrystalBees {
 
 		@Override
 		public int getOutlineColor() {
-			return color.getJavaColor().getRGB();
+			return crystalColors[color.ordinal()].getColor(DragonAPICore.getSystemTimeAsInt()/5D-color.ordinal()*32);//color.getJavaColor().getRGB();
 		}
 
 		@Override
@@ -810,6 +1041,48 @@ public class CrystalBees {
 						int dz = z+k;
 						Block b = world.getBlock(dx, dy, dz);
 						if (b instanceof BlockDyeLeaf && world.getBlockMetadata(dx, dy, dz) == color.ordinal()) {
+							if (last)
+								return true;
+							else
+								last = true;
+						}
+						else
+							last = false;
+					}
+				}
+			}
+			return false;
+		}
+
+	}
+
+	private static class RainbowTreeCheck extends ProductCondition {
+
+		private RainbowTreeCheck() {
+
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
+			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
+			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
+
+			return this.findLeaf(world, x, y, z, r, r2);
+		}
+
+		private boolean findLeaf(World world, int x, int y, int z, int r, int vr) {
+			int d = 2;
+			boolean last = false;
+			for (int i = -r; i <= r; i += d) {
+				for (int k = -r; k <= r; k += d) {
+					for (int h = -vr; h <= vr; h += d) {
+						int dx = x+i;
+						int dy = y+h;
+						int dz = z+k;
+						Block b = world.getBlock(dx, dy, dz);
+						if (b == ChromaBlocks.RAINBOWLEAF.getBlockInstance() && world.getBlockMetadata(dx, dy, dz) == 0) {
 							if (last)
 								return true;
 							else

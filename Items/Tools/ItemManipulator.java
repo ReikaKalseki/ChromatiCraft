@@ -41,17 +41,16 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
-import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
@@ -244,35 +243,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			return true;
 		}
 
-		if (t == ChromaTiles.COMPOUND) {
-			TileEntityCompoundRepeater te = (TileEntityCompoundRepeater)tile;
-			if (ep.isSneaking()) {
-				if (te.isPlacer(ep)) {
-					//world.setBlock(x, y, z, Blocks.air);
-					//ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaTiles.COMPOUND.getCraftedProduct());
-					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, Block.soundTypeStone.getStepResourcePath(), 2, 0.5F);
-					te.redirect(s);
-				}
-			}
-			else if (!world.isRemote) {
-				te.triggerConnectionRender();
-				if (te.checkConnectivity()) {
-					CrystalElement e = te.getActiveColor();
-					ChromaSounds.CAST.playSoundAtBlock(world, x, y, z);
-					int rd = e.getRed();
-					int gn = e.getGreen();
-					int bl = e.getBlue();
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.COLOREDPARTICLE.ordinal(), te, rd, gn, bl, 32, 8);
-					ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), te, te.getSignalDepth(e));
-				}
-				else {
-					ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
-				}
-			}
-			return true;
-		}
-
-		if (t == ChromaTiles.REPEATER) {
+		if (t != null && t.isRepeater()) {
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 			te.triggerConnectionRender();
 			if (ep.isSneaking()) {

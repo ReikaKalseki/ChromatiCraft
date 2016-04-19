@@ -152,6 +152,7 @@ public class MusicPuzzle extends StructurePiece implements TileCallback {
 	public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 		if (te instanceof TileMusicMemory) {
 			((TileMusicMemory)te).program(this, index);
+			((TileMusicMemory)te).uid = parent.id;
 		}
 	}
 

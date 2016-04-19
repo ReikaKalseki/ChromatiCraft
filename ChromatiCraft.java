@@ -67,6 +67,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.DimensionGeneratorCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
@@ -100,6 +101,7 @@ import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaEntities;
@@ -145,14 +147,12 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.VanillaIntegrityTracker;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
-import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.IO.ModLogger;
 import Reika.DragonAPI.Libraries.ReikaDispenserHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJVMParser;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.BannedItemReader;
@@ -291,25 +291,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		logger = new ModLogger(instance, false);
 		if (DragonOptions.FILELOG.getState())
 			logger.setOutput("**_Loading_Log.log");
-
-		if (ReikaJVMParser.getJavaVersion(0) >= 8) {
-			String arg = "-XX:+UseG1GC";
-			if (!ReikaJVMParser.isArgumentPresent(arg)) {
-				if (ChromaOptions.FORCEG1GC.getState()) {
-					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes.";
-					msg += "\nNote that you may have to remove other GC arguments, such as '-XX:+UseConcMarkSweepGC', which is commonly auto-specified by launchers.";
-					msg += "\nCurrent Java Args: "+ReikaJVMParser.getAllArguments();
-					throw new InstallationException(this, msg);
-				}
-				else {
-					String msg = "You are running Java 8, and need to use the JVM argument '"+arg+"' or you will suffer memory allocation-related crashes when using some ChromatiCraft content.";
-					msg += " Your pack developer has chosen to disable forcing the argument, but some content will be inaccessible to prevent crashes. You can add the argument to override the config.";
-					ChromatiCraft.logger.logError(msg);
-					proxy.logPopupWarning(msg);
-					dimensionLoadable = false;
-				}
-			}
-		}
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MusicLoader.instance.registerAssets();
@@ -662,7 +643,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		TileEntityBiomePainter.buildBiomeList();
 		ItemDuplicationWand.loadMappings();
-		ChunkProviderChroma.triggerStructureGen();
+		ChunkProviderChroma.regenerateGenerators();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL.getStackOf(), new ManipulatorDispenserAction());
 
@@ -887,6 +868,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new NetworkLoggerCommand());
 		evt.registerServerCommand(new PlayerEnergyCommand());
 		evt.registerServerCommand(new StructureGenCommand());
+		evt.registerServerCommand(new DimensionGeneratorCommand());
 		evt.registerServerCommand(new RecipeReloadCommand());
 		evt.registerServerCommand(new PylonCacheCommand());
 		evt.registerServerCommand(new CrystalNetCommand());
@@ -970,9 +952,22 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	private void addTileEntities() {
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
-			String label = "CC"+ChromaTiles.TEList[i].getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","");
-			GameRegistry.registerTileEntity(ChromaTiles.TEList[i].getTEClass(), label);
-			ReikaJavaLibrary.initClass(ChromaTiles.TEList[i].getTEClass());
+			ChromaTiles c = ChromaTiles.TEList[i];
+			if (c == ChromaTiles.ADJACENCY) {
+				for (int k = 0; k < 16; k++) {
+					if (AdjacencyUpgrades.upgrades[k].isImplemented()) {
+						String label = "CC"+c.getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","")+"_"+k;
+						Class cl = AdjacencyUpgrades.upgrades[k].getTileClass();
+						GameRegistry.registerTileEntity(cl, label);
+						ReikaJavaLibrary.initClass(cl);
+					}
+				}
+			}
+			else {
+				String label = "CC"+c.getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","");
+				GameRegistry.registerTileEntity(c.getTEClass(), label);
+				ReikaJavaLibrary.initClass(c.getTEClass());
+			}
 		}
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 			ChromaBlocks b = ChromaBlocks.blockList[i];

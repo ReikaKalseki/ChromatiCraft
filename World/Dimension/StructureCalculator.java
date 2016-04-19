@@ -12,36 +12,34 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Random;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
 
-public class StructureCalculator implements Runnable {
+public class StructureCalculator extends ThreadedGenerator {
 
-	private final Random rand = new Random();
+	private final Random rand;
 	private final Random seededRand;
 	private final int maxAttempts;
 	private final Thread callerThread;
 
-	private static boolean isRunning = false;
-
-	StructureCalculator() {
-		this(10);
+	public StructureCalculator(long seed) {
+		this(seed, 10);
 	}
 
-	StructureCalculator(int max) {
+	private StructureCalculator(long seed, int max) {
 		maxAttempts = max;
+		rand = new Random(seed);
 		callerThread = Thread.currentThread();
 
 		//Would base off world seed, but is loaded "outside" a MC world and as such cannot reference it; make it file-specific instead
@@ -78,33 +76,11 @@ public class StructureCalculator implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		if (isRunning) {
-			String msg = "You cannot run two structure gen instances simultaneously!";
-			FMLCommonHandler.instance().raiseException(new IllegalStateException(msg), msg, true);
+	public void run() throws Throwable {
+		this.generate();
+		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
+			ChromatiCraft.logger.log("Generated Structures: "+ChunkProviderChroma.structures);
 		}
-		isRunning = true;
-		ChromatiCraft.logger.log("Initializing dimension structure generation thread...");
-		try {
-			long time = System.nanoTime();
-			this.generate();
-			double el = (System.nanoTime()-time)/(10e9);
-			int n = ChunkProviderChroma.structures.size();
-			ChromatiCraft.logger.log(String.format("Dimension structure generation thread complete; %d structures generated. Elapsed time: %.9fs", n, el));
-			if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
-				ChromatiCraft.logger.log("Generated Structures: "+ChunkProviderChroma.structures);
-			}
-		}
-		catch (Throwable e) {
-			e.printStackTrace();
-			String msg = "Dimension structure generation thread failed with "+e.getClass().getName()+".";
-			if (e instanceof ConcurrentModificationException)
-				msg = msg+" A CME may be a transient issue. Try restarting to see if it happens consistently.";
-			FMLCommonHandler.instance().raiseException(e, msg, true);
-			ChromatiCraft.logger.logError(msg);
-		}
-		ChunkProviderChroma.finishStructureGen();
-		isRunning = false;
 	}
 
 	private void generate() throws OutOfMemoryError {
@@ -139,6 +115,11 @@ public class StructureCalculator implements Runnable {
 		}
 
 		this.generateMonument(structureOriginX, structureOriginZ);
+	}
+
+	@Override
+	public String getStateMessage() {
+		return ChunkProviderChroma.getStructures().size()+" structures generated.";
 	}
 
 	private void generateMonument(int structureOriginX, int structureOriginZ) {

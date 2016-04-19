@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromaNames;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco;
+import Reika.ChromatiCraft.Items.ItemAdjacencyPlacer;
 import Reika.ChromatiCraft.Items.ItemChromaBerry;
 import Reika.ChromatiCraft.Items.ItemChromaCrafting;
 import Reika.ChromatiCraft.Items.ItemChromaMisc;
@@ -89,6 +90,7 @@ public enum ChromaItems implements ItemEnum {
 	PLACER(0, true,			"chroma.placer",		ItemChromaPlacer.class),
 	LINK(0,	false,			"chroma.invlink",		ItemInventoryLinker.class),
 	RIFT(0, false,			"chroma.rift",			ItemRiftPlacer.class),
+	ADJACENCY(0, true,		"chroma.adjacency",		ItemAdjacencyPlacer.class),
 	TOOL(32, false,			"chroma.tool",			ItemManipulator.class),
 	SHARD(64, true, 		"crystal.shard", 		ItemCrystalShard.class),
 	POTION(0, true, 		"crystal.potion", 		ItemCrystalPotion.class),
@@ -238,6 +240,8 @@ public enum ChromaItems implements ItemEnum {
 		switch(this) {
 			case PLACER:
 				return ChromaTiles.TEList[meta].getName();
+			case ADJACENCY:
+				return AdjacencyUpgrades.upgrades[meta].getName();
 			case BUCKET:
 				//if (meta >= 2)
 				//	meta = 2;
@@ -327,6 +331,8 @@ public enum ChromaItems implements ItemEnum {
 				return ChromaNames.fluidNames.length;
 			case PLACER:
 				return ChromaTiles.TEList.length;
+			case ADJACENCY:
+				return CrystalElement.elements.length;
 			case SHARD:
 				return CrystalElement.elements.length*2;
 			case PENDANT:
@@ -545,6 +551,7 @@ public enum ChromaItems implements ItemEnum {
 		switch(this) {
 			case PLACER:
 			case RIFT:
+			case ADJACENCY:
 			case ENDERCRYSTAL:
 				return true;
 			default:

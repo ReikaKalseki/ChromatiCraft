@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -120,7 +121,7 @@ public class GuiCastingTable extends GuiChromaBase {
 				ItemStack out = r.getOutput();
 				ItemStack ctr = tile.getStackInSlot(4);
 				if (ctr != null) {
-					out.stackTagCompound = r.getOutputTag(ctr.stackTagCompound);
+					ReikaNBTHelper.combineNBT(out.stackTagCompound, r.getOutputTag(ctr.stackTagCompound));
 				}
 				api.drawItemStack(itemRender, out, 189, 12);
 				if (api.isMouseInBox(a+186, a+207, b+10, b+30)) {

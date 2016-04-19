@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 
@@ -463,6 +465,46 @@ public class ChromaFX {
 		}
 		src.doBoltClient(tgt);
 		tgt.doBoltClient(src);
+	}
+
+	public static int[] getChromaColorTiles() {
+		int[] arr = new int[]{
+				0x94DE5C,
+				0xC5D471,
+				0xE6C192,
+				0xF9A9B0,
+				0xFE8CC8,
+				0xFC71D5,
+				0xF061D8,
+				0xD563D1,
+				0xAC76C0,
+				0x7290AA,
+				0x28A792,
+				0x00B781,
+				0x00C47E,
+				0x18CD8B,
+				0x58CF9F,
+				0x96C8B2,
+				0xBEBCC0,
+				0xD9AEC8,
+				0xE99EC8,
+				0xF090C1,
+				0xED87B5,
+				0xE186A8,
+				0xCE8B9C,
+				0xB49596,
+				0x97A298,
+				0x78ADA0,
+				0x60B6AA,
+				0x56BDB5,
+				0x60C0BC,
+				0x77BFBE,
+				0x8FB8BB,
+				0x98ACBA,
+		};
+		int[] arr2 = Arrays.copyOf(arr, arr.length);
+		ArrayUtils.reverse(arr2);
+		return ArrayUtils.addAll(arr, arr2);
 	}
 
 }

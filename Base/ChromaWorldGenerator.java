@@ -9,10 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 
 public abstract class ChromaWorldGenerator extends WorldGenerator {
 
-	public abstract float getGenerationChance(int cx, int cz);
+	public final DimensionGenerators type;
+
+	public ChromaWorldGenerator(DimensionGenerators g) {
+		type = g;
+	}
+
+	public abstract float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome);
 
 }

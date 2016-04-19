@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
@@ -109,7 +110,7 @@ public enum ChromaResearch implements ProgressElement {
 	GUARDIAN(		ChromaTiles.GUARDIAN, 		ResearchLevel.PYLONCRAFT),
 	//LIQUIFIER(		ChromaTiles.LIQUIFIER, 		ResearchLevel.RUNECRAFT),
 	REPROGRAMMER(	ChromaTiles.REPROGRAMMER, 	ResearchLevel.PYLONCRAFT),
-	ACCEL(			ChromaTiles.ACCELERATOR, 	ResearchLevel.ENDGAME),
+	ACCEL(			ChromaTiles.ADJACENCY, 		ResearchLevel.ENDGAME),
 	RIFT(			ChromaTiles.RIFT, 			ResearchLevel.PYLONCRAFT),
 	TANK(			ChromaTiles.TANK, 			ResearchLevel.PYLONCRAFT),
 	COMPOUND(		ChromaTiles.COMPOUND, 		ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
@@ -164,6 +165,7 @@ public enum ChromaResearch implements ProgressElement {
 	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.BASICCRAFT,		ProgressStage.MAKECHROMA),
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
+	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -293,6 +295,9 @@ public enum ChromaResearch implements ProgressElement {
 	BOOSTTREE(		Structures.TREE_BOOSTED,14,	ResearchLevel.CTM,				ProgressStage.TURBOCHARGE),
 	BEACONSTRUCT(	Structures.PROTECT,		6,	ResearchLevel.ENDGAME),
 	MINIREPEATER(	Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
+	METEOR1(		Structures.METEOR1,		12,	ResearchLevel.PYLONCRAFT),
+	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
+	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.CTM),
 	;
 
 	private final ItemStack iconItem;
@@ -477,6 +482,9 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ENDERCRYS) {
 			return item.getStackOfMetadata(1);
 		}
+		if (this == ACCEL) {
+			return ChromaItems.ADJACENCY.getStackOfMetadata(CrystalElement.LIGHTBLUE.ordinal());
+		}
 		if (iconItem.stackTagCompound == null)
 			iconItem.stackTagCompound = new NBTTagCompound();
 		iconItem.stackTagCompound.setBoolean("tooltip", true);
@@ -531,6 +539,7 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glPushMatrix();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glRotated(0, 0, 0, 1);
 			int ds = 4;
@@ -729,6 +738,20 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	public ArrayList<ItemStack> getItemStacks() {
+		if (this == ACCEL) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < 16; i++) {
+				if (AdjacencyUpgrades.upgrades[i].isImplemented()) {
+					for (int k = 0; k < TileEntityAdjacencyUpgrade.MAX_TIER; k++) {
+						ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(i);
+						is.stackTagCompound = new NBTTagCompound();
+						is.stackTagCompound.setInteger("tier", k);
+						li.add(is);
+					}
+				}
+			}
+			return li;
+		}
 		if (this.isMachine())
 			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
 		if (this == TURBOREPEATER) {
@@ -864,6 +887,8 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(ChromaStacks.energyCoreHigh);
 			li.add(ChromaStacks.transformCoreHigh);
 			li.add(ChromaStacks.voidCoreHigh);
+			li.add(ChromaStacks.glowChunk);
+			li.add(ChromaStacks.lumenCore);
 			return li;
 		}
 		if (this == PATH) {
@@ -987,6 +1012,9 @@ public enum ChromaResearch implements ProgressElement {
 	public int getRecipeIndex(ItemStack is) {
 		if (this == ALLOYS) {
 			return new ArrayList(PoolRecipes.instance.getAllPoolRecipes()).indexOf(PoolRecipes.instance.getPoolRecipeByOutput(is));
+		}
+		if (this == METEOR && is.stackTagCompound != null) {
+			return is.stackTagCompound.getInteger("tier");
 		}
 		ArrayList<CastingRecipe> li = this.getCraftingRecipes();
 		for (int i = 0; i < li.size(); i++) {

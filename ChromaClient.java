@@ -30,13 +30,16 @@ import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAlta
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
+import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGluon;
+import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -47,9 +50,11 @@ import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.LootChestRenderer;
 import Reika.ChromatiCraft.Render.PortalItemRenderer;
+import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
+import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderVacuum;
 import Reika.ChromatiCraft.Render.ISBRH.ColorLockRenderer;
@@ -163,6 +168,8 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntitySplashGunShot.class, new RenderSplashGunShot());
 		RenderingRegistry.registerEntityRenderingHandler(EntityVacuum.class, new RenderVacuum());
 		RenderingRegistry.registerEntityRenderingHandler(EntityChromaEnderCrystal.class, new RenderEnderCrystal());
+		RenderingRegistry.registerEntityRenderingHandler(EntityMeteorShot.class, new RenderMeteorShot());
+		RenderingRegistry.registerEntityRenderingHandler(EntityAurora.class, new RenderAurora());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
@@ -221,6 +228,14 @@ public class ChromaClient extends ChromaCommon {
 				//int[] renderLists = render.createLists();
 				//GLListData.addListData(m, renderLists);
 				ClientRegistry.bindTileEntitySpecialRenderer(m.getTEClass(), render);
+
+				if (m == ChromaTiles.ADJACENCY) {
+					for (int k = 0; k < 16; k++) {
+						if (AdjacencyUpgrades.upgrades[k].isImplemented()) {
+							ClientRegistry.bindTileEntitySpecialRenderer(AdjacencyUpgrades.upgrades[k].getTileClass(), render);
+						}
+					}
+				}
 			}
 		}
 
@@ -232,6 +247,7 @@ public class ChromaClient extends ChromaCommon {
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
+		MinecraftForgeClient.registerItemRenderer(ChromaItems.ADJACENCY.getItemInstance(), placer);
 
 		crystalRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(crystalRender, crystal);

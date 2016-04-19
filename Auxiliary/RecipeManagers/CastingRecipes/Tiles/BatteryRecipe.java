@@ -48,10 +48,10 @@ public class BatteryRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.focusDust, 4, -4);
 		this.addAuxItem(ChromaStacks.focusDust, 4, 4);
 
-		this.addAuraRequirement(CrystalElement.BLACK, 30000);
-		this.addAuraRequirement(CrystalElement.YELLOW, 30000);
-		this.addAuraRequirement(CrystalElement.BLUE, 10000);
-		this.addAuraRequirement(CrystalElement.PURPLE, 2000);
+		this.addAuraRequirement(CrystalElement.BLACK, 80000);
+		this.addAuraRequirement(CrystalElement.YELLOW, 80000);
+		this.addAuraRequirement(CrystalElement.BLUE, 30000);
+		this.addAuraRequirement(CrystalElement.PURPLE, 8000);
 	}
 
 	@Override

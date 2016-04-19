@@ -379,7 +379,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
 			if (ChromaOptions.PROGRESSNOTIFY.getState()) {
-				ChromaAux.notifyServerPlayersExcept(ep, p);
+				if (ChromaOptions.PROGRESSNOTIFY_SELF.getState())
+					ChromaAux.notifyServerPlayers(ep, p);
+				else
+					ChromaAux.notifyServerPlayersExcept(ep, p);
 			}
 		}
 	}

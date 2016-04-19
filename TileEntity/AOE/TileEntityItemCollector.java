@@ -24,6 +24,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -36,8 +40,9 @@ import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ReikaXPFluidHelper;
 
-public class TileEntityItemCollector extends InventoriedRelayPowered implements NBTTile, LocationCached {
+public class TileEntityItemCollector extends InventoriedRelayPowered implements NBTTile, LocationCached, IFluidHandler {
 
 	private int experience = 0;
 	public boolean canIntake = false;
@@ -347,6 +352,43 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	public ItemStack getMapping(int slot) {
 		return filter[slot] != null ? filter[slot].copy() : null;
+	}
+
+	@Override
+	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+		return 0;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+		return resource.getFluidID() == ReikaXPFluidHelper.getFluid().getFluidID() ? this.drain(from, resource.amount, doDrain) : null;
+	}
+
+	@Override
+	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+		FluidStack fs = experience > 0 ? ReikaXPFluidHelper.getFluid(experience) : null;
+		if (fs != null) {
+			if (fs.amount > maxDrain)
+				fs.amount = maxDrain;
+			if (doDrain)
+				experience -= ReikaXPFluidHelper.getXPForAmount(fs.amount);
+		}
+		return fs;
+	}
+
+	@Override
+	public boolean canFill(ForgeDirection from, Fluid fluid) {
+		return false;
+	}
+
+	@Override
+	public boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return ReikaXPFluidHelper.fluidsExist() && experience > 0 && fluid.equals(ReikaXPFluidHelper.getFluidType());
+	}
+
+	@Override
+	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		return new FluidTankInfo[]{};
 	}
 
 }

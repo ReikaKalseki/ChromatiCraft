@@ -39,7 +39,7 @@ public class DonatorPylonRender implements PlayerRenderObj {
 		GL11.glScaled(s, s, s);
 		//GL11.glRotated(45-ep.rotationPitch+90, 1, 0, 0);
 		//GL11.glRotated(RenderManager.instance.playerViewY-ep.rotationYawHead-45, 0, 1, 0);
-		TileEntityCrystalPylon te = (TileEntityCrystalPylon)ChromaTiles.PYLON.createTEInstanceForRender();
+		TileEntityCrystalPylon te = (TileEntityCrystalPylon)ChromaTiles.PYLON.createTEInstanceForRender(0);
 		TileEntityRendererDispatcher.instance.renderTileEntityAt(te, 0, 0, 0, ptick);
 		GL11.glPopMatrix();
 	}

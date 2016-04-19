@@ -10,12 +10,12 @@
 package Reika.ChromatiCraft.World.Dimension.Biome;
 
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 
 public class BiomeGenSkylands extends ChromaDimensionBiome {
 
-	public BiomeGenSkylands(int id) {
-		super(id);
-		this.setBiomeName("Skylands");
+	public BiomeGenSkylands(int id, String n, Biomes t) {
+		super(id, n, t);
 	}
 
 }

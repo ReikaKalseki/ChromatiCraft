@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.ModInterface.Lua;
 
 import net.minecraft.tileentity.TileEntity;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.ModInteract.Lua.LuaMethod;
 import dan200.computercraft.api.lua.LuaException;

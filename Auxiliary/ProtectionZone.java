@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 
 public final class ProtectionZone {
 

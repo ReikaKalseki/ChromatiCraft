@@ -47,28 +47,8 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 		{0, 1, 4, 1, 0},
 	};
 
-	private static final WeightedRandom<Coordinate> growthRand = new WeightedRandom();
-	private static final WeightedRandom<Coordinate> hydrateRand = new WeightedRandom();
-
-	static {
-		for (int i = 0; i < growthDistrib.length; i++) {
-			for (int k = 0; k < growthDistrib[i].length; k++) {
-				Coordinate c = new Coordinate(i-2, 0, k-2);
-				if (growthDistrib[i][k] > 0) {
-					growthRand.addEntry(c, growthDistrib[i][k]);
-				}
-			}
-		}
-
-		for (int i = 0; i < hydrateDistrib.length; i++) {
-			for (int k = 0; k < hydrateDistrib[i].length; k++) {
-				Coordinate c = new Coordinate(i-2, 0, k-2);
-				if (hydrateDistrib[i][k] > 0) {
-					hydrateRand.addEntry(c, hydrateDistrib[i][k]);
-				}
-			}
-		}
-	}
+	private static final WeightedRandom<Coordinate> growthRand = WeightedRandom.fromArray(growthDistrib);
+	private static final WeightedRandom<Coordinate> hydrateRand = WeightedRandom.fromArray(hydrateDistrib);
 
 	@Override
 	public ForgeDirection getGrowthDirection() {

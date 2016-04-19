@@ -15,6 +15,8 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import Reika.DragonAPI.DragonOptions;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public enum ChromaIcons {
 
@@ -44,6 +46,10 @@ public enum ChromaIcons {
 	FADE_GENTLE("fade_gentle"),
 	FADE_STAR("fade_star"),
 	FADE_RAY("fade_ray"),
+	FADE_CLOUD("fade_cloud"),
+	CLOUDGROUP("cloudgroup"),
+	CLOUDGROUP_TRANS("cloudgroup_trans"),
+	CLOUDGROUP_TRANS_BLUR("cloudgroup_trans_blur"),
 	TRANSFADE("transfade"),
 	CENTER("centerblur3"),
 	CHROMA("chroma_particle"),
@@ -75,7 +81,8 @@ public enum ChromaIcons {
 	CAUSTICS("caustics"),
 	CAUSTICS_GENTLE("caustics-g"),
 	OVALS("oval-rings"),
-	WEAKREPEATER("weakrepeater");
+	WEAKREPEATER("weakrepeater"),
+	SMOKE("smoke");
 
 	private IIcon icon;
 	private final String iconName;
@@ -90,6 +97,7 @@ public enum ChromaIcons {
 		return icon;
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void register(IIconRegister ico) {
 		String s = this.getIconName();
 		icon = ico.registerIcon(s);
@@ -123,6 +131,7 @@ public enum ChromaIcons {
 		return c.get(Calendar.MONTH) == Calendar.DECEMBER && c.get(Calendar.DAY_OF_MONTH) >= 23;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void registerAll(TextureMap ico) {
 		for (int i = 0; i < iconList.length; i++) {
 			ChromaIcons c = iconList[i];
@@ -174,6 +183,9 @@ public enum ChromaIcons {
 			case CHECK:
 			case DIAMOND:
 			case QUESTION:
+			case CLOUDGROUP_TRANS:
+			case CLOUDGROUP_TRANS_BLUR:
+			case SMOKE:
 				return true;
 			default:
 				return false;

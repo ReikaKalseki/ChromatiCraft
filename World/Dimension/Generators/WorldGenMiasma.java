@@ -13,12 +13,18 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WorldGenMiasma extends ChromaWorldGenerator {
+
+	public WorldGenMiasma(DimensionGenerators g) {
+		super(g);
+	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
@@ -52,7 +58,7 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.0025F;//0.02F;
 	}
 

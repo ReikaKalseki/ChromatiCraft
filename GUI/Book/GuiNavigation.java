@@ -55,6 +55,8 @@ public class GuiNavigation extends GuiScrollingPage {
 	private static RegionMap<SectionElement> locations = new RegionMap();
 	private static PluralMap<String> tooltips = new PluralMap(2);
 
+	private final boolean isCreative;
+
 	public GuiNavigation(EntityPlayer ep) {
 		super(ChromaGuis.BOOKNAV, ep, 256, 220, 242, 206);
 
@@ -73,6 +75,9 @@ public class GuiNavigation extends GuiScrollingPage {
 				}
 			}
 		}
+
+		isCreative = ItemChromaBook.isCreative(player.getCurrentEquippedItem());
+
 		Iterator<ChromaResearch> it = sections.keySet().iterator();
 		while (it.hasNext()) {
 			ChromaResearch r = it.next();
@@ -502,7 +507,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 
 		private boolean isActive() {
-			return ChromaResearchManager.instance.playerHasFragment(gui.player, destination);
+			return gui.isCreative || ChromaResearchManager.instance.playerHasFragment(gui.player, destination);
 		}
 
 		public ChromaGuis getGuiType() {

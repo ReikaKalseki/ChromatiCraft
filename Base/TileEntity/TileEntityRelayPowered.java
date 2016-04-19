@@ -72,6 +72,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 			int has = te.getEnergy(e);
 			int trans = Math.min(Math.min(amt, has), this.getMaxStorage(e)-energy.getValue(e));
 			te.drainEnergy(e, trans);
+			te.onDrain(e, trans);
 			energy.addValueToColor(e, trans);
 			return has >= amt;
 		}

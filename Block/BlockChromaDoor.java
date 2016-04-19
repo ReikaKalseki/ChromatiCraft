@@ -104,7 +104,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	 * 8 = stay-open
 	 */
 	private static boolean getBitflag(IBlockAccess iba, int x, int y, int z, int bit) {
-		return (iba.getBlockMetadata(x, y, z) & bit) == 1;
+		return (iba.getBlockMetadata(x, y, z) & bit) != 0;
 	}
 
 	public static int getMetadata(boolean open, boolean damage, boolean oneuse, boolean stay) {
@@ -352,7 +352,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		private void setStates(boolean open) {
 			for (Coordinate c : this.getDoorBlocks()) {
 				if (matchUIDs(this, (TileEntityChromaDoor)c.getTileEntity(worldObj)))
-					c.setBlockMetadata(worldObj, open ? 1 : 0);
+					c.setBlockMetadata(worldObj, (c.getBlockMetadata(worldObj) & 0b1110) | (open ? 1 : 0));
 			}
 		}
 

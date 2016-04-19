@@ -25,9 +25,15 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityRelaySource extends InventoriedCrystalReceiver implements InertIInv, ItemOnRightClick {
 
+	private static final int CAPACITY = 720000;
+
+	private int cooldown = 200;
+
+	private int[] drainValue = new int[16];
+
 	@Override
 	protected int getCooldownLength() {
-		return 200;
+		return cooldown;
 	}
 
 	@Override
@@ -42,6 +48,17 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
+
+		int maxDrain = 0;
+		for (int i = 0; i < 16; i++) {
+			drainValue[i] *= 0.95;
+			maxDrain += drainValue[i];
+		}
+		maxDrain /= 16;
+		if (cooldown > 50 && maxDrain >= CAPACITY/cooldown)
+			cooldown--;
+		else if (cooldown < 200)
+			cooldown++;
 
 		if (inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0])) {
 			for (CrystalElement e : ItemStorageCrystal.getStoredTags(inv[0]).elementSet()) {
@@ -87,7 +104,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 720000;
+		return CAPACITY;
 	}
 
 	@Override
@@ -147,6 +164,10 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	private void dropItem(ItemStack is) {
 		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.75, zCoord+0.5, is);
+	}
+
+	public void onDrain(CrystalElement e, int amt) {
+		drainValue[e.ordinal()] += amt;
 	}
 
 }

@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Render;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -59,10 +58,14 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		if (item.getItemDamage() >= ChromaTiles.TEList.length)
 			return;
-		ChromaTiles machine = item.getItem() == ChromaItems.RIFT.getItemInstance() ? ChromaTiles.RIFT : ChromaTiles.TEList[item.getItemDamage()];
+		ChromaTiles machine = ChromaTiles.TEList[item.getItemDamage()];
+		if (ChromaItems.RIFT.matchWith(item))
+			machine = ChromaTiles.RIFT;
+		if (ChromaItems.ADJACENCY.matchWith(item))
+			machine = ChromaTiles.ADJACENCY;
 		boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
 		if (machine.hasRender() && !machine.hasBlockRender()) {
-			TileEntity te = machine.createTEInstanceForRender();
+			TileEntity te = machine.createTEInstanceForRender(item.getItemDamage());
 			if (machine.hasNBTVariants()) {
 				((NBTTile)te).setDataFromItemStackTag(item);
 			}
@@ -85,7 +88,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && (mc.currentScreen == null || mc.currentScreen instanceof GuiContainerCreative) && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)/* && (mc.currentScreen == null || mc.currentScreen instanceof GuiContainerCreative)*/ && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
 			int idx = -1;
 			if (machine.isPylonPowered()) {
 				idx = 1;

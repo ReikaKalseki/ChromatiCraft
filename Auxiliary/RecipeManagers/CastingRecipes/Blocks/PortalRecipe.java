@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 
 import java.util.Collection;
+import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -98,80 +99,24 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 	public void onRecipeTick(TileEntityCastingTable te) {
 		if (!te.worldObj.isRemote) {
 			int tick = te.getCraftingTick();
-			if (te.getRandom().nextInt(5+tick/2) == 0) {
-				int x = ReikaRandomHelper.getRandomPlusMinus(te.xCoord, 8);
-				int y = ReikaRandomHelper.getRandomPlusMinus(te.yCoord, 2);
-				int z = ReikaRandomHelper.getRandomPlusMinus(te.zCoord, 8);
-				genExplosion(te, x, y, z);
-				//ReikaJavaLibrary.pConsole("S0");
-				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PORTALRECIPE.ordinal(), te, 48, x, y, z, 0);
-			}
-			else if (te.getRandom().nextInt(10+tick/4) == 0) {
-				genLightning(te);
-				//ReikaJavaLibrary.pConsole("S1");
-				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PORTALRECIPE.ordinal(), te, 48, 0, 0, 0, 1);
-			}
-			else if (te.getRandom().nextInt(5+tick%32) == 0) {
-				ChromaSounds.INFUSE.playSoundAtBlock(te);
-				//ReikaJavaLibrary.pConsole("S2");
-				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PORTALRECIPE.ordinal(), te, 48, 0, 0, 0, 2);
+			for (int i = 0; i < EffectType.list.length; i++) {
+				EffectType e = EffectType.list[i];
+				if (e.getChance(te.getRandom(), tick)) {
+					e.doEffect(te);
+					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.PORTALRECIPE.ordinal(), te, 64, i);
+				}
 			}
 		}
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void onClientSideRandomTick(TileEntityCastingTable te, int x, int y, int z, int var) {
+	public static void onClientSideRandomTick(TileEntityCastingTable te, int effect) {
 		//ReikaJavaLibrary.pConsole("P"+var);
-		switch(var) {
-			case 0:
-				genExplosion(te, x, y, z);
-				break;
-			case 1:
-				genLightning(te);
-				break;
-			case 2:
-				generateBurstParticles(te);
-				break;
-		}
-	}
-
-	private static void genExplosion(TileEntityCastingTable te, int x, int y, int z) {
-		ReikaParticleHelper.EXPLODE.spawnAroundBlock(te.worldObj, x, y, z, 4);
-		ReikaSoundHelper.playSoundAtBlock(te.worldObj, x, y, z, "random.explode");
-		ReikaSoundHelper.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, "random.explode");
-	}
-
-	private static void genLightning(TileEntityCastingTable te) {
-		te.worldObj.addWeatherEffect(new EntityLightningBolt(te.worldObj, te.xCoord, te.yCoord, te.zCoord));
-		ChromaSounds.DISCHARGE.playSoundAtBlock(te);
-	}
-
-	@SideOnly(Side.CLIENT)
-	private static void generateBurstParticles(TileEntityCastingTable te) {
-		ElementTagCompound tag = ElementTagCompound.getUniformTag(1);
-		for (int i = 0; i < 16; i++) {
-			CrystalElement e = CrystalElement.elements[i];
-			if (e.isPrimary()) {
-				tag.setTag(e, 4);
-			}
-		}
-		WeightedRandom<CrystalElement> w = tag.asWeightedRandom();
-		for (int i = 0; i < 32; i++) {
-			CrystalElement e = w.getRandomEntry();
-			double ang = te.getRandom().nextDouble()*360;
-			double v = 0.125;
-			double vx = v*Math.cos(Math.toRadians(ang));
-			double vy = ReikaRandomHelper.getRandomPlusMinus(v, v);
-			double vz = v*Math.sin(Math.toRadians(ang));
-			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
-			EntityFX fx = new EntitySparkleFX(te.worldObj, te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5, vx, vy, vz).setColor(c).setScale(1);
-			fx.noClip = true;
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
+		EffectType.list[effect].doEffect(te);
 	}
 
 	@Override
-	public ChromaSounds getSoundOverride(int soundTimer) {
+	public ChromaSounds getSoundOverride(TileEntityCastingTable te, int soundTimer) {
 		return null;
 	}
 
@@ -203,6 +148,91 @@ public class PortalRecipe extends PylonRecipe implements CoreRecipe {
 	@Override
 	public float getPenaltyMultiplier() {
 		return 0;
+	}
+
+	private static enum EffectType {
+		EXPLODE(true),
+		LIGHTNING(true),
+		INFUSE(false);
+
+		public final boolean runServerside;
+
+		private static final EffectType[] list = values();
+
+		private EffectType(boolean b) {
+			runServerside = b;
+		}
+
+		public boolean getChance(Random rand, int tick) {
+			switch(this) {
+				case EXPLODE:
+					return rand.nextInt(5+tick/2) == 0;
+				case LIGHTNING:
+					return rand.nextInt(10+tick/4) == 0;
+				case INFUSE:
+					return rand.nextInt(5+tick%32) == 0;
+				default:
+					return false;
+			}
+		}
+
+		public void doEffect(TileEntityCastingTable te) {
+			if (!te.worldObj.isRemote && !runServerside)
+				return;
+			switch(this) {
+				case EXPLODE:
+					genExplosion(te);
+					break;
+				case LIGHTNING:
+					genLightning(te);
+					break;
+				case INFUSE:
+					generateBurstParticles(te);
+					break;
+			}
+		}
+	}
+
+	private static void genExplosion(TileEntityCastingTable te) {
+		int x = ReikaRandomHelper.getRandomPlusMinus(te.xCoord, 8);
+		int y = ReikaRandomHelper.getRandomPlusMinus(te.yCoord, 2);
+		int z = ReikaRandomHelper.getRandomPlusMinus(te.zCoord, 8);
+		ReikaParticleHelper.EXPLODE.spawnAroundBlock(te.worldObj, x, y, z, 4);
+		ReikaSoundHelper.playSoundAtBlock(te.worldObj, x, y, z, "random.explode");
+		ReikaSoundHelper.playSoundAtBlock(te.worldObj, te.xCoord, te.yCoord, te.zCoord, "random.explode");
+	}
+
+	private static void genLightning(TileEntityCastingTable te) {
+		te.worldObj.addWeatherEffect(new EntityLightningBolt(te.worldObj, te.xCoord, te.yCoord, te.zCoord));
+		ChromaSounds.DISCHARGE.playSoundAtBlock(te);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static void generateBurstParticles(TileEntityCastingTable te) {
+		int x = te.xCoord;
+		int y = te.yCoord;
+		int z = te.zCoord;
+		ReikaSoundHelper.playClientSound(ChromaSounds.INFUSE, x+0.5, y+0.5, z+0.5, 1, 1);
+		ElementTagCompound tag = ElementTagCompound.getUniformTag(1);
+		for (int i = 0; i < 16; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			if (e.isPrimary()) {
+				tag.setTag(e, 4);
+			}
+		}
+		WeightedRandom<CrystalElement> w = tag.asWeightedRandom();
+		for (int i = 0; i < 32; i++) {
+			CrystalElement e = w.getRandomEntry();
+			double ang = te.getRandom().nextDouble()*360;
+			double v = 0.125;
+			double vx = v*Math.cos(Math.toRadians(ang));
+			double vy = ReikaRandomHelper.getRandomPlusMinus(v, v);
+			double vz = v*Math.sin(Math.toRadians(ang));
+			int c = ReikaColorAPI.mixColors(e.getColor(), 0xffffff, 0.5F);
+			EntityFX fx = new EntitySparkleFX(te.worldObj, x+0.5, y+0.5, z+0.5, vx, vy, vz).setColor(c).setScale(1);
+			fx.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 }

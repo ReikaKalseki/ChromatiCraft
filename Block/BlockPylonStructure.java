@@ -30,15 +30,16 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -126,7 +127,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 	public BlockPylonStructure(Material mat) {
 		super(mat);
-		this.setHardness(4);
+		this.setHardness(3);
 		this.setResistance(12);
 		this.setCreativeTab(ChromatiCraft.tabChroma);
 
@@ -429,6 +430,8 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	void triggerBreakCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
+		blocks.extraSpread = true;
+
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -485,6 +488,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			((TileEntityCrystalBeacon)te).validateStructure();
 		}
 
+		te = world.getTileEntity(mx, my+14, mz);
+		if (te instanceof TileEntityMeteorTower) {
+			((TileEntityMeteorTower)te).validateStructure();
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -511,6 +519,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 	void triggerAddCheck(World world, int x, int y, int z) {
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 
+		blocks.extraSpread = true;
 		blocks.recursiveAddWithBounds(world, x, y, z, this, x-16, y-32, z-16, x+16, y+32, z+16);
 
 		int mx = blocks.getMidX();
@@ -562,6 +571,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		te = world.getTileEntity(mx, my+1, mz);
 		if (te instanceof TileEntityCrystalBeacon) {
 			((TileEntityCrystalBeacon)te).validateStructure();
+		}
+
+		te = world.getTileEntity(mx, my+14, mz);
+		if (te instanceof TileEntityMeteorTower) {
+			((TileEntityMeteorTower)te).validateStructure();
 		}
 
 		for (int k = 0; k < 6; k++) {

@@ -68,9 +68,9 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				int meta = store.getItemDamage();
 				if (id == null)
 					return false;
-				if (id == world.getBlock(x, y, z) && meta == world.getBlockMetadata(x, y, z))
-					return false;
 				TransitionMode mode = this.getMode(is);
+				if (id == world.getBlock(x, y, z) && meta == world.getBlockMetadata(x, y, z) && mode != TransitionMode.VOLUMETRIC)
+					return false;
 				if (mode == TransitionMode.VOLUMETRIC) {
 					if (!this.setOrGetBlockBox(is, x, y, z))
 						return false;

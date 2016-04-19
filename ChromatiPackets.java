@@ -38,6 +38,8 @@ import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
@@ -51,6 +53,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory.TileMusicM
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
+import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
@@ -73,22 +76,21 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
-import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
-import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
-import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCobbleGen;
@@ -100,6 +102,8 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -343,7 +347,9 @@ public class ChromatiPackets implements PacketHandler {
 					if (e instanceof EntityItem) {
 						ChromaFX.spawnShardBoostedEffects((EntityItem)e);
 					}
-					((TileEntityChroma)world.getTileEntity(x, y, z)).clear();
+					TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
+					if (te != null)
+						te.clear();
 					break;
 				}/*
 			case FRAGPROGRAM: {
@@ -447,7 +453,13 @@ public class ChromatiPackets implements PacketHandler {
 					ChromaResearchManager.instance.notifyPlayerOfProgression(ep, ChromaResearchManager.instance.getProgressForID(data[0]));
 					break;
 				case PORTALRECIPE:
-					PortalRecipe.onClientSideRandomTick((TileEntityCastingTable)tile, data[0], data[1], data[2], data[3]);
+					PortalRecipe.onClientSideRandomTick((TileEntityCastingTable)tile, data[0]);
+					break;
+				case PYLONTURBORECIPE:
+					PylonTurboRecipe.onClientSideRandomTick((TileEntityCastingTable)tile, data[0]);
+					break;
+				case REPEATERTURBORECIPE:
+					RepeaterTurboRecipe.onClientSideRandomTick((TileEntityCastingTable)tile, data[0]);
 					break;
 				case HEATLAMP:
 					((TileEntityHeatLamp)tile).temperature = data[0];
@@ -671,6 +683,14 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case WIRELESS: {
 					((TileEntityWirelessPowered)tile).doEnergyRequestClient(world, x, y, z, data[0], data[1], data[2], CrystalElement.elements[data[3]], data[4]);
+					break;
+				}
+				case METEORIMPACT: {
+					EntityMeteorShot.doClientImpact(world, data[0]);
+					break;
+				}
+				case ORECREATE: {
+					TileEntityOreCreator.doOreCreationFX(world, x, y, z, data[0], data[1]);
 					break;
 				}
 			}

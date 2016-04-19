@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import net.minecraft.tileentity.TileEntity;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator.Acceleration;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import forestry.api.apiculture.IBeeHousing;
 
 public class ApiaryAcceleration extends Acceleration {

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -23,7 +24,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
-public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
+public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements OperationInterval {
 
 	private int time = 400;
 
@@ -211,6 +212,16 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase {
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.BREWER;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return !this.canBrew() ? 0 : 1-time/400F;
+	}
+
+	@Override
+	public OperationState getState() {
+		return this.canBrew() ? OperationState.RUNNING : OperationState.INVALID;
 	}
 
 }

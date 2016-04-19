@@ -125,7 +125,7 @@ public class BlockChromaPortal extends Block {
 	}
 
 	public static boolean isPortalFunctional() {
-		return ChunkProviderChroma.areStructuresReady() && ChromatiCraft.instance.isDimensionLoadable();
+		return ChunkProviderChroma.areGeneratorsReady() && ChromatiCraft.instance.isDimensionLoadable();
 	}
 
 	public static class TileEntityCrystalPortal extends TileEntity {
@@ -147,7 +147,7 @@ public class BlockChromaPortal extends Block {
 			}
 
 			if (complete) {
-				if (charge < MINCHARGE || !ChunkProviderChroma.areStructuresReady()) {
+				if (charge < MINCHARGE || !ChunkProviderChroma.areGeneratorsReady()) {
 					charge++;
 					if (worldObj.isRemote)
 						this.chargingParticles();

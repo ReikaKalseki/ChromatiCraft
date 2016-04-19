@@ -70,6 +70,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.HighEne
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.HighTransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.HighVoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.IridescentChunkRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenChunkRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.RawCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.UpgradeRecipe;
@@ -78,7 +80,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidSto
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AcceleratorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AdjacencyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectJarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AutomatorRecipe;
@@ -115,6 +117,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenBr
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTurretRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenWireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistributorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MeteorTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ParticleSpawnerRecipe;
@@ -166,13 +169,14 @@ import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
@@ -223,6 +227,9 @@ public class RecipesCastingTable {
 		this.addRecipe(new HighVoidCoreRecipe(ChromaStacks.voidCoreHigh));
 		this.addRecipe(new HighEnergyCoreRecipe(ChromaStacks.energyCoreHigh));
 		this.addRecipe(new HighTransformationCoreRecipe(ChromaStacks.transformCoreHigh));
+
+		this.addRecipe(new LumenChunkRecipe(ChromaStacks.glowChunk, new ItemStack(Items.diamond)));
+		this.addRecipe(new LumenCoreRecipe(ChromaStacks.lumenCore, ChromaStacks.crystalStar));
 
 		this.addRecipe(new CrystalLensRecipe(ChromaStacks.crystalLens, new ItemStack(Blocks.glass)));
 
@@ -289,7 +296,7 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 5, 6), "SSS", "S  ", "S  ", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 5, 6), sr));
 
-		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 11), " S ", " S ", " S ", 'S', new ItemStack(block, 1, 0));
+		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 11), "S", "S", "S", 'S', new ItemStack(block, 1, 0));
 		this.addRecipe(new CrystalStoneRecipe(new ItemStack(block, 3, 11), sr));
 
 		sr = ReikaRecipeHelper.getShapedRecipeFor(new ItemStack(block, 3, 10), "SSS", 'S', new ItemStack(block, 1, 0));
@@ -312,8 +319,14 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new GuardianStoneRecipe(ChromaTiles.GUARDIAN.getCraftedProduct(), ChromaStacks.crystalStar));
 
-		for (int i = 0; i <= TileEntityAccelerator.MAX_TIER; i++)
-			this.addRecipe(new AcceleratorRecipe(i));
+		for (int i = 0; i < 16; i++) {
+			if (AdjacencyUpgrades.upgrades[i].isImplemented()) {
+				CrystalElement e = CrystalElement.elements[i];
+				for (int k = 0; k < TileEntityAccelerator.MAX_TIER; k++) {
+					this.addRecipe(new AdjacencyRecipe(e, k));
+				}
+			}
+		}
 
 		ItemStack is = ChromaTiles.STAND.getCraftedProduct();
 		sr = new ShapedOreRecipe(is, "I I", "SLS", "CCC", 'I', Items.iron_ingot, 'C', "cobblestone", 'S', ReikaItemHelper.stoneSlab, 'L', ReikaItemHelper.lapisDye);
@@ -338,7 +351,7 @@ public class RecipesCastingTable {
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, new ItemStack(Blocks.glass)));
 
-		this.addRecipe(new RiftRecipe(ChromaTiles.RIFT.getCraftedProduct(), ChromaStacks.voidCoreHigh));
+		this.addRecipe(new RiftRecipe(ChromaTiles.RIFT.getCraftedProduct(), ChromaStacks.voidCore));
 		this.addRecipe(new CrystalTankRecipe(ChromaTiles.TANK.getCraftedProduct(), ChromaStacks.voidCore));
 		this.addRecipe(new RecipeTankBlock(new ItemStack(ChromaBlocks.TANK.getBlockInstance()), new ItemStack(Items.diamond)));
 		this.addRecipe(new CrystalFurnaceRecipe(ChromaTiles.FURNACE.getCraftedProduct(), ChromaStacks.energyCore));
@@ -540,7 +553,7 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "sns", "non", "sns", 's', ChromaItems.SHARD.getAnyMetaStack(), 'n', Blocks.noteblock, 'o', Items.clock);
 		this.addRecipe(new MusicRecipe(is, sr));
 
-		this.addRecipe(new PylonTurboRecipe(ChromaTiles.PYLONTURBO.getCraftedProduct(), ChromaStacks.crystalStar, repeater));
+		this.addRecipe(new PylonTurboRecipe(ChromaTiles.PYLONTURBO.getCraftedProduct(), ChromaStacks.lumenCore, repeater));
 
 		is = ChromaTiles.TURRET.getCraftedProduct();
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " g ", "gsg", " b ", 's', ChromaItems.SHARD.getStackOf(CrystalElement.PINK), 'g', Items.glowstone_dust, 'b', new ItemStack(block));
@@ -611,6 +624,9 @@ public class RecipesCastingTable {
 		this.addRecipe(new ParticleSpawnerRecipe(is, sr));
 
 		this.addRecipe(new KillAuraRecipe(ChromaItems.KILLAURAGUN.getStackOf(), ChromaStacks.energyCoreHigh));
+
+		for (int i = 0; i < 3; i++)
+			this.addRecipe(new MeteorTowerRecipe(i));
 
 		this.addSpecialRecipes();
 	}

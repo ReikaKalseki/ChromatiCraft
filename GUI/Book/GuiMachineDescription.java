@@ -9,18 +9,27 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Book;
 
+import java.util.ArrayList;
+
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -89,6 +98,16 @@ public class GuiMachineDescription extends GuiDescription {
 		if (m.isTextureFace())
 			r = -45;
 
+		int offset = 0;
+		if (m == ChromaTiles.ADJACENCY) {
+			ArrayList<Integer> li = new ArrayList();
+			for (int i = 0; i < CrystalElement.elements.length; i++) {
+				if (AdjacencyUpgrades.upgrades[i].isImplemented())
+					li.add(i);
+			}
+			offset = li.get((int)((System.currentTimeMillis()/(1000*TileEntityAdjacencyUpgrade.MAX_TIER))%li.size()));
+		}
+
 		if (m.hasRender()) {
 			double dx = x;
 			double dy = y+m.getRenderOffset();
@@ -100,6 +119,7 @@ public class GuiMachineDescription extends GuiDescription {
 			GL11.glRotatef(r, 0, 1, 0);
 			double a = -0.5;
 			double b = -0.5;
+			TileEntity te = m.createTEInstanceForRender(offset);
 			if (m.needsRenderOffset()) {
 				a = b = -0.875;
 				GL11.glTranslated(0, -0.3, 0);
@@ -113,7 +133,13 @@ public class GuiMachineDescription extends GuiDescription {
 				GL11.glScaled(s, s, s);
 				GL11.glTranslated(0, 0.5, 0);
 			}
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(m.createTEInstanceForRender(), a, 0, b, 0);
+			if (m == ChromaTiles.ADJACENCY) {
+				ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(offset);
+				is.stackTagCompound = new NBTTagCompound();
+				is.stackTagCompound.setInteger("tier", (int)((System.currentTimeMillis()/1000)%TileEntityAdjacencyUpgrade.MAX_TIER));
+				((TileEntityAdjacencyUpgrade)te).setDataFromItemStackTag(is);
+			}
+			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, 0, b, 0);
 			GL11.glPopMatrix();
 		}
 		if (m.hasBlockRender()) {

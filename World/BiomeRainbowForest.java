@@ -41,8 +41,8 @@ public class BiomeRainbowForest extends BiomeGenBase {
 
 	private final Random rand = new Random();
 
-	private final int waterColor = new Color(0, 255, 255).getRGB();
-	private final int skyColor = new Color(100, 140, 255).getRGB();
+	public final int waterColor = new Color(0, 255, 255).getRGB();
+	public final int skyColor = new Color(100, 140, 255).getRGB();
 
 	private final int waterColorDamaged = new Color(64, 64, 64).getRGB();
 	private final int skyColorDamaged = new Color(32, 48, 64).getRGB();

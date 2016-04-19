@@ -39,9 +39,9 @@ public class ChromaChests {
 		data.addItem(3, Location.VILLAGE, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 5);
 		data.addItem(3, Location.MINESHAFT, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 2);
 
-		data.addItem(4, Location.DUNGEON, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 5);
-		data.addItem(4, Location.VILLAGE, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 2);
-		data.addItem(4, Location.JUNGLE_DISPENSER, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 8);
+		data.addItem(4, Location.DUNGEON, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 1);
+		//data.addItem(4, Location.VILLAGE, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 1);
+		data.addItem(4, Location.JUNGLE_DISPENSER, ChromaBlocks.GLOWSAPLING.getStackOf(), 1, 1, 2);
 
 		data.registerToWorldGen(ChromatiCraft.instance, ChromaOptions.CHESTGEN.getValue());
 	}

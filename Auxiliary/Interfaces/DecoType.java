@@ -9,11 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
+import java.util.List;
+
 import net.minecraft.util.IIcon;
 
 public interface DecoType {
 
-	IIcon getOverlay();
+	List<IIcon> getIcons(int pass);
 
 	boolean hasBlockRender();
 

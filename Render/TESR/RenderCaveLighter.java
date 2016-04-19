@@ -36,6 +36,7 @@ public class RenderCaveLighter extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityCaveLighter te = (TileEntityCaveLighter)tile;
+
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);

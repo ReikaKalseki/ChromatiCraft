@@ -26,6 +26,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -58,7 +59,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCobbleGen extends TileEntityMagicPlant {
+public class TileEntityCobbleGen extends TileEntityMagicPlant implements OperationInterval {
 
 	private final MultiMap<String, Coordinate> fluidLocations = new MultiMap(new MultiMap.HashSetFactory());
 
@@ -501,6 +502,16 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant {
 				map.put(b, list[i]);
 			}
 		}
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return activeRecipe == null ? 0 : recipeTick/(float)activeRecipe.duration;
+	}
+
+	@Override
+	public OperationState getState() {
+		return activeRecipe != null ? OperationState.RUNNING : OperationState.INVALID;
 	}
 
 }

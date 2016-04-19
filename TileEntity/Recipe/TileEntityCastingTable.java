@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -74,7 +75,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile, OperationInterval {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -206,9 +207,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 
 		craftSoundTimer++;
-		ChromaSounds sound = activeRecipe.getSoundOverride(craftSoundTimer);
+		ChromaSounds sound = activeRecipe.getSoundOverride(this, craftSoundTimer);
 		if (sound != null) {
-			sound.playSoundAtBlock(this);
+			sound.playSoundAtBlock(this, 2, 1);
 			craftSoundTimer = 0;
 		}
 		else if (craftSoundTimer >= this.getSoundLength() && activeRecipe.getDuration() > 20) {
@@ -227,8 +228,13 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 		}
 		craftingTick--;
-		if (craftingTick <= 0 && !world.isRemote) {
-			this.craft();
+		if (craftingTick <= 0) {
+			if (world.isRemote) {
+				activeRecipe.onCrafted(this, craftingPlayer);
+			}
+			else {
+				this.craft();
+			}
 			//craftingTick = activeRecipe.getDuration();
 		}
 	}
@@ -345,7 +351,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		return blocks;
 	}
 
-	private int getSoundLength() {
+	public int getSoundLength() {
 		switch(this.getTier()) {
 			case CRAFTING:
 				return 1;
@@ -927,6 +933,21 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	@Override
 	public boolean onlyAllowOwnersToUse() {
 		return true;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return activeRecipe == null ? 0 : 1F-(craftingTick/(float)activeRecipe.getDuration())*(isEnhanced ? 4 : 1);
+	}
+
+	@Override
+	public OperationState getState() {
+		if (activeRecipe == null)
+			return OperationState.INVALID;
+		if (activeRecipe instanceof PylonRecipe)
+			return energy.containsAtLeast(((PylonRecipe)activeRecipe).getRequiredAura()) ? OperationState.RUNNING : OperationState.PENDING;
+		else
+			return OperationState.RUNNING;
 	}
 
 }

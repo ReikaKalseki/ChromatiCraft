@@ -408,7 +408,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
 				if (is.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound == null);
+					int rem = (int)network.removeItemFuzzy(ReikaItemHelper.getSizedItemStack(is, amt), false, FuzzyMode.IGNORE_ALL, false, is.stackTagCompound != null);
 					if (rem > 0) {
 						ItemStack ret = ReikaItemHelper.getSizedItemStack(is, rem);
 						ret.setItemDamage(0);

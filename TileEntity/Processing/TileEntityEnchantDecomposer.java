@@ -23,6 +23,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -41,7 +42,7 @@ import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityEnchantDecomposer extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection {
+public class TileEntityEnchantDecomposer extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -283,6 +284,16 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 
 	public int getChromaLevel() {
 		return tank.getLevel();
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return !this.canProcess() ? 0 : processTimer/(float)(Math.max(1, this.getProcessTime()));
+	}
+
+	@Override
+	public OperationState getState() {
+		return inv[0] != null && isItemValid(inv[0]) ? (energy.containsAtLeast(required) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

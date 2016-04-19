@@ -19,6 +19,10 @@ import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 
+	private double originX;
+	private double originY;
+	private double originZ;
+
 	public EntityChromaEnderCrystal(World world) {
 		super(world);
 		yOffset = 0;
@@ -26,7 +30,10 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 
 	public EntityChromaEnderCrystal(World world, EntityEnderCrystal e) {
 		this(world);
-		this.setPosition(e.posX, e.posY, e.posZ);
+		originX = e.posX;
+		originY = e.posY;
+		originZ = e.posZ;
+		this.setPosition(originX, originY, originZ);
 		rotationPitch = e.rotationPitch;
 		rotationYaw = e.rotationYaw;
 		innerRotation = e.innerRotation;
@@ -43,6 +50,8 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 			int z = MathHelper.floor_double(posZ);
 			worldObj.setBlock(x, y+1, z, Blocks.fire);
 		}
+
+		//this.setPosition(originX, originY, originZ);
 	}
 
 	@Override //Identical except cannot die outside of end

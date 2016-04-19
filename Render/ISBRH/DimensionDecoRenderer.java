@@ -9,11 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.ISBRH;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
@@ -41,15 +44,25 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 		if (renderPass == 0) {
 			if (type.hasBlockRender()) {
 				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
-				IIcon ico = type.getOverlay();
-				Tessellator.instance.setBrightness(240);
-				Tessellator.instance.setColorOpaque_I(0xffffff);
-				rb.renderFaceYNeg(b, x, y, z, ico);
-				rb.renderFaceYPos(b, x, y, z, ico);
-				rb.renderFaceZNeg(b, x, y, z, ico);
-				rb.renderFaceZPos(b, x, y, z, ico);
-				rb.renderFaceXNeg(b, x, y, z, ico);
-				rb.renderFaceXPos(b, x, y, z, ico);
+				List<IIcon> li = type.getIcons(0);
+				int idx = 0;
+				for (IIcon ico : li) {
+					Tessellator.instance.setBrightness(240);
+					Tessellator.instance.setColorOpaque_I(idx == 1 ? b.colorMultiplier(world, x, y, z) : 0xffffff);
+					if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+						rb.renderFaceYNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+						rb.renderFaceYPos(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+						rb.renderFaceZNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+						rb.renderFaceZPos(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+						rb.renderFaceXNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+						rb.renderFaceXPos(b, x, y, z, ico);
+					idx++;
+				}
 			}
 			else {
 				Tessellator v5 = Tessellator.instance;
@@ -64,6 +77,27 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 			}
 		}
 		else if (renderPass == 1) {
+			if (type.hasBlockRender()) {
+				List<IIcon> li = type.getIcons(1);
+				int idx = 0;
+				for (IIcon ico : li) {
+					Tessellator.instance.setBrightness(240);
+					Tessellator.instance.setColorOpaque_I(idx == 0 ? b.colorMultiplier(world, x, y, z) : 0xffffff);
+					if (b.shouldSideBeRendered(world, x, y-1, z, ForgeDirection.DOWN.ordinal()))
+						rb.renderFaceYNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y+1, z, ForgeDirection.UP.ordinal()))
+						rb.renderFaceYPos(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y, z-1, ForgeDirection.NORTH.ordinal()))
+						rb.renderFaceZNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x, y, z+1, ForgeDirection.SOUTH.ordinal()))
+						rb.renderFaceZPos(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x-1, y, z, ForgeDirection.WEST.ordinal()))
+						rb.renderFaceXNeg(b, x, y, z, ico);
+					if (b.shouldSideBeRendered(world, x+1, y, z, ForgeDirection.EAST.ordinal()))
+						rb.renderFaceXPos(b, x, y, z, ico);
+					idx++;
+				}
+			}
 			this.renderAuxEffect(world, x, y, z, type, b, modelId, rb);
 		}
 
@@ -100,6 +134,10 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 			case LIFEWATER:
 				break;
 			case LATTICE:
+				break;
+			case GEMSTONE:
+				break;
+			case CRYSTALLEAF:
 				break;
 		}
 	}
@@ -188,7 +226,7 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 				v5.setBrightness(240);
 				int c = ReikaColorAPI.getModifiedHue(0x0000ff, 220+(int)(80*Math.sin((x*x*2+y*y+z*z*8)/100000D)));
 				v5.setColorOpaque_I(c);
-				IIcon ico = type.getOverlay();
+				IIcon ico = type.getIcons(1).get(0);
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();
@@ -364,6 +402,10 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 			case LIFEWATER:
 				break;
 			case LATTICE:
+				break;
+			case GEMSTONE:
+				break;
+			case CRYSTALLEAF:
 				break;
 		}
 	}

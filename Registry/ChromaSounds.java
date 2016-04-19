@@ -68,7 +68,10 @@ public enum ChromaSounds implements SoundEnum {
 	BUFFERWARNING_LOW("buffer_warning2"),
 	BUFFERWARNING_EMPTY("buffer_warning3"),
 	KILLAURA("killaura"),
-	KILLAURA_CHARGE("killaura_charge");
+	KILLAURA_CHARGE("killaura_charge"),
+	POWERCRAFT("powercraft"),
+	METEOR("meteor"),
+	IMPACT("impact");
 
 	public static final ChromaSounds[] soundList = values();
 

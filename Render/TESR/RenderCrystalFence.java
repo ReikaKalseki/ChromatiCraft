@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelFence;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.DragonAPI.Instantiable.Data.Perimeter;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;

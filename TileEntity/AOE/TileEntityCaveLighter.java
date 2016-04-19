@@ -16,6 +16,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEtherealLight;
 import Reika.ChromatiCraft.Block.BlockEtherealLight.Flags;
@@ -37,9 +38,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCaveLighter extends TileEntityChromaticBase {
+public class TileEntityCaveLighter extends TileEntityChromaticBase implements RangeUpgradeable {
 
-	public static final int RANGE = Math.min(64, ChromaOptions.CAVELIGHTERRANGE.getValue());
+	public static final int BASE_RANGE = Math.min(64, ChromaOptions.CAVELIGHTERRANGE.getValue());
 	public static final int MAXY = 80;
 	private static final int ZONE_SIZE = MathHelper.clamp_int(4, 16, ChromaOptions.CAVELIGHTERSIZE.getValue());
 
@@ -47,6 +48,8 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase {
 
 	private int idleTicks;
 	//private boolean complete = false;
+
+	private int range;
 
 	@Override
 	public ChromaTiles getTile() {
@@ -177,12 +180,13 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase {
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		//if (!complete)
+		range = BASE_RANGE;
 		this.initSpirals(world, x, y, z);
 	}
 
 	private void initSpirals(World world, int x, int y, int z) {
 		for (int i = 0; i < spiral.length; i++) {
-			spiral[i] = new BlockSpiral(x, i*ZONE_SIZE, z, RANGE/ZONE_SIZE).setRightHanded().setGridSize(ZONE_SIZE).calculate();
+			spiral[i] = new BlockSpiral(x, i*ZONE_SIZE, z, range/ZONE_SIZE).setRightHanded().setGridSize(ZONE_SIZE).calculate();
 		}
 	}
 
@@ -193,6 +197,20 @@ public class TileEntityCaveLighter extends TileEntityChromaticBase {
 
 	private boolean placeBlockAt(World world, int x, int y, int z) {
 		return world.getBlock(x, y, z).isAir(world, x, y, z) && world.getBlockLightValue(x, y, z) <= 7 && world.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 4 && !world.canBlockSeeTheSky(x, y+1, z);
+	}
+
+	@Override
+	public void upgradeRange(double r) {
+		int last = range;
+		range = (int)(BASE_RANGE*r);
+		if (range != last) {
+			this.initSpirals(worldObj, xCoord, yCoord, zCoord);
+		}
+	}
+
+	@Override
+	public int getRange() {
+		return range;
 	}
 
 }

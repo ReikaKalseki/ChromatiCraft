@@ -70,7 +70,9 @@ public class RenderInfuser3 extends ChromaRenderBase {
 			float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 			double rad = 0.5;
 			Tessellator v5 = Tessellator.instance;
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ReikaRenderHelper.prepareGeoDraw(true);
+			GL11.glEnable(GL11.GL_BLEND);
 			for (int i = 0; i < 360; i += 45) {
 				int idx = (te.getTicksExisted()/4+i/45)%16;
 				int idx2 = (idx+1)%16;
@@ -98,6 +100,7 @@ public class RenderInfuser3 extends ChromaRenderBase {
 				v5.draw();
 			}
 			ReikaRenderHelper.exitGeoDraw();
+			GL11.glPopAttrib();
 			GL11.glLineWidth(w);
 			GL11.glPopMatrix();
 			GL11.glPopMatrix();

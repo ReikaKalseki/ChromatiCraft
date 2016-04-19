@@ -227,7 +227,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 	}
 
 	public IIcon getBacking(int meta) {
-		return back[meta];
+		return TieredOres.list[meta].renderAsGeode() ? this.getGeodeIcon(meta) : back[meta];
 	}
 
 	public IIcon getGeodeIcon(int meta) {

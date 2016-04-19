@@ -13,15 +13,22 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.DimDecoTileTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class WorldGenFireJet extends ChromaWorldGenerator {
 
+	public WorldGenFireJet(DimensionGenerators g) {
+		super(g);
+	}
+
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.1F;
 	}
 
@@ -31,7 +38,7 @@ public class WorldGenFireJet extends ChromaWorldGenerator {
 		int dy = ReikaWorldHelper.findTopBlockBelowY(world, x, 255, z);
 		if (world.getBlock(x, dy, z) == Blocks.water && ReikaWorldHelper.getWaterDepth(world, x, dy, z) >= 2) {
 
-			world.setBlock(x, dy, z, ChromaBlocks.DIMGENTILE.getBlockInstance(), 0, 3);
+			world.setBlock(x, dy, z, ChromaBlocks.DIMGENTILE.getBlockInstance(), DimDecoTileTypes.FIREJET.ordinal(), 3);
 
 			world.setBlock(x+1, dy, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
 			world.setBlock(x-1, dy, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);

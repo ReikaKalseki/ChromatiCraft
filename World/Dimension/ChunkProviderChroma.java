@@ -31,28 +31,19 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalPit;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class ChunkProviderChroma implements IChunkProvider {
 
@@ -68,7 +59,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	/** RNG. */
 	private Random rand;
-	private long overWorldSeed;
+	private final long overWorldSeed;
+	private final long randomSeed;
+
 	private NoiseGeneratorOctaves noiseGen1;
 	private NoiseGeneratorOctaves noiseGen2;
 	private NoiseGeneratorOctaves noiseGen3;
@@ -78,10 +71,12 @@ public class ChunkProviderChroma implements IChunkProvider {
 	/** A NoiseGeneratorOctaves used in generating terrain */
 	private NoiseGeneratorOctaves noiseGen6;
 	private NoiseGeneratorOctaves mobSpawnerNoise;
+
 	/** Reference to the World object. */
 	private World worldObj;
 	/** are map structures going to be generated (e.g. strongholds) */
 	private WorldType worldType;
+
 	private final double[] field_147434_q;
 	private final float[] parabolicField;
 	private double[] stoneNoise = new double[256];
@@ -109,7 +104,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	static final HashSet<StructurePair> structures = new HashSet();
 	static final MonumentGenerator monument = new MonumentGenerator();
 
-	private static boolean generatingStructures = false;
+	private static int generationFlags = 0;
 
 	public void clearCaches() {
 		//populatedChunks.clear();
@@ -120,29 +115,43 @@ public class ChunkProviderChroma implements IChunkProvider {
 		for (int i = 0; i < DimensionStructureType.types.length; i++) {
 			unusedTypes.add(DimensionStructureType.types[i]);
 		}*/
-		this.regenerateStructures();
+		this.regenerateGenerators();
 	}
 
-	public static void triggerStructureGen() {
-		regenerateStructures();
+	public static void triggerGenerator(ThreadedGenerators gen) {
+		regenerateGenerators(~gen.getBit());
 	}
 
-	static void regenerateStructures() {
-		generatingStructures = true;
-		for (StructurePair s : structures)
-			s.generator.clear();
-		structures.clear();
-		monument.clear();
-		StructureCalculator thread = new StructureCalculator();
-		new Thread(thread, "ChromatiCraft Structure Gen").start();
+	public static void regenerateGenerators() {
+		regenerateGenerators(0);
 	}
 
-	static void finishStructureGen() {
-		generatingStructures = false;
+	private static void regenerateGenerators(int invflags) {
+		long seed = System.currentTimeMillis();
+		generationFlags = ReikaMathLibrary.getNBitflags(ThreadedGenerators.generators.length) & ~invflags;
+		if ((invflags & ThreadedGenerators.STRUCTURE.getBit()) == 0) {
+			for (StructurePair s : structures)
+				s.generator.clear();
+			structures.clear();
+			monument.clear();
+		}
+		for (int i = 0; i < ThreadedGenerators.generators.length; i++) {
+			ThreadedGenerators gen = ThreadedGenerators.generators[i];
+			if ((invflags & gen.getBit()) == 0)
+				gen.run(seed);
+		}
 	}
 
-	public static boolean areStructuresReady() {
-		return !generatingStructures;
+	static void finishGeneration(ThreadedGenerators gen) {
+		generationFlags = generationFlags & ~gen.getBit();
+	}
+
+	public static boolean isGeneratorReady(ThreadedGenerators g) {
+		return (generationFlags & g.getBit()) == 0;
+	}
+
+	public static boolean areGeneratorsReady() {
+		return generationFlags == 0;
 	}
 
 	public static Set<StructurePair> getStructures() {
@@ -156,10 +165,11 @@ public class ChunkProviderChroma implements IChunkProvider {
 	public ChunkProviderChroma(World world)
 	{
 		worldObj = world;
+		randomSeed = System.currentTimeMillis();
 		chunkManager = new ChromaChunkManager(world);
-		worldType = world.getWorldInfo().getTerrainType();
+		worldType = world.getWorldInfo().getTerrainType(); //not that it matters
 		overWorldSeed = world.getSeed();
-		rand = new Random(System.currentTimeMillis()); //make independent of world seed
+		rand = new Random(randomSeed); //make independent of world seed
 		noiseGen1 = new NoiseGeneratorOctaves(rand, 16); //16
 		noiseGen2 = new NoiseGeneratorOctaves(rand, 16); //16
 		noiseGen3 = new NoiseGeneratorOctaves(rand, 96); //8 //smoothness factor
@@ -184,17 +194,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private void createDecorators() {
-		decorators.add(new WorldGenFissure());
-		decorators.add(new WorldGenChromaMeteor());
-		decorators.add(new WorldGenCrystalPit());
-		decorators.add(new WorldGenTreeCluster());
-		decorators.add(new WorldGenLightedTree());
-		decorators.add(new WorldGenFloatstone());
-		decorators.add(new WorldGenMoonPool());
-		decorators.add(new WorldGenFireJet());
-		decorators.add(new WorldGenMiniAltar());
-		decorators.add(new WorldGenMiasma());
-		decorators.add(new WorldGenTerrainCrystal());
+		decorators.addAll(DimensionGenerators.getSortedList());
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
@@ -222,7 +222,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	public void generateColumnData(int chunkX, int chunkZ, Block[] columnData)
 	{
 		byte b0 = 63;//32;//63;
-		biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
+		//biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
 		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
 
 		for (int k = 0; k < 4; ++k) {
@@ -365,13 +365,13 @@ public class ChunkProviderChroma implements IChunkProvider {
 				int posIndex = d*columnData.length/256;
 
 				this.generateBedrockLayer(x, z, posIndex, columnData, metaData);
-				this.generateSandBeaches(x, z, posIndex, columnData, metaData, dy);
-				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData, dy);
+				this.generateSandBeaches(x, z, posIndex, columnData, metaData, dy, biome);
+				this.generateSurfaceGrass(x, z, posIndex, columnData, metaData, dy, biome);
 			}
 		}
 	}
 
-	private void generateSandBeaches(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy) {
+	private void generateSandBeaches(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy, BiomeGenBase biome) {
 		Block b = columnData[62+dy+posIndex];
 		Block bb = columnData[61+dy+posIndex];
 		Block ba = columnData[63+dy+posIndex];
@@ -388,7 +388,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		}
 	}
 
-	private void generateSurfaceGrass(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy) {
+	private void generateSurfaceGrass(int x, int z, int posIndex, Block[] columnData, byte[] metaData, int dy, BiomeGenBase biome) {
 		int surface = 0;
 		int filler = 0;
 		int maxSurface = 1;
@@ -404,6 +404,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 				if (surface < maxSurface) {
 					surface++;
 					columnData[y+posIndex] = surf;
+
+					//columnData[y+posIndex] = Blocks.wool;
+					//metaData[y+posIndex] = (byte)((biome.biomeID-100)%16);
 				}
 				else if (filler < maxFiller) {
 					filler++;
@@ -448,9 +451,17 @@ public class ChunkProviderChroma implements IChunkProvider {
 		rand.setSeed(chunkX * 341873128712L + chunkZ * 132897987541L);
 		Block[] ablock = new Block[65536];
 		byte[] abyte = new byte[65536];
+		biomesForGeneration = new BiomeGenBase[256];//chunkManager.loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
+		for (int dx = 0; dx < 16; dx++) {
+			for (int dz = 0; dz < 16; dz++) {
+				int x = chunkX*16+dx;
+				int z = chunkZ*16+dz;
+				int i = dz*16+dx;
+				biomesForGeneration[i] = BiomeDistributor.getBiome(x, z);
+			}
+		}
 		this.generateColumnData(chunkX, chunkZ, ablock);
 		ablock = this.shiftTerrainGen(ablock, VERTICAL_OFFSET);
-		biomesForGeneration = chunkManager.loadBlockGeneratorData(biomesForGeneration, chunkX * 16, chunkZ * 16, 16, 16);
 		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, VERTICAL_OFFSET);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
@@ -682,11 +693,18 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	private void runDecorators(int x, int z) {
 		for (ChromaWorldGenerator wg : decorators) {
-			if (ReikaRandomHelper.doWithChance(wg.getGenerationChance(x, z))) {
-				int dx = x + rand.nextInt(16) + 8;
-				int dz = z + rand.nextInt(16) + 8;
-				int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
-				wg.generate(worldObj, rand, dx, y, dz);
+			ChromaDimensionBiome b = BiomeDistributor.getBiome(x, z);
+			if (wg.type.generateIn(b)) {
+				float f = wg.getGenerationChance(worldObj, x, z, b);
+				int n = (int)f;
+				if (ReikaRandomHelper.doWithChance(f-n))
+					n++;
+				for (int i = 0; i < n; i++) {
+					int dx = x + rand.nextInt(16) + 8;
+					int dz = z + rand.nextInt(16) + 8;
+					int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
+					wg.generate(worldObj, rand, dx, y, dz);
+				}
 			}
 		}
 	}

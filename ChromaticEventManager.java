@@ -109,15 +109,15 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
@@ -640,7 +640,7 @@ public class ChromaticEventManager {
 			int i = 0;
 			int time = 0;
 			int d = 5; //ms
-			while (!ChunkProviderChroma.areStructuresReady()) {
+			while (!ChunkProviderChroma.areGeneratorsReady()) {
 				Thread.sleep(d);
 				time += d;
 				i++;
@@ -1068,6 +1068,13 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void preventLilyFreeze(IceFreezeEvent evt) {
 		if (TileEntityHeatLily.stopFreeze(evt.world, evt.x, evt.y, evt.z)) {
+			evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void preventDimensionIce(IceFreezeEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			evt.setResult(Result.DENY);
 		}
 	}

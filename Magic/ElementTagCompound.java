@@ -212,6 +212,12 @@ public final class ElementTagCompound {
 		return this;
 	}
 
+	public void add(ElementTagCompound tag) {
+		for (CrystalElement e : tag.data.keySet()) {
+			this.addValueToColor(e, tag.getValue(e));
+		}
+	}
+
 	public void subtract(CrystalElement e, int amt) {
 		int has = this.getValue(e);
 		this.setTag(e, Math.max(0, has-amt));

@@ -16,12 +16,14 @@ import java.util.Locale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.BiomeDictionary;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
@@ -262,6 +264,23 @@ public class GuiBiomeChanger extends GuiChromaBase {
 			painter.onRenderTick(a, b);
 			painter.draw();
 			painter.drawLegend(fontRendererObj, j+10+TileEntityBiomePainter.RANGE*2+3, k+ySize/2-TileEntityBiomePainter.RANGE);
+			GL11.glPushMatrix();
+			GL11.glTranslated(0, 0, 100);
+			if (GuiScreen.isShiftKeyDown()) {
+				for (int dx = -TileEntityBiomePainter.RANGE; dx <= TileEntityBiomePainter.RANGE; dx += 16) {
+					for (int dz = -TileEntityBiomePainter.RANGE; dz <= TileEntityBiomePainter.RANGE; dz += 16) {
+						int x = j+10+TileEntityBiomePainter.RANGE+dx;
+						int y = k+ySize/2+dz;
+						api.drawRect(x, y, x+1, y+1, dx == 0 && dz == 0 ? 0xffffffff : 0xffff0000);
+					}
+				}
+			}
+			else if (GuiScreen.isCtrlKeyDown()) {
+				int x = j+10+TileEntityBiomePainter.RANGE;
+				int y = k+ySize/2;
+				api.drawRect(x, y, x+1, y+1, 0xffff0000);
+			}
+			GL11.glPopMatrix();
 		}
 		if (!erase) {
 			String s = String.format("Active Biome: %s", painter.activeElement != null ? painter.activeElement.getName() : "None");

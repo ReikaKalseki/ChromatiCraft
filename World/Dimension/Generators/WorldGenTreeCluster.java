@@ -15,7 +15,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -28,6 +30,10 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 
 	private static final WeightedRandom<TreeGen> genRand = new WeightedRandom();
 	private static final WeightedRandom<TreeShape> shapeRand = new WeightedRandom();
+
+	public WorldGenTreeCluster(DimensionGenerators g) {
+		super(g);
+	}
 
 	static {
 		for (int i = 0; i < TreeGen.genList.length; i++) {
@@ -44,7 +50,7 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 	}
 
 	@Override
-	public float getGenerationChance(int cx, int cz) {
+	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
 		return 0.67F;
 	}
 
@@ -82,7 +88,7 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 	private static enum TreeGen {
 		OAK(ReikaTreeHelper.OAK, 10),
 		BIRCH(ReikaTreeHelper.BIRCH, 8),
-		LIGHT(WorldGenLightedTree.treeType, 3),
+		LIGHT(ModWoodList.LIGHTED, 3),
 		SILVERWOOD(ModWoodList.SILVERWOOD, 1),
 		SAKURA(ModWoodList.SAKURA, 8),
 		SILVERBELL(ModWoodList.SILVERBELL, 6),
@@ -158,24 +164,24 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 			}
 			y += lgh;
 			switch(this) {
-			case GIANT:
-				this.generateGiant(world, x, y, z, rand, log, leaf, lh);
-				break;
-			case HANG:
-				this.generateHanging(world, x, y, z, rand, log, leaf);
-				break;
-			case NEEDLE:
-				this.generateNeedle(world, x, y, z, rand, log, leaf, lh);
-				break;
-			case OAK:
-				this.generateOak(world, x, y, z, rand, log, leaf);
-				break;
-			case TALL:
-				this.generateTall(world, x, y, z, rand, log, leaf, lh);
-				break;
-			case WIDE:
-				this.generateWide(world, x, y, z, rand, log, leaf);
-				break;
+				case GIANT:
+					this.generateGiant(world, x, y, z, rand, log, leaf, lh);
+					break;
+				case HANG:
+					this.generateHanging(world, x, y, z, rand, log, leaf);
+					break;
+				case NEEDLE:
+					this.generateNeedle(world, x, y, z, rand, log, leaf, lh);
+					break;
+				case OAK:
+					this.generateOak(world, x, y, z, rand, log, leaf);
+					break;
+				case TALL:
+					this.generateTall(world, x, y, z, rand, log, leaf, lh);
+					break;
+				case WIDE:
+					this.generateWide(world, x, y, z, rand, log, leaf);
+					break;
 			}
 		}
 

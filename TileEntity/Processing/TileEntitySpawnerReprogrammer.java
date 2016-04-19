@@ -23,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.API.Interfaces.ProgrammableSpawner;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -34,7 +35,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaSpawnerHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered {
+public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered implements OperationInterval {
 
 	private String selectedMob;
 	private static final ArrayList<String> disallowedMobs = new ArrayList();
@@ -46,7 +47,7 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered {
 
 	static {
 		required.addTag(CrystalElement.PINK, 2000);
-		required.addTag(CrystalElement.BLACK, 500);
+		required.addTag(CrystalElement.GRAY, 500);
 
 		addDisallowedMob(EntityWither.class);
 		addDisallowedMob(EntityDragon.class);
@@ -242,6 +243,16 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered {
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
 		return dir != ForgeDirection.DOWN;
+	}
+
+	@Override
+	public float getOperationFraction() {
+		return !this.canConvert() ? 0 : progress.getFraction();
+	}
+
+	@Override
+	public OperationState getState() {
+		return this.isValidSpawner(inv[0]) ? (energy.containsAtLeast(required) ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
 	}
 
 }

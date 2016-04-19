@@ -153,11 +153,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	}
 
 	private int getAttackRange() {
-		return Math.min(8+this.getTileEntityAge()/16, 96);
+		return (int)(Math.min(8+this.getTileEntityAge()/16, 96));
 	}
 
 	private int getHealRange() {
-		return Math.min(4+this.getTileEntityAge()/64, 32);
+		return (int)(Math.min(4+this.getTileEntityAge()/64, 32));
 	}
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {

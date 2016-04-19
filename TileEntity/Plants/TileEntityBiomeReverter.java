@@ -42,18 +42,7 @@ public class TileEntityBiomeReverter extends TileEntityMagicPlant implements Loc
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
-	private static final WeightedRandom<Coordinate> coordinateRand = new WeightedRandom();
-
-	static {
-		for (int i = 0; i < randomDistrib.length; i++) {
-			for (int k = 0; k < randomDistrib[i].length; k++) {
-				Coordinate c = new Coordinate(i-4, 0, k-4);
-				if (randomDistrib[i][k] > 0) {
-					coordinateRand.addEntry(c, randomDistrib[i][k]);
-				}
-			}
-		}
-	}
+	private static final WeightedRandom<Coordinate> coordinateRand = WeightedRandom.fromArray(randomDistrib);
 
 	@Override
 	public ForgeDirection getGrowthDirection() {

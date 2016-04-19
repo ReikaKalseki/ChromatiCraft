@@ -69,7 +69,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
-import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;

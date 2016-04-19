@@ -213,7 +213,7 @@ public class PlayerElementBuffer {
 
 	private int calcElementCap(EntityPlayer ep) {
 		int amt = this.getPlayerTotalEnergy(ep);
-		return MathHelper.clamp_int((int)(Math.min(amt*0.8, 4*Math.pow(amt, 0.75))), 24, this.getPlayerMaximumCap(ep));
+		return Math.max(this.getPlayerBuffer(ep).getMaximumValue(), MathHelper.clamp_int((int)(Math.min(amt*0.8, 4*Math.pow(amt, 0.75))), 24, this.getPlayerMaximumCap(ep)));
 	}
 
 	public int getPlayerMaximumCap(EntityPlayer ep) {

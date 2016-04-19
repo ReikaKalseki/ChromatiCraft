@@ -23,6 +23,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -31,6 +32,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
+import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -38,15 +40,19 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
+import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile {
+public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile, ChunkLoadingTile, RangeUpgradeable {
+
+	public static final int MAXRANGE = 256;
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
 	private HashMap<Fluid, ArrayList<FluidSource>> fluids = new HashMap();
@@ -57,6 +63,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private boolean scanning = true;
 	private boolean fastscan = false;
 	private int scanY = 0;
+
+	private int range;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -168,6 +176,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		range = MAXRANGE;
 		if (scanning) {
 			this.onScan(world, x, y, z);
 		}
@@ -274,7 +283,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	public int getRange() {
-		return 256;
+		return range;
 	}
 
 	private void addFluidBlock(int x, int y, int z, FluidStack fs) {
@@ -369,6 +378,16 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return required.contains(e);
 	}
 
+	@Override
+	public void breakBlock() {
+		ChunkManager.instance.unloadChunks(this);
+	}
+
+	@Override
+	public Collection<ChunkCoordIntPair> getChunksToLoad() {
+		return ChunkManager.getChunkSquare(xCoord, zCoord, range >> 4);
+	}
+
 	private static class FluidSource {
 
 		private final Coordinate location;
@@ -379,6 +398,17 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			fluid = fs;
 		}
 
+	}
+
+	@Override
+	public void upgradeRange(double r) {
+		int old = range;
+		range = (int)(MAXRANGE*r);
+		if (scanning && old != range) {
+			scanY = 0;
+			fluids.clear();
+			counts.clear();
+		}
 	}
 
 }

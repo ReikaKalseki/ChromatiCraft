@@ -30,6 +30,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
+import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
@@ -64,14 +65,16 @@ import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile, ChunkLoadingTile {
+public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile, ChunkLoadingTile, RangeUpgradeable {
+
+	public static final int MAXRANGE = 128;
 
 	private boolean digging = false;
 	private boolean digReady = false;
 
 	private boolean finishedDigging = false;
 
-	private int range = 128;
+	private int range;
 
 	private int readX = 0;
 	private int readY = 0;
@@ -137,6 +140,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		range = MAXRANGE;
 		if (!world.isRemote) {
 			if (dropFlag) {
 				if (this.getTicksExisted()%20 == 0) {
@@ -686,6 +690,20 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	@Override
 	public boolean usesColor(CrystalElement e) {
 		return required.contains(e);
+	}
+
+	@Override
+	public void upgradeRange(double r) {
+		int oldrange = range;
+		range = (int)(MAXRANGE*r);
+		if (range != oldrange && !digging) {
+			readX = 0;
+			readY = 0;
+			readZ = 0;
+			digReady = false;
+			found.clear();
+			coords.clear();
+		}
 	}
 
 }

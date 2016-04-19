@@ -176,7 +176,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock;
+		return hasMultiblock && !worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
 	}
 
 	public final void validateStructure() {

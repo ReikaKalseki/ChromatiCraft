@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
@@ -37,44 +38,38 @@ import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
-import Reika.ChromatiCraft.TileEntity.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
-import Reika.ChromatiCraft.TileEntity.TileEntityChromaCrystal;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalFence;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
-import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
-import Reika.ChromatiCraft.TileEntity.TileEntityMultiStorage;
-import Reika.ChromatiCraft.TileEntity.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityPowerTree;
-import Reika.ChromatiCraft.TileEntity.TileEntityPylonTurboCharger;
-import Reika.ChromatiCraft.TileEntity.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCloakingTower;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLumenTurret;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityAreaHologram;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
@@ -102,7 +97,13 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityChromaCrafter;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityMultiStorage;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
@@ -127,7 +128,7 @@ public enum ChromaTiles implements TileEnum {
 	RIFT("chroma.rift", 				ChromaBlocks.RIFT, 			TileEntityRift.class, 				0, "RenderRift"),
 	BREWER("chroma.brewer", 			ChromaBlocks.TILEENTITY, 	TileEntityCrystalBrewer.class, 		6),
 	GUARDIAN("chroma.guardian", 		ChromaBlocks.TILECRYSTAL, 	TileEntityGuardianStone.class, 		0, "GuardianStoneRenderer"),
-	ACCELERATOR("chroma.accelerator", 	ChromaBlocks.TILECRYSTALNONCUBE, TileEntityAccelerator.class, 	0, "AcceleratorRenderer"),
+	ADJACENCY("chroma.accelerator", 	ChromaBlocks.ADJACENCY, 	TileEntityAdjacencyUpgrade.class,	-1, "AdjacencyUpgradeRenderer"),
 	PYLON("chroma.pylon", 				ChromaBlocks.PYLON, 		TileEntityCrystalPylon.class, 		0, "RenderCrystalPylon"),
 	REPEATER("chroma.repeater", 		ChromaBlocks.PYLON, 		TileEntityCrystalRepeater.class, 	1, "RenderCrystalRepeater"),
 	LASER("chroma.laser", 				ChromaBlocks.TILEMODELLED, 	TileEntityCrystalLaser.class, 		1, "RenderCrystalLaser"),
@@ -192,7 +193,8 @@ public enum ChromaTiles implements TileEnum {
 	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire"),
 	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner"),
 	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3/*, "RenderWirelessSource"*/),
-	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/);
+	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
+	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower");
 
 	private final Class tile;
 	private final String name;
@@ -245,7 +247,7 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean renderInPass1() {
 		switch(this) {
-			case ACCELERATOR:
+			case ADJACENCY:
 			case RIFT:
 			case PYLON:
 			case REPEATER:
@@ -281,6 +283,7 @@ public enum ChromaTiles implements TileEnum {
 			case ENCHANTDECOMP:
 			case FABRICATOR:
 			case PARTICLES:
+			case METEOR:
 				return true;
 			default:
 				return false;
@@ -297,7 +300,10 @@ public enum ChromaTiles implements TileEnum {
 		return "Reika.ChromatiCraft.Render.TESR."+renderer;
 	}
 
-	public TileEntity createTEInstanceForRender() {
+	public TileEntity createTEInstanceForRender(int offset) {
+		if (this == ADJACENCY) {
+			return AdjacencyUpgrades.upgrades[offset].createTEInstanceForRender();
+		}
 		if (renderInstance == null) {
 			try {
 				renderInstance = (TileEntity)tile.newInstance();
@@ -334,6 +340,9 @@ public enum ChromaTiles implements TileEnum {
 		if (index == null) {
 			ChromatiCraft.logger.logError("ID "+id+" and metadata "+meta+" are not a valid tile identification pair!");
 			return null;
+		}
+		if (index == ADJACENCY) {
+			return AdjacencyUpgrades.upgrades[meta].createTileEntity();
 		}
 		Class TEClass = index.tile;
 		try {
@@ -427,7 +436,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isAvailableInCreativeInventory() {
-		if (this == RIFT)
+		if (this == RIFT || this == ADJACENCY)
 			return false;
 		if (DragonAPICore.isReikasComputer())
 			return true;
@@ -544,6 +553,7 @@ public enum ChromaTiles implements TileEnum {
 			case COMPOUND:
 			case BROADCAST:
 			case WEAKREPEATER:
+			case METEOR:
 				return 0;
 			case CHARGER:
 				return 29;
@@ -610,7 +620,7 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isTextureFace() {
-		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER || this == ESSENTIARELAY;
+		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER || this == ESSENTIARELAY || this == METEOR;
 	}
 
 	public boolean needsSilkTouch() {

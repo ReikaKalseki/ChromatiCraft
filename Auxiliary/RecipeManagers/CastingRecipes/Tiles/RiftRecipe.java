@@ -33,15 +33,15 @@ public class RiftRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.spaceDust, 2, -2);
 		this.addAuxItem(ChromaStacks.spaceDust, 2, 2);
 
-		this.addAuxItem(this.getChargedShard(CrystalElement.RED), -4, -4);
-		this.addAuxItem(this.getChargedShard(CrystalElement.LIME), 4, -4);
+		this.addAuxItem(this.getChargedShard(CrystalElement.LIME), -4, -4);
+		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 4, -4);
 		this.addAuxItem(this.getChargedShard(CrystalElement.BLUE), -4, 4);
-		this.addAuxItem(this.getChargedShard(CrystalElement.YELLOW), 4, 4);
+		this.addAuxItem(this.getChargedShard(CrystalElement.LIME), 4, 4);
 
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, 4);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 0, -4);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), 4, 0);
-		this.addAuxItem(this.getChargedShard(CrystalElement.WHITE), -4, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.BLACK), 0, 4);
+		this.addAuxItem(this.getChargedShard(CrystalElement.BLACK), 0, -4);
+		this.addAuxItem(this.getChargedShard(CrystalElement.BLACK), 4, 0);
+		this.addAuxItem(this.getChargedShard(CrystalElement.BLACK), -4, 0);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -60,17 +61,17 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalMusic;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalTank;
-import Reika.ChromatiCraft.TileEntity.TileEntityDimensionCore;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAccelerator;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
+import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
+import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.ModList;
@@ -107,6 +108,14 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		this.setCreativeTab(null);
 		blockHardness = 5;
 		blockResistance = 40;//10;
+	}
+
+	@Override
+	public float getExplosionResistance(Entity e, World world, int x, int y, int z, double eX, double eY, double eZ) {
+		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
+		if (t == ChromaTiles.TABLE)
+			return Float.MAX_VALUE;
+		return super.getExplosionResistance(e, world, x, y, z, eX, eY, eZ);
 	}
 
 	@Override
@@ -387,7 +396,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (ChromaItems.LENS.matchWith(is) && te instanceof TileEntityCrystalLaser) {
+		if (ChromaItems.LENS.matchWith(is) && is.stackSize == 1 && te instanceof TileEntityCrystalLaser) {
 			ItemStack ret = ((TileEntityCrystalLaser)te).swapLens(is);
 			ep.setCurrentItemOrArmor(0, ret);
 			return true;
@@ -403,7 +412,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
-	public final ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(target.blockX, target.blockY, target.blockZ);
 		ChromaTiles m = ChromaTiles.getTileFromIDandMetadata(this, meta);
 		if (m == null)
@@ -466,6 +475,28 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			li = ReikaJavaLibrary.makeListFrom(is);
 			ReikaItemHelper.dropItems(world, x+par5Random.nextDouble(), y+par5Random.nextDouble(), z+par5Random.nextDouble(), li);
 		}
+	}
+
+	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
+		ArrayList<ItemStack> li = new ArrayList();
+		TileEntity te = world.getTileEntity(x, y, z);
+		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
+		if (m != null) {
+			ItemStack is = m.getCraftedProduct();
+			/*
+			if (m.isEnchantable()) {
+				HashMap<Enchantment,Integer> map = ((EnchantableMachine)te).getEnchantments();
+				ReikaEnchantmentHelper.applyEnchantments(is, map);
+			}*/
+			if (m.hasNBTVariants()) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				((NBTTile)te).getTagsToWriteToStack(nbt);
+				is.stackTagCompound = (NBTTagCompound)(!nbt.hasNoTags() ? nbt.copy() : null);
+			}
+			li = ReikaJavaLibrary.makeListFrom(is);
+		}
+		return li;
 	}
 
 	@Override

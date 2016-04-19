@@ -128,8 +128,8 @@ public class ProgressionManager implements ProgressRegistry {
 		KILLWITHER(Items.nether_star),
 		KILLMOB(new ItemStack(Items.skull, 1, 4)),
 		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
-		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
+		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
 		private final ItemStack icon;

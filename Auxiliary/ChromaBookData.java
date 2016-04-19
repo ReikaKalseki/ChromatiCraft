@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Recipe.ItemMatch;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -60,7 +61,9 @@ public class ChromaBookData {
 
 	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
 		ItemStack isout = c.getOutput();
-		isout.stackTagCompound = c.getOutputTag(isout.stackTagCompound);
+		ItemStack ctr = c instanceof MultiBlockCastingRecipe ? ((MultiBlockCastingRecipe)c).getMainInput() : c.getArrayForDisplay()[4];
+		if (ctr != null)
+			ReikaNBTHelper.combineNBT(isout.stackTagCompound, c.getOutputTag(ctr.stackTagCompound));
 		gui.drawItemStack(ri, fr, isout, posX+7, posY+5);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		if (subpage == 0 || subpage == 2) {

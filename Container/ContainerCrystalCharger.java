@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.Container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ICrafting;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.TileEntity.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.DragonAPI.Base.CoreContainer;
 
 public class ContainerCrystalCharger extends CoreContainer {

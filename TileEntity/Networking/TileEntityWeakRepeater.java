@@ -271,7 +271,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	public void setDataFromItemStackTag(ItemStack is) {
 		super.setDataFromItemStackTag(is);
 
-		remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : 0;
+		remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : remainingUse;
 	}
 
 	@Override
