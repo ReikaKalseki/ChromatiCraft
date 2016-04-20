@@ -14,8 +14,8 @@ import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 
 public class WorldGenCrystalShrub extends ChromaWorldGenerator {
 
-	public WorldGenCrystalShrub(DimensionGenerators g) {
-		super(g);
+	public WorldGenCrystalShrub(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

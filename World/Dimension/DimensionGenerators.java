@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
@@ -64,11 +65,11 @@ public enum DimensionGenerators {
 		genTime = p;
 	}
 
-	public ChromaWorldGenerator getGenerator() {
+	public ChromaWorldGenerator getGenerator(Random rand, long seed) {
 		if (generator == null) {
 			try {
-				Constructor<ChromaWorldGenerator> c = genClass.getConstructor(DimensionGenerators.class);
-				generator = c.newInstance(this);
+				Constructor<ChromaWorldGenerator> c = genClass.getConstructor(DimensionGenerators.class, Random.class, long.class);
+				generator = c.newInstance(this, rand, seed);
 			}
 			catch (Exception e) {
 				throw new RegistrationException(ChromatiCraft.instance, "Could not create generator for dimension generator "+this, e);
@@ -111,7 +112,7 @@ public enum DimensionGenerators {
 		}
 	}
 
-	public static ArrayList<ChromaWorldGenerator> getSortedList() {
+	public static ArrayList<ChromaWorldGenerator> getSortedList(Random rand, long seed) {
 		ArrayList<ChromaWorldGenerator> ret = new ArrayList();
 		ArrayList<DimensionGenerators> li = new ArrayList();
 		for (int i = 0; i < DimensionGenerators.generators.length; i++) {
@@ -120,7 +121,7 @@ public enum DimensionGenerators {
 		}
 		Collections.sort(li, generationSorter);
 		for (DimensionGenerators g : li) {
-			ret.add(g.getGenerator());
+			ret.add(g.getGenerator(rand, seed));
 		}
 		return ret;
 	}

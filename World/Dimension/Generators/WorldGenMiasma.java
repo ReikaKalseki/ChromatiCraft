@@ -22,8 +22,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WorldGenMiasma extends ChromaWorldGenerator {
 
-	public WorldGenMiasma(DimensionGenerators g) {
-		super(g);
+	public WorldGenMiasma(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

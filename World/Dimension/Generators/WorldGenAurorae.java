@@ -18,8 +18,8 @@ public class WorldGenAurorae extends ChromaWorldGenerator {
 	private static final WeightedRandom<AuroraColor> auroraColors = new WeightedRandom();
 	private static final PairMap<AuroraColor> disallowedCombinations = new PairMap();
 
-	public WorldGenAurorae(DimensionGenerators g) {
-		super(g);
+	public WorldGenAurorae(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

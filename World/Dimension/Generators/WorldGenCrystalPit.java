@@ -30,8 +30,8 @@ public class WorldGenCrystalPit extends ChromaWorldGenerator {
 
 	private static final CrystalElement[][] colors = new CrystalElement[4][4];
 
-	public WorldGenCrystalPit(DimensionGenerators g) {
-		super(g);
+	public WorldGenCrystalPit(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

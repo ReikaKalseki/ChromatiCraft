@@ -194,7 +194,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	}
 
 	private void createDecorators() {
-		decorators.addAll(DimensionGenerators.getSortedList());
+		decorators.addAll(DimensionGenerators.getSortedList(rand, randomSeed));
 	}
 
 	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
@@ -225,17 +225,17 @@ public class ChunkProviderChroma implements IChunkProvider {
 		//biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
 		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
 
-		for (int k = 0; k < 4; ++k) {
+		for (int k = 0; k < 4; k++) {
 			int l = k * 5;
 			int i1 = (k + 1) * 5;
 
-			for (int j1 = 0; j1 < 4; ++j1) {
+			for (int j1 = 0; j1 < 4; j1++) {
 				int k1 = (l + j1) * 33;
 				int l1 = (l + j1 + 1) * 33;
 				int i2 = (i1 + j1) * 33;
 				int j2 = (i1 + j1 + 1) * 33;
 
-				for (int k2 = 0; k2 < 32; ++k2) {
+				for (int k2 = 0; k2 < 32; k2++) {
 					double d0 = 0.125D;
 					double d1 = field_147434_q[k1 + k2];
 					double d2 = field_147434_q[l1 + k2];
@@ -246,15 +246,14 @@ public class ChunkProviderChroma implements IChunkProvider {
 					double d7 = (field_147434_q[i2 + k2 + 1] - d3) * d0;
 					double d8 = (field_147434_q[j2 + k2 + 1] - d4) * d0;
 
-					for (int l2 = 0; l2 < 8; ++l2) {
+					for (int l2 = 0; l2 < 8; l2++) {
 						double d9 = 0.25D;
 						double d10 = d1;
 						double d11 = d2;
 						double d12 = (d3 - d1) * d9;
 						double d13 = (d4 - d2) * d9;
 
-						for (int i3 = 0; i3 < 4; ++i3)
-						{
+						for (int i3 = 0; i3 < 4; i3++) {
 							int j3 = i3 + k * 4 << 12 | 0 + j1 * 4 << 8 | k2 * 8 + l2;
 							short short1 = 256;
 							j3 -= short1;
@@ -262,7 +261,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 							double d16 = (d11 - d10) * d14;
 							double d15 = d10 - d16;
 
-							for (int k3 = 0; k3 < 4; ++k3) {
+							for (int k3 = 0; k3 < 4; k3++) {
 								if ((d15 += d16) > 0.0D) {
 									columnData[j3 += short1] = Blocks.stone;
 								}
@@ -515,12 +514,12 @@ public class ChunkProviderChroma implements IChunkProvider {
 		noiseData2 = noiseGen2.generateNoiseOctaves(noiseData2, chunkX, p_147423_2_, chunkZ, 5, 33, 5, 684.412D, 684.412D, 684.412D);
 		boolean flag1 = false;
 		boolean flag = false;
-		int l = 0;
+		int idx = 0;
 		int i1 = 0;
 		double d4 = 8.5D;
 
-		for (int j1 = 0; j1 < 5; ++j1) {
-			for (int k1 = 0; k1 < 5; ++k1) {
+		for (int j1 = 0; j1 < 5; j1++) {
+			for (int k1 = 0; k1 < 5; k1++) {
 				float f = 0.0F;
 				float f1 = 0.0F;
 				float f2 = 0.0F;
@@ -632,9 +631,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 						d6 *= 4.0D;
 					}
 
-					double d7 = noiseData1[l] / 512.0D;
-					double d8 = noiseData2[l] / 512.0D;
-					double d9 = (noiseData3[l] / 10.0D + 1.0D) / 2.0D;
+					double d7 = noiseData1[idx] / 512.0D;
+					double d8 = noiseData2[idx] / 512.0D;
+					double d9 = (noiseData3[idx] / 10.0D + 1.0D) / 2.0D;
 					double d10 = MathHelper.denormalizeClamp(d7, d8, d9) - d6;
 
 					if (j2 > 29) {
@@ -645,8 +644,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 					//d10 = Math.max(d10-2.5, (d10-5)*8);
 					//d10 *= 1+0.5*Math.sin(chunkX*chunkX*chunkZ*chunkZ/256D);
 
-					field_147434_q[l] = d10;
-					++l;
+					field_147434_q[idx] = d10;
+					++idx;
 				}
 			}
 		}

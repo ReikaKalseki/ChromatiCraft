@@ -31,8 +31,8 @@ public class WorldGenChromaMeteor extends ChromaWorldGenerator {
 
 	private static final WeightedRandom<BlockKey> basicOres = new WeightedRandom();
 
-	public WorldGenChromaMeteor(DimensionGenerators g) {
-		super(g);
+	public WorldGenChromaMeteor(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

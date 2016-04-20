@@ -30,8 +30,8 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 public class WorldGenFissure extends ChromaWorldGenerator {
 
-	public WorldGenFissure(DimensionGenerators g) {
-		super(g);
+	public WorldGenFissure(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
@@ -30,8 +29,8 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 
 	public static final BlockKey CRYSTAL_TRUNK = new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal());
 
-	public WorldGenCrystalTree(DimensionGenerators g) {
-		super(g);
+	public WorldGenCrystalTree(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override
@@ -504,7 +503,7 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 					break;
 				}
 			}
-			f.setBlock(0, 0, 0, Blocks.wool, this.ordinal());
+			//f.setBlock(0, 0, 0, Blocks.wool, this.ordinal());
 		}
 	}
 

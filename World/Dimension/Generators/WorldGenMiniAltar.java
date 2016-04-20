@@ -29,8 +29,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class WorldGenMiniAltar extends ChromaWorldGenerator {
 
-	public WorldGenMiniAltar(DimensionGenerators g) {
-		super(g);
+	public WorldGenMiniAltar(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

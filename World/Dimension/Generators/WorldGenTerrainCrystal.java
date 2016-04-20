@@ -36,8 +36,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class WorldGenTerrainCrystal extends ChromaWorldGenerator {
 
-	public WorldGenTerrainCrystal(DimensionGenerators g) {
-		super(g);
+	public WorldGenTerrainCrystal(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

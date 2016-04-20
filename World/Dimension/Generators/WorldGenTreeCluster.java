@@ -31,8 +31,8 @@ public class WorldGenTreeCluster extends ChromaWorldGenerator {
 	private static final WeightedRandom<TreeGen> genRand = new WeightedRandom();
 	private static final WeightedRandom<TreeShape> shapeRand = new WeightedRandom();
 
-	public WorldGenTreeCluster(DimensionGenerators g) {
-		super(g);
+	public WorldGenTreeCluster(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	static {

@@ -23,8 +23,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class WorldGenFloatstone extends ChromaWorldGenerator {
 
-	public WorldGenFloatstone(DimensionGenerators g) {
-		super(g);
+	public WorldGenFloatstone(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

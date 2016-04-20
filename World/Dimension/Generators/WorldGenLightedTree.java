@@ -23,8 +23,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
 public class WorldGenLightedTree extends ChromaWorldGenerator {
 
-	public WorldGenLightedTree(DimensionGenerators g) {
-		super(g);
+	public WorldGenLightedTree(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

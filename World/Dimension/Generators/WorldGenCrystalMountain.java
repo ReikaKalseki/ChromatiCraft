@@ -1,115 +1,142 @@
 package Reika.ChromatiCraft.World.Dimension.Generators;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldType;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
-import Reika.DragonAPI.Instantiable.LobulatedCurve;
-import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
 
 public class WorldGenCrystalMountain extends ChromaWorldGenerator {
 
-	public WorldGenCrystalMountain(DimensionGenerators g) {
-		super(g);
+	private final SimplexNoiseGenerator mountainHeight;
+	private final SimplexNoiseGenerator shearNoise;
+	private final SimplexNoiseGenerator threshNoise;
+	private final SimplexNoiseGenerator gemNoise1;
+	private final SimplexNoiseGenerator gemNoise2;
+
+	public static final double MAX_AMPLITUDE = 80;
+
+	public static final double MIN_SHEAR = 4;
+	public static final double MAX_SHEAR = 45;
+
+	public static final double MIN_THRESH = 4;
+	public static final double MAX_THRESH = 24;
+
+	public WorldGenCrystalMountain(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
+		mountainHeight = new SimplexNoiseGenerator(seed);
+
+		shearNoise = new SimplexNoiseGenerator(seed ^ -seed);
+		threshNoise = new SimplexNoiseGenerator(~(seed ^ -seed));
+
+		gemNoise1 = new SimplexNoiseGenerator(-seed);
+		gemNoise2 = new SimplexNoiseGenerator(~(-seed));
 	}
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.5F;
+		return 1;
 	}
 
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
-		if (y > 200)
-			return false;
-		int yb = 64+ChunkProviderChroma.VERTICAL_OFFSET;
-		Mountain m = new Mountain(rand).generate(world, x, y, z);
-		for (Coordinate c : m.heightMap.keySet()) {
-			int h = yb+m.heightMap.get(c);
-			for (int dy = y-1; dy <= h; dy++) {
-				Block b = dy == h ? Blocks.grass : Blocks.stone;
-				world.setBlock(c.xCoord, dy, c.zCoord, b);
-			}
-		}
-		for (Coordinate c : m.cliffSet) {
-			int h = yb+m.heightMap.get(c);
-			int hy = (h-y)/2;
-			if (hy > 0) {
-				int y1 = y+1+rand.nextInt(hy);
-				int y2 = h-1-rand.nextInt(hy);
-				for (int dy = y1; dy <= y2; dy++) {
-					world.setBlock(c.xCoord, dy, c.zCoord, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.GEMSTONE.ordinal(), 3);
+		int chunkX = x >> 4;
+		int chunkZ = z >> 4;
+		double innerScale = 1/16D;
+		double mainScale = 1/4D;
+		x = ReikaMathLibrary.bitRound(x, 4);
+		z = ReikaMathLibrary.bitRound(z, 4);
+		int dt = 1+rand.nextInt(4);
+		for (int i = 0; i < 16; i++) {
+			for (int k = 0; k < 16; k++) {
+				int dx = x+i;
+				int dz = z+k;
+				double rx = this.calcR(chunkX, i, innerScale, mainScale);
+				double rz = this.calcR(chunkZ, k, innerScale, mainScale);
+				double val = this.calcHeight(rx, rz);
+				boolean cliff = this.isCliff(chunkX, chunkZ, i, k, rx, rz, innerScale, mainScale);
+				double shearThresh = 0;
+				if (cliff) {
+					shearThresh = ReikaMathLibrary.normalizeToBounds(threshNoise.getValue(rx, rz), MIN_THRESH, MAX_THRESH);
+				}
+				int h = (int)val;
+				for (int j = 0; j <= h; j++) {
+					int dy = 64+ChunkProviderChroma.VERTICAL_OFFSET+j;
+					if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+						dy = 3+j;
+					int m = 0;
+					Block b = Blocks.stone;
+					if (j == h)
+						b = Blocks.grass;
+					else if (h-j <= dt) {
+						b = Blocks.dirt;
+					}
+					else if (cliff) {
+						double g1 = ReikaMathLibrary.normalizeToBounds(gemNoise1.getValue(rx, rz), shearThresh+1, h-dt-1);//Math.max(, gemNoiseLow.getValue(rx, rz));
+						double g2 = ReikaMathLibrary.normalizeToBounds(gemNoise2.getValue(rx, rz), shearThresh+1, h-dt-1);
+						double max = Math.max(g1, g2);
+						double min = Math.min(g1, g2);
+						if (max-min > 1 && ReikaMathLibrary.isValueInsideBoundsIncl(min, max, j)) {
+							b = ChromaBlocks.DIMGEN.getBlockInstance();
+							m = DimDecoTypes.GEMSTONE.ordinal();
+						}
+					}
+					world.setBlock(dx, dy, dz, b, m, 2);
 				}
 			}
 		}
 		return true;
 	}
 
-	private static class Mountain {
+	private double calcHeight(double rx, double rz) {
+		double voff = 0.6;
+		double val = Math.max(0, (voff+mountainHeight.getValue(rx, rz))*(MAX_AMPLITUDE-MAX_SHEAR)/(1+voff));
+		double shear = ReikaMathLibrary.normalizeToBounds(shearNoise.getValue(rx, rz), MIN_SHEAR, MAX_SHEAR);
+		double shearThresh = ReikaMathLibrary.normalizeToBounds(threshNoise.getValue(rx, rz), MIN_THRESH, MAX_THRESH);
+		if (val >= shearThresh)
+			val += shear;
+		return val;
+	}
+
+	private boolean isCliff(int cx, int cz, int i, int k, double rx, double rz, double innerScale, double mainScale) {
+		double h = this.calcHeight(rx, rz);
+		double rxp = rx+innerScale*mainScale;
+		double rxn = rx-innerScale*mainScale;
+		double rzp = rz+innerScale*mainScale;
+		double rzn = rz-innerScale*mainScale;
+		double hpx = this.calcHeight(rxp, rz);
+		double hnx = this.calcHeight(rxn, rz);
+		double hpz = this.calcHeight(rx, rzp);
+		double hnz = this.calcHeight(rx, rzn);
+		return Math.abs(h-hpx) > 4 || Math.abs(h-hpz) > 4 || Math.abs(h-hnx) > 4 || Math.abs(h-hnz) > 4;
+	}
+
+	private double calcR(int chunk, int d, double innerScale, double mainScale) {
+		return (chunk+d*innerScale)*mainScale;
+	}
+
+	private static class MountainNoiseGenerator {
 
 		private final Random rand;
-		private final HashMap<Coordinate, Integer> heightMap = new HashMap();
-		private final HashSet<Coordinate> cliffSet = new HashSet();
+		private final int chunkX;
+		private final int chunkZ;
 
-		private final double baseHeight;
-		private final LobulatedCurve curve;
-		private final LobulatedCurve heightCurve;
-		private final double baseRadius;
-		private double maxRadius;
-		private final double cliffLocation;
+		private double[][] heightNoise = new double[16][16];
 
-		private Mountain(Random r) {
+		private MountainNoiseGenerator(int cx, int cz, Random r) {
 			rand = r;
-
-			baseHeight = 24+r.nextDouble()*32;
-			baseRadius = 20+r.nextDouble()*30;
-			curve = new LobulatedCurve(baseRadius, baseRadius/4D, 3, 0.5).generate(rand);
-			heightCurve = new LobulatedCurve(baseHeight, baseRadius/5*0.5, 5, 0.5).generate(rand);
-			cliffLocation = 0.4+r.nextDouble()*0.4;
-		}
-
-		public Mountain generate(World world, int x, int y, int z) {
-			for (double a = 0; a < 360; a += 0.5) {
-				double ang = Math.toRadians(a);
-				double r = curve.getRadius(a);
-				maxRadius = Math.max(r, maxRadius);
-				for (double dr = 0; dr <= r; dr += 0.5) {
-					double dx = x+dr*Math.cos(ang);
-					double dz = z+dr*Math.sin(ang);
-					Coordinate c = new Coordinate(dx, 0, dz);
-					if (heightMap.containsKey(c)) {
-						continue;
-					}
-					double f = dr/r;
-					if (ReikaMathLibrary.approxrAbs(f, cliffLocation, 0.1))
-						cliffSet.add(c);
-					int h = (int)this.calcHeight(a, f);
-					if (h > 0)
-						heightMap.put(c, h);
-				}
-			}
-			return this;
-		}
-
-		private double calcHeight(double ang, double f) {
-			double fac = (heightCurve.getRadius(ang)-baseHeight)*f;
-			if (f < cliffLocation) {
-				return fac >= 0 ? baseHeight+fac : baseHeight+fac*0.25;
-			}
-			else {
-				return fac >= 0 ? baseHeight+0.5*fac : baseHeight+fac;
-			}
+			chunkX = cx;
+			chunkZ = cz;
 		}
 
 	}

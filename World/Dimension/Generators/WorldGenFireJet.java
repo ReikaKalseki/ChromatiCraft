@@ -23,8 +23,8 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class WorldGenFireJet extends ChromaWorldGenerator {
 
-	public WorldGenFireJet(DimensionGenerators g) {
-		super(g);
+	public WorldGenFireJet(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override

@@ -26,8 +26,8 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class WorldGenMoonPool extends ChromaWorldGenerator {
 
-	public WorldGenMoonPool(DimensionGenerators g) {
-		super(g);
+	public WorldGenMoonPool(DimensionGenerators g, Random rand, long seed) {
+		super(g, rand, seed);
 	}
 
 	@Override
