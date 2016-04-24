@@ -9,6 +9,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityBlockTicker;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityDamageBoost;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEnergyIncrease;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHealingCore;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHeatRelay;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityPerformanceBoost;
@@ -34,7 +35,7 @@ public enum AdjacencyUpgrades {
 	LIME(0x00ff00, 0x00ffff, TileEntityRangeBoost.class),
 	YELLOW(0xffff00, 0xffffff, TileEntityEnergyIncrease.class),
 	LIGHTBLUE(0x0000ff, 0x00ffff, TileEntityAccelerator.class),
-	MAGENTA(0xFF61DC, 0xD900DC),
+	MAGENTA(0xFF61DC, 0xD900DC, TileEntityHealingCore.class),
 	ORANGE(0xffcf00, 0xff4000, TileEntityHeatRelay.class),
 	WHITE(0xffffff, 0xffffff);
 

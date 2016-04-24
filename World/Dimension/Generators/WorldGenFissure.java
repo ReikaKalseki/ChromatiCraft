@@ -81,7 +81,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 				for (int k = -r; k <= r; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					if (this.canCutInto(world, dx, dy, dz, rand)) {
+					if (this.canCutInto(world, dx, dy, dz)) {
 						world.setBlock(dx, dy, dz, Blocks.air);
 						for (int d = 0; d < 6; d++) {
 							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
@@ -90,7 +90,7 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 							int dz2 = dz+dir.offsetZ;
 							Block b = world.getBlock(dx2, dy2, dz2);
 							int m = world.getBlockMetadata(dx2, dy2, dz2);
-							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2, rand)) {
+							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2)) {
 								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
 								Coordinate c = new Coordinate(dx2, 0, dz2);
 								Integer get = columns.get(c);
@@ -121,10 +121,8 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 
 	}
 
-	private boolean canCutInto(World world, int x, int y, int z, Random rand) {
+	public static boolean canCutInto(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y, z);
-		//if (b instanceof BlockLiquid || b instanceof BlockFluidBase)
-		//return rand.nextBoolean();
 		int meta = world.getBlockMetadata(x, y, z);
 		if (b instanceof BlockStructureShield && meta >= 8)
 			return false;

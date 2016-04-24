@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCrystalPlains;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenGlowingForest;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenIslands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSkylands;
+import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenVoidlands;
 import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -36,11 +37,11 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 public class ChromaDimensionManager {
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
-		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
-		ISLANDS(BiomeGenIslands.class,		"Iridescent Archipelago",	6, ExtraChromaIDs.ISLANDS, 		SubBiomes.DEEPOCEAN, 	Type.MAGICAL, Type.BEACH, Type.WET),
-		SKYLANDS(BiomeGenSkylands.class,	"Lumen Skylands",			2, ExtraChromaIDs.SKYLANDS, 							Type.MAGICAL, Type.COLD),
-		FOREST(BiomeGenGlowingForest.class,	"Glowing Forest",			10, ExtraChromaIDs.FOREST, 		SubBiomes.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
-		STRUCTURE(StructureBiome.class,		"Structure Field",			0, ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS);
+		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
+		ISLANDS(BiomeGenIslands.class,		"Iridescent Archipelago",	6, -5,	ExtraChromaIDs.ISLANDS, 	SubBiomes.DEEPOCEAN, 	Type.MAGICAL, Type.BEACH, Type.WET),
+		SKYLANDS(BiomeGenSkylands.class,	"Lumen Skylands",			2, 0,	ExtraChromaIDs.SKYLANDS,	SubBiomes.VOIDLANDS,	Type.MAGICAL, Type.COLD),
+		FOREST(BiomeGenGlowingForest.class,	"Glowing Forest",			10, 10,	ExtraChromaIDs.FOREST, 		SubBiomes.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
+		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS);
 
 		private int id;
 		public final String biomeName;
@@ -51,20 +52,22 @@ public class ChromaDimensionManager {
 		public final int spawnWeight;
 		private ExtraChromaIDs config;
 		private final SubBiomes subBiome;
+		public final int baseHeightDelta;
 
 		public static final Biomes[] biomeList = values();
 
-		private Biomes(Class<? extends ChromaDimensionBiome> c, String n, int w, ExtraChromaIDs id, BiomeDictionary.Type... t) {
-			this(c, n, w, id, null, t);
+		private Biomes(Class<? extends ChromaDimensionBiome> c, String n, int w, int h, ExtraChromaIDs id, BiomeDictionary.Type... t) {
+			this(c, n, w, h, id, null, t);
 		}
 
-		private Biomes(Class<? extends ChromaDimensionBiome> c, String n, int w, ExtraChromaIDs id, SubBiomes s, BiomeDictionary.Type... t) {
+		private Biomes(Class<? extends ChromaDimensionBiome> c, String n, int w, int h, ExtraChromaIDs id, SubBiomes s, BiomeDictionary.Type... t) {
 			biomeClass = c;
 			types = t;
 			config = id;
 			spawnWeight = w;
 			subBiome = s;
 			biomeName = n;
+			baseHeightDelta = h;
 		}
 
 		private void create() {
@@ -103,12 +106,18 @@ public class ChromaDimensionManager {
 		public boolean isReasonablyFlat() {
 			return this != SKYLANDS;
 		}
+
+		@Override
+		public int getBaseHeightDelta() {
+			return baseHeightDelta;
+		}
 	}
 
 	public static enum SubBiomes implements ChromaDimensionBiomeType {
-		MOUNTAINS(BiomeGenChromaMountains.class,	"Crystal Mountains",	0.75, ExtraChromaIDs.MOUNTAIN, 	Type.MAGICAL, Type.MOUNTAIN),
-		DEEPOCEAN(BiomeGenChromaOcean.class,		"Aura Ocean",			0.4, ExtraChromaIDs.OCEAN, 		Type.MAGICAL, Type.OCEAN),
-		CRYSFOREST(BiomeGenCrystalForest.class,		"Crystal Forest",		0.2, ExtraChromaIDs.CRYSFOREST,	Type.MAGICAL, Type.FOREST);
+		MOUNTAINS(BiomeGenChromaMountains.class,	"Crystal Mountains",	0.75, 0,	ExtraChromaIDs.MOUNTAIN, 	Type.MAGICAL, Type.MOUNTAIN),
+		DEEPOCEAN(BiomeGenChromaOcean.class,		"Aura Ocean",			0.4, -30,	ExtraChromaIDs.OCEAN, 		Type.MAGICAL, Type.OCEAN),
+		CRYSFOREST(BiomeGenCrystalForest.class,		"Crystal Forest",		0.2, 15,	ExtraChromaIDs.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
+		VOIDLANDS(BiomeGenVoidlands.class,			"Voidland",				0.1, 8,		ExtraChromaIDs.VOID,		Type.MAGICAL, Type.COLD, Type.END);
 
 		private int id;
 		public final String biomeName;
@@ -119,13 +128,15 @@ public class ChromaDimensionManager {
 		public final double spawnWeight;
 		private ExtraChromaIDs config;
 		private Biomes parent;
+		public final int baseHeightDelta;
 
-		private SubBiomes(Class<? extends ChromaDimensionSubBiome> c, String n, double w, ExtraChromaIDs id, BiomeDictionary.Type... t) {
+		private SubBiomes(Class<? extends ChromaDimensionSubBiome> c, String n, double w, int h, ExtraChromaIDs id, BiomeDictionary.Type... t) {
 			biomeClass = c;
 			types = t;
 			config = id;
 			spawnWeight = w;
 			biomeName = n;
+			baseHeightDelta = h;
 		}
 
 		private void create(Biomes b) {
@@ -156,7 +167,12 @@ public class ChromaDimensionManager {
 		}
 
 		public boolean isReasonablyFlat() {
-			return this != MOUNTAINS;
+			return this != MOUNTAINS && this != VOIDLANDS;
+		}
+
+		@Override
+		public int getBaseHeightDelta() {
+			return baseHeightDelta;
 		}
 	}
 
@@ -167,6 +183,8 @@ public class ChromaDimensionManager {
 		public boolean isWaterBiome();
 
 		public boolean isReasonablyFlat();
+
+		public int getBaseHeightDelta();
 
 		public String name();
 

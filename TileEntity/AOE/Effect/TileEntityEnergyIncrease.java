@@ -1,5 +1,8 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import ic2.api.reactor.IReactor;
+import ic2.api.reactor.IReactorChamber;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -260,21 +263,29 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static class IC2ReactorInterface extends EnergyFieldSetInterface {
+	private static class IC2ReactorInterface extends EnergyInterface {
 
 		private static final IC2ReactorInterface instance = new IC2ReactorInterface();
 
-		private Field output;
-		private Method getReactor;
+		//private Field output;
+		//private Method getReactor;
+		//private Method processChambers;
+		private Field updateTicker;
 
 		@Override
 		protected void init() throws Exception {
+
 			Class c = Class.forName("ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric");
-			output = c.getDeclaredField("output");
+			/*output = c.getDeclaredField("output");
 			output.setAccessible(true);
 			Class c2 = Class.forName("ic2.core.block.reactor.tileentity.TileEntityReactorChamberElectric");
 			getReactor = c2.getDeclaredMethod("getReactor");
 			getReactor.setAccessible(true);
+			 */
+			//processChambers = c.getDeclaredMethod("processChambers");
+			//processChambers.setAccessible(true);
+			updateTicker = c.getDeclaredField("updateTicker");
+			updateTicker.setAccessible(true);
 		}
 
 		@Override
@@ -286,18 +297,29 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		protected String[] getClasses() {
 			return new String[]{"ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric", "ic2.core.block.reactor.tileentity.TileEntityReactorChamberElectric"};
 		}
-
+		/*
 		@Override
 		protected Field getOutputField(TileEntity te) {
 			return output;
 		}
-
+		 */
 		@Override
+		@ModDependent(ModList.IC2)
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
-			if (te.getClass().getName().contains("Chamber")) {
-				return (TileEntity)getReactor.invoke(te);
+			if (te instanceof IReactorChamber) {
+				return (TileEntity)((IReactorChamber)te).getReactor();
 			}
 			return te;
+		}
+
+		@Override
+		@ModDependent(ModList.IC2)
+		protected void tick(TileEntity te, double boost) throws Exception {
+			te = this.getActingTileEntity(te);
+			IReactor ir = (IReactor)te;
+			//processChambers.invoke(te);
+			if (updateTicker.getInt(te)%20 == 1) //one tick after reactor recalculates
+				ir.addOutput((float)(boost*ir.getReactorEnergyOutput()));
 		}
 
 	}

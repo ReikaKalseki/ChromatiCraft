@@ -75,8 +75,8 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -344,7 +344,19 @@ public class ChromaticEventManager {
 								double d = e.getDistanceToEntity(mob);
 								double f = EnchantmentWeaponAOE.getDamageFactor(level, d, r);
 								if (f > 0) {
-									e.attackEntityFrom(src, (float)(f*evt.ammount));
+									float dmg2 = (float)(f*evt.ammount);
+									if (e instanceof EntityLiving && dmg2 >= e.getHealth() && Chromabilities.RANGEDBOOST.enabledOn(ep)) {
+										int xp = ((EntityLiving)e).experienceValue;
+										if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT3.getStackOf(CrystalElement.PURPLE), ep.inventory, false)) {
+											xp *= 4;
+										}
+										else if (ReikaInventoryHelper.checkForItemStack(ChromaItems.PENDANT.getStackOf(CrystalElement.PURPLE), ep.inventory, false)) {
+											xp *= 2;
+										}
+										((EntityLiving)e).experienceValue = 0;
+										ep.addExperience(xp);
+									}
+									e.attackEntityFrom(src, dmg2);
 								}
 							}
 						}

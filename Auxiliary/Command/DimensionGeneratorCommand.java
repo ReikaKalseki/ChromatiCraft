@@ -21,7 +21,6 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalMountain;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -72,7 +71,7 @@ public class DimensionGeneratorCommand extends DragonCommandBase {
 						for (int a = 0; a < n; a++) {
 							int gx = dx + ep.worldObj.rand.nextInt(16) + 8;
 							int gz = dz + ep.worldObj.rand.nextInt(16) + 8;
-							if (g instanceof WorldGenCrystalMountain) {
+							if (!g.randomizePosition()) {
 								gx = dx;
 								gz = dz;
 							}

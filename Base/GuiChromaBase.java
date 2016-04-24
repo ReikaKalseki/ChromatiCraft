@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundGui;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -132,7 +133,7 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 	@Override
 	protected final void func_146977_a(Slot slot) {
 		super.func_146977_a(slot);
-		if (Keyboard.isKeyDown(Keyboard.KEY_TAB)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && DragonOptions.TABNBT.getState()) {
 			ReikaTextureHelper.bindFontTexture();
 			fontRendererObj.drawString(String.format("%d", slot.getSlotIndex()), slot.xDisplayPosition+1, slot.yDisplayPosition+1, 0x888888);
 		}

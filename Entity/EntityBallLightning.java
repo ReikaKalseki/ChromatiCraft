@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -100,6 +101,12 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 
 	@Override
 	public boolean canRenderOnFire() {
+		return false;
+	}
+
+	@Override
+	public boolean isPotionApplicable(PotionEffect e)
+	{
 		return false;
 	}
 

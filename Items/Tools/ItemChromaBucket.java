@@ -45,6 +45,8 @@ public class ItemChromaBucket extends ItemChromaTool {
 
 	@Override
 	public boolean onItemUse(ItemStack is, EntityPlayer ep, World world, int x, int y, int z, int side, float a, float b, float c) {
+		if (is.stackSize > 1)
+			return false;
 		if (!ReikaWorldHelper.softBlocks(world, x, y, z) && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.water && ReikaWorldHelper.getMaterial(world, x, y, z) != Material.lava) {
 			if (side == 0)
 				--y;
@@ -82,12 +84,12 @@ public class ItemChromaBucket extends ItemChromaTool {
 		//if (is.getItemDamage() >= 2)
 		//	return ChromaBlocks.ACTIVECHROMA.getBlockInstance();
 		switch(is.getItemDamage()) {
-		case 0:
-			return ChromaBlocks.CHROMA.getBlockInstance();
-		case 1:
-			return ChromaBlocks.ENDER.getBlockInstance();
-		default:
-			return Blocks.air;
+			case 0:
+				return ChromaBlocks.CHROMA.getBlockInstance();
+			case 1:
+				return ChromaBlocks.ENDER.getBlockInstance();
+			default:
+				return Blocks.air;
 		}
 	}
 

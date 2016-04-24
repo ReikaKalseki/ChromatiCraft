@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Items;
 
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 
 public class ItemElementalStone extends ItemCrystalBasic implements TieredItem {

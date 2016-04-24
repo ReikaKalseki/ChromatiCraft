@@ -29,6 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -70,6 +71,7 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -92,6 +94,7 @@ import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
 import Reika.DragonAPI.Instantiable.Event.RemovePlayerItemEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
+import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
@@ -101,11 +104,13 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
@@ -119,6 +124,8 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.IBeeHousing;
+import forestry.api.apiculture.IBeeHousingInventory;
 
 
 
@@ -175,7 +182,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
 		progressMap.addValue(Chromabilities.DEATHPROOF, ProgressStage.DIE);
 		progressMap.addValue(Chromabilities.TELEPORT, ProgressStage.CTM);
-		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.SPAWNERSEE, ProgressStage.BREAKSPAWNER);
 		progressMap.addValue(Chromabilities.DIMPING, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.COMMUNICATE, ProgressStage.KILLMOB);
@@ -188,9 +195,11 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.ORECLIP, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.DOUBLECRAFT, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.CTM);
-		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.RAINBOWLEAF);
 		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.HIVE);
+		progressMap.addValue(Chromabilities.BEEALYZE, ProgressStage.LINK);
 
 		for (AbilityXRays x : AbilityXRays.values()) {
 			xRayMap.put(x.objectClass, x);
@@ -1238,6 +1247,7 @@ public class AbilityHelper {
 		//Minecraft.getMinecraft().gameSettings.ambientOcclusion = savedAOSetting;
 		//Minecraft.getMinecraft().thePlayer.removePotionEffect(Potion.nightVision.id);
 		ReikaRenderHelper.rerenderAllChunks();
+		ReikaSoundHelper.playClientSound(ChromaSounds.NOCLIPOFF, Minecraft.getMinecraft().thePlayer, 1, 1);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -1245,6 +1255,7 @@ public class AbilityHelper {
 		//savedAOSetting = Minecraft.getMinecraft().gameSettings.ambientOcclusion;
 		//Minecraft.getMinecraft().gameSettings.ambientOcclusion = 0;
 		ReikaRenderHelper.rerenderAllChunks();
+		ReikaSoundHelper.playClientSound(ChromaSounds.NOCLIPON, Minecraft.getMinecraft().thePlayer, 1, 1);
 	}
 
 	@SubscribeEvent
@@ -1747,6 +1758,43 @@ public class AbilityHelper {
 		else
 		{
 			return null;
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.FORESTRY)
+	public void analyzeBees(EntityItemPickupEvent evt) {
+		if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+			ItemStack is = evt.item.getEntityItem();
+			ReikaBeeHelper.analyzeBee(is);
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.FORESTRY)
+	public void analyzeBees(AddToSlotEvent evt) {
+		IInventory ii = evt.inventory;
+		if (ii instanceof InventoryPlayer) {
+			if (Chromabilities.BEEALYZE.enabledOn(((InventoryPlayer)ii).player)) {
+				ItemStack is = ii.getStackInSlot(evt.slotID);
+				ReikaBeeHelper.analyzeBee(is);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.FORESTRY)
+	public void analyzeBees(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK || evt.action == Action.LEFT_CLICK_BLOCK) {
+			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+				TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
+				if (te instanceof IBeeHousing) {
+					IBeeHousing ibh = (IBeeHousing)te;
+					IBeeHousingInventory ii = ibh.getBeeInventory();
+					ReikaBeeHelper.analyzeBee(ii.getQueen());
+					ReikaBeeHelper.analyzeBee(ii.getDrone());
+				}
+			}
 		}
 	}
 

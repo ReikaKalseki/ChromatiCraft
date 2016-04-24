@@ -11,14 +11,18 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
+import forestry.api.apiculture.EnumBeeType;
 
 public class GuiCraftableDesc extends GuiDescription {
 
@@ -28,6 +32,9 @@ public class GuiCraftableDesc extends GuiDescription {
 
 	@Override
 	protected final int getMaxSubpage() {
+		if (page == ChromaResearch.BEES) {
+			return CrystalBees.beeCount();
+		}
 		return 0;
 	}
 
@@ -51,6 +58,11 @@ public class GuiCraftableDesc extends GuiDescription {
 			if (li != null && !li.isEmpty()) {
 				int tick = (int)((System.currentTimeMillis()/1000)%li.size());
 				is = li.get(tick);
+			}
+			if (page == ChromaResearch.BEES && subpage > 0) {
+				BeeSpecies bs = CrystalBees.getBeeByIndex(subpage-1);
+				int idx = (int)((System.currentTimeMillis()/1000)%3);
+				is = bs.getBeeItem(Minecraft.getMinecraft().theWorld, EnumBeeType.VALUES[idx]);
 			}
 			if (is != null)
 				api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));

@@ -60,9 +60,9 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -105,6 +105,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.ReactorCraft.Entities.EntityRadiation;
 
@@ -147,7 +148,8 @@ public enum Chromabilities implements Ability {
 	GROWAURA(Phase.END, true),
 	RECHARGE(null, false),
 	MEINV(null, false, ModList.APPENG),
-	MOBSEEK(null, true);
+	MOBSEEK(null, true),
+	BEEALYZE(Phase.START, true, ModList.FORESTRY);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -266,6 +268,7 @@ public enum Chromabilities implements Ability {
 			case RECHARGE:
 			case MEINV:
 			case MOBSEEK:
+			case BEEALYZE:
 				return true;
 			default:
 				return false;
@@ -288,7 +291,7 @@ public enum Chromabilities implements Ability {
 				break;
 			case DASH:
 				PotionEffect pot = ep.getActivePotionEffect(Potion.moveSpeed);
-				if (pot != null && pot.getAmplifier() == 60)
+				if (pot != null && pot.getAmplifier() >= 60)
 					ep.stepHeight = 2.75F;
 				else
 					ep.stepHeight = 0.5F;
@@ -301,6 +304,10 @@ public enum Chromabilities implements Ability {
 				break;
 			case ORECLIP:
 				setNoclipState(ep, true);
+				break;
+			case BEEALYZE:
+				analyzeBees(ep);
+				break;
 			default:
 				break;
 		}
@@ -1219,6 +1226,13 @@ public enum Chromabilities implements Ability {
 		}
 	}
 
+	@ModDependent(ModList.FORESTRY)
+	private static void analyzeBees(EntityPlayer ep) {
+		int slot = (int)(ep.worldObj.getTotalWorldTime()%ep.inventory.mainInventory.length);
+		ItemStack is = ep.inventory.mainInventory[slot];
+		ReikaBeeHelper.analyzeBee(is);
+	}
+
 	private static void setNoclipState(EntityPlayer ep, boolean set) {
 		if (AbilityHelper.instance.isNoClipEnabled != set) {
 			AbilityHelper.instance.isNoClipEnabled = set;
@@ -1229,6 +1243,10 @@ public enum Chromabilities implements Ability {
 				AbilityHelper.instance.onNoClipDisable(ep);
 			}
 			ChromatiCraft.logger.debug("Noclip state changed to "+set);
+		}
+		else if (set) {
+			if (ep.worldObj.isRemote && ep.ticksExisted%24 == 0)
+				ReikaSoundHelper.playClientSound(ChromaSounds.NOCLIPRUN, ep, 1, 1);
 		}
 		//ep.noClip = set;// && ((ep.capabilities.allowFlying && ep.capabilities.isFlying) || ep.isSneaking() || KeyWatcher.instance.isKeyDown(ep, Key.JUMP));
 		/*if (ep.noClip) {

@@ -164,9 +164,9 @@ public class GuiParticleSpawner extends GuiChromaBase {
 			case ICON: {
 				int i = 0;
 				for (ChromaIcons ico : permittedIcons) {
-					int r = 6;
-					int x = j+29+(i%r)*24;
-					int y = k+18+(i/r)*22;
+					int r = 7;
+					int x = j+29+(i%r)*21-2;
+					int y = k+18+(i/r)*21;
 					int u = 106;
 					int v = 213;
 					ImagedGuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
@@ -188,9 +188,9 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				}
 				break;
 			case MODIFIER:
-				for (int i = 0; i < 12; i++) {
+				for (int i = 0; i < 14; i++) {
 					int x = j+29+(i%2)*122;
-					int y = k+19+(i/2)*24;
+					int y = k+19+(i/2)*20; //24
 					int u = i%2 == 1 ? 126 : 106;
 					int v = 173;
 					if (i >= 8)
@@ -283,6 +283,12 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				break;
 			case 11:
 				tile.particles.rapidExpand = true;
+				break;
+			case 12:
+				tile.particles.noSlowdown = false;
+				break;
+			case 13:
+				tile.particles.noSlowdown = true;
 				break;
 		}
 	}
@@ -395,6 +401,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 	private void handleColorButton(int id) {
 		if (id == 300) {
 			RGBMode = !RGBMode;
+			this.roundColors();
 		}
 		else if (id >= 200) {
 			if (RGBMode) {
@@ -450,6 +457,14 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		}
 	}
 
+	private void roundColors() {
+		if (!RGBMode) {
+			saturation = ReikaMathLibrary.roundToDecimalPlaces(saturation, 1);
+			luminosity = ReikaMathLibrary.roundToDecimalPlaces(luminosity, 1);
+		}
+		this.calcColors(0);
+	}
+
 	private void calcColors(int mode) {
 		switch(mode) {
 			case 0: {
@@ -496,7 +511,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		int i = 0;
-		int sy = 24;
+		int sy = page == GuiPage.MODIFIER ? 20 : 24;
 		for (Option o : page.options) {
 			int dx = j+49;
 			int dy = k+19+sy*i;
@@ -584,6 +599,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					options.add(new VariableOption("Size", p.particles.particleSize));
 					options.add(new ToggleOption("Collision", p.particles.particleCollision));
 					options.add(new ToggleOption("Fast Expand", p.particles.rapidExpand));
+					options.add(new ToggleOption("No Slowdown", p.particles.noSlowdown));
 					break;
 			}
 		}

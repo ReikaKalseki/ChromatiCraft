@@ -147,7 +147,13 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 				li.add(String.format("contains %s items.", cellInv.getStoredItemCount()));
 
 				IItemList<IAEItemStack> items = cellInv.getAvailableItems(StorageChannel.ITEMS.createList());
-				li.add(String.format("Stores %s.", items.getFirstItem().getItemStack().getDisplayName()));
+				ItemStack in = items.getFirstItem().getItemStack();
+				String n = in.getDisplayName();
+				ChromaItems c = ChromaItems.getEntry(in);
+				if (c != null) {
+					n = c.getBasicName();
+				}
+				li.add(String.format("Stores %s.", n));
 			}
 		}
 		else {

@@ -68,7 +68,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	CAVELIGHTERRANGE("Cave Lighter Range", 128),
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
 	BIOMEFX("Biome FX", true),
-	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false);
+	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
+	POWEREDACCEL("Adjacency Upgrades Require Energy", false);
 
 	private String label;
 	private boolean defaultState;

@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenSkylandCanyons;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -47,7 +48,8 @@ public enum DimensionGenerators {
 	CRYSTALTREE(WorldGenCrystalTree.class,			GeneratorType.FEATURE,		GeneratorTheme.CRYSTAL,			-100),
 	GLOWBUSH(WorldGenLightedShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
 	CRYSBUSH(WorldGenCrystalShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
-	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE);
+	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE),
+	CANYON(WorldGenSkylandCanyons.class,			GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
 
 	private final Class genClass;
 	public final GeneratorType type;
@@ -82,6 +84,8 @@ public enum DimensionGenerators {
 		if (b.biomeType == Biomes.STRUCTURE)
 			return false;
 		if (theme == GeneratorTheme.SKYFEATURE)
+			return b.biomeType == Biomes.SKYLANDS;
+		if (this == CANYON)
 			return b.biomeType == Biomes.SKYLANDS;
 		if (this == FORESTS)
 			return b.biomeType == Biomes.FOREST;

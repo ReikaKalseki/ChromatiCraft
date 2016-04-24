@@ -41,7 +41,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote) {
+		if (world.isRemote && !world.isBlockIndirectlyGettingPowered(x, y, z)) {
 			this.spawnParticles(world, x, y, z);
 		}
 	}
@@ -111,6 +111,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 		public boolean particleCollision = false;
 		public boolean rapidExpand = false;
+		public boolean noSlowdown = false;
 
 		public ChromaIcons particleIcon = ChromaIcons.FADE;
 
@@ -140,6 +141,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 					fx.setBasicBlend();
 				if (rapidExpand)
 					fx.setRapidExpand();
+				if (noSlowdown)
+					fx.setNoSlowdown();
 				return fx;
 			}
 			else {
@@ -160,6 +163,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 			NBT.setBoolean("collide", particleCollision);
 			NBT.setBoolean("rapid", rapidExpand);
+			NBT.setBoolean("noslow", noSlowdown);
 
 			NBT.setString("icon", particleIcon.name());
 
@@ -193,6 +197,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 			particleCollision = NBT.getBoolean("collide");
 			rapidExpand = NBT.getBoolean("rapid");
+			noSlowdown = NBT.getBoolean("noslow");
 
 			try {
 				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));

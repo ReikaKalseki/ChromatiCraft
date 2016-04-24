@@ -666,6 +666,8 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isWirelessPowered() {
+		if (this == ADJACENCY)
+			return ChromaOptions.POWEREDACCEL.getState();
 		return TileEntityWirelessPowered.class.isAssignableFrom(tile);
 	}
 

@@ -252,6 +252,13 @@ public final class AbilityRituals {
 		rit.addAura(CrystalElement.LIGHTGRAY, 60000);
 		rit.addAura(CrystalElement.PURPLE, 120000);
 		this.addRitual(rit);
+
+		rit = new AbilityRitual(Chromabilities.BEEALYZE);
+		rit.addAura(CrystalElement.GREEN, 60000);
+		rit.addAura(CrystalElement.BLUE, 20000);
+		rit.addAura(CrystalElement.MAGENTA, 60000);
+		rit.addAura(CrystalElement.PURPLE, 10000);
+		this.addRitual(rit);
 	}
 
 	private void addRitual(AbilityRitual ar) {

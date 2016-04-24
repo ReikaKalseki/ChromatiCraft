@@ -30,4 +30,8 @@ public abstract class ChromaWorldGenerator extends WorldGenerator {
 
 	public abstract float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome);
 
+	public boolean randomizePosition() {
+		return true;
+	}
+
 }

@@ -360,17 +360,17 @@ public final class ChromaDescriptions {
 		return PARENT;
 	}
 
-	static ProgressNote getProgressText(ProgressStage p) {
-		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("NULL", "NULL", "NULL");
+	public static ProgressNote getProgressText(ProgressStage p) {
+		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("#NULL", "#NULL", "#NULL");
 	}
 
-	static class ProgressNote {
+	public static class ProgressNote {
 
 		public final String title;
 		public final String hint;
 		public final String reveal;
 
-		public ProgressNote(String t, String h, String desc) {
+		private ProgressNote(String t, String h, String desc) {
 			title = t;
 			hint = h;
 			reveal = desc;

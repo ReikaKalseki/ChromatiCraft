@@ -71,7 +71,10 @@ public enum ChromaSounds implements SoundEnum {
 	KILLAURA_CHARGE("killaura_charge"),
 	POWERCRAFT("powercraft"),
 	METEOR("meteor"),
-	IMPACT("impact");
+	IMPACT("impact"),
+	NOCLIPON("rumble-in"),
+	NOCLIPOFF("rumble-out"),
+	NOCLIPRUN("rumble");
 
 	public static final ChromaSounds[] soundList = values();
 

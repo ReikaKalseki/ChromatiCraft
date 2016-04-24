@@ -96,6 +96,9 @@
 	<recharge>
 		You have better things to do than fly around to your pylons draining energy from them, or flail your manipulator at your lumen tree. If you could get your tree to refill your energy buffers automatically, that would be far simpler.
 	</recharge>
+	<beealyze>
+		To think of all those hours you spent fine-tuning your apiculture production lines, breeding the master race of bees - somewhat amusingly earning you a moniker that brings to mind certain expansionist despots. Sure, half of it was spent using the latest in magic-block technology to redesign them at the genetic level, but a large fraction was wasted coaxing finicky insects into a analysis tool - your supply of honeydew may never recover - just to find out the bee is of better use if liquidated. If only you could view their genetics at a glance, you could save hours of time.
+	</beealyze>
 	<name>
 
 	</name>
@@ -105,4 +108,22 @@
 	<name>
 
 	</name>
+	<name>
+
+	</name>
+	<name>
+
+	</name>
+	<name>
+
+	</name>
+	<name>
+
+	</name>
+	<name>
+
+	</name>
+	<name>
+
+	</name>v
 </ability>

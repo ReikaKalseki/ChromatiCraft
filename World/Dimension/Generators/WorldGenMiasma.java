@@ -17,8 +17,11 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class WorldGenMiasma extends ChromaWorldGenerator {
 
@@ -29,26 +32,43 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
 
-		int r = 12+rand.nextInt(36);
-		int e = 1+rand.nextInt(3);
+		int r = 12+rand.nextInt(24);
 		double ecc = 1-rand.nextDouble()*0.5;
 		int r2 = (int)(r*ecc);
 
+		boolean isVoid = BiomeDistributor.getBiome(x, z).getExactType() == SubBiomes.VOIDLANDS;
+
+		int ymin = 0;
+		int ymax = 0;
+		if (!isVoid) {
+			for (int i = WorldGenSkylandCanyons.LOW_FLOOR-2; i <= WorldGenSkylandCanyons.HIGH_FLOOR+2; i++) {
+				if (world.getBlock(x, i, z).isAir(world, x, i, z)) {
+					ymin = i;
+					break;
+				}
+			}
+		}
+		for (int i = WorldGenSkylandCanyons.LOW_CEIL-2; i <= WorldGenSkylandCanyons.HIGH_CEIL+2; i++) {
+			if (!world.getBlock(x, i, z).isAir(world, x, i, z)) {
+				ymax = i-1;
+				break;
+			}
+		}
+		y = ReikaRandomHelper.getRandomPlusMinus(ymin, ymax);
+
 		for (int i = -r; i <= r; i++) {
-			for (int k = -r2; k <= r2; k++) {
-				double dd = i*i+k*k;
-				double c = dd > 0 ? 2*r*r2/dd/100D : 1;
-
-				c *= 0.25; //thinner
-
-				if (c >= 1 || ReikaRandomHelper.doWithChance(c)) {
-					int dx = x+i;
-					int dz = z+k;
-					int dy = world.getTopSolidOrLiquidBlock(dx, dz);
-					int h = 4+rand.nextInt(8);
-					for (int dy2 = dy+e; dy2 <= dy+h+e; dy2++) {
-						if (rand.nextInt(dy2-dy) == 0 && world.getBlock(dx, dy2, dz) == Blocks.air)
-							world.setBlock(dx, dy2, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.MIASMA.ordinal(), 3);
+			for (int k = -r; k <= r; k++) {
+				for (int j = -r2; j <= r2; j++) {
+					if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, r2, r)) {
+						double c = (1-Math.abs((double)i)/r)*(1-Math.abs((double)k)/r)*(1-Math.abs((double)j)/r2);
+						c *= 0.25;
+						if (c >= 1 || ReikaRandomHelper.doWithChance(c)) {
+							int dx = x+i;
+							int dz = z+k;
+							int dy = y+j;
+							if (world.getBlock(dx, dy, dz) == Blocks.air)
+								world.setBlock(dx, dy, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.MIASMA.ordinal(), 3);
+						}
 					}
 				}
 			}
@@ -59,7 +79,7 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.0025F;//0.02F;
+		return 0.0025F*40;//0.02F;
 	}
 
 }

@@ -4,23 +4,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
 
-public abstract class TileEntityAdjacencyUpgrade extends TileEntityChromaticBase implements NBTTile, SneakPop {
+public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPowered implements NBTTile, SneakPop {
 
 	public static final int MAX_TIER = 8;
 
@@ -34,8 +35,25 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityChromaticBase
 	}
 
 	@Override
-	public final void updateEntity(World world, int x, int y, int z, int meta) {
+	public int getMaxStorage(CrystalElement e) {
+		return e == this.getColor() ? 8000 : 0;
+	}
 
+	@Override
+	protected int getReceiveRange(CrystalElement e) {
+		return e == this.getColor() ? 16 : 0;
+	}
+
+	public final boolean hasSufficientEnergy() {
+		return energy.getValue(this.getColor()) >= this.getConsumedEnergy();
+	}
+
+	public final int getConsumedEnergy() {
+		return ChromaOptions.POWEREDACCEL.getState() ? Math.max(1, ReikaMathLibrary.intpow2(tier+1, 2)/4) : 0;
+	}
+
+	@Override
+	public final void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!this.canRun(world, x, y, z)) {
 			soundtick = 0;
 			return;
@@ -51,6 +69,17 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityChromaticBase
 		int l = (int)(221/f);
 		if (soundtick%l == 0)
 			ChromaSounds.DRONE.playSoundAtBlock(world, x, y, z, 0.25F, f);
+
+		if (ChromaOptions.POWEREDACCEL.getState()) {
+			CrystalElement e = this.getColor();
+			if (energy.getValue(e) < this.getMaxStorage(e))
+				this.requestEnergy(this.getColor(), this.getMaxStorage(e)-energy.getValue(e));
+
+			if (this.hasSufficientEnergy())
+				energy.subtract(e, this.getConsumedEnergy());
+			else
+				return;
+		}
 
 		if (this.ticksIndividually()) {
 			long time = System.nanoTime();
@@ -110,6 +139,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityChromaticBase
 
 	public abstract CrystalElement getColor();
 
+	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		if (ChromaItems.ADJACENCY.matchWith(is)) {
 			if (is.stackTagCompound != null) {

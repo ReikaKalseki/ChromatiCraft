@@ -167,7 +167,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		worldObj = world;
 		randomSeed = System.currentTimeMillis();
 		chunkManager = new ChromaChunkManager(world);
-		worldType = world.getWorldInfo().getTerrainType(); //not that it matters
+		worldType = WorldType.DEFAULT;//world.getWorldInfo().getTerrainType(); //not that it matters
 		overWorldSeed = world.getSeed();
 		rand = new Random(randomSeed); //make independent of world seed
 		noiseGen1 = new NoiseGeneratorOctaves(rand, 16); //16
@@ -223,7 +223,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	{
 		byte b0 = 63;//32;//63;
 		//biomesForGeneration = chunkManager.getBiomesForGeneration(biomesForGeneration, chunkX * 4 - 2, chunkZ * 4 - 2, 10, 10);
-		this.applyNoiseLayers(chunkX * 4, 0, chunkZ * 4);
+		this.applyNoiseLayers(chunkX * 4, chunkZ * 4);
 
 		for (int k = 0; k < 4; k++) {
 			int l = k * 5;
@@ -502,16 +502,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 		//canyonGen.func_151539_a(this, worldObj, chunkX, chunkZ, ablock);
 	}
 
-	private void applyNoiseLayers(int chunkX, int p_147423_2_, int chunkZ)
+	private void applyNoiseLayers(int chunkX, int chunkZ)
 	{
 		double d0 = 684.412D;
 		double d1 = 684.412D;
 		double d2 = 512.0D;
 		double d3 = 512.0D;
 		noiseData6 = noiseGen6.generateNoiseOctaves(noiseData6, chunkX, chunkZ, 5, 5, 200.0D, 200.0D, 0.5D);
-		noiseData3 = noiseGen3.generateNoiseOctaves(noiseData3, chunkX, p_147423_2_, chunkZ, 5, 33, 5, 8.555150000000001D, 4.277575000000001D, 8.555150000000001D);
-		noiseData1 = noiseGen1.generateNoiseOctaves(noiseData1, chunkX, p_147423_2_, chunkZ, 5, 33, 5, 684.412D, 684.412D, 684.412D);
-		noiseData2 = noiseGen2.generateNoiseOctaves(noiseData2, chunkX, p_147423_2_, chunkZ, 5, 33, 5, 684.412D, 684.412D, 684.412D);
+		noiseData3 = noiseGen3.generateNoiseOctaves(noiseData3, chunkX, 0, chunkZ, 5, 33, 5, 8.555150000000001D, 4.277575000000001D, 8.555150000000001D);
+		noiseData1 = noiseGen1.generateNoiseOctaves(noiseData1, chunkX, 0, chunkZ, 5, 33, 5, 684.412D, 684.412D, 684.412D);
+		noiseData2 = noiseGen2.generateNoiseOctaves(noiseData2, chunkX, 0, chunkZ, 5, 33, 5, 684.412D, 684.412D, 684.412D);
 		boolean flag1 = false;
 		boolean flag = false;
 		int idx = 0;
@@ -559,12 +559,32 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 						//FINAL GENERATION
 						float f0 = (float)Math.sqrt((chunkX*chunkX+chunkZ*chunkZ)/(65536D*32));
+
+						//New from BiomeDistributor
+						f0 *= 0.03125;
+
 						double dd = this.getDistanceToNearestStructure(chunkX, chunkZ);
 						if (dd <= 8) {
 							f0 *= dd/8D;
 						}
 						float f3 = Math.max(-0.25F, 0.125F-f0*0.125F);
 						float f4 = 0.5F*f0;
+
+						/*
+						//New from BiomeDistributor
+						int r = 3;
+						WeightedAverage avg = new WeightedAverage();
+						for (int i = -r; i <= r; i++) {
+							for (int k = -r; k <= r; k++) {
+								int dx = (chunkX/4+i)*16+8;
+								int dz = (chunkZ/4+k)*16+8;
+								ChromaDimensionBiome biome = BiomeDistributor.getBiome(dx, dz);
+								int base = biome.getExactType().getBaseHeightDelta();
+								avg.addValue(base, 1D/(1D+ReikaMathLibrary.py3d(i, 0, k)));
+							}
+						}
+						f3 *= avg.getAverageValue();
+						 */
 
 						//Math.sqrt(chunkX*chunkX+chunkZ*chunkZ)/32F;
 						//8*Math.sin(chunkX/256D)+32*Math.cos(chunkZ/512D); - large mountains, interesting terrain
@@ -701,6 +721,10 @@ public class ChunkProviderChroma implements IChunkProvider {
 				for (int i = 0; i < n; i++) {
 					int dx = x + rand.nextInt(16) + 8;
 					int dz = z + rand.nextInt(16) + 8;
+					if (!wg.randomizePosition()) {
+						dx = x;
+						dz = z;
+					}
 					int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
 					wg.generate(worldObj, rand, dx, y, dz);
 				}

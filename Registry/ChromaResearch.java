@@ -39,8 +39,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -73,6 +73,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import cpw.mods.fml.relauncher.Side;
@@ -270,9 +271,10 @@ public enum ChromaResearch implements ProgressElement {
 	ORECLIP(		Chromabilities.ORECLIP,						ResearchLevel.CTM),
 	DOUBLECRAFT(	Chromabilities.DOUBLECRAFT,					ResearchLevel.CTM),
 	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.CTM),
-	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.CTM),
+	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.ENDGAME),
 	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
 	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
+	BEEALYZE(		Chromabilities.BEEALYZE),
 
 	STRUCTUREDESC("Structures", ""),
 	PYLON(			Structures.PYLON,		5,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON),
@@ -648,6 +650,9 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == PACKCHANGES) {
 			return PackModificationTracker.instance.getModifications(ChromatiCraft.instance).get(subpage-1).toString();
 		}
+		else if (this == BEES) {
+			return CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
+		}
 		return ChromaDescriptions.getNotes(this);
 	}
 
@@ -909,19 +914,27 @@ public enum ChromaResearch implements ProgressElement {
 			ArrayList<ItemStack> li = new ArrayList();
 			World world = ReikaWorldHelper.getBasicReferenceWorld();
 
-			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.DRONE));
-			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.PRINCESS));
-			li.add(CrystalBees.getCrystalBee().getBeeItem(world, EnumBeeType.QUEEN));
+			Collection<BeeSpecies> c = CrystalBees.getBasicBees();
 
-			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.DRONE));
-			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.PRINCESS));
-			li.add(CrystalBees.getPureBee().getBeeItem(world, EnumBeeType.QUEEN));
+			for (BeeSpecies b : c) {
+				li.add(b.getBeeItem(world, EnumBeeType.DRONE));
+				li.add(b.getBeeItem(world, EnumBeeType.PRINCESS));
+				li.add(b.getBeeItem(world, EnumBeeType.QUEEN));
+			}
 
 			for (int i = 0; i < 16; i++) {
 				CrystalElement e = CrystalElement.elements[i];
 				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.DRONE));
 				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.PRINCESS));
 				li.add(CrystalBees.getElementalBee(e).getBeeItem(world, EnumBeeType.QUEEN));
+			}
+
+			c = CrystalBees.getAdvancedBees();
+
+			for (BeeSpecies b : c) {
+				li.add(b.getBeeItem(world, EnumBeeType.DRONE));
+				li.add(b.getBeeItem(world, EnumBeeType.PRINCESS));
+				li.add(b.getBeeItem(world, EnumBeeType.QUEEN));
 			}
 
 			return li;
@@ -1046,10 +1059,6 @@ public enum ChromaResearch implements ProgressElement {
 
 	public String getTitle() {
 		return pageTitle;
-	}
-
-	public boolean hasSubpages() {
-		return this.isCrafting();
 	}
 
 	public ChromaResearch getParent() {
@@ -1185,6 +1194,7 @@ public enum ChromaResearch implements ProgressElement {
 				catch (Exception e) {
 					Dependency dep = r.getDependency();
 					if (dep != null && !(dep instanceof ConfigList)) {
+						e.printStackTrace();
 						throw new InstallationException(ChromatiCraft.instance, "Another mod/API, '"+dep.getDisplayName()+"' is an incompatible version. Update both mods if possible, or if updating "+dep.getDisplayName()+" caused this, revert to the previous version.");
 					}
 					else {
