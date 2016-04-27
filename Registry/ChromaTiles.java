@@ -284,6 +284,7 @@ public enum ChromaTiles implements TileEnum {
 			case FABRICATOR:
 			case PARTICLES:
 			case METEOR:
+			case LUMENWIRE:
 				return true;
 			default:
 				return false;

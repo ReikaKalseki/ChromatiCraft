@@ -24,7 +24,6 @@ import Reika.ChromatiCraft.World.Dimension.Structure.AntFarm.AntFarmEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarm.AntFarmTunnel;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -39,7 +38,7 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
-		int n = this.getTunnelCount();
+		int n = this.getTunnelCount()/4;
 		int h = 90;
 		int mh = 20;
 
@@ -81,10 +80,10 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 	}
 
 	private AntFarmTunnel createTunnel(int x, int z, int h, int mh, Random rand) {
-		CubeDirections dir = CubeDirections.list[rand.nextInt(CubeDirections.list.length)];
-		int s = ReikaRandomHelper.getRandomPlusMinus(0, 1);
-		int y = mh+rand.nextInt(h-mh);
-		return new AntFarmTunnel(this, dir, s, 2+rand.nextInt(12), 8+rand.nextInt(9), 16+rand.nextInt(17), 3+rand.nextInt(2), x, y, z, mainSpaces);
+		double s = ReikaRandomHelper.getRandomPlusMinus(0D, 45D);
+		int in = 15;
+		int y = mh+in+rand.nextInt(h-mh-in*2);
+		return new AntFarmTunnel(this, rand.nextDouble()*360, 24+rand.nextInt(96), s, 3+rand.nextInt(2), x, y, z, mainSpaces);
 	}
 
 	private int getTunnelCount() {

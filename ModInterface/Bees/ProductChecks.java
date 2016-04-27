@@ -1,18 +1,24 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
-import net.minecraft.block.Block;
+import java.util.HashMap;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.MultiKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.BlockCheck;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
@@ -29,12 +35,10 @@ public class ProductChecks {
 
 	}
 
-	static class AreaBlockCheck extends ProductCondition {
+	static class IridescentShardCheck extends ProductCondition {
 
-		private final BlockCheck check;
-
-		AreaBlockCheck(BlockCheck bk) {
-			check = bk;
+		IridescentShardCheck() {
+			//new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0), 1);
 		}
 
 		@Override
@@ -43,26 +47,147 @@ public class ProductChecks {
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
 			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			return this.check(world, x, y, z, r, r2);
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			if (ep == null)
+				return false;
+			if (!ProgressStage.ALLOY.isPlayerAtStage(ep))
+				return false;
+			TileEntityAuraInfuser te = this.check(world, x, y, z, r2, r2);
+			return te != null && te.hasStructure() && te.isOwnedByPlayer(ep);
 		}
 
-		public boolean check(World world, int x, int y, int z, int r, int vr) {
-			int d = 2;
+		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr) {
 			boolean last = false;
-			for (int i = -r; i <= r; i += d) {
-				for (int k = -r; k <= r; k += d) {
-					for (int h = -vr; h <= vr; h += d) {
+			for (int i = -r; i <= r; i += 2) {
+				for (int k = -r; k <= r; k += 2) {
+					for (int h = -vr; h <= vr; h += 1) {
 						int dx = x+i;
 						int dy = y+h;
 						int dz = z+k;
-						if (check.matchInWorld(world, dx, dy, dz)) {
-							return true;
+						if (ChromaTiles.getTile(world, dx, dy, dz) == ChromaTiles.INFUSER) {
+							return (TileEntityAuraInfuser)world.getTileEntity(dx, dy, dz);
 						}
 					}
 				}
 			}
-			return false;
+			return null;
+		}
+
+		@Override
+		public String getDescription() {
+			return "An operational infusion ring";
+		}
+
+
+	}
+
+	static class AuraLocusCheck extends ProductCondition {
+
+		AuraLocusCheck() {
+
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			EntityPlayer ep = ChromaBeeHelpers.getOwner(ibh);
+			if (ep == null)
+				return false;
+			TileEntityAuraPoint te = TileEntityAuraPoint.getPoint(ep);
+			if (te == null)
+				return false;
+			int[] r = ChromaBeeHelpers.getSearchRange(ibg, ibh);
+			return Math.abs(te.xCoord-x) <= r[0] && Math.abs(te.zCoord-z) <= r[0] && Math.abs(te.yCoord-y) <= r[1];
+		}
+
+		@Override
+		public String getDescription() {
+			return "A nearby Aura Locus";
+		}
+	}
+
+	static class AreaBlockCheck extends ProductCondition {
+
+		private final BlockCheck check;
+		private final int stepSize;
+		private final int stepSizeY;
+
+		private static final HashMap<WorldLocation, Coordinate> successfulChecks = new HashMap();
+		private static final WeightedRandom<Double> rangeRandom = new WeightedRandom();
+		private static final int SEARCH_LOCS = 16;
+
+		static {
+			rangeRandom.addEntry(-1D, 1D);
+			rangeRandom.addEntry(1D, 4D);
+			rangeRandom.addEntry(0.75D, 6D);
+			rangeRandom.addEntry(0.5D, 8D);
+			rangeRandom.addEntry(0.25D, 16D);
+			rangeRandom.addEntry(0.125D, 32D);
+		}
+
+		AreaBlockCheck(BlockCheck bk, int s) {
+			this(bk, s, s);
+		}
+
+		AreaBlockCheck(BlockCheck bk, int s, int sy) {
+			check = bk;
+			stepSize = s;
+			stepSizeY = sy;
+		}
+
+		@Override
+		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
+			int[] r = ChromaBeeHelpers.getSearchRange(ibg, ibh);
+			WorldLocation loc = ChromaBeeHelpers.getLocation(ibh);
+			Coordinate c = successfulChecks.get(loc);
+			if (c != null && !this.validate(world, loc, c, r[0], r[1]))
+				c = null;
+			if (c == null) {
+				Coordinate find = this.check(world, x, y, z, r[0], r[1]);
+				if (find != null) {
+					successfulChecks.put(loc, find);
+					c = find;
+				}
+			}
+			return c != null;
+		}
+
+		private boolean validate(World world, WorldLocation loc, Coordinate c, int r, int vr) {
+			if (!c.isWithinSquare(new Coordinate(loc), r, vr, r))
+				return false;
+			if (!check.matchInWorld(world, c.xCoord, c.yCoord, c.zCoord))
+				return false;
+			return true;
+		}
+
+		private Coordinate check(World world, int x, int y, int z, int r, int vr) {
+			double f = rangeRandom.getRandomEntry();
+			if (f == -1) {
+				for (int i = -r; i <= r; i += stepSize) {
+					for (int k = -r; k <= r; k += stepSize) {
+						for (int h = -vr; h <= vr; h += stepSizeY) {
+							int dx = x+i;
+							int dy = y+h;
+							int dz = z+k;
+							if (check.matchInWorld(world, dx, dy, dz)) {
+								return new Coordinate(dx, dy, dz);
+							}
+						}
+					}
+				}
+			}
+			else {
+				int dr = (int)(f*r);
+				int dvr = (int)(f*vr);
+				for (int i = 0; i < SEARCH_LOCS; i++) {
+					int dx = ReikaRandomHelper.getRandomPlusMinus(x, dr);
+					int dy = ReikaRandomHelper.getRandomPlusMinus(y, dvr);
+					int dz = ReikaRandomHelper.getRandomPlusMinus(z, dr);
+					if (check.matchInWorld(world, dx, dy, dz)) {
+						return new Coordinate(dx, dy, dz);
+					}
+				}
+			}
+			return null;
 		}
 
 		@Override
@@ -96,19 +221,16 @@ public class ProductChecks {
 	static class CrystalPlantCheck extends ProductCondition {
 
 		private final CrystalElement color;
+		private final AreaBlockCheck check;
 
 		CrystalPlantCheck(CrystalElement e) {
 			color = e;
+			check = new AreaBlockCheck(new BlockKey(ChromaBlocks.PLANT.getBlockInstance(), color.ordinal()), 1);
 		}
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
-			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
-			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.PLANT.getBlockInstance(), color.ordinal());
+			return check.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override
@@ -120,19 +242,16 @@ public class ProductChecks {
 	static class FlowerCheck extends ProductCondition {
 
 		private final CrystalElement color;
+		private final AreaBlockCheck check;
 
 		FlowerCheck(CrystalElement e) {
 			color = e;
+			check = new AreaBlockCheck(new BlockKey(ChromaBlocks.DYEFLOWER.getBlockInstance(), color.ordinal()), 1);
 		}
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
-			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
-			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			return ReikaWorldHelper.findNearBlock(world, x, y, z, r2, ChromaBlocks.DYEFLOWER.getBlockInstance(), color.ordinal());
+			return check.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override
@@ -144,43 +263,19 @@ public class ProductChecks {
 	static class LeafCheck extends ProductCondition {
 
 		private final CrystalElement color;
+		private final AreaBlockCheck check;
 
 		LeafCheck(CrystalElement e) {
 			color = e;
+			MultiKey mk = new MultiKey();
+			mk.add(new BlockKey(ChromaBlocks.DECAY.getBlockInstance(), color.ordinal()));
+			//mk.add(new BlockKey(ChromaBlocks.DYELEAF.getBlockInstance(), color.ordinal()));
+			check = new AreaBlockCheck(mk, 2, 2);
 		}
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
-			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
-			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			return this.findLeaf(world, x, y, z, r, r2);
-		}
-
-		private boolean findLeaf(World world, int x, int y, int z, int r, int vr) {
-			int d = 2;
-			boolean last = false;
-			for (int i = -r; i <= r; i += d) {
-				for (int k = -r; k <= r; k += d) {
-					for (int h = -vr; h <= vr; h += d) {
-						int dx = x+i;
-						int dy = y+h;
-						int dz = z+k;
-						Block b = world.getBlock(dx, dy, dz);
-						if (b instanceof BlockDyeLeaf && world.getBlockMetadata(dx, dy, dz) == color.ordinal()) {
-							if (last)
-								return true;
-							else
-								last = true;
-						}
-						else
-							last = false;
-					}
-				}
-			}
-			return false;
+			return check.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override
@@ -197,67 +292,42 @@ public class ProductChecks {
 		private final AreaBlockCheck crystal;
 		private final AreaBlockCheck chroma;
 		private final LeafCheck leaf;
+		private final ProgressionCheck progress;
 
 		ChargedShardCheck(CrystalElement e) {
 			color = e;
 			leaf = new LeafCheck(e);
-			chroma = new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0));
+			chroma = new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0), 1);
 			MultiKey crys = new MultiKey();
 			crys.add(new BlockKey(ChromaBlocks.CRYSTAL.getBlockInstance(), 0));
 			crys.add(new BlockKey(ChromaBlocks.SUPER.getBlockInstance(), 0));
-			crystal = new AreaBlockCheck(crys);
+			crystal = new AreaBlockCheck(crys, 1);
+			progress = new ProgressionCheck(ProgressStage.SHARDCHARGE);
 		}
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			return crystal.check(world, x, y, z, ibg, ibh) && chroma.check(world, x, y, z, ibg, ibh) && leaf.check(world, x, y, z, ibg, ibh);
+			return progress.check(world, x, y, z, ibg, ibh) && crystal.check(world, x, y, z, ibg, ibh) && chroma.check(world, x, y, z, ibg, ibh) && leaf.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override
 		public String getDescription() {
-			return color.displayName+" Crystal and Leaves and Liquid Chroma";
+			return color.displayName+" Crystal\n"+color.displayName+" Leaves\nLiquid Chroma";
 		}
 
 	}
 
 	static class RainbowTreeCheck extends ProductCondition {
 
-		RainbowTreeCheck() {
+		private final AreaBlockCheck check;
 
+		RainbowTreeCheck() {
+			check = new AreaBlockCheck(new BlockKey(ChromaBlocks.RAINBOWLEAF.getBlockInstance(), 0), 3, 2);
 		}
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
-			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
-			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
-			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-
-			return this.findLeaf(world, x, y, z, r, r2);
-		}
-
-		private boolean findLeaf(World world, int x, int y, int z, int r, int vr) {
-			int d = 2;
-			boolean last = false;
-			for (int i = -r; i <= r; i += d) {
-				for (int k = -r; k <= r; k += d) {
-					for (int h = -vr; h <= vr; h += d) {
-						int dx = x+i;
-						int dy = y+h;
-						int dz = z+k;
-						Block b = world.getBlock(dx, dy, dz);
-						if (b == ChromaBlocks.RAINBOWLEAF.getBlockInstance() && world.getBlockMetadata(dx, dy, dz) == 0) {
-							if (last)
-								return true;
-							else
-								last = true;
-						}
-						else
-							last = false;
-					}
-				}
-			}
-			return false;
+			return check.check(world, x, y, z, ibg, ibh);
 		}
 
 		@Override

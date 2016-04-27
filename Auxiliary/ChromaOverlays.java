@@ -38,14 +38,15 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -58,10 +59,10 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.ChromatiCraft.Registry.Chromabilities;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.Chromabilities;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Base.TileEntityBase;
@@ -736,6 +737,8 @@ public class ChromaOverlays {
 		if (pos != null) {
 			TileEntity te = ep.worldObj.getTileEntity(pos.blockX, pos.blockY, pos.blockZ);
 			if (te instanceof LumenTile) {
+				if (te instanceof TileEntityAdjacencyUpgrade && !ChromaOptions.POWEREDACCEL.getState())
+					return;
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
 				this.renderStorageOverlay(ep, gsc, (LumenTile)te);

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -84,6 +85,9 @@ public class RenderLumenWire extends ChromaRenderBase {
 		}
 		this.renderModel(te, model);
 		GL11.glPopMatrix();
+
+		if (MinecraftForgeClient.getRenderPass() == 1)
+			te.particles.render(true);
 
 		GL11.glPopMatrix();
 	}

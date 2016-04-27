@@ -367,12 +367,12 @@ public class AbilityHelper {
 	}
 
 	@SubscribeEvent
-	public void clearLexiconCache(SinglePlayerLogoutEvent evt) {
+	public void disableNoClip(SinglePlayerLogoutEvent evt) {
 		isNoClipEnabled = false;
 	}
 
 	@SubscribeEvent
-	public void clearLexiconCache(ClientDisconnectionFromServerEvent evt) {
+	public void disableNoClip(ClientDisconnectionFromServerEvent evt) {
 		isNoClipEnabled = false;
 	}
 
@@ -1144,7 +1144,7 @@ public class AbilityHelper {
 
 	@SubscribeEvent
 	public void rerouteStackToMESystem(EntityItemPickupEvent evt) {
-		if (evt.entityPlayer.worldObj.isRemote)
+		if (evt.entityPlayer.worldObj.isRemote || evt.item.isDead)
 			return;
 		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
 			ItemStack is = evt.item.getEntityItem();
@@ -1793,6 +1793,23 @@ public class AbilityHelper {
 					IBeeHousingInventory ii = ibh.getBeeInventory();
 					ReikaBeeHelper.analyzeBee(ii.getQueen());
 					ReikaBeeHelper.analyzeBee(ii.getDrone());
+					if (te instanceof IInventory) {
+						IInventory ii2 = (IInventory)te;
+						for (int i = 0; i < ii2.getSizeInventory(); i++) {
+							ReikaBeeHelper.analyzeBee(ii2.getStackInSlot(i));
+						}
+					}
+				}
+				else if (te instanceof IBeeHousingInventory) {
+					IBeeHousingInventory ii = (IBeeHousingInventory)te;
+					ReikaBeeHelper.analyzeBee(ii.getQueen());
+					ReikaBeeHelper.analyzeBee(ii.getDrone());
+					if (te instanceof IInventory) {
+						IInventory ii2 = (IInventory)te;
+						for (int i = 0; i < ii2.getSizeInventory(); i++) {
+							ReikaBeeHelper.analyzeBee(ii2.getStackInSlot(i));
+						}
+					}
 				}
 			}
 		}

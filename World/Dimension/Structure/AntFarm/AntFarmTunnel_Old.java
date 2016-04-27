@@ -14,65 +14,80 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
-import Reika.DragonAPI.Instantiable.Spline;
-import Reika.DragonAPI.Instantiable.Spline.BasicSplinePoint;
-import Reika.DragonAPI.Instantiable.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
-public class AntFarmTunnel extends StructurePiece {
+public class AntFarmTunnel_Old extends StructurePiece {
 
-	public final double direction;
-	public final double slope;
+	public final CubeDirections direction;
+	public final int slope;
+
+	public final int length1;
+	public final int length2;
+	public final int length3;
 
 	public final int tunnelRadius;
-
-	public final int length;
 
 	private final HashSet<Coordinate> air = new HashSet();
 	private final HashMap<Coordinate, BlockKey> blocks = new HashMap();
 
-	public AntFarmTunnel(AntFarmGenerator a, double dir, int len, double s, int r, int x, int y, int z, HashSet<Coordinate> airSpaces) {
+	public AntFarmTunnel_Old(AntFarmGenerator a, CubeDirections dir, int s, int l1, int l2, int l3, int r, int x, int y, int z, HashSet<Coordinate> airSpaces) {
 		super(a);
 		direction = dir;
 		slope = s;
 
+		length1 = l1;
+		length2 = l2;
+		length3 = l3;
+
 		tunnelRadius = r;
-		length = len;
 
 		this.initialize(x, y, z, airSpaces);
 	}
 
 	private void initialize(int x, int y, int z, HashSet<Coordinate> airSpaces) {
-		DecimalPosition p1 = new DecimalPosition(x+0.5, y+0.5, z+0.5);
-		double[] d = ReikaPhysicsHelper.polarToCartesian(length, slope, direction);
-		DecimalPosition p2 = p1.offset(d[0], d[1], d[2]);
-		LightningBolt b = new LightningBolt(p1, p2, 3); //was 6, then 2
-		b.variance = Math.min(6, length/8D); //was 12, L/4
-		b.velocity = b.variance*2;
-		b.update();
-		Spline s = new Spline(SplineType.CHORDAL);
-		for (int i = 0; i <= b.nsteps; i++) {
-			s.addPoint(new BasicSplinePoint(b.getPosition(i)));
+		for (int d = 0; d < length1; d++) {
+			int dx = x+direction.directionX*d;
+			int dz = z+direction.directionZ*d;
+
+			this.generateTunnelSection(dx, y, dz, tunnelRadius, airSpaces);
 		}
-		List<DecimalPosition> li = s.get(4*length, false);
-		for (DecimalPosition p : li) {
-			this.generateTunnelSection(MathHelper.floor_double(p.xCoord), MathHelper.floor_double(p.yCoord), MathHelper.floor_double(p.zCoord), tunnelRadius, airSpaces);
+
+		x += direction.directionX*length1;
+		z += direction.directionZ*length1;
+
+		for (int d = 0; d < length2; d++) {
+			int dx = x+direction.directionX*d;
+			int dz = z+direction.directionZ*d;
+			int dy = y+d*slope;
+
+			this.generateTunnelSection(dx, dy, dz, tunnelRadius, airSpaces);
 		}
+
+		y += length2*slope;
+
+		x += direction.directionX*length2;
+		z += direction.directionZ*length2;
+
+		for (int d = 0; d < length3; d++) {
+			int dx = x+direction.directionX*d;
+			int dz = z+direction.directionZ*d;
+
+			this.generateTunnelSection(dx, y, dz, Math.max(2, Math.round(tunnelRadius-0.125F*d)), airSpaces);
+		}
+
+		x += direction.directionX*length3;
+		z += direction.directionZ*length3;
 	}
 
 	private void generateTunnelSection(int dx, int dy, int dz, int r, HashSet<Coordinate> airSpaces) {

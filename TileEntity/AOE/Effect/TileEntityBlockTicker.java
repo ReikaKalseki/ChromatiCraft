@@ -1,6 +1,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -23,9 +24,17 @@ public class TileEntityBlockTicker extends TileEntityAdjacencyUpgrade {
 			int dy = y+dir.offsetY;
 			int dz = z+dir.offsetZ;
 			Block b = world.getBlock(dx, dy, dz);
-			b.updateTick(world, dx, dy, dz, rand);
-			MinecraftForge.EVENT_BUS.post(new BlockTickEvent(world, dx, dy, dz, b, UpdateFlags.FORCED.flag));
+			if (this.canTickBlock(b)) {
+				b.updateTick(world, dx, dy, dz, rand);
+				MinecraftForge.EVENT_BUS.post(new BlockTickEvent(world, dx, dy, dz, b, UpdateFlags.FORCED.flag));
+			}
 		}
+		return true;
+	}
+
+	private boolean canTickBlock(Block b) {
+		if (b instanceof BlockRedstoneDiode)
+			return false;
 		return true;
 	}
 

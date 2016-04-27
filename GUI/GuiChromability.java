@@ -36,7 +36,7 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 	protected int xSize;
 	protected int ySize;
 
-	private final ArrayList<Ability> abilities = new ArrayList();
+	protected final ArrayList<Ability> abilities = new ArrayList();
 	private int index = 0;
 
 	private int dx = 0;

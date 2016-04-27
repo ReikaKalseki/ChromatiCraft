@@ -10,31 +10,33 @@
 package Reika.ChromatiCraft.Render.Particle;
 
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-
-import org.lwjgl.opengl.GL11;
-
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.ParticleEngine;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderMode;
+import Reika.ChromatiCraft.Render.ParticleEngine.RenderModeFlags;
+import Reika.ChromatiCraft.Render.ParticleEngine.TextureMode;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class EntityBlurFX extends EntityFX {
+public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	private float scale;
 	private float cyclescale;
+
 	private boolean noSlow = false;
 	private boolean rapidExpand = false;
+	private boolean alphaFade = false;
+
 	private AxisAlignedBB bounds = null;
 	private double collideAngle;
 	private boolean colliding = false;
@@ -44,11 +46,17 @@ public class EntityBlurFX extends EntityFX {
 	private int preColor = -1;
 	private int fadeColor = -1;
 
+	private float defaultRed;
+	private float defaultGreen;
+	private float defaultBlue;
+
 	private Coordinate destination;
 
 	private EntityFX lock;
 
 	private boolean additiveBlend = true;
+	private boolean depthTest = true;
+	private boolean alphaTest = false;
 
 	private MotionController motionController;
 	private PositionController positionController;
@@ -71,9 +79,7 @@ public class EntityBlurFX extends EntityFX {
 		motionY = vy;
 		motionZ = vz;
 		scale = 1F;
-		particleRed = e.getRed()/255F;
-		particleGreen = e.getGreen()/255F;
-		particleBlue = e.getBlue()/255F;
+		this.setColor(e.getColor());
 		particleIcon = ChromaIcons.FADE.getIcon();
 	}
 
@@ -102,6 +108,11 @@ public class EntityBlurFX extends EntityFX {
 		return this;
 	}
 
+	public EntityBlurFX setAlphaFading() {
+		alphaFade = true;
+		return this;
+	}
+
 	public final EntityBlurFX setGravity(float g) {
 		particleGravity = g;
 		return this;
@@ -111,6 +122,9 @@ public class EntityBlurFX extends EntityFX {
 		particleRed = r/255F;
 		particleGreen = g/255F;
 		particleBlue = b/255F;
+		defaultRed = particleRed;
+		defaultGreen = particleGreen;
+		defaultBlue = particleBlue;
 		return this;
 	}
 
@@ -157,6 +171,16 @@ public class EntityBlurFX extends EntityFX {
 
 	public EntityBlurFX setBasicBlend() {
 		additiveBlend = false;
+		return this;
+	}
+
+	public EntityBlurFX setNoDepthTest() {
+		depthTest = false;
+		return this;
+	}
+
+	public EntityBlurFX enableAlphaTest() {
+		alphaTest = true;
 		return this;
 	}
 
@@ -231,16 +255,36 @@ public class EntityBlurFX extends EntityFX {
 			this.setColor(c);
 		}
 
-		if (rapidExpand)
-			particleScale = scale*(particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
-		else
-			particleScale = scale*(float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
-		//if (particleAge < 10)
-		//	particleScale = scale*(particleAge+1)/10F;
-		//else if (particleAge > 50)
-		//	particleScale = scale*(61-particleAge)/10F;
-		//else
-		//	particleScale = scale;
+		if (alphaFade) {
+			particleScale = scale;
+			float f = 1;
+			if (rapidExpand) {
+				f = (particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
+			}
+			else {
+				f = (float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
+			}
+			if (additiveBlend) {
+				particleRed = defaultRed*f;
+				particleGreen = defaultGreen*f;
+				particleBlue = defaultBlue*f;
+			}
+			else {
+				particleAlpha = f;
+			}
+		}
+		else {
+			if (rapidExpand)
+				particleScale = scale*(particleMaxAge/age >= 12 ? age*12F/particleMaxAge : 1-age/(float)particleMaxAge);
+			else
+				particleScale = scale*(float)Math.sin(Math.toRadians(180D*age/particleMaxAge));
+			//if (particleAge < 10)
+			//	particleScale = scale*(particleAge+1)/10F;
+			//else if (particleAge > 50)
+			//	particleScale = scale*(61-particleAge)/10F;
+			//else
+			//	particleScale = scale;
+		}
 
 		if (cyclescale > 0) {
 			CrystalElement e = CrystalElement.elements[(int)((age*cyclescale)%16)];
@@ -293,7 +337,7 @@ public class EntityBlurFX extends EntityFX {
 	protected void onCollision() {
 
 	}
-
+	/*
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{
@@ -309,7 +353,7 @@ public class EntityBlurFX extends EntityFX {
 		BlendMode.DEFAULT.apply();
 		v5.startDrawingQuads();
 	}
-
+	 */
 	@Override
 	public int getBrightnessForRender(float par1)
 	{
@@ -320,6 +364,16 @@ public class EntityBlurFX extends EntityFX {
 	public int getFXLayer()
 	{
 		return 2;
+	}
+
+	@Override
+	public RenderMode getRenderMode() {
+		return new RenderMode().setFlag(RenderModeFlags.ADDITIVE, additiveBlend).setFlag(RenderModeFlags.DEPTH, depthTest).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, alphaTest && additiveBlend);//additiveBlend ? RenderMode.ADDITIVEDARK : RenderMode.LIT;
+	}
+
+	@Override
+	public TextureMode getTexture() {
+		return ParticleEngine.instance.blockTex;
 	}
 
 }

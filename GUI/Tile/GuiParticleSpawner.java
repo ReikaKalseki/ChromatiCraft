@@ -178,11 +178,13 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				break;
 			}
 			case TIMING:
-				for (int i = 0; i < 6; i++) {
+				for (int i = 0; i < 8; i++) {
 					int x = j+29+(i%2)*122;
 					int y = k+19+(i/2)*24;
 					int u = i%2 == 1 ? 126 : 106;
 					int v = 173;
+					if (i >= 6)
+						v += 20;
 					GuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
 					buttonList.add(b);
 				}
@@ -312,6 +314,12 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				break;
 			case 5:
 				tile.particles.particleRate.increase();
+				break;
+			case 6:
+				tile.particles.alphaFade = false;
+				break;
+			case 7:
+				tile.particles.alphaFade = true;
 				break;
 		}
 	}
@@ -593,6 +601,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				case TIMING:
 					options.add(new VariableOption("Lifetime", p.particles.particleLife));
 					options.add(new SliderOption("Rate", p.particles.particleRate));
+					options.add(new ToggleOption("Alpha Fade", p.particles.alphaFade));
 					break;
 				case MODIFIER:
 					options.add(new VariableOption("Gravity", p.particles.particleGravity));

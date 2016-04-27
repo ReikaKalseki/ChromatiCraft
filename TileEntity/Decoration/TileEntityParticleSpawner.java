@@ -86,6 +86,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 	@Override
 	public void readCopyableData(NBTTagCompound NBT) {
 		particles.readFromNBT(NBT);
+		particles.location = new Coordinate(this);
 		this.syncAllData(true);
 	}
 
@@ -112,6 +113,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		public boolean particleCollision = false;
 		public boolean rapidExpand = false;
 		public boolean noSlowdown = false;
+		public boolean alphaFade = false;
 
 		public ChromaIcons particleIcon = ChromaIcons.FADE;
 
@@ -143,6 +145,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 					fx.setRapidExpand();
 				if (noSlowdown)
 					fx.setNoSlowdown();
+				if (alphaFade)
+					fx.setAlphaFading();
 				return fx;
 			}
 			else {
@@ -164,6 +168,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			NBT.setBoolean("collide", particleCollision);
 			NBT.setBoolean("rapid", rapidExpand);
 			NBT.setBoolean("noslow", noSlowdown);
+			NBT.setBoolean("afade", alphaFade);
 
 			NBT.setString("icon", particleIcon.name());
 
@@ -198,6 +203,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			particleCollision = NBT.getBoolean("collide");
 			rapidExpand = NBT.getBoolean("rapid");
 			noSlowdown = NBT.getBoolean("noslow");
+			alphaFade = NBT.getBoolean("afade");
 
 			try {
 				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));

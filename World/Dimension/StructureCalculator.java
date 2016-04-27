@@ -179,9 +179,11 @@ public class StructureCalculator extends ThreadedGenerator {
 		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 3000); //was +/- 4000, then 2000
 		int x = structureOriginX+(int)(r*Math.cos(ang));
 		int z = structureOriginZ+(int)(r*Math.sin(ang));
+		long t = System.currentTimeMillis();
 		s.generator.startCalculate(s.color, x, z, rand);
+		double dt = (System.currentTimeMillis()-t)/1000D;
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
-			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ();
+			String sg = "CHROMATICRAFT: Generated a "+s.color+" "+s.generator+" at "+s.generator.getEntryPosX()+", "+s.generator.getEntryPosZ()+" in "+dt+" s";
 			ReikaJavaLibrary.pConsole(sg);
 		}
 	}

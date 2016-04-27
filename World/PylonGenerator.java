@@ -56,6 +56,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -159,6 +160,13 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	@SubscribeEvent
 	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
+		ChromatiCraft.logger.debug("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
+		colorCache.clear();
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void clearOnLogout(ClientLogoutEvent evt) {
 		ChromatiCraft.logger.debug("["+FMLCommonHandler.instance().getEffectiveSide()+"] Logout clear");
 		colorCache.clear();
 	}

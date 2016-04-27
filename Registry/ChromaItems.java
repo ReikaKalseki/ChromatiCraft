@@ -412,6 +412,7 @@ public enum ChromaItems implements ItemEnum {
 	public boolean overridesRightClick(ItemStack is) {
 		switch(this) {
 			case TOOL:
+			case LINKTOOL:
 				return true;
 			default:
 				return false;

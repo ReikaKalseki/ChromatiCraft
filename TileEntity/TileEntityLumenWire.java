@@ -38,6 +38,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Rendering.FXCollection;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
@@ -67,6 +68,14 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 
 	public static final int MAX_LENGTH = 6;
 	public static final int ACTIVATION_LENGTH = 30;
+
+	@SideOnly(Side.CLIENT)
+	public FXCollection particles;
+
+	public TileEntityLumenWire() {
+		if (this.getSide() == Side.CLIENT)
+			particles = new FXCollection();
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -212,18 +221,26 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 	}
 
 	private boolean testBounds(World world, int x, int y, int z) {
+		AxisAlignedBB box = this.getCheckBox(world, x, y, z);
+		return check.check(this, world, box);
+	}
+
+	private AxisAlignedBB getCheckBox(World world, int x, int y, int z) {
 		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
+		if (connection == null)
+			return box;
 		box.minX = Math.min(box.minX, connection.xCoord);
 		box.minY = Math.min(box.minY, connection.yCoord);
 		box.minZ = Math.min(box.minZ, connection.zCoord);
 		box.maxX = Math.max(box.maxX, connection.xCoord+1);
 		box.maxY = Math.max(box.maxY, connection.yCoord+1);
 		box.maxZ = Math.max(box.maxZ, connection.zCoord+1);
-		return check.check(this, world, box);
+		return box;
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void doConnectionParticles(World world, int x, int y, int z) {
+		particles.update();
 		double dp = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
 		int n = 1+rand.nextInt(3);
 		float ds = 0;
@@ -262,6 +279,7 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 			int l = 10+rand.nextInt(10);
 			float s = 1.5F+rand.nextFloat()*1F+ds;
 			int p = rand.nextInt(4);
+			/*
 			EntityBlurFX fx = new EntityBlurFX(world, dx, dy, dz).setLife(l).setColor(check.renderColor).setScale(s);
 			EntityBlurFX fx2 = new EntityBlurFX(world, dx, dy, dz).setLife(l).setColor(0xffffff).setScale(s/2);
 			if (rand.nextBoolean()) {
@@ -284,6 +302,21 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 			}
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+			 */
+			ChromaIcons ico = ChromaIcons.FADE;
+			switch(p) {
+				case 1:
+					ico = ChromaIcons.FLARE;
+					break;
+				case 2:
+					ico = ChromaIcons.CENTER;
+					break;
+				case 3:
+					ico = ChromaIcons.BIGFLARE;
+					break;
+			}
+			particles.addEffect(dx-x, dy-y, dz-z, ico.getIcon(), l, s, check.renderColor);
+			particles.addEffect(dx-x, dy-y, dz-z, ico.getIcon(), l, s/2F, 0xffffff);
 		}
 	}
 
@@ -488,6 +521,11 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 	@Override
 	public int getWeakPower(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
 		return this.getStrongPower(world, x, y, z, side);
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return this.getCheckBox(worldObj, xCoord, yCoord, zCoord);
 	}
 
 }

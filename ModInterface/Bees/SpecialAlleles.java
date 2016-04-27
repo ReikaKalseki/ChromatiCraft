@@ -98,7 +98,7 @@ public class SpecialAlleles {
 		private long lastWorldTickClient = -1;
 
 		public CrystalEffect(CrystalElement color) {
-			super("effect.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName, EnumBeeChromosome.EFFECT);
+			super("effect.cavecrystal."+color.name().toLowerCase(Locale.ENGLISH), color.displayName+" Aura", EnumBeeChromosome.EFFECT);
 			this.color = color;
 		}
 
@@ -121,11 +121,13 @@ public class SpecialAlleles {
 			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
-				int[] r = ibg.getTerritory();
-				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
-				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
-				for (EntityLivingBase e : li) {
-					CrystalBlock.applyEffectFromColor(600, 0, e, color);
+				if (this.canApplyEffect(world, c.posX, c.posY, c.posZ)) {
+					int[] r = ibg.getTerritory();
+					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
+					List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+					for (EntityLivingBase e : li) {
+						CrystalBlock.applyEffectFromColor(600, 0, e, color);
+					}
 				}
 				if (lastWorldTick != world.getTotalWorldTime() && CrystalBees.rand.nextInt(8000) == 0) {
 					ChromaAux.spawnInteractionBallLightning(world, c.posX, c.posY, c.posZ, color);
@@ -133,6 +135,12 @@ public class SpecialAlleles {
 				lastWorldTick  = world.getTotalWorldTime();
 			}
 			return ied;
+		}
+
+		private boolean canApplyEffect(World world, int x, int y, int z) {
+			if (color == CrystalElement.BLUE)
+				return world.canBlockSeeTheSky(x, y+1, z);
+			return true;
 		}
 
 		private boolean isValidBeeForEffect(IAlleleBeeSpecies bee) {
@@ -160,7 +168,7 @@ public class SpecialAlleles {
 							EntityFX fx = new EntityRuneFX(world, px, py, pz, color).setGravity(0).setScale(s).setFading();
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 						}
-						int n2 = (int)(Math.pow(n*1.5, 1.5)/2D);
+						int n2 = (int)(Math.pow(n*1.5, 1.5)/4D);
 						for (int i = 0; i < n2; i++) {
 							double px = ReikaRandomHelper.getRandomBetween(box.minX, box.maxX);
 							double py = ReikaRandomHelper.getRandomBetween(box.minY, box.maxY);
@@ -313,7 +321,8 @@ public class SpecialAlleles {
 			ArrayList<String> li = new ArrayList();
 			li.add("Unmodified flower allele");
 			li.add("'"+CrystalBees.superFlowering.getAllele().getName()+"' flowering");
-			li.add("Biome temperature between 8C and 32C, 50% boost from Rainbow Forest");
+			li.add("Ambient temperature between 8C and 32C");
+			li.add("50% boost from Rainbow Forest");
 			li.add("50% boost from genetic superiority");
 			li.add("33% boost from '"+ProgressStage.DIMENSION.getTitle()+"' progression");
 			li.add("Linear gains from faster production speeds");
@@ -425,7 +434,8 @@ public class SpecialAlleles {
 			ArrayList<String> li = new ArrayList();
 			li.add("Unmodified flower allele");
 			li.add("'"+Flowering.AVERAGE.getAllele().getName()+"' flowering");
-			li.add("Biome temperature between 8C and 32C, 50% boost from Rainbow Forest");
+			li.add("Ambient temperature between 8C and 32C");
+			li.add("50% boost from Rainbow Forest");
 			li.add("50% boost from genetic superiority");
 			li.add("33% boost from '"+ProgressStage.SHARDCHARGE.getTitle()+"' progression");
 			li.add("Linear gains from faster production speeds");

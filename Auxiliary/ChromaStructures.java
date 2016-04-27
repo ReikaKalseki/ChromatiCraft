@@ -44,6 +44,7 @@ public class ChromaStructures {
 		CASTING2(),
 		CASTING3(),
 		RITUAL(),
+		RITUAL2(),
 		INFUSION(),
 		TREE(),
 		TREE_BOOSTED(),
@@ -76,7 +77,9 @@ public class ChromaStructures {
 				case CASTING3:
 					return getCastingLevelThree(w, 0, 0, 0);
 				case RITUAL:
-					return getRitualStructure(w, 0, 0, 0);
+					return getRitualStructure(w, 0, 0, 0, false, false);
+				case RITUAL2:
+					return getRitualStructure(w, 0, 0, 0, true, true);
 				case INFUSION:
 					return getInfusionStructure(w, 0, 0, 0);
 				case TREE:
@@ -1977,7 +1980,7 @@ public class ChromaStructures {
 		return array;
 	}
 
-	public static FilledBlockArray getRitualStructure(World world, int x, int y, int z) {
+	public static FilledBlockArray getRitualStructure(World world, int x, int y, int z, boolean allowEnhance, boolean requireEnhance) {
 		FilledBlockArray array = new FilledBlockArray(world);
 		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 		for (int i = -2; i <= 2; i++) {
@@ -2000,10 +2003,24 @@ public class ChromaStructures {
 		}
 
 		for (int i = -4; i <= 4; i++) {
-			array.setBlock(x-4, y+1, z+i, b, 1);
-			array.setBlock(x+4, y+1, z+i, b, 1);
-			array.setBlock(x+i, y+1, z-4, b, 1);
-			array.setBlock(x+i, y+1, z+4, b, 1);
+			if (requireEnhance) {
+				array.setBlock(x-4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+				array.setBlock(x+4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+				array.setBlock(x+i, y+1, z-4, b, StoneTypes.GLOWBEAM.ordinal());
+				array.setBlock(x+i, y+1, z+4, b, StoneTypes.GLOWBEAM.ordinal());
+			}
+			else {
+				array.setBlock(x-4, y+1, z+i, b, 1);
+				array.setBlock(x+4, y+1, z+i, b, 1);
+				array.setBlock(x+i, y+1, z-4, b, 1);
+				array.setBlock(x+i, y+1, z+4, b, 1);
+				if (allowEnhance) {
+					array.setBlock(x-4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+					array.setBlock(x+4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+					array.setBlock(x+i, y+1, z-4, b, StoneTypes.GLOWBEAM.ordinal());
+					array.setBlock(x+i, y+1, z+4, b, StoneTypes.GLOWBEAM.ordinal());
+				}
+			}
 		}
 
 		for (int i = -3; i <= 3; i++) {
@@ -2013,10 +2030,24 @@ public class ChromaStructures {
 			array.setBlock(x+i, y+2, z+3, b, 1);
 		}
 
-		array.setBlock(x+2, y+2, z+2, b, 2);
-		array.setBlock(x-2, y+2, z+2, b, 2);
-		array.setBlock(x+2, y+2, z-2, b, 2);
-		array.setBlock(x-2, y+2, z-2, b, 2);
+		if (requireEnhance) {
+			array.setBlock(x+2, y+2, z+2, b, StoneTypes.GLOWCOL.ordinal());
+			array.setBlock(x-2, y+2, z+2, b, StoneTypes.GLOWCOL.ordinal());
+			array.setBlock(x+2, y+2, z-2, b, StoneTypes.GLOWCOL.ordinal());
+			array.setBlock(x-2, y+2, z-2, b, StoneTypes.GLOWCOL.ordinal());
+		}
+		else {
+			array.setBlock(x+2, y+2, z+2, b, 2);
+			array.setBlock(x-2, y+2, z+2, b, 2);
+			array.setBlock(x+2, y+2, z-2, b, 2);
+			array.setBlock(x-2, y+2, z-2, b, 2);
+			if (allowEnhance) {
+				array.addBlock(x+2, y+2, z+2, b, StoneTypes.GLOWCOL.ordinal());
+				array.addBlock(x-2, y+2, z+2, b, StoneTypes.GLOWCOL.ordinal());
+				array.addBlock(x+2, y+2, z-2, b, StoneTypes.GLOWCOL.ordinal());
+				array.addBlock(x-2, y+2, z-2, b, StoneTypes.GLOWCOL.ordinal());
+			}
+		}
 
 		array.setBlock(x+2, y+3, z+2, b, 7);
 		array.setBlock(x-2, y+3, z+2, b, 7);

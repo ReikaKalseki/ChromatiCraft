@@ -132,7 +132,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 	}
 
 	public static float getDoublingChance(int ether) {
-		return 0.75F*(float)(Math.pow(ether, 2)/Math.pow(TileEntityChroma.ETHER_SATURATION, 2));
+		return /*0.75F*/1*(float)(Math.pow(ether, 2)/Math.pow(TileEntityChroma.ETHER_SATURATION, 2));
 	}
 
 	public static int getSpeedMultiplier(int ether) {

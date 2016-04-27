@@ -187,7 +187,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 				double rrx = ReikaRandomHelper.getRandomPlusMinus(rx, f);
 				double rry = ReikaRandomHelper.getRandomPlusMinus(ry, f);
 				double rrz = ReikaRandomHelper.getRandomPlusMinus(rz, f);
-				fx = new EntityBlurFX(e, world, rrx, rry, rrz, 0, 0, 0).setLife(l).setScale(s2).setIcon(ChromaIcons.SPARKLEPARTICLE);
+				fx = new EntityBlurFX(e, world, rrx, rry, rrz, 0, 0, 0).setLife(l).setScale(s2).setIcon(ChromaIcons.SPARKLEPARTICLE).enableAlphaTest();
 				if (rand.nextBoolean())
 					((EntityBlurFX)fx).setRapidExpand();
 				if (rand.nextBoolean())

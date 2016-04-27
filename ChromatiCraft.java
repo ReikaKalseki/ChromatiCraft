@@ -112,6 +112,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.Render.ParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
@@ -123,6 +124,8 @@ import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionJoinHandler;
@@ -396,6 +399,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
+			ParticleEngine.instance.register();
 		}
 
 		rainbowforest = new BiomeRainbowForest(ExtraChromaIDs.RAINBOWFOREST.getValue());
@@ -558,6 +562,12 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
 			ReikaMystcraftHelper.registerPageRegistry(MystPages.instance);
+			for (int i = 0; i < Biomes.biomeList.length; i++) {
+				ReikaMystcraftHelper.disableBiomePage(Biomes.biomeList[i].getBiome());
+			}
+			for (int i = 0; i < SubBiomes.biomeList.length; i++) {
+				ReikaMystcraftHelper.disableBiomePage(SubBiomes.biomeList[i].getBiome());
+			}
 		}
 
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {

@@ -9,13 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import java.util.Iterator;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -30,6 +35,29 @@ public class GuiRitualTable extends GuiChromability {
 		tile = te;
 
 		ySize = 224;
+
+		if (!te.isFullyEnhanced()) {
+			Iterator<Ability> it = abilities.iterator();
+			while (it.hasNext()) {
+				Ability a = it.next();
+				if (a instanceof Chromabilities) {
+					ChromaResearch r = ChromaResearch.getPageFor((Chromabilities)a);
+					if (r.level.ordinal() >= ResearchLevel.CTM.ordinal()) {
+						it.remove();
+					}
+					else {
+						ProgressStage[] p = r.getRequiredProgress();
+						for (int i = 0; i < p.length; i++) {
+							ProgressStage ps = p[i];
+							if (ps.isGatedAfter(ProgressStage.DIMENSION)) {
+								it.remove();
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override

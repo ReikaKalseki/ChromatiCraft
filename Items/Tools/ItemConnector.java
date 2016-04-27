@@ -55,6 +55,7 @@ public class ItemConnector extends ItemChromaTool {
 		else if (te instanceof NBTCopyable) {
 			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("NBT_transfer")) {
 				((NBTCopyable)te).readCopyableData(is.stackTagCompound.getCompoundTag("NBT_transfer"));
+				is.stackTagCompound = null;
 			}
 			else {
 				if (is.stackTagCompound == null)
@@ -63,6 +64,7 @@ public class ItemConnector extends ItemChromaTool {
 				((NBTCopyable)te).writeCopyableData(tag);
 				is.stackTagCompound.setTag("NBT_transfer", tag);
 			}
+			return true;
 		}
 		else if (te instanceof LinkerCallback) {
 			is.stackTagCompound = new NBTTagCompound();

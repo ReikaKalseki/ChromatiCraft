@@ -66,11 +66,11 @@ import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.AbilityXRays;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaBookGui;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -107,6 +107,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent;
@@ -141,7 +142,6 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import cpw.mods.fml.relauncher.Side;
@@ -374,23 +374,6 @@ public class ChromaClientEventController {
 				ChromatiCraft.logger.log("Waiting for texture loading to complete...");
 		}
 	}
-
-	/*
-	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void adjustLightMap(LightmapEvent evt) {
-		if (EntityFlyingLight.lightsInWorld(Minecraft.getMinecraft().theWorld)) {
-			int[] colors = Minecraft.getMinecraft().entityRenderer.lightmapColors;
-			for (int i = 0; i < colors.length; i++) {
-				int color = colors[i];
-				int[] c = ReikaColorAPI.HexToRGB(color);
-				int avg = (c[0]+c[1]+c[2])/3;
-				color = 0xff000000 | ReikaColorAPI.GStoHex(avg);
-				colors[i] = color;
-			}
-		}
-	}
-	 */
 	/*
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void controlBrightness(LightmapEvent evt) {
@@ -409,7 +392,7 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	public void clearLexiconCache(ClientDisconnectionFromServerEvent evt) {
+	public void clearLexiconCache(ClientLogoutEvent evt) {
 		ChromaBookGui.lastGui = null;
 	}
 

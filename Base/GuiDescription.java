@@ -9,16 +9,57 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
 public abstract class GuiDescription extends GuiBookSection {
 
+	private int textOffset = 0;
+
 	protected GuiDescription(ChromaGuis g, EntityPlayer ep, ChromaResearch r, int x, int y) {
 		super(g, ep, r, x, y, false);
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if (System.currentTimeMillis()-buttoncooldown >= 50) {
+			if (button.id == 2 && textOffset > 0) {
+				textOffset--;
+			}
+			else if (button.id == 3 && textOffset < CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1)).size()-11) {
+				textOffset++;
+			}
+			else {
+				textOffset = 0;
+			}
+		}
+		//renderq = 22.5F;
+		super.actionPerformed(button);
+		this.initGui();
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		String file = "Textures/GUIs/Handbook/buttons.png";
+
+		if (page == ChromaResearch.BEES && subpage > 0) {
+			buttonList.add(new CustomSoundImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class, this));
+		}
 	}
 
 	@Override
@@ -53,7 +94,17 @@ public abstract class GuiDescription extends GuiBookSection {
 				fontRendererObj.drawSplitString(s, px, posY+descY, 242, c);
 			}
 			else {
-				fontRendererObj.drawSplitString(String.format("%s", page.getNotes(subpage)), px, posY+descY, 242, c);
+				if (page == ChromaResearch.BEES && subpage > 0) {
+					ArrayList<String> li = CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
+					for (int i = textOffset; i < li.size(); i++) {
+						fontRendererObj.drawString(li.get(i), px, posY+descY+(fontRendererObj.FONT_HEIGHT+2)*(i-textOffset), c);
+						if (i-textOffset > 9)
+							break;
+					}
+				}
+				else {
+					fontRendererObj.drawSplitString(String.format("%s", page.getNotes(subpage)), px, posY+descY, 242, c);
+				}
 			}
 			if (disable) {
 				fontRendererObj.drawSplitString("This item has been disabled by your server admin or modpack creator.", px, posY+descY, 242, 0xffffff);

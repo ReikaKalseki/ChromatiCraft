@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,6 +44,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 public class ProgressModifyCommand extends DragonCommandBase {
 
 	private final HashMap<String, AutoFiller> fillers = new HashMap();
+	private CommandBase relay;
 
 	public ProgressModifyCommand() {
 		ModEntry mod = new BasicModEntry("chromaticommands");
@@ -52,6 +55,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				Field f = manager.getDeclaredField("coms");
 				f.setAccessible(true);
 				ICommand comm = ReikaCommandHelper.getCommandByName("/chromaprog2");
+				relay = (CommandBase)comm;
 				String n = comm.getCommandName();
 				Method name = obj.getMethod("getCommand");
 				Method args = obj.getMethod("validArgs", String[].class);
@@ -312,6 +316,11 @@ public class ProgressModifyCommand extends DragonCommandBase {
 	@Override
 	protected boolean isAdminOnly() {
 		return true;
+	}
+
+	@Override
+	public List addTabCompletionOptions(ICommandSender ics, String[] args) {
+		return relay != null ? relay.addTabCompletionOptions(ics, args) : super.addTabCompletionOptions(ics, args);
 	}
 
 }

@@ -60,9 +60,9 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RainbowTreeEffects;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -87,6 +87,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
@@ -179,7 +180,7 @@ public enum Chromabilities implements Ability {
 	private static final HashBiMap<Integer, Ability> intMap = HashBiMap.create();
 	private static int maxID = 0;
 	private static ArrayList<Ability> sortedList;
-	private static final MultiMap<Phase, Ability> tickAbilities = new MultiMap();
+	private static final MultiMap<Phase, Ability> tickAbilities = new MultiMap(new HashSetFactory());
 
 	public static Ability getAbility(String id) {
 		return abilityMap.get(id);

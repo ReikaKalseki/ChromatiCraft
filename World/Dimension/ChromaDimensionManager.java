@@ -130,6 +130,8 @@ public class ChromaDimensionManager {
 		private Biomes parent;
 		public final int baseHeightDelta;
 
+		public static final SubBiomes[] biomeList = values();
+
 		private SubBiomes(Class<? extends ChromaDimensionSubBiome> c, String n, double w, int h, ExtraChromaIDs id, BiomeDictionary.Type... t) {
 			biomeClass = c;
 			types = t;

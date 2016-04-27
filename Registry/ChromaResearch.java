@@ -36,11 +36,12 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -63,6 +64,7 @@ import Reika.DragonAPI.Exception.InstallationException;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
 import Reika.DragonAPI.Interfaces.Registry.Dependency;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -300,6 +302,7 @@ public enum ChromaResearch implements ProgressElement {
 	METEOR1(		Structures.METEOR1,		12,	ResearchLevel.PYLONCRAFT),
 	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
 	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.CTM),
+	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	;
 
 	private final ItemStack iconItem;
@@ -316,8 +319,9 @@ public enum ChromaResearch implements ProgressElement {
 	private int sectionIndex = 0;
 
 	public static final ChromaResearch[] researchList = values();
-	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap();
+	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap(new HashSetFactory());
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
+	private static final HashMap<Ability, ChromaResearch> abilityMap = new HashMap();
 	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
 	private static final List<ChromaResearch> obtainable = new ArrayList();
@@ -448,7 +452,7 @@ public enum ChromaResearch implements ProgressElement {
 		return true;
 	}
 
-	ProgressStage[] getRequiredProgress() {
+	public ProgressStage[] getRequiredProgress() {
 		return Arrays.copyOf(progress, progress.length);
 	}
 
@@ -649,9 +653,6 @@ public enum ChromaResearch implements ProgressElement {
 	public String getNotes(int subpage) {
 		if (this == PACKCHANGES) {
 			return PackModificationTracker.instance.getModifications(ChromatiCraft.instance).get(subpage-1).toString();
-		}
-		else if (this == BEES) {
-			return CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
 		}
 		return ChromaDescriptions.getNotes(this);
 	}
@@ -1190,6 +1191,8 @@ public enum ChromaResearch implements ProgressElement {
 					for (CastingRecipe cr : crc) {
 						cr.setFragment(r);
 					}
+					if (r.ability != null)
+						abilityMap.put(r.ability, r);
 				}
 				catch (Exception e) {
 					Dependency dep = r.getDependency();
@@ -1247,6 +1250,10 @@ public enum ChromaResearch implements ProgressElement {
 
 	public static ChromaResearch getPageFor(ItemStack is) {
 		return itemMap.get(is);
+	}
+
+	public static ChromaResearch getPageFor(Chromabilities a) {
+		return abilityMap.get(a);
 	}
 
 	public static List<ChromaResearch> getAllParents() {

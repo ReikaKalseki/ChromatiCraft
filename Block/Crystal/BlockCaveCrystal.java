@@ -17,18 +17,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger, MinerBlock {
 
@@ -60,6 +62,11 @@ public class BlockCaveCrystal extends CrystalBlock implements ProgressionTrigger
 		for (int i = 0; i < num; i++)
 			li.add(ChromaItems.SHARD.getStackOfMetadata(meta));
 		return li;
+	}
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		return ReikaAABBHelper.getBlockAABB(x, y, z).contract(0.03125, 0, 0.03125);
 	}
 
 	private int getNumberDrops(int meta, int fortune) {

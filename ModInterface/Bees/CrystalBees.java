@@ -39,9 +39,11 @@ import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.GeneticImprovement
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.GeneticStabilityEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.SpecialGeneticEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.AreaBlockCheck;
+import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.AuraLocusCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ChargedShardCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.CrystalPlantCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.FlowerCheck;
+import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.IridescentShardCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.LeafCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProgressionCheck;
@@ -54,7 +56,6 @@ import Reika.ChromatiCraft.ModInterface.Bees.SpecialAlleles.MultiAllele;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -63,6 +64,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Effect;
@@ -292,11 +294,11 @@ public class CrystalBees {
 		purity.addProduct(new ItemStack(Items.ghast_tear), 1);
 
 		chroma.addSpecialty(ChromaStacks.iridCrystal, 2);
-		chroma.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0)));
+		chroma.otherChecks.add(new IridescentShardCheck());
 		lumen.addSpecialty(ChromaStacks.lumaDust, 2);
-		lumen.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance())));
+		lumen.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance()), 2, 1));
 		aura.addSpecialty(ChromaStacks.echoCrystal, 2);
-		aura.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaTiles.AURAPOINT.getBlock(), ChromaTiles.AURAPOINT.getBlockMetadata())));
+		aura.otherChecks.add(new AuraLocusCheck());
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ItemStack shard = ChromaStacks.getChargedShard(e);
@@ -346,36 +348,52 @@ public class CrystalBees {
 		return null;
 	}
 
-	public static String getBeeDescription(BeeSpecies b) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(b.getName());
-		sb.append("\n\n");
+	public static ArrayList<String> getBeeDescription(BeeSpecies b) {
+		ArrayList<String> ret = new ArrayList();
+		ret.add(b.getName());
+		ret.add("");
 		if (b instanceof CrystalBee) {
 			CrystalBee cb = (CrystalBee)b;
-			sb.append("This bee has an extremely powerful gene.\n");
+			ret.add("This bee has one extremely powerful gene.");
 		}
 		if (b.getClass() == BasicBee.class) {
-			sb.append("This bee is a breeding intermediate, not particularly valuable on its own.\n");
+			ret.add("This bee is a breeding intermediate, not");
+			ret.add("particularly valuable on its own.");
+			ret.add("");
+			ret.add("It may, however, be the first step towards");
+			ret.add("something that is.");
 		}
 		if (b instanceof ConditionalProductBee) {
 			ConditionalProductProvider p = ((ConditionalProductBee)b).getProductProvider();
-			sb.append("Special Product Conditions:\n");
+			ret.add("Special Products:");
+			ret.add("");
+			ret.add("General Conditions:");
 			ArrayList<String> li = p.getGeneralRequirements();
 			for (String s : li) {
-				sb.append(s);
-				sb.append("\n");
+				ret.add(s);
 			}
-			sb.append("\n");
 			ItemHashMap<ProductCondition> map = p.getConditions();
-			for (ItemStack is : map.keySet()) {
-				ProductCondition c = map.get(is);
-				sb.append(is.getDisplayName());
-				sb.append(": ");
-				sb.append(c.getDescription());
-				sb.append("\n");
+			if (!map.isEmpty()) {
+				ret.add("");
+				ret.add("Specific Conditions:");
+				for (ItemStack is : map.keySet()) {
+					ProductCondition c = map.get(is);
+					String d = c.getDescription();
+					ArrayList<String> dl = ReikaStringParser.splitStringByNewlines(d);
+					if (dl.size() > 1) {
+						ret.add(is.getDisplayName()+":");
+						for (String in : dl) {
+							ret.add(in);
+						}
+						ret.add("");
+					}
+					else {
+						ret.add(is.getDisplayName()+": "+d);
+					}
+				}
 			}
 		}
-		return sb.toString();
+		return ret;
 	}
 
 	public static Collection<BeeSpecies> getBasicBees() {

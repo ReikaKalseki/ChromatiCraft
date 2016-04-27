@@ -24,20 +24,20 @@ import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -49,6 +49,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile, OperationInterval {
 
 	private boolean hasStructure = false;
+	private boolean hasEnhancedStructure = false;
+
 	private int abilityTick = 0;
 	private Ability ability;
 	private int abilitySoundTick = 2000;
@@ -87,12 +89,13 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		if (abilityTick > 0) {
 			this.onRitualTick(world, x, y, z);
 		}
+		//ChromaStructures.getRitualStructure(world, x, y-2, z).place();
 	}
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		AbilityRituals.addTable(this);
-		this.validateMultiblock(null, world, x, y-2, z);
+		this.validateMultiblock(world, x, y-2, z);
 	}
 
 	private void onRitualTick(World world, int x, int y, int z) {
@@ -255,13 +258,23 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 	}
 
-	public void validateMultiblock(StructuredBlockArray blocks, World world, int x, int y, int z) {
-		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z);
+	public void validateMultiblock(World world, int x, int y, int z) {
+		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, true, false);
 		hasStructure = array.matchInWorld();
+		//ReikaJavaLibrary.pConsole(hasStructure+" / "+isEnhanced+": "+this.getSide()+" @ "+array);
+		hasEnhancedStructure = isEnhanced && hasStructure && ChromaStructures.getRitualStructure(world, x, y, z, true, true).matchInWorld();
 		if (!hasStructure && abilityTick > 0) {
 			this.killRitual();
 		}
 		this.syncAllData(true);
+	}
+
+	private void checkEnhancement(EntityPlayer ep) {
+		isEnhanced = ProgressStage.DIMENSION.isPlayerAtStage(ep);
+	}
+
+	public boolean isFullyEnhanced() {
+		return isEnhanced && hasEnhancedStructure;
 	}
 
 	private void killRitual() {
@@ -278,6 +291,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	public boolean triggerRitual(EntityPlayer ep) {
+		this.initEnhancementCheck(ep);
 		if (hasStructure && abilityTick == 0 && ability != null && AbilityRituals.instance.hasRitual(ability) && this.isOwnedByPlayer(ep)) {
 			ritualPlayer = ep;
 			if (worldObj.isRemote)
@@ -293,6 +307,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		return false;
 	}
 
+	public void initEnhancementCheck(EntityPlayer ep) {
+		this.checkEnhancement(ep);
+		this.validateMultiblock(worldObj, xCoord, yCoord-2, zCoord);
+	}
+
 	public void setChosenAbility(Ability c) {
 		this.killRitual();
 		ability = c;
@@ -303,6 +322,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("struct", hasStructure);
+		NBT.setBoolean("structe", hasEnhancedStructure);
 		NBT.setInteger("atick", abilityTick);
 		NBT.setString("ability", ability != null ? ability.getID() : "null");
 
@@ -314,6 +334,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		super.readSyncTag(NBT);
 
 		hasStructure = NBT.getBoolean("struct");
+		hasEnhancedStructure = NBT.getBoolean("structe");
 		abilityTick = NBT.getInteger("atick");
 		String a = NBT.getString("ability");
 		ability = a != null && !a.isEmpty() && !a.equals("null") ? Chromabilities.getAbility(a) : null;
@@ -323,7 +344,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int maxThroughput() {
-		return isEnhanced ? 2500 : 200;
+		return this.isFullyEnhanced() ? 2500 : 200;
 	}
 
 	@Override

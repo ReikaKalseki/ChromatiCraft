@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
@@ -152,6 +153,10 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 				ChromaItems c = ChromaItems.getEntry(in);
 				if (c != null) {
 					n = c.getBasicName();
+				}
+				ChromaBlocks b = ChromaBlocks.getEntryByItem(in);
+				if (b != null) {
+					n = b.getBasicName();
 				}
 				li.add(String.format("Stores %s.", n));
 			}

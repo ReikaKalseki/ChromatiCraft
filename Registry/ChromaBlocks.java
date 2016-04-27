@@ -481,6 +481,11 @@ public enum ChromaBlocks implements BlockEnum {
 		return blockMap.get(id);
 	}
 
+	public static ChromaBlocks getEntryByItem(ItemStack is) {
+		Block b = Block.getBlockFromItem(is.getItem());
+		return b != null ? getEntryByID(b) : null;
+	}
+
 	public Item getItem() {
 		return Item.getItemFromBlock(this.getBlockInstance());
 	}

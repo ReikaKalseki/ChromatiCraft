@@ -29,10 +29,10 @@ import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
@@ -56,7 +56,6 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
@@ -185,7 +184,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	 */
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.validateStructure(null, world, x, y-1, z);
+		this.validateStructure(world, x, y-1, z);
 		craftingTick = 0;
 	}
 
@@ -366,7 +365,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 	}
 
-	public void validateStructure(StructuredBlockArray blocks, World world, int x, int y, int z) {
+	public void validateStructure(World world, int x, int y, int z) {
 		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);

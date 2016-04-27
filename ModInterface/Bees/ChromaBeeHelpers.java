@@ -5,23 +5,34 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.BeeGene;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Fertility;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Flowering;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
+
+import com.mojang.authlib.GameProfile;
+
+import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
+import forestry.api.apiculture.IBeeModifier;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.EnumTolerance;
+import forestry.api.genetics.IAllele;
 
 
 public class ChromaBeeHelpers {
@@ -112,6 +123,7 @@ public class ChromaBeeHelpers {
 	static class GeneticStabilityEffect extends SpecialGeneticEffect {
 
 		private static final double pristineConversionChance = 0.0005;
+		private static final double geneBalancingChance = 0.005;
 
 		GeneticStabilityEffect() {
 			super(CrystalElement.WHITE);
@@ -125,6 +137,27 @@ public class ChromaBeeHelpers {
 					ReikaBeeHelper.setPristine(queen, true);
 				}
 			}
+			if (ReikaRandomHelper.doWithChance(geneBalancingChance)) {
+				ItemStack queen = ibh.getBeeInventory().getQueen();
+				if (queen != null && AlleleManager.alleleRegistry.getIndividual(queen) instanceof IBee) {
+					EnumBeeChromosome gene = EnumBeeChromosome.values()[rand.nextInt(EnumBeeChromosome.values().length)];
+					if (this.canBalance(queen, ibg, gene)) {
+						this.balanceGene(queen, ibg, gene);
+					}
+				}
+			}
+		}
+
+		private void balanceGene(ItemStack queen, IBeeGenome ibg, EnumBeeChromosome gene) {
+			ReikaBeeHelper.setGene(queen, ibg, gene, ibg.getActiveAllele(gene), true);
+		}
+
+		private boolean canBalance(ItemStack queen, IBeeGenome ibg, EnumBeeChromosome gene) {
+			if (gene == EnumBeeChromosome.HUMIDITY)
+				return false;
+			IAllele primary = ibg.getActiveAllele(gene);
+			IAllele secondary = ibg.getInactiveAllele(gene);
+			return !primary.getUID().equals(secondary.getUID());
 		}
 
 	}
@@ -209,6 +242,24 @@ public class ChromaBeeHelpers {
 			}
 		}
 
+	}
+
+	static int[] getSearchRange(IBeeGenome ibg, IBeeHousing ibh) {
+		IBeeModifier beeModifier = BeeManager.beeRoot.createBeeHousingModifier(ibh);
+		int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
+		int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
+		int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
+		return new int[]{r, r2};
+	}
+
+	public static WorldLocation getLocation(IBeeHousing ibh) {
+		ChunkCoordinates c = ibh.getCoordinates();
+		return new WorldLocation(ibh.getWorld(), c.posX, c.posY, c.posZ);
+	}
+
+	public static EntityPlayer getOwner(IBeeHousing ibh) {
+		GameProfile p = ibh.getOwner();
+		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
 	}
 
 }

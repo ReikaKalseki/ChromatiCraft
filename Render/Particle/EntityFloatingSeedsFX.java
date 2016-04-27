@@ -55,6 +55,7 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 				break;
 			case 2:
 				ico = ChromaIcons.SPARKLEPARTICLE.getIcon();
+				this.enableAlphaTest();
 				break;
 			case 3:
 				ico = ChromaIcons.CENTER.getIcon();

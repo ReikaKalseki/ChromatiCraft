@@ -454,7 +454,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		TileEntity te = world.getTileEntity(mx, my+1, mz);
 		//ReikaJavaLibrary.pConsole(te+" @ "+mx+", "+(my+1)+", "+mz, Side.SERVER);
 		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
+			((TileEntityCastingTable)te).validateStructure(world, mx, my, mz);
 		}
 		if (te instanceof TileEntityAuraInfuser) {
 			((TileEntityAuraInfuser)te).validateMultiblock();
@@ -462,7 +462,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
-			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
+			((TileEntityRitualTable)te).validateMultiblock(world, mx, my, mz);
 		}
 		if (te instanceof TileEntityAuraInfuser) {
 			((TileEntityAuraInfuser)te).validateMultiblock();
@@ -537,7 +537,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 		TileEntity te = world.getTileEntity(mx, my+1, mz);
 		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).validateStructure(blocks, world, mx, my, mz);
+			((TileEntityCastingTable)te).validateStructure(world, mx, my, mz);
 		}
 		if (te instanceof TileEntityAuraInfuser) {
 			((TileEntityAuraInfuser)te).validateMultiblock();
@@ -545,7 +545,7 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 
 		te = world.getTileEntity(mx, my+2, mz);
 		if (te instanceof TileEntityRitualTable) {
-			((TileEntityRitualTable)te).validateMultiblock(blocks, world, mx, my, mz);
+			((TileEntityRitualTable)te).validateMultiblock(world, mx, my, mz);
 		}
 
 		te = world.getTileEntity(mx, my+6, mz);
