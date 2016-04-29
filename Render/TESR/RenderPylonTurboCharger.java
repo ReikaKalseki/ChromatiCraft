@@ -149,8 +149,10 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 
 	private static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, int a, double h) {
 		Tessellator v5 = Tessellator.instance;
-
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDepthMask(false);
 		v5.startDrawing(GL11.GL_LINES);
 		v5.setBrightness(240);
 		v5.setColorRGBA_I(0xffffff, 255);
@@ -202,6 +204,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 		}
 		v5.draw();
 		GL11.glPopMatrix();
+		GL11.glPopAttrib();
 	}
 
 	private void renderLightning(TileEntityPylonTurboCharger te, double par2, double par4, double par6, float par8) {

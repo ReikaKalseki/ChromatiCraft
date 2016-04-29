@@ -222,6 +222,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		int c = te.worldObj != null ? this.getHaloRenderColor(te) : 0xffffff;
 		if (te.worldObj == null)
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthMask(false);
 		Tessellator v5 = Tessellator.instance;
 
 		int step = 15;

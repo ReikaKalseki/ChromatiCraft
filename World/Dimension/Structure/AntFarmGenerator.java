@@ -10,10 +10,13 @@
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
@@ -21,80 +24,115 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarm.AntFarmEntrance;
+import Reika.ChromatiCraft.World.Dimension.Structure.AntFarm.AntFarmLevel;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarm.AntFarmTunnel;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class AntFarmGenerator extends DimensionStructureGenerator {
 
 	public static final float LIGHT_DURATION = 1024;
 
-	private ArrayList<AntFarmTunnel> tunnels = new ArrayList();
-	private HashSet<Coordinate> mainSpaces = new HashSet();
-	private HashSet<Coordinate> airSpaces = new HashSet();
+	private final HashSet<Coordinate> airSpaces = new HashSet();
+	private final HashSet<Coordinate> tunnelSpaces = new HashSet();
+	private final HashSet<Coordinate> levelSpaces = new HashSet();
+
+	private final LinkedList<AntFarmLevel> levels = new LinkedList();
+	private final ArrayList<AntFarmTunnel> tunnels = new ArrayList();
+
+	private final HashMap<Coordinate, BlockKey> blocks = new HashMap();
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
-		int n = this.getTunnelCount()/4;
 		int h = 90;
 		int mh = 20;
 
-		int r = 6;
-		for (int y = mh; y <= mh+h; y++) {
-			int dx = (int)(2.5*Math.cos(4*Math.toRadians(y)));
-			int dz = (int)(2.5*Math.sin(4*Math.toRadians(y*2)));
-			for (int i = -r; i <= r; i++) {
-				for (int k = -r; k <= r; k++) {
-					double d = ReikaMathLibrary.py3d(i, 0, k);
-					if (d <= r+0.5) {
-						int x = chunkX+i+dx;
-						int z = chunkZ+k+dz;
-						BlockKey b = d <= r-0.75 ? new BlockKey(Blocks.air) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
-						world.setBlock(x, y, z, b.blockID, b.metadata);
-						if (b.blockID == Blocks.air)
-							mainSpaces.add(new Coordinate(x, y, z));
-					}
+		int dhy = 10;
+		for (int y = mh; y <= mh+h; y += dhy) {
+			/*
+			int x = ReikaRandomHelper.getRandomPlusMinus(chunkX, 96);
+			int z = ReikaRandomHelper.getRandomPlusMinus(chunkZ, 96);
+			if (y == mh+h) {
+				x = chunkX;
+				z = chunkZ;
+			}
+			 */
+			double a = Math.toRadians(360D*(y-mh)/h);
+			double dr = ReikaRandomHelper.getRandomBetween(48D, 96D);
+			int x = chunkX+MathHelper.floor_double(dr*Math.cos(a));
+			int z = chunkZ+MathHelper.floor_double(dr*Math.sin(a));
+			AntFarmLevel pre = levels.isEmpty() ? null : levels.getLast();
+			int lh = 4;
+			int lr = 8;
+			AntFarmLevel l = new AntFarmLevel(this, x, y, z, lr, lh);
+			l.register(this, levelSpaces);
+			levels.addLast(l);
+			if (pre != null) {
+				AntFarmTunnel t = this.createTunnel(pre.posX, pre.posY, pre.posZ, x, y, z, 3, 2, rand);
+				while (t.intersectsWith(tunnelSpaces, levelSpaces)) {
+					t = this.createTunnel(pre.posX, pre.posY, pre.posZ, x, y, z, 3, 2, rand);
 				}
+				t.register(this, tunnelSpaces);
+				tunnels.add(t);
 			}
 		}
 
-		for (int i = 0; i < n; i++) {
-			AntFarmTunnel a = this.createTunnel(chunkX, chunkZ, h, mh, rand);
-			int t = 0;
-			while (t < 50 && a.intersectsWith(airSpaces)) {
-				a = this.createTunnel(chunkX, chunkZ, h, mh, rand);
-				t++;
+		for (AntFarmLevel l : levels) {
+			int n = 1;//this.getRoomsPerLevel(rand);
+			for (int i = 0; i < n; i++) {
+				double ang = Math.toRadians(rand.nextDouble()*360);
+				double slope = ReikaRandomHelper.getRandomPlusMinus(0D, 45D);
+				double len = ReikaRandomHelper.getRandomBetween(12D, 64D);
+				double[] d = ReikaPhysicsHelper.polarToCartesian(len, slope, ang);
+				int x = MathHelper.floor_double(d[0]);
+				int y = MathHelper.floor_double(d[1]);
+				int z = MathHelper.floor_double(d[2]);
+				int dx = l.posX+x;
+				int dy = l.posY+y;
+				int dz = l.posZ+z;
+				AntFarmTunnel t = this.createTunnel(l.posX, l.posY, l.posZ, dx, dy, dz, 3, 3, rand);
+				while (t.intersectsWith(tunnelSpaces, levelSpaces) && false) {
+					t = this.createTunnel(l.posX, l.posY, l.posZ, dx, dy, dz, 3, 3, rand);
+				}
+				t.register(this, tunnelSpaces);
+				tunnels.add(t);
 			}
-			airSpaces.addAll(a.getAirSpaces());
-			tunnels.add(a);
 		}
 
+		/*
 		for (AntFarmTunnel a : tunnels) {
 			a.generate(world, 0, 0, 0);
+		}
+
+		for (AntFarmLevel a : levels) {
+			a.generate(world, a.posX, a.posY, a.posZ);
+		}
+		 */
+
+		for (Coordinate c : blocks.keySet()) {
+			BlockKey bk = blocks.get(c);
+			world.setBlock(c.xCoord, c.yCoord, c.zCoord, bk.blockID, bk.metadata);
 		}
 
 		this.addDynamicStructure(new AntFarmEntrance(this, mh+h), chunkX, chunkZ);
 	}
 
-	private AntFarmTunnel createTunnel(int x, int z, int h, int mh, Random rand) {
-		double s = ReikaRandomHelper.getRandomPlusMinus(0D, 45D);
-		int in = 15;
-		int y = mh+in+rand.nextInt(h-mh-in*2);
-		return new AntFarmTunnel(this, rand.nextDouble()*360, 24+rand.nextInt(96), s, 3+rand.nextInt(2), x, y, z, mainSpaces);
+	private AntFarmTunnel createTunnel(int x, int y, int z, int x2, int y2, int z2, int w, int c, Random rand) {
+		return new AntFarmTunnel(this, new Coordinate(x, y, z), new Coordinate(x2, y2, z2), c, w);
 	}
 
-	private int getTunnelCount() {
+	private int getRoomsPerLevel(Random rand) {
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return 15;
+				return rand.nextInt(6) == 0 ? 2 : 1;
 			case 2:
-				return 18;
+				return rand.nextInt(2) == 0 ? 2 : 1;
 			case 3:
 			default:
-				return 24;
+				return rand.nextInt(3) == 0 ? 3 : rand.nextInt(4) > 0 ? 2 : 1;
 		}
 	}
 
@@ -120,8 +158,24 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 
 	@Override
 	protected void clearCaches() {
+		levels.clear();
 		tunnels.clear();
+
+		blocks.clear();
+
 		airSpaces.clear();
+		tunnelSpaces.clear();
+		levelSpaces.clear();
+	}
+
+	public void cutBlock(Coordinate c, boolean air) {
+		BlockKey b = air ? new BlockKey(Blocks.air) : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		if (airSpaces.contains(c))
+			b = new BlockKey(Blocks.air);
+		blocks.put(c, b);
+		if (b.blockID == Blocks.air) {
+			airSpaces.add(c);
+		}
 	}
 
 }

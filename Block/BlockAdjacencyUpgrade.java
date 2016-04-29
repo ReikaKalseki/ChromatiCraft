@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
 import java.util.ArrayList;
@@ -13,6 +22,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -65,7 +75,11 @@ public class BlockAdjacencyUpgrade extends BlockCrystalTileNonCube {
 	public final ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z) {
 		int meta = world.getBlockMetadata(target.blockX, target.blockY, target.blockZ);
 		ChromaTiles m = ChromaTiles.getTileFromIDandMetadata(this, meta);
-		return this.getHarvestedItemStack(world, target.blockX, target.blockY, target.blockZ, meta, m);
+		ItemStack is = this.getHarvestedItemStack(world, target.blockX, target.blockY, target.blockZ, meta, m);
+		NBTTagCompound nbt = new NBTTagCompound();
+		((TileEntityAdjacencyUpgrade)world.getTileEntity(target.blockX, target.blockY, target.blockZ)).getTagsToWriteToStack(nbt);
+		is.stackTagCompound = nbt.hasNoTags() ? null : (NBTTagCompound)nbt.copy();
+		return is;
 	}
 
 	@Override

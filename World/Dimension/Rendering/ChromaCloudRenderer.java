@@ -39,9 +39,11 @@ public class ChromaCloudRenderer extends IRenderHandler {
 	@SideOnly(Side.CLIENT)
 	public void render(float ptick, WorldClient world, Minecraft mc) {
 		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_FOG);
+		GL11.glDepthMask(false);
 
 		Tessellator v5 = Tessellator.instance;
 
@@ -60,7 +62,7 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 		int r = 2;
 		for (int a = -r; a <= r; a++) {
@@ -101,13 +103,8 @@ public class ChromaCloudRenderer extends IRenderHandler {
 		}
 
 
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
-		BlendMode.DEFAULT.apply();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	private double getCloudOffset(int i, int k, int index) {

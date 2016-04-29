@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.lang.reflect.Constructor;
@@ -13,7 +22,6 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenAurorae;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenChromaMeteor;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalMountain;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalPit;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalShrub;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalTree;
@@ -25,7 +33,6 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
-import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenSkylandCanyons;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -44,12 +51,12 @@ public enum DimensionGenerators {
 	MOONPOOL(WorldGenMoonPool.class, 				GeneratorType.STRUCTURE, 	GeneratorTheme.OCEANIC,			0),
 	TERRAINCRYSTAL(WorldGenTerrainCrystal.class, 	GeneratorType.TERRAIN, 		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE),
 	ALTAR(WorldGenMiniAltar.class, 					GeneratorType.STRUCTURE, 	GeneratorTheme.PRECURSORS,		-500),
-	MOUNTAIN(WorldGenCrystalMountain.class,			GeneratorType.TERRAIN,		GeneratorTheme.CRYSTAL,			Integer.MIN_VALUE),
+	//MOUNTAIN(WorldGenCrystalMountain.class,			GeneratorType.TERRAIN,		GeneratorTheme.CRYSTAL,			Integer.MIN_VALUE),
 	CRYSTALTREE(WorldGenCrystalTree.class,			GeneratorType.FEATURE,		GeneratorTheme.CRYSTAL,			-100),
 	GLOWBUSH(WorldGenLightedShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
 	CRYSBUSH(WorldGenCrystalShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
-	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE),
-	CANYON(WorldGenSkylandCanyons.class,			GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
+	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE);
+	//CANYON(WorldGenSkylandCanyons.class,			GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
 
 	private final Class genClass;
 	public final GeneratorType type;
@@ -85,8 +92,8 @@ public enum DimensionGenerators {
 			return false;
 		if (theme == GeneratorTheme.SKYFEATURE)
 			return b.biomeType == Biomes.SKYLANDS;
-		if (this == CANYON)
-			return b.biomeType == Biomes.SKYLANDS;
+		//if (this == CANYON)
+		//	return b.biomeType == Biomes.SKYLANDS;
 		if (this == FORESTS)
 			return b.biomeType == Biomes.FOREST;
 		if (this == TREES || this == GLOWBUSH)
@@ -107,8 +114,8 @@ public enum DimensionGenerators {
 				return b.biomeType == Biomes.PLAINS;
 			case MOONPOOL:
 				return b.biomeType == Biomes.ISLANDS;
-			case MOUNTAIN:
-				return b == SubBiomes.MOUNTAINS.getBiome();
+				//case MOUNTAIN:
+				//	return b == SubBiomes.MOUNTAINS.getBiome();
 			case RIFT:
 				return b == Biomes.PLAINS.getBiome();
 			default:

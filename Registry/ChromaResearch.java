@@ -272,7 +272,7 @@ public enum ChromaResearch implements ProgressElement {
 	KEEPINV(		Chromabilities.KEEPINV,						ResearchLevel.ENDGAME),
 	ORECLIP(		Chromabilities.ORECLIP,						ResearchLevel.CTM),
 	DOUBLECRAFT(	Chromabilities.DOUBLECRAFT,					ResearchLevel.CTM),
-	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.CTM),
+	GROWAURA(		Chromabilities.GROWAURA,					ResearchLevel.ENDGAME),
 	RECHARGE(		Chromabilities.RECHARGE,					ResearchLevel.ENDGAME),
 	MEINV(			Chromabilities.MEINV,						ResearchLevel.ENDGAME),
 	MOBSEEK(		Chromabilities.MOBSEEK,						ResearchLevel.CTM),
@@ -301,7 +301,7 @@ public enum ChromaResearch implements ProgressElement {
 	MINIREPEATER(	Structures.WEAKREPEATER,Blocks.log, 0, ResearchLevel.ENERGYEXPLORE, ProgressStage.PYLON),
 	METEOR1(		Structures.METEOR1,		12,	ResearchLevel.PYLONCRAFT),
 	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
-	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.CTM),
+	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	;
 

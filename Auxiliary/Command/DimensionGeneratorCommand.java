@@ -18,6 +18,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.BiomeTerrainProvider;
+import Reika.ChromatiCraft.World.Dimension.BiomeTerrainProvider.ForcedBiomeTerrainProvider;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
@@ -59,6 +61,12 @@ public class DimensionGeneratorCommand extends DragonCommandBase {
 					gen.add(g.getGenerator(ep.worldObj.rand, ep.worldObj.getSeed()));
 				}
 			}
+			BiomeTerrainProvider terrain = new ForcedBiomeTerrainProvider(b, ep.worldObj.getSeed());
+			for (int i = -r; i <= r; i++) {
+				for (int k = -r; k <= r; k++) {
+					terrain.generateChunk(ep.worldObj, x+i, z+k, ep.worldObj.rand);
+				}
+			}
 			for (int i = -r; i <= r; i++) {
 				for (int k = -r; k <= r; k++) {
 					int dx = (x+i)*16;
@@ -71,10 +79,6 @@ public class DimensionGeneratorCommand extends DragonCommandBase {
 						for (int a = 0; a < n; a++) {
 							int gx = dx + ep.worldObj.rand.nextInt(16) + 8;
 							int gz = dz + ep.worldObj.rand.nextInt(16) + 8;
-							if (!g.randomizePosition()) {
-								gx = dx;
-								gz = dz;
-							}
 							int gy = ep.worldObj.getTopSolidOrLiquidBlock(gx, gz);
 							g.generate(ep.worldObj, ep.worldObj.rand, gx, gy, gz);
 						}

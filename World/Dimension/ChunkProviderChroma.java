@@ -92,6 +92,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private final MapGenTendrils caveGenerator = new MapGenTendrils();
 
 	private final ChromaChunkManager chunkManager;
+	private final BiomeTerrainProvider terrainManager;
 
 	private final OneWayList<ChromaWorldGenerator> decorators = new OneWayList();
 
@@ -179,6 +180,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		mobSpawnerNoise = new NoiseGeneratorOctaves(rand, 8); //8
 		field_147434_q = new double[825];
 		parabolicField = new float[25];
+		terrainManager = new BiomeTerrainProvider(randomSeed);
 
 		for (int j = -2; j <= 2; ++j)
 		{
@@ -464,6 +466,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, VERTICAL_OFFSET);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
+		terrainManager.generateChunk(worldObj, chunkX, chunkZ, rand);
 
 		Chunk chunk = new Chunk(worldObj, ablock, abyte, chunkX, chunkZ);
 		byte[] biomeData = chunk.getBiomeArray();
@@ -721,10 +724,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 				for (int i = 0; i < n; i++) {
 					int dx = x + rand.nextInt(16) + 8;
 					int dz = z + rand.nextInt(16) + 8;
-					if (!wg.randomizePosition()) {
-						dx = x;
-						dz = z;
-					}
 					int y = worldObj.getTopSolidOrLiquidBlock(dx, dz);
 					wg.generate(worldObj, rand, dx, y, dz);
 				}
