@@ -29,6 +29,7 @@ public class BiomeTerrainProvider {
 	}
 
 	public void generateChunk(World world, int chunkX, int chunkZ, Random rand) {
+		//ReikaJavaLibrary.pConsole("Providing chunk "+chunkX+", "+chunkZ+" ["+(chunkX*16)+"-"+(chunkX*16+15)+","+(chunkZ*16)+"-"+(chunkZ*16+15)+"]");
 		chunkX = chunkX << 4;
 		chunkZ = chunkZ << 4;
 		for (int i = 0; i < 16; i++) {
@@ -36,6 +37,7 @@ public class BiomeTerrainProvider {
 				int dx = chunkX+i;
 				int dz = chunkZ+k;
 				ChromaDimensionBiome b = this.getBiome(dx, dz);
+				//ReikaJavaLibrary.pConsole("Generating column "+dx+", "+dz+" with "+b);
 				for (ChromaDimensionBiomeTerrainShaper s : terrain) {
 					if (s.canGenerateIn(b)) {
 						s.generateColumn(world, chunkX, chunkZ, i, k, rand, this.getEdgeFactor(world, dx, dz, s));

@@ -67,8 +67,8 @@ public class WorldGenSkylandCanyons extends ChromaDimensionBiomeTerrainShaper {
 		int dz = chunkZ+k;
 		boolean isVoid = BiomeDistributor.getBiome(dx, dz).getExactType() == SubBiomes.VOIDLANDS;
 		int dt = 1+rand.nextInt(4);
-		double rx = this.calcR(chunkX >> 4, i, innerScale, mainScale);
-		double rz = this.calcR(chunkZ >> 4, k, innerScale, mainScale);
+		double rx = this.calcR(chunkX, i, innerScale, mainScale);
+		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
 		double raw = Math.pow(1-Math.abs(canyonShape.getValue(rx, rz)), 5D);
 		double df = ReikaMathLibrary.normalizeToBounds(canyonDepth.getValue(rx, rz), MIN_DEPTH, MAX_DEPTH);
 		double depth = MathHelper.clamp_double(raw*df, 0, MAX_DEPTH);

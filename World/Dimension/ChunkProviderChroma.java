@@ -466,7 +466,6 @@ public class ChunkProviderChroma implements IChunkProvider {
 		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, VERTICAL_OFFSET);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
-		terrainManager.generateChunk(worldObj, chunkX, chunkZ, rand);
 
 		Chunk chunk = new Chunk(worldObj, ablock, abyte, chunkX, chunkZ);
 		byte[] biomeData = chunk.getBiomeArray();
@@ -744,6 +743,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 	 */
 
 	public void onPopulationHook(IChunkProvider gen, IChunkProvider loader, int x, int z) {
+
+		terrainManager.generateChunk(worldObj, x, z, rand);
 
 		this.runDecorators(x*16, z*16);
 

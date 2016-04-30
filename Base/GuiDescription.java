@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -121,6 +122,8 @@ public abstract class GuiDescription extends GuiBookSection {
 
 	@Override
 	public final String getPageTitle() {
+		if (page == ChromaResearch.ACCEL && subpage > 1)
+			return AdjacencyUpgrades.upgrades[subpage-2].getName();
 		return page.isConfigDisabled() ? page.getTitle()+" (Disabled)" : super.getPageTitle();
 	}
 

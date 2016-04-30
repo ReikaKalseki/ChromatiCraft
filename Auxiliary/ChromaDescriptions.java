@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.ItemWandBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -47,6 +48,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -63,7 +65,7 @@ public final class ChromaDescriptions {
 	private static final String NOTE_SUFFIX = ":note";
 
 	private static final HashMap<ChromaResearch, String> data = new HashMap<ChromaResearch, String>();
-	private static final HashMap<ChromaResearch, String> notes = new HashMap<ChromaResearch, String>();
+	private static final PluralMap<String> notes = new PluralMap(2);
 
 	private static final HashMap<ChromaTiles, Object[]> machineData = new HashMap<ChromaTiles, Object[]>();
 	private static final HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
@@ -184,31 +186,61 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : machinetabs) {
 			ChromaTiles m = h.getMachine();
-			String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+DESC_SUFFIX);
-			String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+NOTE_SUFFIX);
-			desc = String.format(desc, machineData.get(m));
-			aux = String.format(aux, machineNotes.get(m));
-
-			if (XMLInterface.NULL_VALUE.equals(desc))
-				desc = "There is no lexicon data for this machine yet.";
-			//ReikaJavaLibrary.pConsole(m.name().toLowerCase()+":"+desc);
-
-			if (m.isDummiedOut()) {
-				desc += "\nThis machine is currently unavailable.";
-				if (m.hasPrerequisite() && !m.getPrerequisite().isLoaded())
-					desc += "\nThis machine depends on another mod.";
-				aux += "\nNote: Dummied Out";
+			if (m == ChromaTiles.ADJACENCY) {
+				ArrayList<String> pages = new ArrayList();
+				pages.add(DESC_SUFFIX);
+				pages.add(NOTE_SUFFIX);
+				for (int i = 0; i < 16; i++) {
+					pages.add(":"+CrystalElement.elements[i].name().toLowerCase());
+				}
+				int i = 0;
+				for (String s : pages) {
+					String text = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+s);
+					boolean desc = s.equals(DESC_SUFFIX);
+					boolean note = s.equals(NOTE_SUFFIX);
+					if (desc)
+						text = String.format(text, machineData.get(m));
+					else if (note)
+						text = String.format(text, machineNotes.get(m));
+					if (XMLInterface.NULL_VALUE.equals(text))
+						text = "There is no lexicon data for this machine yet.";
+					if (m.isIncomplete()) {
+						text += "\nThis machine is incomplete. Use at your own risk.";
+					}
+					if (desc)
+						addEntry(h, text);
+					else
+						notes.put(text, h, i-1);
+					i++;
+				}
 			}
-			if (m.hasPrerequisite()) {
-				String sg = m.getPrerequisite().getModLabel().replaceAll("[|]", "");
-				aux += "\nDependencies: "+ReikaStringParser.splitCamelCase(sg).replaceAll(" Craft", "Craft");
-			}
-			if (m.isIncomplete()) {
-				desc += "\nThis machine is incomplete. Use at your own risk.";
-			}
+			else {
+				String desc = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+DESC_SUFFIX);
+				String aux = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+NOTE_SUFFIX);
+				desc = String.format(desc, machineData.get(m));
+				aux = String.format(aux, machineNotes.get(m));
 
-			addEntry(h, desc);
-			notes.put(h, aux);
+				if (XMLInterface.NULL_VALUE.equals(desc))
+					desc = "There is no lexicon data for this machine yet.";
+				//ReikaJavaLibrary.pConsole(m.name().toLowerCase()+":"+desc);
+
+				if (m.isDummiedOut()) {
+					desc += "\nThis machine is currently unavailable.";
+					if (m.hasPrerequisite() && !m.getPrerequisite().isLoaded())
+						desc += "\nThis machine depends on another mod.";
+					aux += "\nNote: Dummied Out";
+				}
+				if (m.hasPrerequisite()) {
+					String sg = m.getPrerequisite().getModLabel().replaceAll("[|]", "");
+					aux += "\nDependencies: "+ReikaStringParser.splitCamelCase(sg).replaceAll(" Craft", "Craft");
+				}
+				if (m.isIncomplete()) {
+					desc += "\nThis machine is incomplete. Use at your own risk.";
+				}
+
+				addEntry(h, desc);
+				notes.put(aux, h, 0);
+			}
 		}
 
 		for (ChromaResearch h : blocktabs) {
@@ -221,7 +253,7 @@ public final class ChromaDescriptions {
 			String desc = tools.getValueAtNode("tools:"+h.name().toLowerCase(Locale.ENGLISH));
 			desc = String.format(desc, itemData.get(h));
 			if (h.getItem().getItemInstance() instanceof ItemWandBase) {
-				notes.put(h, ((ItemWandBase)h.getItem().getItemInstance()).generateUsageData());
+				notes.put(((ItemWandBase)h.getItem().getItemInstance()).generateUsageData(), h, 0);
 			}
 			addEntry(h, desc);
 		}
@@ -288,10 +320,10 @@ public final class ChromaDescriptions {
 		return data.get(h);
 	}
 
-	public static String getNotes(ChromaResearch h) {
-		if (!notes.containsKey(h))
+	public static String getNotes(ChromaResearch h, int page) {
+		if (!notes.containsKeyV(h, page))
 			return "";
-		return notes.get(h);
+		return notes.get(h, page);
 	}
 
 	static {
@@ -322,6 +354,7 @@ public final class ChromaDescriptions {
 		addData(ChromaTiles.BEACON, CrystalElement.RED.displayName);
 		addData(ChromaTiles.LIGHTER, CrystalElement.BLUE.displayName);
 
+		addNotes(ChromaTiles.ADJACENCY, TileEntityAdjacencyUpgrade.MAX_TIER);
 		addNotes(ChromaTiles.ENCHANTER, TileEntityAutoEnchanter.CHROMA_PER_LEVEL);
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());

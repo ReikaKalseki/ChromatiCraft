@@ -654,7 +654,9 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == PACKCHANGES) {
 			return PackModificationTracker.instance.getModifications(ChromatiCraft.instance).get(subpage-1).toString();
 		}
-		return ChromaDescriptions.getNotes(this);
+		if (this == ACCEL)
+			return ChromaDescriptions.getNotes(this, subpage-1);
+		return ChromaDescriptions.getNotes(this, 0);
 	}
 
 	public boolean sameTextAllSubpages() {
@@ -1059,6 +1061,8 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	public String getTitle() {
+		if (this == ACCEL)
+			return "Adjacency Cores";
 		return pageTitle;
 	}
 

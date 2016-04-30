@@ -48,19 +48,24 @@ public class GuiMachineDescription extends GuiDescription {
 	}
 
 	@Override
+	protected int getMaxSubpage() {
+		if (page == ChromaResearch.ACCEL)
+			return 2+16-1;
+		return super.getMaxSubpage();
+	}
+
+	@Override
 	public final void drawScreen(int x, int y, float f) {
 		super.drawScreen(x, y, f);
 
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		if (subpage == 0)
+		if (subpage == 0 || (page == ChromaResearch.ACCEL && subpage != 1))
 			this.drawMachineRender(posX, posY);
 	}
 
 	private void drawMachineRender(int posX, int posY) {
-		GL11.glTranslated(0, 0, 32);
-		GL11.glColor4f(1, 1, 1, 1);
 		double x = posX+167;
 		double y = posY+44;
 		//float q = 12.5F + fscale*(float)Math.sin(System.nanoTime()/1000000000D); //wobble
@@ -86,12 +91,6 @@ public class GuiMachineDescription extends GuiDescription {
 		if (m.isTextureFace())
 			renderq = 22.5F;
 
-		GL11.glEnable(GL11.GL_BLEND);
-
-		RenderHelper.enableGUIStandardItemLighting();
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-		double sc = 48;
-		GL11.glPushMatrix();
 		int r = (int)(System.nanoTime()/20000000)%360;
 		if (m.isPlant())
 			r = -45;
@@ -106,7 +105,22 @@ public class GuiMachineDescription extends GuiDescription {
 					li.add(i);
 			}
 			offset = li.get((int)((System.currentTimeMillis()/(1000*TileEntityAdjacencyUpgrade.MAX_TIER))%li.size()));
+			if (subpage > 0) {
+				offset = subpage-2;
+			}
+			if (!AdjacencyUpgrades.upgrades[offset].isImplemented())
+				return;
 		}
+
+		GL11.glTranslated(0, 0, 32);
+		GL11.glColor4f(1, 1, 1, 1);
+
+		GL11.glEnable(GL11.GL_BLEND);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		double sc = 48;
+		GL11.glPushMatrix();
 
 		if (m.hasRender()) {
 			double dx = x;

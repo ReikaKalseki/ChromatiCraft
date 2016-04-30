@@ -60,8 +60,8 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 		int dt = 1+rand.nextInt(4);
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
-		double rx = this.calcR(chunkX >> 4, i, innerScale, mainScale);
-		double rz = this.calcR(chunkZ >> 4, k, innerScale, mainScale);
+		double rx = this.calcR(chunkX, i, innerScale, mainScale);
+		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
 		HeightData dat = this.calcHeight(rx, rz);
 		dat.maxHeight *= edgeFactor;
 		dat.isCliff = this.isCliff(chunkX, chunkZ, i, k, rx, rz, innerScale, mainScale);

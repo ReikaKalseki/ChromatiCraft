@@ -119,6 +119,7 @@ import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
@@ -1142,9 +1143,9 @@ public class AbilityHelper {
 	}
 	 */
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void rerouteStackToMESystem(EntityItemPickupEvent evt) {
-		if (evt.entityPlayer.worldObj.isRemote || evt.item.isDead)
+		if (evt.entityPlayer.worldObj.isRemote || evt.item.isDead || evt.isCanceled())
 			return;
 		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
 			ItemStack is = evt.item.getEntityItem();

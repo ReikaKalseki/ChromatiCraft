@@ -1,14 +1,62 @@
 ﻿<?xml version="1.0"?>
 <machines>
-	<accelerator>
+	<adjacency>
 		<desc>
-			As you have already learned, light blue energy is associated most with time and its manipulation. By concentrating this energy and binding it in a crystal structure - a vast improvement over the previous design you scribbled out after slipping and knocking yourself unconscious on a cauldron - you might be able to set up a localized field in which time progresses at a greatly increased rate.
+			Various things you have constructed thus far have been, if not abject failures, somewhat disappointing, having some major drawback or not quite fulfilling your desires (and greed). Sure, you could try to improve them, but that is often impossible or at least stupidly costly (and the last time you tried, its original inventor yelled at you), so a way to apply outside influence is of great use. Different colors, of course, will confer different advantages.
 		</desc>
 		<note>
-			Comes in various tiers, each tier being twice as powerful as the last
+			Each type comes in %d tiers, each tier being more powerful than the last
 			Localized effects may be ineffective over things whose essence is less concentrated
 		</note>
-	</accelerator>
+		<black>
+			Power crystals or not, your poor pylons are so heavily overloaded that your network is more gray balls of sadness than glowing beacons of energy. You do not yet have the means to improve their capabilities directly, but maybe you can reduce the load...
+		</black>
+		<red>
+		
+		</red>
+		<green>
+			You already have more ways to accelerate crops than you can even fit in your farm (not helped by the fact some require so much overhead to work that it would be less work to farm the crops manually), but few work on more general targets, and basically nothing can accelerate other idle processes. That last part, at least, is no longer true.
+		</green>
+		<brown>
+			Ores are a thing that you never really notice you need until you completely run out. Sure, you could create a world out of nothing but paper, ink, and cryptic scribbles - and have it eaten in minutes by white goo if you so much as think about increasing ore yield - or plop down a wall of mining machines and spend more power than an entire country does in a year. Or you could just convert raw stone into ore, and this time without pretending that bedrock has some magic ore-creation capability.
+		</brown>
+		<blue>
+		
+		</blue>
+		<purple>
+
+		</purple>
+		<cyan>
+		
+		</cyan>
+		<lightgray>
+		
+		</lightgray>
+		<gray>
+		
+		</gray>
+		<pink>
+			There are no shortage of ways to defend your base. However, many deal pitiful amounts of damage, and what good is a base defence if it takes so long to kill a Creeper that you still get to enjoy a (not very) shiny new hole in your wall? This frustration must be brought to an end.
+		</pink>
+		<lime>
+			Area-of-effect constructs are wonderful...right up until the point they taunt you by either forcing you to knock out three walls to fit it in the center of your base - unless it needs to be outside, because of course it does - or have their range end an infuriating four blocks from the edge of your house. Of the many things you need, one of them is a way to solve this problem once and for all.
+		</lime>
+		<yellow>
+			"Make a nuclear reactor", they said. "Never worry about power again", they said. What 'they' resolutely failed to tell you, however, was that in order to get anything more than what amounts to a trickle, you need to either rely on magic heat voids that eat lapis like it was coal or duty-cycle the damn thing and hope your base does not turn into a crater. If you could boost its output in a safer way, you would do so in a heartbeat.
+		</yellow>
+		<lightblue>
+			As you have already learned, light blue energy is associated most with time and its manipulation. By concentrating this energy and binding it in a crystal structure - a vast improvement over the previous design you scribbled out after slipping and knocking yourself unconscious on a cauldron - you might be able to set up a localized field in which time progresses at a greatly increased rate.
+		</lightblue>
+		<magenta>
+			There is an old saying that you can always tell how good someone is at managing mechanical power by how many damaged gearboxes they have stuffed in a chest. Though the obvious solution is not to screw up in the first place, that has remained firmly outside your capabilities thus far. Sure, you can still repair them with gear items, but that takes effort. Much better would be an active healing source nearby that could repair them for free.
+		</magenta>
+		<orange>
+			You thought that putting a controller in your fission reactor meant that you would never worry again about it overheating to the point where your base becomes as habitable as the moon, but you realized - too late, of course - a stark truth: That only helps if the heat has time to propagate to the controller, not accumulate in the fuel cores and ruin your day. With this tool to ferry heat around, that should hopefully FINALLY be solved.
+		</orange>
+		<white>
+			Stability is good. So what exactly were you thinking when you decided to construct a crafting system that is so unstable that you almost expect the thing to blow up in your face, sometimes literally? At any rate, you can probably calm it and other...volatile...things with a core of a relevant crystal element.
+		</white>
+	</adjacency>
 	<guardian>
 		<desc>
 			Too often you come home to find your constructions damaged or half of your valuables missing because someone snooping around your property helped themselves to your supplies. Sometimes you are fortunate and have those in power apply magical protection spells over your territory, but they are often of fairly limited range, and the less scrupulous will demand a steep payment from you to do so. Finally, however, you can protect yourself by applying a version of that yourself; each stone emits an aura that prevents those you do not trust from helping themselves to your resources or your structures.
@@ -25,7 +73,7 @@
 			In order to achieve your more grandoise casting arrangements, you will need to expand the grid beyond a 3x3, and that means you need a receptacle on which to store the items. Integrated into the structures around your table, these stands serve exactly that purpose, allowing you a 5x5 grid. The outer ring will need to be elevated by a block so that they have a clear line of sight to the table.
 		</desc>
 		<note>
-			
+
 		</note>
 	</stand>
 	<telepump>
@@ -133,7 +181,7 @@
 		</desc>
 		<note>
 			Requires a perimeter with vertices marked by either fence emitters or relays. Right click with manipulator to calculate perimeter, shift-right-click to set output side
-			
+
 			Each emitter in the perimeter adds to the damage dealt to intruding entities
 		</note>
 	</fence>

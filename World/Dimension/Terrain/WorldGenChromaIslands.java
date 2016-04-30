@@ -44,8 +44,8 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 		double innerScale = 1/16D;
 		double mainScale = 1D;
 		double floorScale = 0.5;
-		double rx = this.calcR(chunkX >> 4, i, innerScale, mainScale);
-		double rz = this.calcR(chunkZ >> 4, k, innerScale, mainScale);
+		double rx = this.calcR(chunkX, i, innerScale, mainScale);
+		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
 		double dxz = XZNoise.getValue(rx, rz);
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
@@ -53,13 +53,13 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 		double min = biome == SubBiomes.DEEPOCEAN ? MIN_FLOOR_OCEAN : MIN_FLOOR_SHALLOWS;
 		double max = biome == SubBiomes.DEEPOCEAN ? MAX_FLOOR_OCEAN : MAX_FLOOR_SHALLOWS;
 		double f = ReikaMathLibrary.normalizeToBounds(floorNoise.getValue(rx*floorScale, rz*floorScale), min, max);
-		for (int y = 0; y <= 64+ChunkProviderChroma.VERTICAL_OFFSET+3; y++) {
+		for (int y = 0; y <= 64+ChunkProviderChroma.VERTICAL_OFFSET+12; y++) {
 			double ry = this.calcR(0, y, innerScale, mainScale);
 			double dxy = XYNoise.getValue(rx, ry);
 			double dyz = YZNoise.getValue(ry, rz);
 			double d = this.convolve(dxz, dxy, dyz);
 			Block b = Blocks.water;
-			if (y >= 64+ChunkProviderChroma.VERTICAL_OFFSET)
+			if (y >= 64+ChunkProviderChroma.VERTICAL_OFFSET-1)
 				b = Blocks.air;
 			if (d > 0 || y <= f) {
 				b = Blocks.stone;

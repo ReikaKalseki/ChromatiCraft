@@ -421,6 +421,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 						Block b = world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 						if (b.isOpaqueCube() && b.getMaterial() == Material.rock)
 							return true;
+						if (b.getClass().getName().toLowerCase().contains("facade"))
+							return true;
 					}
 					//return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();
 					return false;

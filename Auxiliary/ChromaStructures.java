@@ -3183,6 +3183,11 @@ public class ChromaStructures {
 
 		array.setBlock(x, y, z, ChromaTiles.BEACON.getBlock(), ChromaTiles.BEACON.getBlockMetadata());
 
+		array.addBlock(x+1, y, z, ChromaBlocks.ADJACENCY.getBlockInstance());
+		array.addBlock(x-1, y, z, ChromaBlocks.ADJACENCY.getBlockInstance());
+		array.addBlock(x, y, z+1, ChromaBlocks.ADJACENCY.getBlockInstance());
+		array.addBlock(x, y, z-1, ChromaBlocks.ADJACENCY.getBlockInstance());
+
 		return array;
 	}
 

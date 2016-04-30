@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHeatRelay;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityPerformanceBoost;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityStabilityCore;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.relauncher.Side;
@@ -46,7 +47,7 @@ public enum AdjacencyUpgrades {
 	LIGHTBLUE(0x0000ff, 0x00ffff, TileEntityAccelerator.class),
 	MAGENTA(0xFF61DC, 0xD900DC, TileEntityHealingCore.class),
 	ORANGE(0xffcf00, 0xff4000, TileEntityHeatRelay.class),
-	WHITE(0xffffff, 0xffffff);
+	WHITE(0xffffff, 0xffffff, TileEntityStabilityCore.class);
 
 	public final int color1;
 	public final int color2;
