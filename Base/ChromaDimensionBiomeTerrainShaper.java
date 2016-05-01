@@ -27,7 +27,7 @@ public abstract class ChromaDimensionBiomeTerrainShaper {
 		biomeSet.addAll(c);
 	}
 
-	public abstract void generateColumn(World world, int chunkX, int chunkZ, int i, int k, Random rand, double edgeFactor);
+	public abstract void generateColumn(World world, int chunkX, int chunkZ, int i, int k, int surface, Random rand, double edgeFactor);
 
 	public final boolean canGenerateIn(ChromaDimensionBiome b) {
 		return biomeSet.contains(b.getExactType());

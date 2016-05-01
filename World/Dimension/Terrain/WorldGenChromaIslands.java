@@ -17,9 +17,9 @@ import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
 public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 
-	private final SimplexNoiseGenerator XYNoise;
-	private final SimplexNoiseGenerator XZNoise;
-	private final SimplexNoiseGenerator YZNoise;
+	private final SimplexNoiseGenerator archHeightNoise;
+	private final SimplexNoiseGenerator archLocationNoise; //only when abs(val) < thresh
+	private final SimplexNoiseGenerator archThickNoise;
 
 	private final SimplexNoiseGenerator floorNoise;
 
@@ -28,43 +28,52 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 	private static final int MIN_FLOOR_SHALLOWS = 64;
 	private static final int MAX_FLOOR_SHALLOWS = 80;
 
-	private static final int MAX_HEIGHT_OCEAN = 64+ChunkProviderChroma.VERTICAL_OFFSET-1;
-	private static final int MAX_HEIGHT_SHALLOWS = 64+ChunkProviderChroma.VERTICAL_OFFSET+64;
+	private static final int MIN_ARCH_HEIGHT = MIN_FLOOR_SHALLOWS-8;
+	private static final int MAX_ARCH_HEIGHT = 64+ChunkProviderChroma.VERTICAL_OFFSET+64;
+
+	private static final double MIN_ARCH_THICKNESS = 0.1;
+	private static final double MAX_ARCH_THICKNESS = 0.2;
 
 	public WorldGenChromaIslands(long seed) {
 		super(seed, Biomes.ISLANDS, SubBiomes.DEEPOCEAN);
 
 		floorNoise = new SimplexNoiseGenerator(seed);
 
-		XYNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 16));
-		XZNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 32));
-		YZNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 48));
+		archHeightNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 16));
+		archLocationNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 32));
+		archThickNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 48));
 	}
 
 	@Override
-	public void generateColumn(World world, int chunkX, int chunkZ, int i, int k, Random rand, double edgeFactor) {
+	public void generateColumn(World world, int chunkX, int chunkZ, int i, int k, int surface, Random rand, double edgeFactor) {
 		//3d noise map, have "blobs" of ground on surface and suspended midwater, put stuff in
 		double innerScale = 1/16D;
-		double mainScale = 1D;
-		double floorScale = 0.5;
-		double rx = this.calcR(chunkX, i, innerScale, mainScale);
-		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
-		double dxz = XZNoise.getValue(rx, rz);
+		double mainScale = 0.25D;
+		double floorScale = 2D;
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
 		ChromaDimensionBiomeType biome = BiomeDistributor.getBiome(dx, dz).getExactType();
 		boolean ocean = biome == SubBiomes.DEEPOCEAN;
+		double rx = this.calcR(chunkX, i, innerScale, mainScale);
+		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
+		double ay1 = 0;
+		double ay2 = 0;
+		if (!ocean) {
+			double thresh = ReikaMathLibrary.normalizeToBounds(archThickNoise.getValue(rx, rz), MIN_ARCH_THICKNESS, MAX_ARCH_THICKNESS);
+			double aval = Math.abs(archLocationNoise.getValue(rx, rz));
+			if (aval <= thresh) {
+				double ay = ReikaMathLibrary.normalizeToBounds(archHeightNoise.getValue(rx, rz), MIN_ARCH_HEIGHT, MAX_ARCH_HEIGHT);
+				ay1 = ay-2;
+				ay2 = ay+2;
+			}
+		}
 		double min = ocean ? MIN_FLOOR_OCEAN : MIN_FLOOR_SHALLOWS;
 		double max = ocean ? MAX_FLOOR_OCEAN : MAX_FLOOR_SHALLOWS;
 		double f = ReikaMathLibrary.normalizeToBounds(floorNoise.getValue(rx*floorScale, rz*floorScale), min, max);
-		double h = ocean ? MAX_HEIGHT_OCEAN : MAX_HEIGHT_SHALLOWS;
-		for (int y = 0; y <= h+2; y++) {
+		for (int y = 0; y <= 255; y++) {
 			double ry = this.calcR(0, y, innerScale, mainScale);
-			double dxy = XYNoise.getValue(rx, ry);
-			double dyz = YZNoise.getValue(ry, rz);
-			double d = this.convolve(dxz, dxy, dyz, y, f, h, ocean);
 			Block b = Blocks.air;//Blocks.water;
-			if (d > 0 || y <= f) {
+			if ((y >= ay1 && y <= ay2) || y <= f) {
 				b = Blocks.stone;
 			}
 			if (y == 0) {
@@ -75,15 +84,6 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 			world.setBlock(dx, y, dz, b, 0, 2);
 			//world.setBlock(dx, y+1, dz, Blocks.grass, 0, 2);
 		}
-	}
-
-	private double convolve(double d1, double d2, double d3, double y, double f, double h, boolean ocean) {
-		double val = d1+d2+d3-(ocean ? 1.25 : 0.5);//*Math.signum(d1)*Math.signum(d2)*Math.signum(d3);
-		if (y-f < 8)
-			val *= (y-f)/8D;
-		else if (y > h-8)
-			val *= Math.max(0, (h-y)/8D);
-		return val;
 	}
 
 	@Override

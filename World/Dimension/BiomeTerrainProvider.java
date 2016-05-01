@@ -38,9 +38,10 @@ public class BiomeTerrainProvider {
 				int dz = chunkZ+k;
 				ChromaDimensionBiome b = this.getBiome(dx, dz);
 				//ReikaJavaLibrary.pConsole("Generating column "+dx+", "+dz+" with "+b);
+				int top = world.getTopSolidOrLiquidBlock(dx, dz)-1;
 				for (ChromaDimensionBiomeTerrainShaper s : terrain) {
 					if (s.canGenerateIn(b)) {
-						s.generateColumn(world, chunkX, chunkZ, i, k, rand, this.getEdgeFactor(world, dx, dz, s));
+						s.generateColumn(world, chunkX, chunkZ, i, k, top, rand, this.getEdgeFactor(world, dx, dz, s));
 					}
 				}
 			}

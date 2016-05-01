@@ -54,7 +54,7 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 	}
 
 	@Override
-	public void generateColumn(World world, int chunkX, int chunkZ, int i, int k, Random rand, double edgeFactor) {
+	public void generateColumn(World world, int chunkX, int chunkZ, int i, int k, int surface, Random rand, double edgeFactor) {
 		double innerScale = 1/16D;
 		double mainScale = 1/4D;
 		int dt = 1+rand.nextInt(4);
