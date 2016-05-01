@@ -25,6 +25,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -227,15 +229,17 @@ public class EssentiaNetwork {
 		HashSet<WorldLocation> set = new HashSet();
 		set.add(loc);
 		WorldLocation tg = this.getNearestLocationExcept(loc, set);
-		if (tg == null)
+		//ReikaJavaLibrary.pConsole(loc+"  &  "+loc2+"  =  "+tg);
+		if (tg == null) {
 			return new ArrayList();
+		}
 		if (tg.equals(loc2)) {
 			path.add(loc2);
 		}
 		else {
 			this.recursePathTo(tg, loc2, path, set);
 		}
-		//ReikaJavaLibrary.pConsole(loc+">"+loc2+"="+path);
+		//ReikaJavaLibrary.pConsole(loc+"  >  "+loc2+"  =  "+path);
 		return path;
 	}
 
@@ -286,9 +290,21 @@ public class EssentiaNetwork {
 					for (int i = 0; i < 6; i++) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 						if (p.canOutputTo(dir)) {
-							Aspect a = p.getEssentiaType(dir);
-							if (a == aspect) {
-								sum += p.getEssentiaAmount(dir);
+							if (p instanceof IAspectContainer) {
+								AspectList al = ((IAspectContainer)p).getAspects();
+								if (al != null) {
+									for (Aspect a : al.aspects.keySet()) {
+										if (a == aspect) {
+											sum += p.getEssentiaAmount(dir);
+										}
+									}
+								}
+							}
+							else {
+								Aspect a = p.getEssentiaType(dir);
+								if (a == aspect) {
+									sum += p.getEssentiaAmount(dir);
+								}
 							}
 						}
 					}

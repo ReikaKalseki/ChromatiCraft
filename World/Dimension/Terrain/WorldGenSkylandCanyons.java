@@ -120,10 +120,6 @@ public class WorldGenSkylandCanyons extends ChromaDimensionBiomeTerrainShaper {
 		}
 	}
 
-	private double calcR(int chunk, int d, double innerScale, double mainScale) {
-		return (chunk+d*innerScale)*mainScale;
-	}
-
 	@Override
 	public double getBiomeSearchDistance() {
 		return BIOME_SEARCH;

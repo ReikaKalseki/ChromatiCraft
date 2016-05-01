@@ -122,10 +122,6 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 		return Math.abs(h-hpx) > 4 || Math.abs(h-hpz) > 4 || Math.abs(h-hnx) > 4 || Math.abs(h-hnz) > 4;
 	}
 
-	private double calcR(int chunk, int d, double innerScale, double mainScale) {
-		return (chunk+d*innerScale)*mainScale;
-	}
-
 	private static class HeightData {
 
 		private double maxHeight;

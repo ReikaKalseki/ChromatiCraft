@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
+import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -145,6 +146,7 @@ public enum ChromaItems implements ItemEnum {
 	EFFICIENCY(37, false,	"chroma.efficiency",	ItemEfficiencyCrystal.class),
 	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class),
 	KILLAURAGUN(38, false,	"chroma.killauragun",	ItemKillAuraGun.class),
+	THROWGEM(0,	true,		"chroma.throwgem",		ItemThrowableGem.class);
 	;
 
 	private final int index;
@@ -256,6 +258,7 @@ public enum ChromaItems implements ItemEnum {
 			case LENS:
 			case BERRY:
 			case ELEMENTAL:
+			case THROWGEM:
 				return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
 			case CLUSTER:
 				return StatCollector.translateToLocal(ChromaNames.clusterNames[meta]);
@@ -342,6 +345,7 @@ public enum ChromaItems implements ItemEnum {
 			case LENS:
 			case BERRY:
 			case ELEMENTAL:
+			case THROWGEM:
 				return CrystalElement.elements.length;
 			case CLUSTER:
 				return ChromaNames.clusterNames.length;

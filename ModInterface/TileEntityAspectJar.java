@@ -327,7 +327,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
-		return tank.getAspects() == aspect ? tank.drainAspect(aspect, amount) : 0;
+		return tank.getAspects() != null ? tank.drainAspect(aspect, amount) : 0;
 	}
 
 	@Override

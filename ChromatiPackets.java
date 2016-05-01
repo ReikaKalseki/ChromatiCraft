@@ -33,8 +33,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
-import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.PortalRecipe;
@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
+import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
@@ -691,6 +692,13 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case ORECREATE: {
 					TileEntityOreCreator.doOreCreationFX(world, x, y, z, data[0], data[1]);
+					break;
+				}
+				case THROWNGEM: {
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityThrownGem) {
+						((EntityThrownGem)e).doImpactFX(CrystalElement.elements[data[1]]);
+					}
 					break;
 				}
 			}

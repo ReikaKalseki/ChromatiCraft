@@ -125,6 +125,7 @@ public enum ChromaPackets {
 	WIRELESS(5),
 	METEORIMPACT(1),
 	ORECREATE(2),
+	THROWNGEM(2),
 	;
 
 	public final int numInts;

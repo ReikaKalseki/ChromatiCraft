@@ -23,9 +23,9 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ResearchDependentName;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -92,7 +92,7 @@ public abstract class ItemChromaBasic extends Item implements MultisheetItem {
 
 	}
 
-	public Class getTextureReferenceClass() {
+	public final Class getTextureReferenceClass() {
 		return ChromatiCraft.class;
 	}
 

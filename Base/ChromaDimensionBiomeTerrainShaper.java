@@ -42,4 +42,8 @@ public abstract class ChromaDimensionBiomeTerrainShaper {
 
 	public abstract double getBiomeSearchDistance();
 
+	protected final double calcR(int chunk, int d, double innerScale, double mainScale) {
+		return ((chunk >> 4)+d*innerScale)*mainScale;
+	}
+
 }

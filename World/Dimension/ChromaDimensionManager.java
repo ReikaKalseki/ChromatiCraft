@@ -104,7 +104,7 @@ public class ChromaDimensionManager {
 		}
 
 		public boolean isReasonablyFlat() {
-			return this != SKYLANDS;
+			return this != SKYLANDS && this != ISLANDS;
 		}
 
 		@Override

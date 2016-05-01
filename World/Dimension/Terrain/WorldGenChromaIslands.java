@@ -28,6 +28,9 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 	private static final int MIN_FLOOR_SHALLOWS = 64;
 	private static final int MAX_FLOOR_SHALLOWS = 80;
 
+	private static final int MAX_HEIGHT_OCEAN = 64+ChunkProviderChroma.VERTICAL_OFFSET-1;
+	private static final int MAX_HEIGHT_SHALLOWS = 64+ChunkProviderChroma.VERTICAL_OFFSET+64;
+
 	public WorldGenChromaIslands(long seed) {
 		super(seed, Biomes.ISLANDS, SubBiomes.DEEPOCEAN);
 
@@ -50,33 +53,37 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
 		ChromaDimensionBiomeType biome = BiomeDistributor.getBiome(dx, dz).getExactType();
-		double min = biome == SubBiomes.DEEPOCEAN ? MIN_FLOOR_OCEAN : MIN_FLOOR_SHALLOWS;
-		double max = biome == SubBiomes.DEEPOCEAN ? MAX_FLOOR_OCEAN : MAX_FLOOR_SHALLOWS;
+		boolean ocean = biome == SubBiomes.DEEPOCEAN;
+		double min = ocean ? MIN_FLOOR_OCEAN : MIN_FLOOR_SHALLOWS;
+		double max = ocean ? MAX_FLOOR_OCEAN : MAX_FLOOR_SHALLOWS;
 		double f = ReikaMathLibrary.normalizeToBounds(floorNoise.getValue(rx*floorScale, rz*floorScale), min, max);
-		for (int y = 0; y <= 64+ChunkProviderChroma.VERTICAL_OFFSET+12; y++) {
+		double h = ocean ? MAX_HEIGHT_OCEAN : MAX_HEIGHT_SHALLOWS;
+		for (int y = 0; y <= h+2; y++) {
 			double ry = this.calcR(0, y, innerScale, mainScale);
 			double dxy = XYNoise.getValue(rx, ry);
 			double dyz = YZNoise.getValue(ry, rz);
-			double d = this.convolve(dxz, dxy, dyz);
-			Block b = Blocks.water;
-			if (y >= 64+ChunkProviderChroma.VERTICAL_OFFSET-1)
-				b = Blocks.air;
+			double d = this.convolve(dxz, dxy, dyz, y, f, h, ocean);
+			Block b = Blocks.air;//Blocks.water;
 			if (d > 0 || y <= f) {
 				b = Blocks.stone;
 			}
 			if (y == 0) {
 				b = Blocks.bedrock;
 			}
-			world.setBlock(dx, y, dz, b);
+			if (y >= 64+ChunkProviderChroma.VERTICAL_OFFSET-1 && b == Blocks.water)
+				b = Blocks.air;
+			world.setBlock(dx, y, dz, b, 0, 2);
+			//world.setBlock(dx, y+1, dz, Blocks.grass, 0, 2);
 		}
 	}
 
-	private double convolve(double d1, double d2, double d3) {
-		return (d1+d2+d3)-1;//ReikaMathLibrary.py3d(d1, d2, d3);//*Math.signum(d1)*Math.signum(d2)*Math.signum(d3);
-	}
-
-	private double calcR(int chunk, int d, double innerScale, double mainScale) {
-		return (chunk+d*innerScale)*mainScale;
+	private double convolve(double d1, double d2, double d3, double y, double f, double h, boolean ocean) {
+		double val = d1+d2+d3-(ocean ? 1.25 : 0.5);//*Math.signum(d1)*Math.signum(d2)*Math.signum(d3);
+		if (y-f < 8)
+			val *= (y-f)/8D;
+		else if (y > h-8)
+			val *= Math.max(0, (h-y)/8D);
+		return val;
 	}
 
 	@Override

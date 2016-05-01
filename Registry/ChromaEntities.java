@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
+import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
 
@@ -31,7 +32,8 @@ public enum ChromaEntities implements EntityEnum {
 	LIGHT(EntityFlyingLight.class, "Light"),
 	ENDERCRYS(EntityChromaEnderCrystal.class, "CC Ender Crystal"),
 	METEOR(EntityMeteorShot.class, "Meteor Shot"),
-	AURORA(EntityAurora.class, "Aurora");
+	AURORA(EntityAurora.class, "Aurora"),
+	THROWNGEM(EntityThrownGem.class, "Thrown Gem");
 
 	public final String entityName;
 	private final Class entityClass;
