@@ -124,8 +124,8 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 
 	public static boolean isPlayerInvincible(EntityPlayer ep, float dmg) {
 		for (WorldLocation loc : cache) {
-			if (Math.abs(ep.posY-loc.yCoord) <= 8) {
-				TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity();
+			TileEntityCrystalBeacon te = (TileEntityCrystalBeacon)loc.getTileEntity();
+			if (Math.abs(ep.posY-loc.yCoord) <= te.range/2) {
 				if (loc.getDistanceTo(ep) <= te.range) {
 					if (te.isPlacer(ep) && te.prevent(dmg))
 						return true;

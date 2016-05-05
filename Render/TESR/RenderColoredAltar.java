@@ -11,14 +11,12 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -94,6 +92,7 @@ public class RenderColoredAltar extends ChromaRenderBase {
 		this.renderModel(tile, model, e, (double)(te.getRenderTick()+par8));
 		if (MinecraftForgeClient.getRenderPass() == 1) {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDepthMask(false);
 			this.renderFloatingCubes(te, e, par2, par4, par6, par8);
 		}
 		GL11.glPopAttrib();
@@ -153,7 +152,10 @@ public class RenderColoredAltar extends ChromaRenderBase {
 
 		int a = (int)(190*(1+f/24D));
 		int a2 = 150;
+		cube.render(x, y, z, c | (a << 24), c2 | (a2 << 24), f == 0, pdist);
 
+
+		/*
 		float p = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 		if (f == 0) {
 			float w = Math.max(0.125F, 2F-0.125F*pdist);
@@ -207,6 +209,8 @@ public class RenderColoredAltar extends ChromaRenderBase {
 		if (f == 0) {
 			GL11.glLineWidth(p);
 		}
+		 */
+
 
 		/*
 		v5.startDrawingQuads();

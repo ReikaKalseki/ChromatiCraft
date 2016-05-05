@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityAbilityFireball;
 import Reika.ChromatiCraft.Entity.EntityAurora;
@@ -35,6 +36,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGluon;
+import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -55,6 +57,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
+import Reika.ChromatiCraft.Render.Entity.RenderLaserPulse;
 import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
@@ -71,6 +74,7 @@ import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
@@ -83,6 +87,7 @@ import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
+import Reika.ChromatiCraft.Render.TESR.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
@@ -131,6 +136,7 @@ public class ChromaClient extends ChromaCommon {
 	private static final ConsoleRenderer console = new ConsoleRenderer();
 	private static final CrystalFenceRenderer fence = new CrystalFenceRenderer();
 	private static final SelectiveGlassRenderer selective = new SelectiveGlassRenderer();
+	private static final LaserEffectorRenderer lasereffect = new LaserEffectorRenderer();
 
 	//private static FiberRenderer fiber;
 
@@ -173,6 +179,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityMeteorShot.class, new RenderMeteorShot());
 		RenderingRegistry.registerEntityRenderingHandler(EntityAurora.class, new RenderAurora());
 		RenderingRegistry.registerEntityRenderingHandler(EntityThrownGem.class, new RenderThrownGem());
+		RenderingRegistry.registerEntityRenderingHandler(EntityLaserPulse.class, new RenderLaserPulse());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
@@ -247,6 +254,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPortal.class, new RenderCrystalPortal());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVoidRift.class, new RenderVoidRift());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityColoredAltar.class, new RenderColoredAltar());
+		ClientRegistry.bindTileEntitySpecialRenderer(TargetTile.class, new RenderLaserTarget());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
@@ -303,6 +311,9 @@ public class ChromaClient extends ChromaCommon {
 
 		selectiveRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(selectiveRender, selective);
+
+		lasereffectRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(lasereffectRender, lasereffect);
 
 		//fiberRender = RenderingRegistry.getNextAvailableRenderId();
 		//fiber = new FiberRenderer(fiberRender);

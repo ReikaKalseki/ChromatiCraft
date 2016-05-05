@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -42,7 +44,25 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		if (te instanceof Repairable) {
 			((Repairable)te).repair(world, dx, dy, dz, tier);
 		}
+		else if (te instanceof IInventory) {
+			IInventory ii = (IInventory)te;
+			int slot = rand.nextInt(ii.getSizeInventory());
+			ItemStack is = ii.getStackInSlot(slot);
+			if (this.canRepair(is)) {
+				this.repair(is);
+			}
+		}
 		return true;
+	}
+
+	private boolean canRepair(ItemStack is) {
+		if (is.getItem().isRepairable() && is.getItemDamage() > 0)
+			return true;
+		return false;
+	}
+
+	private void repair(ItemStack is) {
+		is.setItemDamage(is.getItemDamage()-this.getTier());
 	}
 
 	@Override

@@ -140,6 +140,7 @@ public class BiomeFXRenderer {
 		BlendMode.ADDITIVEDARK.apply();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		ReikaRenderHelper.disableEntityLighting();
+		GL11.glDepthMask(false);
 
 		if (rainTextures[rainTick] == 0) {
 			rainTextures[rainTick] = ReikaTextureHelper.binder.allocateAndSetupTexture(rainImages[rainTick]);

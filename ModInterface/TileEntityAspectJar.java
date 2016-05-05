@@ -405,7 +405,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 
 	@ModDependent(ModList.THAUMCRAFT)
 	public boolean hasAspects() {
-		return !tank.isEmpty();
+		return tank != null && !tank.isEmpty();
 	}
 
 	@ModDependent(ModList.THAUMCRAFT)

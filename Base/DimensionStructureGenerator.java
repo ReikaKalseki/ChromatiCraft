@@ -32,9 +32,11 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.PinballGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -271,7 +273,9 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		MUSIC(MusicPuzzleGenerator.class, "Crystal Music"),
 		NONEUCLID(NonEuclideanGenerator.class, "Complex Spaces"),
 		GOL(GOLGenerator.class, "Cellular Automata"),
-		ANTFARM(AntFarmGenerator.class, "Fading Light");
+		ANTFARM(AntFarmGenerator.class, "Fading Light"),
+		LASER(LaserPuzzleGenerator.class, "Chromatic Beams"),
+		PINBALL(PinballGenerator.class, "Expanding Motion");
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;

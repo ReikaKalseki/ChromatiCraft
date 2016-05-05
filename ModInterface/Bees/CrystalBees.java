@@ -76,6 +76,7 @@ import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Speeds;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Territory;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.Tolerance;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
+import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.BeeBranch;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.TraitsBee;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
@@ -121,6 +122,8 @@ public class CrystalBees {
 	//static IAlleleTolerance anyHumidity; gray
 	static SpecialGeneticEffect geneImprovement;
 	static SpecialGeneticEffect geneStability;
+
+	static BeeBranch crystalBranch;
 
 	static MultiAllele multiFlower;
 
@@ -214,6 +217,8 @@ public class CrystalBees {
 		geneStability = new GeneticStabilityEffect();
 		//anyTemperature = Tolerance.createNew("", new OmniToleranceCheck(), false);
 		//anyHumidity = Tolerance.createNew("", new OmniToleranceCheck(), false);
+
+		crystalBranch = new BeeBranch("branch.cccrystal", "Crystal", "Vitreus", "These bees can sense and sometimes field the crystal elements.");
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
@@ -506,7 +511,7 @@ public class CrystalBees {
 		}
 
 		private BasicBee(String name, String latin, Speeds s, Life l, Flowering f, Fertility f2, Territory a, int color, EnumTemperature t) {
-			super(name, "bee."+name.toLowerCase(Locale.ENGLISH), latin, "Reika", new BeeTraits());
+			super(name, "bee."+name.toLowerCase(Locale.ENGLISH), latin, "Reika", crystalBranch, new BeeTraits());
 			traits.speed = s;
 			traits.lifespan = l;
 			traits.flowering = f;
@@ -595,7 +600,7 @@ public class CrystalBees {
 		public final EnumHumidity humidity;
 
 		public CrystalBee(CrystalElement color, BeeTraits traits) {
-			super(color.displayName+" Crystal", "bee.crystal."+color.name().toLowerCase(Locale.ENGLISH), "Vitreus "+color.displayName, "Reika");
+			super(color.displayName+" Crystal", "bee.crystal."+color.name().toLowerCase(Locale.ENGLISH), "Vitreus "+color.displayName, "Reika", crystalBranch);
 			this.color = color;
 			speed = traits.speed;
 			fertility = traits.fertility;

@@ -96,21 +96,18 @@ public class EntityAurora extends InertEntity implements IEntityAdditionalSpawnD
 	}
 
 	@Override
-	public boolean shouldRenderInPass(int pass)
-	{
+	public boolean shouldRenderInPass(int pass) {
 		return pass == 1;
 	}
 
 	@Override
-	public boolean isInRangeToRenderDist(double dist)
-	{
+	public boolean isInRangeToRenderDist(double dist) {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean isInRangeToRender3d(double par2, double par4, double par6)
-	{
+	public boolean isInRangeToRender3d(double par2, double par4, double par6) {
 		return true;
 	}
 

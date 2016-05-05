@@ -16,6 +16,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
+import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -33,7 +34,8 @@ public enum ChromaEntities implements EntityEnum {
 	ENDERCRYS(EntityChromaEnderCrystal.class, "CC Ender Crystal"),
 	METEOR(EntityMeteorShot.class, "Meteor Shot"),
 	AURORA(EntityAurora.class, "Aurora"),
-	THROWNGEM(EntityThrownGem.class, "Thrown Gem");
+	THROWNGEM(EntityThrownGem.class, "Thrown Gem"),
+	LASERPULSE(EntityLaserPulse.class, "Laser Pulse");
 
 	public final String entityName;
 	private final Class entityClass;

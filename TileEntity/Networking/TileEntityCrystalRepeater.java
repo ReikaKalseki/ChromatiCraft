@@ -44,10 +44,10 @@ import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -370,12 +370,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		this.delete();
 	}
 
-	protected boolean shouldDrop() {
-		return true;
-	}
-
 	public final boolean canDrop(EntityPlayer ep) {
 		return ep.getUniqueID().equals(placerUUID);
+	}
+
+	protected boolean shouldDrop() {
+		return true;
 	}
 
 	@Override

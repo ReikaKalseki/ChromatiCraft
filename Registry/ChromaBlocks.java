@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
@@ -189,7 +190,8 @@ public enum ChromaBlocks implements BlockEnum {
 	SELECTIVEGLASS(BlockSelectiveGlass.class,									"chroma.selectiveglass"),
 	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
 	PAD(BlockHoverPad.class,													"chroma.hoverpad"),
-	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade");
+	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade"),
+	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect");
 
 	private Class blockClass;
 	private String blockName;
@@ -381,6 +383,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return this.getBasicName();
 			case DECOFLOWER:
 				return StatCollector.translateToLocal("chroma.flower."+BlockDecoFlower.Flowers.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case LASEREFFECT:
+				return StatCollector.translateToLocal("chromablock.laser."+BlockLaserEffector.LaserEffectType.list[meta].name().toLowerCase(Locale.ENGLISH));
 			default:
 				return "";
 		}
@@ -454,6 +458,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockHoverBlock.HoverType.list.length;
 			case DECOFLOWER:
 				return BlockDecoFlower.Flowers.list.length;
+			case LASEREFFECT:
+				return BlockLaserEffector.LaserEffectType.list.length;
 			default:
 				return 1;
 		}

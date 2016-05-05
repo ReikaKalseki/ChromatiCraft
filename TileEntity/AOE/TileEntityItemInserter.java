@@ -197,6 +197,8 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		if (maxCoord >= inv.length)
 			return;
 		Coordinate c = new Coordinate(x, y, z);
+		if (locations.containsKey(c))
+			return;
 		locations.put(c, InsertionType.INVENTORY);
 		targets[maxCoord] = c;
 		maxCoord++;

@@ -42,6 +42,7 @@ import forestry.api.apiculture.IBeeModifier;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.EnumTolerance;
 import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IIndividual;
 
 
 public class ChromaBeeHelpers {
@@ -116,6 +117,10 @@ public class ChromaBeeHelpers {
 		return Arrays.equals(ibg.getTerritory(), CrystalBees.superTerritory.getAllele().getValue());
 	}
 
+	public static boolean isLightningBoostActive(IBeeGenome ibg, IBeeHousing ibh) {
+		return ibg.getEffect() == CrystalBees.effectMap.get(CrystalElement.YELLOW) && ibh.canBlockSeeTheSky() && ibh.getBiome().canSpawnLightningBolt() && ibh.getWorld().getWorldInfo().isThundering();
+	}
+
 	abstract static class SpecialGeneticEffect {
 
 		public final CrystalElement color;
@@ -126,6 +131,43 @@ public class ChromaBeeHelpers {
 		}
 
 		public abstract void doEffect(IBeeGenome ibg, IBeeHousing ibh, Random rand);
+
+	}
+
+	static class LightningProductionEffect extends SpecialGeneticEffect {
+
+		LightningProductionEffect() {
+			super(CrystalElement.YELLOW);
+		}
+
+		@Override
+		public void doEffect(IBeeGenome ibg, IBeeHousing ibh, Random rand) {
+			if (isLightningBoostActive(ibg, ibh))
+				ReikaBeeHelper.runProductionCycle(ibh);
+		}
+
+	}
+
+	static class HistoryRewriteEffect extends SpecialGeneticEffect {
+
+		private static final double mateRewriteChance = 0.01;
+
+		HistoryRewriteEffect() {
+			super(CrystalElement.LIGHTGRAY);
+		}
+
+		@Override
+		public void doEffect(IBeeGenome ibg, IBeeHousing ibh, Random rand) {
+			if (ReikaRandomHelper.doWithChance(mateRewriteChance)) {
+				ItemStack queen = ibh.getBeeInventory().getQueen();
+				if (queen != null) {
+					IIndividual ii = AlleleManager.alleleRegistry.getIndividual(queen);
+					if (ii instanceof IBee) {
+						ReikaBeeHelper.setBeeMate((IBee)ii, (IBee)ii);
+					}
+				}
+			}
+		}
 
 	}
 

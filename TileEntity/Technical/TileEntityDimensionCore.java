@@ -346,6 +346,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				break;
 			case ANTFARM:
 				break;
+			case LASER:
+				break;
 		}
 	}
 

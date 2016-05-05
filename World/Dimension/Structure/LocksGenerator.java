@@ -35,7 +35,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class LocksGenerator extends DimensionStructureGenerator {
 
-	private ArrayList<LockLevel> genOrder = new ArrayList();
+	private final ArrayList<LockLevel> genOrder = new ArrayList();
 
 	private int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
 	private int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];

@@ -19,7 +19,7 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 
 	private final SimplexNoiseGenerator archHeightNoise;
 	private final SimplexNoiseGenerator archLocationNoise; //only when abs(val) < thresh
-	private final SimplexNoiseGenerator archThickNoise;
+	private final SimplexNoiseGenerator archThreshNoise;
 
 	private final SimplexNoiseGenerator floorNoise;
 
@@ -28,11 +28,10 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 	private static final int MIN_FLOOR_SHALLOWS = 64;
 	private static final int MAX_FLOOR_SHALLOWS = 80;
 
-	private static final int MIN_ARCH_HEIGHT = MIN_FLOOR_SHALLOWS-8;
+	private static final int MIN_ARCH_HEIGHT = MIN_FLOOR_SHALLOWS-24;
 	private static final int MAX_ARCH_HEIGHT = 64+ChunkProviderChroma.VERTICAL_OFFSET+64;
 
-	private static final double MIN_ARCH_THICKNESS = 0.1;
-	private static final double MAX_ARCH_THICKNESS = 0.2;
+	private static final double ARCH_VAL_LIMIT = 0.6;
 
 	public WorldGenChromaIslands(long seed) {
 		super(seed, Biomes.ISLANDS, SubBiomes.DEEPOCEAN);
@@ -41,7 +40,7 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 
 		archHeightNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 16));
 		archLocationNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 32));
-		archThickNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 48));
+		archThreshNoise = new SimplexNoiseGenerator(ReikaMathLibrary.cycleBitsLeft(seed, 48));
 	}
 
 	@Override
@@ -49,7 +48,7 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 		//3d noise map, have "blobs" of ground on surface and suspended midwater, put stuff in
 		double innerScale = 1/16D;
 		double mainScale = 0.25D;
-		double floorScale = 2D;
+		double floorScale = 0.5D/mainScale;
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
 		ChromaDimensionBiomeType biome = BiomeDistributor.getBiome(dx, dz).getExactType();
@@ -59,9 +58,10 @@ public class WorldGenChromaIslands extends ChromaDimensionBiomeTerrainShaper {
 		double ay1 = 0;
 		double ay2 = 0;
 		if (!ocean) {
-			double thresh = ReikaMathLibrary.normalizeToBounds(archThickNoise.getValue(rx, rz), MIN_ARCH_THICKNESS, MAX_ARCH_THICKNESS);
+			double thresh = ReikaMathLibrary.normalizeToBounds(archThreshNoise.getValue(rx, rz), -ARCH_VAL_LIMIT, ARCH_VAL_LIMIT);
 			double aval = Math.abs(archLocationNoise.getValue(rx, rz));
-			if (aval <= thresh) {
+			//ReikaJavaLibrary.pConsole(aval+" & "+thresh+":  "+ReikaMathLibrary.approxp(aval, thresh, 0.05));
+			if (ReikaMathLibrary.approxr(aval, thresh, 0.05)) {
 				double ay = ReikaMathLibrary.normalizeToBounds(archHeightNoise.getValue(rx, rz), MIN_ARCH_HEIGHT, MAX_ARCH_HEIGHT);
 				ay1 = ay-2;
 				ay2 = ay+2;

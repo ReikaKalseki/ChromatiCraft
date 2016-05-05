@@ -28,6 +28,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
@@ -68,6 +69,9 @@ public class ParticleEngine extends EffectRenderer {
 
 	private final RenderKey DEFAULT_RENDER = new RenderKey(particleTex, new RenderMode());
 
+	private boolean isRendering;
+	private boolean isTicking;
+
 	private ParticleEngine() {
 		super(null, null);
 	}
@@ -98,6 +102,8 @@ public class ParticleEngine extends EffectRenderer {
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
+
+		isRendering = true;
 
 		for (RenderKey rm : particles.keySet()) {
 			Collection<EntityFX> parts = particles.get(rm);
@@ -138,6 +144,8 @@ public class ParticleEngine extends EffectRenderer {
 			}
 		}
 
+		isRendering = false;
+
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
@@ -146,6 +154,16 @@ public class ParticleEngine extends EffectRenderer {
 	public void addEffect(EntityFX fx) {
 		//int layer = fx.getFXLayer();
 		//int dim = world.provider.dimensionId;
+		if (isRendering) {
+			ChromatiCraft.logger.logError("Tried adding a particle mid-render!");
+			Thread.dumpStack();
+			return;
+		}
+		if (isTicking) {
+			ChromatiCraft.logger.logError("Tried adding a particle mid-update!");
+			Thread.dumpStack();
+			return;
+		}
 		RenderKey rm = DEFAULT_RENDER;
 		if (fx instanceof CustomRenderFX) {
 			rm = this.getOrCreateKey(((CustomRenderFX)fx).getTexture(), ((CustomRenderFX)fx).getRenderMode());
@@ -171,6 +189,7 @@ public class ParticleEngine extends EffectRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (mc.theWorld == null)
 			return;
+		isTicking = true;
 		int dim = mc.theWorld.provider.dimensionId;
 		for (RenderKey rm : particles.keySet()) {
 			Collection<EntityFX> parts = particles.get(rm);
@@ -183,6 +202,7 @@ public class ParticleEngine extends EffectRenderer {
 					it.remove();
 			}
 		}
+		isTicking = false;
 	}
 
 	@Override

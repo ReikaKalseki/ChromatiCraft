@@ -65,6 +65,7 @@ build/
 *.pgd
 *.rsp
 *.pdn
+*.struct
 *.rar
 *.sbr
 *.tlb

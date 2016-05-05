@@ -160,6 +160,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 				this.checkConnection(world, x, y, z);
 			}
 		}
+		else {
+			particles.update();
+		}
 
 		if (connection != null) {
 			if (activeTick > 0) {
@@ -240,7 +243,6 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 
 	@SideOnly(Side.CLIENT)
 	private void doConnectionParticles(World world, int x, int y, int z) {
-		particles.update();
 		double dp = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
 		int n = 1+rand.nextInt(3);
 		float ds = 0;

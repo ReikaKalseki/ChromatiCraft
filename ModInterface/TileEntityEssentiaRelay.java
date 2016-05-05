@@ -12,11 +12,15 @@ package Reika.ChromatiCraft.ModInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaMovement;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaPath;
@@ -24,10 +28,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
 @Strippable(value={"thaumcraft.api.aspects.IEssentiaTransport"})
-public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements IEssentiaTransport, BreakAction {
+public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements IEssentiaTransport, BreakAction, SneakPop {
 
 	//private static final int PATH_DURATION = 30;
 	public static final int SEARCH_RANGE = 8;
@@ -177,6 +182,22 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	@Override
 	public void breakBlock() {
 		network.reset();
+	}
+
+	@Override
+	public final void drop() {
+		//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getTile().getCraftedProduct());
+		//if (!this.shouldDrop())
+		//	return;
+		ItemStack is = this.getTile().getCraftedProduct();
+		is.stackTagCompound = new NBTTagCompound();
+		//this.getTagsToWriteToStack(is.stackTagCompound);
+		ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, is);
+		this.delete();
+	}
+
+	public final boolean canDrop(EntityPlayer ep) {
+		return ep.getUniqueID().equals(placerUUID);
 	}
 
 }
