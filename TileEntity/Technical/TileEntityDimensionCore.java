@@ -348,6 +348,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				break;
 			case LASER:
 				break;
+			case PINBALL:
+				break;
 		}
 	}
 
