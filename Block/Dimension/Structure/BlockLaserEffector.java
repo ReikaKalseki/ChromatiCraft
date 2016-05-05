@@ -37,6 +37,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -263,7 +264,7 @@ public class BlockLaserEffector extends BlockContainer {
 			}
 		}
 
-		private boolean isOmniDirectional() {
+		public boolean isOmniDirectional() {
 			return this == TARGET_THRU || this == COLORIZER;
 		}
 
@@ -282,6 +283,11 @@ public class BlockLaserEffector extends BlockContainer {
 					else if (dmg == CrystalElement.BLUE.ordinal()) {
 						te.color.blue = !te.color.blue;
 					}
+					world.markBlockForUpdate(x, y, z);
+					return;
+				}
+				else if (!this.isOmniDirectional() && is != null && is.getItem() == Items.diamond) {
+					te.rotateable = !te.rotateable;
 					world.markBlockForUpdate(x, y, z);
 					return;
 				}
@@ -390,6 +396,10 @@ public class BlockLaserEffector extends BlockContainer {
 		protected CubeDirections facing = CubeDirections.NORTH;
 		protected ColorData color = new ColorData(true);
 
+		private boolean rotateable = true;
+
+		private static final boolean PARTIAL_ROTATEABILITY = false;
+
 		@Override
 		public boolean canUpdate() {
 			return false;
@@ -401,6 +411,8 @@ public class BlockLaserEffector extends BlockContainer {
 			color = new ColorData(true);
 			color.readFromNBT(tag);
 			facing = CubeDirections.list[tag.getInteger("dir")];
+
+			rotateable = tag.getBoolean("free");
 		}
 
 		@Override
@@ -408,6 +420,8 @@ public class BlockLaserEffector extends BlockContainer {
 			super.writeToNBT(tag);
 			color.writeToNBT(tag);
 			tag.setInteger("dir", facing.ordinal());
+
+			tag.setBoolean("free", rotateable);
 		}
 
 		@Override
@@ -424,8 +438,15 @@ public class BlockLaserEffector extends BlockContainer {
 		}
 
 		public void rotate() {
-			facing = facing.getRotation(true);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			if (this.isRotateable()) {
+				facing = facing.getRotation(true);
+				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 0.4F, 0.5F);
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			}
+		}
+
+		public boolean isRotateable() {
+			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal();
 		}
 
 	}

@@ -48,7 +48,7 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 			LaserLevel l = new LaserLevel(this, s);
 			rooms.add(l);
 			l.generate(world, x, y, z);
-			int dx = l.getLengthX()+10;
+			int dx = l.getLengthX()+20;
 			x += dx;
 		}
 	}

@@ -510,7 +510,45 @@ public class LaserEffectorRenderer implements ISimpleBlockRenderingHandler {
 				break;
 		}
 		v5.setColorRGBA_I(c, a);
-		vt5.rotateNonOrthogonal(0, ang, 0);
+		if (!type.isOmniDirectional()) {
+			if (te.isRotateable()) {
+				double th = 0.0625;
+				vt5.offset(0, th, 0);
+				double s = 0.225;
+
+				IIcon ico3 = Blocks.stonebrick.getIcon(0, 3);
+				float u3 = ico3.getMinU();
+				float v3 = ico3.getMinV();
+				float du3 = ico3.getMaxU();
+				float dv3 = ico3.getMaxV();
+
+				vt5.addVertexWithUVColor(-s, slab+th, s, u3, dv3, 0xffffff);
+				vt5.addVertexWithUVColor(s, slab+th, s, du3, dv3, 0xffffff);
+				vt5.addVertexWithUVColor(s, slab+th, -s, du3, v3, 0xffffff);
+				vt5.addVertexWithUVColor(-s, slab+th, -s, u3, v3, 0xffffff);
+
+				vt5.addVertexWithUV(-s, slab+th, -s, u3, dv3);
+				vt5.addVertexWithUV(s, slab+th, -s, du3, dv3);
+				vt5.addVertexWithUV(s, slab, -s, du3, v3);
+				vt5.addVertexWithUV(-s, slab, -s, u3, v3);
+
+				vt5.addVertexWithUV(-s, slab, s, u3, v3);
+				vt5.addVertexWithUV(s, slab, s, du3, v3);
+				vt5.addVertexWithUV(s, slab+th, s, du3, dv3);
+				vt5.addVertexWithUV(-s, slab+th, s, u3, dv3);
+
+				vt5.addVertexWithUV(-s, slab, -s, u3, v3);
+				vt5.addVertexWithUV(-s, slab, s, du3, v3);
+				vt5.addVertexWithUV(-s, slab+th, s, du3, dv3);
+				vt5.addVertexWithUV(-s, slab+th, -s, u3, dv3);
+
+				vt5.addVertexWithUV(s, slab+th, -s, u3, dv3);
+				vt5.addVertexWithUV(s, slab+th, s, du3, dv3);
+				vt5.addVertexWithUV(s, slab, s, du3, v3);
+				vt5.addVertexWithUV(s, slab, -s, u3, v3);
+			}
+			vt5.rotateNonOrthogonal(0, ang, 0);
+		}
 		vt5.render();
 	}
 

@@ -45,7 +45,7 @@ public class BlockStructureDataStorage extends BlockContainer {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return s <= 1 ? icons[0] : icons[1];
+		return /*s <= 1 ? icons[0] : */icons[1];
 	}
 
 	@Override
