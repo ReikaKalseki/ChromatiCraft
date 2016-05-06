@@ -86,6 +86,7 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			}
 			b.taxiCabDistance = true;
 			b.player = ep;
+			b.hungerFactor = 0.125F;
 			Block bk = ep.worldObj.getBlock(x, y, z);
 			if (bk == Blocks.lit_redstone_ore)
 				b.addBlock(new BlockKey(Blocks.redstone_ore));

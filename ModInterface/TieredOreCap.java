@@ -84,9 +84,10 @@ public class TieredOreCap extends WandCap {
 		for (TieredOres t : items.keySet()) {
 			WandType wt = items.get(t);
 			AspectList al = new AspectList();
-			al.add(Aspect.ORDER, 20);
+			int n = t == TieredOres.FOCAL ? 2 : 1;
+			al.add(Aspect.ORDER, 20*n);
 			Aspect a = wt.aspects.get(0);
-			al.add(a, 50);
+			al.add(a, 50*n);
 			Object[] recipe = {
 					"AAA", "A A", 'A', wt.raw
 			};

@@ -41,11 +41,11 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PlayerChargedFromPylonEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonRechargedEvent;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -855,7 +855,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					int ret = ReikaThaumHelper.addVisToWand(wandstack, a, amt);
 					int added = amt-ret;
 					if (added > 0) {
-						this.drain(color, Math.min(energy, added*48));
+						this.drain(color, Math.min(energy, added*900));
 					}
 				}
 			}

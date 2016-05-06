@@ -94,7 +94,7 @@ public class ItemCrystalCell extends ItemChromaTool implements SpriteRenderCallb
 
 	@Override
 	public int getBytes(ItemStack cellItem) { //Total storage
-		return 262144;
+		return 262144*4; //increased 4x
 	}
 
 	@Override

@@ -672,6 +672,9 @@ public class ChromatiCraft extends DragonAPIMod {
 
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.STRUCTSHIELD.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.SPECIALSHIELD.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.LASEREFFECT.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.TELEPORT.getBlockInstance());
+			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.DOOR.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.RUNE.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLONSTRUCT.getBlockInstance());
 			ThaumcraftApi.portableHoleBlackList.add(ChromaBlocks.PYLON.getBlockInstance());

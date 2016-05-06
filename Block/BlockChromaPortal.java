@@ -304,6 +304,7 @@ public class BlockChromaPortal extends Block {
 		public void validateStructure(World world, int x, int y, int z) {
 			if (worldObj.isRemote)
 				return;
+			boolean last = complete;
 			if (this.getBlockMetadata() == 15) {
 				complete = true;
 			}
@@ -311,7 +312,8 @@ public class BlockChromaPortal extends Block {
 				complete = ChromaStructures.getPortalStructure(world, x, y, z, false).matchInWorld();
 				complete &= this.getEntities(world, x, y, z);
 			}
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			if (last != complete)
+				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private boolean getEntities(World world, int x, int y, int z) {

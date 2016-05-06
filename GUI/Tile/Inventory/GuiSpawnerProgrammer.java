@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntitySpawnerReprogrammer;
+import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -72,14 +73,14 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		switch (b.id) {
-		case 0:
-			if (selectedMob > 0)
-				selectedMob--;
-			break;
-		case 1:
-			if (selectedMob < validMobs.size()-1)
-				selectedMob++;
-			break;
+			case 0:
+				if (selectedMob > 0)
+					selectedMob--;
+				break;
+			case 1:
+				if (selectedMob < validMobs.size()-1)
+					selectedMob++;
+				break;
 		}
 		ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.SPAWNERPROGRAM.ordinal(), this.getMobLabel(), prog);
 		this.initGui();
@@ -122,7 +123,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 			this.drawTexturedModelRectFromIcon(35, 70-h, ico, 16, h);
 		}*/
 
-		String display = Keyboard.isKeyDown(Keyboard.KEY_TAB) ? this.getMobLabel() : this.getMobDisplayName();
+		String display = Keyboard.isKeyDown(DragonOptions.DEBUGKEY.getValue()) ? this.getMobLabel() : this.getMobDisplayName();
 		ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 55, 0xffffff);
 	}
 

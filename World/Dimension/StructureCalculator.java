@@ -25,6 +25,7 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class StructureCalculator extends ThreadedGenerator {
 
@@ -32,6 +33,13 @@ public class StructureCalculator extends ThreadedGenerator {
 	private final Random seededRand;
 	private final int maxAttempts;
 	private final Thread callerThread;
+
+	private int structureOriginX;
+	private int structureOriginZ;
+	private float structureAngleOrigin;
+
+	public static final int BASE_RADIUS = 5000;
+	public static final int RADIUS_VARIATION = 3000; //was +/- 4000, then 2000
 
 	public StructureCalculator(long seed) {
 		this(seed, 10);
@@ -45,6 +53,12 @@ public class StructureCalculator extends ThreadedGenerator {
 		//Would base off world seed, but is loaded "outside" a MC world and as such cannot reference it; make it file-specific instead
 		//seededRand = new Random(new File("c:").getTotalSpace() ^ System.getProperty("os.name").hashCode());
 		seededRand = new Random(this.generateOrGetGenSeed());
+	}
+
+	public double getMaximumDistanceFromOrigin() {
+		double x = Math.max(Math.abs(structureOriginX+BASE_RADIUS+RADIUS_VARIATION), Math.abs(structureOriginX-BASE_RADIUS-RADIUS_VARIATION));
+		double z = Math.max(Math.abs(structureOriginZ+BASE_RADIUS+RADIUS_VARIATION), Math.abs(structureOriginZ-BASE_RADIUS-RADIUS_VARIATION));
+		return ReikaMathLibrary.py3d(x, 0, z);
 	}
 
 	private long generateOrGetGenSeed() {
@@ -106,15 +120,15 @@ public class StructureCalculator extends ThreadedGenerator {
 			}
 		}
 
-		int structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 6000); //was 10K, then 4K
-		int structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 6000);
-		float structureAngleOrigin = rand.nextFloat()*360;
+		structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 6000); //was 10K, then 4K
+		structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 6000);
+		structureAngleOrigin = rand.nextFloat()*360;
 
 		for (StructurePair s : new ArrayList<StructurePair>(ChunkProviderChroma.structures)) {
-			this.tryGenerate(s, structureOriginX, structureOriginZ, structureAngleOrigin, 0);
+			this.tryGenerate(s, 0);
 		}
 
-		this.generateMonument(structureOriginX, structureOriginZ);
+		this.generateMonument();
 	}
 
 	@Override
@@ -122,7 +136,7 @@ public class StructureCalculator extends ThreadedGenerator {
 		return ChunkProviderChroma.getStructures().size()+" structures generated.";
 	}
 
-	private void generateMonument(int structureOriginX, int structureOriginZ) {
+	private void generateMonument() {
 		ChunkProviderChroma.monument.startCalculate(structureOriginX, structureOriginZ, rand);
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
 			String sg = "CHROMATICRAFT: Generated the monument at "+structureOriginX+", "+structureOriginZ+".";
@@ -144,7 +158,7 @@ public class StructureCalculator extends ThreadedGenerator {
 		return li;
 	}
 
-	private void tryGenerate(StructurePair p, int structureOriginX, int structureOriginZ, float structureAngleOrigin, int attempt) {
+	private void tryGenerate(StructurePair p, int attempt) {
 		try {
 			this.doGenerate(p, structureOriginX, structureOriginZ, structureAngleOrigin);
 		}
@@ -170,13 +184,13 @@ public class StructureCalculator extends ThreadedGenerator {
 			p.generator.clear();
 			ChunkProviderChroma.structures.remove(p);
 			if (redo)
-				this.tryGenerate(p, structureOriginX, structureOriginZ, structureAngleOrigin, attempt+1);
+				this.tryGenerate(p, attempt+1);
 		}
 	}
 
 	private void doGenerate(StructurePair s, int structureOriginX, int structureOriginZ, float structureAngleOrigin) {
 		double ang = Math.toRadians(structureAngleOrigin+s.color.ordinal()*22.5);
-		int r = ReikaRandomHelper.getRandomPlusMinus(5000, 3000); //was +/- 4000, then 2000
+		int r = ReikaRandomHelper.getRandomPlusMinus(BASE_RADIUS, RADIUS_VARIATION);
 		int x = structureOriginX+(int)(r*Math.cos(ang));
 		int z = structureOriginZ+(int)(r*Math.sin(ang));
 		long t = System.currentTimeMillis();

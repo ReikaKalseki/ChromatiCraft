@@ -39,10 +39,11 @@ public class AuraCleanerRecipe extends PylonRecipe {
 		this.addAuxItem(Items.diamond, 2, 4);
 		this.addAuxItem(Items.emerald, 0, -4);
 
-		this.addAuraRequirement(CrystalElement.BLACK, 5000);
-		this.addAuraRequirement(CrystalElement.WHITE, 5000);
+		this.addAuraRequirement(CrystalElement.BLACK, 20000);
+		this.addAuraRequirement(CrystalElement.WHITE, 10000);
 		this.addAuraRequirement(CrystalElement.GRAY, 5000);
 		this.addAuraRequirement(CrystalElement.PINK, 5000);
+		this.addAuraRequirement(CrystalElement.MAGENTA, 10000);
 	}
 
 }

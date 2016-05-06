@@ -33,6 +33,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
@@ -80,7 +81,9 @@ public class BlockCrystalHive extends Block implements MinerBlock {
 			for (int i = 0; i < drones; i++) {
 				li.add(bee.getBeeItem(world, EnumBeeType.DRONE));
 			}
-			li.add(bee.getBeeItem(world, EnumBeeType.PRINCESS));
+			ItemStack pr = bee.getBeeItem(world, EnumBeeType.PRINCESS);
+			ReikaBeeHelper.setPristine(pr, ReikaRandomHelper.doWithChance(10));
+			li.add(pr);
 		}
 		return li;
 	}
@@ -95,12 +98,12 @@ public class BlockCrystalHive extends Block implements MinerBlock {
 	@ModDependent(ModList.FORESTRY)
 	private BeeSpecies getBeeForMeta(int meta) {
 		switch(meta) {
-		case 0:
-			return CrystalBees.getCrystalBee();
-		case 1:
-			return CrystalBees.getPureBee();
-		default:
-			return null;
+			case 0:
+				return CrystalBees.getCrystalBee();
+			case 1:
+				return CrystalBees.getPureBee();
+			default:
+				return null;
 		}
 	}
 

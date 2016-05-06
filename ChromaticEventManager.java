@@ -75,8 +75,8 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
-import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Base.CrystalBlock;
@@ -86,6 +86,7 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
@@ -916,8 +917,15 @@ public class ChromaticEventManager {
 	@ModDependent(ModList.BLOODMAGIC)
 	@ClassDependent("WayofTime.alchemicalWizardry.api.event.TeleposeEvent")
 	public void noTelepose(TeleposeEvent evt) {
-		if (!this.isMovable(evt.getInitialTile()) || !this.isMovable(evt.getFinalTile()))
+		if (!this.isMovable(evt.initialBlock) || !this.isMovable(evt.finalBlock) || !this.isMovable(evt.getInitialTile()) || !this.isMovable(evt.getFinalTile()))
 			evt.setCanceled(true);
+	}
+
+	private boolean isMovable(Block b) {
+		if (b instanceof BlockStructureShield)
+			return false;
+		ChromaBlocks r = ChromaBlocks.getEntryByID(b);
+		return r == null || !r.isDimensionStructureBlock();
 	}
 
 	private boolean isMovable(TileEntity te) {

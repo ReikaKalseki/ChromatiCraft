@@ -47,7 +47,7 @@ public class PoolRecipes {
 		this.addRecipe(ChromaStacks.conductiveIngot, new ItemStack(Items.gold_ingot), new ItemStack(Items.redstone, 8, 0), ReikaItemHelper.getSizedItemStack(ChromaStacks.beaconDust, 16));
 		this.addRecipe(ChromaStacks.auraIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.auraDust, 8), new ItemStack(Items.glowstone_dust, 8, 0), new ItemStack(Items.redstone, 16, 0), new ItemStack(Items.quartz, 4, 0));
 		this.addRecipe(ChromaStacks.spaceIngot, new ItemStack(Items.iron_ingot), ReikaItemHelper.getSizedItemStack(ChromaStacks.spaceDust, 16), new ItemStack(Items.glowstone_dust, 32, 0), new ItemStack(Items.redstone, 64, 0), new ItemStack(Items.quartz, 16, 0), new ItemStack(Items.diamond, 4, 0));
-		this.addRecipe(ChromaStacks.complexIngot, new ItemStack(Items.gold_ingot), ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
+		this.addRecipe(ChromaStacks.complexIngot, ChromaStacks.chromaIngot, ChromaStacks.enderIngot, ChromaStacks.waterIngot, ChromaStacks.spaceIngot, ChromaStacks.fieryIngot, ChromaStacks.auraIngot, ChromaStacks.conductiveIngot, ChromaStacks.iridChunk, new ItemStack(Blocks.obsidian, 4, 0), new ItemStack(Items.emerald, 8, 0));
 
 	}
 
