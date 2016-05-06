@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
+import java.util.HashMap;
+
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
@@ -20,7 +22,7 @@ public class MusicStructureData extends StructureData {
 	}
 
 	@Override
-	public void load() {
+	public void load(HashMap<String, Object> map) {
 		MusicPuzzleGenerator mus = (MusicPuzzleGenerator)generator;
 
 	}

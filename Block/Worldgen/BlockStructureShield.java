@@ -137,6 +137,8 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
 		if (ReikaBlockHelper.isLiquid(b))
 			return false;
+		if (b == ChromaBlocks.DOOR.getBlockInstance())
+			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			if (b instanceof BlockStructureShield)
 				return false;

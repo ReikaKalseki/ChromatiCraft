@@ -47,6 +47,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
@@ -363,6 +364,10 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		}
 
 		private static boolean matchUIDs(TileEntityChromaDoor te1, TileEntityChromaDoor te2) {
+			if (te1 == null || te2 == null) {
+				ReikaJavaLibrary.pConsole("NULL TILE");
+				return false;
+			}
 			if (te1.uid == te2.uid)
 				return true;
 			if (te1.uid == null || te2.uid == null)

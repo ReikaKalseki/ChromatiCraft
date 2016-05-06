@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
+import java.util.HashMap;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -32,12 +34,12 @@ public class ShiftMazeData extends StructureData {
 	}
 
 	@Override
-	public void load() {
+	public void load(HashMap<String, Object> map) {
 
 	}
 
 	@Override
-	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s) {
+	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
 		this.cycle(world);
 	}
 

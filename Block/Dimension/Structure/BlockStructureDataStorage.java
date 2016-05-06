@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import net.minecraft.block.BlockContainer;
@@ -21,6 +22,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 
 public class BlockStructureDataStorage extends BlockContainer {
 
@@ -59,25 +61,37 @@ public class BlockStructureDataStorage extends BlockContainer {
 	public static class TileEntityStructureDataStorage extends TileEntity {
 
 		private StructureData data;
+		private HashMap<String, Object> extraData;
 
-		public void loadData(DimensionStructureGenerator gen) {
+		public void loadData(DimensionStructureGenerator gen, HashMap<String, Object> map) {
 			data = gen.createDataStorage();
 			if (data != null)
-				data.load();
+				data.load(map);
+			extraData = map;
 		}
 
 		protected void onRightClick(EntityPlayer ep, int s) {
 			if (data != null)
-				data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s);
+				data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s, extraData);
 		}
 
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);
 
+			//extraData = new HashMap();
+			NBTTagCompound dat = NBT.getCompoundTag("extra");
+			/*
+			for (Object o : dat.func_150296_c()) {
+				String s = (String)o;
+				extraData.put(s, ReikaNBTHelper.getValue(dat.getTag(s)));
+			}
+			 */
+			extraData = dat != null && !dat.hasNoTags() ? (HashMap<String, Object>)ReikaNBTHelper.getValue(dat) : null;
+
 			if (NBT.hasKey("uid")) {
 				UUID uid = UUID.fromString(NBT.getString("uid"));
-				this.loadData(DimensionStructureGenerator.getGeneratorByID(uid));
+				this.loadData(DimensionStructureGenerator.getGeneratorByID(uid), extraData);
 			}
 		}
 
@@ -87,6 +101,17 @@ public class BlockStructureDataStorage extends BlockContainer {
 
 			if (data != null)
 				NBT.setString("uid", data.getUUID().toString());
+
+			if (extraData != null && !extraData.isEmpty()) {
+				/*
+				NBTTagCompound dat = new NBTTagCompound();
+				for (String s : extraData.keySet()) {
+					dat.setTag(s, ReikaNBTHelper.getTagForObject(extraData.get(s)));
+				}
+				NBT.setTag("extra", dat);
+				 */
+				NBT.setTag("extra", ReikaNBTHelper.getTagForObject(extraData));
+			}
 		}
 
 	}

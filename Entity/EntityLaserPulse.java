@@ -36,15 +36,17 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 
 	public ColorData color;
 	public CubeDirections direction;
+	//private String level = "";
 
 	public EntityLaserPulse(World world) {
 		super(world);
 	}
 
-	public EntityLaserPulse(World world, int x, int y, int z, CubeDirections dir, ColorData c) {
+	public EntityLaserPulse(World world, int x, int y, int z, CubeDirections dir, ColorData c, String l) {
 		super(world, x, y, z, dir);
 		direction = dir;
 		color = c.copy();
+		//level = l;
 	}
 
 	@Override
@@ -113,7 +115,9 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 
 	@Override
 	protected void onDeath() {
+		if (!worldObj.isRemote) {
 
+		}
 	}
 
 	private void playTonalSound(SoundEnum s, float vol, float p) {
@@ -211,6 +215,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		super.writeSpawnData(data);
 		color.writeBuf(data);
 		data.writeInt(direction.ordinal());
+		//ReikaPacketHelper.writeString(data, level);
 	}
 
 	@Override
@@ -219,6 +224,7 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		color = new ColorData(true);
 		color.readBuf(data);
 		direction = CubeDirections.list[data.readInt()];
+		//level = ReikaPacketHelper.readString(data);
 	}
 
 	@Override
@@ -244,6 +250,10 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 	@Override
 	public boolean despawnOverDistance() {
 		return true;
+	}
+
+	public String getLevel() {
+		return "";//level;
 	}
 
 }

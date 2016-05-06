@@ -384,22 +384,28 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
-	public final void generateDataTile(int x, int y, int z) {
-		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this));
+	public final void generateDataTile(int x, int y, int z, Object... data) {
+		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this, data));
 	}
 
 	private static final class StructureDataCallback implements TileCallback {
 
 		private final DimensionStructureGenerator generator;
+		private final HashMap<String, Object> data;
 
-		private StructureDataCallback(DimensionStructureGenerator gen) {
+		private StructureDataCallback(DimensionStructureGenerator gen, Object[] data) {
 			generator = gen;
+			this.data = new HashMap();
+			for (int i = 0; i < data.length; i += 2) {
+				String s = (String)data[i];
+				this.data.put(s, data[i+1]);
+			}
 		}
 
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof TileEntityStructureDataStorage) {
-				((TileEntityStructureDataStorage)te).loadData(generator);
+				((TileEntityStructureDataStorage)te).loadData(generator, data);
 			}
 		}
 

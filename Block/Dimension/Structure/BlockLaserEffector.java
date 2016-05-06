@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -121,10 +122,7 @@ public class BlockLaserEffector extends BlockContainer {
 			if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
 				if (world.getBlockMetadata(x, y, z) == LaserEffectType.EMITTER.ordinal()) {
 					LaserEffectTile te = (LaserEffectTile)world.getTileEntity(x, y, z);
-					EntityLaserPulse ea = new EntityLaserPulse(world, x, y, z, te.facing, te.color);
-					if (!world.isRemote) {
-						world.spawnEntityInWorld(ea);
-					}
+					te.fire();
 					return;
 				}
 			}
@@ -151,7 +149,7 @@ public class BlockLaserEffector extends BlockContainer {
 			LaserEffectTile te = (LaserEffectTile)world.getTileEntity(x, y, z);
 			if (te instanceof TargetTile) {
 				if (e.color.matchColor(te.color) && (e.direction == te.facing || this.isOmniDirectional()))
-					((TargetTile)te).trigger(true);
+					((TargetTile)te).trigger(true, true, true);
 			}
 			switch(this) {
 				case COLORIZER:
@@ -164,7 +162,7 @@ public class BlockLaserEffector extends BlockContainer {
 						return true;
 					//ReikaJavaLibrary.pConsole(e.direction+" & "+te.facing+" ("+Math.abs(e.direction.ordinal()-te.facing.ordinal())+")");
 					e.reflect(te.facing);
-					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color);
+					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color, e.getLevel());
 					if (!world.isRemote)
 						world.spawnEntityInWorld(eb);
 					return true;
@@ -179,7 +177,7 @@ public class BlockLaserEffector extends BlockContainer {
 						dir = dir.getOpposite();
 					//ReikaJavaLibrary.pConsole(e.direction+" & "+te.facing+" > "+dir+" ("+Math.abs(e.direction.ordinal()-te.facing.ordinal())+")");
 					e.reflect(dir);
-					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color);
+					EntityLaserPulse eb = new EntityLaserPulse(world, x, y, z, e.direction, e.color, e.getLevel());
 					if (!world.isRemote)
 						world.spawnEntityInWorld(eb);
 					return true;
@@ -215,9 +213,9 @@ public class BlockLaserEffector extends BlockContainer {
 						((PrismTile)te).addPulse(dat);
 						return true;
 					}
-					EntityLaserPulse e1 = e.color.red ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true, 2), new ColorData(true, false, false)) : null;
-					EntityLaserPulse e2 = e.color.green ? new EntityLaserPulse(world, x, y, z, e.direction, new ColorData(false, true, false)) : null;
-					EntityLaserPulse e3 = e.color.blue ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false, 2), new ColorData(false, false, true)) : null;
+					EntityLaserPulse e1 = e.color.red ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true, 2), new ColorData(true, false, false), e.getLevel()) : null;
+					EntityLaserPulse e2 = e.color.green ? new EntityLaserPulse(world, x, y, z, e.direction, new ColorData(false, true, false), e.getLevel()) : null;
+					EntityLaserPulse e3 = e.color.blue ? new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false, 2), new ColorData(false, false, true), e.getLevel()) : null;
 					if (!world.isRemote) {
 						if (e1 != null)
 							world.spawnEntityInWorld(e1);
@@ -242,8 +240,8 @@ public class BlockLaserEffector extends BlockContainer {
 					return false;
 				case SPLITTER: {
 					if (e.direction == te.facing) {
-						EntityLaserPulse e1 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true), e.color);
-						EntityLaserPulse e2 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false), e.color);
+						EntityLaserPulse e1 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(true), e.color, e.getLevel());
+						EntityLaserPulse e2 = new EntityLaserPulse(world, x, y, z, e.direction.getRotation(false), e.color, e.getLevel());
 						if (!world.isRemote) {
 							world.spawnEntityInWorld(e1);
 							world.spawnEntityInWorld(e2);
@@ -292,14 +290,15 @@ public class BlockLaserEffector extends BlockContainer {
 					return;
 				}
 				else if (te instanceof TargetTile && is != null && is.getItem() == Items.glowstone_dust) {
-					((TargetTile)te).trigger(!((TargetTile)te).isTriggered());
+					((TargetTile)te).trigger(!((TargetTile)te).isTriggered(), true, false);
+					return;
+				}
+				else if (te instanceof PrismTile && is != null && is.getItem() == Items.emerald) {
+					((PrismTile)te).timer++;
 					return;
 				}
 				if (this == EMITTER && !ep.isSneaking()) {
-					EntityLaserPulse ea = new EntityLaserPulse(world, x, y, z, te.facing, te.color);
-					if (!world.isRemote) {
-						world.spawnEntityInWorld(ea);
-					}
+					te.fire();
 					return;
 				}
 			}
@@ -316,21 +315,29 @@ public class BlockLaserEffector extends BlockContainer {
 			return triggered;
 		}
 
-		public void trigger(boolean set) {
+		public void trigger(boolean set, boolean doFX, boolean triggerCompletion) {
 			triggered = set;
-			if (set) {
-				ChromaSounds.CAST.playSoundAtBlock(this);
-				for (int i = 0; i < 32; i++) {
-					double x = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 0.75);
-					double y = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, 0.5);
-					double z = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.75);
-					int l = ReikaRandomHelper.getRandomBetween(8, 30);
-					EntityFX fx = new EntityBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			if (doFX) {
+				if (set) {
+					ChromaSounds.CAST.playSoundAtBlock(this);
+					for (int i = 0; i < 32; i++) {
+						double x = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 0.75);
+						double y = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, 0.5);
+						double z = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.75);
+						int l = ReikaRandomHelper.getRandomBetween(8, 30);
+						EntityFX fx = new EntityBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(this);
 				}
 			}
-			else {
-				ChromaSounds.ERROR.playSoundAtBlock(this);
+			if (triggerCompletion && !worldObj.isRemote) {
+				LaserPuzzleGenerator gen = this.getGenerator();
+				if (gen != null) {
+					gen.completeTrigger(level, worldObj, new Coordinate(this), set);
+				}
 			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
@@ -364,7 +371,7 @@ public class BlockLaserEffector extends BlockContainer {
 		public void updateEntity() {
 			timer--;
 			if (timer == 0 && !nextPulse.isBlack()) {
-				EntityLaserPulse e = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, facing, nextPulse);
+				EntityLaserPulse e = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, facing, nextPulse, level);
 				if (!worldObj.isRemote) {
 					worldObj.spawnEntityInWorld(e);
 				}
@@ -398,7 +405,9 @@ public class BlockLaserEffector extends BlockContainer {
 
 		private boolean rotateable = true;
 
-		private static final boolean PARTIAL_ROTATEABILITY = false;
+		protected String level = "none";
+
+		public static final boolean PARTIAL_ROTATEABILITY = false;
 
 		@Override
 		public boolean canUpdate() {
@@ -413,6 +422,8 @@ public class BlockLaserEffector extends BlockContainer {
 			facing = CubeDirections.list[tag.getInteger("dir")];
 
 			rotateable = tag.getBoolean("free");
+
+			level = tag.getString("level");
 		}
 
 		@Override
@@ -422,6 +433,8 @@ public class BlockLaserEffector extends BlockContainer {
 			tag.setInteger("dir", facing.ordinal());
 
 			tag.setBoolean("free", rotateable);
+
+			tag.setString("level", level);
 		}
 
 		@Override
@@ -438,15 +451,29 @@ public class BlockLaserEffector extends BlockContainer {
 		}
 
 		public void rotate() {
-			if (this.isRotateable()) {
+			if (this.isRotateable() && !this.areLasersInPlay()) {
 				facing = facing.getRotation(true);
 				ReikaSoundHelper.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord, "random.click", 0.4F, 0.5F);
 				worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			}
 		}
 
+		private boolean areLasersInPlay() {
+			LaserPuzzleGenerator gen = this.getGenerator();
+			if (gen == null)
+				return false;
+			return gen.areLasersInPlay(level);
+		}
+
 		public boolean isRotateable() {
 			return PARTIAL_ROTATEABILITY ? rotateable : !(this instanceof TargetTile) && this.getBlockMetadata() != LaserEffectType.EMITTER.ordinal();
+		}
+
+		public void fire() {
+			if (!worldObj.isRemote) {
+				EntityLaserPulse ea = new EntityLaserPulse(worldObj, xCoord, yCoord, zCoord, facing, color, level);
+				worldObj.spawnEntityInWorld(ea);
+			}
 		}
 
 	}
@@ -527,6 +554,11 @@ public class BlockLaserEffector extends BlockContainer {
 
 		public ColorData copy() {
 			return new ColorData(red, green, blue);
+		}
+
+		@Override
+		public String toString() {
+			return red+"/"+green+"/"+blue+" : "+Integer.toHexString(this.getRenderColor()&0xffffff);
 		}
 
 	}

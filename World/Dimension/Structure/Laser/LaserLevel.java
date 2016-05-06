@@ -12,19 +12,31 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Laser;
 import java.io.IOException;
 
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.StructurePiece;
+import Reika.ChromatiCraft.Block.BlockChromaDoor;
+import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector.LaserEffectType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructureExport;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructureExport.NBTCallback;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructureExport.PlacementCallback;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
-public class LaserLevel extends StructurePiece {
+public class LaserLevel extends StructurePiece implements PlacementCallback, NBTCallback {
 
 	private final String name;
 	private static final String PATH = "Structure Data/Laser";
@@ -32,6 +44,8 @@ public class LaserLevel extends StructurePiece {
 	private StructureExport data;
 
 	public boolean isSolved = false;
+
+	private Coordinate doorLocation;
 
 	public LaserLevel(LaserPuzzleGenerator s, String name) {
 		super(s);
@@ -55,6 +69,14 @@ public class LaserLevel extends StructurePiece {
 
 	public int getLengthZ() {
 		return data.getBounds().getSizeZ();
+	}
+
+	public BlockBox getBounds() {
+		return data.getBounds();
+	}
+
+	public int getFullLengthX() {
+		return this.getLengthX()+7;
 	}
 
 	@Override
@@ -85,6 +107,10 @@ public class LaserLevel extends StructurePiece {
 			}
 		}
 
+		data.placeCallback = this;
+		data.setExtraNBTTag("level", name);
+		data.setExtraNBTTag("uid", parent.id.toString());
+		data.addNBTOverride("dir", this);
 		data.place(world);
 
 		for (int i = 3; i <= 6; i++) {
@@ -92,9 +118,10 @@ public class LaserLevel extends StructurePiece {
 			int d = i == 6 ? 1 : 2;
 			for (int k = -d; k <= d; k++) {
 				world.setBlock(def.minX-w, dy, z+k, Blocks.air);
-				world.setBlock(def.maxX+w, dy, z+k, ChromaBlocks.DOOR.getBlockInstance());
+				world.setBlock(def.maxX+w, dy, z+k, ChromaBlocks.DOOR.getBlockInstance(), BlockChromaDoor.getMetadata(false, false, false, true));
 			}
 		}
+		doorLocation = new Coordinate(def.maxX+w, y+3, z);
 
 		int xc = x+this.getLengthX()/2;
 		int zp = z-this.getLengthZ()/2-3;
@@ -110,10 +137,10 @@ public class LaserLevel extends StructurePiece {
 					world.setBlock(dx, y+4, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 			}
 
-			world.setBlock(xc-4, y+3, dz, Blocks.stone_brick_stairs, 0);
-			world.setBlock(xc+4, y+3, dz, Blocks.stone_brick_stairs, 1);
-			world.setBlock(xc-3, y+4, dz, Blocks.stone_brick_stairs, 0);
-			world.setBlock(xc+3, y+4, dz, Blocks.stone_brick_stairs, 1);
+			world.setBlock(def.minX-1, y+3, dz, Blocks.stone_brick_stairs, 0);
+			world.setBlock(def.maxX+1, y+3, dz, Blocks.stone_brick_stairs, 1);
+			world.setBlock(def.minX, y+4, dz, Blocks.stone_brick_stairs, 0);
+			world.setBlock(def.maxX, y+4, dz, Blocks.stone_brick_stairs, 1);
 		}
 
 		for (int dx = def.minX-1; dx <= def.maxX+1; dx++) {
@@ -131,7 +158,7 @@ public class LaserLevel extends StructurePiece {
 			}
 		}
 
-		parent.generateDataTile(xc, y+4, zp);
+		parent.generateDataTile(xc, y+4, zp, "level", name);
 
 		/*
 		for (int dx = def.minX-w; dx <= def.maxX+w; dx++) {
@@ -183,7 +210,7 @@ public class LaserLevel extends StructurePiece {
 			}
 		}
 
-		for (int dx = xc-2; dx <= xc+2; dx++) {
+		for (int dx = def.minX+1; dx <= def.maxX-1; dx++) {
 			int dz = def.maxZ+2;
 			world.setBlock(dx, y+1, dz, Blocks.air);
 		}
@@ -221,6 +248,54 @@ public class LaserLevel extends StructurePiece {
 		world.setBlock(xc+1, y+11, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
 		world.setBlock(xc, y+11, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 		world.setBlock(xc-1, y+11, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.LIGHT.metadata);
+	}
+
+	@Override
+	public void onPlace(Coordinate c, BlockKey bk, NBTTagCompound data) {
+		if (bk.blockID == ChromaBlocks.LASEREFFECT.getBlockInstance()) {
+			if (bk.metadata == LaserEffectType.EMITTER.ordinal()) {
+				((LaserPuzzleGenerator)parent).addEmitter(name, c);
+			}
+			else if (bk.metadata == LaserEffectType.TARGET.ordinal() || bk.metadata == LaserEffectType.TARGET_THRU.ordinal()) {
+				((LaserPuzzleGenerator)parent).addTarget(name, c);
+			}
+			/*
+			else if (!LaserEffectType.list[bk.metadata].isOmniDirectional()) {
+				if (data != null && data.getBoolean("free")) {
+					int dir = ReikaRandomHelper.getSafeRandomInt(CubeDirections.list.length);
+
+				}
+			}
+			 */
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public NBTBase getOverriddenValue(Coordinate c, BlockKey bk, String key, NBTBase original, NBTTagCompound data) {
+		if (key.equals("dir")) {
+			if (!LaserEffectType.list[bk.metadata].isOmniDirectional() && (BlockLaserEffector.LaserEffectTile.PARTIAL_ROTATEABILITY ? data.getBoolean("free") : bk.metadata != LaserEffectType.EMITTER.ordinal() && bk.metadata != LaserEffectType.TARGET.ordinal() && bk.metadata != LaserEffectType.TARGET_THRU.ordinal())) {
+				int dir = ReikaRandomHelper.getSafeRandomInt(CubeDirections.list.length);
+				return new NBTTagInt(dir);
+			}
+		}
+		return original;
+	}
+
+	public void applyDoorState(World world) {
+		TileEntityChromaDoor te = (TileEntityChromaDoor)doorLocation.getTileEntity(world);
+		if (te == null) {
+			ChromatiCraft.logger.log("No door for laser puzzle room "+name+" @ "+doorLocation+"?");
+			return;
+		}
+		if (isSolved) {
+			te.open(0);
+		}
+		else {
+			te.close();
+		}
 	}
 
 }

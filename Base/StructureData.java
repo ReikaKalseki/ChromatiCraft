@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,9 +29,9 @@ public abstract class StructureData {
 		return generator.getType();
 	}
 
-	public abstract void load();
+	public abstract void load(HashMap<String, Object> map);
 
-	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s) {
+	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
 
 	}
 
