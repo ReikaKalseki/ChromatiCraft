@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.OreType.OreLocation;
@@ -33,6 +34,8 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 
@@ -51,7 +54,7 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 		OreRarity.RARE,
 	};
 
-	static {
+	public static void initOreMap() {
 		for (int k = 0; k < 3; k++) {
 			OreLocation loc = OreLocation.list[k];
 			for (int i = 0; i < oreLists.length; i++) {
@@ -76,6 +79,19 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 				}
 			}
 		}
+	}
+
+	private static boolean isItemStackGenerationPermitted(ItemStack is) {
+		if (ModList.TINKERER.isLoaded() && ReikaItemHelper.matchStackWithBlock(is, TinkerBlockHandler.getInstance().gravelOreID))
+			return false;
+		Block b = Block.getBlockFromItem(is.getItem());
+		if (b == null)
+			return false;
+		if (b.getClass().getName().startsWith("shukaro.artifice")) //artifice ore variants
+			return false;
+		if (ModList.RAILCRAFT.isLoaded() && RailcraftHandler.getInstance().isDarkOre(b, is.getItemDamage()))
+			return false;
+		return true;
 	}
 
 	@Override

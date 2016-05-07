@@ -188,16 +188,16 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.DIMENSIONCORE) {
 			((TileEntityDimensionCore)te).prime(true);
 		}
-		if (m == ChromaTiles.REPEATER || m == ChromaTiles.COMPOUND) {
-			if (!ep.isSneaking()) {
-				((TileEntityCrystalRepeater)te).findFirstValidSide();
-			}
-		}
 		if (m == ChromaTiles.CONSOLE) {
 			((TileEntityCrystalConsole)te).placedDir = ReikaEntityHelper.getDirectionFromEntityLook(ep, false).getOpposite();
 		}
 		if (te instanceof NBTTile && is.stackTagCompound != null) {
 			((NBTTile)te).setDataFromItemStackTag(is);
+		}
+		if (m.isRotateableRepeater()) {
+			if (!ep.isSneaking()) {
+				((TileEntityCrystalRepeater)te).findFirstValidSide();
+			}
 		}
 		return true;
 	}

@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 public enum DimensionGenerators {
@@ -88,8 +89,11 @@ public enum DimensionGenerators {
 	}
 
 	public boolean generateIn(ChromaDimensionBiome b) {
-		if (b.biomeType == Biomes.STRUCTURE)
-			return false;
+		if (b.biomeType == Biomes.STRUCTURE) {
+			return ReikaRandomHelper.doWithChance(25) && this.generateIn(Biomes.CENTER.getBiome());
+		}
+		if (b.biomeType == Biomes.CENTER)
+			return !this.isDedicatedBiomeOnly();
 		if (theme == GeneratorTheme.SKYFEATURE)
 			return b.biomeType == Biomes.SKYLANDS;
 		//if (this == CANYON)
@@ -120,6 +124,21 @@ public enum DimensionGenerators {
 				return b == Biomes.PLAINS.getBiome();
 			default:
 				return true;
+		}
+	}
+
+	private boolean isDedicatedBiomeOnly() {
+		switch(this) {
+			case AURORA:
+			case CRYSBUSH:
+			case CRYSTALTREE:
+			case METEOR:
+			case MOONPOOL:
+			case TERRAINCRYSTAL:
+			case GLOWBUSH:
+				return true;
+			default:
+				return false;
 		}
 	}
 

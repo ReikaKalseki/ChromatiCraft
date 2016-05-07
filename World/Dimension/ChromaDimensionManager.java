@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaOcean;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCrystalForest;
@@ -41,7 +42,8 @@ public class ChromaDimensionManager {
 		ISLANDS(BiomeGenIslands.class,		"Iridescent Archipelago",	6, -5,	ExtraChromaIDs.ISLANDS, 	SubBiomes.DEEPOCEAN, 	Type.MAGICAL, Type.BEACH, Type.WET),
 		SKYLANDS(BiomeGenSkylands.class,	"Lumen Skylands",			2, 0,	ExtraChromaIDs.SKYLANDS,	SubBiomes.VOIDLANDS,	Type.MAGICAL, Type.COLD),
 		FOREST(BiomeGenGlowingForest.class,	"Glowing Forest",			10, 10,	ExtraChromaIDs.FOREST, 		SubBiomes.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
-		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS);
+		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS),
+		CENTER(BiomeGenCentral.class, "Luminescent Sanctuary",			0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE);
 
 		private int id;
 		public final String biomeName;

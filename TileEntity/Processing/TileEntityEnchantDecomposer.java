@@ -220,7 +220,7 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 	}
 
 	public int getCookProgressScaled(int a) {
-		return processTimer * a / this.getProcessTime();
+		return this.canProcess() ? processTimer * a / this.getProcessTime() : 0;
 	}
 
 	@Override

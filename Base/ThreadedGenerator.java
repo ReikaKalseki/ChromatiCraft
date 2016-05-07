@@ -9,8 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Random;
+
 
 public abstract class ThreadedGenerator {
+
+	protected final long seed;
+	protected final Random rand;
+
+	protected ThreadedGenerator(long seed) {
+		this.seed = seed;
+		rand = new Random(seed);
+	}
 
 	public abstract void run() throws Throwable;
 

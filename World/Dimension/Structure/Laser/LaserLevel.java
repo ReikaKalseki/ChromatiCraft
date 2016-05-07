@@ -53,6 +53,7 @@ public class LaserLevel extends StructurePiece implements PlacementCallback, NBT
 		data = new StructureExport(name, PATH, ChromatiCraft.class).addIgnoredBlock(new BlockKey(Blocks.stone)).addIgnoredBlock(new BlockKey(Blocks.air));
 		this.name = name;
 		try {
+			data.encryptData = true;
 			data.load();
 			BlockBox box = data.getBounds();
 			Coordinate origin = new Coordinate(box.minX, box.minY, box.minZ).negate();

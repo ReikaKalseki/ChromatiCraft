@@ -27,6 +27,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
@@ -89,6 +90,17 @@ public class BlockChromaPortal extends Block {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dz = z+dir.offsetZ;
+			if (world.getBlock(dx, y, dz) != this) {
+				int ddx = x-dir.offsetX;
+				int ddz = z-dir.offsetZ;
+				this.onEntityCollidedWithBlock(world, ddx, y, ddz, e);
+				return;
+			}
+		}
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof TileEntityCrystalPortal && !world.isRemote) {
 			TileEntityCrystalPortal te = (TileEntityCrystalPortal)tile;
@@ -121,6 +133,7 @@ public class BlockChromaPortal extends Block {
 		e.motionY = 1.5;
 		e.fallDistance = Math.max(e.fallDistance, 500);
 		e.addVelocity(ReikaRandomHelper.getRandomPlusMinus(0, 0.25), 0, ReikaRandomHelper.getRandomPlusMinus(0, 0.25));
+		e.velocityChanged = true;
 		ChromaSounds.POWERDOWN.playSound(e);
 	}
 

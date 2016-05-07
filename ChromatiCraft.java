@@ -114,6 +114,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.ParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
@@ -652,6 +653,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		ModCropList.addCustomCropType(new CrystalPlantHandler());
 
 		TileEntityBiomePainter.buildBiomeList();
+		TileEntityOreCreator.initOreMap();
 		ItemDuplicationWand.loadMappings();
 		ChunkProviderChroma.regenerateGenerators();
 

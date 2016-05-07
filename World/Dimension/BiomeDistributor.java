@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Iterator;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -28,9 +28,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.LobulatedCurve;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
@@ -45,44 +47,50 @@ import cpw.mods.fml.relauncher.SideOnly;
 //always forest at center?
 public class BiomeDistributor extends ThreadedGenerator {
 
-	public final long seed;
-	private final Random rand;
-
 	private static final int SIZE = 2048;//4096;
 
 	public static final int SCALE_FACTOR = 1;
 
-	public static final int SPREADERS_PER_DOT = 1024;
-
-	/*
-	private static final int[][] DOT_SPREAD = {
-		{0, 1, 1, 1, 0},
-		{1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1},
-		{1, 1, 1, 1, 1},
-		{0, 1, 1, 1, 0},
-	};
-	 */
-
-	//private static WeightedRandom<Coordinate> dotSpread = WeightedRandom.fromArray(DOT_SPREAD);
+	private static final double MIN_STRUCTURE_RADIUS = 64;
+	private static final double MAX_STRUCTURE_RADIUS = 128;
 
 	private static ChromaDimensionBiomeType[][] biomes = new ChromaDimensionBiomeType[SIZE][SIZE];
+
+	private static LobulatedCurve monumentBlob;
+	private static final EnumMap<CrystalElement, LobulatedCurve> structureBlobs = new EnumMap(CrystalElement.class);
 
 	private final Collection<Spreader> spreaders = new ArrayList();
 	private final MultiMap<ChromaDimensionBiomeType, Point> blobLocations = new MultiMap(new ListFactory());
 
 	public BiomeDistributor(long seed) {
-		this.seed = seed;
-		rand = new Random(seed);
+		super(seed);
 	}
 
 	public static ChromaDimensionBiome getBiome(int x, int z) {
+		double d = ChunkProviderChroma.getDistanceToNearestStructureBlockCoords(x, z);
+		if (d <= MAX_STRUCTURE_RADIUS) {
+			StructurePair p = ChunkProviderChroma.getNearestStructure(x, z);
+			LobulatedCurve map = monumentBlob;
+			if (p != null) {
+				map = structureBlobs.get(p.color);
+			}
+			int dx = x-p.generator.getEntryPosX();
+			int dz = z-p.generator.getEntryPosZ();
+			if (map.isPointInsideCurve(dx, dz)) {
+				return Biomes.STRUCTURE.getBiome();
+			}
+		}
+		if (RegionMapper.isPointInCentralRegion(x, z))
+			return Biomes.CENTER.getBiome();
 		return getAdj(x/SCALE_FACTOR, z/SCALE_FACTOR, 0, 0).getBiome();
 	}
 
 	@Override
 	public void run() throws Throwable {
 		biomes = new ChromaDimensionBiomeType[SIZE][SIZE];
+		monumentBlob = null;
+		structureBlobs.clear();
+
 		this.distributeDots();
 		//this.createImage("dots");
 		this.spreadDots();
@@ -137,10 +145,16 @@ public class BiomeDistributor extends ThreadedGenerator {
 			printed = true;
 		}
 		for (StructurePair p : ChunkProviderChroma.getStructures()) {
-			int x = p.generator.getEntryPosX();
-			int z = p.generator.getEntryPosZ();
+			//int x = p.generator.getEntryPosX();
+			//int z = p.generator.getEntryPosZ();
+			LobulatedCurve c = LobulatedCurve.fromMinMaxRadii(MIN_STRUCTURE_RADIUS, MAX_STRUCTURE_RADIUS, 12).generate(rand);
+			structureBlobs.put(p.color, c);
 			//this.placeBlob(Biomes.STRUCTURE, x, z, 0.125F, over);
 		}
+		MonumentGenerator gen = ChunkProviderChroma.getMonumentGenerator();
+		//int x = gen.getPosX();
+		//int z = gen.getPosZ();
+		monumentBlob = LobulatedCurve.fromMinMaxRadii(MIN_STRUCTURE_RADIUS, MAX_STRUCTURE_RADIUS, 12).generate(rand);
 	}
 
 	private void distributeDots() {

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.TreeMap;
 
 import net.minecraft.block.Block;
@@ -101,6 +102,7 @@ public class ChromaOverlays {
 	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
 
 	private final TreeMap<ProgressElement, Integer> progressFlags = new TreeMap(new ProgressComparator());
+	private final ArrayList<FlareMessage> flareMessages = new ArrayList();
 
 	private String structureText = null;
 	private long structureTextTick = -1;
@@ -184,6 +186,7 @@ public class ChromaOverlays {
 			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderProgressOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
+			this.renderFlareMessages(gsc);
 			GL11.glPopMatrix();
 		}
 		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
@@ -257,6 +260,27 @@ public class ChromaOverlays {
 			if (frac >= 2) {
 				structureText = null;
 			}
+		}
+	}
+
+	private void renderFlareMessages(int gsc) {
+		/*
+		structureText = DimensionStructureType.LOCKS.getDisplayText();
+		if (structureTextTick < ep.worldObj.getTotalWorldTime()-300)
+			structureTextTick = ep.worldObj.getTotalWorldTime();
+		 */
+		int x = 16/gsc;
+		int dy = ChromaFontRenderer.FontType.GUI.renderer.FONT_HEIGHT+2;
+		int y = (Minecraft.getMinecraft().displayHeight-ChromaFontRenderer.FontType.GUI.renderer.FONT_HEIGHT-16)/gsc-dy*flareMessages.size();
+		Iterator<FlareMessage> it = flareMessages.iterator();
+		int i = 0;
+		while (it.hasNext()) {
+			FlareMessage f = it.next();
+			f.render(gsc, x, y+i*dy*gsc, 0xffffff);
+			y -= dy;
+			if (f.update())
+				it.remove();
+			i++;
 		}
 	}
 
@@ -406,6 +430,10 @@ public class ChromaOverlays {
 		String s = type.getDisplayText();
 		structureText = s;
 		structureTextTick = Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+	}
+
+	public void addFlareMessage(String s) {
+		flareMessages.add(new FlareMessage(s));
 	}
 
 	public void triggerWashout(CrystalElement e) {
@@ -1199,5 +1227,62 @@ public class ChromaOverlays {
 				return -1;
 		}
 
+	}
+
+	private static class FlareMessage {
+
+		private static final int OBF_FRAMES = 25;
+		private static final int FRAMES_PER_CHAR = 2;
+		private static final int DEOBF_FRAMES = 200;
+
+		private final String text;
+		private int age = 0;
+		private final int deobfTicks;
+		private int charSplit = -1;
+		private final int lifespan;
+
+		private FlareMessage(String s) {
+			text = s;
+			deobfTicks = OBF_FRAMES+FRAMES_PER_CHAR*text.length();
+			lifespan = deobfTicks+DEOBF_FRAMES;
+		}
+
+		private boolean update() {
+			age++;
+			if (age >= OBF_FRAMES) {
+				if (age >= deobfTicks) {
+					charSplit = text.length();
+				}
+				else {
+					charSplit = (age-OBF_FRAMES)/FRAMES_PER_CHAR;
+				}
+				return age >= lifespan;
+			}
+			return false;
+		}
+
+		private void render(int gsc, int x, int y, int color) {
+			int c = 0xffffff;
+			if (charSplit >= 0) {
+				if (charSplit >= text.length()) {
+					float f = (age-deobfTicks)/(float)(lifespan-deobfTicks);
+					if (f >= 0.5) {
+						c = ReikaColorAPI.mixColors(0xffffff, 0x000000, 1-((f-0.5F)*2));
+						c = 0xff000000 | c;
+					}
+					ChromaFontRenderer.FontType.GUI.renderer.drawString(text, x, y, c);
+				}
+				else {
+					String s1 = text.substring(0, charSplit);
+					String s2 = text.substring(charSplit);
+					ChromaFontRenderer.FontType.GUI.renderer.drawString(s1, x, y, c);
+					int x2 = x+ChromaFontRenderer.FontType.GUI.renderer.getStringWidth(s1);
+					ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawString(s2, x2, y, c);
+				}
+			}
+			else {
+				ChromaFontRenderer.FontType.OBFUSCATED.renderer.drawString(text, x, y, c);
+			}
+		}
 	}
 }

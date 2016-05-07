@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Entity;
 
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
@@ -28,6 +29,18 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 		yOffset = 0;
 	}
 
+	public EntityChromaEnderCrystal(World world, int x, int y, int z) {
+		this(world);
+		yOffset = 0;
+		double dx = x+0.5;
+		double dy = y+1;
+		double dz = z+0.5;
+		this.setPosition(dx, dy, dz);
+		originX = dx;
+		originY = dy;
+		originZ = dz;
+	}
+
 	public EntityChromaEnderCrystal(World world, EntityEnderCrystal e) {
 		this(world);
 		originX = e.posX;
@@ -39,7 +52,15 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 		innerRotation = e.innerRotation;
 		health = e.health;
 	}
-
+	/*
+	@Override
+	public void setPosition(double x, double y, double z) {
+		super.setPosition(x, y, z);
+		originX = x;
+		originY = y;
+		originZ = z;
+	}
+	 */
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
@@ -49,6 +70,8 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 			int y = MathHelper.floor_double(posY);
 			int z = MathHelper.floor_double(posZ);
 			worldObj.setBlock(x, y+1, z, Blocks.fire);
+			if (worldObj.getBlock(x, y-1, z) != Blocks.bedrock)
+				this.setDead();
 		}
 
 		//this.setPosition(originX, originY, originZ);
@@ -61,6 +84,31 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 			return false;
 		}
 		return super.attackEntityFrom(src, amt);
+	}
+
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound tag) {
+		super.readEntityFromNBT(tag);
+
+		/*
+		if (tag.hasKey("ix"))
+			originX = tag.getDouble("ix");
+		if (tag.hasKey("iy"))
+			originY = tag.getDouble("iy");
+		if (tag.hasKey("iz"))
+			originZ = tag.getDouble("iz");
+		 */
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound tag) {
+		super.writeEntityToNBT(tag);
+
+		/*
+		tag.setDouble("ix", originX);
+		tag.setDouble("iy", originY);
+		tag.setDouble("iz", originZ);
+		 */
 	}
 
 	@Override

@@ -29,7 +29,6 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class StructureCalculator extends ThreadedGenerator {
 
-	private final Random rand;
 	private final Random seededRand;
 	private final int maxAttempts;
 	private final Thread callerThread;
@@ -37,6 +36,10 @@ public class StructureCalculator extends ThreadedGenerator {
 	private int structureOriginX;
 	private int structureOriginZ;
 	private float structureAngleOrigin;
+
+	private boolean positionsDetermined = false;
+
+	public static final int STRUCTURE_CENTER_VARIATION = 6000; //was 10K, then 4K
 
 	public static final int BASE_RADIUS = 5000;
 	public static final int RADIUS_VARIATION = 3000; //was +/- 4000, then 2000
@@ -46,8 +49,8 @@ public class StructureCalculator extends ThreadedGenerator {
 	}
 
 	private StructureCalculator(long seed, int max) {
+		super(seed);
 		maxAttempts = max;
-		rand = new Random(seed);
 		callerThread = Thread.currentThread();
 
 		//Would base off world seed, but is loaded "outside" a MC world and as such cannot reference it; make it file-specific instead
@@ -59,6 +62,14 @@ public class StructureCalculator extends ThreadedGenerator {
 		double x = Math.max(Math.abs(structureOriginX+BASE_RADIUS+RADIUS_VARIATION), Math.abs(structureOriginX-BASE_RADIUS-RADIUS_VARIATION));
 		double z = Math.max(Math.abs(structureOriginZ+BASE_RADIUS+RADIUS_VARIATION), Math.abs(structureOriginZ-BASE_RADIUS-RADIUS_VARIATION));
 		return ReikaMathLibrary.py3d(x, 0, z);
+	}
+
+	public static double getMaximumPossibleDistance() {
+		return STRUCTURE_CENTER_VARIATION+BASE_RADIUS+RADIUS_VARIATION;
+	}
+
+	public boolean arePositionsDetermined() {
+		return positionsDetermined;
 	}
 
 	private long generateOrGetGenSeed() {
@@ -120,9 +131,11 @@ public class StructureCalculator extends ThreadedGenerator {
 			}
 		}
 
-		structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, 6000); //was 10K, then 4K
-		structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, 6000);
+		structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
+		structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
 		structureAngleOrigin = rand.nextFloat()*360;
+
+		positionsDetermined = true;
 
 		for (StructurePair s : new ArrayList<StructurePair>(ChunkProviderChroma.structures)) {
 			this.tryGenerate(s, 0);
@@ -160,7 +173,7 @@ public class StructureCalculator extends ThreadedGenerator {
 
 	private void tryGenerate(StructurePair p, int attempt) {
 		try {
-			this.doGenerate(p, structureOriginX, structureOriginZ, structureAngleOrigin);
+			this.doGenerate(p);
 		}
 		catch (Throwable e) {
 			if (e instanceof OutOfMemoryError)
@@ -188,7 +201,7 @@ public class StructureCalculator extends ThreadedGenerator {
 		}
 	}
 
-	private void doGenerate(StructurePair s, int structureOriginX, int structureOriginZ, float structureAngleOrigin) {
+	private void doGenerate(StructurePair s) {
 		double ang = Math.toRadians(structureAngleOrigin+s.color.ordinal()*22.5);
 		int r = ReikaRandomHelper.getRandomPlusMinus(BASE_RADIUS, RADIUS_VARIATION);
 		int x = structureOriginX+(int)(r*Math.cos(ang));

@@ -701,6 +701,10 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				}
+				case FLAREMSG: {
+					ChromaOverlays.instance.addFlareMessage(stringdata);
+					break;
+				}
 			}
 		}
 		catch (NullPointerException e) {

@@ -15,10 +15,12 @@ import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
+import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
 import Reika.DragonAPI.Interfaces.Registry.EntityEnum;
@@ -35,7 +37,9 @@ public enum ChromaEntities implements EntityEnum {
 	METEOR(EntityMeteorShot.class, "Meteor Shot"),
 	AURORA(EntityAurora.class, "Aurora"),
 	THROWNGEM(EntityThrownGem.class, "Thrown Gem"),
-	LASERPULSE(EntityLaserPulse.class, "Laser Pulse");
+	LASERPULSE(EntityLaserPulse.class, "Laser Pulse"),
+	TNTPINBALL(EntityTNTPinball.class, "TNT Pinball"),
+	DIMENSIONFLARE(EntityDimensionFlare.class, "Dimension Flare");
 
 	public final String entityName;
 	private final Class entityClass;

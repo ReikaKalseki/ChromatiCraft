@@ -96,7 +96,9 @@ public class ChromaDimensionTicker implements TickHandler {
 			case PLAYER:
 				EntityPlayer ep = (EntityPlayer)tickData[0];
 				if (ep.worldObj.provider.dimensionId == dimID) {
-
+					if (!RegionMapper.isPointInCentralRegion(ep.posX, ep.posZ)) {
+						OuterRegionsEvents.instance.tickPlayerInOuterRegion(ep);
+					}
 				}
 				break;
 			default:

@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ISBRH.ConsoleRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
@@ -60,6 +61,10 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		EntityDimensionFlare f = new EntityDimensionFlare(world, ep);
+		f.setLocationAndAngles(x, y+8, z, 0, 0);
+		if (!world.isRemote)
+			world.spawnEntityInWorld(f);
 		TileEntityCrystalConsole te = (TileEntityCrystalConsole)world.getTileEntity(x, y, z);
 		ForgeDirection dir = te.getConsoleFace();
 		if (s == dir.ordinal()) {

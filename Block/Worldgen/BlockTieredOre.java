@@ -16,6 +16,7 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -24,6 +25,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenMinable;
@@ -35,7 +37,10 @@ import Reika.ChromatiCraft.Base.BlockChromaTiered;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.RotaryCraft.API.ItemFetcher;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTieredOre extends BlockChromaTiered {
 
@@ -275,6 +280,20 @@ public class BlockTieredOre extends BlockChromaTiered {
 		return new ItemStack(TieredOres.list[meta].genBlock);
 	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer eff)
+	{
+		ReikaRenderHelper.spawnDropParticles(world, x, y, z, Blocks.stone, 0);
+		return true;
+	}
 
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff)
+	{
+		ReikaRenderHelper.spawnDropParticles(world, tg.blockX, tg.blockY, tg.blockZ, Blocks.stone, 0);
+		return true;
+	}
 
 }

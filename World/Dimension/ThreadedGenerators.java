@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.lang.reflect.Constructor;
 import java.util.ConcurrentModificationException;
+import java.util.EnumMap;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
@@ -21,7 +22,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public enum ThreadedGenerators {
 
 	STRUCTURE(StructureCalculator.class),
-	BIOME(BiomeDistributor.class);
+	BIOME(BiomeDistributor.class),
+	REGION(RegionMapper.class);
 
 	private final Class generator;
 
@@ -29,8 +31,22 @@ public enum ThreadedGenerators {
 
 	public static final ThreadedGenerators[] generators = values();
 
+	private static final EnumMap<ThreadedGenerators, ThreadedGenerator> runMap = new EnumMap(ThreadedGenerators.class);
+
 	private ThreadedGenerators(Class<? extends ThreadedGenerator> c) {
 		generator = c;
+	}
+
+	public boolean isDependentOn(ThreadedGenerators g) {
+		switch(this) {
+			case BIOME:
+				return g == ThreadedGenerators.STRUCTURE;
+			case REGION:
+				return g == ThreadedGenerators.STRUCTURE;
+			case STRUCTURE:
+				return false;
+		}
+		return false;
 	}
 
 	public void run(long seed) {
@@ -55,6 +71,10 @@ public enum ThreadedGenerators {
 		}
 	}
 
+	ThreadedGenerator getCurrentlyActiveGenerator() {
+		return runMap.get(this);
+	}
+
 	public int getBit() {
 		return (1 << this.ordinal());
 	}
@@ -66,11 +86,14 @@ public enum ThreadedGenerators {
 	private static class ThreadedGeneratorRunnable implements Runnable {
 
 		private final ThreadedGenerators generator;
+		private final ThreadedGenerator generatorObject;
 		private final long seed;
 
 		private ThreadedGeneratorRunnable(ThreadedGenerators g, long s) {
 			generator = g;
 			seed = s;
+			generatorObject = generator.getGenerator(seed);
+			runMap.put(generator, generatorObject);
 		}
 
 		public void run() {
@@ -82,10 +105,9 @@ public enum ThreadedGenerators {
 			ChromatiCraft.logger.log("Initializing Dimension "+generator.getName()+" generation thread...");
 			try {
 				long time = System.currentTimeMillis();
-				ThreadedGenerator gen = generator.getGenerator(seed);
-				gen.run();
+				generatorObject.run();
 				double el = (System.currentTimeMillis()-time)/1000D;
-				String sg = gen.getStateMessage();
+				String sg = generatorObject.getStateMessage();
 				ChromatiCraft.logger.log(String.format("Dimension "+generator.getName()+" generation thread complete; Elapsed time: %.3fs. %s", el, sg));
 			}
 			catch (Throwable e) {
@@ -100,6 +122,11 @@ public enum ThreadedGenerators {
 			generator.isRunning = false;
 		}
 
+	}
+
+	public static void reset() {
+		runMap.clear();
+		ChromatiCraft.logger.log("All "+generators.length+" dimension generators complete.");
 	}
 
 }

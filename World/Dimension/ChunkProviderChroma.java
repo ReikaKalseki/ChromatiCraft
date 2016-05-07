@@ -145,6 +145,8 @@ public class ChunkProviderChroma implements IChunkProvider {
 
 	static void finishGeneration(ThreadedGenerators gen) {
 		generationFlags = generationFlags & ~gen.getBit();
+		if (generationFlags == 0)
+			ThreadedGenerators.reset();
 	}
 
 	public static boolean isGeneratorReady(ThreadedGenerators g) {
@@ -199,7 +201,37 @@ public class ChunkProviderChroma implements IChunkProvider {
 		decorators.addAll(DimensionGenerators.getSortedList(rand, randomSeed));
 	}
 
-	private double getDistanceToNearestStructure(int chunkX, int chunkZ) {
+	static StructurePair getNearestStructure(int x, int z) {
+		double d = Double.POSITIVE_INFINITY;
+		StructurePair ret = null;
+		for (StructurePair s : structures) {
+			ChunkCoordIntPair p = s.generator.getCentralLocation();
+			double dx = x-(p.chunkXPos << 4);
+			double dz = z-(p.chunkZPos << 4);
+			double dd = Math.sqrt(dx*dx+dz*dz);
+			if (dd < d) {
+				d = dd;
+				ret = s;
+			}
+		}
+		return ret;
+	}
+
+	static double getDistanceToNearestStructureBlockCoords(int x, int z) {
+		double dx = monument.getPosX()-x;
+		double dz = monument.getPosZ()-z;
+		double d = Math.sqrt(dx*dx+dz*dz);
+		for (StructurePair s : structures) {
+			ChunkCoordIntPair p = s.generator.getCentralLocation();
+			dx = x-(p.chunkXPos << 4);
+			dz = z-(p.chunkZPos << 4);
+			double dd = Math.sqrt(dx*dx+dz*dz);
+			d = Math.min(d, dd);
+		}
+		return d;
+	}
+
+	static double getDistanceToNearestStructureChunkCoords(int chunkX, int chunkZ) {
 		double dx = (monument.getPosX() >> 4)-chunkX;
 		double dz = (monument.getPosZ() >> 4)-chunkZ;
 		double d = Math.sqrt(dx*dx+dz*dz);
@@ -565,7 +597,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 						//New from BiomeDistributor
 						f0 *= 0.03125;
 
-						double dd = this.getDistanceToNearestStructure(chunkX, chunkZ);
+						double dd = this.getDistanceToNearestStructureChunkCoords(chunkX, chunkZ);
 						if (dd <= 8) {
 							f0 *= dd/8D;
 						}

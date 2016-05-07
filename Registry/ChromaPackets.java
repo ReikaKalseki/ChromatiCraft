@@ -126,6 +126,7 @@ public enum ChromaPackets {
 	METEORIMPACT(1),
 	ORECREATE(2),
 	THROWNGEM(2),
+	FLAREMSG(),
 	;
 
 	public final int numInts;

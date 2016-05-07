@@ -10,18 +10,25 @@
 package Reika.ChromatiCraft.Base;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Recipe.ItemCollision;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockModelledChromaTile extends BlockChromaTile {
 
@@ -99,6 +106,20 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 				e.attackEntityFrom(DamageSource.generic, 0.25F);
 			}
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer eff)
+	{
+		return ReikaRenderHelper.addModelledBlockParticles("/Reika/ChromatiCraft/Textures/TileEntity/", world, x, y, z, this, eff, ReikaJavaLibrary.makeListFrom(new double[]{0,0,1,1}), ChromatiCraft.class);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff)
+	{
+		return ReikaRenderHelper.addModelledBlockParticles("/Reika/ChromatiCraft/Textures/TileEntity/", world, tg, this, eff, ReikaJavaLibrary.makeListFrom(new double[]{0,0,1,1}), ChromatiCraft.class);
 	}
 
 }

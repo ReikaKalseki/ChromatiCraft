@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Entity.EntityAurora;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
+import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
@@ -56,6 +57,7 @@ import Reika.ChromatiCraft.Render.PortalItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
+import Reika.ChromatiCraft.Render.Entity.RenderDimensionFlare;
 import Reika.ChromatiCraft.Render.Entity.RenderGluon;
 import Reika.ChromatiCraft.Render.Entity.RenderLaserPulse;
 import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
@@ -180,6 +182,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityAurora.class, new RenderAurora());
 		RenderingRegistry.registerEntityRenderingHandler(EntityThrownGem.class, new RenderThrownGem());
 		RenderingRegistry.registerEntityRenderingHandler(EntityLaserPulse.class, new RenderLaserPulse());
+		RenderingRegistry.registerEntityRenderingHandler(EntityDimensionFlare.class, new RenderDimensionFlare());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
