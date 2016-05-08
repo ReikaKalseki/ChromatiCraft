@@ -189,6 +189,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		return this;
 	}
 
+	public EntityBlurFX freezeLife(int ticks) {
+		lifeFreeze = ticks;
+		return this;
+	}
+
 	public EntityBlurFX setMotionController(MotionController m) {
 		motionController = m;
 		return this;

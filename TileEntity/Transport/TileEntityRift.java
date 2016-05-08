@@ -13,12 +13,12 @@ import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.ManagedPeripheral;
-import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.SidedEnvironment;
+import li.cil.oc.api.network.Visibility;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,6 +64,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cofh.api.energy.IEnergyHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -71,15 +74,26 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 @Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
 		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
-		"li.cil.oc.api.network.ManagedPeripheral", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
+		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment",
+		"vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, SneakPop, IFluidHandler, IEnergyHandler,
-IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, ManagedPeripheral, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
+IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, SidedEnvironment, ManagedPeripheral, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
 
 	private WorldLocation target;
 	private int color = 0xffffff;
 	private int[] redstoneCache = new int[6];
 	private ForgeDirection singleDirection;
 	private boolean shouldDrop;
+
+	private final Object[] sidedOCNode = new Object[6];
+
+	public TileEntityRift() {
+		if (ModList.OPENCOMPUTERS.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
+			for (int i = 0; i < 6; i++) {
+				sidedOCNode[i] = Network.newNode(this, Visibility.Network).create();
+			}
+		}
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -221,6 +235,11 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			te.target = new WorldLocation(worldObj, xCoord, yCoord, zCoord);
 			te.color = color;
 			this.onLink(true);
+			if (ModList.OPENCOMPUTERS.isLoaded()) {
+				for (int i = 0; i < 6; i++) {
+					((Node)te.sidedOCNode[dirs[i].getOpposite().ordinal()]).connect((Node)sidedOCNode[i]);
+				}
+			}
 			return true;
 		}
 		return false;
@@ -253,6 +272,13 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 		color = 0xffffff;
 		redstoneCache = new int[6];
 		singleDirection = null;
+		if (ModList.OPENCOMPUTERS.isLoaded()) {
+			for (int i = 0; i < 6; i++) {
+				if (sidedOCNode[i] != null)
+					((Node)sidedOCNode[i]).disconnect(((Node)this.getOther().sidedOCNode[i]));
+			}
+		}
+
 		this.onLink(true);
 	}
 
@@ -262,6 +288,12 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			if (te != null) {
 				te.target = null;
 				te.color = 0xffffff;
+				if (ModList.OPENCOMPUTERS.isLoaded()) {
+					for (int i = 0; i < 6; i++) {
+						if (te.sidedOCNode[i] != null)
+							((Node)te.sidedOCNode[i]).disconnect(((Node)sidedOCNode[i]));
+					}
+				}
 				this.onLink(true);
 			}
 		}
@@ -786,7 +818,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			((IPeripheral)this.getSingleDirTile()).detach(computer);
 		}
 	}
-
+	/*
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public String[] methods() {
@@ -813,23 +845,49 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 		}
 		return null;
 	}
-
+	 */
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onConnect(Node node) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
-			((Environment)this.getSingleDirTile()).onConnect(node);
+		TileEntityRift te = this.getOther();
+		if (te != null) {
+			for (int i = 0; i < 6; i++) {
+				if (sidedOCNode[i] != null && sidedOCNode[i] == node && this.getOtherNode(te, i) != null) {
+					((Node)sidedOCNode[i]).connect(this.getOtherNode(te, i));
+				}
+			}
 		}
 	}
-
+	/*
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onDisconnect(Node node) {
-		if (this.getOther() != null && this.getSingleDirTile() instanceof Environment) {
-			((Environment)this.getSingleDirTile()).onDisconnect(node);
+		TileEntityRift te = this.getOther();
+		if (te != null) {
+			for (int i = 0; i < 6; i++) {
+				if (sidedOCNode[i] != null && sidedOCNode[i] == node && this.getOtherNode(te, i) != null) {
+					((Node)sidedOCNode[i]).disconnect(this.getOtherNode(te, i));
+				}
+			}
 		}
 	}
+	 */
+	@ModDependent(ModList.OPENCOMPUTERS)
+	private Node getOtherNode(TileEntityRift te, int side) {
+		return (Node)te.sidedOCNode[dirs[side].getOpposite().ordinal()];
+	}
 
+	@Override
+	protected void onInvalidateOrUnload(World world, int x, int y, int z, boolean invalid) {
+		if (ModList.OPENCOMPUTERS.isLoaded()) {
+			for (int i = 0; i < 6; i++) {
+				if (sidedOCNode[i] != null) {
+					((Node)sidedOCNode[i]).remove();
+				}
+			}
+		}
+	}
+	/*
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	public final void onMessage(Message message) {
@@ -837,7 +895,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 			((Environment)this.getSingleDirTile()).onMessage(message);
 		}
 	}
-
+	 */
 	@Override
 	public void breakBlock() {
 		ChunkManager.instance.unloadChunks(this);
@@ -871,6 +929,18 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	@Override
 	public boolean canRecieveManaFromBursts() {
 		return true;
+	}
+
+	@Override
+	public Node sidedNode(ForgeDirection side) {
+		return (Node)sidedOCNode[side.ordinal()];
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public
+	boolean canConnect(ForgeDirection side) {
+		return this.isLinked();
 	}
 
 }

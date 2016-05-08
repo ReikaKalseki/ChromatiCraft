@@ -1,27 +1,33 @@
 package Reika.ChromatiCraft.Entity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 //Like ships in supercruise for sound, physics, render
-public class EntityDimensionFlare extends EntityLiving {
+public class EntityDimensionFlare extends Entity/*Living*/ {
 
 	private EntityPlayer target;
 
 	private int stateTick;
 	private RelationState state = RelationState.FIND;
+
+	private final ArrayList<EntityPlayer> aggroPlayers = new ArrayList();
 
 	public EntityDimensionFlare(World world) {
 		super(world);
@@ -36,13 +42,18 @@ public class EntityDimensionFlare extends EntityLiving {
 	public void onUpdate() {
 		super.onUpdate();
 		if (target != null) {
+			EntityPlayer ep = worldObj.getClosestPlayerToEntity(this, 100);
+			if (ep != null && !worldObj.isRemote && ticksExisted%20 == 0) {
+				OuterRegionsEvents.instance.doRejectAttack(this, ep);
+			}
+			this.doAggro();
 			double d = this.getDistanceSqToEntity(target);
 			if (d < 65536) { //256
 				this.moveToTarget();
 				if (d < 9216) { //96
 					this.progressRelationship();
 					if (d < 576) { //24
-						if (rand.nextInt(80) == 0) {
+						if (rand.nextInt(320) == 0) {
 							if (target instanceof EntityPlayerMP)
 								this.sendMessageToPlayer();
 						}
@@ -52,6 +63,18 @@ public class EntityDimensionFlare extends EntityLiving {
 		}
 		else if (!worldObj.isRemote) {
 			this.setDead();
+		}
+	}
+
+	private void doAggro() {
+		Iterator<EntityPlayer> it = aggroPlayers.iterator();
+		while (it.hasNext()) {
+			EntityPlayer ep = it.next();
+			boolean flag = OuterRegionsEvents.instance.doRejectAttack(this, ep);
+
+			if (flag || ep.isDead || ep.getHealth() <= 0 || ep.dimension != ExtraChromaIDs.DIMID.getValue()) {
+				it.remove();
+			}
 		}
 	}
 
@@ -95,8 +118,8 @@ public class EntityDimensionFlare extends EntityLiving {
 	public static enum RelationState {
 		FIND(30, "Curiosity", "Inquisitiveness", "Confusion", "Interest", "Confidence", "Fascination"),
 		INSPECT(5, "Suspicion", "Caution", "Investigative", "Hope", "Anxiety", "Expectation", "Anticipation"),
-		REJECT(15, "Dismissiveness", "Superiority", "Contempt", "Insult", "Concern"),
-		WARN(30, "Aggravation", "Provoked", "Irritation", "Agitation", "Exclusion"),
+		REJECT(15, "Dismissiveness", "Superiority", "Contempt", "Insult", "Concern", "Territoriality"),
+		WARN(30, "Aggravation", "Provocation", "Irritation", "Agitation", "Exclusion"),
 		THREATEN(45, "Hostile", "Alarm", "Intimidation", "Exile"),
 		ATTACK(Integer.MAX_VALUE, "Aggression", "Defence", "Banishment"),
 		ATTACKED(Integer.MAX_VALUE, "Shock", "Rage", "Anger", "Retaliation"),
@@ -124,6 +147,27 @@ public class EntityDimensionFlare extends EntityLiving {
 				return hostile ? REJECT : ACCEPT;
 			return list[this.ordinal()+1];
 		}
+	}
+
+	@Override
+	protected void entityInit() {
+
+	}
+
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound tag) {
+
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound tag) {
+
+	}
+
+	public void aggroTo(EntityPlayer ep) {
+		if (!aggroPlayers.contains(ep))
+			aggroPlayers.add(ep);
+		state = RelationState.ATTACKED;
 	}
 
 }

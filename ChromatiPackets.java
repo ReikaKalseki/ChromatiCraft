@@ -53,6 +53,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory.TileMusicM
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
+import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -106,6 +107,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.PacketHandler;
@@ -703,6 +705,13 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case FLAREMSG: {
 					ChromaOverlays.instance.addFlareMessage(stringdata);
+					break;
+				}
+				case FLAREATTACK: {
+					Entity e = world.getEntityByID(data[0]);
+					if (e instanceof EntityDimensionFlare) {
+						OuterRegionsEvents.instance.doRejectAttack((EntityDimensionFlare)e, ep);
+					}
 					break;
 				}
 			}

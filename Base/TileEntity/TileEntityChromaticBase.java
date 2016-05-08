@@ -122,11 +122,6 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	}
 
 	@Override
-	public final String getName() {
-		return this.getTEName();
-	}
-
-	@Override
 	public final boolean shouldRenderInPass(int pass) {
 		ChromaTiles r = ChromaTiles.TEList[this.getIndex()];
 		return pass == 0 || (r.renderInPass1() && pass == 1);

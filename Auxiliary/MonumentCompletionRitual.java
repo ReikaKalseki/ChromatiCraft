@@ -23,8 +23,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -481,12 +481,10 @@ public class MonumentCompletionRitual {
 						for (double r = 0; r <= 1; r += 0.03125) {
 							float s = 5F;
 							int clr = e.getColor();
-							double dx = pos1.xCoord+r*(pos2.xCoord-pos1.xCoord);
-							double dy = pos1.yCoord+r*(pos2.yCoord-pos1.yCoord);
-							double dz = pos1.zCoord+r*(pos2.zCoord-pos1.zCoord);
-							EntityFX fx = new EntityBlurFX(world, dx, dy, dz).setScale(s).setColor(clr).setLife(l).setRapidExpand();
+							DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
+							EntityFX fx = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand();
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-							EntityFX fx2 = new EntityBlurFX(world, dx, dy, dz).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
+							EntityFX fx2 = new EntityBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s/2.5F).setColor(0xffffff).setLife(l).setRapidExpand();
 							Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 						}
 					}
