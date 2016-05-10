@@ -61,6 +61,7 @@ public class BlockCrystalConsole extends BlockContainer implements ConnectedText
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		TileEntityCrystalConsole te = (TileEntityCrystalConsole)world.getTileEntity(x, y, z);
+
 		ForgeDirection dir = te.getConsoleFace();
 		if (s == dir.ordinal()) {
 			int idx = this.getClickedButton(te, dir, a, c);

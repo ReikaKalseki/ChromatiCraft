@@ -14,7 +14,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -24,7 +23,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
 
-public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
+public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 
 	private final SimplexNoiseGenerator mountainHeight;
 	private final SimplexNoiseGenerator shearNoise;
@@ -40,9 +39,9 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 	public static final double MIN_THRESH = 4;
 	public static final double MAX_THRESH = 24;
 
-	public static final int BIOME_SEARCH = 32;
+	public static final int BIOME_SEARCH = 24;
 
-	public WorldGenCrystalMountain(long seed) {
+	public TerrainGenCrystalMountain(long seed) {
 		super(seed, SubBiomes.MOUNTAINS);
 		mountainHeight = new SimplexNoiseGenerator(seed);
 
@@ -70,7 +69,7 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 		if (dat.isCliff) {
 			double dc = dat.maxHeight-dt-dat.shearThreshold;
 			double gw = ReikaMathLibrary.normalizeToBounds(gemNoise.getValue(rx*2, rz*2), 0, dc);//Math.max(, gemNoiseLow.getValue(rx, rz));
-			double base = world.getWorldInfo().getTerrainType() == WorldType.FLAT ? 3 : 64+ChunkProviderChroma.VERTICAL_OFFSET;
+			double base = this.isFlatWorld(world) ? 3 : 64+ChunkProviderChroma.VERTICAL_OFFSET;
 			double mid = base+dat.shearThreshold+dc/2;//dat.shearThreshold+dat.shearHeight/2;
 			//ReikaJavaLibrary.pConsole(mid+" @ "+dx+", "+dz);
 			g1 = mid-gw/2;
@@ -80,9 +79,10 @@ public class WorldGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper {
 		double gmax = Math.max(g1, g2);
 		double gmin = Math.min(g1, g2);
 		int h = (int)dat.maxHeight;
+		//ReikaJavaLibrary.pConsole(dx+", "+dz+": "+h);
 		for (int j = 0; j <= h; j++) {
 			int dy = 64+ChunkProviderChroma.VERTICAL_OFFSET+j;
-			if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+			if (this.isFlatWorld(world))
 				dy = 3+j;
 			int m = 0;
 			Block b = Blocks.stone;

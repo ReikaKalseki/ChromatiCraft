@@ -54,6 +54,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -74,16 +75,15 @@ import Reika.ChromatiCraft.API.Interfaces.CustomEnderDragon;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.LumenTurretDamage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
-import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityCrystalBase;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
-import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -179,6 +179,23 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void noTargeting(LivingSetAttackTargetEvent evt) {
+		if (evt.target instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)evt.target;
+			if (evt.entityLiving instanceof EntityLiving) {
+				if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
+					//evt.setCanceled(true);
+					((EntityLiving)evt.entityLiving).setAttackTarget(null);
+				}
+				else if (TileEntityCloakingTower.isPlayerCloaked(ep)) {
+					//evt.setCanceled(true);
+					((EntityLiving)evt.entityLiving).setAttackTarget(null);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -917,8 +934,18 @@ public class ChromaticEventManager {
 	@ModDependent(ModList.BLOODMAGIC)
 	@ClassDependent("WayofTime.alchemicalWizardry.api.event.TeleposeEvent")
 	public void noTelepose(TeleposeEvent evt) {
-		if (!this.isMovable(evt.initialBlock) || !this.isMovable(evt.finalBlock) || !this.isMovable(evt.getInitialTile()) || !this.isMovable(evt.getFinalTile()))
+		if (!this.isMovable(evt.initialBlock) || !this.isMovable(evt.finalBlock))
 			evt.setCanceled(true);
+		if (!this.isMovable(evt.getInitialTile()) || !this.isMovable(evt.getFinalTile()))
+			evt.setCanceled(true);
+		if (evt.initialWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || evt.finalWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			AxisAlignedBB box1 = ReikaAABBHelper.getBlockAABB(evt.initialX, evt.initialY, evt.initialZ).expand(3, 3, 3).offset(0, 4, 0);
+			AxisAlignedBB box2 = ReikaAABBHelper.getBlockAABB(evt.finalX, evt.finalY, evt.finalZ).expand(3, 3, 3).offset(0, 4, 0);
+			List<Entity> li = evt.initialWorld.getEntitiesWithinAABB(Entity.class, box1);
+			List<Entity> li2 = evt.finalWorld.getEntitiesWithinAABB(Entity.class, box2);
+			if (!li.isEmpty() || !li2.isEmpty())
+				evt.setCanceled(true);
+		}
 	}
 
 	private boolean isMovable(Block b) {
@@ -1189,10 +1216,10 @@ public class ChromaticEventManager {
 				ItemStack is = inv[i];
 				if (is != null) {
 					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalPotionController.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalBlock.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalPotionController.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()]);
 					}
 					else if (is.getItem() instanceof ActivatedInventoryItem) {
 						this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is), is);

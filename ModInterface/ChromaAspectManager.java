@@ -95,6 +95,7 @@ public class ChromaAspectManager {
 		this.addAspectTheme(CrystalElement.CYAN, Aspect.WATER);
 		this.addAspectTheme(CrystalElement.LIGHTGRAY, Aspect.ENTROPY, Aspect.TRAP);
 		this.addAspectTheme(CrystalElement.GRAY, Aspect.EXCHANGE);
+		this.addAspectTheme(CrystalElement.PINK, Aspect.WEAPON);
 		this.addAspectTheme(CrystalElement.LIME, Aspect.MOTION, Aspect.TRAVEL, Aspect.FLIGHT);
 		this.addAspectTheme(CrystalElement.YELLOW, Aspect.ENERGY, SIGNAL);
 		if (Aspect.getAspect("tempus") != null)

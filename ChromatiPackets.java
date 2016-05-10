@@ -714,6 +714,9 @@ public class ChromatiPackets implements PacketHandler {
 					}
 					break;
 				}
+				case ASPECTMODE:
+					((TileEntityAspectFormer)tile).stepMode();
+					break;
 			}
 		}
 		catch (NullPointerException e) {

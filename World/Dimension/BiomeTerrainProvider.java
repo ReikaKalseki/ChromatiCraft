@@ -13,14 +13,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
-import Reika.ChromatiCraft.World.Dimension.Terrain.WorldGenChromaIslands;
-import Reika.ChromatiCraft.World.Dimension.Terrain.WorldGenCrystalMountain;
-import Reika.ChromatiCraft.World.Dimension.Terrain.WorldGenSkylandCanyons;
+import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenChromaIslands;
+import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenCrystalMountain;
+import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenSkylandCanyons;
 
 
 public class BiomeTerrainProvider {
@@ -28,9 +27,9 @@ public class BiomeTerrainProvider {
 	private final ArrayList<ChromaDimensionBiomeTerrainShaper> terrain = new ArrayList();
 
 	protected BiomeTerrainProvider(long seed) {
-		this.registerTerrain(new WorldGenSkylandCanyons(seed));
-		this.registerTerrain(new WorldGenCrystalMountain(seed));
-		this.registerTerrain(new WorldGenChromaIslands(seed));
+		this.registerTerrain(new TerrainGenSkylandCanyons(seed));
+		this.registerTerrain(new TerrainGenCrystalMountain(seed));
+		this.registerTerrain(new TerrainGenChromaIslands(seed));
 	}
 
 	public void registerTerrain(ChromaDimensionBiomeTerrainShaper b) {
@@ -58,7 +57,7 @@ public class BiomeTerrainProvider {
 	}
 
 	protected final double getEdgeFactor(World world, int x, int z, ChromaDimensionBiomeTerrainShaper t) {
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+		if (t.isFlatWorld(world))
 			return 1;
 		int minDist = Integer.MAX_VALUE;
 		double search = t.getBiomeSearchDistance();

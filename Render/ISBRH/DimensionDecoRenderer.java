@@ -139,6 +139,8 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 				break;
 			case CRYSTALLEAF:
 				break;
+			case OCEANSTONE:
+				break;
 		}
 	}
 
@@ -224,7 +226,7 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 		switch(type) {
 			case MIASMA: {
 				v5.setBrightness(240);
-				int c = ReikaColorAPI.getModifiedHue(0x0000ff, 220+(int)(80*Math.sin((x*x*2+y*y+z*z*8)/100000D)));
+				int c = ReikaColorAPI.getModifiedHue(0x0000ff, 220+(int)(80*Math.sin((x*x*2+y*y+z*z*8)/(100000D*20))));
 				v5.setColorOpaque_I(c);
 				IIcon ico = type.getIcons(1).get(0);
 				float u = ico.getMinU();
@@ -406,6 +408,8 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 			case GEMSTONE:
 				break;
 			case CRYSTALLEAF:
+				break;
+			case OCEANSTONE:
 				break;
 		}
 	}

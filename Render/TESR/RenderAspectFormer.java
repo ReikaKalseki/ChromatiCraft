@@ -58,7 +58,7 @@ public class RenderAspectFormer extends ChromaRenderBase {
 	}
 
 	private void renderAspect(TileEntityAspectFormer te, double par2, double par4, double par6, float ptick) {
-		Aspect a = te.getAspect();
+		Aspect a = te.getAspectForRender();
 		if (a != null) {
 			Tessellator v5 = Tessellator.instance;
 			GL11.glPushMatrix();
@@ -107,54 +107,55 @@ public class RenderAspectFormer extends ChromaRenderBase {
 	}
 
 	private void renderAspectTransfer(TileEntityAspectFormer te, double par2, double par4, double par6, float ptick) {
-		if (te.isActive()) {
-			GL11.glPushMatrix();
-			GL11.glTranslated(par2, par4, par6);
-			GL11.glPushMatrix();
 
-			Aspect a = te.getAspect();
-			Tessellator v5 = Tessellator.instance;
-			GL11.glEnable(GL11.GL_BLEND);
-			BlendMode.ADDITIVEDARK.apply();
-			GL11.glDisable(GL11.GL_LIGHTING);
+		Aspect a = te.getAspectForRender();
+		if (a == null)
+			return;
 
-			//float w = GL11.glGetFloat(GL11.GL_POINT_SIZE);
+		GL11.glPushMatrix();
+		GL11.glTranslated(par2, par4, par6);
+		GL11.glPushMatrix();
+		Tessellator v5 = Tessellator.instance;
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.ADDITIVEDARK.apply();
+		GL11.glDisable(GL11.GL_LIGHTING);
 
-			int ct = 0;
-			double r = 0.5;
-			for (double dy = -0.0625; dy > -0.9375; dy -= 0.0625) {
-				//GL11.glPointSize(6);
-				//v5.startDrawing(GL11.GL_POINTS);
-				//v5.setBrightness(240);
-				//v5.setColorOpaque_I(a.getColor());
-				double ang = Math.toRadians(9*(te.getTicksExisted()+ct*6+ptick));
-				double dx = 0.5+r*Math.sin(ang);
-				double dz = 0.5+r*Math.cos(ang);
-				//v5.addVertex(dx, dy, dz);
-				//v5.draw();
+		//float w = GL11.glGetFloat(GL11.GL_POINT_SIZE);
 
-				//GL11.glPointSize(3);
-				//v5.startDrawing(GL11.GL_POINTS);
-				//v5.setColorOpaque_I(0xffffff);
-				//v5.addVertex(dx, dy, dz);
-				//v5.draw();
+		int ct = 0;
+		double r = 0.5;
+		for (double dy = -0.0625; dy > -0.9375; dy -= 0.0625) {
+			//GL11.glPointSize(6);
+			//v5.startDrawing(GL11.GL_POINTS);
+			//v5.setBrightness(240);
+			//v5.setColorOpaque_I(a.getColor());
+			double ang = Math.toRadians(9*(te.getTicksExisted()+ct*6+ptick));
+			double dx = 0.5+r*Math.sin(ang);
+			double dz = 0.5+r*Math.cos(ang);
+			//v5.addVertex(dx, dy, dz);
+			//v5.draw();
 
-				double px = dx+te.xCoord;
-				double py = dy+te.yCoord;
-				double pz = dz+te.zCoord;
-				EntityFX fx = new EntityCenterBlurFX(CrystalElement.WHITE, te.worldObj, px, py, pz, 0, 0, 0).setLife(4).setScale(2F).setColor(a.getColor());
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				ct++;
-			}
+			//GL11.glPointSize(3);
+			//v5.startDrawing(GL11.GL_POINTS);
+			//v5.setColorOpaque_I(0xffffff);
+			//v5.addVertex(dx, dy, dz);
+			//v5.draw();
 
-			//GL11.glPointSize(w);
-
-			BlendMode.DEFAULT.apply();
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glPopMatrix();
-			GL11.glPopMatrix();
+			double px = dx+te.xCoord;
+			double py = dy+te.yCoord;
+			double pz = dz+te.zCoord;
+			EntityFX fx = new EntityCenterBlurFX(CrystalElement.WHITE, te.worldObj, px, py, pz, 0, 0, 0).setLife(4).setScale(2F).setColor(a.getColor());
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			ct++;
 		}
+
+		//GL11.glPointSize(w);
+
+		BlendMode.DEFAULT.apply();
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glPopMatrix();
+		GL11.glPopMatrix();
 	}
 
 }

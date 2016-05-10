@@ -848,11 +848,12 @@ public class ChromatiCraft extends DragonAPIMod {
 				Class c = Class.forName("crazypants.enderio.config.Config");
 				Field f = c.getField("travelStaffBlinkBlackList");
 				String[] arr = (String[])f.get(null);
-				String[] next = new String[arr.length+3];
+				String[] next = new String[arr.length+4];
 				System.arraycopy(arr, 0, next, 0, arr.length);
-				next[next.length-3] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
-				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
-				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.DOOR);
+				next[next.length-4] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
+				next[next.length-3] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
+				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.DOOR);
+				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.TELEPORT);
 				f.set(null, next);
 			}
 			catch (Exception e) {

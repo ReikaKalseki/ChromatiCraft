@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Block;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -146,7 +147,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	}
 
 	private boolean connectToBlock(Block b) {
-		return b == this || b.isOpaqueCube() || b.getRenderType() == 0 || b instanceof BlockStructureShield;
+		return b == this || b.isOpaqueCube() || b.getRenderType() == 0 || b instanceof BlockStructureShield || b.getClass().getName().toLowerCase(Locale.ENGLISH).contains("facade");
 	}
 
 	@Override

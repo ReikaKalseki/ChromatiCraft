@@ -62,29 +62,32 @@ public class RenderDimensionFlare extends Render {
 		v5.addVertexWithUV(-s1, s1, 0, 0, 1);
 		v5.draw();
 
-		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/dimflare_trail_anim.png");
-		int frame = (int)((System.currentTimeMillis()/70)%16);//(e.ticksExisted/4)%16;
-		int w = 4;
-		double u = (frame%w)/(double)w;
-		double v = (frame/w)/(double)w;
-		double du = u+1D/w;
-		double dv = v+1D/w;
-		//ReikaJavaLibrary.pConsole(frame+" > ["+u+", "+v+"] > ["+du+", "+dv+"]");
+		if (false) {
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/dimflare_trail_anim.png");
+			int frame = (int)((System.currentTimeMillis()/70)%16);//(e.ticksExisted/4)%16;
+			int w = 4;
+			double u = (frame%w)/(double)w;
+			double v = (frame/w)/(double)w;
+			double du = u+1D/w;
+			double dv = v+1D/w;
+			//ReikaJavaLibrary.pConsole(frame+" > ["+u+", "+v+"] > ["+du+", "+dv+"]");
 
-		Vec3 vel = Vec3.createVectorHelper(e.motionX, e.motionY, e.motionZ);
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		Vec3 pos = Vec3.createVectorHelper(e.posX-ep.posX, e.posY-ep.posY, e.posZ-ep.posZ);
-		double ang = 0;
+			Vec3 vel = Vec3.createVectorHelper(e.motionX, e.motionY, e.motionZ);
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			Vec3 pos = Vec3.createVectorHelper(e.posX-ep.posX, e.posY-ep.posY, e.posZ-ep.posZ);
+			double ang = 0;
 
-		GL11.glRotated(ang, 0, 0, 1);
-		v5.startDrawingQuads();
-		v5.setBrightness(240);
-		v5.setColorOpaque_I(0xffffff);
-		v5.addVertexWithUV(-s2, -s2, 0, u, v);
-		v5.addVertexWithUV(s2, -s2, 0, du, v);
-		v5.addVertexWithUV(s2, s2, 0, du, dv);
-		v5.addVertexWithUV(-s2, s2, 0, u, dv);
-		v5.draw();
+			GL11.glRotated(ang, 0, 0, 1);
+			v5.startDrawingQuads();
+			v5.setBrightness(240);
+			v5.setColorOpaque_I(0xffffff);
+			v5.addVertexWithUV(-s2, -s2, 0, u, v);
+			v5.addVertexWithUV(s2, -s2, 0, du, v);
+			v5.addVertexWithUV(s2, s2, 0, du, dv);
+			v5.addVertexWithUV(-s2, s2, 0, u, dv);
+			v5.draw();
+		}
+
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}

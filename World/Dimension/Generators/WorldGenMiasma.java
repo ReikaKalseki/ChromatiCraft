@@ -20,7 +20,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
-import Reika.ChromatiCraft.World.Dimension.Terrain.WorldGenSkylandCanyons;
+import Reika.ChromatiCraft.World.Dimension.Terrain.TerrainGenSkylandCanyons;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -42,14 +42,14 @@ public class WorldGenMiasma extends ChromaWorldGenerator {
 		int ymin = 0;
 		int ymax = 0;
 		if (!isVoid) {
-			for (int i = WorldGenSkylandCanyons.LOW_FLOOR-2; i <= WorldGenSkylandCanyons.HIGH_FLOOR+2; i++) {
+			for (int i = TerrainGenSkylandCanyons.LOW_FLOOR-2; i <= TerrainGenSkylandCanyons.HIGH_FLOOR+2; i++) {
 				if (world.getBlock(x, i, z).isAir(world, x, i, z)) {
 					ymin = i;
 					break;
 				}
 			}
 		}
-		for (int i = WorldGenSkylandCanyons.LOW_CEIL-2; i <= WorldGenSkylandCanyons.HIGH_CEIL+2; i++) {
+		for (int i = TerrainGenSkylandCanyons.LOW_CEIL-2; i <= TerrainGenSkylandCanyons.HIGH_CEIL+2; i++) {
 			if (!world.getBlock(x, i, z).isAir(world, x, i, z)) {
 				ymax = i-1;
 				break;

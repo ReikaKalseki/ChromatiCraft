@@ -128,6 +128,7 @@ public enum ChromaPackets {
 	THROWNGEM(2),
 	FLAREMSG(),
 	FLAREATTACK(1),
+	ASPECTMODE(),
 	;
 
 	public final int numInts;

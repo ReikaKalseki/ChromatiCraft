@@ -58,7 +58,8 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		LIFEWATER(1),
 		LATTICE(1),
 		GEMSTONE(3),
-		CRYSTALLEAF(3);
+		CRYSTALLEAF(3),
+		OCEANSTONE(1);
 
 		public final int numIcons;
 

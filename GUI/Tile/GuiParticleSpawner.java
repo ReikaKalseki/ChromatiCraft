@@ -143,8 +143,8 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				for (int i = 0; i < 16; i++) {
 					int x = j+27+(i%8)*18;
 					int y = k+18+(i/8)*18;
-					int u = i%2 == 1 ? 126 : 106;
-					int v = 173;
+					int u = 106;
+					int v = 213;
 					ImagedGuiButton b = new ImagedGuiButton(i+100, x, y, 20, 20, u, v, file, ChromatiCraft.class);
 					b.icon = CrystalElement.elements[i].getGlowRune();
 					b.iconHeight = b.iconWidth = 16;

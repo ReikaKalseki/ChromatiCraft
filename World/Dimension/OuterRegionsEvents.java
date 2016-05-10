@@ -1,7 +1,15 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2015
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -11,7 +19,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Block.BlockChromaPortal.ChromaTeleporter;
+import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -22,6 +30,7 @@ import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -63,15 +72,16 @@ public class OuterRegionsEvents {
 			return false;
 		}
 		else {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FLAREATTACK.ordinal(), (EntityPlayerMP)ep, e.getEntityId());
 			if (ep.getHealth() <= dmg) {
 				if (!ep.capabilities.isCreativeMode)
 					ReikaEntityHelper.transferEntityToDimension(ep, 0, new ChromaTeleporter(0));
 				return true;
 			}
 			else {
-				ChromaAux.doPylonAttack(CrystalElement.WHITE, ep, dmg, false);
+				if (!ep.capabilities.isCreativeMode)
+					ChromaAux.doPylonAttack(CrystalElement.WHITE, ep, dmg, false);
 				ReikaEntityHelper.knockbackEntity(e, ep, ep.worldObj.rand.nextDouble());
-				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.FLAREATTACK.ordinal(), (EntityPlayerMP)ep, e.getEntityId());
 				return false;
 			}
 		}
@@ -79,12 +89,12 @@ public class OuterRegionsEvents {
 
 	@SideOnly(Side.CLIENT)
 	private void doRejectAttackFX(EntityDimensionFlare e, EntityPlayer ep) {
-		ChromaSounds.FLAREATTACK.playSound(ep, 1, 1);
+		ReikaSoundHelper.playClientSound(ChromaSounds.FLAREATTACK, ep, 1, e.getIdentity().soundPitch);
 		int n = 4+ep.worldObj.rand.nextInt(4);
 		LightningBolt b = new LightningBolt(new DecimalPosition(e), new DecimalPosition(ep).offset(0, -0.8, 0), n);
 		b.variance *= 2;
 		b.update();
-		int clr = this.getRandomAttackColor(ep.worldObj.rand);
+		int clr = e.getIdentity().flareColor;
 		for (int i = 0; i < b.nsteps; i++) {
 			DecimalPosition pos1 = b.getPosition(i);
 			DecimalPosition pos2 = b.getPosition(i+1);
@@ -97,20 +107,6 @@ public class OuterRegionsEvents {
 				EntityFX fx = new EntityBlurFX(ep.worldObj, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(clr).setLife(l).setRapidExpand().freezeLife(a);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
-		}
-	}
-
-	private int getRandomAttackColor(Random rand) {
-		switch(rand.nextInt(4)) {
-			case 0:
-			default:
-				return 0xffffff;
-			case 1:
-				return 0x22aaff;
-			case 2:
-				return 0xDA8CFF;
-			case 3:
-				return 0xFFF1AD;
 		}
 	}
 

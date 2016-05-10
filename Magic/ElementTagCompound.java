@@ -233,6 +233,15 @@ public final class ElementTagCompound {
 		this.clearEmptyKeys();
 	}
 
+	/** Returns the minimum value. */
+	public float divide(ElementTagCompound tag) {
+		float f = Float.MAX_VALUE;
+		for (CrystalElement e : tag.elementSet()) {
+			f = Math.min(f, this.getValue(e)/(float)tag.getValue(e));
+		}
+		return f;
+	}
+
 	public void readFromNBT(String name, NBTTagCompound NBT) {
 		if (!NBT.hasKey(name))
 			return;

@@ -21,12 +21,8 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
@@ -46,7 +42,6 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
-import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -233,7 +228,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 					player = true;
 			}
 			if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
-				this.applyEffectFromColor(dura, level, e, color);
+				CrystalPotionController.applyEffectFromColor(dura, level, e, color);
 			}
 		}
 	}
@@ -252,71 +247,6 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	}
 
 	public abstract int getPotionLevel(CrystalElement e);
-
-	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
-		if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
-			switch(color) {
-				case ORANGE:
-					e.setFire(2);
-					break;
-				case RED:
-					e.attackEntityFrom(DamageSource.magic, 1);
-					break;
-				case PURPLE:
-					if (!e.worldObj.isRemote && rand.nextInt(5) == 0 && e instanceof EntityPlayer) {
-						EntityPlayer ep = (EntityPlayer)e;
-						if (ep.experienceLevel > 0) {
-							ep.addExperienceLevel(-1);
-						}
-						else {
-							ep.experienceTotal = 0;
-							ep.experience = 0;
-						}
-					}
-					break;
-				case BROWN:
-					if (!e.isPotionActive(Potion.confusion.id))
-						e.addPotionEffect(new PotionEffect(Potion.confusion.id, Math.max(100, (int)(dura*1.8)), level, true));
-					break;
-				case LIME:
-					e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
-					break;
-				default:
-					PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
-					if (CrystalPotionController.isPotionAllowed(eff, e))
-						e.addPotionEffect(eff);
-			}
-		}
-		else {
-			switch(color) {
-				case BLACK:
-					if (e instanceof EntityMob) {  //clear AI
-						EntityMob m = (EntityMob)e;
-						m.setAttackTarget(null);
-						m.getNavigator().clearPathEntity();
-					}
-					break;
-				case WHITE:
-					//ReikaPotionHelper.clearPotionsExceptPerma(e);
-					ReikaPotionHelper.clearBadPotions(e, level > 0 ? null : CrystalPotionController.ignoredBadPotionsForLevelZero());
-					break;
-				case PURPLE:
-					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
-						EntityPlayer ep = (EntityPlayer)e;
-						e.playSound("random.orb", 0.2F, rand.nextFloat()*2);
-						ep.addExperience(1);
-					}
-					break;
-				default:
-					PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
-					if (eff != null) {
-						if (CrystalPotionController.isPotionAllowed(eff, e)) {
-							e.addPotionEffect(eff);
-						}
-					}
-			}
-		}
-	}
 
 	@Override
 	public boolean canEntityDestroy(IBlockAccess world, int x, int y, int z, Entity e) {

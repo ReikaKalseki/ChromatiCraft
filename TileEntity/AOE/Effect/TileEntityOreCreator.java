@@ -131,6 +131,8 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 	private void doCreateOre(World world, int x, int y, int z, OreType ore) {
 		Collection<ItemStack> li = ore.getAllOreBlocks();
 		ItemStack is = ReikaJavaLibrary.getRandomCollectionEntry(li);
+		if (!this.isItemStackGenerationPermitted(is))
+			return;
 		BlockKey b = ReikaItemHelper.getWorldBlockFromItem(is);
 		if (b.blockID == Blocks.air)
 			return;

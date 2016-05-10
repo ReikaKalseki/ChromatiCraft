@@ -241,6 +241,7 @@ public enum ChromaBlocks implements BlockEnum {
 				//case FIBER:
 			case POWERTREE:
 			case RELAY:
+			case ADJACENCY:
 				return ChromatiCraft.crystalMat;
 			case TNT:
 				return Material.tnt;

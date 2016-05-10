@@ -35,8 +35,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		}
 		else if (b instanceof BlockAnvil) {
 			int meta = world.getBlockMetadata(dx, dy, dz);
-			if (meta > 0 && rand.nextInt(40) < 1+tier*2) {
-				world.setBlockMetadataWithNotify(dx, dy, dz, meta-1, 3);
+			if (meta > 0 && rand.nextInt(200) < 1+tier*8) {
+				world.setBlockMetadataWithNotify(dx, dy, dz, meta-4, 3);
 			}
 		}
 
@@ -56,6 +56,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 	}
 
 	private boolean canRepair(ItemStack is) {
+		if (is == null)
+			return false;
 		if (is.getItem().isRepairable() && is.getItemDamage() > 0)
 			return true;
 		return false;

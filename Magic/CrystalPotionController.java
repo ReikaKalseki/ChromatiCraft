@@ -12,12 +12,17 @@ package Reika.ChromatiCraft.Magic;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -27,6 +32,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Libraries.ReikaPotionHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 
 public class CrystalPotionController {
 
@@ -34,6 +40,8 @@ public class CrystalPotionController {
 	private static final HashMap<CrystalElement, Potion> nethermap = new HashMap();
 
 	private static final HashSet<Integer> ignoredPotions = new HashSet();
+
+	private static final Random rand = new Random();
 
 	static {
 		addColorPotion(CrystalElement.BLUE, Potion.nightVision);
@@ -82,6 +90,8 @@ public class CrystalPotionController {
 	public static boolean isWorldHostile(World world) {
 		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return true;
+		if (world.provider.dimensionId == ThaumIDHandler.getInstance().dimensionID)
+			return true;
 		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.HOSTILE.existsInWorld(world))
 			return true;
 		return world.provider.isHellWorld;
@@ -101,7 +111,11 @@ public class CrystalPotionController {
 		if (e instanceof EntityPlayer && ItemPurifyCrystal.isActive((EntityPlayer)e))
 			return !ReikaPotionHelper.isBadEffect(pot);
 		if (!(e instanceof EntityPlayer)) {
-			return e.worldObj.provider.isHellWorld ? !ReikaPotionHelper.isBadEffect(pot) : true;
+			boolean flag = false;
+			if (e instanceof EntityCreature) {
+				flag = ((EntityCreature)e).getCreatureAttribute() == EnumCreatureAttribute.UNDEAD;
+			}
+			return e.worldObj.provider.isHellWorld ? ReikaPotionHelper.isBadEffect(pot) == flag : true;
 		}
 		if (e.worldObj.provider.isHellWorld)
 			return eff.getPotionID() == Potion.nightVision.id || ReikaPotionHelper.isBadEffect(pot);
@@ -204,5 +218,70 @@ public class CrystalPotionController {
 
 	public static void addIgnoredPotion(Potion p) {
 		ignoredPotions.add(p.id);
+	}
+
+	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
+		if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
+			switch(color) {
+				case ORANGE:
+					e.setFire(2);
+					break;
+				case RED:
+					e.attackEntityFrom(DamageSource.magic, 1);
+					break;
+				case PURPLE:
+					if (!e.worldObj.isRemote && rand.nextInt(5) == 0 && e instanceof EntityPlayer) {
+						EntityPlayer ep = (EntityPlayer)e;
+						if (ep.experienceLevel > 0) {
+							ep.addExperienceLevel(-1);
+						}
+						else {
+							ep.experienceTotal = 0;
+							ep.experience = 0;
+						}
+					}
+					break;
+				case BROWN:
+					if (!e.isPotionActive(Potion.confusion.id))
+						e.addPotionEffect(new PotionEffect(Potion.confusion.id, Math.max(100, (int)(dura*1.8)), level, true));
+					break;
+				case LIME:
+					e.addPotionEffect(new PotionEffect(Potion.jump.id, dura, -5, true));
+					break;
+				default:
+					PotionEffect eff = CrystalPotionController.getNetherEffectFromColor(color, dura, level);
+					if (CrystalPotionController.isPotionAllowed(eff, e))
+						e.addPotionEffect(eff);
+			}
+		}
+		else {
+			switch(color) {
+				case BLACK:
+					if (e instanceof EntityMob) {  //clear AI
+						EntityMob m = (EntityMob)e;
+						m.setAttackTarget(null);
+						m.getNavigator().clearPathEntity();
+					}
+					break;
+				case WHITE:
+					//ReikaPotionHelper.clearPotionsExceptPerma(e);
+					ReikaPotionHelper.clearBadPotions(e, level > 0 ? null : CrystalPotionController.ignoredBadPotionsForLevelZero());
+					break;
+				case PURPLE:
+					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
+						EntityPlayer ep = (EntityPlayer)e;
+						e.playSound("random.orb", 0.2F, rand.nextFloat()*2);
+						ep.addExperience(1);
+					}
+					break;
+				default:
+					PotionEffect eff = CrystalPotionController.getEffectFromColor(color, dura, level);
+					if (eff != null) {
+						if (CrystalPotionController.isPotionAllowed(eff, e)) {
+							e.addPotionEffect(eff);
+						}
+					}
+			}
+		}
 	}
 }

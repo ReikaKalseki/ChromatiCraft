@@ -349,8 +349,7 @@ public class ChromaClientEventController {
 
 	@SubscribeEvent
 	public void stopSwapOutofGUIItem(HotbarKeyEvent evt) {
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		ItemStack is = ep.inventory.getStackInSlot(evt.hotbarSlot);
+		ItemStack is = evt.getItem();
 		if (ChromaItems.AURAPOUCH.matchWith(is) && evt.gui instanceof GuiAuraPouch) {
 			evt.setCanceled(true);
 		}

@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -54,7 +53,7 @@ public class ItemPendant extends ItemCrystalBasic {
 				int dura = this.isEnhanced() ? 6000 : color == CrystalElement.BLUE ? 3 : 100;
 				PotionEffect pot = CrystalPotionController.getEffectFromColor(color, dura, level);
 				if (pot == null || color == CrystalElement.BLUE || !ep.isPotionActive(pot.getPotionID())) {
-					CrystalBlock.applyEffectFromColor(dura, level, ep, color);
+					CrystalPotionController.applyEffectFromColor(dura, level, ep, color);
 				}
 			}
 			if (ChromaOptions.NOPARTICLES.getState())

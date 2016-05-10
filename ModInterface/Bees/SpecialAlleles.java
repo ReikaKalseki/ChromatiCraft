@@ -30,7 +30,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Base.CrystalBlock;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.SpecialGeneticEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.CrystalBee;
@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -133,9 +134,9 @@ public class SpecialAlleles {
 				if (this.canApplyEffect(world, c.posX, c.posY, c.posZ)) {
 					int[] r = ibg.getTerritory();
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
-					List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
+					List<EntityLivingBase> li = world.selectEntitiesWithinAABB(EntityLivingBase.class, box, ReikaEntityHelper.nonMobSelector);
 					for (EntityLivingBase e : li) {
-						CrystalBlock.applyEffectFromColor(600, 0, e, color);
+						CrystalPotionController.applyEffectFromColor(600, 0, e, color);
 					}
 				}
 				if (lastWorldTick != world.getTotalWorldTime() && CrystalBees.rand.nextInt(8000) == 0) {

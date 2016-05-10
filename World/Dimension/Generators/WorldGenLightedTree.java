@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
@@ -29,7 +28,14 @@ public class WorldGenLightedTree extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return biome.biomeType == Biomes.PLAINS ? 0.05F : 0.5F;
+		switch(biome.biomeType) {
+			case PLAINS:
+				return 0.05F;
+			case ISLANDS:
+				return 0.8F;
+			default:
+				return 0.5F;
+		}
 	}
 
 	@Override

@@ -536,22 +536,22 @@
 
 		</note>
 	</particles>
-	<name>
+	<meteor>
 		<desc>
-
+			Lumen turrets are all well and good, but they need to be spammed to protect a large area, and do not work for areas without a clear sky view. You tried a magnetic projectile launcher earlier, but for what it accomplished in mob-killing it doubled in destroying the base you were trying to protect. To that end, you have decided to create a defense tower, one that can attack mobs at a large range, and doing large amounts of splash damage. Now, some towers are more effective than others against certain mob types (in case you hadn't noticed), and this one does not work for fliers.
+		</desc>
+		<note>
+			Comes in three tiers, each with greater capabilities and costs.
+		</note>
+	</meteor>
+	<fluxcreator>
+		<desc>
+			Every time you screw up with a crucible, or a jar of magic...stuff, it creates a cloud or puddle of purple goo. Now, you are SUPPOSED to be unhappy about this, but who could be unhappy about a supply of pretty purple...stuff? Sure, others will say that you are crazy - or, more than they already do - but since when has that stopped you?
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
-		<desc>
-
-		</desc>
-		<note>
-
-		</note>
-	</name>
+	</fluxcreator>
 	<name>
 		<desc>
 

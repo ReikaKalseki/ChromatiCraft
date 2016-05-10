@@ -26,8 +26,8 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
@@ -127,10 +127,10 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.CHROMA.stepPlayerTo(ep);
-			CrystalBlock.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE);
-			CrystalBlock.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN);
-			CrystalBlock.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA);
-			CrystalBlock.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE);
+			CrystalPotionController.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE);
 		}
 	}
 

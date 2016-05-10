@@ -19,10 +19,10 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Render.Particle.EntityBallLightningFX;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -264,14 +264,16 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		super.getTagsToWriteToStack(NBT);
 
-		NBT.setInteger("total", remainingUse);
+		NBT.setInteger("total", originalUse);
+		NBT.setInteger("remain", remainingUse);
 	}
 
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		super.setDataFromItemStackTag(is);
 
-		remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : remainingUse;
+		remainingUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("remain") ? is.stackTagCompound.getInteger("remain") : remainingUse;
+		originalUse = is.stackTagCompound != null && is.stackTagCompound.hasKey("total") ? is.stackTagCompound.getInteger("total") : originalUse;
 	}
 
 	@Override

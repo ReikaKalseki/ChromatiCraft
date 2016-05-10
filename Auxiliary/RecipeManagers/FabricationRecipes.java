@@ -13,15 +13,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import net.minecraft.item.ItemStack;
+import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class FabricationRecipes {
 
@@ -85,6 +90,26 @@ public class FabricationRecipes {
 		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.GLOWBEAM.ordinal()), tag);
 		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.GLOWCOL.ordinal()), tag);
 		this.addRecipe(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.FOCUS.ordinal()), tag);
+
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			ItemStack item = ReikaItemHelper.lookupItem(ModList.THAUMCRAFT, "ItemEldritchObject", 3);
+			if (item != null) {
+				tag = new ElementTagCompound();
+				HashSet<CrystalElement> set = new HashSet();
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.AIR, true));
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.FIRE, true));
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.WATER, true));
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.ENTROPY, true));
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.EARTH, true));
+				set.addAll(ChromaAspectManager.instance.getColorsForAspect(Aspect.ORDER, true));
+				for (CrystalElement e : set)
+					tag.addTag(e, 1000000);
+				tag.addTag(CrystalElement.PINK, 100000);
+				tag.addTag(CrystalElement.BLACK, 100000);
+				this.addRecipe(item, tag);
+			}
+		}
+
 	}
 
 	private void addRecipe(ItemStack is, ElementTagCompound tag) {

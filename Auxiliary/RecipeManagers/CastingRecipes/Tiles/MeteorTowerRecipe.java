@@ -72,7 +72,7 @@ public class MeteorTowerRecipe extends PylonRecipe {
 			case 1:
 				return ChromaStacks.resocrystal;
 			case 2:
-				return ChromaStacks.boostroot;
+				return ChromaStacks.resocrystal;
 		}
 	}
 
@@ -96,7 +96,7 @@ public class MeteorTowerRecipe extends PylonRecipe {
 			case 1:
 				return ChromaStacks.focusDust;
 			case 2:
-				return ChromaStacks.echoCrystal;
+				return ChromaStacks.spaceDust;
 		}
 	}
 

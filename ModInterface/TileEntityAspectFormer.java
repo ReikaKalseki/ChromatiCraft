@@ -9,8 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -18,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IAspectContainer;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -38,39 +42,58 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	private ForgeDirection facing = ForgeDirection.DOWN;
 
+	private AspectMode mode = AspectMode.DEMAND;
+
+	private ElementTagCompound currentRequest = new ElementTagCompound();
+
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+		TileEntity te = this.getAdjacentTileEntity(facing);
+		if (te instanceof IAspectContainer) {
+			IAspectContainer iac = (IAspectContainer)te;
+			mode.collectEnergy(this, world, x, y, z, iac);
 			this.checkAndRequest();
-		}
 
-		if (this.isActive()) {
-			ElementTagCompound cost = this.getCost();
-			if (!world.isRemote) {
-				this.addAspect(selected, (IAspectContainer)this.getAdjacentTileEntity(facing), cost);
-			}
+			mode.generateAspects(this, world, x, y, z, iac);
+
 			if (world.isRemote)
-				this.spawnParticles(world, x, y, z, cost);
+				this.spawnParticles(world, x, y, z, iac);
 		}
 	}
 
-	public boolean isActive() {
-		return selected != null && energy.containsAtLeast(this.getCost()) && this.getAdjacentTileEntity(facing) instanceof IAspectContainer;
+	public void stepMode() {
+		mode = mode.next();
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void spawnParticles(World world, int x, int y, int z, ElementTagCompound tag) {
+	private void spawnParticles(World world, int x, int y, int z, IAspectContainer iac) {
 		double h = 0.2875;
-		for (CrystalElement e : tag.elementSet()) {
-			if (ReikaRandomHelper.doWithChance(15)) {
-				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.375);
-				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.375);
-				EntityCenterBlurFX fx = new EntityCenterBlurFX(e, world, rx, y+h, rz, 0, 0, 0).setColor(selected.getColor());
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
+		Aspect a = null;
+		switch(mode) {
+			case DEMAND:
+				a = selected;
+				break;
+			case SUSTAIN:
+				AspectList al = iac.getAspects();
+				if (al == null || al.aspects.isEmpty())
+					break;
+				ArrayList<Aspect> li = new ArrayList(al.aspects.keySet());
+				a = li.get((this.getTicksExisted()/20)%li.size());
+				break;
 		}
+		if (a == null)
+			return;
+		//ElementTagCompound tag = getAspectCost(a);
+		//for (CrystalElement e : tag.elementSet()) {
+		if (ReikaRandomHelper.doWithChance(15)) {
+			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.375);
+			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.375);
+			EntityCenterBlurFX fx = new EntityCenterBlurFX(world, rx, y+h, rz, 0, 0, 0).setColor(a.getColor());
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+		//}
 	}
 
 	@Override
@@ -79,6 +102,8 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 		if (NBT.hasKey("aspect"))
 			this.selectAspect(NBT.getString("aspect"));
+
+		mode = AspectMode.list[NBT.getInteger("mode")];
 	}
 
 	@Override
@@ -86,44 +111,54 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 		super.writeSyncTag(NBT);
 
 		NBT.setString("aspect", selected != null ? selected.getTag() : "null");
+
+		NBT.setInteger("mode", mode.ordinal());
 	}
 
 	public void selectAspect(String asp) {
 		selected = Strings.isNullOrEmpty(asp) ? null : Aspect.aspects.get(asp);
 	}
 
-	public Aspect getAspect() {
-		return selected;
-	}
-
-	private void addAspect(Aspect a, IAspectContainer iac, ElementTagCompound tag) {
-		int amt = iac instanceof TileEntityAspectJar ? 100 : selected.isPrimal() ? 4 : 1;
-		int left = iac.addToContainer(a, amt);
-		int added = amt-left;
-		if (added > 0) {
-			this.drainEnergy(tag.scale(added));
+	public Aspect getAspectForRender() {
+		switch(mode) {
+			case DEMAND:
+				return selected;
+			case SUSTAIN:
+				TileEntity te = this.getAdjacentTileEntity(facing);
+				if (te instanceof IAspectContainer) {
+					AspectList al = ((IAspectContainer)te).getAspects();
+					if (al == null || al.aspects.isEmpty())
+						return null;
+					ArrayList<Aspect> li = new ArrayList(al.aspects.keySet());
+					return li.get((this.getTicksExisted()/20)%li.size());
+				}
+				else {
+					return null;
+				}
 		}
+		return null;
 	}
 
 	public static ElementTagCompound getAspectCost(Aspect a) {
-		return ChromaAspectManager.instance.getElementCost(a, 2).square();
+		return ChromaAspectManager.instance.getElementCost(a, 2).square().scale(20);
 	}
 
-	private ElementTagCompound getCost() {
-		return this.getAspectCost(selected);
+	private void checkAndRequest(Aspect a) {
+		if (a != null) {
+			ElementTagCompound tag = this.getAspectCost(a).scale(64);
+			currentRequest.add(tag);
+		}
 	}
 
 	private void checkAndRequest() {
-		if (selected != null) {
-			ElementTagCompound tag = this.getCost().scale(64);
-			for (CrystalElement e : tag.elementSet()) {
-				int max = Math.min(tag.getValue(e), this.getMaxStorage(e));
-				int diff = max-this.getEnergy(e);
-				if (diff > 0) {
-					this.requestEnergy(e, diff);
-				}
+		for (CrystalElement e : currentRequest.elementSet()) {
+			int max = Math.min(currentRequest.getValue(e), this.getMaxStorage(e));
+			int diff = max-this.getEnergy(e);
+			if (diff > 0) {
+				this.requestEnergy(e, diff);
 			}
 		}
+		currentRequest.clear();
 	}
 
 	@Override
@@ -177,12 +212,79 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public ElementTagCompound getRequestedTotal() {
-		return selected != null ? this.getCost() : null;
+		return selected != null ? this.getAspectCost(selected) : null;
 	}
 
 	@Override
 	public double getIncomingBeamRadius() {
 		return 0.25;
+	}
+
+	public AspectMode getMode() {
+		return mode;
+	}
+
+	public static enum AspectMode {
+
+		DEMAND(),
+		SUSTAIN();
+
+		private static AspectMode[] list = values();
+
+		public AspectMode next() {
+			return list[(this.ordinal()+1)%list.length];
+		}
+
+		private void collectEnergy(TileEntityAspectFormer te, World world, int x, int y, int z, IAspectContainer iac) {
+			if (!world.isRemote && te.getCooldown() == 0 && te.checkTimer.checkCap()) {
+				switch(this) {
+					case DEMAND:
+						if (te.selected != null)
+							te.checkAndRequest(te.selected);
+						break;
+					case SUSTAIN:
+						AspectList al = iac.getAspects();
+						if (al != null) {
+							for (Aspect a : al.aspects.keySet()) {
+								te.checkAndRequest(a);
+							}
+						}
+						break;
+				}
+			}
+		}
+
+		private void generateAspects(TileEntityAspectFormer te, World world, int x, int y, int z, IAspectContainer iac) {
+			switch(this) {
+				case DEMAND:
+					if (te.selected != null)
+						this.addAspect(te, te.selected, iac);
+					break;
+				case SUSTAIN:
+					AspectList al = iac.getAspects();
+					if (al != null) {
+						for (Aspect a : al.aspects.keySet()) {
+							this.addAspect(te, a, iac);
+						}
+					}
+					break;
+			}
+		}
+
+		private void addAspect(TileEntityAspectFormer te, Aspect a, IAspectContainer iac) {
+			int amt = iac instanceof TileEntityAspectJar ? 100 : a.isPrimal() ? 4 : 1;
+			ElementTagCompound tag = getAspectCost(a);
+			int frac = (int)te.energy.divide(tag);
+			amt = Math.min(amt, frac);
+			if (amt > 0) {
+				int left = iac.addToContainer(a, amt);
+				int added = amt-left;
+				if (added > 0) {
+					te.drainEnergy(tag.scale(added));
+				}
+			}
+		}
+
 	}
 
 }

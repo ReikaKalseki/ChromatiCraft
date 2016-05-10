@@ -56,6 +56,9 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
+import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
+import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -66,8 +69,11 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -76,10 +82,16 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.apiculture.IBee;
+import forestry.api.apiculture.IBeeHousing;
+import forestry.api.genetics.AlleleManager;
 
 @SideOnly(Side.CLIENT)
 public class ChromaOverlays {
@@ -779,6 +791,36 @@ public class ChromaOverlays {
 				this.renderStatusOverlay(ep, gsc, (OperationInterval)te);
 				GL11.glPopMatrix();
 				GL11.glPopAttrib();
+			}
+			if (ModList.FORESTRY.isLoaded() && InterfaceCache.BEEHOUSE.instanceOf(te)) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+				this.renderConditionalBeeProductOverlay(ep, gsc, (IBeeHousing)te);
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
+			}
+		}
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private void renderConditionalBeeProductOverlay(EntityPlayer ep, int gsc, IBeeHousing te) {
+		ItemStack queen = te.getBeeInventory().getQueen();
+		if (queen != null) {
+			IBee bee = (IBee)AlleleManager.alleleRegistry.getIndividual(queen);
+			if (bee != null) {
+				IAlleleBeeSpecies type = (IAlleleBeeSpecies)bee.getGenome().getActiveAllele(EnumBeeChromosome.SPECIES);
+				if (type instanceof ConditionalProductBee) {
+
+					int ox = Minecraft.getMinecraft().displayWidth/(gsc*2)-8;
+					int oy = Minecraft.getMinecraft().displayHeight/(gsc*2)-8;
+
+					ConditionalProductProvider p = ((ConditionalProductBee)type).getProductProvider();
+					ItemHashMap<ProductCondition> map = p.getConditions();
+					for (ItemStack is : map.keySet()) {
+						ProductCondition c = map.get(is);
+
+					}
+				}
 			}
 		}
 	}

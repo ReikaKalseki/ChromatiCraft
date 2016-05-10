@@ -46,8 +46,11 @@ public class ProductChecks {
 
 	static class IridescentShardCheck extends ProductCondition {
 
+		//private final AreaBlockCheck tileCheck;
+
 		IridescentShardCheck() {
 			//new AreaBlockCheck(new BlockKey(ChromaBlocks.CHROMA.getBlockInstance(), 0), 1);
+			//tileCheck = new AreaBlockCheck(new BlockKey(ChromaTiles.INFUSER), 1, 1);
 		}
 
 		@Override
@@ -67,8 +70,8 @@ public class ProductChecks {
 
 		private TileEntityAuraInfuser check(World world, int x, int y, int z, int r, int vr) {
 			boolean last = false;
-			for (int i = -r; i <= r; i += 2) {
-				for (int k = -r; k <= r; k += 2) {
+			for (int i = -r; i <= r; i += 1) {
+				for (int k = -r; k <= r; k += 1) {
 					for (int h = -vr; h <= vr; h += 1) {
 						int dx = x+i;
 						int dy = y+h;

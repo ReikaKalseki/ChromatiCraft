@@ -16,15 +16,15 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiomeTerrainShaper;
+import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
-import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
 
-public class WorldGenSkylandCanyons extends ChromaDimensionBiomeTerrainShaper {
+public class TerrainGenSkylandCanyons extends ChromaDimensionBiomeTerrainShaper {
 
 	private final SimplexNoiseGenerator canyonDepth;
 	private final SimplexNoiseGenerator canyonShape;
@@ -45,9 +45,9 @@ public class WorldGenSkylandCanyons extends ChromaDimensionBiomeTerrainShaper {
 
 	public static final int BIOME_SEARCH = 24;
 
-	public static final int VERTICAL_BUFFER = 12;
+	public static final int VERTICAL_BUFFER = 18;
 
-	public WorldGenSkylandCanyons(long seed) {
+	public TerrainGenSkylandCanyons(long seed) {
 		super(seed, Biomes.SKYLANDS, SubBiomes.VOIDLANDS);
 
 		canyonDepth = new SimplexNoiseGenerator(seed);

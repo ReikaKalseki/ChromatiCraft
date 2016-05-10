@@ -720,10 +720,11 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@ModDependent(ModList.THAUMCRAFT)
 	public AspectList getAspects() {
 		AspectList as = new AspectList();
-		as.add(Aspect.AURA, 400);
+		int n = this.isEnhanced() ? 6000 : 400;
+		as.add(Aspect.AURA, n);
 		Collection<Aspect> li = ChromaAspectManager.instance.getAspects(this.getColor(), true);
 		for (Aspect a : li) {
-			as.add(a, 400);
+			as.add(a, n);
 		}
 		return as;
 	}
@@ -776,7 +777,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public String getId() { //Normally based on world coords, but uses just color to make each pylon color scannable once
-		return "Pylon_"+color.toString();//"Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
+		String s = "Pylon_"+color.toString();//"Pylon_"+worldObj.provider.dimensionId+":"+xCoord+":"+yCoord+":"+zCoord;
+		if (this.isEnhanced())
+			s = s+"_E";
+		return s;
 	}
 
 	@Override

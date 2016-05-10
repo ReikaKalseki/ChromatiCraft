@@ -41,10 +41,11 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.ListFactory;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-//always forest at center?
 public class BiomeDistributor extends ThreadedGenerator {
 
 	private static final int SIZE = 2048;//4096;
@@ -110,6 +111,11 @@ public class BiomeDistributor extends ThreadedGenerator {
 		//this.createImage("struct");
 
 		//this.createImage("end");
+
+		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
+			String sg = "CHROMATICRAFT: Biome map: "+blobLocations;
+			ReikaJavaLibrary.pConsole(sg);
+		}
 
 		ChunkProviderChroma.finishGeneration(ThreadedGenerators.BIOME);
 	}

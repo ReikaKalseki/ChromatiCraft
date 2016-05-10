@@ -28,11 +28,13 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenIslandArch;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedShrub;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiasma;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMiniAltar;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenMoonPool;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainBlob;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTerrainCrystal;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenTreeCluster;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -56,8 +58,10 @@ public enum DimensionGenerators {
 	CRYSTALTREE(WorldGenCrystalTree.class,			GeneratorType.FEATURE,		GeneratorTheme.CRYSTAL,			-100),
 	GLOWBUSH(WorldGenLightedShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
 	CRYSBUSH(WorldGenCrystalShrub.class,			GeneratorType.FEATURE,		GeneratorTheme.FOLIAGE,			500),
-	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE);
+	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE),
 	//CANYON(WorldGenSkylandCanyons.class,			GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
+	ARCH(WorldGenIslandArch.class,					GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
+	BLOBS(WorldGenTerrainBlob.class,				GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE);
 
 	private final Class genClass;
 	public final GeneratorType type;
@@ -101,7 +105,7 @@ public enum DimensionGenerators {
 		if (this == FORESTS)
 			return b.biomeType == Biomes.FOREST;
 		if (this == TREES || this == GLOWBUSH)
-			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS;
+			return b.biomeType == Biomes.FOREST || b.biomeType == Biomes.PLAINS || b.getExactType() == Biomes.ISLANDS;
 		switch(this) {
 			case ALTAR:
 				return b.getExactType().isReasonablyFlat();
@@ -122,6 +126,10 @@ public enum DimensionGenerators {
 				//	return b == SubBiomes.MOUNTAINS.getBiome();
 			case RIFT:
 				return b == Biomes.PLAINS.getBiome();
+			case ARCH:
+				return  b == Biomes.ISLANDS.getBiome();
+			case BLOBS:
+				return b == SubBiomes.DEEPOCEAN.getBiome();
 			default:
 				return true;
 		}
@@ -136,6 +144,8 @@ public enum DimensionGenerators {
 			case MOONPOOL:
 			case TERRAINCRYSTAL:
 			case GLOWBUSH:
+			case ARCH:
+			case BLOBS:
 				return true;
 			default:
 				return false;
