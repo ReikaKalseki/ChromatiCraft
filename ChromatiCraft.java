@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @author Reika Kalseki
  * 
- * Copyright 2015
+ * Copyright 2016
  * 
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
@@ -199,7 +199,6 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -607,6 +606,43 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class);
 
+		if (ModList.ENDERIO.isLoaded()) {
+			try {
+				Class c = Class.forName("crazypants.enderio.config.Config");
+				//Class c2 = Class.forName("crazypants.enderio.teleport.TravelController");
+				Field f = c.getField("travelStaffBlinkBlackList");
+				//Field f2 = c2.getDeclaredField("blackList");
+				//f2.setAccessible(true);
+				//Field inst = c2.getField("instance");
+
+				ArrayList<ChromaBlocks> add = new ArrayList();
+				add.add(ChromaBlocks.STRUCTSHIELD);
+				add.add(ChromaBlocks.SPECIALSHIELD);
+				add.add(ChromaBlocks.DOOR);
+				add.add(ChromaBlocks.TELEPORT);
+
+				String[] arr = (String[])f.get(null);
+				String[] next = new String[arr.length+add.size()];
+				System.arraycopy(arr, 0, next, 0, arr.length);
+				for (int i = 0; i < add.size(); i++) {
+					next[next.length-add.size()+i] = ReikaRegistryHelper.getGameRegistryName(add.get(i));
+				}
+				f.set(null, next);
+				//ArrayList<UniqueIdentifier> li = (ArrayList<UniqueIdentifier>)f2.get(inst.get(null));
+				//for (ChromaBlocks b : add) {
+				//	li.add(GameRegistry.findUniqueIdentifierFor(b.getBlockInstance()));
+				//}
+				for (ChromaBlocks b : add) {
+					FMLInterModComms.sendMessage(ModList.ENDERIO.modLabel, "teleport:blacklist:add", ReikaRegistryHelper.getGameRegistryName(b));
+				}
+			}
+			catch (Exception e) {
+				logger.logError("Could not add EnderIO travelling staff blacklisting!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.ENDERIO, e);
+				e.printStackTrace();
+			}
+		}
+
 		this.finishTiming();
 	}
 
@@ -842,40 +878,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			catch (Exception e) {
 				logger.logError("Could not add compatibility with Carpenter's blocks!");
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.CARPENTER, e);
-				e.printStackTrace();
-			}
-		}
-
-		if (ModList.ENDERIO.isLoaded()) {
-			try {
-				Class c = Class.forName("crazypants.enderio.config.Config");
-				Class c2 = Class.forName("crazypants.enderio.teleport.TravelController");
-				Field f = c.getField("travelStaffBlinkBlackList");
-				Field f2 = c2.getDeclaredField("blackList");
-				f2.setAccessible(true);
-				Field inst = c2.getField("instance");
-
-				ArrayList<ChromaBlocks> add = new ArrayList();
-				add.add(ChromaBlocks.STRUCTSHIELD);
-				add.add(ChromaBlocks.SPECIALSHIELD);
-				add.add(ChromaBlocks.DOOR);
-				add.add(ChromaBlocks.TELEPORT);
-
-				String[] arr = (String[])f.get(null);
-				String[] next = new String[arr.length+add.size()];
-				System.arraycopy(arr, 0, next, 0, arr.length);
-				for (int i = 0; i < add.size(); i++) {
-					next[next.length-add.size()+i] = ReikaRegistryHelper.getGameRegistryName(add.get(i));
-				}
-				f.set(null, next);
-				ArrayList<UniqueIdentifier> li = (ArrayList<UniqueIdentifier>)f2.get(inst.get(null));
-				for (ChromaBlocks b : add) {
-					li.add(GameRegistry.findUniqueIdentifierFor(b.getBlockInstance()));
-				}
-			}
-			catch (Exception e) {
-				logger.logError("Could not add EnderIO travelling staff blacklisting!");
-				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.ENDERIO, e);
 				e.printStackTrace();
 			}
 		}
