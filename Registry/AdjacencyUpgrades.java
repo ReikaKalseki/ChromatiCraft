@@ -128,11 +128,11 @@ public enum AdjacencyUpgrades {
 			case LIGHTBLUE:
 				return String.format("Accelerates time by %dx for TileEntities adjacent to it.", (int)this.getFactor(tier));
 			case MAGENTA:
-				break;
+				return String.format("Repairs adjacent blocks, Tier %d", tier);
 			case ORANGE:
 				return String.format("Exchanges and balances heat, %s%s per tick", ReikaStringParser.getAutoDecimal(this.getFactor(tier)), "%");
 			case WHITE:
-				break;
+				return String.format("Stabilizes adjacent constructs, Tier %d", tier);
 		}
 		return "Does nothing...yet";
 	}

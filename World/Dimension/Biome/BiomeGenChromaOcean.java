@@ -16,6 +16,7 @@ public class BiomeGenChromaOcean extends ChromaDimensionSubBiome {
 
 	public BiomeGenChromaOcean(int id, String n, SubBiomes t) {
 		super(id, n, t);
+		enableRain = true;
 	}
 
 }

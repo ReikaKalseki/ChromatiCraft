@@ -47,6 +47,8 @@ public class RenderMeteorTower extends ChromaRenderBase {
 		TileEntityMeteorTower te = (TileEntityMeteorTower)tile;
 
 		if (tile.hasWorldObj() && (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles())) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDepthMask(false);
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			//GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -116,12 +118,7 @@ public class RenderMeteorTower extends ChromaRenderBase {
 			}
 
 			GL11.glPopMatrix();
-			BlendMode.DEFAULT.apply();
-			//GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_BLEND);
-			ReikaRenderHelper.enableEntityLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopAttrib();
 		}
 		else if (!tile.hasWorldObj()) {
 			ReikaTextureHelper.bindTerrainTexture();

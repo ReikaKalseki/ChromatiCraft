@@ -91,7 +91,7 @@ public class ParticleEngine extends EffectRenderer {
 
 	@Override
 	public String getStatistics() {
-		return particles.totalSize()+" Particles, "+particles.keySet().size()+" keys";
+		return particles.totalSize()+" Particles, "+keyMap.size()+" keys";
 	}
 
 	@Override

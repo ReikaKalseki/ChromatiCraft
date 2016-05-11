@@ -228,7 +228,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 					player = true;
 			}
 			if (ReikaMathLibrary.py3d(e.posX-x-0.5, e.posY+e.getEyeHeight()/2F-y-0.5, e.posZ-z-0.5) <= r) {
-				CrystalPotionController.applyEffectFromColor(dura, level, e, color);
+				CrystalPotionController.applyEffectFromColor(dura, level, e, color, true);
 			}
 		}
 	}

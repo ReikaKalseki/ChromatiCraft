@@ -259,7 +259,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	}
 
 	public void validateMultiblock(World world, int x, int y, int z) {
-		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, true, false);
+		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, isEnhanced, false);
 		hasStructure = array.matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure+" / "+isEnhanced+": "+this.getSide()+" @ "+array);
 		hasEnhancedStructure = isEnhanced && hasStructure && ChromaStructures.getRitualStructure(world, x, y, z, true, true).matchInWorld();

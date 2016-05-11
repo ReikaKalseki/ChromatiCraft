@@ -359,25 +359,37 @@ public class LaserEffectorRenderer implements ISimpleBlockRenderingHandler {
 					float dpv = i == 0 ? dv : dv2;
 					double outl = out/1.25;
 					double outi = out/6;
-					vt5b.addVertexWithUV(0, h, out, pu, pv);
-					vt5b.addVertexWithUV(outl, h, out, dpu, pv);
-					vt5b.addVertexWithUV(0, h, outi, dpu, dpv);
-					vt5b.addVertexWithUV(-outl, h, out, pu, dpv);
+					vt5b.addVertexWithUVColor(0, h, out, pu, pv, 0xffffff);
+					vt5b.addVertexWithUVColor(outl, h, out, dpu, pv, 0xffffff);
+					vt5b.addVertexWithUVColor(0, h, outi, dpu, dpv, 0xffffff);
+					vt5b.addVertexWithUVColor(-outl, h, out, pu, dpv, 0xffffff);
 
-					vt5b.addVertexWithUV(-outl, h, out, u, dv);
-					vt5b.addVertexWithUV(-outl, slab, out, u, v);
-					vt5b.addVertexWithUV(outl, slab, out, du, v);
-					vt5b.addVertexWithUV(outl, h, out, du, dv);
+					int sc = 0xffffff;
+					switch(i) {
+						case 90:
+							sc = 0xa0a0ff;
+							break;
+						case 180:
+							sc = 0xa0ffa0;
+							break;
+						case 270:
+							sc = 0xffa0a0;
+							break;
+					}
+					vt5b.addVertexWithUVColor(-outl, h, out, u, dv, sc);
+					vt5b.addVertexWithUVColor(-outl, slab, out, u, v, sc);
+					vt5b.addVertexWithUVColor(outl, slab, out, du, v, sc);
+					vt5b.addVertexWithUVColor(outl, h, out, du, dv, sc);
 
-					vt5b.addVertexWithUV(outl, h, out, du, dv);
-					vt5b.addVertexWithUV(outl, slab, out, du, v);
-					vt5b.addVertexWithUV(0, slab, outi, u, v);
-					vt5b.addVertexWithUV(0, h, outi, u, dv);
+					vt5b.addVertexWithUVColor(outl, h, out, du, dv, 0xffffff);
+					vt5b.addVertexWithUVColor(outl, slab, out, du, v, 0xffffff);
+					vt5b.addVertexWithUVColor(0, slab, outi, u, v, 0xffffff);
+					vt5b.addVertexWithUVColor(0, h, outi, u, dv, 0xffffff);
 
-					vt5b.addVertexWithUV(0, h, outi, u, dv);
-					vt5b.addVertexWithUV(0, slab, outi, u, v);
-					vt5b.addVertexWithUV(-outl, slab, out, du, v);
-					vt5b.addVertexWithUV(-outl, h, out, du, dv);
+					vt5b.addVertexWithUVColor(0, h, outi, u, dv, 0xffffff);
+					vt5b.addVertexWithUVColor(0, slab, outi, u, v, 0xffffff);
+					vt5b.addVertexWithUVColor(-outl, slab, out, du, v, 0xffffff);
+					vt5b.addVertexWithUVColor(-outl, h, out, du, dv, 0xffffff);
 					if (i > 0) {
 						vt5b.rotateNonOrthogonal(0, i, 0);
 					}

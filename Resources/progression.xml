@@ -451,17 +451,17 @@
 			Yes, and the myriad constructs powered by them offer great utility.
 		</reveal>
 	</useenergy>
-	<name>
+	<structcomplete>
 		<title>
-
+			Unusual Structures
 		</title>
 		<hint>
-
+			Large structures dot the volatile realm. What lies deep inside them?
 		</hint>
 		<reveal>
-
+			A glowing core, tuned to one of the crystal colors. Interesting...
 		</reveal>
-	</name>
+	</structcomplete>
 	<name>
 		<title>
 

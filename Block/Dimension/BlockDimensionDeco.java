@@ -74,7 +74,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		public boolean hasBlockRender() {
-			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF;
+			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF || this == OCEANSTONE;
 		}
 
 		public List<IIcon> getIcons(int pass) {

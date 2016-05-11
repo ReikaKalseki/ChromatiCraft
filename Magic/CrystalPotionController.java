@@ -220,7 +220,7 @@ public class CrystalPotionController {
 		ignoredPotions.add(p.id);
 	}
 
-	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color) {
+	public static void applyEffectFromColor(int dura, int level, EntityLivingBase e, CrystalElement color, boolean doFX) {
 		if (CrystalPotionController.shouldBeHostile(e, e.worldObj)) {
 			switch(color) {
 				case ORANGE:
@@ -270,7 +270,8 @@ public class CrystalPotionController {
 				case PURPLE:
 					if (e instanceof EntityPlayer && !e.worldObj.isRemote && (level > 0 || rand.nextInt(2) == 0)) {
 						EntityPlayer ep = (EntityPlayer)e;
-						e.playSound("random.orb", 0.2F, rand.nextFloat()*2);
+						if (doFX)
+							ep.worldObj.playSoundAtEntity(ep, "random.orb", 0.2F, rand.nextFloat()*2);
 						ep.addExperience(1);
 					}
 					break;

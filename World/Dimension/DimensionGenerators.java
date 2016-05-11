@@ -146,6 +146,7 @@ public enum DimensionGenerators {
 			case GLOWBUSH:
 			case ARCH:
 			case BLOBS:
+			case MIASMA:
 				return true;
 			default:
 				return false;

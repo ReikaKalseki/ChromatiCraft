@@ -1216,10 +1216,10 @@ public class ChromaticEventManager {
 				ItemStack is = inv[i];
 				if (is != null) {
 					if (is.getItem() == ChromaItems.PENDANT3.getItemInstance()) {
-						CrystalPotionController.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalPotionController.applyEffectFromColor(100, 1, elb, CrystalElement.elements[is.getItemDamage()], true);
 					}
 					else if (is.getItem() == ChromaItems.PENDANT.getItemInstance()) {
-						CrystalPotionController.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()]);
+						CrystalPotionController.applyEffectFromColor(100, 0, elb, CrystalElement.elements[is.getItemDamage()], true);
 					}
 					else if (is.getItem() instanceof ActivatedInventoryItem) {
 						this.parseInventoryForPendantCarry(ev, elb, ((ActivatedInventoryItem)is.getItem()).getInventory(is), is);

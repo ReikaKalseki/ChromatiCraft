@@ -9,9 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Particle;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomRenderFX;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -53,6 +57,7 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 	private Coordinate destination;
 
 	private EntityFX lock;
+	private Collection<EntityFX> locks = new HashSet();
 
 	private boolean additiveBlend = true;
 	private boolean depthTest = true;
@@ -166,6 +171,12 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 
 	public EntityBlurFX lockTo(EntityFX fx) {
 		lock = fx;
+		if (fx instanceof EntityBlurFX) {
+			EntityBlurFX bfx = (EntityBlurFX)fx;
+			if (!bfx.getRenderMode().equals(this.getRenderMode()))
+				ChromatiCraft.logger.logError("Cannot accurately lock two different particle render types: "+fx+" & "+this);
+			bfx.locks.add(this);
+		}
 		return this;
 	}
 
@@ -317,6 +328,15 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 			motionX = lock.motionX;
 			motionY = lock.motionY;
 			motionZ = lock.motionZ;
+		}
+
+		for (EntityFX fx : locks) {
+			//fx.posX = posX;
+			//fx.posY = posY;
+			//fx.posZ = posZ;
+			fx.motionX = motionX;
+			fx.motionY = motionY;
+			fx.motionZ = motionZ;
 		}
 
 		if (motionController != null) {

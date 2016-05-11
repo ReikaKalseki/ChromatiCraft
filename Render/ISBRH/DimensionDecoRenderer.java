@@ -17,6 +17,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.lwjgl.opengl.GL11;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DecoType;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
@@ -25,6 +28,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.DimDecoTileTyp
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
@@ -32,8 +36,38 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 	public static int renderPass;
 
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-
+	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks rb) {
+		DecoType type = block instanceof BlockDimensionDecoTile ? DimDecoTileTypes.list[metadata] : DimDecoTypes.list[metadata];
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glColor4f(1, 1, 1, 1);
+		ReikaRenderHelper.disableEntityLighting();
+		GL11.glDisable(GL11.GL_LIGHTING);
+		Tessellator.instance.startDrawingQuads();
+		Tessellator.instance.setColorOpaque_I(0xffffff);
+		Tessellator.instance.setBrightness(240);
+		Tessellator.instance.addTranslation(0, -0.08F, 0);
+		for (int pass = 0; pass <= 1; pass++) {
+			List<IIcon> li = type.getIcons(pass);
+			for (IIcon ico : li) {
+				float f = 0.5F;
+				Tessellator.instance.setColorOpaque_F(f, f, f);
+				rb.renderFaceYNeg(block, 0, 0, 0, ico);
+				f = 1F;
+				Tessellator.instance.setColorOpaque_F(f, f, f);
+				rb.renderFaceYPos(block, 0, 0, 0, ico);
+				f = 0.66F;
+				Tessellator.instance.setColorOpaque_F(f, f, f);
+				rb.renderFaceXNeg(block, 0, 0, 0, ico);
+				rb.renderFaceXPos(block, 0, 0, 0, ico);
+				f = 0.8F;
+				Tessellator.instance.setColorOpaque_F(f, f, f);
+				rb.renderFaceZNeg(block, 0, 0, 0, ico);
+				rb.renderFaceZPos(block, 0, 0, 0, ico);
+			}
+		}
+		Tessellator.instance.addTranslation(0, 0.08F, 0);
+		Tessellator.instance.draw();
+		GL11.glPopAttrib();
 	}
 
 	@Override

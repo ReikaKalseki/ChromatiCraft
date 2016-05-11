@@ -21,6 +21,7 @@ import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -105,6 +106,18 @@ public class GuiStructure extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.BEACONSTRUCT) {
 			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.BEACON.getCraftedProduct());
+		}
+		else if (page.name().contains("METEOR")) {
+			ItemStack is = ChromaTiles.METEOR.getCraftedProduct();
+			if (page == ChromaResearch.METEOR2) {
+				is.stackTagCompound = new NBTTagCompound();
+				is.stackTagCompound.setInteger("tier", 1);
+			}
+			if (page == ChromaResearch.METEOR3) {
+				is.stackTagCompound = new NBTTagCompound();
+				is.stackTagCompound.setInteger("tier", 2);
+			}
+			render.addOverride(array.getMidX(), array.getMaxY()-2, array.getMidZ(), is);
 		}
 		else if (page == ChromaResearch.MINIREPEATER) {
 			//render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.WEAKREPEATER.getCraftedProduct());
@@ -262,6 +275,16 @@ public class GuiStructure extends GuiBookSection {
 			}
 			else if (page == ChromaResearch.CLOAKTOWER && Block.getBlockFromItem(is.getItem()) == ChromaBlocks.TILEMODELLED2.getBlockInstance()) {
 				is2 = ChromaTiles.CLOAKING.getCraftedProduct();
+			}
+			else if (page.name().contains("METEOR") && Block.getBlockFromItem(is.getItem()) == ChromaTiles.METEOR.getBlock()) {
+				is2 = ChromaTiles.METEOR.getCraftedProduct();
+				if (page == ChromaResearch.METEOR3) {
+					is2.stackTagCompound = new NBTTagCompound();
+					is2.stackTagCompound.setInteger("tier", 1);
+				}
+			}
+			if (ChromaBlocks.PYLON.match(is2)) {
+				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);
 			fontRendererObj.drawString(String.valueOf(map.get(is)), dx+20, dy+5, 0xffffff);

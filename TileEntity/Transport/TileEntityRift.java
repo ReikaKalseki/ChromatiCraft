@@ -15,9 +15,7 @@ import java.util.List;
 
 import li.cil.oc.api.Network;
 import li.cil.oc.api.network.Environment;
-import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.SidedEnvironment;
 import li.cil.oc.api.network.Visibility;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -54,6 +52,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
@@ -73,11 +72,11 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 @Strippable(value = {"cofh.api.energy.IEnergyHandler", "thaumcraft.api.aspects.IEssentiaTransport",
-		"thaumcraft.api.aspects.IAspectContainer", "dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
-		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment",
-		"vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
+		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
+@Injectable(value = {"dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
+		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment"})
 public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, SneakPop, IFluidHandler, IEnergyHandler,
-IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment, SidedEnvironment, ManagedPeripheral, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
+IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
 
 	private WorldLocation target;
 	private int color = 0xffffff;
@@ -90,7 +89,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 	public TileEntityRift() {
 		if (ModList.OPENCOMPUTERS.isLoaded() && FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
 			for (int i = 0; i < 6; i++) {
-				sidedOCNode[i] = Network.newNode(this, Visibility.Network).create();
+				sidedOCNode[i] = Network.newNode((Environment)this, Visibility.Network).create();
 			}
 		}
 	}
@@ -931,15 +930,15 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, IPeripheral, Environment,
 		return true;
 	}
 
-	@Override
-	public Node sidedNode(ForgeDirection side) {
+	//@Override
+	@ModDependent(ModList.OPENCOMPUTERS)
+	public Node sidedNode(ForgeDirection side) { //OC
 		return (Node)sidedOCNode[side.ordinal()];
 	}
 
-	@Override
+	//@Override
 	@SideOnly(Side.CLIENT)
-	public
-	boolean canConnect(ForgeDirection side) {
+	public boolean canConnect(ForgeDirection side) { //OC
 		return this.isLinked();
 	}
 

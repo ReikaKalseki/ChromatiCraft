@@ -236,7 +236,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					dy++;
 				}
 				for (int i = dy-1; i > y; i--) {
-					((World)world).setBlock(x, y, z, Blocks.air);
+					((World)world).setBlock(x, i, z, Blocks.air);
 					ReikaItemHelper.dropItem((World)world, x+0.5, i+0.5, z+0.5, is);
 				}
 			}
@@ -560,14 +560,14 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 					float g = -(float)ReikaRandomHelper.getRandomPlusMinus(0.0625, 0.03125);
 					int l = 10+r.nextInt(30);
 					float s = 1+r.nextFloat()*0.5F;
-					int c1 = 0xc020ff;
+					int c1 = 0xdf3fff;
 					int c2 = 0x202020;
 					double dx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.25);
 					double dz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.25);
 					double dy = y+r.nextDouble();
 					float f = (float)ReikaRandomHelper.getRandomPlusMinus(0.6, 0.2);
-					EntityFX fx1 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setScale(s).setLife(l).setColor(c1).setGravity(g).setIcon(ChromaIcons.FADE);
-					EntityFX fx2 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setScale(s*f).setLife(l).setColor(c2).setGravity(g).lockTo(fx1).setBasicBlend().setIcon(ChromaIcons.TRANSFADE);
+					EntityFX fx1 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setScale(s).setLife(l).setColor(c1).setGravity(g).setBasicBlend().setIcon(ChromaIcons.TRANSFADE);
+					EntityFX fx2 = new EntityFloatingSeedsFX(world, dx, dy, dz, 0, 90).setScale(s*f).setLife(l).setColor(c2).setGravity(g).setBasicBlend().setIcon(ChromaIcons.TRANSFADE).lockTo(fx1);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx1);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 					break;

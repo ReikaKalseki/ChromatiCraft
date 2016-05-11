@@ -12,10 +12,12 @@ package Reika.ChromatiCraft;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 
 import mekanism.api.MekanismAPI;
 import net.minecraft.block.Block;
@@ -197,6 +199,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -846,19 +849,52 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.ENDERIO.isLoaded()) {
 			try {
 				Class c = Class.forName("crazypants.enderio.config.Config");
+				Class c2 = Class.forName("crazypants.enderio.teleport.TravelController");
 				Field f = c.getField("travelStaffBlinkBlackList");
+				Field f2 = c2.getDeclaredField("blackList");
+				f2.setAccessible(true);
+				Field inst = c2.getField("instance");
+
+				ArrayList<ChromaBlocks> add = new ArrayList();
+				add.add(ChromaBlocks.STRUCTSHIELD);
+				add.add(ChromaBlocks.SPECIALSHIELD);
+				add.add(ChromaBlocks.DOOR);
+				add.add(ChromaBlocks.TELEPORT);
+
 				String[] arr = (String[])f.get(null);
-				String[] next = new String[arr.length+4];
+				String[] next = new String[arr.length+add.size()];
 				System.arraycopy(arr, 0, next, 0, arr.length);
-				next[next.length-4] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.STRUCTSHIELD);
-				next[next.length-3] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.SPECIALSHIELD);
-				next[next.length-2] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.DOOR);
-				next[next.length-1] = ReikaRegistryHelper.getGameRegistryName(ChromaBlocks.TELEPORT);
+				for (int i = 0; i < add.size(); i++) {
+					next[next.length-add.size()+i] = ReikaRegistryHelper.getGameRegistryName(add.get(i));
+				}
 				f.set(null, next);
+				ArrayList<UniqueIdentifier> li = (ArrayList<UniqueIdentifier>)f2.get(inst.get(null));
+				for (ChromaBlocks b : add) {
+					li.add(GameRegistry.findUniqueIdentifierFor(b.getBlockInstance()));
+				}
 			}
 			catch (Exception e) {
 				logger.logError("Could not add EnderIO travelling staff blacklisting!");
 				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.ENDERIO, e);
+				e.printStackTrace();
+			}
+		}
+
+		if (ModList.RFTOOLS.isLoaded()) {
+			try {
+				Class c = Class.forName("mcjty.rftools.blocks.teleporter.TeleportConfiguration");
+				Field f1 = c.getDeclaredField("blacklistedTeleportationSourcesSet");
+				Field f2 = c.getDeclaredField("blacklistedTeleportationDestinationsSet");
+				f1.setAccessible(true);
+				f2.setAccessible(true);
+				Set<Integer> set1 = (Set<Integer>)f1.get(null);
+				Set<Integer> set2 = (Set<Integer>)f2.get(null);
+				set1.add(ExtraChromaIDs.DIMID.getValue());
+				set2.add(ExtraChromaIDs.DIMID.getValue());
+			}
+			catch (Exception e) {
+				logger.logError("Could not add RF Tools teleportation blacklisting!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.RFTOOLS, e);
 				e.printStackTrace();
 			}
 		}

@@ -127,10 +127,10 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 		if (e instanceof EntityPlayer) {
 			EntityPlayer ep = (EntityPlayer)e;
 			ProgressStage.CHROMA.stepPlayerTo(ep);
-			CrystalPotionController.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA);
-			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE);
+			CrystalPotionController.applyEffectFromColor(201, 0, ep, CrystalElement.BLUE, true);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN, true);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA, true);
+			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE, true);
 		}
 	}
 

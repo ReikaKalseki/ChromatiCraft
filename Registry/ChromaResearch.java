@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
@@ -100,6 +101,7 @@ public enum ChromaResearch implements ProgressElement {
 	USINGRUNES("Crafting With Runes",	ChromaBlocks.RUNE.getStackOfMetadata(1),				ResearchLevel.RUNECRAFT, 	ProgressStage.RUNEUSE),
 	DIMENSION("Another World",			ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	DIMENSION2("A Volatile World",		ChromaBlocks.GLOWSAPLING.getStackOf(),					ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
+	DIMENSION3("The Far Regions",		ChromaBlocks.DIMGEN.getStackOfMetadata(DimDecoTypes.FLOATSTONE.ordinal()),	ResearchLevel.ENDGAME,		ProgressStage.DIMENSION, ProgressStage.STRUCTCOMPLETE),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	TURBOREPEATER("Repeater Turbocharging", ChromaStacks.turboRepeater,							ResearchLevel.ENDGAME,		ProgressStage.TURBOCHARGE),
 	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
@@ -630,6 +632,20 @@ public enum ChromaResearch implements ProgressElement {
 		}
 		ReikaGuiAPI.instance.drawItemStack(ri, this.getTabIcon(), x, y);
 		ri.zLevel = zp;
+		if (this == DIMENSION3) {
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			ReikaTextureHelper.bindTerrainTexture();
+			//GL11.glTranslated(0, 0, 65);
+			int s = 32;
+			int ds = (s-16)/2;
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-ds, y-ds, ChromaIcons.PURPLESPIN.getIcon(), s, s);
+			GL11.glPopAttrib();
+			GL11.glPopMatrix();
+		}
 	}
 
 	public boolean isUnloadable() {
@@ -1102,6 +1118,8 @@ public enum ChromaResearch implements ProgressElement {
 			return RecipesCastingTable.instance.getAllAPIRecipes().isEmpty() && RecipesCastingTable.instance.getAllModdedItemRecipes().isEmpty();
 		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
 			return true;
+		if (this == AUGMENT)
+			return false;
 		Dependency dep = this.getDependency();
 		if (dep != null && !dep.isLoaded())
 			return true;

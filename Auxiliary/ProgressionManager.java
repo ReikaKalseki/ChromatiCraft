@@ -46,9 +46,9 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
@@ -129,6 +129,7 @@ public class ProgressionManager implements ProgressRegistry {
 		KILLMOB(new ItemStack(Items.skull, 1, 4)),
 		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
 		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
+		STRUCTCOMPLETE(ChromaBlocks.DIMDATA.getStackOf()),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -307,8 +308,12 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.DESERTSTRUCT);
 
 		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.TURBOCHARGE, ProgressStage.STRUCTCOMPLETE);
 
-		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.DIMENSION);
+		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.ABILITY);
+		progressMap.addParent(ProgressStage.STRUCTCOMPLETE,	ProgressStage.DIMENSION);
+
+		progressMap.addParent(ProgressStage.ALLCORES,	ProgressStage.STRUCTCOMPLETE);
 
 		progressMap.addParent(ProgressStage.CTM,		ProgressStage.ALLCORES);
 

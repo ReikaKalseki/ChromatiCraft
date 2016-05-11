@@ -47,7 +47,7 @@ public class ChromaNames {
 
 	public static final String[] dimGenNames = {
 		"chromaitem.dimgen.miasma", "chromaitem.dimgen.floatstone", "chromaitem.dimgen.aqua", "chromaitem.dimgen.lifewater", "chromaitem.dimgen.tubes",
-		"chromaitem.dimgen.geode", "chromaitem.dimgen.crysleaf"
+		"chromaitem.dimgen.geode", "chromaitem.dimgen.crysleaf", "chromaitem.dimgen.oceanstone"
 	};
 
 	public static final String[] storageNames = {

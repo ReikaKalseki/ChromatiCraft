@@ -17,14 +17,25 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
+import Reika.ReactorCraft.Registry.ReactorTiles;
+import Reika.ReactorCraft.TileEntities.Processing.TileEntityElectrolyzer;
+import Reika.ReactorCraft.TileEntities.Processing.TileEntitySynthesizer;
+import Reika.RotaryCraft.TileEntities.Farming.TileEntityComposter;
+import Reika.RotaryCraft.TileEntities.Processing.TileEntityCompactor;
+import Reika.RotaryCraft.TileEntities.Processing.TileEntityCrystallizer;
+import Reika.RotaryCraft.TileEntities.Production.TileEntityBlastFurnace;
+import Reika.RotaryCraft.TileEntities.Production.TileEntityFermenter;
 
 
 public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 
 	private static final BlockMap<Integer> blockTemps = new BlockMap();
+	private static final HashSet<String> tileList = new HashSet();
 
 	private static final double[] factors = {
 		0.03125,
@@ -41,6 +52,35 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 		blockTemps.put(Blocks.ice, 0);
 		blockTemps.put(Blocks.water, 15);
 		blockTemps.put(Blocks.fire, 90);
+
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			addRC();
+			if (ModList.REACTORCRAFT.isLoaded()) {
+				addReC();
+			}
+		}
+	}
+
+	@ModDependent(ModList.ROTARYCRAFT)
+	private static void addRC() {
+		tileList.add(TileEntityBlastFurnace.class.getName());
+		tileList.add(TileEntityCompactor.class.getName());
+		tileList.add(TileEntityComposter.class.getName());
+		tileList.add(TileEntityCrystallizer.class.getName());
+		tileList.add(TileEntityFermenter.class.getName());
+	}
+
+	@ModDependent(ModList.REACTORCRAFT)
+	private static void addReC() {
+		for (int i = 0; i < ReactorTiles.TEList.length; i++) {
+			ReactorTiles r = ReactorTiles.TEList[i];
+			if (r.isReactorCore()) {
+				tileList.add(r.getTEClass().getName());
+			}
+		}
+
+		tileList.add(TileEntitySynthesizer.class.getName());
+		tileList.add(TileEntityElectrolyzer.class.getName());
 	}
 
 	@Override
@@ -57,7 +97,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 		for (int i = 0; i < 6; i++) {
 			BlockKey bk = BlockKey.getAt(world, x+dirs[i].offsetX, y+dirs[i].offsetY, z+dirs[i].offsetZ);
 			TileEntity te = this.getAdjacentTileEntity(dirs[i]);
-			if (te instanceof ThermalTile) {
+			if (te instanceof ThermalTile && tileList.contains(te.getClass().getName())) {
 				n++;
 				set.add((ThermalTile)te);
 				Tavg += ((ThermalTile)te).getTemperature();

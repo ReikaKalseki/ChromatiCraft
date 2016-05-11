@@ -399,7 +399,6 @@ public enum ChromaTiles implements TileEnum {
 			case PERSONAL:
 			case PYLONTURBO:
 			case CLOAKING:
-			case MINER:
 				return false;
 			default:
 				return true;
