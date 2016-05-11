@@ -65,7 +65,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -937,7 +936,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	//@Override
-	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.OPENCOMPUTERS)
 	public boolean canConnect(ForgeDirection side) { //OC
 		return this.isLinked();
 	}
