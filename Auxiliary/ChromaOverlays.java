@@ -100,7 +100,6 @@ public class ChromaOverlays {
 
 	private static final RenderItem itemRender = new RenderItem();
 
-	private boolean holding = false;
 	private int tick = 0;
 
 	private final EnumMap<CrystalElement, Float> factors = new EnumMap(CrystalElement.class);
@@ -153,65 +152,66 @@ public class ChromaOverlays {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
-	public void renderHUD(RenderGameOverlayEvent.Pre evt) {
+	public void renderBackground(RenderGameOverlayEvent.Pre evt) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glPushMatrix();
 		tick++;
+
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		ItemStack is = ep.getCurrentEquippedItem();
+		if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
+			this.renderBoostedHealthBar(evt, ep);
+		} else {
+			int gsc = evt.resolution.getScaleFactor();
+			ItemStack is = ep.getCurrentEquippedItem();
 
-		if (evt.type == ElementType.HELMET) {
-			if (washout > 0) {
-				this.renderWashout(evt);
-				//evt.setCanceled(true);
-
-				return;
+			if (evt.type == ElementType.HELMET) {
+				if (washout > 0) {
+					this.renderWashout(evt);
+				}
+				if (ChromaItems.TOOL.matchWith(is)) {
+					this.syncBuffer(ep);
+					this.renderElementPie(ep, gsc);
+					this.renderTileOverlays(ep, gsc);
+				}
+				if (ChromaItems.OREPICK.matchWith(is)) {
+					this.renderOreHUD(ep, evt.resolution, is);
+				} else if (ChromaItems.TRANSITION.matchWith(is)) {
+					this.renderTransitionHUD(ep, evt.resolution, is);
+				}
+				if (PylonGenerator.instance.canGenerateIn(ep.worldObj)) {
+					this.renderPylonAura(ep, gsc);
+				}
+				this.renderPingOverlays(ep, gsc);
+			} else if (evt.type == ElementType.CROSSHAIRS) {
+				if (ChromaItems.TOOL.matchWith(is)) {
+					this.renderCustomCrosshair(evt);
+				} else if (ChromaItems.KILLAURAGUN.matchWith(is)) {
+					this.renderKillAuraCrosshair(evt, gsc);
+				}
 			}
 		}
 
-		int gsc = evt.resolution.getScaleFactor();
+		GL11.glPopMatrix();
+		GL11.glPopAttrib();
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
+	public void renderForeground(RenderGameOverlayEvent.Post evt) {
 		if (evt.type == ElementType.HELMET) {
-			if (ChromaItems.TOOL.matchWith(is)) {
-				if (!holding)
-					this.syncBuffer(ep);
-				holding = true;
-				this.renderElementPie(ep, gsc);
-				this.renderTileOverlays(ep, gsc);
-			}
-			else {
-				holding = false;
-			}
-			if (ChromaItems.OREPICK.matchWith(is)) {
-				this.renderOreHUD(ep, evt.resolution, is);
-			}
-			else if (ChromaItems.TRANSITION.matchWith(is)) {
-				this.renderTransitionHUD(ep, evt.resolution, is);
-			}
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
-			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
+
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			int gsc = evt.resolution.getScaleFactor();
+
 			this.renderAbilityStatus(ep, gsc);
-			GL11.glPopMatrix();
-			if (PylonGenerator.instance.canGenerateIn(ep.worldObj))
-				this.renderPylonAura(ep, gsc);
-			this.renderPingOverlays(ep, gsc);
-			GL11.glPushMatrix();
-			GL11.glTranslated(0, 0, FRONT_TRANSLATE);
 			this.renderProgressOverlays(ep, gsc);
 			this.renderStructureText(ep, gsc);
 			this.renderFlareMessages(gsc);
+
 			GL11.glPopMatrix();
+			GL11.glPopAttrib();
 		}
-		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.TOOL.matchWith(is)) {
-			this.renderCustomCrosshair(evt);
-		}
-		else if (evt.type == ElementType.CROSSHAIRS && ChromaItems.KILLAURAGUN.matchWith(is)) {
-			this.renderKillAuraCrosshair(evt, gsc);
-		}
-		else if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
-			this.renderBoostedHealthBar(evt, ep);
-		}
-		GL11.glPopMatrix();
-		GL11.glPopAttrib();
 	}
 
 	public boolean isWashoutActive() {
