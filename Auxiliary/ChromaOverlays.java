@@ -151,23 +151,41 @@ public class ChromaOverlays {
 		 */
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
-	public void renderBackground(RenderGameOverlayEvent.Pre evt) {
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glPushMatrix();
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void renderWashoutHook(RenderGameOverlayEvent.Pre evt) {
 		tick++;
 
+		if ((washout > 0) && (evt.type == ElementType.HELMET)) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glPushMatrix();
+
+			this.renderWashout(evt);
+			evt.setCanceled(true); // Let literally nothing else render
+
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH) //Not highest because of Dualhotbar
+	public void renderBackground(RenderGameOverlayEvent.Pre evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		if (evt.type == ElementType.HEALTH && Chromabilities.HEALTH.enabledOn(ep)) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glPushMatrix();
+
 			this.renderBoostedHealthBar(evt, ep);
+
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
 		} else {
 			int gsc = evt.resolution.getScaleFactor();
 			ItemStack is = ep.getCurrentEquippedItem();
 
 			if (evt.type == ElementType.HELMET) {
-				if (washout > 0) {
-					this.renderWashout(evt);
-				}
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				GL11.glPushMatrix();
+
 				if (ChromaItems.TOOL.matchWith(is)) {
 					this.syncBuffer(ep);
 					this.renderElementPie(ep, gsc);
@@ -182,6 +200,9 @@ public class ChromaOverlays {
 					this.renderPylonAura(ep, gsc);
 				}
 				this.renderPingOverlays(ep, gsc);
+
+				GL11.glPopMatrix();
+				GL11.glPopAttrib();
 			} else if (evt.type == ElementType.CROSSHAIRS) {
 				if (ChromaItems.TOOL.matchWith(is)) {
 					this.renderCustomCrosshair(evt);
@@ -190,12 +211,9 @@ public class ChromaOverlays {
 				}
 			}
 		}
-
-		GL11.glPopMatrix();
-		GL11.glPopAttrib();
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGH, receiveCanceled = true) //Not highest because of Dualhotbar
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void renderForeground(RenderGameOverlayEvent.Post evt) {
 		if (evt.type == ElementType.HELMET) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -613,6 +631,9 @@ public class ChromaOverlays {
 	}
 
 	private void renderCustomCrosshair(RenderGameOverlayEvent.Pre evt) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glPushMatrix();
+
 		ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/crosshair.png");
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
@@ -633,10 +654,14 @@ public class ChromaOverlays {
 		BlendMode.DEFAULT.apply();
 		//GL11.glDisable(GL11.GL_BLEND);
 		evt.setCanceled(true);
+
+		GL11.glPopMatrix();
+		GL11.glPopAttrib();
 	}
 
 	private void renderKillAuraCrosshair(RenderGameOverlayEvent.Pre evt, int gsc) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glPushMatrix();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -695,6 +720,7 @@ public class ChromaOverlays {
 		//GL11.glDisable(GL11.GL_DEPTH_TEST); //turn off depth testing to avoid this occluding other elements
 
 		evt.setCanceled(true);
+		GL11.glPopMatrix();
 		GL11.glPopAttrib();
 	}
 
