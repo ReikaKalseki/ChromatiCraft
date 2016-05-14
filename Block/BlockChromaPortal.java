@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Block;
 
+import java.util.HashSet;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -39,6 +41,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -47,6 +50,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockChromaPortal extends Block {
+
+	private static final HashSet<Coordinate> portalCheck = new HashSet();
 
 	public BlockChromaPortal(Material mat) {
 		super(mat);
@@ -87,6 +92,7 @@ public class BlockChromaPortal extends Block {
 
 	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity e) {
+		portalCheck.add(new Coordinate(x, y, z));
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 			int dx = x+dir.offsetX;
@@ -94,10 +100,14 @@ public class BlockChromaPortal extends Block {
 			if (world.getBlock(dx, y, dz) != this) {
 				int ddx = x-dir.offsetX;
 				int ddz = z-dir.offsetZ;
-				this.onEntityCollidedWithBlock(world, ddx, y, ddz, e);
-				return;
+				if (world.getBlock(ddx, y, ddz) == this && !portalCheck.contains(new Coordinate(ddx, y, ddz))) {
+					this.onEntityCollidedWithBlock(world, ddx, y, ddz, e);
+					portalCheck.remove(new Coordinate(x, y, z));
+					return;
+				}
 			}
 		}
+		portalCheck.remove(new Coordinate(x, y, z));
 		TileEntity tile = world.getTileEntity(x, y, z);
 		if (tile instanceof TileEntityCrystalPortal && !world.isRemote) {
 			TileEntityCrystalPortal te = (TileEntityCrystalPortal)tile;

@@ -27,7 +27,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import vazkii.botania.api.boss.IBotaniaBoss;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityLocusPoint;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -161,11 +163,19 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	}
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
-		float dmg = e instanceof EntityPlayer ? 10 : Math.max(4, e.getHealth()/2);
-		e.attackEntityFrom(ChromatiCraft.pylonDamage[CrystalElement.WHITE.ordinal()], dmg);
+		float dmg = this.getAttackDamage(e);
+		ChromaAux.doPylonAttack(CrystalElement.WHITE, e, dmg, false);
 		ChromaSounds.DISCHARGE.playSound(e, 0.5F, 1);
 
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.AURATTACK.ordinal(), this, 192, e.getEntityId());
+	}
+
+	private float getAttackDamage(EntityLivingBase e) {
+		if (ModList.BOTANIA.isLoaded() && e instanceof IBotaniaBoss)
+			return 100;
+		if (e instanceof EntityPlayer)
+			return 10;
+		return Math.max(4, e.getHealth()/2);
 	}
 
 	@SideOnly(Side.CLIENT)

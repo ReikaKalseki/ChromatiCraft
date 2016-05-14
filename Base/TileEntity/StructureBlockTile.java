@@ -61,4 +61,8 @@ public abstract class StructureBlockTile<S> extends TileEntity {
 		return (S)this.getType().getGenerator(uid);
 	}
 
+	protected void copyFrom(StructureBlockTile<S> g) {
+		this.uid = g.uid;
+	}
+
 }

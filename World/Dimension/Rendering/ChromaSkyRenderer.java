@@ -47,8 +47,10 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		this.renderBlackscreen();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
+		//GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.ADDITIVEDARK.apply();
+		GL11.glDepthMask(false);
 
 		GL11.glPushMatrix();
 		this.renderStars();
@@ -60,6 +62,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDepthMask(true);
+
+		//GL11.glPopAttrib();
 	}
 
 	private void renderBrightStars() {

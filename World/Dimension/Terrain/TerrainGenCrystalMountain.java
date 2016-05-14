@@ -29,6 +29,7 @@ public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper
 	private final SimplexNoiseGenerator shearNoise;
 	private final SimplexNoiseGenerator threshNoise;
 	private final SimplexNoiseGenerator gemNoise;
+	private final SimplexNoiseGenerator dirtNoise;
 	//private final SimplexNoiseGenerator gemNoise2;
 
 	public static final double MAX_AMPLITUDE = 80;
@@ -50,17 +51,18 @@ public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper
 
 		gemNoise = new SimplexNoiseGenerator(-seed);
 		//gemNoise2 = new SimplexNoiseGenerator(~(-seed));
+		dirtNoise = new SimplexNoiseGenerator(~(-seed));
 	}
 
 	@Override
 	public void generateColumn(World world, int chunkX, int chunkZ, int i, int k, int surface, Random rand, double edgeFactor) {
 		double innerScale = 1/16D;
 		double mainScale = 1/4D;
-		int dt = 1+rand.nextInt(4);
 		int dx = chunkX+i;
 		int dz = chunkZ+k;
 		double rx = this.calcR(chunkX, i, innerScale, mainScale);
 		double rz = this.calcR(chunkZ, k, innerScale, mainScale);
+		int dt = (int)ReikaMathLibrary.normalizeToBounds(dirtNoise.getValue(rx*8, rz*8), 0, 4);//1+rand.nextInt(4);
 		HeightData dat = this.calcHeight(rx, rz);
 		dat.maxHeight *= edgeFactor;
 		dat.isCliff = this.isCliff(chunkX, chunkZ, i, k, rx, rz, innerScale, mainScale);
@@ -68,13 +70,15 @@ public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper
 		double g2 = 0;
 		if (dat.isCliff) {
 			double dc = dat.maxHeight-dt-dat.shearThreshold;
-			double gw = ReikaMathLibrary.normalizeToBounds(gemNoise.getValue(rx*2, rz*2), 0, dc);//Math.max(, gemNoiseLow.getValue(rx, rz));
+			double gt = 0.75;
+			double gw = ReikaMathLibrary.normalizeToBounds(gemNoise.getValue(rx*2, rz*2), 0, dc*gt);//Math.max(, gemNoiseLow.getValue(rx, rz));
 			double base = this.isFlatWorld(world) ? 3 : 64+ChunkProviderChroma.VERTICAL_OFFSET;
 			double mid = base+dat.shearThreshold+dc/2;//dat.shearThreshold+dat.shearHeight/2;
+
 			//ReikaJavaLibrary.pConsole(mid+" @ "+dx+", "+dz);
 			g1 = mid-gw/2;
-			g2 = mid+g2/2;//ReikaMathLibrary.normalizeToBounds(gemNoise2.getValue(rx, rz), shearThresh+1, val-dt-1);
-			//ReikaJavaLibrary.pConsole(g1+":"+g2+" @ "+dx+", "+dz+" in "+(dat.shearThreshold+1)+" & "+(dat.maxHeight-dt-1));
+			g2 = mid+gw/2;//ReikaMathLibrary.normalizeToBounds(gemNoise2.getValue(rx, rz), shearThresh+1, val-dt-1);
+			//ReikaJavaLibrary.pConsole(g1+":"+g2+" by "+mid+" @ "+dx+", "+dz+" in "+(dat.shearThreshold+1)+" & "+(dat.maxHeight-dt-1));
 		}
 		double gmax = Math.max(g1, g2);
 		double gmin = Math.min(g1, g2);
@@ -91,7 +95,7 @@ public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper
 			else if (h-j <= dt) {
 				b = Blocks.dirt;
 			}
-			else if (dat.isCliff && (int)(gmax-gmin) > 1 && ReikaMathLibrary.isValueInsideBoundsIncl(gmin, gmax, j)) {
+			else if (dat.isCliff && (int)(gmax-gmin) > 1 && ReikaMathLibrary.isValueInsideBoundsIncl(gmin, gmax, dy)) {
 				b = ChromaBlocks.DIMGEN.getBlockInstance();
 				m = DimDecoTypes.GEMSTONE.ordinal();
 			}

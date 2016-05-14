@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
-import li.cil.oc.api.network.Visibility;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,8 +22,6 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -131,13 +128,13 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	public int getRedstoneOverride() {
 		return 0;
 	}
-
+	/*
 	@Override
 	@ModDependent(ModList.OPENCOMPUTERS)
 	protected final Visibility getOCNetworkVisibility() {
 		return Visibility.Network;//this.getMachine().isPipe() ? Visibility.Neighbors : Visibility.Network;
 	}
-
+	 */
 	public int getIconState(int side) {
 		return 0;
 	}

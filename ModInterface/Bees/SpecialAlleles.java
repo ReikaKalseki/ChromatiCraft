@@ -136,7 +136,7 @@ public class SpecialAlleles {
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					List<EntityLivingBase> li = world.selectEntitiesWithinAABB(EntityLivingBase.class, box, ReikaEntityHelper.nonMobSelector);
 					for (EntityLivingBase e : li) {
-						CrystalPotionController.applyEffectFromColor(600, 0, e, color, CrystalBees.rand.nextInt(80) == 0);
+						CrystalPotionController.applyEffectFromColor(600, 0, e, color, CrystalBees.rand.nextInt(240) == 0 && e.getDistanceSq(c.posX+0.5, c.posY+0.5, c.posZ+0.5) < 256);
 					}
 				}
 				if (lastWorldTick != world.getTotalWorldTime() && CrystalBees.rand.nextInt(8000) == 0) {

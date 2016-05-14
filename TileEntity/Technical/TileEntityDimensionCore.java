@@ -350,6 +350,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 				break;
 			case PINBALL:
 				break;
+			case GRAVITY:
+				break;
 		}
 	}
 

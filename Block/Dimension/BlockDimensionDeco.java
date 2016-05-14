@@ -138,7 +138,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	}
 
 	public static int getGemStoneColor(IBlockAccess iba, int x, int y, int z) {
-		return ReikaColorAPI.getModifiedHue(0xff0000, (x+z)*4);
+		return ReikaColorAPI.getModifiedHue(0xff0000, (x+z*3/2)*4);
 	}
 
 	@Override

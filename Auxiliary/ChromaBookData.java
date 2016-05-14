@@ -62,7 +62,7 @@ public class ChromaBookData {
 	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
 		ItemStack isout = c.getOutput();
 		ItemStack ctr = c instanceof MultiBlockCastingRecipe ? ((MultiBlockCastingRecipe)c).getMainInput() : c.getArrayForDisplay()[4];
-		if (ctr != null)
+		if (ctr != null && isout.stackTagCompound != null)
 			ReikaNBTHelper.combineNBT(isout.stackTagCompound, c.getOutputTag(ctr.stackTagCompound));
 		gui.drawItemStack(ri, fr, isout, posX+7, posY+5);
 		GL11.glDisable(GL11.GL_LIGHTING);

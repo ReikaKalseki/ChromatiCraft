@@ -17,6 +17,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -131,6 +132,9 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.BROWN, true);
 			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.MAGENTA, true);
 			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE, true);
+		}
+		else if (e instanceof EntityItem) {
+			((EntityItem)e).age = 0;
 		}
 	}
 

@@ -38,6 +38,7 @@ import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Interfaces.Registry.ModEntry;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaCommandHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
 
@@ -235,6 +236,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct reset for "+ep.getCommandSenderName());
 				}
+				if (args[1].equals("all") || args[1].equals("colors")) {
+					for (int i = 0; i < 16; i++) {
+						ProgressionManager.instance.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], false, false);
+					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Color discovery reset for "+ep.getCommandSenderName());
+				}
 				break;
 			}
 			case "maximize": {
@@ -258,6 +265,12 @@ public class ProgressModifyCommand extends DragonCommandBase {
 						ProgressionManager.instance.markPlayerCompletedStructureColor(ep, CrystalElement.elements[i], true, false);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Dimstruct maximized for "+ep.getCommandSenderName());
+				}
+				if (args[1].equals("all") || args[1].equals("colors")) {
+					for (int i = 0; i < 16; i++) {
+						ProgressionManager.instance.setPlayerDiscoveredColor(ep, CrystalElement.elements[i], true, false);
+					}
+					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Color discovery maximized for "+ep.getCommandSenderName());
 				}
 				break;
 			}
@@ -296,6 +309,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				break;
 		}
 		ProgressionManager.instance.updateChunks(ep);
+		ReikaJavaLibrary.pConsole("Player "+ep.getCommandSenderName()+" used /chromaprog with args "+Arrays.toString(args));
 	}
 
 	private CrystalElement getColor(String s) {

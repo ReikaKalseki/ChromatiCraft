@@ -451,7 +451,7 @@ public class BlockLootChest extends BlockContainer {
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
 			}
 
-			StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct.name(), s, r);
+			StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct != null ? struct.name() : "No structure", s, r);
 			MinecraftForge.EVENT_BUS.post(evt);
 			for (ItemStack is : evt.getItems()) {
 				ReikaInventoryHelper.addToIInv(is, this);

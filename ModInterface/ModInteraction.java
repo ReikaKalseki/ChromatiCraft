@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import net.minecraft.potion.Potion;
 import thaumcraft.api.ThaumcraftApi;
 import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.ModInterface.Bees.ApiaryAcceleration;
@@ -20,10 +22,13 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
@@ -59,7 +64,7 @@ public class ModInteraction {
 				String[] next = new String[arr.length+add.size()];
 				System.arraycopy(arr, 0, next, 0, arr.length);
 				for (int i = 0; i < add.size(); i++) {
-					next[next.length-add.size()+i] = ReikaRegistryHelper.getGameRegistryName(add.get(i));
+					next[next.length-add.size()+i] = ReikaRegistryHelper.getGameRegistryName(ChromatiCraft.instance, add.get(i));
 				}
 				f.set(null, next);
 				//ArrayList<UniqueIdentifier> li = (ArrayList<UniqueIdentifier>)f2.get(inst.get(null));
@@ -67,7 +72,7 @@ public class ModInteraction {
 				//	li.add(GameRegistry.findUniqueIdentifierFor(b.getBlockInstance()));
 				//}
 				for (ChromaBlocks b : add) {
-					FMLInterModComms.sendMessage(ModList.ENDERIO.modLabel, "teleport:blacklist:add", ReikaRegistryHelper.getGameRegistryName(b));
+					//FMLInterModComms.sendMessage(ModList.ENDERIO.modLabel, "teleport:blacklist:add", ReikaRegistryHelper.getGameRegistryName(ChromatiCraft.instance, b));
 				}
 			}
 		}
@@ -246,6 +251,14 @@ public class ModInteraction {
 			f2.setAccessible(true);
 			Set<Integer> set1 = (Set<Integer>)f1.get(null);
 			Set<Integer> set2 = (Set<Integer>)f2.get(null);
+			if (set1 == null) {
+				set1 = new HashSet();
+				f1.set(null, set1);
+			}
+			if (set2 == null) {
+				set2 = new HashSet();
+				f2.set(null, set2);
+			}
 			set1.add(ExtraChromaIDs.DIMID.getValue());
 			set2.add(ExtraChromaIDs.DIMID.getValue());
 		}
@@ -280,6 +293,35 @@ public class ModInteraction {
 		catch (Exception e) {
 			ChromatiCraft.logger.logError("Unable to blacklist golden apple recycling");
 			e.printStackTrace();
+		}
+	}
+
+	public static void addMicroblocks() {
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(1));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(2));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(7));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(8));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(10));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(11));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(12));
+
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()));
+		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()));
+	}
+
+	public static void addMystCraft() {
+		ReikaMystcraftHelper.registerPageRegistry(MystPages.instance);
+		for (int i = 0; i < Biomes.biomeList.length; i++) {
+			ReikaMystcraftHelper.disableBiomePage(Biomes.biomeList[i].getBiome());
+		}
+		for (int i = 0; i < SubBiomes.biomeList.length; i++) {
+			ReikaMystcraftHelper.disableBiomePage(SubBiomes.biomeList[i].getBiome());
 		}
 	}
 }

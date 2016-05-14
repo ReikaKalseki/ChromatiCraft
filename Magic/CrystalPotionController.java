@@ -88,9 +88,9 @@ public class CrystalPotionController {
 	}
 
 	public static boolean isWorldHostile(World world) {
-		if (world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
+		if (ModList.EXTRAUTILS.isLoaded() && ExtraUtilsHandler.getInstance().initializedProperly() && world.provider.dimensionId == ExtraUtilsHandler.getInstance().darkID)
 			return true;
-		if (world.provider.dimensionId == ThaumIDHandler.getInstance().dimensionID)
+		if (ModList.THAUMCRAFT.isLoaded() && ThaumIDHandler.getInstance().initializedProperly() && world.provider.dimensionId == ThaumIDHandler.getInstance().dimensionID)
 			return true;
 		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.HOSTILE.existsInWorld(world))
 			return true;

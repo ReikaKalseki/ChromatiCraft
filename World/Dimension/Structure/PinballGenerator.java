@@ -14,6 +14,7 @@ import java.util.Random;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
 public class PinballGenerator extends DimensionStructureGenerator {
@@ -41,6 +42,14 @@ public class PinballGenerator extends DimensionStructureGenerator {
 	@Override
 	public boolean hasBeenSolved(World world) {
 		return false;
+	}
+
+	public boolean areBallsInPlay(String level) {
+		return false;
+	}
+
+	public void completeTrigger(String level, World world, Coordinate c, boolean set) {
+
 	}
 
 }

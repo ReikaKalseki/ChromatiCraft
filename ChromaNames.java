@@ -55,7 +55,8 @@ public class ChromaNames {
 	};
 
 	public static final String[] miscNames = {
-		"chromamisc.silktouch", "chromamisc.speed", "chromamisc.efficiency"
+		"chromamisc.silktouch", "chromamisc.speed", "chromamisc.efficiency", "chromamisc.stonematch", "chromamisc.groundmatch",
+		"chromamisc.orematch", "chromamisc.saplingmatch", "chromamisc.mobdropsmatch", "chromamisc.seedmatch", "chromamisc.flowermatch"
 	};
 
 	public static final String[] modInteractNames = {

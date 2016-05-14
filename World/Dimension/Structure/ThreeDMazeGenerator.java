@@ -24,11 +24,14 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.LootRoom;
+import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.MazeRoom;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TDMazeEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.TDMaze.TunnelPiece;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 
@@ -36,11 +39,13 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 	private final LinkedList<Coordinate> pathLocs = new LinkedList();
 	private final HashSet<Coordinate> coordCache = new HashSet();
 	//private final HashSet<Coordinate> coordCacheInverse = new HashSet();
-	private final MultiMap<Coordinate, ForgeDirection> locationCache = new MultiMap();
+	private final MultiMap<Coordinate, ForgeDirection> locationCache = new MultiMap(new HashSetFactory());
 	//private final HashSet<Coordinate> currentStep = new HashSet();
 	//private final HashSet<Coordinate> currentStepTemp = new HashSet();
 	//private final MultiMap<Coordinate, ForgeDirection> next = new MultiMap();
 	//private final MultiMap<Coordinate, ForgeDirection> nextTemp = new MultiMap();
+	private final ArrayList<MazeRoom> rooms = new ArrayList();
+	private final HashSet<Coordinate> roomSpaces = new HashSet();
 	private Coordinate step;
 	private ForgeDirection nextDir;
 
@@ -118,6 +123,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		this.generatePathFrom(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2, rand);
 		this.cutExits(rand);
 		this.cutExtras(rand);
+		this.addRooms(rand);
 		this.generateBlocks(x, posY, z, rand);
 
 		int mx = x+partSize*MAX_SIZE_X/2+partSize/2;
@@ -146,8 +152,10 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		for (int i = 0; i < MAX_SIZE_X; i++) {
 			for (int j = 0; j < MAX_SIZE_Y; j++) {
 				for (int k = 0; k < MAX_SIZE_Z; k++) {
+					Coordinate c = new Coordinate(i, j, k);
 					TunnelPiece p = new TunnelPiece(this, partSize);
-					for (ForgeDirection dir : locationCache.get(new Coordinate(i, j, k))) {
+					Collection<ForgeDirection> dirs = locationCache.get(new Coordinate(i, j, k));
+					for (ForgeDirection dir : dirs) {
 						p.connect(dir);
 					}
 					if (i%4 == 0 && j%2 == 0 && k%4 == 0)
@@ -158,12 +166,32 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 							p.addWindow(ForgeDirection.VALID_DIRECTIONS[rand.nextInt(6)]);
 						}
 					}
+					/*
+					//if (roomSpaces.contains(c)) {
+					for (int s = 0; s < 6; s++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s];
+						if (s >= 2 || dirs.contains(dir)) {
+							Coordinate c2 = c.offset(dir, 1);
+							if (roomSpaces.contains(c2)) {
+								p.addRoomConnection(dir);
+							}
+						}
+					}
+					//}
+					 */
 					int dx = x+i*partSize;
 					int dy = y+j*partSize-MAX_SIZE_Y*partSize;
 					int dz = z+k*partSize;
 					p.generate(world, dx, dy, dz);
 				}
 			}
+		}
+
+		for (MazeRoom r : rooms) {
+			int dx = x+r.center.xCoord*partSize;
+			int dy = y+r.center.yCoord*partSize-MAX_SIZE_Y*partSize;
+			int dz = z+r.center.zCoord*partSize;
+			r.generate(world, dx, dy, dz);
 		}
 	}
 
@@ -186,6 +214,62 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		}
 	}
 
+	private void addRooms(Random rand) {
+		int n = (int)(Math.sqrt(MAX_SIZE_X*MAX_SIZE_Y*MAX_SIZE_Z)/2D);
+		Coordinate start = new Coordinate(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2);
+		Coordinate end = new Coordinate(MAX_SIZE_X/2, MAX_SIZE_Y-1, MAX_SIZE_Z/2);
+		for (int a = 0; a < n; a++) {
+			boolean large = rand.nextInt(6) == 0;
+			int s = large ? 2 : 1;
+			int dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s);
+			int dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s);
+			int dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s);
+			Coordinate c = new Coordinate(dx, dy, dz);
+			int d = 4+s;
+			int tries = 0;
+			while ((c.getTaxicabDistanceTo(end) < d || c.getTaxicabDistanceTo(start) < d) && tries < 50) {
+				dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s);
+				dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s);
+				dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s);
+				c = new Coordinate(dx, dy, dz);
+				tries++;
+			}
+			boolean flag = false;
+			do {
+				for (int i = -s-1; i <= s+1; i++) {
+					for (int k = -s-1; k <= s+1; k++) {
+						Coordinate c2 = c.offset(i, 0, k);
+						if (roomSpaces.contains(c2)) {
+							flag = true;
+							break;
+						}
+					}
+					if (flag)
+						break;
+				}
+				if (flag) {
+					dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s);
+					dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s);
+					dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s);
+					c = new Coordinate(dx, dy, dz);
+				}
+				tries++;
+			} while (flag && tries < 50);
+
+			if (tries < 50) {
+				MazeRoom r = new MazeRoom(this, partSize, s, c, rand);
+				for (int i = -s; i <= s; i++) {
+					for (int k = -s; k <= s; k++) {
+						Coordinate c2 = c.offset(i, 0, k);
+						roomSpaces.add(c2);
+						r.addCell(c2);
+					}
+				}
+				rooms.add(r);
+			}
+		}
+	}
+
 	private void generatePathFrom(int x, int y, int z, Random rand) {
 		pathCache.addLast(ForgeDirection.DOWN);
 		//this.stepPath(x, y, z, rand, this.getMovementDirection(x, y, z, ForgeDirection.DOWN, rand));
@@ -195,91 +279,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 			this.stepPath(step.xCoord, step.yCoord, step.zCoord, rand, nextDir);
 			//ReikaJavaLibrary.pConsole("----------"+coordCache.size()+"/"+step+"-------------");
 		}
-
-		/*
-		currentStep.add(new Coordinate(x, y, z));
-		while (!this.isFull()) {
-			for (Coordinate c : currentStep)
-				this.stepPath2(c.xCoord, c.yCoord, c.zCoord, rand);
-			currentStep.clear();
-			currentStep.addAll(currentStepTemp);
-			currentStepTemp.clear();
-			if (!this.isFull() && currentStep.isEmpty()) {
-				currentStep.add(coordCacheInverse.iterator().next());
-			}
-		}
-		 */
 	}
-
-	/*
-	private void stepPath2(int x, int y, int z, Random rand) {
-		Coordinate c = new Coordinate(x, y, z);
-		coordCache.add(c);
-		coordCacheInverse.remove(c);
-		if (this.isFull()) {
-			ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; is full; returning from "+x+", "+y+", "+z);
-			return;
-		}
-		else {
-			int n = rand.nextInt(3) == 0 ? 2 : 1;
-			ArrayList<ForgeDirection> dirs = new ArrayList();
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				if (dirs.size() < n) {
-					if (this.canMove(x, y, z, dir) && !this.hasCellFrom(x, y, z, dir)) {
-						dirs.add(dir);
-					}
-				}
-				else
-					break;
-			}
-			for (ForgeDirection dir : dirs) {
-				ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping forward "+dir+" from "+x+", "+y+", "+z);
-				locationCache.addValue(c, dir);
-				//this.stepPath(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, rand, dir);
-				Coordinate c2 = new Coordinate(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
-				currentStepTemp.add(c2);
-				locationCache.addValue(c2, dir.getOpposite());
-				ReikaJavaLibrary.pConsole("Connecting "+x+", "+y+", "+z+" and "+(x+dir.offsetX)+", "+(y+dir.offsetY)+", "+(z+dir.offsetZ));
-			}
-		}
-	}
-	 */
-	/*
-	private void stepPath(int x, int y, int z, Random rand, ForgeDirection dir) {
-		Coordinate c = new Coordinate(x, y, z);
-		locationCache.addValue(c, dir.getOpposite());
-		coordCache.add(c);
-		if (this.isFull()) {
-			ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; is full; returning from "+dir+" from "+x+", "+y+", "+z);
-			return;
-		}
-		else if (this.hasUnvisitedNeighbors(x, y, z)) {
-			Collection<ForgeDirection> dirs = this.getMovementDirections(x, y, z, dir, rand);
-			ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping forward "+dirs+" from "+x+", "+y+", "+z);
-			for (ForgeDirection dir2 : dirs) {
-				dir = dir2;
-				locationCache.addValue(c, dir);
-				pathCache.addLast(dir);
-				//this.stepPath(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, rand, dir);
-				Coordinate c2 = new Coordinate(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
-				ReikaJavaLibrary.pConsole("stepping forward from "+x+", "+y+", "+z+" to "+c2);
-				nextTemp.addValue(c2, dir);
-
-			}
-		}
-		else {
-			dir = pathCache.removeLast();
-			ReikaJavaLibrary.pConsole("Backstep has: "+coordCache.contains(new Coordinate(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ))+"|"+this.hasUnvisitedNeighbors(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ));
-			ReikaJavaLibrary.pConsole("Current has: "+coordCache.contains(new Coordinate(x, y, z)));
-			Coordinate c2 = new Coordinate(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ);
-			ReikaJavaLibrary.pConsole("Have "+coordCache.size()+" points; stepping backward, opposite of "+dir+", from "+x+", "+y+", "+z+" to "+c2);
-			//this.stepPath(x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, rand, dir);
-			nextTemp.addValue(c2, dir);
-			//return;
-		}
-	}
-	 */
 
 	private void stepPath(int x, int y, int z, Random rand, ForgeDirection dir) {
 		Coordinate c = new Coordinate(x, y, z);
@@ -392,12 +392,6 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		return li.get(idx);
 	}
 
-	/*
-	private void generateFrom(int entryAX, int entryAY, int entrySide, int pathSize, int x, int y, int z, CrystalElement e, Random rand) {
-
-	}
-	 */
-
 	private boolean canMove(int x, int y, int z, ForgeDirection dir) {
 		int dx = x+dir.offsetX;
 		int dy = y+dir.offsetY;
@@ -428,6 +422,8 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		coordCache.clear();
 		locationCache.clear();
 		distances.clear();
+		roomSpaces.clear();
+		rooms.clear();
 		goalDistance = 0;
 		step = null;
 		nextDir = null;

@@ -13,9 +13,11 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,6 +26,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -31,6 +34,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Instantiable.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -44,6 +48,7 @@ public class ItemKillAuraGun extends ItemChromaTool {
 	public static final int CHARGE_TIME = 100;
 
 	public static final int BASE_DAMAGE = 12;
+	public static final int MAX_DAMAGE = 18;
 	public static final int RANGE = 12;
 
 	public static final float RANGE_FALLOFF = BASE_DAMAGE/2F/RANGE;
@@ -57,13 +62,13 @@ public class ItemKillAuraGun extends ItemChromaTool {
 		super(index);
 	}
 
-	private static boolean fire(EntityPlayer ep, int power) {
+	private static boolean fire(ItemStack is, EntityPlayer ep, int power) {
 		power = power+1; //since never reaches 100
 		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, RANGE);
 		List<EntityLivingBase> li = ep.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, box);
 		for (Entity e : li) {
 			if (e != ep) {
-				float dmg = getWallAttackDamage(ep, e, power);
+				float dmg = getWallAttackDamage(is, ep, e, power);
 				if (dmg > 0) {
 					e.attackEntityFrom(new ReikaEntityHelper.WrappedDamageSource(DamageSource.magic, ep), dmg);
 				}
@@ -74,6 +79,15 @@ public class ItemKillAuraGun extends ItemChromaTool {
 			doFireParticles(ep, power);
 		}
 		return false;
+	}
+
+	private static float getFalloffFactor(ItemStack is) {
+		return 1-ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.WEAPONAOE.getEnchantment(), is)/10F;
+	}
+
+	private static float getRawDamage(ItemStack is) {
+		float f = (MAX_DAMAGE-BASE_DAMAGE)/10F;
+		return BASE_DAMAGE+ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.power, is)*f;
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -115,7 +129,7 @@ public class ItemKillAuraGun extends ItemChromaTool {
 		}
 	}
 
-	private static float getWallAttackDamage(EntityPlayer ep, Entity e, int power) {
+	private static float getWallAttackDamage(ItemStack is, EntityPlayer ep, Entity e, int power) {
 		double d = e.getDistanceToEntity(ep);
 		if (d <= RANGE) {
 			double[] angs = ReikaPhysicsHelper.cartesianToPolar(e.posX-ep.posX, e.posY-ep.posY, e.posZ-ep.posZ);
@@ -126,7 +140,8 @@ public class ItemKillAuraGun extends ItemChromaTool {
 			//ReikaJavaLibrary.pConsole(ep.rotationYawHead+":"+ep.rotationPitch+":"+Arrays.toString(angs), Side.SERVER);
 			double da = ReikaMathLibrary.py3d(angs[2], 0, angs[1]);
 			//ReikaJavaLibrary.pConsole(power+":"+((CHARGE_TIME-power)*CHARGE_FALLOFF));
-			double dmg = BASE_DAMAGE-RANGE_FALLOFF*Math.max(0, (d-2))-ANGLE_FALLOFF*da-(CHARGE_TIME-power)*CHARGE_FALLOFF;
+			float f = getFalloffFactor(is);
+			double dmg = getRawDamage(is)-RANGE_FALLOFF*f*Math.max(0, (d-2))-ANGLE_FALLOFF*f*da-(CHARGE_TIME-power)*CHARGE_FALLOFF;
 			return (float)Math.max(1F, dmg);
 		}
 		else {
@@ -139,7 +154,7 @@ public class ItemKillAuraGun extends ItemChromaTool {
 		count = MathHelper.clamp_int(this.getMaxItemUseDuration(is)-count, 0, CHARGE_TIME);
 		//ReikaChatHelper.write(power+"  ->  "+charge);
 		if (count > 10)
-			this.fire(ep, count);
+			this.fire(is, ep, count);
 		useTick = 0;
 		useTickUnbounded = 0;
 		ep.setItemInUse(null, 0);
@@ -228,6 +243,11 @@ public class ItemKillAuraGun extends ItemChromaTool {
 			EntityFX fx = new EntityBlurFX(ep.worldObj, px, py, pz).setLife(t).setScale(0.5F).setPositionController(p).setIcon(ChromaIcons.FLARE);
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	@Override
+	public int getItemEnchantability(ItemStack is) {
+		return Items.stone_pickaxe.getItemEnchantability(is);
 	}
 
 }

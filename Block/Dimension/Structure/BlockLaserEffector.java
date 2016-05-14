@@ -248,7 +248,7 @@ public class BlockLaserEffector extends BlockContainer {
 						}
 					}
 					else if (e.direction == te.facing.getOpposite().getRotation(true) || e.direction == te.facing.getOpposite().getRotation(false)) {
-						e.setDirection(te.facing.getOpposite());
+						e.setDirection(te.facing.getOpposite(), true);
 						return false;
 					}
 					return true;

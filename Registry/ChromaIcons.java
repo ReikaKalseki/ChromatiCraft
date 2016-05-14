@@ -82,7 +82,16 @@ public enum ChromaIcons {
 	CAUSTICS_GENTLE("caustics-g"),
 	OVALS("oval-rings"),
 	WEAKREPEATER("weakrepeater"),
-	SMOKE("smoke");
+	SMOKE("smoke"),
+	BLACKHOLE("blackhole"),
+	BLURFLARE("blurflare2"),
+	HOLE("hole"),
+	PINWHEEL("pinwheel"),
+	HEXFLARE("hexflare"),
+	HEXFLARE2("hexflare2"),
+	CONCENTRIC("concentric"),
+	CONCENTRIC2("concentric2"),
+	;
 
 	private IIcon icon;
 	private final String iconName;

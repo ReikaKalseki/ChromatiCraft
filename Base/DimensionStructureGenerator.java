@@ -18,13 +18,17 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructureDataStorage;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -32,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.GravityPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
@@ -275,7 +280,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		GOL(GOLGenerator.class, "Cellular Automata"),
 		ANTFARM(AntFarmGenerator.class, "Fading Light"),
 		LASER(LaserPuzzleGenerator.class, "Chromatic Beams"),
-		PINBALL(PinballGenerator.class, "Expanding Motion");
+		PINBALL(PinballGenerator.class, "Expanding Motion"),
+		GRAVITY(GravityPuzzleGenerator.class, "Luma Bursts");
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;
@@ -388,6 +394,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this, data));
 	}
 
+	public final void generateLootChest(int x, int y, int z, ForgeDirection dir, String chest, int bonus, ItemStack... extras) {
+		world.setTileEntity(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), BlockLootChest.getMeta(dir), new LootChestCallback(chest, bonus, extras));
+	}
+
 	private static final class StructureDataCallback implements TileCallback {
 
 		private final DimensionStructureGenerator generator;
@@ -423,6 +433,32 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			if (te instanceof StructureBlockTile) {
 				((StructureBlockTile)te).uid = uid;
+			}
+		}
+
+	}
+
+	public static final class LootChestCallback implements TileCallback {
+
+		private final String chest;
+		private final int bonus;
+		private final ItemStack[] extras;
+
+		public LootChestCallback(String s, int b, ItemStack... ex) {
+			chest = s;
+			bonus = b;
+			extras = ex;
+		}
+
+		@Override
+		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
+			if (te instanceof TileEntityLootChest) {
+				TileEntityLootChest tc = (TileEntityLootChest)te;
+				tc.populateChest(chest, null, bonus, world.rand);
+				for (int i = 0; i < extras.length; i++) {
+					int slot = world.rand.nextInt(tc.getSizeInventory());
+					tc.setInventorySlotContents(slot, extras[i]);
+				}
 			}
 		}
 

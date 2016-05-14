@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Worldgen;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -164,22 +163,22 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				float nz = 1-0.0625F;
 				float px = 0.0625F;
 				float pz = 0.0625F;
-				if (world.getBlock(x+1, y, z).isOpaqueCube()) {
+				if (isIvySolid(world, x+1, y, z, ForgeDirection.WEST)) {
 					px = 1;
 					nz = 0;
 					pz = 1;
 				}
-				if (world.getBlock(x-1, y, z).isOpaqueCube()) {
+				if (isIvySolid(world, x-1, y, z, ForgeDirection.EAST)) {
 					nx = 0;
 					nz = 0;
 					pz = 1;
 				}
-				if (world.getBlock(x, y, z+1).isOpaqueCube()) {
+				if (isIvySolid(world, x, y, z+1, ForgeDirection.NORTH)) {
 					pz = 1;
 					nx = 0;
 					px = 1;
 				}
-				if (world.getBlock(x, y, z-1).isOpaqueCube()) {
+				if (isIvySolid(world, x, y, z-1, ForgeDirection.SOUTH)) {
 					nz = 0;
 					nx = 0;
 					px = 1;
@@ -191,6 +190,13 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				this.setBlockBounds(0, 0, 0, 1, 1, 1);
 				break;
 		}
+	}
+
+	private static boolean isIvySolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
+		Block b = world.getBlock(x, y, z);
+		if (b.isOpaqueCube())
+			return true;
+		return ReikaBlockHelper.isFacade(b) && b.isSideSolid(world, x, y, z, dir);
 	}
 
 	@Override
@@ -422,8 +428,9 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 						Block b = world.getBlock(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 						if (b.isOpaqueCube() && b.getMaterial() == Material.rock)
 							return true;
-						if (b.getClass().getName().toLowerCase(Locale.ENGLISH).contains("facade"))
+						if (isIvySolid(world, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ, dir.getOpposite())) {
 							return true;
+						}
 					}
 					//return this.matchAt(world, x, y+1, z) || (ReikaPlantHelper.VINES.canPlantAt(world, x, y, z)/* && world.getBlock(x, y-1, z).isAir(world, x, y-1, z)*/);//world.getBlock(x, y+1, z).getMaterial().isSolid();
 					return false;

@@ -88,17 +88,6 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 		return pass == 1;
 	}
 
-	@Override
-	public boolean isInRangeToRenderDist(double dist) {
-		return true;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean isInRangeToRender3d(double par2, double par4, double par6) {
-		return true;
-	}
-
 	@SideOnly(Side.CLIENT)
 	private void spawnParticle() {
 		int l = 10+rand.nextInt(15);
@@ -176,17 +165,17 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 			this.setDead();
 			return;
 		}
-		this.setDirection(dir);
+		this.setDirection(dir, true);
 	}
 
 	public void refract(boolean clockwise) {
 		CubeDirections dir = direction.getRotation(clockwise);
-		this.setDirection(dir);
+		this.setDirection(dir, true);
 	}
 
 	@Override
-	public void setDirection(CubeDirections dir) {
-		super.setDirection(dir);
+	public void setDirection(CubeDirections dir, boolean setPos) {
+		super.setDirection(dir, setPos);
 		direction = dir;
 	}
 
@@ -254,6 +243,11 @@ public class EntityLaserPulse extends ParticleEntity implements IEntityAdditiona
 
 	public String getLevel() {
 		return "";//level;
+	}
+
+	@Override
+	public double getRenderRangeSquared() {
+		return Double.POSITIVE_INFINITY;
 	}
 
 }

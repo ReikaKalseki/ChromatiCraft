@@ -110,6 +110,17 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.BOTANIA.isLoaded()) {
+			ItemStack item = ReikaItemHelper.lookupItem(ModList.BOTANIA, "manaResource", 5);
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 40000);
+				tag.addValueToColor(CrystalElement.BLACK, 20000);
+				tag.addValueToColor(CrystalElement.GREEN, 20000);
+				this.addRecipe(item, tag);
+			}
+		}
+
 	}
 
 	private void addRecipe(ItemStack is, ElementTagCompound tag) {

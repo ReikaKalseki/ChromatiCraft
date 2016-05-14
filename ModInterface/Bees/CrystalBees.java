@@ -79,6 +79,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.BeeBranch;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies.TraitsBee;
 import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
@@ -86,6 +87,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.core.EnumHumidity;
@@ -99,6 +101,8 @@ public class CrystalBees {
 	static final String LOGGER_TAG = "CrystalBees";
 
 	static final Random rand = new Random();
+
+	static RawBee feedstock;
 
 	static BasicBee protective;
 	static BasicBee luminous;
@@ -219,6 +223,9 @@ public class CrystalBees {
 		//anyHumidity = Tolerance.createNew("", new OmniToleranceCheck(), false);
 
 		crystalBranch = new BeeBranch("branch.cccrystal", "Crystal", "Vitreus", "These bees can sense and sometimes field the crystal elements.");
+
+		feedstock = new RawBee("Raw", "Imperitus Materia", 0x888888);
+		feedstock.register();
 
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement color = CrystalElement.elements[i];
@@ -502,6 +509,23 @@ public class CrystalBees {
 
 	}
 
+	static class RawBee extends BasicBee {
+
+		private RawBee(String name, String latin, int color) {
+			super(name, latin, Speeds.SLOWEST, Life.NORMAL, Flowering.SLOWEST, Fertility.LOW, Territory.DEFAULT, color);
+		}
+
+		@Override
+		public boolean isJubilant(IBeeGenome ibg, IBeeHousing ibh) {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "With no traits or utility of their own, completely worthless as anything but raw feedstock.";
+		}
+	}
+
 	static class BasicBee extends TraitsBee {
 
 		public final int outline;
@@ -665,6 +689,9 @@ public class CrystalBees {
 				case LIGHTGRAY:
 					this.addSpecialty(ChromaStacks.icyDust, 5);
 					break;
+				case MAGENTA:
+					ItemStack is = ReikaBeeHelper.getBeeItem(feedstock.getUID(), EnumBeeType.PRINCESS);
+					this.addSpecialty(is, 2);
 				default:
 					break;
 			}

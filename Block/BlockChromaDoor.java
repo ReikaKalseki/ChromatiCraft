@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
@@ -35,6 +34,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -121,7 +121,7 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 	}
 
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess iba, int x, int y, int z) {
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
 		float in = 0.375F;
 		float minx = in;
 		float miny = in;
@@ -130,24 +130,44 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		float maxy = 1-in;
 		float maxz = 1-in;
 
-		if (this.connectToBlock(iba.getBlock(x, y+1, z)))
+		if (this.connectToBlock(world, x, y+1, z, ForgeDirection.DOWN))
 			maxy = 1;
-		if (this.connectToBlock(iba.getBlock(x, y-1, z)))
+		if (this.connectToBlock(world, x, y-1, z, ForgeDirection.UP))
 			miny = 0;
-		if (this.connectToBlock(iba.getBlock(x+1, y, z)))
+		if (this.connectToBlock(world, x+1, y, z, ForgeDirection.WEST))
 			maxx = 1;
-		if (this.connectToBlock(iba.getBlock(x-1, y, z)))
+		if (this.connectToBlock(world, x-1, y, z, ForgeDirection.EAST))
 			minx = 0;
-		if (this.connectToBlock(iba.getBlock(x, y, z+1)))
+		if (this.connectToBlock(world, x, y, z+1, ForgeDirection.NORTH))
 			maxz = 1;
-		if (this.connectToBlock(iba.getBlock(x, y, z-1)))
+		if (this.connectToBlock(world, x, y, z-1, ForgeDirection.SOUTH))
 			minz = 0;
 
 		this.setBlockBounds(minx, miny, minz, maxx, maxy, maxz);
 	}
 
-	private boolean connectToBlock(Block b) {
-		return b == this || b.isOpaqueCube() || b.getRenderType() == 0 || b instanceof BlockStructureShield || b.getClass().getName().toLowerCase(Locale.ENGLISH).contains("facade");
+	private boolean connectToBlock(IBlockAccess world, int x, int y, int z, ForgeDirection s) {
+		Block b = world.getBlock(x, y, z);
+		if (b == this)
+			return true;
+		if (b.isOpaqueCube() || b.getRenderType() == 0)
+			return true;
+		if (b instanceof BlockStructureShield)
+			return true;
+		if (b.isSideSolid(world, x, y, z, s))
+			return true;
+		/*
+		String n = b.getClass().getName().toLowerCase(Locale.ENGLISH);
+		if (n.contains("facade"))
+			return true;
+		if (n.contains("conduitbundle"))
+			return true;
+		if (n.contains("cover"))
+			return true;
+		if (n.contains("multipart"))
+			return true;
+		 */
+		return false;
 	}
 
 	@Override

@@ -611,7 +611,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case BURROW:
 				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 			case DESERT:
-				return r.nextInt(96) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
+				return r.nextInt(120) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.sand;
 			default:
 				return false;
 		}

@@ -73,11 +73,13 @@ import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockPinballTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
@@ -191,7 +193,9 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
 	PAD(BlockHoverPad.class,													"chroma.hoverpad"),
 	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade"),
-	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect");
+	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
+	PINBALL(BlockPinballTile.class,				ItemBlockMultiType.class,		"chroma.pinball"),
+	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity");
 
 	private Class blockClass;
 	private String blockName;
@@ -371,8 +375,9 @@ public enum ChromaBlocks implements BlockEnum {
 			case PATH:
 				return PathType.list[meta].name+" "+this.getBasicName();
 			case STRUCTSHIELD:
-			case SPECIALSHIELD:
 				return this.getBasicName()+" "+BlockStructureShield.BlockType.list[meta%8].name;
+			case SPECIALSHIELD:
+				return this.getBasicName();
 			case RELAY:
 				return (meta == 16 ? "Omni" : CrystalElement.elements[meta].displayName)+" "+this.getBasicName();
 			case DIMGEN:
@@ -386,6 +391,10 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chroma.flower."+BlockDecoFlower.Flowers.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case LASEREFFECT:
 				return StatCollector.translateToLocal("chromablock.laser."+BlockLaserEffector.LaserEffectType.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case PINBALL:
+				return StatCollector.translateToLocal("chromablock.pinball."+BlockPinballTile.PinballRerouteType.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case GRAVITY:
+				return StatCollector.translateToLocal("chromablock.gravity."+BlockGravityTile.GravityTiles.list[meta].name().toLowerCase(Locale.ENGLISH));
 			default:
 				return "";
 		}
@@ -461,6 +470,10 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockDecoFlower.Flowers.list.length;
 			case LASEREFFECT:
 				return BlockLaserEffector.LaserEffectType.list.length;
+			case PINBALL:
+				return BlockPinballTile.PinballRerouteType.list.length;
+			case GRAVITY:
+				return BlockGravityTile.GravityTiles.list.length;
 			default:
 				return 1;
 		}

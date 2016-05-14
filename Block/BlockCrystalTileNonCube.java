@@ -14,7 +14,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 
@@ -33,6 +35,16 @@ public class BlockCrystalTileNonCube extends BlockCrystalTile {
 			default:
 				return this.getBlockAABB(x, y, z);
 		}
+	}
+
+	@Override
+	public final boolean isNormalCube() {
+		return false;
+	}
+
+	@Override
+	public final boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+		return false;
 	}
 
 	@Override

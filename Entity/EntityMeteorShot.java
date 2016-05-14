@@ -184,8 +184,19 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 				EntityFX fx = new EntityBlurFX(e.worldObj, px, py, pz).setScale(s).setColor(c);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
-			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, 2, 2, false);
-			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, 2, 2, false);
+			double d = e.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer);
+			float v = 0.8F;
+			if (d <= 256) {
+				v = 2;
+			}
+			else if (d <= 576) {
+				v = 1.5F;
+			}
+			else if (d <= 1024) {
+				v = 1;
+			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, v, 2, false);
+			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, v, 2, false);
 		}
 	}
 

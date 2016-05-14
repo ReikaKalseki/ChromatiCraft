@@ -76,13 +76,11 @@ import Reika.ChromatiCraft.Auxiliary.Potions.PotionCustomRegen;
 import Reika.ChromatiCraft.Auxiliary.Potions.PotionGrowthHormone;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.TransmutationRecipes;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer.PlayerEnergyCommand;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
-import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
@@ -113,8 +111,6 @@ import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
-import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
-import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.DimensionJoinHandler;
@@ -150,7 +146,6 @@ import Reika.DragonAPI.ModInteract.BannedItemReader;
 import Reika.DragonAPI.ModInteract.ItemStackRepository;
 import Reika.DragonAPI.ModInteract.ReikaEEHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MTInteractionManager;
-import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveFluidRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
@@ -463,26 +458,6 @@ public class ChromatiCraft extends DragonAPIMod {
 			FurnaceFuelRegistry.instance.registerItemSimple(sapling, 0.5F);
 		}
 
-		if (ChromaOptions.doesVanillaDyeDrop()) {
-
-		}
-		else {/*
-			logger.log("Configs were set such that trees do not drop vanilla dyes! Loading interface recipes to ensure farmability!");
-			for (int i = 0; i < 16; i++) {
-				ReikaDyeHelper dye = ReikaDyeHelper.dyes[i];
-				Object[] in = this.getIntercraft(dye);
-				Object[] sub = new Object[in.length-1];
-				System.arraycopy(in, 1, sub, 0, sub.length);
-				boolean shaped = (Boolean)in[0];
-				if (shaped) {
-					GameRegistry.addRecipe(dye.getStackOf(), sub);
-				}
-				else {
-					GameRegistry.addShapelessRecipe(dye.getStackOf(), sub);
-				}
-			}*/
-		}
-
 		this.addDyeCompat();
 
 		VanillaIntegrityTracker.instance.addWatchedBlock(instance, Blocks.leaves);
@@ -508,32 +483,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
 
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(0));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(1));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(2));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(7));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(8));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(10));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(11));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(12));
-
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CLOAK.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.STONE.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.GLASS.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.MOSS.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.CRACKS.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.COBBLE.ordinal()));
-		FMLInterModComms.sendMessage("ForgeMicroblock", "microMaterial", ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockType.LIGHT.ordinal()));
+		ModInteraction.addMicroblocks();
 
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
-			ReikaMystcraftHelper.registerPageRegistry(MystPages.instance);
-			for (int i = 0; i < Biomes.biomeList.length; i++) {
-				ReikaMystcraftHelper.disableBiomePage(Biomes.biomeList[i].getBiome());
-			}
-			for (int i = 0; i < SubBiomes.biomeList.length; i++) {
-				ReikaMystcraftHelper.disableBiomePage(SubBiomes.biomeList[i].getBiome());
-			}
+			ModInteraction.addMystCraft();
 		}
 
 		for (int i = 0; i < ChromaItems.itemList.length; i++) {
