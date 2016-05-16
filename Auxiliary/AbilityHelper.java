@@ -112,7 +112,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
 import appeng.api.networking.IGridHost;
@@ -195,7 +194,7 @@ public class AbilityHelper {
 		progressMap.addValue(Chromabilities.KEEPINV, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.ORECLIP, ProgressStage.CTM);
 		progressMap.addValue(Chromabilities.DOUBLECRAFT, ProgressStage.CTM);
-		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.CTM);
+		progressMap.addValue(Chromabilities.RECHARGE, ProgressStage.STRUCTCOMPLETE);
 		progressMap.addValue(Chromabilities.GROWAURA, ProgressStage.RAINBOWLEAF);
 		progressMap.addValue(Chromabilities.MEINV, ProgressStage.DIMENSION);
 		progressMap.addValue(Chromabilities.MOBSEEK, ProgressStage.CTM);
@@ -1104,7 +1103,7 @@ public class AbilityHelper {
 		if (te instanceof IGridHost) {
 			IGridHost ih = (IGridHost)te;
 			IGridNode n = ih.getGridNode(ForgeDirection.VALID_DIRECTIONS[nbt.getInteger("dir")]);
-			MESystemReader me = new MESystemReader(n, SourceType.MACHINE);
+			MESystemReader me = new MESystemReader(n, ep);
 			return me;
 		}
 		return null;

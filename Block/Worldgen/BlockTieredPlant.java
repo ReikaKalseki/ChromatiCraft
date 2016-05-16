@@ -34,10 +34,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.LoadRegistry;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PlantDropManager;
 import Reika.ChromatiCraft.Base.BlockChromaTiered;
+import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ModList;
@@ -193,7 +194,7 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			return null;
 		}
 
-		public int getGenerationCount() {
+		public int getGenerationCount(World world) {
 			switch(this) {
 				case POD:
 					return 6;
@@ -206,15 +207,25 @@ public final class BlockTieredPlant extends BlockChromaTiered implements IPlanta
 			}
 		}
 
-		public int getGenerationChance() {
+		public int getGenerationChance(World world) {
 			switch(this) {
 				case CAVE:
-					return 2;
+					return world.provider.dimensionId == 1 ? 1 : 2;
 				case POD:
 				case ROOT:
 					return 4;
 				default:
 					return 5;
+			}
+		}
+
+		public boolean canGenerateIn(World world) {
+			switch(this) {
+				case CAVE:
+				case LILY:
+					return !CrystalPotionController.isWorldHostile(world);
+				default:
+					return true;
 			}
 		}
 

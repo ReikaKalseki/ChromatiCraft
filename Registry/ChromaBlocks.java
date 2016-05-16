@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
+import Reika.ChromatiCraft.Block.BlockChromaTrail;
 import Reika.ChromatiCraft.Block.BlockCrystalConsole;
 import Reika.ChromatiCraft.Block.BlockCrystalFence;
 import Reika.ChromatiCraft.Block.BlockCrystalHive;
@@ -195,7 +196,8 @@ public enum ChromaBlocks implements BlockEnum {
 	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade"),
 	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
 	PINBALL(BlockPinballTile.class,				ItemBlockMultiType.class,		"chroma.pinball"),
-	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity");
+	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity"),
+	TRAIL(BlockChromaTrail.class,												"chroma.trail");
 
 	private Class blockClass;
 	private String blockName;
@@ -256,6 +258,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case GLOWLEAF:
 				return Material.leaves;
 			case HOVER:
+			case TRAIL:
 				return ChromatiCraft.airMat;
 			case LIGHT:
 				return Material.circuits;
@@ -431,6 +434,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case LIGHT:
 			case SELECTIVEGLASS:
 			case PAD:
+			case TRAIL:
 				return false;
 			default:
 				return true;

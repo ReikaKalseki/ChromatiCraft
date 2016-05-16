@@ -95,6 +95,7 @@ public enum ChromaResearch implements ProgressElement {
 	STRUCTURES("Structures",			ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
+	CRAFTING2("Casting II",				ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.RUNECRAFT,	ProgressStage.RUNEUSE),
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 	LEYLINES("Ley Lines",				ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
@@ -194,6 +195,7 @@ public enum ChromaResearch implements ProgressElement {
 	GLASS(			ChromaBlocks.GLASS,			CrystalElement.BLUE.ordinal(),		ResearchLevel.BASICCRAFT),
 	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT),
 	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
+	TRAIL(			ChromaBlocks.TRAIL,												ResearchLevel.BASICCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),

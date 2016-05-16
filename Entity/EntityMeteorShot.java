@@ -187,16 +187,22 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 			double d = e.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer);
 			float v = 0.8F;
 			if (d <= 256) {
-				v = 2;
+				v = 4;
 			}
 			else if (d <= 576) {
-				v = 1.5F;
+				v = 2F;
 			}
 			else if (d <= 1024) {
+				v = 1.5F;
+			}
+			else if (d <= 2304) { //48
 				v = 1;
 			}
-			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, v, 2, false);
-			ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, v, 2, false);
+			while (v > 0) {
+				float m = Math.min(2, v);
+				ReikaSoundHelper.playClientSound(ChromaSounds.IMPACT, e.posX, e.posY, e.posZ, m, 2, false);
+				v -= m;
+			}
 		}
 	}
 

@@ -45,7 +45,7 @@ public class OuterRegionsEvents {
 	}
 
 	public void tickPlayerInOuterRegion(EntityPlayer ep) {
-		if (ep.worldObj.rand.nextInt(400) == 0) {
+		if (ep.worldObj.rand.nextInt(100) == 0) {
 			this.spawnFlare(ep.worldObj, ep, 256);
 		}
 	}

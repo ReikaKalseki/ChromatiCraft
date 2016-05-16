@@ -24,6 +24,9 @@
 	<crafting>
 		At first, the casting table seemed identical to a wooden worktable, but you soon realized that in that form it can only make the most basic of items. In all likelihood, you will need to build a structure around the table to help focus the energy and allow you to advance your crafting. Additionally, the directionality to the recipes is likely important; one can only hope that the logical mapping of upwards to North has been chosen.
 	</crafting>
+	<crafting2>
+		North is indeed marked as upwards in the recipe display, so as long as you keep that in mind, things should proceed smoothly. One other thing to note, however, is that the table seems to rely on the ambient energy field in the world to perform its duty; In a world where this field is negligible or entirely absent - most easily exemplified by a total lack of pylons - it is likely to be unable to craft anything beyond basic recipes.
+	</crafting2>
 	<balllightning>
 		Pylons and rainbow forests seem to have interesting phenomena flitting about, wandering through the sky and around the ground. You wonder if they have a use, or if they might be dangerous. Even if not dangerous directly, you probably want to avoid letting them into sensitive machinery like a turbine.
 	</balllightning>

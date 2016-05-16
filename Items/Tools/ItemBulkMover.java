@@ -24,7 +24,6 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
@@ -89,7 +88,7 @@ public class ItemBulkMover extends ItemChromaTool {
 		}
 
 		if (this.getStoredItem(is) != null) {
-			InventoryInteraction ii = this.getInteraction(world, x, y, z, s);
+			InventoryInteraction ii = this.getInteraction(world, x, y, z, s, ep);
 			if (ii != null) {
 				if (this.hasItems(is)) {
 					int added = ii.addItems(this.getStoredItem(is), this.getStoredItems(is));
@@ -118,10 +117,10 @@ public class ItemBulkMover extends ItemChromaTool {
 		}
 	}
 
-	private InventoryInteraction getInteraction(World world, int x, int y, int z, int side) {
+	private InventoryInteraction getInteraction(World world, int x, int y, int z, int side, EntityPlayer ep) {
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (InterfaceCache.GRIDHOST.instanceOf(te)) {
-			return new AEInteraction(((IGridHost)te).getGridNode(ForgeDirection.VALID_DIRECTIONS[side]));
+			return new AEInteraction(((IGridHost)te).getGridNode(ForgeDirection.VALID_DIRECTIONS[side]), ep);
 		}
 		else if (te instanceof IInventory) {
 			return new IInvInteraction((IInventory)te);
@@ -134,8 +133,8 @@ public class ItemBulkMover extends ItemChromaTool {
 
 		private final MESystemReader me;
 
-		private AEInteraction(IGridNode ign) {
-			me = new MESystemReader(ign, SourceType.MACHINE);
+		private AEInteraction(IGridNode ign, EntityPlayer ep) {
+			me = new MESystemReader(ign, ep);
 		}
 
 		@Override

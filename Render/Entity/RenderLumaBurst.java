@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -58,6 +59,14 @@ public class RenderLumaBurst extends Render {
 		double s1 = 0.1875*1.125;
 		int c1 = eb.getColor().getColor();
 		v5.setColorOpaque_I(c1);
+		v5.addVertexWithUV(-s1, -s1, 0, u, v);
+		v5.addVertexWithUV(s1, -s1, 0, du, v);
+		v5.addVertexWithUV(s1, s1, 0, du, dv);
+		v5.addVertexWithUV(-s1, s1, 0, u, dv);
+
+		int c2 = ReikaColorAPI.mixColors(c1, 0xffffff, 0.25F);
+		v5.setColorOpaque_I(c2);
+		s1 *= 0.5;
 		v5.addVertexWithUV(-s1, -s1, 0, u, v);
 		v5.addVertexWithUV(s1, -s1, 0, du, v);
 		v5.addVertexWithUV(s1, s1, 0, du, dv);

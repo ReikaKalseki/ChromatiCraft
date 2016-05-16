@@ -20,6 +20,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -31,6 +32,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
@@ -41,10 +43,14 @@ import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.EntityLockMotionController;
+import Reika.DragonAPI.Instantiable.Spline;
+import Reika.DragonAPI.Instantiable.Spline.BasicSplinePoint;
+import Reika.DragonAPI.Instantiable.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -505,6 +511,150 @@ public class ChromaFX {
 		int[] arr2 = Arrays.copyOf(arr, arr.length);
 		ArrayUtils.reverse(arr2);
 		return ArrayUtils.addAll(arr, arr2);
+	}
+
+	public static void drawRadialFillbar(double frac, int tintColor, boolean segments) {
+		double u = 0;
+		double du = 0.5;
+		double v = segments ? 0.5 : 0;
+		double dv = v+0.5;
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/radialfill.png");
+		Tessellator v5 = Tessellator.instance;
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+		v5.setColorOpaque_I(0xffffff);
+		v5.addVertexWithUV(-1, 1, 0, u, dv);
+		v5.addVertexWithUV(1, 1, 0, du, dv);
+		v5.addVertexWithUV(1, -1, 0, du, v);
+		v5.addVertexWithUV(-1, -1, 0, u, v);
+		v5.draw();
+
+		v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+		v5.setBrightness(240);
+		v5.setColorOpaque_I(tintColor);
+		u = 0.75;
+		v = v+0.25;
+		v5.addVertexWithUV(0, 0, 0, u, v);
+		double ma = 360*frac;
+		double da = 0.25;
+		for (double a = 0; a < ma; a += da) {
+			double x = Math.sin(Math.toRadians(a+90));
+			double y = Math.cos(Math.toRadians(a+90));
+			du = u+x*0.25;
+			dv = v+y*0.25;
+			//ReikaJavaLibrary.pConsole(a+">"+x+","+y+" @ "+du+","+dv+" from "+u+","+v);
+			v5.addVertexWithUV(x, y, 0, du, dv);
+		}
+		v5.draw();
+	}
+
+	public static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, int a, double h) {
+		Tessellator v5 = Tessellator.instance;
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDepthMask(false);
+		v5.startDrawing(GL11.GL_LINES);
+		v5.setBrightness(240);
+		v5.setColorRGBA_I(0xffffff, 255);
+
+		v5.addVertex(x1, y1, z1);
+		v5.addVertex(x2, y2, z2);
+
+		v5.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+		ReikaTextureHelper.bindTerrainTexture();
+		IIcon ico = ChromaIcons.LASER.getIcon();
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+
+		double dd = ReikaMathLibrary.py3d(x2-x1, y2-y1, z2-z1);
+		int n = (int)(dd);
+		double dn = dd-n;
+
+		GL11.glPushMatrix();
+		//GL11.glRotated(ang, 0, 0, 0);
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+		v5.setColorRGBA_I(ReikaColorAPI.GStoHex(a), a);
+		for (double d = 0; d < n; d++) {
+			double nx = x1+(x2-x1)*d/dd;
+			double ny = y1+(y2-y1)*d/dd;
+			double nz = z1+(z2-z1)*d/dd;
+
+			double px = x1+(x2-x1)*(d+1)/dd;
+			double py = y1+(y2-y1)*(d+1)/dd;
+			double pz = z1+(z2-z1)*(d+1)/dd;
+
+			v5.addVertexWithUV(nx, ny-h, nz, u, v);
+			v5.addVertexWithUV(nx, ny+h, nz, u, dv);
+			v5.addVertexWithUV(px, py+h, pz, du, dv);
+			v5.addVertexWithUV(px, py-h, pz, du, v);
+
+			v5.addVertexWithUV(nx-h, ny, nz, u, v);
+			v5.addVertexWithUV(nx+h, ny, nz, u, dv);
+			v5.addVertexWithUV(px+h, py, pz, du, dv);
+			v5.addVertexWithUV(px-h, py, pz, du, v);
+
+			v5.addVertexWithUV(nx, ny, nz-h, u, v);
+			v5.addVertexWithUV(nx, ny, nz+h, u, dv);
+			v5.addVertexWithUV(px, py, pz+h, du, dv);
+			v5.addVertexWithUV(px, py, pz-h, du, v);
+		}
+		if (dn > 0) {
+			double nx = x1+(x2-x1)*0/dd;
+			double ny = y1+(y2-y1)*0/dd;
+			double nz = z1+(z2-z1)*0/dd;
+
+			double px = x1+(x2-x1)*(dn)/dd;
+			double py = y1+(y2-y1)*(dn)/dd;
+			double pz = z1+(z2-z1)*(dn)/dd;
+
+			v5.addVertexWithUV(nx, ny-h, nz, u, v);
+			v5.addVertexWithUV(nx, ny+h, nz, u, dv);
+			v5.addVertexWithUV(px, py+h, pz, du, dv);
+			v5.addVertexWithUV(px, py-h, pz, du, v);
+
+			v5.addVertexWithUV(nx-h, ny, nz, u, v);
+			v5.addVertexWithUV(nx+h, ny, nz, u, dv);
+			v5.addVertexWithUV(px+h, py, pz, du, dv);
+			v5.addVertexWithUV(px-h, py, pz, du, v);
+
+			v5.addVertexWithUV(nx, ny, nz-h, u, v);
+			v5.addVertexWithUV(nx, ny, nz+h, u, dv);
+			v5.addVertexWithUV(px, py, pz+h, du, dv);
+			v5.addVertexWithUV(px, py, pz-h, du, v);
+		}
+		v5.draw();
+		GL11.glPopMatrix();
+		GL11.glPopAttrib();
+	}
+
+	public static void renderBolt(LightningBolt b, float par8, int a, double h, boolean spline) {
+		if (spline) {
+			Spline s = new Spline(SplineType.CENTRIPETAL);
+			for (int i = 0; i <= b.nsteps; i++) {
+				DecimalPosition pos = b.getPosition(i);
+				s.addPoint(new BasicSplinePoint(pos));
+			}
+			List<DecimalPosition> li = s.get(32, false);
+			for (int i = 0; i < li.size()-1; i++) {
+				DecimalPosition pos1 = li.get(i);
+				DecimalPosition pos2 = li.get(i+1);
+				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h);
+			}
+		}
+		else {
+			for (int i = 0; i < b.nsteps; i++) {
+				DecimalPosition pos1 = b.getPosition(i);
+				DecimalPosition pos2 = b.getPosition(i+1);
+				renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, a, h);
+			}
+		}
 	}
 
 }

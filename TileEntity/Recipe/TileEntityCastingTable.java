@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
@@ -52,6 +53,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -727,6 +729,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private CastingRecipe getValidRecipe() {
 		CastingRecipe r = RecipesCastingTable.instance.getRecipe(this, this.getValidRecipeTypes());
+		if (r instanceof TempleCastingRecipe && !PylonGenerator.instance.canGenerateIn(worldObj))
+			r = null;
 		//ReikaJavaLibrary.pConsole(r);
 		if (r instanceof MultiBlockCastingRecipe) {
 			MultiBlockCastingRecipe m = (MultiBlockCastingRecipe)r;

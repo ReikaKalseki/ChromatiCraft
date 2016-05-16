@@ -67,7 +67,7 @@ public class BlockSpecialShield extends BlockStructureShield {
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
-		int meta = iba.getBlockMetadata(x, y, z);
+		int meta = iba.getBlockMetadata(x, y, z)%8;
 		return icons[meta];
 	}
 

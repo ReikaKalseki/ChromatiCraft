@@ -46,15 +46,17 @@ public class TieredWorldGenerator implements RetroactiveGenerator, ChromaDecorat
 
 			for (int i = 0; i < TieredPlants.list.length; i++) {
 				TieredPlants p = TieredPlants.list[i];
-				boolean flag = false;
-				if (random.nextInt(p.getGenerationChance()) == 0) {
-					int n = p.getGenerationCount();
-					for (int k = 0; k < n; k++) {
-						int posX = chunkX + random.nextInt(16);
-						int posZ = chunkZ + random.nextInt(16);
-						Coordinate c = p.generate(world, posX, posZ, random);
-						if (c != null) {
-							c.setBlock(world, p.getBlock(), p.ordinal());
+				if (p.canGenerateIn(world)) {
+					boolean flag = false;
+					if (random.nextInt(p.getGenerationChance(world)) == 0) {
+						int n = p.getGenerationCount(world);
+						for (int k = 0; k < n; k++) {
+							int posX = chunkX + random.nextInt(16);
+							int posZ = chunkZ + random.nextInt(16);
+							Coordinate c = p.generate(world, posX, posZ, random);
+							if (c != null) {
+								c.setBlock(world, p.getBlock(), p.ordinal());
+							}
 						}
 					}
 				}

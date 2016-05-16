@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
 import Reika.ChromatiCraft.Items.Tools.ItemPendant;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -251,10 +252,15 @@ public class GuiCastingAuto extends GuiChromaBase {
 			//r.drawTabIcon(itemRender, 21, 33);
 			//fontRendererObj.drawSplitString(r.getTitle(), 40, 36, 120, 0xffffff);
 
-			fontRendererObj.drawString(cr.getOutput().getDisplayName(), 10, 18, 0xffffff);
+			ItemStack out = cr.getOutput();
+			String s = out.getDisplayName();
+			if (ChromaItems.ADJACENCY.matchWith(out)) {
+				s = s+" (Tier "+(out.stackTagCompound.getInteger("tier"))+")";
+			}
+			fontRendererObj.drawString(s, 10, 18, 0xffffff);
 
-			fontRendererObj.drawString(String.format("x%d = %d", number, number*cr.getOutput().stackSize), 74, 38, 0xffffff);
-			api.drawItemStack(itemRender, cr.getOutput(), 52, 34);
+			fontRendererObj.drawString(String.format("x%d = %d", number, number*out.stackSize), 74, 38, 0xffffff);
+			api.drawItemStack(itemRender, out, 52, 34);
 
 			/*
 			ItemHashMap<Integer> map = cr.getItemCounts();

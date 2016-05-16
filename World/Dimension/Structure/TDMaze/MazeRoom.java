@@ -99,7 +99,7 @@ public class MazeRoom extends StructurePiece {
 		}
 		 */
 
-		if (rand.nextInt(Math.max(0, 2-cellRadius)) == 0) {
+		if (rand.nextInt(Math.max(1, 3-cellRadius)) == 0) {
 			String s = rand.nextBoolean() ? ChestGenHooks.DUNGEON_CHEST : ChestGenHooks.PYRAMID_DESERT_CHEST;
 			ItemStack is = rand.nextBoolean() ? ChromaStacks.getChargedShard(CrystalElement.randomElement()) : ChromaStacks.lumaDust;
 			int m = 2;

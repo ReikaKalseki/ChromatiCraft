@@ -872,8 +872,10 @@ public class ProgressionManager implements ProgressRegistry {
 		tag.setBoolean(e.name(), set);
 		if (had != set) {
 			nbt.setTag(STRUCTURE_NBT_TAG, tag);
-			if (set)
+			if (set) {
+				ProgressStage.STRUCTCOMPLETE.stepPlayerTo(ep);
 				this.checkPlayerStructures(ep);
+			}
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)

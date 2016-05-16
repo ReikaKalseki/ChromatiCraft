@@ -9,9 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
@@ -20,7 +18,6 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Models.ModelTurbo;
-import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
@@ -28,11 +25,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
 public class RenderPylonTurboCharger extends ChromaRenderBase {
@@ -143,68 +138,8 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 			Coordinate end = nx.position.offset(loc.position.negate());
 			Coordinate test = end.offset(te.xCoord, te.yCoord, te.zCoord);
 			if (ChromaTiles.getTileFromIDandMetadata(test.getBlock(te.worldObj), test.getBlockMetadata(te.worldObj)) == ChromaTiles.PYLONTURBO)
-				this.renderBeam(0.5, 0.4375, 0.5, end.xCoord+0.5, end.yCoord+0.4375, end.zCoord+0.5, par8, 192, 0.5);
+				ChromaFX.renderBeam(0.5, 0.4375, 0.5, end.xCoord+0.5, end.yCoord+0.4375, end.zCoord+0.5, par8, 192, 0.5);
 		}
-	}
-
-	private static void renderBeam(double x1, double y1, double z1, double x2, double y2, double z2, float par8, int a, double h) {
-		Tessellator v5 = Tessellator.instance;
-		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDepthMask(false);
-		v5.startDrawing(GL11.GL_LINES);
-		v5.setBrightness(240);
-		v5.setColorRGBA_I(0xffffff, 255);
-
-		v5.addVertex(x1, y1, z1);
-		v5.addVertex(x2, y2, z2);
-
-		v5.draw();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-		ReikaTextureHelper.bindTerrainTexture();
-		IIcon ico = ChromaIcons.LASER.getIcon();
-		float u = ico.getMinU();
-		float v = ico.getMinV();
-		float du = ico.getMaxU();
-		float dv = ico.getMaxV();
-
-		double dd = ReikaMathLibrary.py3d(x2-x1, y2-y1, z2-z1);
-		int n = (int)(dd);
-
-		GL11.glPushMatrix();
-		//GL11.glRotated(ang, 0, 0, 0);
-		v5.startDrawingQuads();
-		v5.setBrightness(240);
-		v5.setColorRGBA_I(ReikaColorAPI.GStoHex(a), a);
-		for (double d = 0; d < n; d++) {
-			double nx = x1+(x2-x1)*d/n;
-			double ny = y1+(y2-y1)*d/n;
-			double nz = z1+(z2-z1)*d/n;
-
-			double px = x1+(x2-x1)*(d+1)/n;
-			double py = y1+(y2-y1)*(d+1)/n;
-			double pz = z1+(z2-z1)*(d+1)/n;
-
-			v5.addVertexWithUV(nx, ny-h, nz, u, v);
-			v5.addVertexWithUV(nx, ny+h, nz, u, dv);
-			v5.addVertexWithUV(px, py+h, pz, du, dv);
-			v5.addVertexWithUV(px, py-h, pz, du, v);
-
-			v5.addVertexWithUV(nx-h, ny, nz, u, v);
-			v5.addVertexWithUV(nx+h, ny, nz, u, dv);
-			v5.addVertexWithUV(px+h, py, pz, du, dv);
-			v5.addVertexWithUV(px-h, py, pz, du, v);
-
-			v5.addVertexWithUV(nx, ny, nz-h, u, v);
-			v5.addVertexWithUV(nx, ny, nz+h, u, dv);
-			v5.addVertexWithUV(px, py, pz+h, du, dv);
-			v5.addVertexWithUV(px, py, pz-h, du, v);
-		}
-		v5.draw();
-		GL11.glPopMatrix();
-		GL11.glPopAttrib();
 	}
 
 	private void renderLightning(TileEntityPylonTurboCharger te, double par2, double par4, double par6, float par8) {
@@ -213,15 +148,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 			int idx = loc != null ? loc.ordinal()+1 : 0;
 			LightningBolt b = bolts[f][idx];
 			b.update();
-			renderBolt(b, par8);
-		}
-	}
-
-	private static void renderBolt(LightningBolt b, float par8) {
-		for (int i = 0; i < b.nsteps; i++) {
-			DecimalPosition pos1 = b.getPosition(i);
-			DecimalPosition pos2 = b.getPosition(i+1);
-			renderBeam(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, par8, 192, 0.25);
+			ChromaFX.renderBolt(b, par8, 192, 0.25, false);
 		}
 	}
 

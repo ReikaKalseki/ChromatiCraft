@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTarget;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockPinballTile.TileBouncePad;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -96,7 +96,7 @@ import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderBouncePad;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
-import Reika.ChromatiCraft.Render.TESR.RenderGravityTarget;
+import Reika.ChromatiCraft.Render.TESR.RenderGravityTile;
 import Reika.ChromatiCraft.Render.TESR.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
@@ -269,7 +269,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityColoredAltar.class, new RenderColoredAltar());
 		ClientRegistry.bindTileEntitySpecialRenderer(TargetTile.class, new RenderLaserTarget());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileBouncePad.class, new RenderBouncePad());
-		ClientRegistry.bindTileEntitySpecialRenderer(GravityTarget.class, new RenderGravityTarget());
+		ClientRegistry.bindTileEntitySpecialRenderer(GravityTile.class, new RenderGravityTile());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);

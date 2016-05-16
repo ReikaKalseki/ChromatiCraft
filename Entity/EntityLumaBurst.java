@@ -31,16 +31,47 @@ public class EntityLumaBurst extends ParticleEntity {
 
 	public EntityLumaBurst(World world, int x, int y, int z, CubeDirections dir, CrystalElement e) {
 		super(world, x, y, z, dir);
+		this.setColor(e);
+	}
+
+	public EntityLumaBurst(World world, int x, int y, int z, double ang, CrystalElement e) {
+		super(world, x, y, z);
+		this.setColor(e);
+		this.setAngle(ang);
+	}
+
+	@Override
+	protected void entityInit() {
+		dataWatcher.addObject(24, 0);
+	}
+
+	public void copyFrom(EntityLumaBurst e) {
+		this.setColor(e.color);
+		motionX = e.motionX;
+		motionY = e.motionY;
+		motionZ = e.motionZ;
+	}
+
+	public void setColor(CrystalElement e) {
 		color = e;
+		dataWatcher.updateObject(24, e.ordinal());
 	}
 
 	@Override
 	protected void setDirection(CubeDirections dir, boolean setPos) {
-		super.setDirection(dir, setPos);
-		double d = 0.03125/4;
-		motionX = ReikaRandomHelper.getRandomPlusMinus(motionX, d);
-		motionZ = ReikaRandomHelper.getRandomPlusMinus(motionZ, d);
-		motionY = ReikaRandomHelper.getRandomPlusMinus(motionY, d/4D);
+		if (setPos)
+			super.setDirection(dir, setPos);
+
+		double d = 10;//0.03125/4;
+		double a = ReikaRandomHelper.getRandomPlusMinus(dir.angle, d);
+		this.setAngle(a);
+	}
+
+	private void setAngle(double a) {
+		double[] vel = ReikaPhysicsHelper.polarToCartesian(this.getSpeed(), 0, -a);
+		motionX = vel[0];//ReikaRandomHelper.getRandomPlusMinus(motionX, d);
+		motionZ = vel[2];//ReikaRandomHelper.getRandomPlusMinus(motionZ, d);
+		motionY = vel[1];//ReikaRandomHelper.getRandomPlusMinus(motionY, d/4D);
 	}
 
 	public void resetSpawnTimer() {
@@ -92,6 +123,7 @@ public class EntityLumaBurst extends ParticleEntity {
 		if (outOfSpawnZone)
 			outOfSpawnZoneLast = true;
 		outOfSpawnZone = true;
+		color = CrystalElement.elements[dataWatcher.getWatchableObjectInt(24)];
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -91,6 +91,10 @@ public enum ChromaIcons {
 	HEXFLARE2("hexflare2"),
 	CONCENTRIC("concentric"),
 	CONCENTRIC2("concentric2"),
+	CONCENTRIC2REV("concentric2rev"),
+	FAN("fan"),
+	SIDEDFLOW("sidedflow"),
+	SIDEDFLOWBI("sidedflow-bi"),
 	;
 
 	private IIcon icon;

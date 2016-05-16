@@ -67,7 +67,8 @@ public class BlockAdjacencyUpgrade extends BlockCrystalTileNonCube {
 		return li;
 	}
 
-	private ItemStack getHarvestedItemStack(World world, int x, int y, int z, int meta, ChromaTiles c) {
+	@Override
+	protected ItemStack getHarvestedItemStack(World world, int x, int y, int z, int meta, ChromaTiles c) {
 		return ChromaItems.ADJACENCY.getStackOfMetadata(meta);
 	}
 

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,6 +19,8 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -32,6 +35,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -41,11 +45,13 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -88,6 +94,32 @@ public class BlockChromaPortal extends Block {
 	@Override
 	public int getRenderType() {
 		return -1;
+	}
+
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
+		if (ChromaItems.TOOL.matchWith(ep.getCurrentEquippedItem())) {
+			TileEntityCrystalPortal te = (TileEntityCrystalPortal)world.getTileEntity(x, y, z);
+			if (te.ownedBy(ep)) {
+				//world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
+				//world.createExplosion(ep, x+0.5, y+0.5, z+0.5, 4, false);
+				for (int i = -2; i <= 2; i++) {
+					for (int k = -2; k <= 2; k++) {
+						if (world.getBlock(x+i, y, z+k) == Blocks.fire)
+							world.setBlock(x+i, y, z+k, Blocks.air);
+					}
+				}
+				BlockArray bk = new BlockArray();
+				bk.recursiveAddWithBounds(world, x, y, z, this, x-16, y-8, z-16, x+16, y+8, z+16);
+				for (Coordinate loc : bk.keySet()) {
+					loc.setBlock(world, Blocks.air);
+					ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, new ItemStack(this));
+				}
+				ChromaSounds.RIFT.playSoundAtBlock(te);
+				ChromaSounds.POWERDOWN.playSoundAtBlock(te);
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -157,6 +189,7 @@ public class BlockChromaPortal extends Block {
 		private int charge;
 		public final int MINCHARGE = 300;
 		private int ticks = 0;
+		private UUID placerUUID;
 
 		@Override
 		public void updateEntity() {
@@ -199,6 +232,10 @@ public class BlockChromaPortal extends Block {
 					ChromaSounds.PORTAL.playSoundAtBlock(this);
 				}
 			}
+		}
+
+		public boolean ownedBy(EntityPlayer ep) {
+			return placerUUID == null || placerUUID.equals(ep.getUniqueID());
 		}
 
 		public int getTargetDimension() {
@@ -357,6 +394,10 @@ public class BlockChromaPortal extends Block {
 			NBT.setBoolean("built", complete);
 
 			NBT.setInteger("charge", charge);
+
+			if (placerUUID != null) {
+				NBT.setString("owner", placerUUID.toString());
+			}
 		}
 
 		@Override
@@ -366,6 +407,11 @@ public class BlockChromaPortal extends Block {
 			complete = NBT.getBoolean("built");
 
 			charge = NBT.getInteger("charge");
+
+			String s = NBT.getString("owner");
+			if (s != null && !s.isEmpty()) {
+				placerUUID = UUID.fromString(s);
+			}
 		}
 
 		@Override

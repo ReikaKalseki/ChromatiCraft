@@ -84,7 +84,8 @@ public class BlockMusicTrigger extends Block implements SemiUnbreakable {
 			CrystalElement e = CrystalElement.elements[meta];
 			float p = CrystalMusicManager.instance.getScaledDing(e, idx);
 			CrystalTypeBlock.ding(world, x, y, z, e, p);
-			BlockMusicMemory.ping(world, x, y, z, e, idx);
+			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
+				BlockMusicMemory.ping(world, x, y, z, e, idx);
 			if (world.isRemote) {
 				this.createParticle(world, x, y+1, z, e);
 			}

@@ -60,19 +60,18 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
-import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.SourceType;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IGridBlock;
-import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.security.IActionHost;
 import appeng.api.util.AECableType;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Strippable(value={"appeng.api.networking.IGridHost"})
-public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiController, OwnedTile, IGridHost {
+@Strippable(value={"appeng.api.networking.IActionHost"})
+public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiController, OwnedTile, IActionHost {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -268,7 +267,7 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				aeGridNode = FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER ? AEApi.instance().createGridNode((IGridBlock)aeGridBlock) : null;
 			}
 			((IGridNode)aeGridNode).updateState();
-			network = aeGridNode != null ? new MESystemReader((IGridNode)aeGridNode, SourceType.MACHINE) : null;
+			network = aeGridNode != null ? new MESystemReader((IGridNode)aeGridNode, this) : null;
 		}
 	}
 
@@ -510,6 +509,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 	@Override
 	public boolean onlyAllowOwnersToUse() {
 		return true;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public IGridNode getActionableNode() {
+		return (IGridNode)aeGridNode;
 	}
 
 	private static class UpdateStep {

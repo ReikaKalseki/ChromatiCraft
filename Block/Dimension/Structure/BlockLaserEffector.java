@@ -42,6 +42,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockLaserEffector extends BlockContainer {
@@ -320,14 +322,8 @@ public class BlockLaserEffector extends BlockContainer {
 			if (doFX) {
 				if (set) {
 					ChromaSounds.CAST.playSoundAtBlock(this);
-					for (int i = 0; i < 32; i++) {
-						double x = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 0.75);
-						double y = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, 0.5);
-						double z = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.75);
-						int l = ReikaRandomHelper.getRandomBetween(8, 30);
-						EntityFX fx = new EntityBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
-						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					}
+					if (worldObj.isRemote)
+						this.doFXClient();
 				}
 				else {
 					ChromaSounds.ERROR.playSoundAtBlock(this);
@@ -340,6 +336,18 @@ public class BlockLaserEffector extends BlockContainer {
 				}
 			}
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void doFXClient() {
+			for (int i = 0; i < 32; i++) {
+				double x = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 0.75);
+				double y = ReikaRandomHelper.getRandomPlusMinus(yCoord+0.5, 0.5);
+				double z = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.75);
+				int l = ReikaRandomHelper.getRandomBetween(8, 30);
+				EntityFX fx = new EntityBlurFX(worldObj, x, y, z).setColor(this.getRenderColor()).setLife(l);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 
 		@Override
