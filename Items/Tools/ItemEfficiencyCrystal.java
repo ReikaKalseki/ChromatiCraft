@@ -19,7 +19,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Orbit;
-import Reika.DragonAPI.Instantiable.OrbitMotionController;
+import Reika.DragonAPI.Instantiable.ParticleController.OrbitMotionController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

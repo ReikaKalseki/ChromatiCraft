@@ -172,6 +172,7 @@ public enum ChromaResearch implements ProgressElement {
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
 	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
+	FLUIDDISTRIB(	ChromaTiles.FLUIDDISTRIBUTOR,ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

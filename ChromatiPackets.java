@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.fluids.FluidRegistry;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
@@ -105,6 +106,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
@@ -716,6 +718,9 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case ASPECTMODE:
 					((TileEntityAspectFormer)tile).stepMode();
+					break;
+				case FLUIDSEND:
+					((TileEntityFluidDistributor)tile).sendFluidToClient(data[0], data[1], data[2], FluidRegistry.getFluid(data[3]), data[4]);
 					break;
 			}
 		}

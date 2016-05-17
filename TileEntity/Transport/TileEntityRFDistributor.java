@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Transport;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -21,12 +20,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
-import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -39,16 +37,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value = {"cofh.api.energy.IEnergyReceiver", "cofh.api.energy.IEnergyHandler"})
-public class TileEntityRFDistributor extends TileEntityChromaticBase implements IEnergyReceiver, IEnergyHandler { //IEH only for EiO conduit connection
-
-	public static final int SCAN_RADIUS_XZ = 16;
-
-	private final HashSet<WorldLocation> storages = new HashSet();
-	private final HashSet<WorldLocation> inputs = new HashSet();
-
-	private final HashMap<WorldLocation, Integer> particleCooldowns = new HashMap();
-
-	private final StepTimer cacheTimer = new StepTimer(40);
+public class TileEntityRFDistributor extends TileEntityAreaDistributor implements IEnergyReceiver, IEnergyHandler { //IEH only for EiO conduit connection
 
 	private static final HashSet<Class> blacklist = new HashSet();
 
@@ -65,20 +54,9 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 		return this.tryDistributeEnergy(maxReceive, simulate);
 	}
 
-	private void addInput(WorldLocation loc) {
-		inputs.add(loc);
-		storages.remove(loc);
-	}
-
-	private void addStorage(WorldLocation loc, IEnergyReceiver ie) {
-		if (!inputs.contains(loc)) {
-			storages.add(loc);
-		}
-	}
-
 	private int tryDistributeEnergy(int maxReceive, boolean simulate) {
 		int add = 0;
-		Iterator<WorldLocation> it = storages.iterator();
+		Iterator<WorldLocation> it = this.getTargets();
 		while (it.hasNext()) {
 			WorldLocation loc = it.next();
 			TileEntity te = loc.getTileEntity();
@@ -124,7 +102,7 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 	@SideOnly(Side.CLIENT)
 	public void sendRFToClient(int x, int y, int z, int rf) {
 		WorldLocation loc = new WorldLocation(worldObj, x, y, z);
-		if (!particleCooldowns.containsKey(loc)) {
+		if (this.trySendParticle(loc)) {
 			int l = 40;
 			double dx = x-xCoord;
 			double dy = y-yCoord;
@@ -149,8 +127,6 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
-
-			particleCooldowns.put(loc, 3+rand.nextInt(8));
 		}
 	}
 
@@ -171,27 +147,10 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		cacheTimer.update();
-
-		if (cacheTimer.checkCap() || this.getTicksExisted() == 0) {
-			this.scanAndCache(world, x, y, z);
-		}
+		super.updateEntity(world, x, y, z, meta);
 
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
-
-			HashSet<WorldLocation> remove = new HashSet();
-			for (WorldLocation loc : particleCooldowns.keySet()) {
-				int get = particleCooldowns.get(loc);
-				if (get > 1) {
-					particleCooldowns.put(loc, get-1);
-				}
-				else {
-					remove.add(loc);
-				}
-			}
-			for (WorldLocation loc : remove)
-				particleCooldowns.remove(loc);
 		}
 	}
 
@@ -215,22 +174,8 @@ public class TileEntityRFDistributor extends TileEntityChromaticBase implements 
 		}
 	}
 
-	private void scanAndCache(World world, int x, int y, int z) {
-		int r = SCAN_RADIUS_XZ;
-		int r2 = r/2;
-		for (int i = -r; i <= r; i++) {
-			for (int k = -r; k <= r; k++) {
-				for (int j = -r2; j <= 0; j++) {
-					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
-					if (this.isValidTarget(te)) {
-						this.addStorage(new WorldLocation(te), (IEnergyReceiver)te);
-					}
-				}
-			}
-		}
-	}
-
-	private boolean isValidTarget(TileEntity te) {
+	@Override
+	protected boolean isValidTarget(TileEntity te) {
 		if (te == this)
 			return false;
 		if (te == null)

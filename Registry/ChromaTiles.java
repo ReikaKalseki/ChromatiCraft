@@ -102,6 +102,7 @@ import Reika.ChromatiCraft.TileEntity.Storage.TileEntityMultiStorage;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
@@ -194,7 +195,8 @@ public enum ChromaTiles implements TileEnum {
 	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner"),
 	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3/*, "RenderWirelessSource"*/),
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
-	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower");
+	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
+	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor");
 
 	private final Class tile;
 	private final String name;
@@ -269,6 +271,7 @@ public enum ChromaTiles implements TileEnum {
 			case AUTOMATOR:
 			case MEDISTRIBUTOR:
 			case RFDISTRIBUTOR:
+			case FLUIDDISTRIBUTOR:
 			case PERSONAL:
 			case PYLONTURBO:
 			case TURRET:

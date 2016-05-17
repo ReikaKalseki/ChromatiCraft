@@ -31,7 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
-import Reika.DragonAPI.Instantiable.CollectingPositionController;
+import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;

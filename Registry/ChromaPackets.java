@@ -129,6 +129,7 @@ public enum ChromaPackets {
 	FLAREMSG(),
 	FLAREATTACK(1),
 	ASPECTMODE(),
+	FLUIDSEND(5),
 	;
 
 	public final int numInts;
