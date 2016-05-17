@@ -99,6 +99,10 @@ public class RenderGravityTile extends ChromaRenderBase {
 					du = icon.getMaxU();
 					dv = icon.getMaxV();
 
+					if (i == 1) {
+						GL11.glRotated((t/10D)%360D, 0, 0, 1);
+					}
+
 					v5.startDrawingQuads();
 					int c = i == 0 ? 0xffffff : te.getColor().getColor();
 					v5.setColorOpaque_I(c);
@@ -235,7 +239,7 @@ public class RenderGravityTile extends ChromaRenderBase {
 			GL11.glTranslated(0.5, te.getBlockType().getBlockBoundsMaxY()/2, 0.5);
 			if (c != null && gw.linkRender != null) {
 				gw.linkRender.update();
-				ChromaFX.renderBolt(gw.linkRender, par8, 192, 0.1875, true);
+				ChromaFX.renderBolt(gw.linkRender, par8, 192, 0.1875, 6);
 			}
 			GL11.glPopAttrib();
 			GL11.glPopMatrix();

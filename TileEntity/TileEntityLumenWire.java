@@ -270,9 +270,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 		}
 		double in = 0.25;
 		double h = 0.5;
-		double inx = facing.offsetX == 0 ? 0.5 : in;
-		double iny = facing.offsetY == 0 ? h : in;
-		double inz = facing.offsetZ == 0 ? 0.5 : in;
+		double inx = this.getFacing().offsetX == 0 ? 0.5 : in;
+		double iny = this.getFacing().offsetY == 0 ? h : in;
+		double inz = this.getFacing().offsetZ == 0 ? 0.5 : in;
 		for (int i = 0; i < n; i++) {
 			double d = rand.nextDouble();
 			double dx = x+inx+d*(connection.xCoord+1-inx*2-x);
@@ -349,9 +349,9 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 			return;
 		double in = 0.25;
 		double h = 0.5;
-		double inx = facing.offsetX == 0 ? 0.5 : in;
-		double iny = facing.offsetY == 0 ? h : in;
-		double inz = facing.offsetZ == 0 ? 0.5 : in;
+		double inx = this.getFacing().offsetX == 0 ? 0.5 : in;
+		double iny = this.getFacing().offsetY == 0 ? h : in;
+		double inz = this.getFacing().offsetZ == 0 ? 0.5 : in;
 		double d = rand.nextDouble();
 		double dx = x+inx+d*(connection.xCoord+1-inx*2-x);
 		double dy = y+iny+d*(connection.yCoord+1-iny*2-y);

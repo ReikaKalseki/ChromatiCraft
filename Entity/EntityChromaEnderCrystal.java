@@ -65,11 +65,11 @@ public final class EntityChromaEnderCrystal extends EntityEnderCrystal {
 	public void onUpdate() {
 		super.onUpdate();
 
+		int x = MathHelper.floor_double(posX);
+		int y = MathHelper.floor_double(posY);
+		int z = MathHelper.floor_double(posZ);
+		worldObj.setBlock(x, y+1, z, Blocks.fire);
 		if (!worldObj.isRemote) {
-			int x = MathHelper.floor_double(posX);
-			int y = MathHelper.floor_double(posY);
-			int z = MathHelper.floor_double(posZ);
-			worldObj.setBlock(x, y+1, z, Blocks.fire);
 			if (worldObj.getBlock(x, y-1, z) != Blocks.bedrock)
 				this.setDead();
 		}

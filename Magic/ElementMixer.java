@@ -47,6 +47,10 @@ public class ElementMixer {
 		return data.getMix(e1, e2);
 	}
 
+	public boolean isMixable(CrystalElement e1, CrystalElement e2) {
+		return this.getMix(e1, e2) != null;
+	}
+
 	public CrystalElement subtract(CrystalElement mix, CrystalElement e) {
 		return data.getOtherEntry(mix, e);
 	}

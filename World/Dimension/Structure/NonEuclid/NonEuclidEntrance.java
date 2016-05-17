@@ -57,8 +57,8 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 			Block bb = world.getBlock(x, localmax, dz);
 			if (!(bb instanceof BlockStructureShield)) {
 				h = localmax-miny;
-				dd = d-h;
 			}
+			dd++;
 		}
 
 		parent.offsetEntry(0, dd);
@@ -75,7 +75,7 @@ public class NonEuclidEntrance extends DynamicStructurePiece {
 					world.setBlock(dx, dy+f, dz, wall ? b : Blocks.air, wall ? m1 : 0, 3);
 			}
 
-			dz = z+k+h+dd+10+1;
+			dz = z+k+dd+1+2;
 			dy = maxy-2;
 			for (int i = -2; i <= 2; i++) {
 				int dx = x+i;

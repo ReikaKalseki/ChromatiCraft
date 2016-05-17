@@ -53,7 +53,7 @@ public class GlowKnot {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_BLEND);
 		Tessellator v5 = Tessellator.instance;
-		spline.render(v5, 0.5, 0.5, 0.5, color, inworld, true);
+		spline.render(v5, 0.5, 0.5, 0.5, color, inworld, true, 32);
 
 		IIcon ico = ChromaIcons.FADE.getIcon();
 		float u = ico.getMinU();

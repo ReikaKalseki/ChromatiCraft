@@ -148,7 +148,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 			int idx = loc != null ? loc.ordinal()+1 : 0;
 			LightningBolt b = bolts[f][idx];
 			b.update();
-			ChromaFX.renderBolt(b, par8, 192, 0.25, false);
+			ChromaFX.renderBolt(b, par8, 192, 0.25, 0);
 		}
 	}
 

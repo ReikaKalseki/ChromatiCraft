@@ -180,6 +180,7 @@ public class ChromaAspectManager {
 			ItemStack pendant = ChromaItems.PENDANT.getStackOf(dye);
 			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOf(dye);
 			ItemStack acc = ChromaItems.ADJACENCY.getStackOfMetadata(i);
+			ItemStack stone = ChromaItems.ELEMENTAL.getStackOfMetadata(i);
 			List<Aspect> li = new ArrayList();
 			li.addAll(aspectsColor.getForward(dye));
 			li.addAll(aspectsThematic.getForward(dye));
@@ -216,6 +217,8 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(acc, Aspect.CRYSTAL, 4);
 			ReikaThaumHelper.addAspects(acc, Aspect.ENERGY, 4);
 			ReikaThaumHelper.addAspects(acc, Aspect.TRAVEL, 4);
+			ReikaThaumHelper.addAspects(stone, Aspect.ENERGY, 1);
+			ReikaThaumHelper.addAspects(stone, Aspect.EARTH, 1);
 			for (Aspect a : li) {
 				ReikaThaumHelper.addAspects(shard, a, 2);
 				ReikaThaumHelper.addAspects(bshard, a, 5);
@@ -229,6 +232,7 @@ public class ChromaAspectManager {
 				ReikaThaumHelper.addAspects(pendant, a, 12);
 				ReikaThaumHelper.addAspects(pendant3, a, 24);
 				ReikaThaumHelper.addAspects(acc, a, 8);
+				ReikaThaumHelper.addAspects(stone, a, 4);
 			}
 		}
 

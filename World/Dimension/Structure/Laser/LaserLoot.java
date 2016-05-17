@@ -52,15 +52,15 @@ public class LaserLoot extends StructurePiece {
 		world.setBlock(i + 6, j + 0, k + 3, b, ms);
 		world.setBlock(i + 6, j + 0, k + 4, b, ms);
 
-		parent.addBreakable(i + 6, j + 1, k + 2);
-		parent.addBreakable(i + 6, j + 1, k + 3);
-		parent.addBreakable(i + 6, j + 1, k + 4);
-		parent.addBreakable(i + 6, j + 2, k + 2);
-		parent.addBreakable(i + 6, j + 2, k + 3);
-		parent.addBreakable(i + 6, j + 2, k + 4);
-		parent.addBreakable(i + 6, j + 0, k + 2);
-		parent.addBreakable(i + 6, j + 0, k + 3);
-		parent.addBreakable(i + 6, j + 0, k + 4);
+		parent.addBreakable(i - 6+26, j + 1, k + 2);
+		parent.addBreakable(i - 6+26, j + 1, k + 3);
+		parent.addBreakable(i - 6+26, j + 1, k + 4);
+		parent.addBreakable(i - 6+26, j + 2, k + 2);
+		parent.addBreakable(i - 6+26, j + 2, k + 3);
+		parent.addBreakable(i - 6+26, j + 2, k + 4);
+		parent.addBreakable(i - 6+26, j + 0, k + 2);
+		parent.addBreakable(i - 6+26, j + 0, k + 3);
+		parent.addBreakable(i - 6+26, j + 0, k + 4);
 
 		world.setBlock(i + 0, j + 0, k + 0, b, ms);
 		world.setBlock(i + 0, j + 0, k + 1, b, ms);

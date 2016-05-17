@@ -632,6 +632,10 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glPopAttrib();
 			ri.zLevel = 0;
 		}
+		GL11.glPushMatrix();
+		if (this == DIMENSION3) {
+			GL11.glTranslated(0, 0, -50);
+		}
 		ReikaGuiAPI.instance.drawItemStack(ri, this.getTabIcon(), x, y);
 		ri.zLevel = zp;
 		if (this == DIMENSION3) {
@@ -648,6 +652,7 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glPopAttrib();
 			GL11.glPopMatrix();
 		}
+		GL11.glPopMatrix();
 	}
 
 	public boolean isUnloadable() {

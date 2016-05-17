@@ -1,9 +1,13 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -25,12 +29,14 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
+import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.PulsingRadius;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.GravityPuzzleGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -40,8 +46,12 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class BlockGravityTile extends BlockContainer {
@@ -122,6 +132,9 @@ public class BlockGravityTile extends BlockContainer {
 				return new GravityTarget();
 			case RIFT:
 				return new GravityWarp();
+			case REROUTE:
+			case SPLITTER:
+				return new RerouteTile();
 			default:
 				return new GravityTile();
 		}
@@ -140,6 +153,9 @@ public class BlockGravityTile extends BlockContainer {
 				}
 				else if (is != null && is.getItem() == Items.ender_pearl && te instanceof GravityTarget) {
 					((GravityTarget)te).isDormant = false;
+				}
+				else if (is != null && is.getItem() == Items.glowstone_dust && te instanceof GravityTarget) {
+					((GravityTarget)te).collectedBursts = 0;
 				}
 				else if (ChromaItems.LINKTOOL.matchWith(is)) {
 					//is.getItem().onItemUse(is, ep, world, x, y, z, 0, 0, 0, 0);
@@ -211,10 +227,9 @@ public class BlockGravityTile extends BlockContainer {
 				case EMITTER:
 					return true;
 				case REROUTE:
-					te.fire(e.getColor());
-					return true;
 				case SPLITTER:
-					te.fire(e.getColor());
+					//te.fire(e.getColor());
+					((RerouteTile)te).collect(e);
 					return true;
 				case TARGET:
 					return e.getColor() == te.color && !((GravityTarget)te).isDormant;
@@ -254,6 +269,51 @@ public class BlockGravityTile extends BlockContainer {
 
 		public boolean isOmniColor() {
 			return this != EMITTER && this != TARGET;
+		}
+
+	}
+
+	public static class RerouteTile extends GravityTile {
+
+		private final EnumMap<CrystalElement, Integer> collection = new EnumMap(CrystalElement.class);
+		private int cooldown;
+
+		@Override
+		public void updateEntity() {
+			super.updateEntity();
+
+			if (cooldown > 0) {
+				cooldown--;
+				if (cooldown == 0) {
+					for (CrystalElement e : collection.keySet()) {
+						int num = collection.get(e);
+						for (int i = 0; i < num; i++) {
+							this.fire(e);
+						}
+					}
+					collection.clear();
+				}
+			}
+		}
+
+		private void collect(EntityLumaBurst b) {
+			ArrayList<CrystalElement> li = new ArrayList(collection.keySet());
+			if (li.isEmpty()) {
+				ReikaJavaLibrary.addToIntMap(collection, b.getColor(), 1);
+			}
+			else {
+				for (CrystalElement e : li) {
+					CrystalElement mix = ElementMixer.instance.getMix(e, b.getColor());
+					if (mix != null) {
+						ReikaJavaLibrary.subtractFromIntMap(collection, e, 1);
+						ReikaJavaLibrary.addToIntMap(collection, mix, 1);
+					}
+					else {
+						ReikaJavaLibrary.addToIntMap(collection, b.getColor(), 1);
+					}
+				}
+			}
+			cooldown = 1;
 		}
 
 	}
@@ -394,9 +454,9 @@ public class BlockGravityTile extends BlockContainer {
 					collectedBursts++;
 					if (collectedBursts >= requiredBursts) {
 						if (collectedBursts == requiredBursts)  {
-							ChromaSounds.CAST.playSoundAtBlock(this);
+							this.trigger(true);
 						}
-						if (this.getFillFraction() > 1.5) {
+						if (this.getFillFraction() > 1.5 && !worldObj.isRemote) {
 							this.overload();
 						}
 					}
@@ -411,6 +471,32 @@ public class BlockGravityTile extends BlockContainer {
 			}
 		}
 
+		private void trigger(boolean set) {
+			if (set) {
+				if (worldObj.isRemote) {
+					this.doTriggerClientside();
+				}
+				ChromaSounds.CAST.playSoundAtBlock(this);
+			}
+			else {
+				ChromaSounds.POWERDOWN.playSoundAtBlock(this, 1, 0.67F);
+			}
+		}
+
+		@SideOnly(Side.CLIENT)
+		private void doTriggerClientside() {
+			for (int i = 0; i < 16; i++) {
+				double px = ReikaRandomHelper.getRandomPlusMinus(xCoord+0.5, 0.4375);
+				double pz = ReikaRandomHelper.getRandomPlusMinus(zCoord+0.5, 0.4375);
+				double py = yCoord+0.25;
+				int l = ReikaRandomHelper.getRandomBetween(20, 40);
+				float s = 1+worldObj.rand.nextFloat()*0.67F;
+				float g = -(float)ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+				EntityFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(color.getColor()).setGravity(g).setScale(s).setLife(l);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
+		}
+
 		private void overload() {
 			timer = new Recharger(8, 16, this);
 			isDormant = true;
@@ -421,7 +507,7 @@ public class BlockGravityTile extends BlockContainer {
 				if (collectedBursts < 0)
 					collectedBursts = 0;
 			}
-			ChromaSounds.POWERDOWN.playSoundAtBlock(this, 1, 0.67F);
+			this.trigger(false);
 		}
 
 		@Override

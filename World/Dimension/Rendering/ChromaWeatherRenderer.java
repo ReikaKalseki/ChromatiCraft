@@ -85,15 +85,18 @@ public class ChromaWeatherRenderer extends IRenderHandler {
 		int radius = 10;
 
 		int b1 = -1;
-		float tick = rendererUpdateCount+ptick;
+		float tick = world.getTotalWorldTime()+ptick;//rendererUpdateCount+ptick;
+		//rendererUpdateCount++;
 
 		GL11.glColor4f(1F, 1F, 1F, 1F);
 
-		for (int z = ez-radius; z <= ez+radius; z++) {
-			for (int x = ex-radius; x <= ex+radius; x++) {
+		int d = 8;
+		for (int z = ez-radius; z <= ez+radius; z += d) {
+			for (int x = ex-radius; x <= ex+radius; x += d) {
+				int od = x*(radius*2+1)+z;
 				int idx = (z-ez+16)*32+x-ex+16;
-				float staggerX = rainXCoords[idx]*0.5F;
-				float staggerY = rainYCoords[idx]*0.5F;
+				float staggerX = rainXCoords[idx]*4;//0.5F;
+				float staggerY = rainYCoords[idx]*4;//0.5F;
 				BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 
 				if (!(biome instanceof ChromaDimensionBiome)) {
@@ -103,7 +106,7 @@ public class ChromaWeatherRenderer extends IRenderHandler {
 
 				ChromaDimensionBiome b = (ChromaDimensionBiome)biome;
 
-				if (biome.canSpawnLightningBolt() || biome.getEnableSnow()) {
+				if (biome.canSpawnLightningBolt() || biome.getEnableSnow() || true) {
 					int rainY = world.getPrecipitationHeight(x, z);
 					int minY = ey-radius;
 					int maxY = ey+radius;
@@ -133,23 +136,27 @@ public class ChromaWeatherRenderer extends IRenderHandler {
 
 							b1 = 0;
 							ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/DimWeather/"+b.getExactType().name().toLowerCase(Locale.ENGLISH)+".png");
+							ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/DimWeather/deepocean.png");
 							v5.startDrawingQuads();
 						}
 
-						frame = ((rendererUpdateCount+x*x*3121+x*45238971+z*z*418711+z*13761 & 31)+ptick)/32.0F*(3.0F+rand.nextFloat());
+						float f = (float)(96+32*Math.sin(System.currentTimeMillis()/2000D));
+						frame = (tick+(x%16)*6+(z%16)*8)/f;//((rendererUpdateCount+x*x*3121+x*45238971+z*z*418711+z*13761 & 31)+ptick)/32.0F*(3.0F+rand.nextFloat());
 						double dx = x+0.5F-e.posX;
 						double dz = z+0.5F-e.posZ;
 						float dd = MathHelper.sqrt_double(dx*dx+dz*dz)/radius;
 						float colorFactor = 1F;
 						v5.setBrightness(240/*world.getLightBrightnessForSkyBlocks(x, y, z, 0)*/);
 						float alpha = 1;
-						float frameSize = 1F;
+						float frameSizeX = 1F;
+						float frameSizeY = 1F;
+						double u = od/16D;
 						v5.setColorRGBA_F(colorFactor, colorFactor, colorFactor, ((1F-dd*dd)*0.5F+0.5F)*alpha);
 						v5.setTranslation(-rdx*1D, -rdy*1D, -rdz*1D);
-						v5.addVertexWithUV(x-staggerX+0.5, minY, z-staggerY+0.5, 0F*frameSize, minY*frameSize/4F+frame*frameSize);
-						v5.addVertexWithUV(x+staggerX+0.5, minY, z+staggerY+0.5, 1F*frameSize, minY*frameSize/4F+frame*frameSize);
-						v5.addVertexWithUV(x+staggerX+0.5, maxY, z+staggerY+0.5, 1F*frameSize, maxY*frameSize/4F+frame*frameSize);
-						v5.addVertexWithUV(x-staggerX+0.5, maxY, z-staggerY+0.5, 0F*frameSize, maxY*frameSize/4F+frame*frameSize);
+						v5.addVertexWithUV(x-staggerX+0.5, minY, z-staggerY+0.5, u+0F*frameSizeX, minY*frameSizeY/4F+frame*frameSizeY);
+						v5.addVertexWithUV(x+staggerX+0.5, minY, z+staggerY+0.5, u+1F*frameSizeX, minY*frameSizeY/4F+frame*frameSizeY);
+						v5.addVertexWithUV(x+staggerX+0.5, maxY, z+staggerY+0.5, u+1F*frameSizeX, maxY*frameSizeY/4F+frame*frameSizeY);
+						v5.addVertexWithUV(x-staggerX+0.5, maxY, z-staggerY+0.5, u+0F*frameSizeX, maxY*frameSizeY/4F+frame*frameSizeY);
 						v5.setTranslation(0, 0, 0);
 					}
 				}

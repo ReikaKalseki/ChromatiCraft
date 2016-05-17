@@ -43,7 +43,7 @@ public class ChromaDimensionManager {
 		SKYLANDS(BiomeGenSkylands.class,	"Lumen Skylands",			2, 0,	ExtraChromaIDs.SKYLANDS,	SubBiomes.VOIDLANDS,	Type.MAGICAL, Type.COLD),
 		FOREST(BiomeGenGlowingForest.class,	"Glowing Forest",			10, 10,	ExtraChromaIDs.FOREST, 		SubBiomes.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
 		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS),
-		CENTER(BiomeGenCentral.class, "Luminescent Sanctuary",			0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE);
+		CENTER(BiomeGenCentral.class, 		"Luminescent Sanctuary",	0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE);
 
 		private int id;
 		public final String biomeName;

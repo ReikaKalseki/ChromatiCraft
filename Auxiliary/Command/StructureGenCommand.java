@@ -50,7 +50,7 @@ public class StructureGenCommand extends DragonCommandBase {
 						continue;
 					set.add(type);
 					if (ReikaArrayHelper.arrayContains(args, type.name(), true)) {
-						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" @ "+p.generator.getCentralBlockCoords()+"...");
+						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" @ "+p.generator.getEntryPosX()+", "+p.generator.getEntryPosZ()+"...");
 						p.generator.generateAll(ep.worldObj);
 						ReikaChatHelper.sendChatToPlayer(ep, "Generating "+type+" complete.");
 					}

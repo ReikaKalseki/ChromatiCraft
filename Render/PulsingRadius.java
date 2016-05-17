@@ -45,7 +45,7 @@ public class PulsingRadius {
 	public void render(double x, double y, double z, int color) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		Tessellator v5 = Tessellator.instance;
-		spline.render(v5, x, y, z, color, true, true);
+		spline.render(v5, x, y, z, color, true, true, 6);
 		GL11.glPopAttrib();
 	}
 

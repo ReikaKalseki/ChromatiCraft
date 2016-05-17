@@ -634,14 +634,14 @@ public class ChromaFX {
 		GL11.glPopAttrib();
 	}
 
-	public static void renderBolt(LightningBolt b, float par8, int a, double h, boolean spline) {
-		if (spline) {
+	public static void renderBolt(LightningBolt b, float par8, int a, double h, int splinePoints) {
+		if (splinePoints > 2) {
 			Spline s = new Spline(SplineType.CENTRIPETAL);
 			for (int i = 0; i <= b.nsteps; i++) {
 				DecimalPosition pos = b.getPosition(i);
 				s.addPoint(new BasicSplinePoint(pos));
 			}
-			List<DecimalPosition> li = s.get(32, false);
+			List<DecimalPosition> li = s.get(splinePoints, false);
 			for (int i = 0; i < li.size()-1; i++) {
 				DecimalPosition pos1 = li.get(i);
 				DecimalPosition pos2 = li.get(i+1);

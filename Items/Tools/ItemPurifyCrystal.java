@@ -30,8 +30,8 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.DragonAPIInit;
@@ -117,13 +117,16 @@ public class ItemPurifyCrystal extends ItemChromaTool {
 				int amt = this.getChargeRate(is);
 				CrystalElement e = CrystalElement.WHITE;
 				//CrystalSource s = CrystalNetworker.instance.findSourceWithX(r, e, amt, range, true);
-				CrystalSource s = (CrystalSource)CrystalNetworker.instance.getNearestTileOfType(r, CrystalSource.class, range);
+				CrystalSource s = CrystalNetworker.instance.getNearestTileOfType(r, CrystalSource.class, range);
 				if (s != null) {
 					s.drain(e, amt*4);
-					if (s instanceof TileEntityCrystalPylon)
+					if (s instanceof TileEntityCrystalPylon) {
 						amt *= 1.25; //25% boost
+						if (((TileEntityCrystalPylon)s).isEnhanced())
+							amt *= 1.5;
+					}
 					if (loc.getBlock() == ChromaBlocks.CHROMA.getBlockInstance() && loc.getBlockMetadata() == 0)
-						amt *= 1.5;
+						amt *= 1.25;
 					this.addCharge(is, amt);
 					ReikaPacketHelper.sendEntitySyncPacket(DragonAPIInit.packetChannel, ei, 32);
 					//ReikaJavaLibrary.pConsole(this.getCharge(is)+" (+"+this.getChargeRate(is)+", f="+(this.getCharge(is)/(float)MAX_CHARGE));
