@@ -230,7 +230,7 @@ public class TileEntityEnchantDecomposer extends InventoriedRelayPowered impleme
 
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
-		return true;
+		return this.isAcceptingColor(e);
 	}
 
 	@Override

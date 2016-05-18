@@ -15,13 +15,16 @@ import java.util.Iterator;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 
-public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase {
+public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase implements RangeUpgradeable {
 
 	public static final int SCAN_RADIUS_XZ = 16;
+
+	private int scanRange;
 
 	private final StepTimer cacheTimer = new StepTimer(40);
 
@@ -70,7 +73,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 	}
 
 	private void scanAndCache(World world, int x, int y, int z) {
-		int r = SCAN_RADIUS_XZ;
+		int r = scanRange;
 		int r2 = r/2;
 		for (int i = -r; i <= r; i++) {
 			for (int k = -r; k <= r; k++) {
@@ -82,6 +85,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 				}
 			}
 		}
+		scanRange = SCAN_RADIUS_XZ;
 	}
 
 	protected abstract boolean isValidTarget(TileEntity te);
@@ -92,6 +96,14 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 			return true;
 		}
 		return false;
+	}
+
+	public final void upgradeRange(double r) {
+		scanRange = (int)(SCAN_RADIUS_XZ*r);
+	}
+
+	public final int getRange() {
+		return scanRange;
 	}
 
 }

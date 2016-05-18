@@ -48,7 +48,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public boolean canIntake = false;
 
 	public static final int MAXRANGE = 24;
-	public static final int MAXYRANGE = 4;
+
+	private int range = MAXRANGE;
 
 	private ItemStack[] filter = new ItemStack[2*9];
 	private final StepTimer scanTimer = new StepTimer(200);
@@ -109,13 +110,17 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	private void doScan(World world, int x, int y, int z) {
-		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-MAXRANGE, y-MAXYRANGE, z-MAXRANGE, x+MAXRANGE+1, y+MAXYRANGE+1, z+MAXRANGE+1);
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-range, y-this.getYRange(), z-range, x+range+1, y+this.getYRange()+1, z+range+1);
 		List<Entity> li = world.selectEntitiesWithinAABB(Entity.class, box, ReikaEntityHelper.itemOrXPSelector);
 		for (Entity e : li) {
 			if (this.checkAbsorb(e)) {
 				e.setDead();
 			}
 		}
+	}
+
+	private int getYRange() {
+		return Math.max(Math.min(4, range), range/4);
 	}
 
 	@Override
@@ -159,7 +164,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		if (!energy.containsAtLeast(required))
 			return false;
 		if (e instanceof EntityItem || e instanceof EntityXPOrb) {
-			if (Math.abs(e.posX-x) <= MAXRANGE && Math.abs(e.posY-y) <= MAXYRANGE && Math.abs(e.posZ-z) <= MAXRANGE) {
+			if (Math.abs(e.posX-x-0.5) <= range && Math.abs(e.posY-y-0.5) <= this.getYRange() && Math.abs(e.posZ-z-0.5) <= range) {
 				if (e instanceof EntityItem) {
 					EntityItem ei = (EntityItem)e;
 					if (this.canAbsorbItem(ei.getEntityItem())) {
@@ -269,6 +274,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	{
 		super.readSyncTag(NBT);
 		experience = NBT.getInteger("xp");
+		if (NBT.hasKey("range"))
+			range = NBT.getInteger("range");
 	}
 
 	@Override
@@ -276,6 +283,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	{
 		super.writeSyncTag(NBT);
 		NBT.setInteger("xp", experience);
+		NBT.setInteger("range", range);
 	}
 
 	@Override
@@ -389,6 +397,24 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	@Override
 	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
 		return new FluidTankInfo[]{};
+	}
+
+	public void decreaseRange() {
+		range--;
+		if (range < 1)
+			range = 1;
+		this.syncAllData(false);
+	}
+
+	public void increaseRange() {
+		range++;
+		if (range > MAXRANGE)
+			range = MAXRANGE;
+		this.syncAllData(false);
+	}
+
+	public int getRange() {
+		return range;
 	}
 
 }

@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -16,9 +17,12 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -42,22 +46,29 @@ public class GuiItemCollector extends GuiChromaBase
 		ySize = var4 + inventoryRows * 18;
 		vac = te;
 	}
-	/*
+
 	@Override
 	public void initGui() {
 		super.initGui();
-		int var5 = (width - xSize) / 2;
-		int var6 = (height - ySize) / 2;
-		buttonList.add(new GuiButton(0, var5+xSize-1, var6+32, 43, 20, "Get XP"));
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+		String tex = "Textures/GUIs/buttons.png";
+		buttonList.add(new CustomSoundImagedGuiButton(0, j+11, k+75, 10, 10, 100, 66, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, j+83, k+75, 10, 10, 100, 56, tex, ChromatiCraft.class, this));
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton button) {
-		super.actionPerformed(button);
-		if (button.id == 0)
-			ReikaPacketHelper.sendUpdatePacket(RotaryCraft.packetChannel, PacketRegistry.ItemCollector.getMinValue(), vac);
+	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
+		if (b.id <= 1) {
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.COLLECTORRANGE.ordinal(), vac, b.id);
+			if (b.id > 0)
+				vac.increaseRange();
+			else
+				vac.decreaseRange();
+		}
 	}
-
+	/*
 	@Override
 	protected void drawGuiContainerForegroundLayer(int a, int b)
 	{
@@ -95,6 +106,8 @@ public class GuiItemCollector extends GuiChromaBase
 				}
 			}
 		}
+
+		fontRendererObj.drawString("Range: "+vac.getRange(), 28, 76, 0xffffff);
 	}
 
 	@Override

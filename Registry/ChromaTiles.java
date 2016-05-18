@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
+import Reika.ChromatiCraft.ModInterface.TileEntityFluxGooCreator;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
@@ -196,7 +197,8 @@ public enum ChromaTiles implements TileEnum {
 	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3/*, "RenderWirelessSource"*/),
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
-	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor");
+	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
+	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,	7);
 
 	private final Class tile;
 	private final String name;
@@ -414,6 +416,16 @@ public enum ChromaTiles implements TileEnum {
 		if (this == CREATIVEPYLON || this == STRUCTCONTROL)
 			return null;
 		return ChromaItems.PLACER.getStackOfMetadata(this.ordinal());
+	}
+
+	public ItemStack getCraftedProduct(TileEntity te) {
+		ItemStack is = this.getCraftedProduct();
+		if (te instanceof NBTTile) {
+			if (is.stackTagCompound == null)
+				is.stackTagCompound = new NBTTagCompound();
+			((NBTTile)te).getTagsToWriteToStack(is.stackTagCompound);
+		}
+		return is;
 	}
 
 	public ItemStack getCraftedNBTProduct(Object... args) {

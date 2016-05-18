@@ -29,7 +29,7 @@ public class RenderBiomePainter extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return null;
+		return "biomepainterouter.png";
 	}
 
 	@Override

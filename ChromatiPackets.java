@@ -82,6 +82,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
@@ -721,6 +722,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case FLUIDSEND:
 					((TileEntityFluidDistributor)tile).sendFluidToClient(data[0], data[1], data[2], FluidRegistry.getFluid(data[3]), data[4]);
+					break;
+				case COLLECTORRANGE:
+					if (data[0] > 0)
+						((TileEntityItemCollector)tile).increaseRange();
+					else
+						((TileEntityItemCollector)tile).decreaseRange();
 					break;
 			}
 		}

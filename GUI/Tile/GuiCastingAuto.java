@@ -22,6 +22,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
@@ -41,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class GuiCastingAuto extends GuiChromaBase {
@@ -252,7 +254,9 @@ public class GuiCastingAuto extends GuiChromaBase {
 			//r.drawTabIcon(itemRender, 21, 33);
 			//fontRendererObj.drawSplitString(r.getTitle(), 40, 36, 120, 0xffffff);
 
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ItemStack out = cr.getOutput();
+			BlendMode.DEFAULT.apply();
 			String s = out.getDisplayName();
 			if (ChromaItems.ADJACENCY.matchWith(out)) {
 				s = s+" (Tier "+(out.stackTagCompound.getInteger("tier"))+")";
@@ -261,6 +265,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 			fontRendererObj.drawString(String.format("x%d = %d", number, number*out.stackSize), 74, 38, 0xffffff);
 			api.drawItemStack(itemRender, out, 52, 34);
+			GL11.glPopAttrib();
 
 			/*
 			ItemHashMap<Integer> map = cr.getItemCounts();

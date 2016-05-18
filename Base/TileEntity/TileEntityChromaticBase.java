@@ -22,6 +22,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaRenderList;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -36,8 +37,8 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	protected final HashSet<UUID> owners = new HashSet();
 
 	public final TextureFetcher getRenderer() {
-		if (ChromaTiles.TEList[this.getIndex()].hasRender())
-			return null;//ChromatiRenderList.getRenderForMachine(ChromatiTiles.TEList[this.getIndex()]);
+		if (this.getTile().hasRender())
+			return ChromaRenderList.getRenderForMachine(this.getTile());
 		else
 			return null;
 	}

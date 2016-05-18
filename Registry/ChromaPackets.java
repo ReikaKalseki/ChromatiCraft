@@ -130,6 +130,7 @@ public enum ChromaPackets {
 	FLAREATTACK(1),
 	ASPECTMODE(),
 	FLUIDSEND(5),
+	COLLECTORRANGE(1),
 	;
 
 	public final int numInts;

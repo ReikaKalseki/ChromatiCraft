@@ -296,7 +296,7 @@
 			Despite your best attempts, you have not been able to totally avert the need for farming, and your mountain of grey seeds and beige goo can attest to that. Unfortunately, farms tend to scatter items far and wide, leading to the need for either powerful item collection systems - which have their own problems - or a problem with so many items on the ground you find it hard to move. The item collector at last is an answer to this problem, being able to collect items anywhere in its range as soon as they are created.
 		</desc>
 		<note>
-			Range: +/- %d blocks horizontally, +/- %d blocks vertically
+			Max Range: +/- %d blocks horizontally, one fourth of that vertically
 		</note>
 	</itemcollector>
 	<aishutdown>

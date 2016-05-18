@@ -304,7 +304,7 @@ public class BlockLaserEffector extends BlockContainer {
 					return;
 				}
 			}
-			if (!this.isOmniDirectional())
+			if (!this.isOmniDirectional() && !world.isRemote)
 				te.rotate();
 		}
 	}

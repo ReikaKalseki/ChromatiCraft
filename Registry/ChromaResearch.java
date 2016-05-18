@@ -105,8 +105,8 @@ public enum ChromaResearch implements ProgressElement {
 	DIMENSION3("The Far Regions",		ChromaBlocks.DIMGEN.getStackOfMetadata(DimDecoTypes.FLOATSTONE.ordinal()),	ResearchLevel.ENDGAME,		ProgressStage.DIMENSION, ProgressStage.STRUCTCOMPLETE),
 	TURBO("Turbocharging",				ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	TURBOREPEATER("Repeater Turbocharging", ChromaStacks.turboRepeater,							ResearchLevel.ENDGAME,		ProgressStage.TURBOCHARGE),
-	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.command_block),					ResearchLevel.ENTRY),
-	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.command_block),					ResearchLevel.CTM,		ProgressStage.CTM),
+	PACKCHANGES("Modpack Changes",		new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
+	NODENET("Networking Aura Nodes",	new ItemStack(Blocks.dirt),								ResearchLevel.CTM,		ProgressStage.CTM),
 	SELFCHARGE("Energy Internalization",ChromaItems.TOOL.getStackOf(),							ResearchLevel.CHARGESELF,	ProgressStage.CHARGE),
 	MYSTPAGE("World Authoring",			new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
 	ENCHANTING("Crystal Enchanting",	new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
@@ -383,7 +383,7 @@ public enum ChromaResearch implements ProgressElement {
 	}
 
 	private ChromaResearch(String name, ItemStack icon, ResearchLevel rl, ProgressStage... p) {
-		iconItem = icon;
+		iconItem = icon != null ? icon.copy() : null;
 		pageTitle = name;
 		progress = p;
 		level = rl;
@@ -496,9 +496,6 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ACCEL) {
 			return ChromaItems.ADJACENCY.getStackOfMetadata(CrystalElement.LIGHTBLUE.ordinal());
 		}
-		if (iconItem.stackTagCompound == null)
-			iconItem.stackTagCompound = new NBTTagCompound();
-		iconItem.stackTagCompound.setBoolean("tooltip", true);
 		return iconItem;
 	}
 
@@ -637,7 +634,13 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == DIMENSION3) {
 			GL11.glTranslated(0, 0, -50);
 		}
-		ReikaGuiAPI.instance.drawItemStack(ri, this.getTabIcon(), x, y);
+
+		ItemStack ico = this.getTabIcon().copy();
+		if (ico.stackTagCompound == null)
+			ico.stackTagCompound = new NBTTagCompound();
+		ico.stackTagCompound.setBoolean("tooltip", true);
+		ReikaGuiAPI.instance.drawItemStack(ri, ico, x, y);
+
 		ri.zLevel = zp;
 		if (this == DIMENSION3) {
 			GL11.glPushMatrix();
@@ -981,6 +984,13 @@ public enum ChromaResearch implements ProgressElement {
 		}
 		if (this == FENCEAUX || this == TNT || this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(iconItem);
+		if (this == APIRECIPES) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (CastingRecipe c : RecipesCastingTable.instance.getAllAPIRecipes()) {
+				li.add(c.getOutput());
+			}
+			return li;
+		}
 		return null;
 	}
 
