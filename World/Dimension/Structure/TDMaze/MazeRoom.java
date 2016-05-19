@@ -31,19 +31,17 @@ import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 public class MazeRoom extends StructurePiece {
 
 	private final HashSet<Coordinate> cells = new HashSet();
-	private final HashSet<Coordinate> allRooms;
 	public final int size;
 	public final Coordinate center;
 	public final int cellRadius;
 	private final Random rand;
 
-	public MazeRoom(ThreeDMazeGenerator s, int sz, int w, Coordinate c, Random r, HashSet<Coordinate> all) {
+	public MazeRoom(ThreeDMazeGenerator s, int sz, int w, Coordinate c, Random r) {
 		super(s);
 		size = sz;
 		center = c;
 		cellRadius = w;
 		rand = r;
-		allRooms = all;
 	}
 
 	public MazeRoom addCell(Coordinate c) {
@@ -55,23 +53,21 @@ public class MazeRoom extends StructurePiece {
 	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) { //XYZ is of origin cell
 		for (Coordinate c : cells) {
 			c = c.offset(center.negate());
-			boolean ru = allRooms.contains(c.offset(0, 1, 0));
-			boolean rd = allRooms.contains(c.offset(0, -1, 0));
 			for (int i = 0; i <= size; i++) {
 				for (int j = 0; j <= size; j++) {
 					for (int k = 0; k <= size; k++) {
 						int dx = x+c.xCoord*size+i;
 						int dy = y+c.yCoord*size+j;
 						int dz = z+c.zCoord*size+k;
-						if (j == 0 || rd) {
+						if (j == 0) {
 							BlockKey bk = world.getBlock(dx, dy, dz);
-							if (rd || (bk != null && bk.blockID == Blocks.air)) {
+							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CRACKS.metadata);
 							}
 						}
-						else if (j == size || ru) {
+						else if (j == size) {
 							BlockKey bk = world.getBlock(dx, dy, dz);
-							if (ru || (bk != null && bk.blockID == Blocks.air)) {
+							if (bk != null && bk.blockID == Blocks.air) {
 								world.setBlock(dx, dy, dz, ChromaBlocks.HOVER.getBlockInstance(), HoverType.DAMPER.getPermanentMeta());
 							}
 						}

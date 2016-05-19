@@ -117,7 +117,7 @@
 			The transmission range of a Crystal Pylon is limited to %d blocks, and its beams are blocked by just about anything aside from air and glass; this means that unless you built your base next to one of every pylon - a dangerous endeavour - you need some way to relay the signal. This is exactly the function of a repeater, which can repeat a signal and do so around obstacles. However, repeaters do incur a small signal attenuation, so optimizing the path is a good idea. This is only a first attempt at such repeaters, and as a result its quality is...questionable. Surely you will need to improve your designs with experience.
 		</desc>
 		<note>
-			Range: %d blocks receiving and transmitting
+			Range: %d blocks transmitting and %d receiving
 		</note>
 	</weakrepeater>
 	<rift>

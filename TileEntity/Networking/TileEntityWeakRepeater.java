@@ -48,6 +48,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 	private int eolTicks;
 
 	public static final int WEAK_RANGE = 16;
+	public static final int WEAK_RECEIVE_RANGE = 24;
 
 	public TileEntityWeakRepeater() {
 		originalUse = ReikaRandomHelper.getRandomBetween(MAX_LUMENS_MIN, MAX_LUMENS_MAX);
@@ -237,7 +238,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater {
 
 	@Override
 	public int getReceiveRange() {
-		return WEAK_RANGE;
+		return WEAK_RECEIVE_RANGE;
 	}
 
 	@Override

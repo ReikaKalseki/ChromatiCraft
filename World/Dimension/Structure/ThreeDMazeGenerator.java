@@ -257,7 +257,7 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 			} while (flag && tries < 50);
 
 			if (tries < 50) {
-				MazeRoom r = new MazeRoom(this, partSize, s, c, rand, roomSpaces);
+				MazeRoom r = new MazeRoom(this, partSize, s, c, rand);
 				for (int i = -s; i <= s; i++) {
 					for (int k = -s; k <= s; k++) {
 						Coordinate c2 = c.offset(i, 0, k);

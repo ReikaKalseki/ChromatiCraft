@@ -37,11 +37,14 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
+import Reika.RotaryCraft.Registry.BlockRegistry;
 
 public class PylonFinder {
 
@@ -409,6 +412,14 @@ public class PylonFinder {
 		tracer.addTransparentBlock(Blocks.glass);
 		tracer.addTransparentBlock(Blocks.glass_pane);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			addRCGlass();
+		}
+		if (ModList.EXTRAUTILS.isLoaded()) {
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
+		}
 
 		tracer.addOpaqueBlock(Blocks.deadbush);
 		tracer.addOpaqueBlock(Blocks.tallgrass, 0);
@@ -434,12 +445,22 @@ public class PylonFinder {
 		tracer.addOpaqueBlock(Blocks.potatoes);*/
 	}
 
+	@ModDependent(ModList.ROTARYCRAFT)
+	private static void addRCGlass() {
+		tracer.addTransparentBlock(BlockRegistry.BLASTGLASS.getBlockInstance());
+		tracer.addTransparentBlock(BlockRegistry.BLASTPANE.getBlockInstance());
+	}
+
 	static final WorldLocation getLocation(CrystalNetworkTile te) {
 		return new WorldLocation(te.getWorld(), te.getX(), te.getY(), te.getZ());
 	}
 
 	static void stopAllSearches() {
 		invalid = true;
+	}
+
+	static boolean isBlockPassable(World world, int x, int y, int z) {
+		return tracer.isBlockPassable(world, x, y, z);
 	}
 	/*
 	void receiveChunk(Chunk c) {

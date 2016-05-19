@@ -106,7 +106,7 @@ public class ChromaWeatherRenderer extends IRenderHandler {
 
 				ChromaDimensionBiome b = (ChromaDimensionBiome)biome;
 
-				if (biome.canSpawnLightningBolt() || biome.getEnableSnow() || true) {
+				if (biome.canSpawnLightningBolt() || biome.getEnableSnow()) {
 					int rainY = world.getPrecipitationHeight(x, z);
 					int minY = ey-radius;
 					int maxY = ey+radius;

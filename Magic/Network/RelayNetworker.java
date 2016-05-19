@@ -166,10 +166,15 @@ public final class RelayNetworker {
 					}
 				}
 				else {
+					/*
 					if (b.isOpaqueCube())
 						return null;
 					else if (b.getLightOpacity(world, c.xCoord, c.yCoord, c.zCoord) > 0)
 						return null;
+					 */
+					if (!PylonFinder.isBlockPassable(world, c.xCoord, c.yCoord, c.zCoord)) {
+						return null;
+					}
 				}
 			}
 			return null;

@@ -361,7 +361,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
 		//addNotes(ChromaTiles.REPROGRAMMER, TileEntitySpawnerReprogrammer.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.REPEATER, TileEntityCrystalRepeater.RANGE);
-		addNotes(ChromaTiles.WEAKREPEATER, TileEntityWeakRepeater.WEAK_RANGE);
+		addNotes(ChromaTiles.WEAKREPEATER, TileEntityWeakRepeater.WEAK_RANGE, TileEntityWeakRepeater.WEAK_RECEIVE_RANGE);
 		addNotes(ChromaTiles.TANK, TileEntityCrystalTank.FACTOR/1000, TileEntityCrystalTank.MAXCAPACITY/1000);
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		//addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
