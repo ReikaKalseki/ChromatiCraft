@@ -38,9 +38,11 @@ public class RenderBallLightning extends Render {
 		float du = icon.getMaxU();
 		float dv = icon.getMaxV();
 		GL11.glPushMatrix();
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		BlendMode.ADDITIVEDARK.apply();
+		GL11.glDepthMask(false);
 		GL11.glTranslated(par2, par4, par6);
 		if (!e.isDead) {
 			RenderManager rm = RenderManager.instance;
@@ -79,9 +81,7 @@ public class RenderBallLightning extends Render {
 		v5.addVertexWithUV(s3, s3, d*2, du, dv);
 		v5.addVertexWithUV(-s3, s3, d*2, u, dv);
 		v5.draw();
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_BLEND);
-		BlendMode.DEFAULT.apply();
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 

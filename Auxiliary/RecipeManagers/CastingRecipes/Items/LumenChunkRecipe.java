@@ -41,4 +41,9 @@ public class LumenChunkRecipe extends PylonRecipe implements CoreRecipe {
 		this.addAuraRequirement(CrystalElement.BLUE, 10000);
 	}
 
+	@Override
+	public int getDuration() {
+		return super.getDuration()/8;
+	}
+
 }

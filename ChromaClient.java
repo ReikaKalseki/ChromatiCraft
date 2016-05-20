@@ -101,7 +101,6 @@ import Reika.ChromatiCraft.Render.TESR.RenderLaserTarget;
 import Reika.ChromatiCraft.Render.TESR.RenderLootChest;
 import Reika.ChromatiCraft.Render.TESR.RenderVoidRift;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
-import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
@@ -384,7 +383,7 @@ public class ChromaClient extends ChromaCommon {
 	public void addDonatorRender() {
 		Collection<Donator> donators = new ArrayList();
 		donators.addAll(DonatorController.instance.getReikasDonators());
-		donators.addAll(PatreonController.instance.getModPatrons(DragonAPIInit.instance));
+		donators.addAll(PatreonController.instance.getModPatrons("Reika"));
 		for (Donator s : donators) {
 			if (s.ingameName != null)
 				PlayerSpecificRenderer.instance.registerRenderer(s.ingameName, DonatorPylonRender.instance);

@@ -39,7 +39,7 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 
 	@Override
 	public boolean onItemUse(ItemStack item, EntityPlayer player, World world, int x, int y, int z, int side, float par8, float par9, float par10) {
-		if (!ReikaWorldHelper.softBlocks(world.getBlock(x, y, z))) {
+		if (!ReikaWorldHelper.softBlocks(world, x, y, z)) {
 			if (side == 0)
 				--y;
 			if (side == 1)
@@ -54,7 +54,7 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 				++x;
 		}
 		Block idbelow = world.getBlock(x, y-1, z);
-		if ((!ReikaWorldHelper.softBlocks(world.getBlock(x, y, z))) || !ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z))
+		if ((!ReikaWorldHelper.softBlocks(world, x, y, z)) || !ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z))
 			return false;
 		if (!player.canPlayerEdit(x, y, z, 0, item))
 			return false;

@@ -47,91 +47,24 @@ public class ChromaSkyRenderer extends IRenderHandler {
 	private ChromaSkyRenderer() {
 		//rand.setSeed(10842L);
 		for (int i = 0; i < stars.length; i++) {
-			double d0 = rand.nextFloat() * 2.0F - 1.0F;
-			double d1 = rand.nextFloat() * 2.0F - 1.0F;
-			double d2 = rand.nextFloat() * 2.0F - 1.0F;
-			double d3 = 0.15F + rand.nextFloat() * 0.1F;
-			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
 
-			if (d4 < 1.0D && d4 > 0.01D) {
-				d4 = 1.0D / Math.sqrt(d4);
-				d0 *= d4;
-				d1 *= d4;
-				d2 *= d4;
-				double d8 = Math.atan2(d0, d2);
-				double d9 = Math.sin(d8);
-				double d10 = Math.cos(d8);
-				double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
-				double d12 = Math.sin(d11);
-				double d13 = Math.cos(d11);
-				double d14 = rand.nextDouble() * Math.PI * 2.0D;
-				double size = 1+Math.sin(d14)*(rand.nextDouble()*4);
-				double d16 = Math.cos(d14);
+			int texture = rand.nextInt(16);//4+random.nextInt(4);
+			int c1 = starColors[rand.nextInt(starColors.length)];
 
-				int texture = rand.nextInt(16);//4+random.nextInt(4);
-				int c1 = starColors[rand.nextInt(starColors.length)];
+			double tw = ReikaRandomHelper.getRandomBetween(0.125, 4);
+			double ta = ReikaRandomHelper.getRandomBetween(0.0625, 0.375);
 
-				double tw = ReikaRandomHelper.getRandomBetween(0.125, 4);
-
-				stars[i] = new Star(c1, texture, size*12, tw, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+			stars[i] = Star.createRandomized(c1, texture, tw, ta, rand);
+			if (stars[i] != null)
 				stars[i].twinkleOffset = i;
-			}
 		}
 
 		for (int i = 0; i < nebulae.length; i++) {
-
-			double d0 = rand.nextFloat() * 2.0F - 1.0F;
-			double d1 = rand.nextFloat() * 2.0F - 1.0F;
-			double d2 = rand.nextFloat() * 2.0F - 1.0F;
-			double d3 = 0.15F + rand.nextFloat() * 0.1F;
-			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
-
-			double size = 175;
-
-			if (d4 < 1.0D && d4 > 0.01D) {
-				d4 = 1.0D / Math.sqrt(d4);
-				d0 *= d4;
-				d1 *= d4;
-				d2 *= d4;
-				double d8 = Math.atan2(d0, d2);
-				double d9 = Math.sin(d8);
-				double d10 = Math.cos(d8);
-				double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
-				double d12 = Math.sin(d11);
-				double d13 = Math.cos(d11);
-				double d14 = rand.nextDouble() * Math.PI * 2.0D;
-				double d16 = Math.cos(d14);
-
-				nebulae[i] = new TexturedQuad(i, size, d0, d1, d2, d3, d9, d10, d12, d13, d16);
-			}
+			nebulae[i] = TexturedQuad.constructRandomized(i, 4, 175, rand);
 		}
 
 		for (int i = 0; i < planets.length; i++) {
-
-			double d0 = rand.nextFloat() * 2.0F - 1.0F;
-			double d1 = rand.nextFloat() * 2.0F - 1.0F;
-			double d2 = rand.nextFloat() * 2.0F - 1.0F;
-			double d3 = 0.15F + rand.nextFloat() * 0.1F;
-			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
-
-			double size = 30;
-
-			if (d4 < 1.0D && d4 > 0.01D) {
-				d4 = 1.0D / Math.sqrt(d4);
-				d0 *= d4;
-				d1 *= d4;
-				d2 *= d4;
-				double d8 = Math.atan2(d0, d2);
-				double d9 = Math.sin(d8);
-				double d10 = Math.cos(d8);
-				double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
-				double d12 = Math.sin(d11);
-				double d13 = Math.cos(d11);
-				double d14 = rand.nextDouble() * Math.PI * 2.0D;
-				double d16 = Math.cos(d14);
-
-				planets[i] = new TexturedQuad(i, size, d0, d1, d2, d3, d9, d10, d12, d13, d16);
-			}
+			planets[i] = TexturedQuad.constructRandomized(i, 2, 30, rand);
 		}
 	}
 
@@ -172,10 +105,9 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 	private void renderNebulae(double t) {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/stars2.png");
+
 		Tessellator v5 = Tessellator.instance;
-		v5.startDrawingQuads();
-		v5.setBrightness(240);
-		v5.setColorOpaque_I(0xffffff);
+
 		for (int i = 0; i < nebulae.length; i++) {
 			TexturedQuad neb = nebulae[i];
 			if (neb != null) {
@@ -189,14 +121,18 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				GL11.glRotated(ry, 0, 1, 0);
 				GL11.glRotated(rz, 0, 0, 1);
 
+				v5.startDrawingQuads();
+				v5.setBrightness(240);
+				v5.setColorOpaque_I(0xffffff);
 
 				neb.render(380, 1, t);
+
+				v5.draw();
+
+				GL11.glPopMatrix();
 			}
 
-			GL11.glPopMatrix();
-
 		}
-		v5.draw();
 	}
 
 	private void renderPlanets(double t) {
@@ -204,9 +140,6 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/planets2.png");
 
 		Tessellator v5 = Tessellator.instance;
-		v5.startDrawingQuads();
-		v5.setBrightness(240);
-		v5.setColorOpaque_I(0xffffff);
 
 		for (int k = 0; k < planets.length; k++) {
 			TexturedQuad planet = planets[k];
@@ -224,13 +157,17 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				GL11.glRotated(ry, 0, 1, 0);
 				GL11.glRotated(rz, 0, 0, 1);
 
+				v5.startDrawingQuads();
+				v5.setBrightness(240);
+				v5.setColorOpaque_I(0xffffff);
+
 				planet.render(380, 1, t);
+
+				v5.draw();
 
 				GL11.glPopMatrix();
 			}
 		}
-
-		v5.draw();
 	}
 
 	private void renderBlackscreen() {
@@ -316,18 +253,49 @@ public class ChromaSkyRenderer extends IRenderHandler {
 
 		public final int color;
 		private final double twinkleSpeed;
+		private final double twinkleAmplitude;
 
 		private double twinkleOffset;
 
-		private Star(int c, int tex, double s, double tw, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
-			super(tex, s, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+		private Star(int c, int tex, double s, double tw, double ta, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
+			super(tex, 4, s, d0, d1, d2, d3, d9, d10, d12, d13, d16);
 			color = c;
 			twinkleSpeed = tw;
+			twinkleAmplitude = ta;
+		}
+
+		private static Star createRandomized(int c, int tex, double tw, double ta, Random rand) {
+			double d0 = rand.nextFloat() * 2.0F - 1.0F;
+			double d1 = rand.nextFloat() * 2.0F - 1.0F;
+			double d2 = rand.nextFloat() * 2.0F - 1.0F;
+			double d3 = 0.15F + rand.nextFloat() * 0.1F;
+			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
+
+			if (d4 < 1.0D && d4 > 0.01D) {
+				d4 = 1.0D / Math.sqrt(d4);
+				d0 *= d4;
+				d1 *= d4;
+				d2 *= d4;
+				double d8 = Math.atan2(d0, d2);
+				double d9 = Math.sin(d8);
+				double d10 = Math.cos(d8);
+				double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
+				double d12 = Math.sin(d11);
+				double d13 = Math.cos(d11);
+				double d14 = rand.nextDouble() * Math.PI * 2.0D;
+				double d16 = Math.cos(d14);
+				double size = 1+Math.sin(d14)*(rand.nextDouble()*4);
+
+				return new Star(c, tex, size*12, tw, ta, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+			}
+			return null;
 		}
 
 		@Override
 		protected void render(double d, float brightness, double time) {
-			int c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(color, (float)(0.5+0.5*Math.sin(twinkleOffset+time*twinkleSpeed/500D)));
+			double td = 500D;//+500*Math.sin((time/100000D)%360);
+			double tb = 1-twinkleAmplitude;
+			int c2 = ReikaColorAPI.getColorWithBrightnessMultiplier(color, (float)(tb+twinkleAmplitude*Math.sin(twinkleOffset+time*twinkleSpeed/td)));
 			int c = brightness >= 24 ? c2 : ReikaColorAPI.getColorWithBrightnessMultiplier(c2, brightness/24F);
 			Tessellator.instance.setColorOpaque_I(c);
 
@@ -353,15 +321,18 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		private final double d13;
 		private final double d16;
 
-		private TexturedQuad(int tex, double s, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
+		private TexturedQuad(int tex, int rowWidth, double s, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
 			textureIndex = tex;
 			size = s;
 
-			double du = (textureIndex%4)/4D;
-			double dv = (textureIndex/4)/4D;
+			int ttex = rowWidth*rowWidth;
+			tex = ((tex%ttex)+ttex)%ttex;
 
-			texU = new double[]{du, du, du+0.25, du+0.25};
-			texV = new double[]{dv, dv+0.25, dv+0.25, dv};
+			double du = (textureIndex%rowWidth)/(double)rowWidth;
+			double dv = (textureIndex/rowWidth)/(double)rowWidth;
+
+			texU = new double[]{du, du, du+1D/rowWidth, du+1D/rowWidth};
+			texV = new double[]{dv, dv+1D/rowWidth, dv+1D/rowWidth, dv};
 
 			this.d0 = d0;
 			this.d1 = d1;
@@ -372,6 +343,32 @@ public class ChromaSkyRenderer extends IRenderHandler {
 			this.d12 = d12;
 			this.d13 = d13;
 			this.d16 = d16;
+		}
+
+		private static TexturedQuad constructRandomized(int tex, int row, double s, Random rand) {
+			double d0 = rand.nextFloat() * 2.0F - 1.0F;
+			double d1 = rand.nextFloat() * 2.0F - 1.0F;
+			double d2 = rand.nextFloat() * 2.0F - 1.0F;
+			double d3 = 0.15F + rand.nextFloat() * 0.1F;
+			double d4 = d0 * d0 + d1 * d1 + d2 * d2;
+
+			if (d4 < 1.0D && d4 > 0.01D) {
+				d4 = 1.0D / Math.sqrt(d4);
+				d0 *= d4;
+				d1 *= d4;
+				d2 *= d4;
+				double d8 = Math.atan2(d0, d2);
+				double d9 = Math.sin(d8);
+				double d10 = Math.cos(d8);
+				double d11 = Math.atan2(Math.sqrt(d0 * d0 + d2 * d2), d1);
+				double d12 = Math.sin(d11);
+				double d13 = Math.cos(d11);
+				double d14 = rand.nextDouble() * Math.PI * 2.0D;
+				double d16 = Math.cos(d14);
+
+				return new TexturedQuad(tex, row, s, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+			}
+			return null;
 		}
 
 		protected void render(double d, float brightness, double time) {

@@ -387,13 +387,16 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 	}
 
 	private void connect(TileEntityLumenWire te, boolean callOther) {
+		Coordinate old = connection;
 		this.disconnect(true);
 		connection = new Coordinate(te);
-		connectionUID = callOther ? UUID.randomUUID() : te.connectionUID;
-		this.markDirty();
-		this.syncAllData(false);
-		if (callOther)
-			te.connect(this, false);
+		if (!connection.equals(old)) {
+			connectionUID = callOther ? UUID.randomUUID() : te.connectionUID;
+			this.markDirty();
+			this.syncAllData(false);
+			if (callOther)
+				te.connect(this, false);
+		}
 	}
 
 	private void disconnect(boolean callOther) {

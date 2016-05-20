@@ -122,6 +122,7 @@ import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
+import Reika.DragonAPI.Auxiliary.Trackers.DonatorController;
 import Reika.DragonAPI.Auxiliary.Trackers.FurnaceFuelRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.IntegrityChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
@@ -485,6 +486,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ModInteraction.addMicroblocks();
 
+		DonatorController.instance.registerMod(this, DonatorController.reikaURL);
 
 		if (ModList.MYSTCRAFT.isLoaded()) {
 			ModInteraction.addMystCraft();
