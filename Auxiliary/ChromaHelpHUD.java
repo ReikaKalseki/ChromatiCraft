@@ -25,6 +25,7 @@ import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -54,8 +55,8 @@ public class ChromaHelpHUD {
 
 	}
 
-	@SubscribeEvent
-	public void renderHUD(RenderGameOverlayEvent evt) {
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void renderHUD(RenderGameOverlayEvent.Post evt) {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			boolean recalc = ep.ticksExisted%8 == 0; //Only update 1/8 ticks, to help FPS
