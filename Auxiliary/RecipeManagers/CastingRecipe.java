@@ -33,8 +33,8 @@ import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.APICastingRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.LumenRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.MultiRecipe;
 import Reika.ChromatiCraft.API.Interfaces.CastingRecipeViewer.RuneRecipe;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.RuneShape;
@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -279,6 +280,10 @@ public class CastingRecipe implements APICastingRecipe {
 
 	public ItemStack getCentralLeftover(ItemStack is) {
 		return null;
+	}
+
+	public float getAutomationCostFactor(TileEntityCastingAuto ae, TileEntityCastingTable te, ItemStack is) {
+		return 1;
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {

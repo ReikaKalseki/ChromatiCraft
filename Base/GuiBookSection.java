@@ -25,10 +25,10 @@ import org.lwjgl.opengl.GL12;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
-import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
 import Reika.ChromatiCraft.GUI.Book.GuiNavigation;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

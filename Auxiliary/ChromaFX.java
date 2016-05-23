@@ -43,7 +43,6 @@ import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Spline;
-import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
 import Reika.DragonAPI.Instantiable.Spline.BasicSplinePoint;
 import Reika.DragonAPI.Instantiable.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -51,6 +50,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
+import Reika.DragonAPI.Instantiable.ParticleController.EntityLockMotionController;
 import Reika.DragonAPI.Interfaces.MotionController;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -606,13 +606,13 @@ public class ChromaFX {
 			v5.addVertexWithUV(px, py, pz-h, du, v);
 		}
 		if (dn > 0) {
-			double nx = x1+(x2-x1)*0/dd;
-			double ny = y1+(y2-y1)*0/dd;
-			double nz = z1+(z2-z1)*0/dd;
+			double nx = x1+(x2-x1)*n/dd;
+			double ny = y1+(y2-y1)*n/dd;
+			double nz = z1+(z2-z1)*n/dd;
 
-			double px = x1+(x2-x1)*(dn)/dd;
-			double py = y1+(y2-y1)*(dn)/dd;
-			double pz = z1+(z2-z1)*(dn)/dd;
+			double px = x1+(x2-x1)*(dn+n)/dd;
+			double py = y1+(y2-y1)*(dn+n)/dd;
+			double pz = z1+(z2-z1)*(dn+n)/dd;
 
 			v5.addVertexWithUV(nx, ny-h, nz, u, v);
 			v5.addVertexWithUV(nx, ny+h, nz, u, dv);

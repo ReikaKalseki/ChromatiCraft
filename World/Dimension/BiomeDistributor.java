@@ -52,8 +52,8 @@ public class BiomeDistributor extends ThreadedGenerator {
 
 	public static final int SCALE_FACTOR = 1;
 
-	private static final double MIN_STRUCTURE_RADIUS = 64;
-	private static final double MAX_STRUCTURE_RADIUS = 128;
+	private static final double MIN_STRUCTURE_RADIUS = 96;//64;
+	private static final double MAX_STRUCTURE_RADIUS = 384;//128;
 
 	private static ChromaDimensionBiomeType[][] biomes = new ChromaDimensionBiomeType[SIZE][SIZE];
 

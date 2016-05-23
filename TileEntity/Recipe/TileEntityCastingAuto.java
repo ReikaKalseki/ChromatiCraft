@@ -160,7 +160,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						if (this.isRecipeReady(world, x, y, z, te)) {
 							if (this.triggerCrafting(world, x, y, z, te)) {
 								te.syncAllData(true);
-								this.drainEnergy(required);
+								ElementTagCompound tag = required.copy();
+								tag.scale(recipe.getAutomationCostFactor(this, te, null));
+								this.drainEnergy(tag);
 								recipesToGo -= recipeCycles;
 								recipeCycles = 0;
 							}
@@ -173,7 +175,9 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 								ChromaSounds.CAST.playSoundAtBlock(world, c.loc.xCoord, c.loc.yCoord, c.loc.zCoord);
 								int[] dat = new int[]{c.loc.xCoord, c.loc.yCoord, c.loc.zCoord, 0, Item.getIdFromItem(c.item.getItem()), c.item.getItemDamage(), c.item.stackTagCompound != null ? 1 : 0};
 								ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.CASTAUTOUPDATE.ordinal(), this, 48, dat);
-								this.drainEnergy(required);
+								ElementTagCompound tag = required.copy();
+								tag.scale(recipe.getAutomationCostFactor(this, te, c.item));
+								this.drainEnergy(tag);
 								te.markDirty();
 								TileEntity tile = c.loc.getTileEntity(world);
 								if (tile != null) {

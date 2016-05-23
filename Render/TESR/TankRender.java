@@ -11,10 +11,6 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -22,7 +18,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 
@@ -39,7 +34,6 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
-import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -79,119 +73,19 @@ public class TankRender extends ChromaRenderBase {
 		BlockArray blocks = te.getBlocks();
 		int d = Math.max(5, 100-blocks.getSize()/2);
 		int tick = te.getTicksExisted()/d;
-		HashMap<List<Float>, CrystalElement> colors = te.runes;
-		if (colors == null) {
-			colors = new HashMap();
-			te.runes = colors;
-		}
 		CrystalElement et = ChromaAux.getRune(te.getFluid());
 		int last = te.lastptick;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			Coordinate dat = blocks.getRandomBlock();
 			if (dat != null) {
-				colors.put(Arrays.asList((float)dat.xCoord, (float)dat.yCoord, (float)dat.zCoord), et);
+				te.runes.addRune(dat.xCoord, dat.yCoord, dat.zCoord, et);
 				te.lastptick = te.getTicksExisted();
 			}
 		}
-		if (!colors.isEmpty()) {
+		if (!Keyboard.isKeyDown(Keyboard.KEY_NUMPAD9)) {
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
-			Tessellator v5 = Tessellator.instance;
-			GL11.glEnable(GL11.GL_BLEND);
-			BlendMode.ADDITIVEDARK.apply();
-			ReikaTextureHelper.bindTerrainTexture();
-			v5.startDrawingQuads();
-			v5.setBrightness(240);
-			v5.setColorOpaque_I(0xffffff);
-			float sp = Math.min(0.005F, 0.5F/ReikaRenderHelper.getFPS());
-			HashMap<List<Float>, CrystalElement> add = new HashMap();
-			ArrayList<List<Float>> remove = new ArrayList();
-			for (List<Float> key : colors.keySet()) {
-				CrystalElement e = colors.get(key);
-				//ReikaJavaLibrary.pConsole(gs+" @ "+(te.getTicksExisted()%d));
-				float f1 = key.get(0);
-				float f2 = key.get(1);
-				float f3 = key.get(2);
-				int x = Math.round(f1);
-				int y = Math.round(f2);
-				int z = Math.round(f3);
-				HashSet<ForgeDirection> li = new HashSet(ReikaJavaLibrary.makeListFromArray(ForgeDirection.VALID_DIRECTIONS));
-				for (int k = 0; k < 6; k++) {
-					int dx = x+dirs[k].offsetX;
-					int dy = y+dirs[k].offsetY;
-					int dz = z+dirs[k].offsetZ;
-					Block b = te.worldObj.getBlock(dx, dy, dz);
-					if (b == ChromaBlocks.TANK.getBlockInstance())
-						li.remove(dirs[k]);
-				}
-				//ReikaJavaLibrary.pConsole(li+" @ "+Arrays.toString(xyz));
-
-				IIcon ico = e.getGlowRune();
-				float u = ico.getMinU();
-				float du = ico.getMaxU();
-				float v = ico.getMinV();
-				float dv = ico.getMaxV();
-				double o = 0.004;
-				double dx = f1-te.xCoord;
-				double dy = f2-te.yCoord;
-				double dz = f3-te.zCoord;
-
-				for (int i = 0; i < 4; i++) {
-					if (li.contains(ForgeDirection.SOUTH)) {
-						v5.addVertexWithUV(dx-0-o, dy-0-o, dz+1+o, u, dv);
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz+1+o, du, dv);
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz+1+o, du, v);
-						v5.addVertexWithUV(dx-0-o, dy+1+o, dz+1+o, u, v);
-					}
-					if (li.contains(ForgeDirection.NORTH)) {
-						v5.addVertexWithUV(dx-0-o, dy+1+o, dz-0-o, du, v);
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz-0-o, u, v);
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz-0-o, u, dv);
-						v5.addVertexWithUV(dx-0-o, dy-0-o, dz-0-o, du, dv);
-					}
-					if (li.contains(ForgeDirection.WEST)) {
-						v5.addVertexWithUV(dx-0-o, dy-0-o, dz-0-o, u, dv);
-						v5.addVertexWithUV(dx-0-o, dy-0-o, dz+1+o, du, dv);
-						v5.addVertexWithUV(dx-0-o, dy+1+o, dz+1+o, du, v);
-						v5.addVertexWithUV(dx-0-o, dy+1+o, dz-0-o, u, v);
-					}
-					if (li.contains(ForgeDirection.EAST)) {
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz+1-o, u, dv);
-						v5.addVertexWithUV(dx+1+o, dy-0-o, dz-0+o, du, dv);
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz-0+o, du, v);
-						v5.addVertexWithUV(dx+1+o, dy+1+o, dz+1-o, u, v);
-					}
-					/*
-				if (li.contains(ForgeDirection.UP)) {
-					v5.addVertexWithUV(dx-0-o, dy+1+o, dz+1+o, u, dv);
-					v5.addVertexWithUV(dx+1+o, dy+1+o, dz+1+o, du, dv);
-					v5.addVertexWithUV(dx+1+o, dy+1+o, dz-0-o, du, v);
-					v5.addVertexWithUV(dx-0-o, dy+1+o, dz-0-o, u, v);
-				}
-				if (li.contains(ForgeDirection.DOWN)) {
-					v5.addVertexWithUV(dx-0-o, dy-0-o, dz-0-o, u, v);
-					v5.addVertexWithUV(dx+1+o, dy-0-o, dz-0-o, du, v);
-					v5.addVertexWithUV(dx+1+o, dy-0-o, dz+1+o, du, dv);
-					v5.addVertexWithUV(dx-0-o, dy-0-o, dz+1+o, u, dv);
-				}*/
-				}
-
-				f2 -= sp;
-				int y2 = MathHelper.floor_double(f2);
-				if (blocks.hasBlock(x, y2, z)) {
-					add.put(Arrays.asList(f1, f2, f3), e);
-				}
-				remove.add(key);
-			}
-			for (List<Float> key : add.keySet())
-				colors.put(key, add.get(key));
-			for (List<Float> key : remove)
-				colors.remove(key);
-
-			v5.draw();
-			GL11.glDisable(GL11.GL_BLEND);
-			BlendMode.DEFAULT.apply();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			te.runes.updateAndRender(Tessellator.instance, te, par8);
 			GL11.glPopMatrix();
 		}
 	}

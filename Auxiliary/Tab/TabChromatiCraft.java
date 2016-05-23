@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Tab;
 
 import net.minecraft.item.ItemStack;
 import Reika.DragonAPI.Instantiable.GUI.RegistryEnumCreativeTab;

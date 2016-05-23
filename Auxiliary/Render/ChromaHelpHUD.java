@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Render;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -21,6 +21,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaHelpData;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;

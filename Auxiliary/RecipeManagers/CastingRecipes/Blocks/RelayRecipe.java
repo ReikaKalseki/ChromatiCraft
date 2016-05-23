@@ -13,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -33,7 +32,7 @@ public class RelayRecipe extends MultiBlockCastingRecipe implements EnergyLinkin
 
 	@Override
 	public boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
+		return super.canRunRecipe(ep);// && RecipesCastingTable.playerHasCrafted(ep, RecipeType.PYLON);
 	}
 
 	@Override

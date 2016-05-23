@@ -225,8 +225,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				}
 				if (args[1].equals("all") || args[1].equals("ability") || args[1].equals("abilities")) {
 					for (Ability c : Chromabilities.getAbilities()) {
-						if (!Chromabilities.playerHasAbility(ep, c))
-							Chromabilities.removeFromPlayer(ep, c);
+						Chromabilities.removeFromPlayer(ep, c);
 					}
 					this.sendChatToSender(ics, EnumChatFormatting.GREEN+"Abilities reset for "+ep.getCommandSenderName());
 				}

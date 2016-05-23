@@ -20,7 +20,7 @@ import net.minecraftforge.common.DimensionManager;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Base.CoreContainer;

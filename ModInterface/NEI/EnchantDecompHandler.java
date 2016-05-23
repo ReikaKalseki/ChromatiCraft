@@ -26,7 +26,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiEnchantDecomposer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;

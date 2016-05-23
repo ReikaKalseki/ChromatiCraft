@@ -27,8 +27,8 @@ import net.minecraft.util.IIcon;
 
 import org.lwjgl.input.Keyboard;
 
-import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;

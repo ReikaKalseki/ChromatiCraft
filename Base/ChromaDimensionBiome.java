@@ -14,10 +14,15 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.ChromaDimensionBiomeType;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
 public abstract class ChromaDimensionBiome extends BiomeGenBase {
 
 	public final Biomes biomeType;
+
+	protected final SimplexNoiseGenerator grassColor;
 
 	public ChromaDimensionBiome(int id, String n, Biomes t) {
 		super(id);
@@ -25,13 +30,18 @@ public abstract class ChromaDimensionBiome extends BiomeGenBase {
 		this.func_76733_a(5159473);
 		this.setDisableRain();
 		biomeType = t;
+		grassColor = new SimplexNoiseGenerator(System.currentTimeMillis());
 	}
 
 	//public abstract boolean allowsGenerator(DimensionGenerators gen);
 
 	@Override
 	public int getBiomeGrassColor(int x, int y, int z) {
-		return ChromatiCraft.rainbowforest.getBiomeGrassColor(x, y, z);
+		int c = ChromatiCraft.rainbowforest.getBiomeGrassColor(x, y, z);
+		double rx = x/8D;
+		double rz = z/8D;
+		float f = (float)ReikaMathLibrary.normalizeToBounds(grassColor.getValue(rx, rz), 1, 1.5);
+		return ReikaColorAPI.multiplyChannels(c, 1, f, 1);
 	}
 
 	@Override

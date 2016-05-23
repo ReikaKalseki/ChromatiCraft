@@ -95,6 +95,10 @@ public enum ChromaIcons {
 	FAN("fan"),
 	SIDEDFLOW("sidedflow"),
 	SIDEDFLOWBI("sidedflow-bi"),
+	RING0("ring0"),
+	RING1("ring1"),
+	RING2("ring2"),
+	RING3("ring3"),
 	;
 
 	private IIcon icon;

@@ -221,16 +221,16 @@ public class ThreeDMazeGenerator extends DimensionStructureGenerator {
 		for (int a = 0; a < n; a++) {
 			boolean large = rand.nextInt(6) == 0;
 			int s = large ? 2 : 1;
-			int dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s);
-			int dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s);
-			int dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s);
+			int dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s-1);
+			int dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s-1);
+			int dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s-1);
 			Coordinate c = new Coordinate(dx, dy, dz);
 			int d = 4+s;
 			int tries = 0;
 			while ((c.getTaxicabDistanceTo(end) < d || c.getTaxicabDistanceTo(start) < d) && tries < 50) {
-				dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s);
-				dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s);
-				dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s);
+				dx = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_X-s-1);
+				dy = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Y-s-1);
+				dz = ReikaRandomHelper.getRandomBetween(s, MAX_SIZE_Z-s-1);
 				c = new Coordinate(dx, dy, dz);
 				tries++;
 			}

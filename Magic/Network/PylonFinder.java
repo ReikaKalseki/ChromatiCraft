@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker.CrystalLink;
 import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -412,6 +413,7 @@ public class PylonFinder {
 		tracer.addTransparentBlock(Blocks.glass);
 		tracer.addTransparentBlock(Blocks.glass_pane);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);
+		tracer.addTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			addRCGlass();
 		}

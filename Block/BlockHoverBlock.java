@@ -153,8 +153,8 @@ public class BlockHoverBlock extends Block {
 
 	@Override
 	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
-		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 32);
-		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y-1, z, 32);
+		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 4);
+		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y-1, z, 2);
 	}
 
 	@Override

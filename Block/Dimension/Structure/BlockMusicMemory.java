@@ -14,6 +14,7 @@ import java.util.List;
 
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,9 +31,11 @@ import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.Music.MusicPuzzle;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -214,16 +217,40 @@ public class BlockMusicMemory extends BlockContainer {
 			ReikaSoundHelper.playClientSound(ChromaSounds.DING, xCoord+0.5, yCoord+0.5, zCoord+0.5-1, 1, (float)rel);
 			ReikaSoundHelper.playClientSound(ChromaSounds.DING, xCoord+0.5, yCoord+0.5, zCoord+0.5+9, 1, (float)rel);
 			for (CrystalElement e : CrystalMusicManager.instance.getColorsWithKey(key)) {
-				this.playCrystal(e);
+				this.playCrystal(e, key);
 			}
 		}
 
 		@SideOnly(Side.CLIENT)
-		private void playCrystal(CrystalElement e) {
+		private void playCrystal(CrystalElement e, MusicKey key) {
 			int dy = yCoord+1;
 			int dx = e.ordinal() >= 8 ? xCoord-4 : xCoord+4;
 			int dz = zCoord+1+e.ordinal()%8;
 			BlockMusicTrigger.createParticle(worldObj, dx, dy, dz, e);
+			int idx = CrystalMusicManager.instance.getIntervalFor(e, key);
+			double px = dx+0.5;
+			if (e.ordinal() >= 8)
+				px += 0.75;
+			else
+				px -= 0.75;
+			double pz = dz+0.5;
+			double py = yCoord+0.5;
+			EntityBlurFX fx = new EntityBlurFX(worldObj, px, py, pz).setColor(e.getColor()).setLife(30).setScale(3F).setRapidExpand().setAlphaFading();
+			switch(idx) {
+				case 0:
+					fx.setIcon(ChromaIcons.RING0);
+					break;
+				case 1:
+					fx.setIcon(ChromaIcons.RING1);
+					break;
+				case 2:
+					fx.setIcon(ChromaIcons.RING2);
+					break;
+				case 3:
+					fx.setIcon(ChromaIcons.RING3);
+					break;
+			}
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
 		public void play() {

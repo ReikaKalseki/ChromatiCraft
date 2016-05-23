@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -172,12 +173,20 @@ public final class RelayNetworker {
 					else if (b.getLightOpacity(world, c.xCoord, c.yCoord, c.zCoord) > 0)
 						return null;
 					 */
-					if (!PylonFinder.isBlockPassable(world, c.xCoord, c.yCoord, c.zCoord)) {
+					if (!PylonFinder.isBlockPassable(world, c.xCoord, c.yCoord, c.zCoord) && !this.isBlockRelayTransparent(world, c.xCoord, c.yCoord, c.zCoord)) {
 						return null;
 					}
 				}
 			}
 			return null;
+		}
+
+		private boolean isBlockRelayTransparent(World world, int x, int y, int z) {
+			Block b = world.getBlock(x, y, z);
+			int meta = world.getBlockMetadata(x, y, z);
+			if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && meta == Flowers.FLOWIVY.ordinal())
+				return true;
+			return false;
 		}
 
 	}

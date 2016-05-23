@@ -28,12 +28,14 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -257,6 +259,11 @@ public class PylonTurboRecipe extends PylonRecipe {
 
 		EntityFX fx = new EntityBlurFX(te.worldObj, x, y, z).setRapidExpand().setScale(24).setColor(c1).setLife(l).setIcon(ChromaIcons.RINGFLARE);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
+	@Override
+	public float getAutomationCostFactor(TileEntityCastingAuto ae, TileEntityCastingTable te, ItemStack is) {
+		return is == null ? 8 : ReikaItemHelper.matchStacks(is, ChromaStacks.lumenCore) ? 4 : 2;
 	}
 
 }

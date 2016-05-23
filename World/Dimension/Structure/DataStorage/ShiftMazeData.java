@@ -40,23 +40,24 @@ public class ShiftMazeData extends StructureData {
 
 	@Override
 	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
-		this.cycle(world);
+		this.cycle(world, x, y, z);
 	}
 
-	private void cycle(World world) {
+	private void cycle(World world, int x, int y, int z) {
 		MazeState last = shift.getState(state);
 		state = (state+1)%length;
 		MazeState active = shift.getState(state);
 		for (Coordinate c : shift.getLocks()) {
-			int x = c.xCoord;
-			int z = c.zCoord;
-			if (last.isPositionOpen(x, z) && !active.isPositionOpen(x, z)) {
+			int dx = c.xCoord;
+			int dz = c.zCoord;
+			if (last.isPositionOpen(dx, dz) && !active.isPositionOpen(dx, dz)) {
 				this.toggleLock(world, c, false);
 			}
-			else if (!last.isPositionOpen(x, z) && active.isPositionOpen(x, z)) {
+			else if (!last.isPositionOpen(dx, dz) && active.isPositionOpen(dx, dz)) {
 				this.toggleLock(world, c, true);
 			}
 		}
+		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone);
 	}
 
 	private void toggleLock(World world, Coordinate c, boolean open) {

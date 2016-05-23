@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.CubeRotation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -146,7 +147,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 		@Override
 		public boolean isLegalTransition(BiomeGenBase in, BiomeGenBase out) {
-			return this.isAccessibleBiome(in) && this.isAccessibleBiome(out);
+			return DragonAPICore.isReikasComputer() || (this.isAccessibleBiome(in) && this.isAccessibleBiome(out));
 		}
 
 		private boolean isAccessibleBiome(BiomeGenBase in) {

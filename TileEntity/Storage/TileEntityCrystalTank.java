@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Storage;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,11 +23,11 @@ import net.minecraftforge.fluids.IFluidHandler;
 
 import org.lwjgl.input.Keyboard;
 
+import Reika.ChromatiCraft.Auxiliary.Render.TankRunes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
@@ -55,7 +53,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	private Fluid fluidType;
 
 	//Render only-------
-	public HashMap<List<Float>, CrystalElement> runes = new HashMap();
+	public final TankRunes runes = new TankRunes();
 	public int ptick = -1;
 	public int lastptick = -1;
 	//------------------
@@ -210,8 +208,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		return tank.getLevel();
 	}
 
+	@SideOnly(Side.CLIENT)
 	public BlockArray getBlocks() {
-		return blocks.copy();
+		return blocks;//.copy();
 	}
 
 	public void addCoordinate(int x, int y, int z) {

@@ -270,7 +270,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 		color = 0xffffff;
 		redstoneCache = new int[6];
 		singleDirection = null;
-		if (ModList.OPENCOMPUTERS.isLoaded()) {
+		if (ModList.OPENCOMPUTERS.isLoaded() && this.getOther() != null) {
 			for (int i = 0; i < 6; i++) {
 				if (sidedOCNode[i] != null)
 					((Node)sidedOCNode[i]).disconnect(((Node)this.getOther().sidedOCNode[i]));

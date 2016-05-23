@@ -77,6 +77,8 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 
+		BlendMode.DEFAULT.apply();
+
 		GL11.glPushMatrix();
 		if (te.isInWorld()) {
 

@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Auxiliary;
+package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ColorDiscovery;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.StructureComplete;
@@ -164,7 +165,8 @@ public class ChromaOverlays {
 			if (washout > 0) {
 				this.renderWashout(evt);
 				//evt.setCanceled(true);
-
+				GL11.glPopAttrib();
+				GL11.glPopMatrix();
 				return;
 			}
 		}
@@ -254,7 +256,6 @@ public class ChromaOverlays {
 			}
 		}
 
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glPopAttrib();
 	}
 

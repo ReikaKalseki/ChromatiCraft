@@ -24,7 +24,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalFurnace;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
