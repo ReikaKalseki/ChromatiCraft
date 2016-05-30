@@ -64,6 +64,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 	private MultiMap<Point, Path> nodePaths = new MultiMap(); //point is the end point of the path
 
 	private MazeState[] states = new MazeState[ANCHORS+1];
+	private int baseState;
 
 	private Point step;
 	private ForgeDirection nextDir;
@@ -99,12 +100,14 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 		entryX = x+26;
 		entryZ = z+11;
 
+		baseState = rand.nextInt(states.length);
+
 		for (int i = 0; i < states.length; i++) {
 			states[i] = new MazeState();
 		}
 
 		FixedMaze fixed = new FixedMaze(this, rand);
-		FixedMazeDoors doors = new FixedMazeDoors(this, ANCHORS+1, rand);
+		FixedMazeDoors doors = new FixedMazeDoors(this, ANCHORS+1, rand, baseState);
 		ShiftMazeLoot loot = new ShiftMazeLoot(this);
 
 		fixed.generate(world, x, posY, z);
@@ -550,7 +553,7 @@ public class ShiftMazeGenerator extends DimensionStructureGenerator {
 
 	@Override
 	public StructureData createDataStorage() {
-		return new ShiftMazeData(this, ANCHORS+1);
+		return new ShiftMazeData(this, ANCHORS+1, baseState);
 	}
 
 	public static class MazeState {

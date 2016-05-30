@@ -514,6 +514,11 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		public String getFormatting() {
 			return EnumChatFormatting.BOLD.toString();
 		}
+
+		@Override
+		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+			return ChromaResearchManager.instance.setPlayerResearchLevel(ep, this, notify);
+		}
 	}
 
 	private static final class ChromaResearchComparator implements Comparator<ChromaResearch> {
@@ -551,6 +556,8 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 		//@SideOnly(Side.CLIENT)
 		public String getFormatting();
+
+		public boolean giveToPlayer(EntityPlayer ep, boolean notify);
 
 	}
 

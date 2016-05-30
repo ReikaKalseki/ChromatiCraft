@@ -464,7 +464,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	private void doSurge() {
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.REPEATERSURGE.ordinal(), this, 64, surgeColor.ordinal());
+		if (!worldObj.isRemote)
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.REPEATERSURGE.ordinal(), this, 64, surgeColor.ordinal());
 		int y = yCoord-1;
 		Block b = worldObj.getBlock(xCoord, y, zCoord);
 		while (y > 0 && b == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || b == ChromaBlocks.RUNE.getBlockInstance()) {

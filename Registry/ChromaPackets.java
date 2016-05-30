@@ -93,7 +93,7 @@ public enum ChromaPackets {
 	PYLONTURBOFAIL(1),
 	MUSICPLAY(1),
 	TURRETATTACK(1),
-	MONUMENTEVENT(5),
+	MONUMENTEVENT(6),
 	MONUMENTCOMPLETE(3),
 	RESETMONUMENT(3),
 	MONUMENTEND(),
@@ -131,6 +131,7 @@ public enum ChromaPackets {
 	ASPECTMODE(),
 	FLUIDSEND(5),
 	COLLECTORRANGE(1),
+	LEAVEDIM(),
 	;
 
 	public final int numInts;

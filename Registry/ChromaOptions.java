@@ -57,6 +57,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	DELEND("Delete End on Unload", false),
 	EASYFRAG("Auxiliary Fragment Acquisition", false),
 	COPYSIZE("Duplication Wand Max Volume", 1000),
+	SHIFTTILES("World Shift Can Move TileEntities", false),
 	//SMALLAURA("Use reduced-size Pylon Aura image; only enable this if you get a full-screen color washout", false),
 	STRUCTDIFFICULTY("Dimension Structure Difficulty", 3),
 	BALLLIGHTNING("Enable Ball Lightning", true),
@@ -69,7 +70,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
 	BIOMEFX("Biome FX", true),
 	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
-	POWEREDACCEL("Adjacency Upgrades Require Energy", false);
+	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
+	PROGRESSDURATION("Progression Notification Duration", 800);
 
 	private String label;
 	private boolean defaultState;

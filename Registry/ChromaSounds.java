@@ -224,7 +224,9 @@ public enum ChromaSounds implements SoundEnum {
 	public boolean preload() {
 		switch(this) {
 			case MONUMENT:
+			case MONUMENTCOMPLETE:
 			case CRAFTING:
+			case POWERCRAFT:
 			case INFUSION:
 			case ABILITY:
 			case GOTODIM:

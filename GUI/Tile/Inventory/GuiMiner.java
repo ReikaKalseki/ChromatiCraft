@@ -115,7 +115,7 @@ public class GuiMiner extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "miner";
+		return "miner2";
 	}
 
 }

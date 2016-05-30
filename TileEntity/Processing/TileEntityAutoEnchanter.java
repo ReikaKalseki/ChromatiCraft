@@ -244,7 +244,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	@Override
 	public int getCapacity() {
-		return 6000;
+		return 12000;//6000;
 	}
 
 	@Override

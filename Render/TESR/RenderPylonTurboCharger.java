@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Models.ModelTurbo;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
@@ -117,7 +118,10 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 						GL11.glTranslated(0, i, 0);
 						DecimalPosition p1 = new DecimalPosition(te);
 						DecimalPosition p2 = new DecimalPosition(te).offset(0, h, 0);
-						ChromaFX.drawEnergyTransferBeam(p1, p2, te.getPylon(te.worldObj, te.xCoord, te.yCoord, te.zCoord).getColor().getColor(), 0.35, 0.35, (byte)6, t);
+						TileEntityCrystalPylon tp = te.getPylon(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
+						if (tp != null) {
+							ChromaFX.drawEnergyTransferBeam(p1, p2, tp.getColor().getColor(), 0.35, 0.35, (byte)6, t);
+						}
 						GL11.glPopMatrix();
 					}
 

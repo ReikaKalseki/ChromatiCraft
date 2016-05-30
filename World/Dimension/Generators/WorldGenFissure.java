@@ -21,7 +21,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -91,13 +93,36 @@ public class WorldGenFissure extends ChromaWorldGenerator {
 							Block b = world.getBlock(dx2, dy2, dz2);
 							int m = world.getBlockMetadata(dx2, dy2, dz2);
 							if (b.getMaterial() == Material.rock && this.canCutInto(world, dx2, dy2, dz2)) {
-								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), 0, 3);
+								world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 3);
 								Coordinate c = new Coordinate(dx2, 0, dz2);
 								Integer get = columns.get(c);
 								int h = get != null ? get.intValue() : 0;
 								columns.put(c, Math.max(dy2+1, h));
 							}
 						}
+
+						int gy = my-6;
+						for (int d = 0; d < 6; d++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
+							int dx2 = dx+dir.offsetX;
+							int dy2 = gy+dir.offsetY;
+							int dz2 = dz+dir.offsetZ;
+							if (this.canCutInto(world, dx2, dy2, dz2)) {
+								if (dir == ForgeDirection.UP) {
+									for (int h = 1; h < my; h++) {
+										dy2 = gy+dir.offsetY*h;
+										if (this.canCutInto(world, dx2, dy2, dz2)) {
+											world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.ordinal(), 3);
+										}
+									}
+								}
+								else {
+									if (world.getBlock(dx2, dy2, dz2) != ChromaBlocks.DIMGEN.getBlockInstance())
+										world.setBlock(dx2, dy2, dz2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.CLOAK.metadata, 3);
+								}
+							}
+						}
+						world.setBlock(dx, gy, dz, ChromaBlocks.DIMGEN.getBlockInstance(), DimDecoTypes.LIFEWATER.ordinal(), 3);
 					}
 				}
 			}

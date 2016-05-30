@@ -462,17 +462,28 @@
 			A glowing core, tuned to one of the crystal colors. Interesting...
 		</reveal>
 	</structcomplete>
-	<name>
+	<netherroof>
 		<title>
-
+			A second layer
 		</title>
 		<hint>
-
+			The evil realm seems capped. Is the cap impenetrable?
 		</hint>
 		<reveal>
-
+			No, and further mysteries await for those who venture into it.
 		</reveal>
-	</name>
+	</netherroof>
+	<netherstruct>
+		<title>
+			Ominous Constructions
+		</title>
+		<hint>
+			Strange things dot and cross the Nether roof.
+		</hint>
+		<reveal>
+			Some even contain useful clues.
+		</reveal>
+	</netherstruct>
 	<name>
 		<title>
 

@@ -193,6 +193,8 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	}
 
 	private static ItemStack spreadItems(EntityPlayer ep, ItemStack is) {
+		if (is == null)
+			return null;
 		int n = spreadSet.size();
 		int amt = is.stackSize;
 		for (WorldLocation loc : spreadSet) {

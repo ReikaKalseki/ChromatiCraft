@@ -406,7 +406,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 		if (DragonAPICore.debugtest)
 			return ReikaItemHelper.getSizedItemStack(li.get(0), amt);
 
-		ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients+" / "+network);
+		if (ModList.APPENG.isLoaded()) {
+			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients+" / "+network);
+		}
+		else {
+			ChromatiCraft.logger.debug("Delegate "+this+" requesting "+li+" from "+ingredients);
+		}
 
 		for (ItemStack is : li) {
 			if (ModList.APPENG.isLoaded()) {
@@ -417,11 +422,18 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 						ret.setItemDamage(0);
 						return ret;
 					}
+					else {
+						//network.triggerFuzzyCrafting(worldObj, is, amt, null, null);
+					}
 				}
 				else {
 					int rem = (int)network.removeItem(ReikaItemHelper.getSizedItemStack(is, amt), false, is.stackTagCompound != null);
-					if (rem > 0)
+					if (rem > 0) {
 						return ReikaItemHelper.getSizedItemStack(is, rem);
+					}
+					else {
+						//network.triggerCrafting(worldObj, is, amt, null, null); GOD DAMN IT AE
+					}
 				}
 				ChromatiCraft.logger.debug(this+" failed to find "+is+" in its ME System.");
 			}

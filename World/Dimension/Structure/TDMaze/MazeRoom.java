@@ -110,10 +110,10 @@ public class MazeRoom extends StructurePiece {
 
 		if (rand.nextInt(Math.max(1, 3-cellRadius)) == 0) {
 			String s = rand.nextBoolean() ? ChestGenHooks.DUNGEON_CHEST : ChestGenHooks.PYRAMID_DESERT_CHEST;
-			ItemStack is = rand.nextBoolean() ? ChromaStacks.getChargedShard(CrystalElement.randomElement()) : ChromaStacks.lumaDust;
+			ItemStack is = rand.nextBoolean() ? ChromaStacks.getChargedShard(CrystalElement.randomElement()) : ChromaStacks.lumaDust.copy();
 			int m = 2;
 			if (cellRadius > 1 && rand.nextInt(4) == 0) {
-				is = ChromaStacks.complexIngot;
+				is = ChromaStacks.complexIngot.copy();
 				m = 1;
 			}
 			is.stackSize = 1+m*rand.nextInt(2*cellRadius);

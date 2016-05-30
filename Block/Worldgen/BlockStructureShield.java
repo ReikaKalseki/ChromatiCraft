@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Block.Worldgen;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
@@ -137,9 +138,9 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
 		if (ReikaBlockHelper.isLiquid(b))
 			return false;
-		if (b == ChromaBlocks.DOOR.getBlockInstance())
-			return false;
 		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			if (b == ChromaBlocks.DOOR.getBlockInstance())
+				return false;
 			if (b instanceof BlockStructureShield)
 				return false;
 			if (ChromaBlocks.getEntryByID(b) != null && ChromaBlocks.getEntryByID(b).isDimensionStructureBlock())
@@ -211,6 +212,21 @@ public class BlockStructureShield extends Block implements SemiUnbreakable {
 	@Override
 	public boolean isUnbreakable(World world, int x, int y, int z, int meta) {
 		return meta >= 8 && !BlockType.list[meta%8].isMineable();
+	}
+
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block b, int meta) {
+		super.breakBlock(world, x, y, z, b, meta);
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			if (world.getBlock(dx, dy, dz) instanceof BlockTNT) {
+				world.getBlock(dx, dy, dz).onBlockDestroyedByPlayer(world, dx, dy, dz, 1);
+				world.setBlockToAir(dx, dy, dz);
+			}
+		}
 	}
 
 }

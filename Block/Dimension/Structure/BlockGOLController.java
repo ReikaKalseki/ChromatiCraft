@@ -77,6 +77,8 @@ public class BlockGOLController extends BlockContainer {
 
 	@Override
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) {
+		if (s <= 1)
+			return icons[2];
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (te instanceof GOLController && ((GOLController)te).isActive) {
 			return icons[1];
@@ -119,6 +121,7 @@ public class BlockGOLController extends BlockContainer {
 					}
 				}
 			}
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		private void reset() {
@@ -137,6 +140,7 @@ public class BlockGOLController extends BlockContainer {
 				}
 			}
 			this.getGenerator().clearTiles();
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 
 		@Override

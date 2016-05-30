@@ -27,6 +27,7 @@ import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
@@ -131,6 +132,7 @@ import Reika.DragonAPI.Instantiable.Event.AttackAggroEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
+import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
@@ -138,6 +140,7 @@ import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
+import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -179,6 +182,27 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void dioramaSpawners(EntitySpawnerCheckEvent evt) {
+		if (evt.entityLiving instanceof EntityGhast && evt.logic.getSpawnerY() > 129) {
+			if (evt.entityLiving.worldObj.getCollidingBoundingBoxes(evt.entityLiving, evt.entityLiving.boundingBox).isEmpty())
+				evt.setResult(Result.ALLOW);
+		}
+	}
+
+	@SubscribeEvent
+	public void banDimensionBlocks(SetBlockEvent evt) {
+		if (evt.world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			Block b = evt.getBlock();
+			int meta = evt.getMetadata();
+			if (ChromaDimensionManager.isBannedDimensionBlock(b, meta)) {
+				ArrayList<ItemStack> li = b.getDrops(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, meta, 0);
+				evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, Blocks.air);
+				ReikaItemHelper.dropItems(evt.world, evt.xCoord+0.5, evt.yCoord+0.5, evt.zCoord+0.5, li);
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -245,8 +269,23 @@ public class ChromaticEventManager {
 				evt.setCanceled(true);
 			}
 			else {
-				evt.distance = (Math.min(evt.distance, Math.max(1, 0.5F*MathHelper.sqrt_float(evt.distance))));
+				evt.distance = Math.min(8, (Math.min(evt.distance, Math.max(1, 0.5F*MathHelper.sqrt_float(evt.distance)))));
 			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void protectDimDeath(LivingDeathEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && evt.entityLiving.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+			evt.entityLiving.setHealth(1);
+			evt.setCanceled(true);
+			ReikaEntityHelper.transferEntityToDimension(evt.entityLiving, 0, new ChromaTeleporter(0));
+			ElementTagCompound tag = PlayerElementBuffer.instance.getPlayerBuffer((EntityPlayer)evt.entityLiving);
+			for (CrystalElement e : new ArrayList<CrystalElement>(tag.elementSet())) {
+				float f = (float)ReikaRandomHelper.getRandomBetween(0.4, 0.9);
+				tag.setTag(e, Math.max(1, (int)(tag.getValue(e)*f)));
+			}
+			PlayerElementBuffer.instance.removeFromPlayer((EntityPlayer)evt.entityLiving, tag);
 		}
 	}
 

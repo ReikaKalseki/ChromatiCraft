@@ -23,14 +23,15 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class ShiftMazeData extends StructureData {
 
-	private int state = 0;
+	private int state;
 	private final int length;
 	private final ShiftMazeGenerator shift;
 
-	public ShiftMazeData(ShiftMazeGenerator gen, int len) {
+	public ShiftMazeData(ShiftMazeGenerator gen, int len, int baseState) {
 		super(gen);
 		length = len;
 		shift = (ShiftMazeGenerator)generator;
+		state = baseState;
 	}
 
 	@Override

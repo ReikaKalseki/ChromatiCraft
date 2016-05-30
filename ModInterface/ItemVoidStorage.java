@@ -26,7 +26,6 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.BasicInventory;
-import Reika.DragonAPI.Instantiable.DummyInventory;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -83,7 +82,7 @@ public class ItemVoidStorage extends ItemChromaTool implements SpriteRenderCallb
 
 	@Override
 	public IInventory getUpgradesInventory(ItemStack is) {
-		return new DummyInventory();//ECCellInventory(is, "upgrades", 2, 1);
+		return new AECellFormat(is, "upgrades", 2);
 	}
 
 	@Override

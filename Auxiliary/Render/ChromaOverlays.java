@@ -83,6 +83,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -128,6 +129,8 @@ public class ChromaOverlays {
 	private CrystalElement washoutColor;
 
 	static final double FRONT_TRANSLATE = 930;
+
+	private static final int PROGRESS_DURATION = Math.max(100, ChromaOptions.PROGRESSDURATION.getValue());
 
 	private ChromaOverlays() {
 
@@ -470,7 +473,7 @@ public class ChromaOverlays {
 			int sw = Math.max(40, fr.getStringWidth(p.getTitle()));
 			int sh = 24+(fr.listFormattedStringToWidth(p.getShortDesc(), sw*2).size()-1)*4;//24;
 			int w = sw+28;//144;
-			int h = tick > 800-sh ? 800-tick : tick < sh ? tick : sh;
+			int h = tick > PROGRESS_DURATION-sh ? PROGRESS_DURATION-tick : tick < sh ? tick : sh;
 
 			int x = Minecraft.getMinecraft().displayWidth/gsc-w-1;
 
@@ -902,6 +905,7 @@ public class ChromaOverlays {
 
 		int n = tag.tagCount();
 		int i = 0;
+		double angleStep = ReikaMathLibrary.isInteger(360D/n) ? 2 : 1;
 		for (CrystalElement e : tag.elementSet()) {
 			double min = i*360D/n;
 			double max = (i+1)*360D/n;
@@ -914,7 +918,7 @@ public class ChromaOverlays {
 			int color = ReikaColorAPI.mixColors(e.getColor(), 0, 0.25F);
 			v5.setColorOpaque_I(color);
 			v5.setBrightness(240);
-			for (double a = min; a <= max; a += 2) {
+			for (double a = min; a <= max; a += angleStep) {
 				double x = ox+r*Math.cos(Math.toRadians(oa+a));
 				double y = oy+r*Math.sin(Math.toRadians(oa+a));
 				//ReikaJavaLibrary.pConsole(x+", "+y);
@@ -928,7 +932,7 @@ public class ChromaOverlays {
 			v5.setColorOpaque_I(color);
 			v5.setBrightness(240);
 			double dr = Math.min(r, r*lt.getEnergy(e)/maxe);
-			for (double a = min; a <= max; a += 2) {
+			for (double a = min; a <= max; a += angleStep) {
 				double x = ox+dr*Math.cos(Math.toRadians(oa+a));
 				double y = oy+dr*Math.sin(Math.toRadians(oa+a));
 				//ReikaJavaLibrary.pConsole(x+", "+y);
@@ -1228,7 +1232,7 @@ public class ChromaOverlays {
 	}
 
 	public void addProgressionNote(ProgressElement p) {
-		progressFlags.put(p, 800);
+		progressFlags.put(p, PROGRESS_DURATION);
 		//ReikaJavaLibrary.pConsole("Adding "+p+" to map ("+progressFlags.keySet().contains(p)+"), set is "+progressFlags.keySet());
 	}
 

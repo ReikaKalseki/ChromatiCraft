@@ -9,26 +9,59 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 
-public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenTile {
+public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenTile, AdjacentUpdateWatcher {
+
+	private int efficiencyBoost;
+
+	public void onAdjacentUpdate(Block b) {
+		this.calcEfficiency();
+		this.syncAllData(false);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		efficiencyBoost = NBT.getInteger("eff");
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setInteger("eff", efficiencyBoost);
+	}
+
+	public int getEfficiencyBoost() {
+		return efficiencyBoost;
+	}
 
 	protected final float getEnergyCostScale() {
 		float f = 1;
-		if (this.hasEfficiency())
-			f *= 0.25F;
+		int e = this.getEfficiencyBoost();
+		if (e > 0)
+			f *= TileEntityEfficiencyUpgrade.getCostFactor(e-1);
 		f *= this.getCostModifier();
 		return f;
 	}
 
-	public abstract boolean hasEfficiency();
-
 	public abstract float getCostModifier();
+
+	private void calcEfficiency() {
+		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.BLACK);
+		efficiencyBoost = get != null ? get.intValue() : 0;
+	}
 
 	public final int getEnergy(CrystalElement e) {
 		if (e == null)

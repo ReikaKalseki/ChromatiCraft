@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -144,6 +145,8 @@ public class BlockGravityTile extends BlockContainer {
 			case REROUTE:
 			case SPLITTER:
 				return new RerouteTile();
+			case EMITTER:
+				return new GravityEmitter();
 			default:
 				return new GravityTile();
 		}
@@ -166,6 +169,30 @@ public class BlockGravityTile extends BlockContainer {
 				else if (is != null && is.getItem() == Items.glowstone_dust && te instanceof GravityTarget) {
 					((GravityTarget)te).collectedBursts = 0;
 				}
+				else if (is != null && is.getItem() == Items.beef) {
+					te.gravityFactor -= 0.03125;
+				}
+				else if (is != null && is.getItem() == Items.cooked_beef) {
+					te.gravityFactor += 0.03125;
+				}
+				else if (is != null && is.getItem() == Items.porkchop) {
+					te.gravityRangeFactor -= 0.03125;
+					double r = te.gravityRangeFactor*te.getTileType().gravityRange;
+					if (r > 0)
+						te.gravityDisplay = new PulsingRadius(r, 0.125);
+				}
+				else if (is != null && is.getItem() == Items.cooked_porkchop) {
+					te.gravityRangeFactor += 0.03125;
+					double r = te.gravityRangeFactor*te.getTileType().gravityRange;
+					if (r > 0)
+						te.gravityDisplay = new PulsingRadius(r, 0.125);
+				}
+				else if (is != null && is.getItem() == Items.redstone && te instanceof GravityEmitter) {
+					((GravityEmitter)te).fireDuration += 10;
+				}
+				else if (is != null && is.getItem() == Items.gunpowder && te instanceof GravityEmitter) {
+					((GravityEmitter)te).fireDuration -= 10;
+				}
 				else if (ChromaItems.LINKTOOL.matchWith(is)) {
 					//is.getItem().onItemUse(is, ep, world, x, y, z, 0, 0, 0, 0);
 					return false;
@@ -178,6 +205,16 @@ public class BlockGravityTile extends BlockContainer {
 		}
 		ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.click", 0.75F, 1.25F);
 		return true;
+	}
+
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		GravityTile te = (GravityTile)world.getTileEntity(x, y, z);
+		if (te instanceof GravityEmitter) {
+			if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
+				((GravityEmitter)te).startFiring();
+			}
+		}
 	}
 
 	public static boolean tryMove(World world, int x, int y, int z, ForgeDirection dir) {
@@ -214,8 +251,8 @@ public class BlockGravityTile extends BlockContainer {
 		REROUTE(1, 0.5, ChromaIcons.SIDEDFLOW),
 		SPLITTER(1, 0.5, ChromaIcons.SIDEDFLOWBI),
 		TINTER(0, 0, null),
-		ATTRACTOR(1.5, 0.25, ChromaIcons.BLACKHOLE),
-		REPULSOR(1.5, -0.25, ChromaIcons.CONCENTRIC2),
+		ATTRACTOR(1.5, 0.125, ChromaIcons.BLACKHOLE),
+		REPULSOR(1.5, -0.125, ChromaIcons.CONCENTRIC2),
 		RIFT(0, 0, ChromaIcons.HOLE);
 
 		public static final GravityTiles[] list = values();
@@ -534,6 +571,47 @@ public class BlockGravityTile extends BlockContainer {
 
 	}
 
+	public static class GravityEmitter extends GravityTile {
+
+		private int fireDuration = 180;
+		private int firePower = 1;
+		private int fireTimer;
+
+		@Override
+		public void updateEntity() {
+			super.updateEntity();
+
+			if (fireTimer > 0) {
+				for (int i = 0; i < firePower; i++) {
+					EntityLumaBurst e = this.fire(color);
+				}
+				fireTimer--;
+			}
+		}
+
+		public void startFiring() {
+			if (fireTimer == 0) {
+				fireTimer = fireDuration;
+			}
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+			super.readFromNBT(tag);
+
+			firePower = tag.getInteger("pwr");
+			fireDuration = tag.getInteger("dur");
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+			super.writeToNBT(tag);
+
+			tag.setInteger("pwr", firePower);
+			tag.setInteger("dur", fireDuration);
+		}
+	}
+
 	public static class GravityTile extends StructureBlockTile<GravityPuzzleGenerator> {
 
 		protected String level = "none";
@@ -541,16 +619,19 @@ public class BlockGravityTile extends BlockContainer {
 		protected CubeDirections facing = CubeDirections.NORTH;
 		public int renderAlpha = 255;
 
+		private double gravityFactor = 1;
+		private double gravityRangeFactor = 1;
+
 		public PulsingRadius gravityDisplay;
 
 		@Override
 		public void updateEntity() {
 			GravityTiles type = this.getTileType();
-			if (gravityDisplay == null && worldObj.isRemote)
-				gravityDisplay = new PulsingRadius(type.gravityRange, 0.125);
+			double r = type.gravityRange*gravityRangeFactor;
+			if (gravityDisplay == null && r > 0 && worldObj.isRemote)
+				gravityDisplay = new PulsingRadius(r, 0.125);
 			if (worldObj.isRemote)
 				;//return;
-			double r = type.gravityRange;
 			if (r > 0) {
 				Coordinate c = new Coordinate(this);
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(r, r, r);
@@ -562,9 +643,6 @@ public class BlockGravityTile extends BlockContainer {
 					this.onImpact(type, c, e, r, d);
 				}
 			}
-			if (type == GravityTiles.EMITTER) {
-				EntityLumaBurst e = this.fire(color);
-			}
 		}
 
 		protected void onImpact(GravityTiles type, Coordinate c, EntityLumaBurst e, double r, double d) {
@@ -573,7 +651,7 @@ public class BlockGravityTile extends BlockContainer {
 					double dx = e.posX-xCoord-0.5;
 					double dy = e.posY-yCoord-0.5;
 					double dz = e.posZ-zCoord-0.5;
-					double v = 0.03125*4*type.gravityStrength;
+					double v = 0.03125*4*type.gravityStrength*gravityFactor;
 					e.motionX -= dx*v/d;
 					e.motionY -= dy*v/d;
 					e.motionZ -= dz*v/d;
@@ -639,6 +717,11 @@ public class BlockGravityTile extends BlockContainer {
 
 			level = tag.getString("level");
 			renderAlpha = 255;//tag.getInteger("alpha");
+
+			if (tag.hasKey("gfactor"))
+				gravityFactor = tag.getDouble("gfactor");
+			if (tag.hasKey("rfactor"))
+				gravityRangeFactor = tag.getDouble("rfactor");
 		}
 
 		@Override
@@ -651,6 +734,9 @@ public class BlockGravityTile extends BlockContainer {
 
 			tag.setString("level", level);
 			tag.setInteger("alpha", renderAlpha);
+
+			tag.setDouble("gfactor", gravityFactor);
+			tag.setDouble("rfactor", gravityRangeFactor);
 		}
 
 		public CubeDirections getFacing() {

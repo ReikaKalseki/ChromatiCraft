@@ -33,6 +33,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -54,6 +55,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -199,6 +201,16 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 				}
 			}
 		}
+		if (location == null && this.getPylon(world, x, y, z) != null) {
+			for (int i = 0; i < Location.list.length; i++) {
+				Location loc = Location.list[i];
+				Coordinate c = loc.position.offset(x, y, z);
+				TileEntity te = c.getTileEntity(world);
+				if (te instanceof TileEntityPylonTurboCharger) {
+					((TileEntityPylonTurboCharger)te).location = loc;
+				}
+			}
+		}
 	}
 
 	private void doRitualTick(World world, int x, int y, int z) {
@@ -220,6 +232,13 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 
 			if ((RITUAL_LENGTH-ritualTick)%200 == 0) {
 				ChromaSounds.PYLONBOOSTRITUAL.playSoundAtBlockNoAttenuation(this, 0.75F, 1, EFFECT_RANGE);
+			}
+
+			if (rand.nextInt(20) == 0) {
+				int rx = ReikaRandomHelper.getRandomPlusMinus(te.xCoord, 12);
+				int rz = ReikaRandomHelper.getRandomPlusMinus(te.zCoord, 12);
+				int ry = ReikaRandomHelper.getRandomPlusMinus(te.yCoord, 6);
+				ReikaWorldHelper.ignite(world, rx, ry, rz);
 			}
 
 			if (skyTick > 0) {
@@ -463,6 +482,7 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 						break;
 					case 2:
 						ico = ChromaIcons.SPARKLEPARTICLE.getIcon();
+						fx.setBasicBlend();
 						break;
 					case 3:
 						ico = ChromaIcons.CENTER.getIcon();
@@ -741,7 +761,11 @@ public class TileEntityPylonTurboCharger extends TileEntityChromaticBase impleme
 								return false;
 						}
 					}
-					return true;
+					if (location == null)
+						return false;
+					Location l = location.getNext();
+					Coordinate end = l.position.offset(location.position.negate()).offset(x, y, z);
+					return end.getTileEntity(world) instanceof TileEntityPylonTurboCharger && PylonFinder.lineOfSight(world, x, y, z, end.xCoord, end.yCoord, end.zCoord);
 				}
 			}
 		}

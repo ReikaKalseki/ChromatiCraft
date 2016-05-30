@@ -272,7 +272,7 @@ public enum ChromaResearch implements ProgressElement {
 	RANGEBOOST(		Chromabilities.RANGEDBOOST),
 	DIMPING(		Chromabilities.DIMPING,						ResearchLevel.ENDGAME),
 	DASH(			Chromabilities.DASH),
-	LASERBILITY(	Chromabilities.LASER,						ResearchLevel.CTM),
+	LASERBILITY(	Chromabilities.LASER,						ResearchLevel.ENDGAME),
 	FIRERAIN(		Chromabilities.FIRERAIN,					ResearchLevel.CTM),
 	KEEPINV(		Chromabilities.KEEPINV,						ResearchLevel.ENDGAME),
 	ORECLIP(		Chromabilities.ORECLIP,						ResearchLevel.CTM),
@@ -1311,6 +1311,11 @@ public enum ChromaResearch implements ProgressElement {
 
 	public static ChromaResearch getByName(String s) {
 		return byName.get(s);
+	}
+
+	@Override
+	public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+		return ChromaResearchManager.instance.givePlayerFragment(ep, this, notify);
 	}
 
 }

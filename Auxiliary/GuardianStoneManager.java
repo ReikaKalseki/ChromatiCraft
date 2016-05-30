@@ -11,19 +11,28 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -34,8 +43,52 @@ public class GuardianStoneManager {
 
 	private final ArrayList<ProtectionZone> zones = new ArrayList();
 
-	private GuardianStoneManager() {
+	private final MultiMap<BlockKey, Action> blockExceptions = new MultiMap(new HashSetFactory());
+	private final MultiMap<KeyedItemStack, Action> itemExceptions = new MultiMap(new HashSetFactory());
 
+	private GuardianStoneManager() {
+		for (String s : ChromatiCraft.config.getGuardianExceptions()) {
+			if (this.parseString(s)) {
+				ChromatiCraft.logger.log("Registered Guardian Stone Exception: "+s);
+			}
+			else {
+				ChromatiCraft.logger.logError("Could not parse Guardian Stone exception, due to a malformed line (or missing item): "+s);
+			}
+		}
+	}
+
+	private boolean parseString(String s) {
+		String[] parts = s.split("#");
+		if (parts.length != 2)
+			return false;
+		ItemStack is = ReikaItemHelper.lookupItem(parts[0]);
+		if (is == null)
+			return false;
+		Action a = null;
+		try {
+			a = Action.valueOf(parts[1].toUpperCase(Locale.ENGLISH));
+		}
+		catch (IllegalArgumentException e) {
+			return false;
+		}
+		if (a == null)
+			return false;
+		Block b = Block.getBlockFromItem(is.getItem());
+		if (b != null) {
+			this.addBlockException(new BlockKey(b, is.getItemDamage()), a);
+		}
+		else {
+			this.addItemException(is, a);
+		}
+		return true;
+	}
+
+	public void addBlockException(BlockKey bk, Action a) {
+		blockExceptions.addValue(bk, a);
+	}
+
+	public void addItemException(ItemStack is, Action a) {
+		itemExceptions.addValue(new KeyedItemStack(is).setSimpleHash(true), a);
 	}
 
 	public boolean canPlayerOverrideProtections(EntityPlayer ep) {
@@ -142,9 +195,13 @@ public class GuardianStoneManager {
 		int y = event.y;
 		int z = event.z;
 		if (!world.isRemote) {
-			if (!this.doesPlayerHavePermissions(world, x, y, z, ep))
+			if (!this.doesPlayerHavePermissions(world, x, y, z, ep) && !this.isWhitelistedAction(event.action, world, x, y, z, ep.getCurrentEquippedItem()))
 				event.setCanceled(true);
 		}
+	}
+
+	private boolean isWhitelistedAction(Action a, World world, int x, int y, int z, ItemStack is) {
+		return blockExceptions.get(BlockKey.getAt(world, x, y, z)).contains(a) || itemExceptions.get(new KeyedItemStack(is).setSimpleHash(true)).contains(a);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

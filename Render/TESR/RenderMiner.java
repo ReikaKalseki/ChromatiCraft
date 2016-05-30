@@ -20,6 +20,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -82,11 +83,11 @@ public class RenderMiner extends ChromaRenderBase {
 
 		ArrayList<Integer> li = new ArrayList();
 
-		if (te.hasSpeed())
+		if (TileEntityAdjacencyUpgrade.getAdjacentUpgrades(te).containsKey(CrystalElement.LIGHTBLUE))
 			li.add(0xff0000);
-		if (te.hasEfficiency())
+		if (te.getEfficiencyBoost() > 0)
 			li.add(0x00ff00);
-		if (te.silkTouch())
+		if (te.hasSilkTouch())
 			li.add(0x0000ff);
 
 		if (li.isEmpty())

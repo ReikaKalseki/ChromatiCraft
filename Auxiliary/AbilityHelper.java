@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -114,6 +115,7 @@ import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
+import Reika.VoidMonster.Entity.EntityVoidMonster;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -1813,6 +1815,12 @@ public class AbilityHelper {
 				}
 			}
 		}
+	}
+
+	public boolean canRenderEntityXRay(Entity e) {
+		if (ModList.VOIDMONSTER.isLoaded() && e instanceof EntityVoidMonster)
+			return false;
+		return e instanceof EntityLivingBase && e.worldObj != null;
 	}
 
 }

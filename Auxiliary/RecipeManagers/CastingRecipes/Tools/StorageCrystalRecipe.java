@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCast
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
@@ -95,7 +96,8 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public int getDuration() {
-		return 8*super.getDuration();
+		int n = ReikaMathLibrary.intpow2(2, this.getOutput().getItemDamage());
+		return n*super.getDuration()/2;
 	}
 
 	@Override
@@ -111,7 +113,7 @@ public class StorageCrystalRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 8;
+		return 4;
 	}
 
 }

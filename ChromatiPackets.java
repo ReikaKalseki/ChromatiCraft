@@ -110,6 +110,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -592,7 +593,7 @@ public class ChromatiPackets implements PacketHandler {
 					MonumentCompletionRitual.resetSettings(world, data[0], data[1], data[2]);
 					break;
 				case MONUMENTEVENT:
-					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3], data[4]);
+					MonumentCompletionRitual.triggerMonumentEventClient(world, data[0], data[1], data[2], data[3], data[4], data[5]);
 					break;
 				case MONUMENTEND:
 					((TileEntityStructControl)tile).endMonumentRitual();
@@ -729,6 +730,8 @@ public class ChromatiPackets implements PacketHandler {
 					else
 						((TileEntityItemCollector)tile).decreaseRange();
 					break;
+				case LEAVEDIM:
+					ChromaDimensionManager.resetDimensionClient();
 			}
 		}
 		catch (NullPointerException e) {

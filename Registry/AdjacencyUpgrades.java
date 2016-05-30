@@ -22,8 +22,10 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHealingCore;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHeatRelay;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityPerformanceBoost;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityStabilityCore;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityTankCapacityUpgrade;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import cpw.mods.fml.relauncher.Side;
@@ -33,12 +35,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public enum AdjacencyUpgrades {
 
 	BLACK(0x000000, 0x505050, TileEntityEfficiencyUpgrade.class),
-	RED(0xff0000, 0x800000),
+	RED(0xff0000, 0x800000, TileEntityProtectionUpgrade.class),
 	GREEN(0x00C90E, 0x008206, TileEntityBlockTicker.class),
 	BROWN(0xA06139, 0x56341F, TileEntityOreCreator.class),
 	BLUE(0x0000FF, 0x0065FF),
 	PURPLE(0xBE00EA, 0x7400EA, TileEntityPerformanceBoost.class),
-	CYAN(0x009F8C, 0x009FF0),
+	CYAN(0x009F8C, 0x009FF0, TileEntityTankCapacityUpgrade.class),
 	LIGHTGRAY(0x808080, 0xC0C0C0),
 	GRAY(0x404040, 0x808080),
 	PINK(0xff4040, 0xffcfcf, TileEntityDamageBoost.class),
@@ -104,17 +106,17 @@ public enum AdjacencyUpgrades {
 			case BLACK:
 				return String.format("Reduces lumen consumption by %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case RED:
-				break;
+				return String.format("Protects against explosions up to %sx TNT", ReikaStringParser.getAutoDecimal(this.getFactor(tier)/4D));
 			case GREEN:
-				return String.format("Ticks blocks around it, %d times per 5 seconds", (int)this.getFactor(tier));
+				return String.format("Ticks blocks around it, %d times per 5 seconds", (int)(this.getFactor(tier)*50));
 			case BROWN:
 				return String.format("Transmutes stone into mineral, %s per tick, up to rarity '%s'", ReikaStringParser.getAutoDecimal(this.getFactor(tier)), TileEntityOreCreator.getMaxSpawnableRarity(tier));
 			case BLUE:
 				break;
 			case PURPLE:
-				break;
+				return "Improves the performance of adjacent constructs";
 			case CYAN:
-				break;
+				return String.format("Increases fluid capacity %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case GRAY:
 				break;
 			case LIGHTGRAY:
@@ -140,11 +142,11 @@ public enum AdjacencyUpgrades {
 	public double getFactor(int tier) {
 		switch(this) {
 			case BLACK:
-				break;
+				return TileEntityEfficiencyUpgrade.getCostFactor(tier);
 			case RED:
-				break;
+				return TileEntityProtectionUpgrade.getMaxProtectedPower(tier);
 			case GREEN:
-				return (TileEntityBlockTicker.getTicksPerTick(tier)*50);
+				return (TileEntityBlockTicker.getTicksPerTick(tier));
 			case BROWN:
 				return TileEntityOreCreator.getOreChance(tier);
 			case BLUE:
@@ -152,7 +154,7 @@ public enum AdjacencyUpgrades {
 			case PURPLE:
 				break;
 			case CYAN:
-				break;
+				return TileEntityTankCapacityUpgrade.getCapacityFactor(tier);
 			case GRAY:
 				break;
 			case LIGHTGRAY:

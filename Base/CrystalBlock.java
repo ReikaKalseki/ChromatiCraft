@@ -193,7 +193,7 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 		else {
 			double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.35);
 			double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.35);
-			fx = new EntityFloatingSeedsFX(world, rx, y+0.5, rz, 0, 90).setColor(e.getColor()).setIcon(ChromaIcons.CENTER).setScale(4).setLife(120).setColliding();
+			fx = new EntityFloatingSeedsFX(world, rx, y+0.5, rz, 0, 90, ChromaIcons.CENTER.getIcon()).setColor(e.getColor()).setScale(4).setLife(120).setColliding();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}

@@ -17,7 +17,7 @@ import Reika.DragonAPI.Instantiable.LobulatedCurve;
 public class RegionMapper extends ThreadedGenerator {
 
 	private static final double MIN_BUFFER = 200;
-	private static final double MAX_BUFFER = 1500;
+	public static final double MAX_BUFFER = 1500;
 
 	//private final HashSet<Coordinate> centralRegion = new HashSet();
 	//private static final HashMap<Double, Double> angleMap = new HashMap();

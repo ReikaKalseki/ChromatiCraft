@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector.TargetTi
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.Laser.LaserEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.Laser.LaserLevel;
 import Reika.ChromatiCraft.World.Dimension.Structure.Laser.LaserLoot;
@@ -40,18 +41,23 @@ public class LaserPuzzleGenerator extends DimensionStructureGenerator {
 	private final HashMap<String, LaserPuzzleStatus> rooms = new HashMap();
 
 	static {
+		int d = ChromaOptions.getStructureDifficulty();
 		order.add("mirrortut");
 		order.add("mirrors2");
 		order.add("refractortut");
 		order.add("splittertut");
-		order.add("filtertut");
-		order.add("polartut");
-		order.add("polar2");
-		order.add("oneway");
+		if (d > 1) {
+			order.add("filtertut");
+			order.add("polartut");
+			order.add("polar2");
+			order.add("oneway");
+		}
 		order.add("prismtut1");
 		order.add("prismtut2");
-		order.add("prism3");
-		order.add("complex");
+		if (d > 2) {
+			order.add("prism3");
+			order.add("complex");
+		}
 	}
 
 	@Override

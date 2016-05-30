@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.HashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -23,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -206,6 +210,38 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	@Override
 	public final ChromaTiles getTile() {
 		return ChromaTiles.ADJACENCY;
+	}
+
+	public static HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase core) {
+		HashMap<CrystalElement, Integer> set = new HashMap();
+		for (int i = 0; i < 6; i++) {
+			TileEntity te = core.getAdjacentTileEntity(ForgeDirection.VALID_DIRECTIONS[i]);
+			if (te instanceof TileEntityAdjacencyUpgrade) {
+				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
+				Integer get = set.get(ta.getColor());
+				int has = get != null ? get.intValue() : 0;
+				set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+			}
+		}
+		return set;
+	}
+
+	public static HashMap<CrystalElement, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
+		HashMap<CrystalElement, Integer> set = new HashMap();
+		for (int i = 0; i < 6; i++) {
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = x+dir.offsetX;
+			int dy = y+dir.offsetY;
+			int dz = z+dir.offsetZ;
+			TileEntity te = world.getTileEntity(dx, dy, dz);
+			if (te instanceof TileEntityAdjacencyUpgrade) {
+				TileEntityAdjacencyUpgrade ta = (TileEntityAdjacencyUpgrade)te;
+				Integer get = set.get(ta.getColor());
+				int has = get != null ? get.intValue() : 0;
+				set.put(ta.getColor(), Math.max(1+ta.getTier(), has));
+			}
+		}
+		return set;
 	}
 
 }

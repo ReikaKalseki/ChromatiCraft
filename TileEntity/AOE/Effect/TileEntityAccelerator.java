@@ -72,7 +72,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 			actions.put(cl, blacklistKey);
 		}
 		catch (ClassNotFoundException e) {
-			ChromatiCraft.logger.logError("Could not add "+name+" to the Accelerator blacklist: Class not found!");
+			ChromatiCraft.logger.log("Could not add "+name+" to the Accelerator blacklist: Class not found!");
 		}
 	}
 
@@ -118,7 +118,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	private Acceleration getAccelerate(TileEntity te) {
 		if (te == null)
 			return blacklistKey;
-		if (te instanceof TileEntityAccelerator)
+		if (te instanceof TileEntityAdjacencyUpgrade)
 			return blacklistKey;
 		if (!te.canUpdate() || te.isInvalid())
 			return blacklistKey;

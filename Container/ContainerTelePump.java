@@ -25,10 +25,10 @@ public class ContainerTelePump extends CoreContainer {
 		tile = te;
 
 		this.addSlot(0, 152, 35);
-		this.addSlot(1, 152, 54);
+		//this.addSlot(1, 152, 54);
 
-		this.addSlot(2, 170, 54);
-		this.addSlot(3, 170, 35);
+		//this.addSlot(2, 170, 54);
+		//this.addSlot(3, 170, 35);
 
 		this.addPlayerInventoryWithOffset(player, 9, 2);
 	}

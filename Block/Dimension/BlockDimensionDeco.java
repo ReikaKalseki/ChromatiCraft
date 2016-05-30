@@ -59,7 +59,8 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		LATTICE(1),
 		GEMSTONE(3),
 		CRYSTALLEAF(3),
-		OCEANSTONE(1);
+		OCEANSTONE(2),
+		CLIFFGLASS(2);
 
 		public final int numIcons;
 
@@ -74,7 +75,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		public boolean hasBlockRender() {
-			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF || this == OCEANSTONE;
+			return this == FLOATSTONE || this == GEMSTONE || this == CRYSTALLEAF || this == OCEANSTONE || this == CLIFFGLASS;
 		}
 
 		public List<IIcon> getIcons(int pass) {
@@ -90,7 +91,7 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		private boolean renderIconInPass(int idx, int pass) {
-			if (this == CRYSTALLEAF) {
+			if (this == CRYSTALLEAF || this == CLIFFGLASS) {
 				return idx >= 1 ? pass == 1 : pass == 0;
 			}
 			if (this == MIASMA || this == LIFEWATER)
@@ -99,7 +100,20 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 		}
 
 		public boolean requiresPickaxe() {
-			return this == FLOATSTONE || this == GEMSTONE;
+			return this == FLOATSTONE || this == GEMSTONE || this == OCEANSTONE || this == CLIFFGLASS;
+		}
+
+		public boolean canSilkTouch() {
+			switch(this) {
+				case FLOATSTONE:
+				case MIASMA:
+				case LATTICE:
+				case LIFEWATER:
+				case AQUA:
+					return false;
+				default:
+					return true;
+			}
 		}
 	}
 
@@ -206,6 +220,12 @@ public class BlockDimensionDeco extends Block implements MinerBlock {
 	@Override
 	public int damageDropped(int meta) {
 		return meta;
+	}
+
+	@Override
+	public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata)
+	{
+		return DimDecoTypes.list[metadata].canSilkTouch();
 	}
 
 	@Override

@@ -16,8 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
@@ -47,7 +47,8 @@ public class ExplorationMonitor implements TickHandler {
 
 				if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON) {
 					TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y, z);
-					ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true, true);
+					if (te.hasStructure())
+						ProgressionManager.instance.setPlayerDiscoveredColor(ep, te.getColor(), true, true);
 				}
 
 				Block b = world.getBlock(x, y, z);
@@ -63,6 +64,10 @@ public class ExplorationMonitor implements TickHandler {
 				else if (b == Blocks.bedrock && y < 6) {
 					ProgressStage.BEDROCK.stepPlayerTo(ep);
 				}
+			}
+
+			if (ep.worldObj.provider.dimensionId == -1 && ep.posY > 128) {
+				ProgressStage.NETHERROOF.stepPlayerTo(ep);
 			}
 		}
 	}

@@ -209,8 +209,10 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 		for (WorldLocation loc : cache) {
 			if (loc.getDistanceTo(ep) <= MAXRANGE) {
 				TileEntityCloakingTower te = (TileEntityCloakingTower)loc.getTileEntity();
-				if (te.isOwnedByPlayer(ep) && te.isActive()) {
-					return true;
+				if (te != null) {
+					if (te.isOwnedByPlayer(ep) && te.isActive()) {
+						return true;
+					}
 				}
 			}
 		}

@@ -47,6 +47,7 @@ public class ChromaHelpHUD {
 	private int posZ;
 	private Block block;
 	private int metadata;
+	private boolean tierView;
 
 	private static final int xSize = 64;
 	private static final int ySize = 128;
@@ -68,7 +69,7 @@ public class ChromaHelpHUD {
 			else {
 				boolean flag = true;
 				if (block instanceof BlockTieredResource) {
-					flag = ((BlockTieredResource)block).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, posX, posY, posZ, ep);
+					flag = tierView;
 				}
 				int gsc = evt.resolution.getScaleFactor();
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -100,6 +101,7 @@ public class ChromaHelpHUD {
 			block = ep.worldObj.getBlock(posX, posY, posZ);
 			metadata = ep.worldObj.getBlockMetadata(posX, posY, posZ);
 			text = ChromaHelpData.instance.getText(block, metadata);
+			tierView = block instanceof BlockTieredResource ? ((BlockTieredResource)block).isPlayerSufficientTier(Minecraft.getMinecraft().theWorld, posX, posY, posZ, ep) : false;
 		}
 		else {
 			text = null;

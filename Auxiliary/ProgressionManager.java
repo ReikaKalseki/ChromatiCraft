@@ -130,6 +130,8 @@ public class ProgressionManager implements ProgressRegistry {
 		ALLCORES(ChromaTiles.DIMENSIONCORE.getCraftedNBTProduct("color", CrystalElement.RED.ordinal())),
 		USEENERGY(ChromaTiles.WEAKREPEATER.getCraftedProduct()),
 		STRUCTCOMPLETE(ChromaBlocks.DIMDATA.getStackOf()),
+		NETHERROOF(Blocks.netherrack),
+		NETHERSTRUCT(Blocks.nether_brick),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -212,6 +214,11 @@ public class ProgressionManager implements ProgressRegistry {
 		public String getFormatting() {
 			return EnumChatFormatting.UNDERLINE.toString();
 		}
+
+		@Override
+		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+			return this.stepPlayerTo(ep);
+		}
 	}
 
 	private ProgressionManager() {
@@ -276,6 +283,8 @@ public class ProgressionManager implements ProgressRegistry {
 		progressMap.addParent(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
 
 		progressMap.addParent(ProgressStage.NETHER, 	ProgressStage.BEDROCK);
+		progressMap.addParent(ProgressStage.NETHERROOF, ProgressStage.NETHER);
+		progressMap.addParent(ProgressStage.NETHERSTRUCT, ProgressStage.NETHERROOF);
 
 		progressMap.addParent(ProgressStage.END, 		ProgressStage.NETHER);
 
@@ -300,6 +309,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.DIMENSION,	ProgressStage.ALLCOLORS);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.END);
+		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.NETHERSTRUCT);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.RAINBOWFOREST);
 		progressMap.addParent(ProgressStage.DIMENSION, 	ProgressStage.CAVERN);
@@ -644,7 +654,7 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 	}
 
-	public void setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc, boolean notify) {
+	public boolean setPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e, boolean disc, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(COLOR_NBT_TAG);
@@ -660,7 +670,9 @@ public class ProgressionManager implements ProgressRegistry {
 				this.updateChunks(ep);
 			if (disc && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
+			return true;
 		}
+		return false;
 	}
 
 	private void checkPlayerColors(EntityPlayer ep) {
@@ -740,6 +752,11 @@ public class ProgressionManager implements ProgressRegistry {
 			return color.getChatColorString();
 		}
 
+		@Override
+		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+			return instance.setPlayerDiscoveredColor(ep, color, true, notify);
+		}
+
 	}
 
 	public static class StructureComplete implements ProgressElement {
@@ -789,6 +806,11 @@ public class ProgressionManager implements ProgressRegistry {
 		@Override
 		public String getFormatting() {
 			return color.getChatColorString();
+		}
+
+		@Override
+		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
+			return instance.markPlayerCompletedStructureColor(ep, color, true, notify);
 		}
 
 	}
@@ -864,7 +886,7 @@ public class ProgressionManager implements ProgressRegistry {
 		return nbt.getBoolean(e.name());
 	}
 
-	public void markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set, boolean notify) {
+	public boolean markPlayerCompletedStructureColor(EntityPlayer ep, CrystalElement e, boolean set, boolean notify) {
 		//ReikaJavaLibrary.pConsole(this.getPlayerData(ep));
 		NBTTagCompound nbt = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		NBTTagCompound tag = nbt.getCompoundTag(STRUCTURE_NBT_TAG);
@@ -882,7 +904,9 @@ public class ProgressionManager implements ProgressRegistry {
 				this.updateChunks(ep);
 			if (set && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
+			return true;
 		}
+		return false;
 	}
 
 	private void checkPlayerStructures(EntityPlayer ep) {

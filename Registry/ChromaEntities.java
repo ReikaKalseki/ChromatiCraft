@@ -20,6 +20,7 @@ import Reika.ChromatiCraft.Entity.EntityFlyingLight;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
+import Reika.ChromatiCraft.Entity.EntitySkyRiver;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -41,7 +42,8 @@ public enum ChromaEntities implements EntityEnum {
 	LASERPULSE(EntityLaserPulse.class, "Laser Pulse"),
 	TNTPINBALL(EntityTNTPinball.class, "TNT Pinball"),
 	DIMENSIONFLARE(EntityDimensionFlare.class, "Dimension Flare"),
-	LUMABURST(EntityLumaBurst.class, "Luma Burst");
+	LUMABURST(EntityLumaBurst.class, "Luma Burst"),
+	SKYRIVER(EntitySkyRiver.class, "Sky River Rapid");
 
 	public final String entityName;
 	private final Class entityClass;

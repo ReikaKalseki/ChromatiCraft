@@ -37,14 +37,16 @@ public class FixedMazeDoors extends StructurePiece {
 
 	private final UUID[] ids;
 	private final Random rand;
+	private final int baseState;
 
-	public FixedMazeDoors(DimensionStructureGenerator s, int len, Random r) {
+	public FixedMazeDoors(DimensionStructureGenerator s, int len, Random r, int base) {
 		super(s);
 		ids = new UUID[len];
 		for (int i = 0; i < len; i++) {
 			ids[i] = UUID.randomUUID();
 		}
 		rand = r;
+		baseState = base;
 	}
 
 	@Override
@@ -96,7 +98,7 @@ public class FixedMazeDoors extends StructurePiece {
 	}
 
 	private void generateGate(ChunkSplicedGenerationCache world, int x, int y, int z, int... openStates) {
-		int m = ReikaJavaLibrary.makeIntListFromArray(openStates).contains(0) ? 1 : 0;
+		int m = ReikaJavaLibrary.makeIntListFromArray(openStates).contains(baseState) ? 1 : 0;
 		for (int h = 0; h <= 1; h++) {
 			int dy = y+h;
 			world.setBlock(x, dy, z, ChromaBlocks.SHIFTLOCK.getBlockInstance(), m);

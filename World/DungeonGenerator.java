@@ -32,6 +32,7 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Auxiliary.DesertStructure;
@@ -535,8 +536,10 @@ public class DungeonGenerator implements RetroactiveGenerator {
 
 	private boolean isValidOceanLocation(World world, int x, int y, int z, FilledBlockArray struct) {
 		//needs to be at least 8 blocks deep
-		if (world.getBlock(x, y+8, z) != Blocks.water && world.getBlock(x, y+8, z) != Blocks.flowing_water)
+		if (world.getBlock(x, y+8, z) != Blocks.water && world.getBlock(x, y+8, z) != Blocks.flowing_water) {
+			ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Not deep enough");
 			return false;
+		}
 
 		//at least one end open
 		boolean flag1 = true;
@@ -557,19 +560,27 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				flag2 = false;
 			}
 		}
-		if (!flag1 && !flag2)
+		if (!flag1 && !flag2) {
+			ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Blocked ends");
 			return false;
+		}
 
 		//bury lower half, and ensure not near shore or intersecting another
 		for (int k = 0; k < struct.getSize(); k++) {
 			Coordinate c = struct.getNthBlock(k);
 			Block b = c.getBlock(world);
-			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance())
+			if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Intersects other structure");
 				return false;
-			if (world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord) <= y)
+			}
+			if (world.getTopSolidOrLiquidBlock(c.xCoord, c.zCoord) <= y) {
+				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Extends out of water");
 				return false;
-			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(c.xCoord, c.zCoord)))
+			}
+			if (!ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(c.xCoord, c.zCoord))) {
+				ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: Bounds outside ocean");
 				return false;
+			}
 		}
 
 		//can generate pit to cave
@@ -593,6 +604,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				consec = 0;
 			}
 		}
+		ChromatiCraft.logger.debug("Ocean Temple generation @ "+x+", "+y+", "+z+" failed: No cave.");
 		return false;
 	}
 

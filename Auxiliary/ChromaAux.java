@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
+import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -50,12 +51,12 @@ import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
@@ -470,5 +471,12 @@ public class ChromaAux {
 			}
 		}
 		return e.worldObj.func_147447_a(vec1, vec2, b1, b2, b3);
+	}
+
+	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, String s, int bonus) {
+		world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), m, 3);
+		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
+		te.populateChest(s, null, bonus, world.rand);
+		return te;
 	}
 }

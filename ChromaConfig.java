@@ -26,6 +26,7 @@ public class ChromaConfig extends ControlledConfig {
 	private static final int treeLength = modTrees.size();
 	private static final int vanillaTreeCount = ReikaTreeHelper.treeList.length;
 	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
+	private DataElement<String[]> guardianExceptions;
 
 	public ChromaConfig(DragonAPIMod mod, ConfigList[] option, IDRegistry[] id) {
 		super(mod, option, id);
@@ -38,6 +39,12 @@ public class ChromaConfig extends ControlledConfig {
 			String name = modTrees.get(i);
 			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
 		}
+
+		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", new String[0]);
+	}
+
+	public ArrayList<String> getGuardianExceptions() {
+		return ReikaJavaLibrary.makeListFromArray(guardianExceptions.getData());
 	}
 
 	private static ArrayList<String> getModTrees() {

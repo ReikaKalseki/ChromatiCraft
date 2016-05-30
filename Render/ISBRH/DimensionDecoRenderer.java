@@ -10,8 +10,10 @@
 package Reika.ChromatiCraft.Render.ISBRH;
 
 import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
@@ -27,13 +29,29 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.DimDecoTileTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 
 	public static int renderPass;
+
+	//private final ISBRHModel latticeModel = new LatticeModel();
+
+	private static double[][][] latticeRotations = new double[3][4][6];
+
+	static {
+		for (int i = 0; i < latticeRotations.length; i++) {
+			for (int j = 0; j < latticeRotations[i].length; j++) {
+				for (int k = 0; k < latticeRotations[i][j].length; k++) {
+					latticeRotations[i][j][k] = ReikaRandomHelper.getRandomBetween(0D, 360D);
+				}
+			}
+		}
+	}
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks rb) {
@@ -174,6 +192,8 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 			case CRYSTALLEAF:
 				break;
 			case OCEANSTONE:
+				break;
+			case CLIFFGLASS:
 				break;
 		}
 	}
@@ -435,15 +455,150 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 				}
 				break;
 			}
-			case LIFEWATER:
+			case LIFEWATER: {
+				v5.setBrightness(240);
+				v5.setColorOpaque_I(0xffffff);
+				IIcon ico = type.getIcons(1).get(0);
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+
+				double h1 = 1-0.0625;
+				double h2 = 1-0.0625;
+				double h3 = 1-0.0625;
+				double h4 = 1-0.0625;
+
+				/*
+				if (world.getBlock(x-1, y, z-1) != b)
+					h4 -= 0.125;
+				if (world.getBlock(x+1, y, z-1) != b)
+					h3 -= 0.125;
+				if (world.getBlock(x+1, y, z+1) != b)
+					h2 -= 0.125;
+				if (world.getBlock(x-1, y, z+1) != b)
+					h1 -= 0.125;
+				 */
+
+				h1 += 0.03125*Math.sin(((x-0.5)+(z+0.5)*2)/1D);
+				h2 += 0.03125*Math.sin(((x+0.5)+(z+0.5)*2)/1D);
+				h3 += 0.03125*Math.sin(((x+0.5)+(z-0.5)*2)/1D);
+				h4 += 0.03125*Math.sin(((x-0.5)+(z-0.5)*2)/1D);
+
+				double uu = du-u;
+				double vv = dv-v;
+
+				u += uu*(((x%4+4)%4)/4D);
+				v += vv*(((z%4+4)%4)/4D);
+
+				double u2 = u+uu/4;
+				double v2 = v+vv/4;
+
+				v5.addVertexWithUV(0, h1, 1, u, v2);
+				v5.addVertexWithUV(1, h2, 1, u2, v2);
+				v5.addVertexWithUV(1, h3, 0, u2, v);
+				v5.addVertexWithUV(0, h4, 0, u, v);
+
+				v5.addVertexWithUV(0, 0, 1, u, v);
+				v5.addVertexWithUV(1, 0, 1, u2, v);
+				v5.addVertexWithUV(1, h2, 1, u2, v2);
+				v5.addVertexWithUV(0, h1, 1, u, v2);
+
+				v5.addVertexWithUV(0, h4, 0, u, v2);
+				v5.addVertexWithUV(1, h3, 0, u2, v2);
+				v5.addVertexWithUV(1, 0, 0, u2, v);
+				v5.addVertexWithUV(0, 0, 0, u, v);
+
+				v5.addVertexWithUV(0, h1, 1, u2, v2);
+				v5.addVertexWithUV(0, h4, 0, u, v2);
+				v5.addVertexWithUV(0, 0, 0, u2, v);
+				v5.addVertexWithUV(0, 0, 1, u, v);
+
+				v5.addVertexWithUV(1, h3, 0, u2, v2);
+				v5.addVertexWithUV(1, h2, 1, u, v2);
+				v5.addVertexWithUV(1, 0, 1, u2, v);
+				v5.addVertexWithUV(1, 0, 0, u, v);
+
+				v5.addVertexWithUV(0, 0, 0, u, v);
+				v5.addVertexWithUV(1, 0, 0, u2, v);
+				v5.addVertexWithUV(1, 0, 1, u2, v2);
+				v5.addVertexWithUV(0, 0, 1, u, v2);
 				break;
+			}
 			case LATTICE:
+				v5.setBrightness(240);
+				v5.setColorOpaque_I(0xffffff);
+				IIcon ico = ChromaIcons.WIDEBAR.getIcon();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+
+				ico = ChromaIcons.BIGFLARE.getIcon();
+				float u2 = ico.getMinU();
+				float v2 = ico.getMinV();
+				float du2 = ico.getMaxU();
+				float dv2 = ico.getMaxV();
+
+				int i = (x%4+4)%4;
+				int j = (y%4+4)%4;
+				int k = (z%4+4)%4;
+
+				for (int n = 0; n < 6; n++) {
+					TessellatorVertexList vt5 = new TessellatorVertexList(0.5, 0.5, 0.5);
+
+					double w = 0.0625;
+					double l = (0.5-0.03125)*2;
+					int c = ReikaColorAPI.getModifiedHue(0xff4040, (int)(n*7.5)+((i+j+k)%12)*30);
+
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5-w, u2, v2, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5-w, du2, v2, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5+w, du2, dv2, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5+w, u2, dv2, c);
+
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5+w, u2, dv2, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5+w, du2, dv2, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5-w, du2, v2, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5-w, u2, v2, c);
+
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5+w, u, v, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5+w, u, dv, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5+w, du, dv, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5+w, du, v, c);
+
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5-w, u, dv, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5-w, u, v, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5-w, du, v, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5-w, du, dv, c);
+
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5-w, u, dv, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5+l, 0.5+w, u, v, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5+w, du, v, c);
+					vt5.addVertexWithUVColor(0.5+w, 0.5-l, 0.5-w, du, dv, c);
+
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5-w, u, v, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5-l, 0.5+w, u, dv, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5+w, du, dv, c);
+					vt5.addVertexWithUVColor(0.5-w, 0.5+l, 0.5-w, du, v, c);
+
+					Random r = new Random(Minecraft.getMinecraft().theWorld.getSeed());
+					double dx = r.nextDouble()*0.5-0.5;
+					double dy = r.nextDouble()*0.5-0.5;
+					double dz = r.nextDouble()*0.5-0.5;
+					vt5.offset(dx, dy, dz);
+
+					vt5.rotateNonOrthogonal(latticeRotations[0][i][n], latticeRotations[1][j][n], latticeRotations[2][k][n]);
+					vt5.render();
+
+				}
 				break;
 			case GEMSTONE:
 				break;
 			case CRYSTALLEAF:
 				break;
 			case OCEANSTONE:
+				break;
+			case CLIFFGLASS:
 				break;
 		}
 	}

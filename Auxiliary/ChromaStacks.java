@@ -93,6 +93,12 @@ public class ChromaStacks {
 	public static final ItemStack miasma			= ChromaItems.DIMGEN.getStackOfMetadata(0);
 	public static final ItemStack floatstone		= ChromaItems.DIMGEN.getStackOfMetadata(1);
 	public static final ItemStack aqua				= ChromaItems.DIMGEN.getStackOfMetadata(2);
+	public static final ItemStack lifegel			= ChromaItems.DIMGEN.getStackOfMetadata(3);
+	public static final ItemStack orthocrystal		= ChromaItems.DIMGEN.getStackOfMetadata(4);
+	public static final ItemStack gem				= ChromaItems.DIMGEN.getStackOfMetadata(5);
+	public static final ItemStack crysleaf			= ChromaItems.DIMGEN.getStackOfMetadata(6);
+	public static final ItemStack oceanrock			= ChromaItems.DIMGEN.getStackOfMetadata(7);
+	public static final ItemStack cliffshard		= ChromaItems.DIMGEN.getStackOfMetadata(8);
 
 	public static final ItemStack blackShard 		= ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard 			= ChromaItems.SHARD.getStackOfMetadata(1);

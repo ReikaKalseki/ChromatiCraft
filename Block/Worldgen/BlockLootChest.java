@@ -11,6 +11,8 @@ package Reika.ChromatiCraft.Block.Worldgen;
 
 import static net.minecraftforge.common.util.ForgeDirection.DOWN;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +28,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -44,6 +47,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -104,11 +109,15 @@ public class BlockLootChest extends BlockContainer {
 
 	@Override
 	public boolean removedByPlayer(World world, EntityPlayer ep, int x, int y, int z, boolean harvest) {
-		fireEvent(world, x, y, z, ep, true);
+		onAccessed(world, x, y, z, ep, true);
 		return super.removedByPlayer(world, ep, x, y, z, harvest);
 	}
 
-	private static void fireEvent(World world, int x, int y, int z, EntityPlayer ep, boolean b) {
+	private static void onAccessed(World world, int x, int y, int z, EntityPlayer ep, boolean b) {
+		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
+		for (ProgressElement e : te.triggers) {
+			e.giveToPlayer(ep, true);
+		}
 		MinecraftForge.EVENT_BUS.post(new LootChestAccessEvent(world, x, y, z, ep, b));
 	}
 
@@ -126,7 +135,7 @@ public class BlockLootChest extends BlockContainer {
 				return true;
 			}
 			boolean open = this.canOpen(world, x, y, z, ep);
-			fireEvent(world, x, y, z, ep, open);
+			onAccessed(world, x, y, z, ep, open);
 			if (open) {
 				ep.displayGUIChest((IInventory)world.getTileEntity(x, y, z));
 			}
@@ -244,6 +253,8 @@ public class BlockLootChest extends BlockContainer {
 		private int ticksSinceSync;
 
 		private int maxReachAccess = 8;
+
+		private final Collection<ProgressElement> triggers = new HashSet();
 
 		@Override
 		public void updateEntity() {
@@ -381,22 +392,28 @@ public class BlockLootChest extends BlockContainer {
 		{
 			super.writeToNBT(NBT);
 
-			NBTTagList nbttaglist = new NBTTagList();
+			NBTTagList li = new NBTTagList();
 
 			for (int i = 0; i < inv.length; i++) {
 				if (inv[i] != null) {
 					NBTTagCompound nbttagcompound = new NBTTagCompound();
 					nbttagcompound.setByte("Slot", (byte)i);
 					inv[i].writeToNBT(nbttagcompound);
-					nbttaglist.appendTag(nbttagcompound);
+					li.appendTag(nbttagcompound);
 				}
 			}
 
-			NBT.setTag("Items", nbttaglist);
+			NBT.setTag("Items", li);
 
 			//NBT.setInteger("using", numPlayersUsing);
 
 			NBT.setInteger("maxreach", maxReachAccess);
+
+			li = new NBTTagList();
+			for (ProgressElement e : triggers) {
+				li.appendTag(new NBTTagInt(ChromaResearchManager.instance.getID(e)));
+			}
+			NBT.setTag("flags", li);
 		}
 
 		@Override
@@ -404,12 +421,12 @@ public class BlockLootChest extends BlockContainer {
 		{
 			super.readFromNBT(NBT);
 
-			NBTTagList nbttaglist = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
+			NBTTagList li = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
 			inv = new ItemStack[this.getSizeInventory()];
 
-			for (int i = 0; i < nbttaglist.tagCount(); i++)
+			for (int i = 0; i < li.tagCount(); i++)
 			{
-				NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+				NBTTagCompound nbttagcompound = li.getCompoundTagAt(i);
 				byte byte0 = nbttagcompound.getByte("Slot");
 
 				if (byte0 >= 0 && byte0 < inv.length) {
@@ -420,6 +437,12 @@ public class BlockLootChest extends BlockContainer {
 			//numPlayersUsing = NBT.getInteger("using");
 
 			maxReachAccess = NBT.getInteger("maxreach");
+
+			triggers.clear();
+			li = NBT.getTagList("flags", NBTTypes.INT.ID);
+			for (NBTTagInt tag : ((List<NBTTagInt>)li.tagList)) {
+				triggers.add(ChromaResearchManager.instance.getProgressForID(tag.func_150287_d()));
+			}
 		}
 
 		@Override
@@ -456,6 +479,10 @@ public class BlockLootChest extends BlockContainer {
 			for (ItemStack is : evt.getItems()) {
 				ReikaInventoryHelper.addToIInv(is, this);
 			}
+		}
+
+		public void addProgress(ProgressElement e) {
+			triggers.add(e);
 		}
 	}
 

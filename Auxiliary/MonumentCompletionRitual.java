@@ -24,8 +24,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
-import Reika.ChromatiCraft.Auxiliary.Render.AngleColorController;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
+import Reika.ChromatiCraft.Auxiliary.Render.AngleColorController;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -63,6 +63,8 @@ public class MonumentCompletionRitual {
 	private int count;
 	private int tick;
 	private int totalTick = 0;
+
+	private long millis;
 
 	private boolean running;
 	private boolean complete;
@@ -353,7 +355,7 @@ public class MonumentCompletionRitual {
 	}
 
 	private void triggerEvent(EventType evt) {
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTEVENT.ordinal(), packetTarget, x, y, z, evt.ordinal(), count);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTEVENT.ordinal(), packetTarget, x, y, z, evt.ordinal(), count, tick);
 	}
 
 	public void endRitual() {
@@ -377,8 +379,8 @@ public class MonumentCompletionRitual {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void triggerMonumentEventClient(World world, int x, int y, int z, int type, int count) {
-		EventType.list[type].doEventClient(world, x, y, z, count);
+	public static void triggerMonumentEventClient(World world, int x, int y, int z, int type, int count, int tick) {
+		EventType.list[type].doEventClient(world, x, y, z, count, tick);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -438,7 +440,7 @@ public class MonumentCompletionRitual {
 		}
 
 		@SideOnly(Side.CLIENT)
-		public void doEventClient(World world, int x, int y, int z, int count) {
+		public void doEventClient(World world, int x, int y, int z, int count, int tick) {
 			switch(this) {
 				case FLARES: {
 					ReikaSoundHelper.playClientSound(ChromaSounds.USE, x+0.5, y+0.5, z+0.5, 1, 2F, false);

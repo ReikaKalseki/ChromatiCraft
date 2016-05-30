@@ -36,6 +36,10 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 	public double particleVelocity = 0.0625;
 
 	public EntityFloatingSeedsFX(World world, double x, double y, double z, double windAng, double climbAng) {
+		this(world, x, y, z, windAng, climbAng, null);
+	}
+
+	public EntityFloatingSeedsFX(World world, double x, double y, double z, double windAng, double climbAng, IIcon icon) {
 		super(world, x, y, z);
 
 		windAngle = windAng;
@@ -48,20 +52,26 @@ public class EntityFloatingSeedsFX extends EntityBlurFX {
 		this.randomizeY();
 		this.updateVelocities();
 
-		IIcon ico = particleIcon;
-		switch(rand.nextInt(4)) {
-			case 1:
-				ico = ChromaIcons.BIGFLARE.getIcon();
-				break;
-			case 2:
-				ico = ChromaIcons.SPARKLEPARTICLE.getIcon();
-				this.enableAlphaTest();
-				break;
-			case 3:
-				ico = ChromaIcons.CENTER.getIcon();
-				break;
+		if (icon == null) {
+			IIcon ico = particleIcon;
+			switch(rand.nextInt(4)) {
+				case 1:
+					ico = ChromaIcons.BIGFLARE.getIcon();
+					break;
+				case 2:
+					ico = ChromaIcons.SPARKLEPARTICLE.getIcon();
+					this.setBasicBlend();
+					this.enableAlphaTest();
+					break;
+				case 3:
+					ico = ChromaIcons.CENTER.getIcon();
+					break;
+			}
+			this.setParticleIcon(ico);
 		}
-		this.setParticleIcon(ico);
+		else {
+			this.setParticleIcon(icon);
+		}
 	}
 
 	@Override

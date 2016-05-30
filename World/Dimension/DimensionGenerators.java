@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenCrystalTree;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFireJet;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFissure;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenFloatstone;
+import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenGlassCliffs;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenIslandArch;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedShrub;
 import Reika.ChromatiCraft.World.Dimension.Generators.WorldGenLightedTree;
@@ -61,7 +62,8 @@ public enum DimensionGenerators {
 	AURORA(WorldGenAurorae.class,					GeneratorType.FEATURE,		GeneratorTheme.SKYFEATURE,		Integer.MAX_VALUE),
 	//CANYON(WorldGenSkylandCanyons.class,			GeneratorType.TERRAIN,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
 	ARCH(WorldGenIslandArch.class,					GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
-	BLOBS(WorldGenTerrainBlob.class,				GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE);
+	BLOBS(WorldGenTerrainBlob.class,				GeneratorType.TERRAIN,		GeneratorTheme.OCEANIC,			Integer.MIN_VALUE),
+	GLASSCLIFFS(WorldGenGlassCliffs.class,			GeneratorType.FEATURE,		GeneratorTheme.GEOHISTORICAL,	Integer.MIN_VALUE);
 
 	private final Class genClass;
 	public final GeneratorType type;
@@ -130,6 +132,8 @@ public enum DimensionGenerators {
 				return  b == Biomes.ISLANDS.getBiome();
 			case BLOBS:
 				return b == SubBiomes.DEEPOCEAN.getBiome();
+			case GLASSCLIFFS:
+				return b == Biomes.PLAINS.getBiome();
 			default:
 				return true;
 		}
@@ -147,6 +151,7 @@ public enum DimensionGenerators {
 			case ARCH:
 			case BLOBS:
 			case MIASMA:
+			case GLASSCLIFFS:
 				return true;
 			default:
 				return false;

@@ -7,19 +7,13 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.World.Nether;
+package Reika.ChromatiCraft.Auxiliary.Interfaces;
 
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
+import net.minecraft.entity.item.EntityItem;
 
 
-public class FloatingLavaRiver {
+public interface ItemCollision {
 
-	FloatingLavaRiver() {
-
-	}
-
-	public void generate(ChunkSplicedGenerationCache world, int x, int y, int z) {
-
-	}
+	public boolean onItemCollision(EntityItem ei);
 
 }

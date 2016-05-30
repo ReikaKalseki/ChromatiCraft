@@ -17,6 +17,7 @@ import java.util.Locale;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -134,7 +135,30 @@ public class SpecialAlleles {
 				if (this.canApplyEffect(world, c.posX, c.posY, c.posZ)) {
 					int[] r = ibg.getTerritory();
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
-					List<EntityLivingBase> li = world.selectEntitiesWithinAABB(EntityLivingBase.class, box, ReikaEntityHelper.nonMobSelector);
+					IEntitySelector s = null;
+					Class ce = EntityLivingBase.class;
+					switch(color) {
+						case MAGENTA:
+						case CYAN:
+						case LIGHTBLUE:
+						case ORANGE:
+						case PINK:
+						case LIME:
+						case RED:
+							s = ReikaEntityHelper.nonMobSelector;
+							break;
+						case GREEN:
+							ce = EntityPlayer.class;
+							break;
+						case BLACK:
+						case GRAY:
+						case LIGHTGRAY:
+							s = ReikaEntityHelper.hostileOrPlayerSelector;
+							break;
+						default:
+							break;
+					}
+					List<EntityLivingBase> li = world.selectEntitiesWithinAABB(ce, box, s);
 					for (EntityLivingBase e : li) {
 						CrystalPotionController.applyEffectFromColor(600, 0, e, color, CrystalBees.rand.nextInt(240) == 0 && e.getDistanceSq(c.posX+0.5, c.posY+0.5, c.posZ+0.5) < 256);
 					}

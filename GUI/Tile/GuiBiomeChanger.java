@@ -26,6 +26,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -122,11 +123,11 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		}
 
 		int w = 10;
-		buttonList.add(new GuiButton(0, j+w, k+ySize-20-w, 20, 20, "<"));
-		buttonList.add(new GuiButton(1, j+xSize-20-w, k+ySize-20-w, 20, 20, ">"));
+		buttonList.add(new CustomSoundGuiButton(0, j+w, k+ySize-20-w, 20, 20, "<", this));
+		buttonList.add(new CustomSoundGuiButton(1, j+xSize-20-w, k+ySize-20-w, 20, 20, ">", this));
 
 		if (page == GuiPages.PAINT)
-			buttonList.add(new GuiButton(2, j+w, k+16, 50, 20, erase ? "Paint" : "Erase"));
+			buttonList.add(new CustomSoundGuiButton(2, j+w, k+16, 50, 20, erase ? "Paint" : "Erase", this));
 
 		if (page == GuiPages.BRUSH) {
 			for (int i = 0; i < Brush.brushList.length; i++) {

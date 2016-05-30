@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Storage;
 
 import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -24,15 +25,19 @@ import net.minecraftforge.fluids.IFluidHandler;
 import org.lwjgl.input.Keyboard;
 
 import Reika.ChromatiCraft.Auxiliary.Render.TankRunes;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityTankCapacityUpgrade;
 import Reika.DragonAPI.Instantiable.FlaggedTank;
 import Reika.DragonAPI.Instantiable.FlaggedTank.TankWatcher;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -40,7 +45,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction {
+public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction, AdjacentUpdateWatcher {
 
 	public static final int MAXCAPACITY = 2000000000;
 
@@ -59,6 +64,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	//------------------
 
 	public static final int FACTOR = 4000;
+
+	private double capacityIncreaseFactor = 0;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -187,6 +194,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		int base = Math.min(size*size, 500000);
 		int lin = base*FACTOR;
 		double fac = Math.pow(1.005, size-1);
+		if (capacityIncreaseFactor > 1) {
+			fac *= capacityIncreaseFactor;
+		}
 		int bucket = (int)Math.min(2000000D, (lin*fac/1000D));
 		int rnd = 1;
 		if (bucket > 100)
@@ -216,14 +226,26 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	public void addCoordinate(int x, int y, int z) {
 		if (blocks.addBlockCoordinate(x, y, z))
 			size++;
+		this.updateBoostFactor();
 	}
 
 	public void removeCoordinate(int x, int y, int z) {
 		if (blocks.hasBlock(x, y, z))
 			size--;
 		blocks.remove(x, y, z);
+		this.updateBoostFactor();
 		if (tank.getLevel() > this.getCapacity())
 			tank.setContents(this.getCapacity(), fluidType);
+	}
+
+	@Override
+	public void onAdjacentUpdate(Block b) {
+		this.updateBoostFactor();
+	}
+
+	private void updateBoostFactor() {
+		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.CYAN);
+		capacityIncreaseFactor = get == null || get.intValue() == 0 ? 0 : TileEntityTankCapacityUpgrade.getCapacityFactor(get-1);
 	}
 
 	@Override
@@ -234,6 +256,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		NBT.setInteger("size", size);
 
 		blocks.writeToNBT("blocks", NBT);
+
+		NBT.setDouble("factor", capacityIncreaseFactor);
 	}
 
 	@Override
@@ -245,6 +269,8 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 		blocks.readFromNBT("blocks", NBT);
 		blocks.addBlockCoordinate(xCoord, yCoord, zCoord);
+
+		capacityIncreaseFactor = NBT.getDouble("factor");
 	}
 
 	@Override

@@ -77,7 +77,7 @@ public class ContainerBulkMover extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
 	{
-		return this.getSlot(0).getStack();
+		return null;//this.getSlot(0).getStack();
 	}
 
 }

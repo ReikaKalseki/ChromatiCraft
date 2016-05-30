@@ -39,7 +39,6 @@ import Reika.ChromatiCraft.ModInterface.TileEntityFluxGooCreator;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
-import Reika.ChromatiCraft.TileEntity.TileEntityAuraLiquifier;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
@@ -123,7 +122,7 @@ public enum ChromaTiles implements TileEnum {
 
 	CHROMAFLOWER("chroma.flower", 		ChromaBlocks.TILEPLANT, 	TileEntityChromaFlower.class, 		0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", 		ChromaBlocks.TILEENTITY, 	TileEntityAutoEnchanter.class, 		0),
-	LIQUIFIER("chroma.liquifier", 		ChromaBlocks.TILEENTITY, 	TileEntityAuraLiquifier.class, 		1),
+	UNUSED("chroma.unused", 			ChromaBlocks.TILEENTITY, 	TileEntityChromaticBase.class,		1),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, 	TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", 		ChromaBlocks.TILEENTITY, 	TileEntityCollector.class, 			4),
 	TABLE("chroma.table", 				ChromaBlocks.TILEENTITY, 	TileEntityCastingTable.class, 		5),
@@ -404,6 +403,7 @@ public enum ChromaTiles implements TileEnum {
 			case PERSONAL:
 			case PYLONTURBO:
 			case CLOAKING:
+			case ADJACENCY:
 				return false;
 			default:
 				return true;
@@ -452,6 +452,8 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean isAvailableInCreativeInventory() {
 		if (this == RIFT || this == ADJACENCY)
+			return false;
+		if (tile == TileEntityChromaticBase.class)
 			return false;
 		if (DragonAPICore.isReikasComputer())
 			return true;
@@ -592,6 +594,8 @@ public enum ChromaTiles implements TileEnum {
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			return false;
 		if (this.hasPrerequisite() && !this.getPrerequisite().isLoaded())
+			return true;
+		if (tile == TileEntityChromaticBase.class)
 			return true;
 		return false;
 	}

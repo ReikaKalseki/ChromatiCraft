@@ -11,7 +11,9 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary;
@@ -31,11 +33,17 @@ import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenIslands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSkylands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenVoidlands;
 import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ChromaDimensionManager {
+
+	private static final HashSet<BlockKey> bannedBlocks = new HashSet();
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -220,8 +228,44 @@ public class ChromaDimensionManager {
 		}
 	}
 
+	public static void resetDimensionClient() {
+		System.gc();
+		String path = DragonAPICore.getMinecraftDirectoryString()+"mods/VoxelMods/voxelMap/cache/";
+		File f = new File(path);
+		if (f.exists() && f.isDirectory()) {
+			File[] saves = f.listFiles();
+			for (int i = 0; i < saves.length; i++) {
+				File f2 = new File(saves[i], "Chroma (dimension 60)");
+				if (f2.exists())
+					f2.delete();
+			}
+		}
+	}
+
 	public static ChunkProviderChroma getChunkProvider(World world) {
 		return ((WorldProviderChroma)world.provider).getChunkGenerator();
+	}
+
+	public static boolean isBannedDimensionBlock(Block b, int meta) {
+		return bannedBlocks.contains(new BlockKey(b, meta));
+	}
+
+	static {
+		if (ModList.ENDERIO.isLoaded()) {
+			Block b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTravelAnchor");
+			if (b != null)
+				bannedBlocks.add(new BlockKey(b));
+
+			b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTelePad");
+			if (b != null)
+				bannedBlocks.add(new BlockKey(b));
+		}
+
+		if (ModList.THAUMICTINKER.isLoaded()) {
+			Block b = GameRegistry.findBlock(ModList.THAUMICTINKER.modLabel, "warpGate");
+			if (b != null)
+				bannedBlocks.add(new BlockKey(b));
+		}
 	}
 
 }

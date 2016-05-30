@@ -526,7 +526,7 @@ public class ChromaClientEventController {
 	@SubscribeEvent
 	public void renderMobsThroughWalls(EntityRenderEvent evt) {
 		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(Minecraft.getMinecraft().thePlayer)) {
-			if (evt.entity instanceof EntityLivingBase) {
+			if (AbilityHelper.instance.canRenderEntityXRay(evt.entity)) {
 				Entity te = evt.entity;
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -876,6 +876,9 @@ public class ChromaClientEventController {
 			//if (uid != null && uid.modId.equals(ModList.CHROMATICRAFT.modLabel)) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			ChromaResearch r = ChromaResearch.getPageFor(is);
+			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted") && r.getMachine() != null && r.getMachine().isRepeater()) {
+				r = ChromaResearch.TURBOREPEATER;
+			}
 			if (r != null && r.playerCanSee(ep) && r.isCrafting() && r.isCraftable() && !r.isVanillaRecipe()) {
 				ep.openGui(ChromatiCraft.instance, r.getCraftingType().ordinal(), null, r.ordinal(), r.getRecipeIndex(is), 1);
 				return true;

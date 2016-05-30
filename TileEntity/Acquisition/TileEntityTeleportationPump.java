@@ -33,7 +33,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
-import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -46,7 +45,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -95,7 +93,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public int getSizeInventory() {
-		return 4;
+		return 1;
 	}
 
 	@Override
@@ -216,38 +214,35 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 			}
 		}
 		else {
-			int n = this.hasSpeed() ? 4 : 1;
 			if (selected != null) {
 				ArrayList<FluidSource> li = fluids.get(selected);
-				for (int i = 0; i < n; i++) {
-					if (li != null && !li.isEmpty()) {
-						FluidSource src = li.get(0);
-						if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
-							tank.addLiquid(src.fluid.amount, selected);
-							src.location.setBlock(world, Blocks.air);
-							this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
-							li.remove(0);
-							this.decrFluid(src.fluid.amount, selected);
-						}
+				if (li != null && !li.isEmpty()) {
+					FluidSource src = li.get(0);
+					if (this.canAddFluid(src.fluid.amount, selected) && this.hasEnergy(required)) {
+						tank.addLiquid(src.fluid.amount, selected);
+						src.location.setBlock(world, Blocks.air);
+						this.useEnergy(required.copy().scale(this.getEnergyCostScale()));
+						li.remove(0);
+						this.decrFluid(src.fluid.amount, selected);
 					}
+				}
 
-					Fluid f = tank.getActualFluid();
-					if (f != null) {
-						if (tank.getLevel() >= 1000) {
-							this.fillBucket(f);
-						}
-						if (!tank.isEmpty()) {
-							for (int k = 0; k < 6; k++) {
-								ForgeDirection dir = dirs[k];
-								TileEntity te = this.getAdjacentTileEntity(dir);
-								if (te instanceof IFluidHandler) {
-									IFluidHandler ifl = (IFluidHandler)te;
-									int amt = ifl.fill(dir.getOpposite(), tank.getFluid(), true);
-									if (amt > 0) {
-										tank.removeLiquid(amt);
-										if (tank.isEmpty())
-											break;
-									}
+				Fluid f = tank.getActualFluid();
+				if (f != null) {
+					if (tank.getLevel() >= 1000) {
+						this.fillBucket(f);
+					}
+					if (!tank.isEmpty()) {
+						for (int k = 0; k < 6; k++) {
+							ForgeDirection dir = dirs[k];
+							TileEntity te = this.getAdjacentTileEntity(dir);
+							if (te instanceof IFluidHandler) {
+								IFluidHandler ifl = (IFluidHandler)te;
+								int amt = ifl.fill(dir.getOpposite(), tank.getFluid(), true);
+								if (amt > 0) {
+									tank.removeLiquid(amt);
+									if (tank.isEmpty())
+										break;
 								}
 							}
 						}
@@ -258,8 +253,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	private void fillBucket(Fluid f) {
-		if (inv[0] != null) {
-			int amt = FluidContainerRegistry.getContainerCapacity(inv[0]);
+		if (inv[1] != null) {
+			int amt = FluidContainerRegistry.getContainerCapacity(inv[1]);
 			ItemStack is = FluidContainerRegistry.fillFluidContainer(new FluidStack(f, amt), inv[1]);
 			if (is != null) {
 				inv[1] = is;
@@ -311,15 +306,6 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return tank.canTakeIn(amt);
 	}
 
-	private boolean hasSpeed() {
-		return ReikaItemHelper.matchStacks(inv[2], ChromaStacks.speedUpgrade);
-	}
-
-	@Override
-	public boolean hasEfficiency() {
-		return ReikaItemHelper.matchStacks(inv[3], ChromaStacks.efficiencyUpgrade);
-	}
-
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
@@ -366,11 +352,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public float getCostModifier() {
-		float f = 1;
-		if (this.hasSpeed()) {
-			f *= 2;
-		}
-		return f;
+		return 1;
 	}
 
 	@Override

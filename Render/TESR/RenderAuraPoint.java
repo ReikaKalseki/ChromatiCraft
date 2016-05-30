@@ -39,6 +39,7 @@ public class RenderAuraPoint extends RenderLocusPoint {
 			double dz = tile.zCoord+0.5;
 			int color = 0xff000000 | ReikaColorAPI.getModifiedSat(tile.getRenderColor(), 0.875F);
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDepthMask(false);
 			float w = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
 			if (!tile.isInWorld()) {
 				dx = dy = dz = 0;

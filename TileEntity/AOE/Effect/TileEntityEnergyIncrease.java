@@ -62,6 +62,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 			EnergyInterface e = this.getInterface(te);
 			if (e != NoInterface.instance) {
 				double boost = this.getBoostFactor();
+				double f = e.getMultiplier();
+				if (f != 1) {
+					boost = Math.pow(1+boost, f)-1;
+				}
 				try {
 					e.tick(te, boost);
 				}
@@ -136,6 +140,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
+		}
+
+		public double getMultiplier() {
+			return 1;
 		}
 	}
 
@@ -329,6 +337,11 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 			//processChambers.invoke(te);
 			if (updateTicker.getInt(te)%20 == 1) //one tick after reactor recalculates
 				ir.addOutput((float)(boost*ir.getReactorEnergyOutput()));
+		}
+
+		@Override
+		public double getMultiplier() {
+			return 0.75;
 		}
 
 	}

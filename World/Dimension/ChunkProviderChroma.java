@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.World.Dimension;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +36,10 @@ import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
+import Reika.ChromatiCraft.Entity.EntitySkyRiver;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
 import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
@@ -790,6 +793,15 @@ public class ChunkProviderChroma implements IChunkProvider {
 		monument.generateChunk(worldObj, cp);
 		//for (int i = 0; i < 256; i++) {
 		//	worldObj.setBlock(x+8, i, z+8, Blocks.glass);
+
+		Collection<RiverPoint> c = SkyRiverGenerator.getPointsForChunk(x, z);
+		if (c != null) {
+			for (RiverPoint p : c) {
+				EntitySkyRiver e = new EntitySkyRiver(worldObj, p);
+				e.setPosition(p.position.xCoord, p.position.yCoord, p.position.zCoord);
+				worldObj.spawnEntityInWorld(e);
+			}
+		}
 	}
 
 	private void generateExtraChromaOre(World world, IChunkProvider gen, IChunkProvider loader, int x, int z) {

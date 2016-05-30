@@ -99,6 +99,7 @@ public enum ChromaIcons {
 	RING1("ring1"),
 	RING2("ring2"),
 	RING3("ring3"),
+	WIDEBAR("widebar"),
 	;
 
 	private IIcon icon;

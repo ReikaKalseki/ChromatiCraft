@@ -131,8 +131,8 @@ public class StructureCalculator extends ThreadedGenerator {
 			}
 		}
 
-		structureOriginX = ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
-		structureOriginZ = ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
+		structureOriginX = 2009;//ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
+		structureOriginZ = -2536;//ReikaRandomHelper.getRandomPlusMinus(0, STRUCTURE_CENTER_VARIATION);
 		structureAngleOrigin = rand.nextFloat()*360;
 
 		positionsDetermined = true;

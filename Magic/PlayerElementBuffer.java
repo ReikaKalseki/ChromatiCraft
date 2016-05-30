@@ -217,7 +217,13 @@ public class PlayerElementBuffer {
 	}
 
 	public int getPlayerMaximumCap(EntityPlayer ep) {
-		return ProgressStage.CTM.isPlayerAtStage(ep) ? 2400000 : 400000;
+		if (ProgressStage.CTM.isPlayerAtStage(ep))
+			return 2400000;
+		else if (ProgressStage.TURBOCHARGE.isPlayerAtStage(ep))
+			return 1200000;
+		else if (ProgressStage.DIMENSION.isPlayerAtStage(ep))
+			return 800000;
+		return 400000;
 	}
 
 	public int getChargeInefficiency(EntityPlayer ep) {

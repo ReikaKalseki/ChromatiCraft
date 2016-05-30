@@ -31,6 +31,7 @@ import Reika.DragonAPI.Instantiable.CubeRotation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -147,7 +148,7 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 		@Override
 		public boolean isLegalTransition(BiomeGenBase in, BiomeGenBase out) {
-			return DragonAPICore.isReikasComputer() || (this.isAccessibleBiome(in) && this.isAccessibleBiome(out));
+			return (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || (this.isAccessibleBiome(in) && this.isAccessibleBiome(out));
 		}
 
 		private boolean isAccessibleBiome(BiomeGenBase in) {

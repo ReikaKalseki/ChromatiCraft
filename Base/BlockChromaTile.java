@@ -84,6 +84,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
+import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
@@ -219,6 +220,9 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (!flag) {
 				((SidePlacedTile)te).drop();
 			}
+		}
+		if (te instanceof AdjacentUpdateWatcher) {
+			((AdjacentUpdateWatcher)te).onAdjacentUpdate(b);
 		}
 	}
 

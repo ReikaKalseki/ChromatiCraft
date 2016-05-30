@@ -23,7 +23,9 @@ public enum ThreadedGenerators {
 
 	STRUCTURE(StructureCalculator.class),
 	BIOME(BiomeDistributor.class),
-	REGION(RegionMapper.class);
+	REGION(RegionMapper.class),
+	//SKYRIVER(SkyRiverGenerator.class),
+	;
 
 	private final Class generator;
 
@@ -45,6 +47,8 @@ public enum ThreadedGenerators {
 				return g == ThreadedGenerators.STRUCTURE;
 			case STRUCTURE:
 				return false;
+				//case SKYRIVER:
+				//	return false;
 		}
 		return false;
 	}

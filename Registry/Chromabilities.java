@@ -1122,10 +1122,12 @@ public enum Chromabilities implements Ability {
 					int z = k+box.minZ;
 					Block b = world.getBlock(x, y, z);
 					int meta = world.getBlockMetadata(x, y, z);
-					if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
-						continue;
-					if (!ReikaBlockHelper.isUnbreakable(world, x, y, z, b, meta, ep)) {
-						if (!b.hasTileEntity(meta)) {
+					if (!ep.capabilities.isCreativeMode) {
+						if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, x, y, z, meta))
+							continue;
+					}
+					if (ep.capabilities.isCreativeMode || !ReikaBlockHelper.isUnbreakable(world, x, y, z, b, meta, ep)) {
+						if (!b.hasTileEntity(meta) || ChromaOptions.SHIFTTILES.getState()) {
 							//if (ReikaWorldHelper.softBlocks(world, dx, dy, dz)) {
 							moved.setBlock(x, y, z, b, meta);
 							toDel.addBlockCoordinate(x, y, z);

@@ -17,7 +17,16 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 
-	private int[] lastRFValues = new int[6];
+	private static double[] factor = {
+		0.975,
+		0.875,
+		0.75,
+		0.625,
+		0.5,
+		0.25,
+		0.125,
+		0.0625,
+	};
 
 	@Override
 	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
@@ -32,6 +41,10 @@ public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	public static double getCostFactor(int tier) {
+		return factor[tier];
 	}
 
 }

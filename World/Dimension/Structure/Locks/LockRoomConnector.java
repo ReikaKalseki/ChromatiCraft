@@ -12,7 +12,10 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
@@ -20,6 +23,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class LockRoomConnector extends StructurePiece {
 
@@ -81,6 +85,16 @@ public class LockRoomConnector extends StructurePiece {
 		world.setBlock(x+2, y, z-2, b, ml);
 		world.setBlock(x-2, y, z+2, b, ml);
 		world.setBlock(x+2, y, z+2, b, ml);
+
+		if (!openCeiling && openFloor == 0) {
+			if (ReikaRandomHelper.doWithChance(25)) {
+				ItemStack is = ReikaRandomHelper.doWithChance(25) ? ChromaStacks.iridChunk.copy() : ChromaStacks.glowChunk.copy();
+				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0, is);
+			}
+			else {
+				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0);
+			}
+		}
 
 		for (int k = 2; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];

@@ -168,7 +168,7 @@ public class GuiTelePump extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "telepump2";
+		return "telepump3";
 	}
 
 }

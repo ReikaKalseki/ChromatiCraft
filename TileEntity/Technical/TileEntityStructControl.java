@@ -29,9 +29,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures.Structures;
-import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Auxiliary.OceanStructure;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
@@ -53,6 +53,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
+import Reika.DragonAPI.Interfaces.TileEntity.PlayerBreakHook;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -64,7 +65,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv {
+public class TileEntityStructControl extends InventoriedChromaticBase implements BreakAction, HitAction, InertIInv, PlayerBreakHook {
 
 	private Structures struct;
 	private FilledBlockArray blocks;
@@ -576,6 +577,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 					}
 					break;
 				case OCEAN:
+					this.triggerOceanTrap(worldObj.getClosestPlayer(xCoord+0.5, yCoord+0.5, zCoord+0.5, 8));
 					if (blocks != null) {
 						for (int i = 0; i < blocks.getSize(); i++) {
 							Coordinate c = blocks.getNthBlock(i);
@@ -792,6 +794,14 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 
 	static {
 		MinecraftForge.EVENT_BUS.register(LootChestWatcher.instance);
+	}
+
+	@Override
+	public boolean breakByPlayer(EntityPlayer ep) {
+		if (struct == Structures.OCEAN) {
+			return ep.getDistance(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= 2.5;
+		}
+		return true;
 	}
 
 }
