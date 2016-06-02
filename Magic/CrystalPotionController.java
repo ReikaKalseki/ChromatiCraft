@@ -10,7 +10,7 @@
 package Reika.ChromatiCraft.Magic;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -36,8 +36,8 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
 
 public class CrystalPotionController {
 
-	private static final HashMap<CrystalElement, Potion> map = new HashMap();
-	private static final HashMap<CrystalElement, Potion> nethermap = new HashMap();
+	private static final EnumMap<CrystalElement, Potion> map = new EnumMap(CrystalElement.class);
+	private static final EnumMap<CrystalElement, Potion> nethermap = new EnumMap(CrystalElement.class);
 
 	private static final HashSet<Integer> ignoredPotions = new HashSet();
 

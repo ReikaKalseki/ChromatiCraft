@@ -266,4 +266,9 @@ public class PylonTurboRecipe extends PylonRecipe {
 		return is == null ? 8 : ReikaItemHelper.matchStacks(is, ChromaStacks.lumenCore) ? 4 : 2;
 	}
 
+	@Override
+	public int getEnhancedTableAccelerationFactor() {
+		return 8;
+	}
+
 }

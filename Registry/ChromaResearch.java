@@ -168,11 +168,12 @@ public enum ChromaResearch implements ProgressElement {
 	PLANTACCEL(		ChromaTiles.PLANTACCEL,		ResearchLevel.RUNECRAFT),
 	CROPSPEED(		ChromaTiles.CROPSPEED,		ResearchLevel.RUNECRAFT),
 	WEAKREPEATER(	ChromaTiles.WEAKREPEATER,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.PYLON, ProgressStage.MAKECHROMA),
-	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.BASICCRAFT,		ProgressStage.MAKECHROMA),
+	ENCHANTDECOMP(	ChromaTiles.ENCHANTDECOMP,	ResearchLevel.RUNECRAFT,		ProgressStage.MAKECHROMA),
 	LUMENWIRE(		ChromaTiles.LUMENWIRE,		ResearchLevel.BASICCRAFT),
 	PARTICLES(		ChromaTiles.PARTICLES,		ResearchLevel.BASICCRAFT),
 	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
 	FLUIDDISTRIB(	ChromaTiles.FLUIDDISTRIBUTOR,ResearchLevel.RUNECRAFT),
+	VILLAGEREPAIR(	ChromaTiles.VILLAGEREPAIR,	ResearchLevel.MULTICRAFT,		ProgressStage.VILLAGECASTING),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),

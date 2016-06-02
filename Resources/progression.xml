@@ -484,17 +484,17 @@
 			Some even contain useful clues.
 		</reveal>
 	</netherstruct>
-	<name>
+	<villagecasting>
 		<title>
-
+			A...less than honorable attempt
 		</title>
 		<hint>
-
+			Are you the only one to have tried to learn these magic forces?
 		</hint>
 		<reveal>
-
+			No, but the others who tried have clearly been about as smart as a piece of flint.
 		</reveal>
-	</name>
+	</villagecasting>
 	<name>
 		<title>
 

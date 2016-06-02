@@ -17,8 +17,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 
@@ -67,7 +67,7 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 
 	@Override
 	public ItemStack getCentralLeftover(ItemStack is) {
-		return new ItemStack(Items.bucket);
+		return new ItemStack(Items.bucket, is.stackSize, 1);
 	}
 
 }

@@ -324,17 +324,16 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (world.getBlock(x, 0, z) == Blocks.air || world.canBlockSeeTheSky(x, 1, z)) //sky/void world
 			return false;
 
-		Block origin = world.getBlock(x, y, z);
-		if (origin == Blocks.log || origin == Blocks.log2)
-			return false;
-		if (origin == Blocks.leaves || origin == Blocks.leaves2)
+		if (ReikaBlockHelper.isWood(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y, z))
 			return false;
 
+		/*
 		for (int i = y+1; i < world.getHeight(); i++) {
 			Block b = world.getBlock(x, i, z);
 			if (b != Blocks.air && b != Blocks.leaves && b != Blocks.leaves2 && !ReikaWorldHelper.softBlocks(world, x, i, z))
 				;//return false;
 		}
+		 */
 
 		StructuredBlockArray blocks = new StructuredBlockArray(world);
 

@@ -132,6 +132,7 @@ public enum ChromaPackets {
 	FLUIDSEND(5),
 	COLLECTORRANGE(1),
 	LEAVEDIM(),
+	DIMSOUND(),
 	;
 
 	public final int numInts;

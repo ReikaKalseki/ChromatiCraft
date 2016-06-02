@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 
 	private static double[] factor = {
-		0.975,
+		0.9375,
 		0.875,
 		0.75,
 		0.625,

@@ -104,7 +104,7 @@ public enum AdjacencyUpgrades {
 	public String getDesc(int tier) {
 		switch(this) {
 			case BLACK:
-				return String.format("Reduces lumen consumption by %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
+				return String.format("Reduces lumen consumption by %sx", ReikaStringParser.getAutoDecimal(1-this.getFactor(tier)));
 			case RED:
 				return String.format("Protects against explosions up to %sx TNT", ReikaStringParser.getAutoDecimal(this.getFactor(tier)/4D));
 			case GREEN:

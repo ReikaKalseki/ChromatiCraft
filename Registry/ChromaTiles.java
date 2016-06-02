@@ -122,7 +122,7 @@ public enum ChromaTiles implements TileEnum {
 
 	CHROMAFLOWER("chroma.flower", 		ChromaBlocks.TILEPLANT, 	TileEntityChromaFlower.class, 		0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", 		ChromaBlocks.TILEENTITY, 	TileEntityAutoEnchanter.class, 		0),
-	UNUSED("chroma.unused", 			ChromaBlocks.TILEENTITY, 	TileEntityChromaticBase.class,		1),
+	VILLAGEREPAIR("chroma.unused", 		ChromaBlocks.TILEENTITY, 	TileEntityChromaticBase.class,		1),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, 	TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", 		ChromaBlocks.TILEENTITY, 	TileEntityCollector.class, 			4),
 	TABLE("chroma.table", 				ChromaBlocks.TILEENTITY, 	TileEntityCastingTable.class, 		5),
@@ -691,6 +691,10 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isRotateableRepeater() {
+		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER;
+	}
+
+	public boolean isTurbochargeableRepeater() {
 		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER;
 	}
 

@@ -154,6 +154,12 @@ public class TileEntityCastingAuto extends CrystalReceiverBase implements GuiCon
 				this.checkAndRequest();
 			}
 
+			if (ModList.APPENG.isLoaded()) {
+				if (aeGridBlock != null && !world.isRemote) {
+					((BasicAEInterface)aeGridBlock).setPowerCost(recipe != null ? 6 : 1);
+				}
+			}
+
 			if (recipe != null && recipesToGo > 0 && energy.containsAtLeast(required)) {
 				if (te != null) {
 					if (this.canCraft(world, x, y, z, te)) {

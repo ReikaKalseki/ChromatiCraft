@@ -176,6 +176,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
@@ -381,7 +382,7 @@ public class RecipesCastingTable {
 		this.addRecipe(new CrystalFocusRecipe(ChromaStacks.crystalFocus, ChromaStacks.primaryCluster));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, ChromaStacks.getChargedShard(CrystalElement.WHITE)));
 
-		RecipeCrystalRepeater repeater = new RecipeCrystalRepeater(ChromaTiles.REPEATER.getCraftedProduct(), ChromaStacks.crystalCore);
+		RecipeCrystalRepeater repeater = new RecipeCrystalRepeater(ChromaStacks.crystalCore);
 		this.addRecipe(repeater);
 
 		this.addRecipe(new TransitionRecipe(ChromaItems.TRANSITION.getStackOf(), ChromaStacks.transformCore));
@@ -422,7 +423,7 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new TelePumpRecipe(ChromaTiles.TELEPUMP.getCraftedProduct(), ChromaStacks.energyCoreHigh));
 
-		this.addRecipe(new CompoundRepeaterRecipe(ChromaTiles.COMPOUND.getCraftedProduct(), ChromaStacks.crystalFocus, repeater));
+		this.addRecipe(new CompoundRepeaterRecipe(ChromaStacks.crystalFocus));
 
 		//is = ChromaTiles.FIBER.getCraftedProduct();
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(is, "GgG", "GDG", "GgG", 'G', Blocks.glass, 'D', Items.diamond, 'g', Items.glowstone_dust);
@@ -584,7 +585,7 @@ public class RecipesCastingTable {
 		sr = ReikaRecipeHelper.getShapedRecipeFor(is, "crc", "cgc", "cic", 'i', Items.iron_ingot, 'r', Items.redstone, 'c', Blocks.cobblestone, 'g', Items.glowstone_dust);
 		this.addRecipe(new FenceAuxRecipe(is, sr));
 
-		this.addRecipe(new LumenBroadcastRecipe(ChromaTiles.BROADCAST.getCraftedProduct(), ChromaStacks.crystalStar, repeater));
+		this.addRecipe(new LumenBroadcastRecipe(ChromaStacks.crystalStar));
 
 		this.addRecipe(new CloakTowerRecipe(ChromaTiles.CLOAKING.getCraftedProduct(), ChromaStacks.crystalFocus));
 
@@ -771,6 +772,7 @@ public class RecipesCastingTable {
 		NBTTagCompound cast = nbt.getCompoundTag("castingprog");
 		cast.setBoolean(type.name().toLowerCase(Locale.ENGLISH), true);
 		nbt.setTag("castingprog", cast);
+		ChromaResearchManager.instance.checkForUpgrade(ep);
 	}
 
 	public CastingRecipe getRecipeByID(int id) {

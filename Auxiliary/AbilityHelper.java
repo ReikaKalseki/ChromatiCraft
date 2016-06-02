@@ -24,6 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -1819,6 +1820,11 @@ public class AbilityHelper {
 
 	public boolean canRenderEntityXRay(Entity e) {
 		if (ModList.VOIDMONSTER.isLoaded() && e instanceof EntityVoidMonster)
+			return false;
+		int x = MathHelper.floor_double(e.posX+TileEntityRendererDispatcher.staticPlayerX);
+		int y = MathHelper.floor_double(e.posY+TileEntityRendererDispatcher.staticPlayerY);
+		int z = MathHelper.floor_double(e.posZ+TileEntityRendererDispatcher.staticPlayerZ);
+		if (e.worldObj.getBlock(x, y, z) == Blocks.mob_spawner)
 			return false;
 		return e instanceof EntityLivingBase && e.worldObj != null;
 	}

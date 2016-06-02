@@ -11,6 +11,8 @@ package Reika.ChromatiCraft;
 
 import java.util.ArrayList;
 
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Instantiable.IO.ControlledConfig;
 import Reika.DragonAPI.Interfaces.Configuration.ConfigList;
@@ -40,7 +42,15 @@ public class ChromaConfig extends ControlledConfig {
 			trees[i+vanillaTreeCount] = this.registerAdditionalOption("Generate Mod Logs", name, true);
 		}
 
-		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", new String[0]);
+		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", this.getDefaultGuardstoneExceptions());
+	}
+
+	private String[] getDefaultGuardstoneExceptions() {
+		ArrayList<String> li = new ArrayList();
+		for (Action a : Action.values())
+			li.add("none#"+a.name());
+		li.add(ModList.EXTRAUTILS.modLabel+":dark_portal:2#"+Action.RIGHT_CLICK_BLOCK.name()); //last millenium portal
+		return li.toArray(new String[li.size()]);
 	}
 
 	public ArrayList<String> getGuardianExceptions() {

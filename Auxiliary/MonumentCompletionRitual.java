@@ -64,7 +64,7 @@ public class MonumentCompletionRitual {
 	private int tick;
 	private int totalTick = 0;
 
-	private long millis;
+	private long lastTick;
 
 	private boolean running;
 	private boolean complete;
@@ -128,8 +128,11 @@ public class MonumentCompletionRitual {
 	public void tick() {
 		if (running) {
 			if (!world.isRemote) {
+				long time = System.currentTimeMillis();
+				long dur = time-lastTick;
+				lastTick = time;
 				if (tick > 0) {
-					tick--;
+					tick -= Math.min(tick, Math.max(1, dur/50));
 					if (tick == 0) {
 						this.doChecks(true);
 					}

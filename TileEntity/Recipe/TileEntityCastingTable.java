@@ -81,6 +81,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
 	private int craftSoundTimer = 20000;
+	private int craftingAmount;
 
 	private EntityPlayer craftingPlayer;
 
@@ -432,10 +433,28 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				if (worldObj.isRemote)
 					return true;
 				ChromaSounds.CAST.playSoundAtBlock(this);
+
+				if (activeRecipe.canBeStacked()) {
+					craftingAmount = 1;
+				}
+				else {
+					craftingAmount = inv[4].stackSize;
+					if (activeRecipe instanceof MultiBlockCastingRecipe) {
+						MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
+						HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
+						for (WorldLocation loc : map.keySet()) {
+							TileEntityItemStand te = (TileEntityItemStand)worldObj.getTileEntity(loc.xCoord, loc.yCoord, loc.zCoord);//loc.getTileEntity();
+							if (te != null) {
+								craftingAmount = Math.min(craftingAmount, te.getStackInSlot(0).stackSize);
+							}
+						}
+					}
+				}
+
 				this.setRecipeTickDuration(activeRecipe);
 				if (activeRecipe instanceof PylonRecipe) {
 					ElementTagCompound tag = ((PylonRecipe)activeRecipe).getRequiredAura();
-					this.requestEnergyDifference(tag);
+					this.requestEnergyDifference(tag.scale(craftingAmount));
 				}
 				return true;
 			}
@@ -445,9 +464,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	}
 
 	private void setRecipeTickDuration(CastingRecipe r) {
-		craftingTick = r.getDuration();
+		int t = r.getDuration();
 		if (isEnhanced)
-			craftingTick = Math.max(craftingTick/4, Math.min(craftingTick, 20));
+			t = Math.max(t/r.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
+		t *= r.getRecipeStackedTimeFactor(this, craftingAmount);
+		craftingTick = t;
 	}
 
 	public boolean isReadyToCraft() {
@@ -531,6 +552,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		craftingTick = NBT.getInteger("craft");
 
 		isEnhanced = NBT.getBoolean("enhance");
+
+		craftingAmount = NBT.getInteger("crafting");
 	}
 
 	@Override
@@ -547,6 +570,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		NBT.setInteger("craft", craftingTick);
 
 		NBT.setBoolean("enhance", isEnhanced);
+
+		NBT.setInteger("crafting", craftingAmount);
 	}
 
 	private void craft() {
@@ -593,7 +618,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			activeRecipe.onCrafted(this, craftingPlayer);
 			activeRecipe = recipe;
 			recipe = this.getValidRecipe();
-			if (activeRecipe instanceof PylonRecipe && recipe == activeRecipe) {
+			if (!activeRecipe.canBeStacked() && recipe == activeRecipe) {
 				this.setRecipeTickDuration(activeRecipe);
 				ChromaSounds.CAST.playSoundAtBlock(this);
 				repeat = true;
@@ -729,8 +754,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private CastingRecipe getValidRecipe() {
 		CastingRecipe r = RecipesCastingTable.instance.getRecipe(this, this.getValidRecipeTypes());
-		if (r instanceof TempleCastingRecipe && !PylonGenerator.instance.canGenerateIn(worldObj))
-			r = null;
+		if (worldObj.provider.dimensionId != 0) {
+			if (r instanceof TempleCastingRecipe && !PylonGenerator.instance.canGenerateIn(worldObj))
+				r = null;
+		}
 		//ReikaJavaLibrary.pConsole(r);
 		if (r instanceof MultiBlockCastingRecipe) {
 			MultiBlockCastingRecipe m = (MultiBlockCastingRecipe)r;
@@ -940,7 +967,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public float getOperationFraction() {
-		return activeRecipe == null ? 0 : 1F-(craftingTick/(float)activeRecipe.getDuration())*(isEnhanced ? 4 : 1);
+		return activeRecipe == null ? 0 : 1F-(craftingTick/(activeRecipe.getDuration()*activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount)))*(isEnhanced ? activeRecipe.getEnhancedTableAccelerationFactor() : 1);
 	}
 
 	@Override

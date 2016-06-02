@@ -122,15 +122,15 @@ public class ChunkProviderChroma implements IChunkProvider {
 		this.regenerateGenerators();
 	}
 
-	public static void triggerGenerator(ThreadedGenerators gen) {
+	public static synchronized void triggerGenerator(ThreadedGenerators gen) {
 		regenerateGenerators(~gen.getBit());
 	}
 
-	public static void regenerateGenerators() {
+	public static synchronized void regenerateGenerators() {
 		regenerateGenerators(0);
 	}
 
-	private static void regenerateGenerators(int invflags) {
+	private static synchronized void regenerateGenerators(int invflags) {
 		long seed = System.currentTimeMillis();
 		generationFlags = ReikaMathLibrary.getNBitflags(ThreadedGenerators.generators.length) & ~invflags;
 		if ((invflags & ThreadedGenerators.STRUCTURE.getBit()) == 0) {
@@ -146,7 +146,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		}
 	}
 
-	static void finishGeneration(ThreadedGenerators gen) {
+	static synchronized void finishGeneration(ThreadedGenerators gen) {
 		generationFlags = generationFlags & ~gen.getBit();
 		if (generationFlags == 0)
 			ThreadedGenerators.reset();

@@ -110,9 +110,12 @@ public class CrystalPath implements Comparable<CrystalPath> {
 			if (sr == null || !sr.canConduct() || !sr.isConductingElement(element)) {
 				return false;
 			}
-			if (!PylonFinder.lineOfSight(tgt, src)) {
-				if (sr.needsLineOfSight()) {
-					return false;
+			if (sr.needsLineOfSight()) {
+				CrystalLink l = network.getLink(tgt, src);
+				if (!l.hasLineOfSight()) {
+					l.recalculateLOS();
+					if (!l.hasLineOfSight())
+						return false;
 				}
 			}
 		}

@@ -24,6 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 
 	private boolean fade = false;
+	private final CrystalElement color;
 
 	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
 
@@ -40,6 +41,7 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 		motionY = vy;
 		motionZ = vz;
 		particleIcon = e.getGlowRune();
+		color = e;
 		particleScale = 1F;
 		particleGravity = 0;
 	}
@@ -96,12 +98,19 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 		else {
 			super.onUpdate();
 		}
+
+		if (fade) {
+			float f = (float)Math.pow(1*(Math.sin(Math.toRadians(180D*particleAge/particleMaxAge))), 0.5);
+			particleRed = f;
+			particleGreen = f;
+			particleBlue = f;
+		}
 	}
 
 	@Override
 	public int getBrightnessForRender(float par1)
 	{
-		return fade ? (int)(250-10*(0.5+0.5*Math.sin(Math.toRadians(180D*particleAge/particleMaxAge)))) : 240;
+		return 240;
 	}
 
 	@Override

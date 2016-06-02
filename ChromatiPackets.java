@@ -72,6 +72,7 @@ import Reika.ChromatiCraft.ModInterface.NodeReceiverWrapper;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
@@ -732,6 +733,11 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case LEAVEDIM:
 					ChromaDimensionManager.resetDimensionClient();
+					break;
+				case DIMSOUND:
+					if (ChromaOptions.RECEIVEDIMSOUND.getState())
+						ReikaSoundHelper.playClientSound(ChromaSounds.GOTODIM, ep, 0.75F, 1);
+					break;
 			}
 		}
 		catch (NullPointerException e) {

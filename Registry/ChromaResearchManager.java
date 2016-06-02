@@ -217,23 +217,13 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		return false;
 	}
 
-	private void checkForUpgrade(EntityPlayer ep) {
-		this.checkForUpgrade(ep, false);
-	}
-
-	private void checkForUpgrade(EntityPlayer ep, boolean debug) {
+	public void checkForUpgrade(EntityPlayer ep) {
 		ResearchLevel rl = this.getPlayerResearchLevel(ep);
 		Collection<ChromaResearch> li = this.getResearchForLevel(rl);
-		if (debug) {
-			ChromatiCraft.logger.log("Fragments for level "+rl+": "+li);
-			ChromatiCraft.logger.log(ep.getCommandSenderName()+" has: "+this.playerHasAllFragments(ep, li));
-		}
-		else {
-			if (this.playerHasAllFragmentsThatMatter(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
-				ResearchLevel next = ResearchLevel.levelList[rl.ordinal()+1];
-				if (next.canProgressTo(ep)) {
-					this.stepPlayerResearchLevel(ep, next);
-				}
+		if (this.playerHasAllFragmentsThatMatter(ep, li) && rl.ordinal() < ResearchLevel.levelList.length-1) {
+			ResearchLevel next = ResearchLevel.levelList[rl.ordinal()+1];
+			if (next.canProgressTo(ep)) {
+				this.stepPlayerResearchLevel(ep, next);
 			}
 		}
 	}

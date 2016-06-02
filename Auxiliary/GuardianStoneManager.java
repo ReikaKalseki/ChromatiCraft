@@ -61,8 +61,9 @@ public class GuardianStoneManager {
 		String[] parts = s.split("#");
 		if (parts.length != 2)
 			return false;
-		ItemStack is = ReikaItemHelper.lookupItem(parts[0]);
-		if (is == null)
+		boolean empty = parts[0].equals("none") || parts[0].equals("null") || parts[0].equals("empty");
+		ItemStack is = empty ? null : ReikaItemHelper.lookupItem(parts[0]);
+		if (is == null && !empty)
 			return false;
 		Action a = null;
 		try {
@@ -73,12 +74,17 @@ public class GuardianStoneManager {
 		}
 		if (a == null)
 			return false;
-		Block b = Block.getBlockFromItem(is.getItem());
-		if (b != null) {
-			this.addBlockException(new BlockKey(b, is.getItemDamage()), a);
+		if (empty) {
+			itemExceptions.addValue(null, a);
 		}
 		else {
-			this.addItemException(is, a);
+			Block b = Block.getBlockFromItem(is.getItem());
+			if (b != null) {
+				this.addBlockException(new BlockKey(b, is.getItemDamage()), a);
+			}
+			else {
+				this.addItemException(is, a);
+			}
 		}
 		return true;
 	}
@@ -201,7 +207,7 @@ public class GuardianStoneManager {
 	}
 
 	private boolean isWhitelistedAction(Action a, World world, int x, int y, int z, ItemStack is) {
-		return blockExceptions.get(BlockKey.getAt(world, x, y, z)).contains(a) || itemExceptions.get(new KeyedItemStack(is).setSimpleHash(true)).contains(a);
+		return blockExceptions.get(BlockKey.getAt(world, x, y, z)).contains(a) || itemExceptions.get(is != null ? new KeyedItemStack(is).setSimpleHash(true) : null).contains(a);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)

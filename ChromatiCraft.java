@@ -110,6 +110,7 @@ import Reika.ChromatiCraft.World.DecoFlowerGenerator;
 import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.TieredWorldGenerator;
+import Reika.ChromatiCraft.World.VillagersFailChromatiCraft;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
@@ -401,6 +402,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		this.addRerunnableDecorator(DecoFlowerGenerator.instance, Integer.MIN_VALUE);
 
 		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
+
+		VillagersFailChromatiCraft.register();
 
 		ChromaChests.addToChests();
 

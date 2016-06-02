@@ -24,7 +24,6 @@ public class ContainerCrystalCharger extends CoreContainer {
 		tile = te;
 
 		this.addSlot(0, 80, 47);
-		this.addSlot(1, 80, 75);
 
 		this.addPlayerInventoryWithOffset(player, 0, 25);
 	}

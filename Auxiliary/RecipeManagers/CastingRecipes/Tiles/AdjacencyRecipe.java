@@ -9,12 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
+import java.util.Collection;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
@@ -23,8 +27,11 @@ public class AdjacencyRecipe extends PylonRecipe {
 	private static final Item[] upgrade = {Items.iron_ingot, Items.iron_ingot, Items.gold_ingot, Items.gold_ingot,
 		Items.diamond, Items.emerald, Items.nether_star};
 
-	public AdjacencyRecipe(CrystalElement e, int tier) {
-		super(getItem(e, tier), getMainItem(e, tier));
+	private final int tier;
+
+	public AdjacencyRecipe(CrystalElement e, int n) {
+		super(getItem(e, n), getMainItem(e, n));
+		tier = n;
 
 		ItemStack corner = tier == 0 ? new ItemStack(Items.diamond) : new ItemStack(upgrade[tier-1]);
 		this.addAuxItem(corner, -2, -2);
@@ -38,7 +45,7 @@ public class AdjacencyRecipe extends PylonRecipe {
 		this.addAuxItem(shard, 0, 2);
 		this.addAuxItem(shard, -2, 0);
 
-		this.addAuraRequirement(e, 20000*(tier+1));
+		this.addAuraRequirement(e, 20000*(tier*2+1));
 		this.addAuraRequirement(CrystalElement.YELLOW, 500*(tier+1));
 	}
 
@@ -55,7 +62,25 @@ public class AdjacencyRecipe extends PylonRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 8;
+		return 32;
+	}
+
+	@Override
+	protected void getRequiredProgress(Collection<ProgressStage> c) {
+		switch(tier) {
+			case TileEntityAdjacencyUpgrade.MAX_TIER-1:
+				c.add(ProgressStage.CTM);
+				break;
+			case TileEntityAdjacencyUpgrade.MAX_TIER-2:
+				c.add(ProgressStage.ALLCORES);
+				break;
+			case TileEntityAdjacencyUpgrade.MAX_TIER-3:
+				c.add(ProgressStage.STRUCTCOMPLETE);
+				break;
+			case TileEntityAdjacencyUpgrade.MAX_TIER-4:
+				c.add(ProgressStage.DIMENSION);
+				break;
+		}
 	}
 
 }

@@ -165,4 +165,19 @@ public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRec
 		return 24;
 	}
 
+	@Override
+	public int getEnhancedTableAccelerationFactor() {
+		return 6;
+	}
+
+	@Override
+	public boolean canBeStacked() {
+		return true;
+	}
+
+	@Override
+	public float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
+		return 0.75F;
+	}
+
 }

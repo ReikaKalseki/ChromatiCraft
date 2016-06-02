@@ -115,8 +115,10 @@ public class BlockLootChest extends BlockContainer {
 
 	private static void onAccessed(World world, int x, int y, int z, EntityPlayer ep, boolean b) {
 		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
-		for (ProgressElement e : te.triggers) {
-			e.giveToPlayer(ep, true);
+		if (canOpen(world, x, y, z, ep)) {
+			for (ProgressElement e : te.triggers) {
+				e.giveToPlayer(ep, true);
+			}
 		}
 		MinecraftForge.EVENT_BUS.post(new LootChestAccessEvent(world, x, y, z, ep, b));
 	}
@@ -145,7 +147,7 @@ public class BlockLootChest extends BlockContainer {
 		}
 	}
 
-	public boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
+	public static boolean canOpen(World world, int x, int y, int z, EntityPlayer ep) {
 		if (world.getBlockMetadata(x, y, z) >= 8 || world.isSideSolid(x, y+1, z, DOWN))
 			return false;
 		TileEntity te = world.getTileEntity(x, y, z);

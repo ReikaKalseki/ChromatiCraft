@@ -25,7 +25,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 
-	private int colorTimer = 0;
 	private EnumMap<CrystalElement, Integer> depth = new EnumMap(CrystalElement.class);
 
 	@Override
@@ -33,27 +32,22 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 		super.updateEntity(world, x, y, z, meta);
 		if (world.isRemote && this.canConduct())
 			this.particles(world, x, y, z);
-		colorTimer++;
 		//ReikaJavaLibrary.pConsole(colorTimer+":"+this.getSide()+">"+this.getActiveColor());
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
-
-		colorTimer = NBT.getInteger("colort");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
-
-		NBT.setInteger("colort", colorTimer);
 	}
 
 	@SideOnly(Side.CLIENT)
 	private void particles(World world, int x, int y, int z) {
-		if (this.getTicksExisted()%32 == 2) {
+		if (this.getColorCycleTick()%32 == 5) {
 			double px = x+0.5;//rand.nextDouble();
 			double py = y+0.5;//0.25+y+rand.nextDouble();
 			double pz = z+0.5;//rand.nextDouble();
@@ -63,11 +57,15 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	}
 
 	private CrystalElement getParticleColor() {
-		return this.getRenderColorWithOffset(8);
+		return this.getRenderColorWithOffset(64);
 	}
 
 	public CrystalElement getRenderColorWithOffset(int i) {
-		return CrystalElement.elements[((colorTimer+i)/32)%16];
+		return CrystalElement.elements[((this.getColorCycleTick()+i)/32)%16];
+	}
+
+	public int getColorCycleTick() {
+		return (int)((worldObj.getTotalWorldTime()+xCoord/8D%16+zCoord/8D%16)%512D);//this.getTicksExisted();
 	}
 
 	@Override
@@ -138,7 +136,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 	 */
 	@Override
 	public CrystalElement getActiveColor() {
-		return CrystalElement.elements[(colorTimer/32)%16];
+		return CrystalElement.elements[(this.getRenderColorWithOffset(7).ordinal()+2)%16];
 	}
 	/*
 	@Override

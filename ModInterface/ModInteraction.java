@@ -81,7 +81,7 @@ public class ModInteraction {
 				//	li.add(GameRegistry.findUniqueIdentifierFor(b.getBlockInstance()));
 				//}
 				for (ChromaBlocks b : add) {
-					//FMLInterModComms.sendMessage(ModList.ENDERIO.modLabel, "teleport:blacklist:add", ReikaRegistryHelper.getGameRegistryName(ChromatiCraft.instance, b));
+					FMLInterModComms.sendMessage(ModList.ENDERIO.modLabel, "teleport:blacklist:add", ReikaRegistryHelper.getGameRegistryName(ChromatiCraft.instance, b));
 				}
 			}
 		}

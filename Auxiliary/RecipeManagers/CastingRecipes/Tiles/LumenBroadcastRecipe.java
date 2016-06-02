@@ -9,21 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.EnergyLinkingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RepeaterRecipe;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 
-public class LumenBroadcastRecipe extends MultiBlockCastingRecipe implements EnergyLinkingRecipe {
+public class LumenBroadcastRecipe extends RepeaterRecipe {
 
-	public LumenBroadcastRecipe(ItemStack out, ItemStack main, RecipeCrystalRepeater repeater) {
-		super(out, main);
+	public LumenBroadcastRecipe(ItemStack main) {
+		super(ChromaTiles.BROADCAST, main);
 
 		this.addAuxItem(ChromaTiles.COMPOUND.getCraftedProduct(), -2, -2);
 		this.addAuxItem(ChromaTiles.COMPOUND.getCraftedProduct(), 0, -2);
@@ -52,8 +47,6 @@ public class LumenBroadcastRecipe extends MultiBlockCastingRecipe implements Ene
 		this.addAuxItem(ChromaStacks.beaconDust, -4, 2);
 		this.addAuxItem(ChromaStacks.beaconDust, -4, 0);
 		this.addAuxItem(ChromaStacks.beaconDust, -4, -2);
-
-		this.addRunes(repeater.getRunes());
 	}
 
 	@Override
@@ -69,16 +62,6 @@ public class LumenBroadcastRecipe extends MultiBlockCastingRecipe implements Ene
 	@Override
 	public int getExperience() {
 		return super.getExperience();
-	}
-
-	@Override
-	public boolean canRunRecipe(EntityPlayer ep) {
-		return super.canRunRecipe(ep) && ChromaResearchManager.instance.getPlayerResearchLevel(ep).ordinal() >= ResearchLevel.NETWORKING.ordinal();
-	}
-
-	@Override
-	public void onCrafted(TileEntityCastingTable te, EntityPlayer ep) {
-		super.onCrafted(te, ep);
 	}
 
 }

@@ -77,7 +77,8 @@ public class ItemBulkMover extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		ep.openGui(ChromatiCraft.instance, ChromaGuis.BULKMOVER.ordinal(), world, 0, 0, 0);
+		if (!this.hasItems(is))
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.BULKMOVER.ordinal(), world, 0, 0, 0);
 		return is;
 	}
 

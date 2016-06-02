@@ -552,14 +552,14 @@
 
 		</note>
 	</fluxcreator>
-	<name>
+	<villagerepair>
 		<desc>
-
+			Villagers may LOOK intelligent (ok, not really), but after their crowning architectural achievement was a pylon embedded in their wall and their attempt at a casting structure was about as skillful as a painting made with one's rear, it is clear that their cognitive capabilites are more like that of the carrots they farm. That extends to their defence strategies during a zombie seige, which consist of trying to cram the entire village into a tiny hut and usually forgetting to close the door. Sure, you could try teaching them, but after all they got out of your last educational session (about early discoveries you made) was "LEAF"...well...good luck with that.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</villagerepair>
 	<name>
 		<desc>
 

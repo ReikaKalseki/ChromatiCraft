@@ -13,7 +13,6 @@ import java.util.HashSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -55,10 +54,12 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDepthMask(false);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
@@ -92,13 +93,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			}
 
 			GL11.glPopMatrix();
-			BlendMode.DEFAULT.apply();
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_BLEND);
-			ReikaRenderHelper.enableEntityLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopAttrib();
 		}
 		else if (!tile.hasWorldObj()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			if (par8 < 0)
@@ -114,6 +112,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
 			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDepthMask(false);
 			BlendMode.ADDITIVEDARK.apply();
 			GL11.glPushMatrix();
 			GL11.glRotated(45, 0, 1, 0);
@@ -135,14 +134,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			}
 
 			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			BlendMode.DEFAULT.apply();
-
-			GL11.glDisable(GL11.GL_BLEND);
-			if (par8 < 0)
-				ReikaRenderHelper.enableEntityLighting();
-			RenderHelper.enableStandardItemLighting();
-			//GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopAttrib();
 		}
 	}
 

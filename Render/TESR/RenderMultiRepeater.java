@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Render.TESR;
 
 import net.minecraft.tileentity.TileEntity;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 
@@ -30,10 +31,11 @@ public class RenderMultiRepeater extends RenderCrystalRepeater {
 		//return CrystalElement.getBlendedColor(te.getTicksExisted(), 32);//ReikaColorAPI.mixColors(next.getColor(), e.getColor(), f);
 
 		float mod = 32F;
-		int tick = (1+(int)((te.getTicksExisted()/(double)mod)%16))%16;
+		TileEntityCompoundRepeater tc = (TileEntityCompoundRepeater)te;
+		int tick = (1+(int)((tc.getColorCycleTick()/(double)mod)%16))%16;
 		CrystalElement e1 = CrystalElement.elements[tick];
 		CrystalElement e2 = CrystalElement.elements[(tick+1)%16];
-		float mix = (float)(te.getTicksExisted()%(double)mod)/mod;
+		float mix = (float)(tc.getColorCycleTick()%(double)mod)/mod;
 		mix = Math.min(mix*2, 1);
 		int c1 = e1.getColor();
 		int c2 = e2.getColor();

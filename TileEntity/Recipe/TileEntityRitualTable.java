@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
-import java.util.Iterator;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
@@ -213,9 +211,9 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		int n = tag.tagCount();
 		if (n > 0) {
 			a = (8*this.getTicksExisted())%360;
-			Iterator<CrystalElement> it = tag.elementSet().iterator();
-			for (int i = 0; i < 360; i += 360/n) {
-				double ang = Math.toRadians(a+i);
+			int i = 0;
+			for (CrystalElement e : tag.elementSet()) {
+				double ang = Math.toRadians(a+i*360D/n);
 				double r = 0.25;
 				double rx = x+0.5+r*Math.cos(ang);
 				double ry = y;
@@ -223,9 +221,9 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 				double v = 0.0125;
 				double vx = v*Math.cos(ang);
 				double vz = v*Math.sin(ang);
-				CrystalElement e = it.next();
 				EntityGlobeFX fx = new EntityGlobeFX(e, world, rx, y, rz, vx, 0.1875, vz).setScale(1.5F);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				i++;
 			}
 		}
 

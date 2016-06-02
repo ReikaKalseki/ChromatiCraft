@@ -31,6 +31,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Collections.ItemCollection;
+import Reika.DragonAPI.Instantiable.ModInteract.BasicAEInterface;
 import Reika.DragonAPI.Instantiable.ModInteract.DirectionalAEInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
@@ -55,6 +56,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private MESystemReader network;
 	private Object aeGridBlock;
 	private Object aeGridNode;
+	private int AEPowerCost = 1;
 
 	private final ItemCollection output = new ItemCollection();
 
@@ -150,6 +152,12 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 				this.buildCache();
 			}
 
+			if (aeGridBlock != null && !world.isRemote) {
+				((BasicAEInterface)aeGridBlock).setPowerCost(AEPowerCost);
+			}
+			if (AEPowerCost > 1)
+				AEPowerCost -= Math.max(1, AEPowerCost/40);
+
 			if (network != null) {
 				checkTimer.update();
 				if (checkTimer.checkCap()) {
@@ -205,6 +213,7 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 				mode.removeItems(network, is, false);
 			}
 			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.METRANSFER.ordinal(), this, 32, Item.getIdFromItem(is.getItem()), is.getItemDamage());
+			AEPowerCost = Math.min(500, AEPowerCost+Math.max(1, is.stackSize/4));
 		}
 	}
 

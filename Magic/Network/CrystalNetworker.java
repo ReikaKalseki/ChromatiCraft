@@ -591,7 +591,7 @@ public class CrystalNetworker implements TickHandler {
 			CrystalNetworkTile tile = tiles.get(c);
 			if (tile instanceof CrystalSource) {
 				CrystalSource te = (CrystalSource)tile;
-				if (te.canConduct() || !activeOnly) {
+				if (!activeOnly || te.canConduct()) {
 					if (e == null || te.isConductingElement(e)) {
 						li.add(te);
 					}

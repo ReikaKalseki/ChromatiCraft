@@ -132,6 +132,7 @@ public class ProgressionManager implements ProgressRegistry {
 		STRUCTCOMPLETE(ChromaBlocks.DIMDATA.getStackOf()),
 		NETHERROOF(Blocks.netherrack),
 		NETHERSTRUCT(Blocks.nether_brick),
+		VILLAGECASTING(Blocks.cobblestone),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 

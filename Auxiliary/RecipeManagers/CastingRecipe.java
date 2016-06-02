@@ -286,6 +286,27 @@ public class CastingRecipe implements APICastingRecipe {
 		return 1;
 	}
 
+	public int getEnhancedTableAccelerationFactor() {
+		return 4;
+	}
+
+	public boolean canBeStacked() {
+		return true;
+	}
+
+	public float getRecipeStackedTimeFactor(TileEntityCastingTable te, int stack) {
+		float f = this.getConsecutiveStackingTimeFactor(te);
+		double t = 0;
+		for (int i = 0; i < stack; i++) {
+			t += Math.pow(f, i);
+		}
+		return (float)t;
+	}
+
+	protected float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
+		return 0.9375F;
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
 		private static final BlockArray runeRing = new BlockArray();
@@ -637,6 +658,11 @@ public class CastingRecipe implements APICastingRecipe {
 
 		public int getEnergyCost(CrystalElementProxy e) {
 			return elements.getValue(CrystalElement.getFromAPI(e));
+		}
+
+		@Override
+		public boolean canBeStacked() {
+			return false;
 		}
 	}
 

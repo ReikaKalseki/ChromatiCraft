@@ -30,7 +30,6 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
-import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
@@ -42,6 +41,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
@@ -66,7 +66,7 @@ import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile, ChunkLoadingTile, RangeUpgradeable {
+public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile, ChunkLoadingTile {
 
 	public static final int MAXRANGE = 128;
 
@@ -75,7 +75,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	private boolean finishedDigging = false;
 
-	private int range;
+	private int range = MAXRANGE;
 
 	private int readX = 0;
 	private int readY = 0;
@@ -138,13 +138,14 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	@Override
 	public void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
+		this.updateRange();
+		this.calcSilkTouch();
 		digging = digReady = dropFlag = false;
 		readY = 0;
 	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		range = MAXRANGE;
 		if (!world.isRemote) {
 			if (dropFlag) {
 				if (this.getTicksExisted()%20 == 0) {
@@ -489,6 +490,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	@Override
 	public void onAdjacentUpdate(Block b) {
 		this.calcSilkTouch();
+		this.updateRange();
 		super.onAdjacentUpdate(b);
 	}
 
@@ -694,9 +696,13 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		return required.contains(e);
 	}
 
-	@Override
-	public void upgradeRange(double r) {
+	private void updateRange() {
 		int oldrange = range;
+		double r = 1;
+		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.LIME);
+		int val = get != null ? get.intValue() : 0;
+		if (val > 0)
+			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);
 		if (range != oldrange && !digging) {
 			readX = 0;

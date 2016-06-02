@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
@@ -126,5 +127,11 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 
 	public abstract boolean canExtractItem(int slot, ItemStack is, int side);
 	public abstract boolean isItemValidForSlot(int slot, ItemStack is);
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		this.calcEfficiency();
+	}
 
 }

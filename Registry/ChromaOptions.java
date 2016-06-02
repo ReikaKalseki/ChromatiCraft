@@ -71,7 +71,8 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	BIOMEFX("Biome FX", true),
 	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
 	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
-	PROGRESSDURATION("Progression Notification Duration", 800);
+	PROGRESSDURATION("Progression Notification Duration", 800),
+	RECEIVEDIMSOUND("Play Dimension Join Sound For Others", true);
 
 	private String label;
 	private boolean defaultState;
@@ -235,6 +236,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case PIELOC:
 			case BIOMEFX:
 			case CONNECTEDCRYSTALSTONE:
+			case RECEIVEDIMSOUND:
 				return true;
 			default:
 				return false;

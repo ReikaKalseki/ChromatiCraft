@@ -55,7 +55,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 			maxDrain += drainValue[i];
 		}
 		maxDrain /= 16;
-		if (cooldown > 50 && maxDrain >= CAPACITY/cooldown)
+		if (cooldown > 100 && maxDrain >= CAPACITY/cooldown)
 			cooldown--;
 		else if (cooldown < 200)
 			cooldown++;

@@ -32,13 +32,14 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.HybridTank;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -48,7 +49,7 @@ import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile, ChunkLoadingTile, RangeUpgradeable {
+public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile, ChunkLoadingTile {
 
 	public static final int MAXRANGE = 256;
 
@@ -62,7 +63,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private boolean fastscan = false;
 	private int scanY = 0;
 
-	private int range;
+	private int range = MAXRANGE;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
@@ -92,8 +93,20 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		this.updateRange();
+	}
+
+	@Override
+	public void onAdjacentUpdate(Block b) {
+		this.updateRange();
+		super.onAdjacentUpdate(b);
+	}
+
+	@Override
 	public int getSizeInventory() {
-		return 1;
+		return 2;
 	}
 
 	@Override
@@ -174,7 +187,6 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		range = MAXRANGE;
 		if (scanning) {
 			this.onScan(world, x, y, z);
 		}
@@ -382,11 +394,15 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	}
 
-	@Override
-	public void upgradeRange(double r) {
-		int old = range;
+	private void updateRange() {
+		int oldrange = range;
+		double r = 1;
+		Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(this).get(CrystalElement.LIME);
+		int val = get != null ? get.intValue() : 0;
+		if (val > 0)
+			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);
-		if (scanning && old != range) {
+		if (scanning && oldrange != range) {
 			scanY = 0;
 			fluids.clear();
 			counts.clear();

@@ -120,6 +120,7 @@ public class PylonFinder {
 	CrystalFlow findPylon(int amount, int maxthru, int thresh) {
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths(thresh);
+		//ReikaJavaLibrary.pConsole(element+" to "+this.getLocation(target)+": "+p);
 		if (p != null)
 			return new CrystalFlow(net, p, target, amount, maxthru);
 		if (!this.anyConnectedSources())
