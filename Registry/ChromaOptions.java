@@ -237,6 +237,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case BIOMEFX:
 			case CONNECTEDCRYSTALSTONE:
 			case RECEIVEDIMSOUND:
+			case PROGRESSDURATION:
 				return true;
 			default:
 				return false;

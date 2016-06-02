@@ -57,6 +57,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -346,6 +347,12 @@ public class ChromaClientEventController {
 	@SubscribeEvent
 	public void clearSavedGui(ClientLoginEvent evt) {
 		ChromaBookGui.lastGui = null;
+	}
+
+	@SubscribeEvent
+	public void clearSavedGui(LivingDeathEvent evt) {
+		if (evt.entityLiving == Minecraft.getMinecraft().thePlayer)
+			ChromaBookGui.lastGui = null;
 	}
 
 	@SubscribeEvent

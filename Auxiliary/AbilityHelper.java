@@ -1279,7 +1279,7 @@ public class AbilityHelper {
 		if (b == Blocks.netherrack || b == Blocks.end_stone)
 			return false;
 		if (b == Blocks.bedrock)
-			return y == 0;
+			return y == 0 || (y >= 128 && world.provider.dimensionId == -1);
 		if (ReikaBlockHelper.isLeaf(b, meta) || ReikaBlockHelper.isWood(b, meta))
 			return false;
 		if (RailcraftHandler.Blocks.QUARRIED.match(b, meta) || RailcraftHandler.Blocks.ABYSSAL.match(b, meta))
