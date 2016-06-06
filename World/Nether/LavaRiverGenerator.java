@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Nether;
 
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
@@ -16,12 +18,16 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ThresholdMapping;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.SimplexNoiseGenerator;
 
+import com.xcompwiz.mystcraft.api.world.logic.IPopulate;
 
-public class LavaRiverGenerator {
+@Strippable(value="com.xcompwiz.mystcraft.api.world.logic.IPopulate")
+public class LavaRiverGenerator implements IPopulate {
 
 	private static final double RIVER_THRESH = 0.2;
 	private static final double RIVER_CENTER_THRESH = 0.1;
@@ -33,16 +39,25 @@ public class LavaRiverGenerator {
 
 	public final long seed;
 
+	private final BlockKey structBlock;
+	private final BlockKey fluidBlock;
+
 	private final SimplexNoiseGenerator placementNoise;
 	private final SimplexNoiseGenerator heightNoise;
 	//sometimes lava, sometimes pyrotheum
 	private final SimplexNoiseGenerator blockNoise;
 
-	public LavaRiverGenerator(World world) {
-		seed = world.getSeed();
+	public LavaRiverGenerator(long seed) {
+		this(seed, null, null);
+	}
+
+	public LavaRiverGenerator(long seed, BlockKey struct, BlockKey fluid) {
+		this.seed = seed;
 		placementNoise = new SimplexNoiseGenerator(seed);
 		heightNoise = new SimplexNoiseGenerator(-seed);
 		blockNoise = new SimplexNoiseGenerator(~seed);
+		structBlock = struct != null ? struct : new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		fluidBlock = fluid;
 	}
 
 	static {
@@ -83,7 +98,7 @@ public class LavaRiverGenerator {
 					if (val < RIVER_CENTER_THRESH) {
 						for (int j = 0; j < 1; j++) {
 							int dy = y+j;
-							world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 2);
+							world.setBlock(dx, dy, dz, structBlock.blockID, structBlock.metadata, 2);
 						}
 						for (int j = 1; j <= 1; j++) {
 							int dy = y+j;
@@ -93,7 +108,7 @@ public class LavaRiverGenerator {
 					else {
 						for (int j = 0; j < 3; j++) {
 							int dy = y+j;
-							world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata, 2);
+							world.setBlock(dx, dy, dz, structBlock.blockID, structBlock.metadata, 2);
 						}
 					}
 				}
@@ -102,8 +117,16 @@ public class LavaRiverGenerator {
 	}
 
 	private Block getLiquid(double rx, double rz) {
+		if (fluidBlock != null)
+			return fluidBlock.blockID;
 		double t = ReikaMathLibrary.normalizeToBounds(blockNoise.getValue(rx, rz), 0, blockTypes.maxValue());
 		return blockTypes.getForValue(t, true);
+	}
+
+	@Override
+	public boolean populate(World world, Random rand, int x, int z, boolean flag) {
+		this.generate(world, x >> 4, z >> 4);
+		return true;
 	}
 
 }

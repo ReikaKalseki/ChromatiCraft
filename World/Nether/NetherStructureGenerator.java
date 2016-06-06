@@ -39,7 +39,7 @@ public class NetherStructureGenerator implements RetroactiveGenerator {
 	@Override
 	public void generate(Random rand, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		if (lavaRiverGen == null || lavaRiverGen.seed != world.getSeed())
-			lavaRiverGen = new LavaRiverGenerator(world);
+			lavaRiverGen = new LavaRiverGenerator(world.getSeed());
 
 		if (world.provider.dimensionId != -1)
 			return;

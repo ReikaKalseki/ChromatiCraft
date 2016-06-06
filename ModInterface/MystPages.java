@@ -15,7 +15,9 @@ import java.util.Locale;
 
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.World.Nether.LavaRiverGenerator;
 import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.APISegment;
@@ -23,7 +25,10 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper.MystcraftPa
 
 import com.xcompwiz.mystcraft.api.hook.SymbolValuesAPI;
 import com.xcompwiz.mystcraft.api.hook.WordAPI;
+import com.xcompwiz.mystcraft.api.symbol.BlockCategory;
+import com.xcompwiz.mystcraft.api.symbol.BlockDescriptor;
 import com.xcompwiz.mystcraft.api.symbol.IAgeSymbol;
+import com.xcompwiz.mystcraft.api.symbol.ModifierUtils;
 import com.xcompwiz.mystcraft.api.word.DrawableWord;
 import com.xcompwiz.mystcraft.api.world.AgeDirector;
 
@@ -77,7 +82,8 @@ public class MystPages implements MystcraftPageRegistry {
 		LOSSY("Lumen Loss",				-80,	4, 0.0625F,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
 		BUFFERDRAIN("Energy Drain",		-150,	4, 0.125F,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
 		HOSTILE("Hostile Aura",			-40,	5, 0.03125F,	Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
-		CORRUPTED("Corrupted Aura",		-400,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION);
+		CORRUPTED("Corrupted Aura",		-400,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION),
+		LAVARIVER("Sky Rivers",			2,		4, 0.0625F,		Symbols.STRUCTURE, Symbols.MATERIAL, Symbols.MINERAL);
 
 		public final String name;
 		public final int instability;
@@ -128,7 +134,15 @@ public class MystPages implements MystcraftPageRegistry {
 
 		@Override
 		public void registerLogic(AgeDirector age, long seed) {
-
+			switch(this) {
+				case LAVARIVER:
+					BlockDescriptor b1 = ModifierUtils.popBlockMatching(age, BlockCategory.STRUCTURE);
+					BlockDescriptor b2 = ModifierUtils.popBlockMatching(age, BlockCategory.FLUID);
+					age.registerInterface(new LavaRiverGenerator(seed, b1 != null ? new BlockKey(b1.block, b1.metadata) : null, b2 != null ? new BlockKey(b2.block, b2.metadata) : null));
+					break;
+				default:
+					break;
+			}
 		}
 
 		@Override

@@ -120,6 +120,7 @@ import Reika.VoidMonster.Entity.EntityVoidMonster;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -1151,7 +1152,8 @@ public class AbilityHelper {
 			return;
 		if (Chromabilities.MEINV.enabledOn(evt.entityPlayer)) {
 			ItemStack is = evt.item.getEntityItem();
-			for (int i = 0; i < 9; i++) {
+			int n = Loader.isModLoaded("dualhotbar") ? 18 : 9;
+			for (int i = 0; i < n; i++) {
 				ItemStack in = evt.entityPlayer.inventory.mainInventory[i];
 				if (ReikaItemHelper.matchStacks(is, in) && in.stackSize == in.getMaxStackSize()) {
 					MESystemReader me = this.getMESystem(evt.entityPlayer);

@@ -318,6 +318,7 @@ public class ChromaAspectManager {
 				Aspect.ELDRITCH,
 				Aspect.GREED,
 				Aspect.WEAPON,
+				Aspect.CRYSTAL
 		};
 
 		Aspect[] tierplants = {

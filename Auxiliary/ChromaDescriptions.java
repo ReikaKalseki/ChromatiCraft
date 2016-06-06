@@ -53,6 +53,9 @@ import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+
+import com.google.common.base.Strings;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -298,8 +301,11 @@ public final class ChromaDescriptions {
 			ProgressStage p = ProgressStage.list[i];
 			String title = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":title");
 			String hint = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":hint");
-			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":reveal");
-			progressText.put(p, new ProgressNote(title.replaceAll("\\n", ""), hint.replaceAll("\\n", ""), desc.replaceAll("\\n", "")));
+			String reveal = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":reveal");
+			String desc = progress.getValueAtNode("progression:"+p.name().toLowerCase(Locale.ENGLISH)+":desc");
+			if (Strings.isNullOrEmpty(desc))
+				desc = reveal;
+			progressText.put(p, new ProgressNote(title.replaceAll("\\n", ""), hint.replaceAll("\\n", ""), reveal.replaceAll("\\n", ""), desc.replaceAll("\\n", "")));
 		}
 	}
 
@@ -394,7 +400,7 @@ public final class ChromaDescriptions {
 	}
 
 	public static ProgressNote getProgressText(ProgressStage p) {
-		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("#NULL", "#NULL", "#NULL");
+		return progressText.containsKey(p) ? progressText.get(p) : new ProgressNote("#NULL", "#NULL", "#NULL", "#NULL");
 	}
 
 	public static class ProgressNote {
@@ -402,11 +408,13 @@ public final class ChromaDescriptions {
 		public final String title;
 		public final String hint;
 		public final String reveal;
+		public final String desc;
 
-		private ProgressNote(String t, String h, String desc) {
+		private ProgressNote(String t, String h, String rvl, String desc) {
 			title = t;
 			hint = h;
-			reveal = desc;
+			reveal = rvl;
+			this.desc = desc;
 		}
 
 	}

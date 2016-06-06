@@ -1265,6 +1265,7 @@ public class ChromaClientEventController {
 						 */
 						GL11.glPushMatrix();
 						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+						GL11.glDepthMask(false);
 
 						boolean back = b == Blocks.chest;
 						if (back)

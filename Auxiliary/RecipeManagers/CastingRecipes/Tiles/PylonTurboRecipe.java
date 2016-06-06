@@ -115,6 +115,11 @@ public class PylonTurboRecipe extends PylonRecipe {
 	}
 
 	@Override
+	public boolean canBeStacked() {
+		return true;
+	}
+
+	@Override
 	public void onRecipeTick(TileEntityCastingTable te) {
 		if (!te.worldObj.isRemote) {
 			int tick = te.getCraftingTick();

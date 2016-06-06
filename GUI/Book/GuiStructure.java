@@ -110,6 +110,9 @@ public class GuiStructure extends GuiBookSection {
 		else if (page.name().contains("METEOR")) {
 			ItemStack is = ChromaTiles.METEOR.getCraftedProduct();
 			if (page == ChromaResearch.METEOR2) {
+				is.stackTagCompound = null;
+			}
+			if (page == ChromaResearch.METEOR2) {
 				is.stackTagCompound = new NBTTagCompound();
 				is.stackTagCompound.setInteger("tier", 1);
 			}
@@ -118,6 +121,7 @@ public class GuiStructure extends GuiBookSection {
 				is.stackTagCompound.setInteger("tier", 2);
 			}
 			render.addOverride(array.getMidX(), array.getMaxY()-2, array.getMidZ(), is);
+			render.addOverride(ChromaTiles.METEOR.getCraftedProduct(), is);
 		}
 		else if (page == ChromaResearch.MINIREPEATER) {
 			//render.addOverride(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.WEAKREPEATER.getCraftedProduct());
@@ -278,9 +282,17 @@ public class GuiStructure extends GuiBookSection {
 			}
 			else if (page.name().contains("METEOR") && Block.getBlockFromItem(is.getItem()) == ChromaTiles.METEOR.getBlock()) {
 				is2 = ChromaTiles.METEOR.getCraftedProduct();
-				if (page == ChromaResearch.METEOR3) {
+				if (page == ChromaResearch.METEOR1) {
+					is2.stackTagCompound = new NBTTagCompound();
+					is2.stackTagCompound.setInteger("tier", 0);
+				}
+				else if (page == ChromaResearch.METEOR2) {
 					is2.stackTagCompound = new NBTTagCompound();
 					is2.stackTagCompound.setInteger("tier", 1);
+				}
+				else if (page == ChromaResearch.METEOR3) {
+					is2.stackTagCompound = new NBTTagCompound();
+					is2.stackTagCompound.setInteger("tier", 2);
 				}
 			}
 			if (ChromaBlocks.PYLON.match(is2)) {

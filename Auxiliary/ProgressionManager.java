@@ -181,7 +181,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		//@SideOnly(Side.CLIENT)
 		public String getShortDesc() {
-			return this.getRevealedString();
+			return ChromaDescriptions.getProgressText(this).desc;
 		}
 
 		//@SideOnly(Side.CLIENT)

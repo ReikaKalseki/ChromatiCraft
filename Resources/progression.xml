@@ -10,6 +10,9 @@
 		<reveal>
 			Sure enough, you have found places where crystal energy has coalesced and formed regular, glassy formations, ones that radiate the effects of their element.
 		</reveal>
+		<desc>
+			Underground crystals of energy, radiating the effect of their element
+		</desc>
 	</crystals>
 	<casting>
 		<title>
@@ -21,6 +24,9 @@
 		<reveal>
 			As expected, to perform feats more complex than making a wooden box to store your items, you needed to create a special more magically-sound table.
 		</reveal>
+		<desc>
+			To create anything remotely magical, you needed a dedicated, magically-capable table on which to do it
+		</desc>
 	</casting>
 	<dyetree>
 		<title>
@@ -32,6 +38,9 @@
 		<reveal>
 			Well, they seem to drop berries and dyes of their color, so that has to count for something...
 		</reveal>
+		<desc>
+			Trees, likely magical, of every color, and which drop not only saplings but dyes and berries
+		</desc>
 	</dyetree>
 	<multiblock>
 		<title>
@@ -43,6 +52,9 @@
 		<reveal>
 			Sure enough, the 5x5 afforded by the item stands is what you need.
 		</reveal>
+		<desc>
+			Using item stands has allowed you to expand the complexity of your crafting recipes
+		</desc>
 	</multiblock>
 	<runeuse>
 		<title>
@@ -54,6 +66,9 @@
 		<reveal>
 			That they do, allowing you to make items more infused with energy than simple stone.
 		</reveal>
+		<desc>
+			The beginnings of harnessing crystal energy, allowing you to enhance your crafting
+		</desc>
 	</runeuse>
 	<pylon>
 		<title>
@@ -65,6 +80,9 @@
 		<reveal>
 			Some sort of an energy beacon...probably a good idea to remember that.
 		</reveal>
+		<desc>
+			A source of crystal energy, almost dangerously powerful and of incalculable value
+		</desc>
 	</pylon>
 	<link>
 		<title>
@@ -76,6 +94,9 @@
 		<reveal>
 			Channeling all that energy directly into the table has allowed you to construct devices from your wildest imagination.
 		</reveal>
+		<desc>
+			Crafting with lumen energy allows for the creation of powerful constructs
+		</desc>
 	</link>
 	<charge>
 		<title>
@@ -87,17 +108,23 @@
 		<reveal>
 			Turns out you can, though the acquisition process is more dangerous than is enjoyable.
 		</reveal>
+		<desc>
+			Collecting energy in oneself to...do something
+		</desc>
 	</charge>
 	<ability>
 		<title>
 			Personal Enhancement
 		</title>
 		<hint>
-			Machines you can accelerate. Tools you can enchant. Yourself?
+			Machines you can upgrade. Tools you can enchant. Yourself?
 		</hint>
 		<reveal>
 			A new set of rituals has given you abilities of great utility.
 		</reveal>
+		<desc>
+			Various powers and abilities offer huge potential
+		</desc>
 	</ability>
 	<rainbowleaf>
 		<title>
@@ -109,6 +136,9 @@
 		<reveal>
 			The raw magic energy in this tree is palpable, not to mention behind the impressive visual display.
 		</reveal>
+		<desc>
+			A giant tree of iridescent hue. It surely has magic power that you can only imagine
+		</desc>
 	</rainbowleaf>
 	<makechroma>
 		<title>
@@ -120,6 +150,9 @@
 		<reveal>
 			Experience can be converted to a mysterious magic fluid. Surely that will have uses.
 		</reveal>
+		<desc>
+			A distilled essence of experience, or magic, with as-yet unknown purpose
+		</desc>
 	</makechroma>
 	<shardcharge>
 		<title>
@@ -131,6 +164,9 @@
 		<reveal>
 			Dissolving berries in the chroma allows it to greatly boost the magic energy found in the crystal shards.
 		</reveal>
+		<desc>
+			Enhancing the power of a crystal shard with elemental energy distilled from the trees
+		</desc>
 	</shardcharge>
 	<chroma>
 		<title>
@@ -142,6 +178,9 @@
 		<reveal>
 			Stepping in it yourself seemed to do little - though you do feel a bit rejuvenated - but its power to enrich materials is not insignificant.
 		</reveal>
+		<desc>
+			This liquid has enriching power, and you have only scratched the surface
+		</desc>
 	</chroma>
 	<alloy>
 		<title>
@@ -153,6 +192,9 @@
 		<reveal>
 			The chroma dissolves those materials, infusing the mundane materials with a great deal of energy.
 		</reveal>
+		<desc>
+			The creation of magical materials with the enriching power of liquid chroma
+		</desc>
 	</alloy>
 	<stones>
 		<title>
@@ -164,6 +206,9 @@
 		<reveal>
 			This gemstone throbs will all the colors of energy. That will surely prove useful.
 		</reveal>
+		<desc>
+			A complete collection of the crystal elements into a gem
+		</desc>
 	</stones>
 	<shock>
 		<title>
@@ -175,6 +220,9 @@
 		<reveal>
 			If your idea of "friendly" is a discharge to the face...
 		</reveal>
+		<desc>
+			Proximity to a crystal pylon, at least for now, is clearly undesirable
+		</desc>
 	</shock>
 	<nether>
 		<title>
@@ -186,6 +234,9 @@
 		<reveal>
 			So those stories of obsidian portals leading to a fiery nightmare are true...
 		</reveal>
+		<desc>
+			A hostile, unpleasant world of lava, red rock, and nightmarish creatures
+		</desc>
 	</nether>
 	<end>
 		<title>
@@ -197,6 +248,9 @@
 		<reveal>
 			Apparently it can.
 		</reveal>
+		<desc>
+			A...strange world suspended in the void, ruled by an aggressive dragon
+		</desc>
 	</end>
 	<twilight>
 		<title>
@@ -208,6 +262,9 @@
 		<reveal>
 			Not only does this realm exist, but it teems with unique creatures and is plentiful with treasure.
 		</reveal>
+		<desc>
+			A mystical forest dotted with massive structures and strange creatures
+		</desc>
 	</twilight>
 	<bedrock>
 		<title>
@@ -219,6 +276,9 @@
 		<reveal>
 			Maybe, but that layer of rock below seems impenetrable.
 		</reveal>
+		<desc>
+			An unyielding barrier to those who attempt to dig downwards
+		</desc>
 	</bedrock>
 	<cavern>
 		<title>
@@ -230,6 +290,9 @@
 		<reveal>
 			Buried deep in the rock, these crystal-rich cavities hold further intrigue.
 		</reveal>
+		<desc>
+			A buried room, populated with crystals and some random loot
+		</desc>
 	</cavern>
 	<burrow>
 		<title>
@@ -241,6 +304,9 @@
 		<reveal>
 			Upon closer inspection, you found hidden burrows stocked with goods, but for who?
 		</reveal>
+		<desc>
+			A small burrow, with a handful of starter items
+		</desc>
 	</burrow>
 	<ocean>
 		<title>
@@ -252,6 +318,9 @@
 		<reveal>
 			True stories, it seems. If only they warned of the danger...
 		</reveal>
+		<desc>
+			A large submerged structure which is more complex than it first appears
+		</desc>
 	</ocean>
 	<desertstruct>
 		<title>
@@ -263,6 +332,9 @@
 		<reveal>
 			They do indeed, and their riches eclipse most others.
 		</reveal>
+		<desc>
+			A subsurface hollow, filled with loot but also danger
+		</desc>
 	</desertstruct>
 	<die>
 		<title>
@@ -274,6 +346,9 @@
 		<reveal>
 			Lost too. Ouch.
 		</reveal>
+		<desc>
+			Like your items, your knowledge and energy is also lost upon your demise
+		</desc>
 	</die>
 	<allcolors>
 		<title>
@@ -285,6 +360,9 @@
 		<reveal>
 			You have identified sixteen, each with a unique color and symbolic icon.
 		</reveal>
+		<desc>
+			Sixteen colors, sixteen forms of energy, each tuned to a specific property
+		</desc>
 	</allcolors>
 	<repeater>
 		<title>
@@ -296,6 +374,9 @@
 		<reveal>
 			These refractors of a sort seem to be able to reconcentrate and repeat the signal.
 		</reveal>
+		<desc>
+			A more refined and effective form of lumen transmission
+		</desc>
 	</repeater>
 	<rainbowforest>
 		<title>
@@ -307,6 +388,9 @@
 		<reveal>
 			Not only do such forests exist, but they also teem with animals and plants, and the magic keeps hostile forces at bay.
 		</reveal>
+		<desc>
+			A magic forest, full of multicolored trees and with significant power to keep evil away
+		</desc>
 	</rainbowforest>
 	<dimension>
 		<title>
@@ -318,6 +402,9 @@
 		<reveal>
 			There are indeed, but this one...is different.
 		</reveal>
+		<desc>
+			A new world...strange, yet peaceful and serene. And vibrantly hued
+		</desc>
 	</dimension>
 	<ctm>
 		<title>
@@ -329,6 +416,9 @@
 		<reveal>
 			The reward for completing and restoring the monument must be large.
 		</reveal>
+		<desc>
+			Completing the ruined monument, with surely significant reward
+		</desc>
 	</ctm>
 	<storage>
 		<title>
@@ -340,6 +430,9 @@
 		<reveal>
 			Fortunately, you have found out how to store energy in a crystal matrix for exactly this purpose.
 		</reveal>
+		<desc>
+			Storing energy in a crystal for easy mobility
+		</desc>
 	</storage>
 	<balllightning>
 		<title>
@@ -351,6 +444,9 @@
 		<reveal>
 			They do not seem particularly useful, but at least they are not obviously dangerous.
 		</reveal>
+		<desc>
+			A glowing, moving clump of energy that seems to be animated on its own
+		</desc>
 	</balllightning>
 	<powercrystal>
 		<title>
@@ -362,6 +458,9 @@
 		<reveal>
 			That ring of iridescent crystals dramatically helps.
 		</reveal>
+		<desc>
+			Upgrading a pylon with a ring of eight power crystals massively improves its energy recovery
+		</desc>
 	</powercrystal>
 	<killdragon>
 		<title>
@@ -373,6 +472,9 @@
 		<reveal>
 			Killing it has revealed yet more of the world to you.
 		</reveal>
+		<desc>
+			A giant, hostile dragon whose destruction gives both physical and conceptual reward
+		</desc>
 	</killdragon>
 	<breakspawner>
 		<title>
@@ -384,6 +486,9 @@
 		<reveal>
 			The only way to stop them is to destroy them.
 		</reveal>
+		<desc>
+			Destroying a spawner not only stops the flood of creatures, but also lets you better understand, and maybe even harvest it
+		</desc>
 	</breakspawner>
 	<killwither>
 		<title>
@@ -395,6 +500,9 @@
 		<reveal>
 			An undead monstrosity, though its loot proved useful.
 		</reveal>
+		<desc>
+			A nightmarish creature which drops a mysterious but obviously valuable star
+		</desc>
 	</killwither>
 	<hive>
 		<title>
@@ -406,6 +514,9 @@
 		<reveal>
 			Yes, they can, and not only that, but they take on the effect of nearby cave crystals.
 		</reveal>
+		<desc>
+			Underground, crystalline hives full of uniquely adapted bees
+		</desc>
 	</hive>
 	<killmob>
 		<title>
@@ -417,6 +528,9 @@
 		<reveal>
 			Conveniently, they drop useful items when killed.
 		</reveal>
+		<desc>
+			Killing various creatures, especially hostile ones, drops an assortment of useful items
+		</desc>
 	</killmob>
 	<allcores>
 		<title>
@@ -428,6 +542,9 @@
 		<reveal>
 			I have all sixteen...maybe these are for that monument I need to repair...
 		</reveal>
+		<desc>
+			Collecting all sixteen glowing orbs, for some unified purpose
+		</desc>
 	</allcores>
 	<turbocharge>
 		<title>
@@ -439,6 +556,9 @@
 		<reveal>
 			More so than expected, but also far more valuable.
 		</reveal>
+		<desc>
+			Greatly enhancing the power of a crystal pylon
+		</desc>
 	</turbocharge>
 	<useenergy>
 		<title>
@@ -450,6 +570,9 @@
 		<reveal>
 			Yes, and the myriad constructs powered by them offer great utility.
 		</reveal>
+		<desc>
+			Relaying the signal from a crystal pylon allows for feasible use of their energy
+		</desc>
 	</useenergy>
 	<structcomplete>
 		<title>
@@ -461,6 +584,9 @@
 		<reveal>
 			A glowing core, tuned to one of the crystal colors. Interesting...
 		</reveal>
+		<desc>
+			Completing the task in the strange construction, and being consequently rewarded
+		</desc>
 	</structcomplete>
 	<netherroof>
 		<title>
@@ -472,6 +598,9 @@
 		<reveal>
 			No, and further mysteries await for those who venture into it.
 		</reveal>
+		<desc>
+			Getting above the impassable layer at the top of the Nether
+		</desc>
 	</netherroof>
 	<netherstruct>
 		<title>
@@ -483,6 +612,9 @@
 		<reveal>
 			Some even contain useful clues.
 		</reveal>
+		<desc>
+			Finding the secrets buried in the Nether
+		</desc>
 	</netherstruct>
 	<villagecasting>
 		<title>
@@ -494,6 +626,9 @@
 		<reveal>
 			No, but the others who tried have clearly been about as smart as a piece of flint.
 		</reveal>
+		<desc>
+			The villagers have tried - and abjectly failed - to learn to manipulate crystal energy.
+		</desc>
 	</villagecasting>
 	<name>
 		<title>

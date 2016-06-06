@@ -44,7 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTieredOre extends BlockChromaTiered {
 
-	public static final int ARR_LENGTH = 13;
+	public static final int ARR_LENGTH = 14;
 
 	private final IIcon[] overlay = new IIcon[ARR_LENGTH];
 	private final IIcon[] back = new IIcon[ARR_LENGTH];
@@ -71,7 +71,8 @@ public class BlockTieredOre extends BlockChromaTiered {
 		FIRESTONE(Blocks.netherrack, ProgressStage.LINK),
 		THERMITE(Blocks.netherrack, ProgressStage.END),
 		RESO(Blocks.end_stone, ProgressStage.ABILITY),
-		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON);
+		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON),
+		RAINBOW(Blocks.stone, ProgressStage.USEENERGY);
 
 		public final ProgressStage level;
 		private final Block genBlock;
@@ -188,6 +189,11 @@ public class BlockTieredOre extends BlockChromaTiered {
 				n = 1+fortune+rand.nextInt(1+fortune)*3/2;
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.spaceDust.copy());
+				break;
+			case RAINBOW:
+				n = 1+fortune+rand.nextInt(1+fortune)/2;
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.lumenGem.copy());
 				break;
 		}
 		return li;

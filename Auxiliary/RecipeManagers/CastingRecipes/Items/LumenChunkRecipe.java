@@ -46,4 +46,9 @@ public class LumenChunkRecipe extends PylonRecipe implements CoreRecipe {
 		return super.getDuration()/8;
 	}
 
+	@Override
+	public boolean canBeStacked() {
+		return true;
+	}
+
 }

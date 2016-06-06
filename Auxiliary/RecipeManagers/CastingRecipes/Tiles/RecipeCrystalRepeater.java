@@ -42,10 +42,11 @@ public class RecipeCrystalRepeater extends RepeaterRecipe {
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 2);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 2);
 
-		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, -2);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 0, 2);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), 2, 0);
 		this.addAuxItem(ChromaItems.SHARD.getStackOfMetadata(31), -2, 0);
+
+		this.addAuxItem(ChromaStacks.lumenGem, 0, -2);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class ChromaNames {
 		"chromacraft.beacondust", "chromacraft.bindingcrystal", "chromacraft.resodust", "chromacraft.enderdust", "chromacraft.waterdust",
 		"chromacraft.firaxite", "chromacraft.lumadust", "chromacraft.echocrystal", "chromacraft.cavern", "chromacraft.burrow",
 		"chromacraft.ocean", "chromacraft.fireessence", "chromacraft.thermiticcrystal", "chromacraft.endcrystal", "chromacraft.spacedust",
-		"chromacraft.desert", "chromacraft.glowbeans", "chromacraft.boostroot"
+		"chromacraft.desert", "chromacraft.glowbeans", "chromacraft.boostroot", "chromacraft.lumengem"
 	};
 
 	public static final String[] dimGenNames = {

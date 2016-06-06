@@ -199,8 +199,7 @@ public class ChromatiPackets implements PacketHandler {
 					x = inputStream.readInt();
 					y = inputStream.readInt();
 					z = inputStream.readInt();
-					int value = inputStream.readInt();
-					ReikaPacketHelper.updateTileEntityData(world, x, y, z, name, value);
+					ReikaPacketHelper.updateTileEntityData(world, x, y, z, name, inputStream);
 					return;
 				case TANK:
 					String tank = packet.readString();
