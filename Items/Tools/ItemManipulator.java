@@ -25,8 +25,8 @@ import thaumcraft.api.nodes.INode;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.TileEntityCrystalGlow;
@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.ModInterface.NodeRecharger;
+import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -42,6 +43,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
@@ -69,6 +71,7 @@ import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.IBeeHousing;
 
 @Strippable("thaumcraft.api.IScribeTools")
 public class ItemManipulator extends ItemChromaTool implements IScribeTools {
@@ -154,6 +157,17 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.LUMENWIRE) {
 			TileEntityLumenWire ir = (TileEntityLumenWire)tile;
 			ir.cycleMode();
+			return true;
+		}
+
+		if (t == ChromaTiles.AREABREAKER) {
+			TileEntityAreaBreaker ab = (TileEntityAreaBreaker)tile;
+			if (ep.isSneaking()) {
+				ab.incRange();
+			}
+			else {
+				ab.cycleShape();
+			}
 			return true;
 		}
 		/*
@@ -298,10 +312,14 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			}
 		}
 
-		if (ModList.APPENG.isLoaded()) {
-			if (InterfaceCache.GRIDHOST.instanceOf(tile)) {
-				AbilityHelper.instance.saveMESystemLocation(ep, tile, s);
-			}
+		if (ModList.APPENG.isLoaded() && InterfaceCache.GRIDHOST.instanceOf(tile)) {
+			AbilityHelper.instance.saveMESystemLocation(ep, tile, s);
+			return true;
+		}
+
+		if (!world.isRemote && ModList.FORESTRY.isLoaded() && InterfaceCache.BEEHOUSE.instanceOf(tile)) {
+			IBeeHousing ibh = (IBeeHousing)tile;
+			CrystalBees.showConditionalStatuses(world, x, y, z, ep, ibh);
 		}
 
 		return false;

@@ -130,7 +130,7 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 
 	private int tier;
 
-	private boolean hasStructure;
+	private boolean hasStructure = false;
 
 	private int fireTick;
 
@@ -299,7 +299,7 @@ public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTil
 	}
 
 	public void validateStructure() {
-		hasStructure = ChromaStructures.getMeteorTowerStructure(worldObj, xCoord, yCoord, zCoord, tier).matchInWorld();
+		hasStructure = !worldObj.isRemote && ChromaStructures.getMeteorTowerStructure(worldObj, xCoord, yCoord, zCoord, tier).matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		if (!hasStructure) {
 			fireTick = 0;

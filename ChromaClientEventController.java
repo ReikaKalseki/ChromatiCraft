@@ -97,6 +97,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -197,6 +198,11 @@ public class ChromaClientEventController {
 		}
 	}
 	 */
+	@SubscribeEvent
+	public void renderDimensionSkyriver(EntityRenderingLoopEvent evt) {
+		SkyRiverRenderer.instance.render();
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void applyAntFarmLighting(NightVisionBrightnessEvent evt) {
 		PotionEffect p = evt.player.getActivePotionEffect(Potion.nightVision);

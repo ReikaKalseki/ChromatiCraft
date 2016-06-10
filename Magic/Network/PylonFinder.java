@@ -303,7 +303,7 @@ public class PylonFinder {
 					if (te instanceof CrystalSource && this.isConnectableSource((CrystalSource)te, thresh)) {
 						net.addLink(l, true);
 						nodes.add(loc2);
-						//ReikaJavaLibrary.pConsole("Found source, returning: "+this.isComplete());
+						//ReikaJavaLibrary.pConsole("Found source for "+element+" > "+r+", returning: "+this.isComplete());
 						return;
 					}
 					else if (te instanceof CrystalRepeater) {

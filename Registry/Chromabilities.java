@@ -150,7 +150,7 @@ public enum Chromabilities implements Ability {
 	RECHARGE(null, false),
 	MEINV(null, false, ModList.APPENG),
 	MOBSEEK(null, true),
-	BEEALYZE(Phase.START, true, ModList.FORESTRY);
+	BEEALYZE(Phase.START, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;

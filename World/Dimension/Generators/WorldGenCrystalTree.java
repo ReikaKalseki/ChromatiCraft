@@ -27,13 +27,14 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
 
 public class WorldGenCrystalTree extends ChromaWorldGenerator {
 
 	private static final ArrayList<CrystalTree>[] crystalTrees = new ArrayList[4];
-	private static final int[] treeHeights = {5, 7, 10, 30};
+	private static final int[][] treeHeights = {{2, 5}, {3, 7}, {4, 10}, {12, 30}};
 	private static final WeightedRandom<Integer> sizeRand = new WeightedRandom();
 
 	public static final BlockKey CRYSTAL_TRUNK = new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal());
@@ -56,18 +57,21 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 		c.populate(tree);
 		tree.offset(x, y, z);
 		if (this.checkSpace(world, x, y, z, tree)) {
-			int h = Math.max(2, rand.nextInt(treeHeights[size]));
+			int[] hs = treeHeights[size];
+			int h = ReikaRandomHelper.getRandomBetween(hs[0], hs[1]);
 			tree.offset(0, h, 0);
 			for (int i = 0; i < h; i++) {
 				int n = c.trunkWidth;
-				world.setBlock(x, y+i, z, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal(), 3);
+				world.setBlock(x, y+i, z, CRYSTAL_TRUNK.blockID, CRYSTAL_TRUNK.metadata, 3);
 				for (int a = 0; a < n; a++) {
 					for (int b = 0; b < n; b++) {
-						world.setBlock(x+a, y+i, z+b, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.ordinal(), 3);
+						world.setBlock(x-a, y+i, z-b, CRYSTAL_TRUNK.blockID, CRYSTAL_TRUNK.metadata, 3);
 					}
 				}
 			}
 			tree.place();
+			//world.setBlock(x, y+h+tree.getSizeY(), z, Blocks.standing_sign);
+			//((TileEntitySign)world.getTileEntity(x, y+h+tree.getSizeY(), z)).signText = new String[]{c.name(), String.valueOf(x), y+", "+h, String.valueOf(z)};
 			return true;
 		}
 		return false;
@@ -99,7 +103,9 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 		sizeRand.addEntry(3, 1);
 
 		for (int i = 0; i < CrystalTree.list.length; i++) {
-			CrystalTree.list[i].register();
+			CrystalTree tree = CrystalTree.list[i];
+			if (tree != CrystalTree.XMAS)
+				tree.register();
 		}
 	}
 
@@ -393,8 +399,8 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 				}
 				case WAVE: {
 					RevolvedPattern p = new RevolvedPattern(f.world, trunkWidth, 13, 5);
-					for (int i = 0; i < 13; i++)
-						p.addBlock(t, i, 0, 0);
+					for (int i = 0; i < 12; i++)
+						p.addBlock(i < 11 ? t : l, i, 0, 0);
 
 					int[][] r = {
 							{4, 4, 4, 3, 1},
@@ -484,8 +490,8 @@ public class WorldGenCrystalTree extends ChromaWorldGenerator {
 				}
 				case CANOPY: {
 					RevolvedPattern p = new RevolvedPattern(f.world, trunkWidth, 7, 7);
-					for (int i = 0; i < 19; i++)
-						p.addBlock(t, i, 0, 0);
+					for (int i = 0; i < 7; i++)
+						p.addBlock(i < 6 ? t : l, i, 0, 0);
 
 					int[][] r = {
 							{5, 5, 5, 4, 3, 1},

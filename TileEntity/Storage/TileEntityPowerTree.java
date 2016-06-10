@@ -26,8 +26,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
@@ -36,7 +36,6 @@ import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
-import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -692,11 +691,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	@Override
 	public boolean canTransmitTo(TileEntityWirelessPowered te) {
-		return this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= 1024 && PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord);
+		return this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= 1024;// && PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord);
 	}
 
 	@Override
-	public boolean request(CrystalElement e, int amt) {
+	public boolean request(CrystalElement e, int amt, int x, int y, int z) {
 		int has = energy.getValue(e);
 		if (has >= amt) {
 			this.drain(e, amt);

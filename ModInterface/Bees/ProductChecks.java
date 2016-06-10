@@ -324,7 +324,7 @@ public class ProductChecks {
 
 		@Override
 		public String getDescription() {
-			return color.displayName+" Crystal\n"+color.displayName+" Leaves\nLiquid Chroma";
+			return "Liquid Chroma, "+color.displayName+" Tree and Crystal";
 		}
 
 	}

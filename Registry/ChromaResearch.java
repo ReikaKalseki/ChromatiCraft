@@ -174,6 +174,8 @@ public enum ChromaResearch implements ProgressElement {
 	METEOR(			ChromaTiles.METEOR,			ResearchLevel.PYLONCRAFT),
 	FLUIDDISTRIB(	ChromaTiles.FLUIDDISTRIBUTOR,ResearchLevel.RUNECRAFT),
 	VILLAGEREPAIR(	ChromaTiles.VILLAGEREPAIR,	ResearchLevel.MULTICRAFT,		ProgressStage.VILLAGECASTING),
+	AREABREAKER(	ChromaTiles.AREABREAKER,	ResearchLevel.MULTICRAFT),
+	WIRELESS(		ChromaTiles.WIRELESS,		ResearchLevel.MULTICRAFT,		ProgressStage.USEENERGY),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -182,7 +184,7 @@ public enum ChromaResearch implements ProgressElement {
 	TNT(			ChromaBlocks.TNT,												ResearchLevel.PYLONCRAFT),
 	TANKAUX(		ChromaBlocks.TANK,												ResearchLevel.MULTICRAFT),
 	FENCEAUX(		ChromaBlocks.FENCE,												ResearchLevel.MULTICRAFT),
-	LUMENLEAVES(	ChromaBlocks.POWERTREE,		CrystalElement.LIME.ordinal(),		ResearchLevel.PYLONCRAFT),
+	LUMENLEAVES(	ChromaBlocks.POWERTREE,		CrystalElement.LIME.ordinal(),		ResearchLevel.PYLONCRAFT,	ProgressStage.POWERCRYSTAL),
 	DYELEAVES(		ChromaBlocks.DYELEAF,		CrystalElement.BROWN.ordinal(),		ResearchLevel.ENTRY,		ProgressStage.DYETREE),
 	RAINBOWLEAVES(	ChromaBlocks.RAINBOWLEAF,	3,									ResearchLevel.RAWEXPLORE,	ProgressStage.RAINBOWLEAF),
 	LAMPAUX(		ChromaBlocks.LAMPBLOCK,		CrystalElement.WHITE.ordinal(),		ResearchLevel.BASICCRAFT),

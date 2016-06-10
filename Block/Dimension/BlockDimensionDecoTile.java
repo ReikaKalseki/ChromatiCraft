@@ -45,9 +45,16 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 	private static final IIcon[][] icons = new IIcon[2][16];
 
 	public static enum DimDecoTileTypes implements DecoType {
-		FIREJET();
+		FIREJET("aurajet");
 
 		public static DimDecoTileTypes[] list = values();
+
+		private final String itemTex;
+		private IIcon icon;
+
+		private DimDecoTileTypes(String s) {
+			itemTex = s;
+		}
 
 		public ItemStack getItem() {
 			return new ItemStack(ChromaBlocks.DIMGENTILE.getBlockInstance(), 1, this.ordinal());
@@ -64,6 +71,10 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 				default:
 					return false;
 			}
+		}
+
+		public IIcon getItemIcon() {
+			return icon;
 		}
 
 		public List<IIcon> getIcons(int pass) {
@@ -116,9 +127,10 @@ public class BlockDimensionDecoTile extends BlockDimensionDeco {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
-		for (int i = 0; i < 16; i++) {
+		for (int i = 0; i < DimDecoTileTypes.list.length; i++) {
 			icons[0][i] = ico.registerIcon("chromaticraft:dimgen2/underlay_"+i);
 			icons[1][i] = ico.registerIcon("chromaticraft:dimgen2/overlay_"+i);
+			DimDecoTileTypes.list[i].icon = ico.registerIcon("chromaticraft:"+DimDecoTileTypes.list[i].itemTex);
 		}
 	}
 

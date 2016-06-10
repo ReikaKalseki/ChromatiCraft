@@ -22,6 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
@@ -62,7 +63,9 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -88,13 +91,17 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.EnumBeeType;
+import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.apiculture.IBee;
 import forestry.api.apiculture.IBeeGenome;
 import forestry.api.apiculture.IBeeHousing;
 import forestry.api.core.EnumHumidity;
 import forestry.api.core.EnumTemperature;
 import forestry.api.core.ForestryAPI;
 import forestry.api.core.IErrorState;
+import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
+import forestry.api.genetics.IIndividual;
 
 public class CrystalBees {
 
@@ -311,13 +318,15 @@ public class CrystalBees {
 		lumen.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance()), 2, 1));
 		aura.addSpecialty(ChromaStacks.echoCrystal, 2);
 		aura.otherChecks.add(new AuraLocusCheck());
+
+		RainbowTreeCheck tree = new RainbowTreeCheck();
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];
 			ItemStack shard = ChromaStacks.getChargedShard(e);
 			multi.addSpecialty(shard, 4);
 			ItemStack is = ChromaItems.BERRY.getStackOfMetadata(i);
 			multi.addProduct(is, 20/16F); // /16 since one of each
-			FlowerProviderMulti.conditions.put(is, new RainbowTreeCheck());
+			FlowerProviderMulti.conditions.put(is, tree);
 			FlowerProviderMulti.conditions.put(shard, new ChargedShardCheck(e));
 		}
 
@@ -858,6 +867,25 @@ public class CrystalBees {
 			return (FlowerProviderCrystal)flowerMap.get(color).getProvider();
 		}
 
+	}
+
+	public static void showConditionalStatuses(World world, int x, int y, int z, EntityPlayer ep, IBeeHousing ibh) {
+		ItemStack is = ibh.getBeeInventory().getQueen();
+		if (is != null) {
+			IIndividual ii = AlleleManager.alleleRegistry.getIndividual(is);
+			if (ii instanceof IBee) {
+				IBeeGenome ibg = ((IBee)ii).getGenome();
+				IAlleleBeeSpecies sp = ibg.getPrimary();
+				if (sp instanceof ConditionalProductBee) {
+					ReikaChatHelper.sendChatToPlayer(ep, "Product Conditions for "+EnumChatFormatting.GOLD+sp.getName()+EnumChatFormatting.RESET+" Bee:");
+					ConditionalProductBee cb = (ConditionalProductBee)sp;
+					ConditionalProductProvider cp = cb.getProductProvider();
+					StatusLogger log = new StatusLogger();
+					cp.sendStatusInfo(world, x, y, z, log, ibg, ibh);
+					log.sendToPlayer(ep);
+				}
+			}
+		}
 	}
 
 }

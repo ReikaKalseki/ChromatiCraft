@@ -18,9 +18,11 @@ import net.minecraft.world.biome.BiomeDecorator;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.ModInterface.MystPages;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -136,14 +138,14 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 			return false;
 		if (Math.abs(world.provider.dimensionId) == ReikaTwilightHelper.getDimensionID())
 			return false;
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT)
+		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
 			return false;
-		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
+		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && !ChromatiCraft.isRainbowForest(biome)) {
 			if (!MystPages.Pages.TREES.existsInWorld(world)) {
 				return false;
 			}
 		}
-		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		BiomeDecorator dec = biome.theBiomeDecorator;
 		if (biome == BiomeGenBase.ocean || biome == BiomeGenBase.frozenOcean)
 			return false;

@@ -9,12 +9,17 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class TileEntityWirelessSource extends CrystalReceiverBase implements WirelessSource {
@@ -22,7 +27,26 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 	public static final int TRANSMIT_RANGE = 18;
 
 	public static final double LOSS_PER_LUMEN = 0.2;
-	//public static final int LOSS_PER_OCCLUSION = 120;
+	public static final int OCCLUSION_FACTOR = 20;
+
+	@Override
+	public void updateEntity(World world, int x, int y, int z, int meta) {
+		super.updateEntity(world, x, y, z, meta);
+		if (world.isRemote) {
+			this.doParticles(world, x, y, z);
+		}
+	}
+
+	private void doParticles(World world, int x, int y, int z) {
+		if (rand.nextInt(1+Minecraft.getMinecraft().gameSettings.particleSetting) == 0) {
+			int c = CrystalElement.getBlendedColor(this.getTicksExisted()+15, 25);
+			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.125);
+			double[] vel = ReikaPhysicsHelper.polarToCartesian(v, rand.nextDouble()*360, rand.nextDouble()*360);
+			float g = rand.nextBoolean() ? 0.0625F : -0.0625F;
+			EntityBlurFX fx = new EntityBlurFX(world, x+0.5, y+0.5, z+0.5, vel[0], vel[1], vel[2]).setColor(c).setRapidExpand().setGravity(g).setColliding();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
 
 	@Override
 	public int getReceiveRange() {
@@ -61,12 +85,19 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 
 	@Override
 	public boolean canTransmitTo(TileEntityWirelessPowered te) {
-		return false;
+		return te.getDistanceFrom(xCoord+0.5, yCoord+0.5, zCoord+0.5) <= TRANSMIT_RANGE*TRANSMIT_RANGE;
 	}
 
 	@Override
-	public boolean request(CrystalElement e, int amt) {
-		return false;
+	public boolean request(CrystalElement e, int amt, int x, int y, int z) {
+		amt *= 1+LOSS_PER_LUMEN;
+		if (!PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, x, y, z))
+			amt *= OCCLUSION_FACTOR;
+		boolean flag = energy.containsAtLeast(e, amt);
+		if (flag) {
+			energy.subtract(e, amt);
+		}
+		return flag;
 	}
 
 }

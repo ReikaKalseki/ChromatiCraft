@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -129,6 +130,29 @@ public class WorldGenMiniAltar extends ChromaWorldGenerator {
 				slot = rand.nextInt(te.getSizeInventory());
 			}
 			te.setInventorySlotContents(slot, is);
+		}
+
+		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+		if (b instanceof ChromaDimensionBiome) {
+			ItemStack is = this.getRandomBiomeItem((ChromaDimensionBiome)b);
+			if (is != null) {
+				te.setInventorySlotContents(rand.nextInt(te.getSizeInventory()), is);
+			}
+		}
+	}
+
+	private ItemStack getRandomBiomeItem(ChromaDimensionBiome biome) {
+		switch(biome.biomeType) {
+			case FOREST:
+				return null;
+			case ISLANDS:
+				return null;
+			case PLAINS:
+				return null;
+			case SKYLANDS:
+				return null;
+			default:
+				return null;
 		}
 	}
 

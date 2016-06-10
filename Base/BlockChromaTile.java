@@ -347,8 +347,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		}
 
 		if (m == ChromaTiles.HOVERPAD) {
-			TileEntityHoverPad ir = (TileEntityHoverPad)te;
-			ir.toggleMode();
+			TileEntityHoverPad h = (TileEntityHoverPad)te;
+			h.toggleMode();
 			return true;
 		}
 

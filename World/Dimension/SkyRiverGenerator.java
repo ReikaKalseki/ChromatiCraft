@@ -14,8 +14,10 @@ import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -74,11 +76,12 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		}
 
 		for (Ray r : rays) {
-			for (int i = 0; i < r.points.size()-1; i++) {
+			for (int i = 1; i < r.points.size()-1; i++) {
 				DecimalPosition p1 = r.points.get(i);
-				DecimalPosition p2 = r.points.get(i+1);
+				DecimalPosition pb = r.points.get(i+1);
+				DecimalPosition pa = r.points.get(i-1);
 				ChunkCoordIntPair ch = new ChunkCoordIntPair(MathHelper.floor_double(p1.xCoord)/16, MathHelper.floor_double(p1.zCoord)/16);
-				RiverPoint p = new RiverPoint(ch, p1, p2);
+				RiverPoint p = new RiverPoint(ch, p1, pa, pb);
 				points.addValue(ch, p);
 			}
 		}
@@ -87,10 +90,38 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		}
 	}
 
+
 	public static Collection<RiverPoint> getPointsForChunk(int x, int z) {
 		ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
 		Collection<RiverPoint> c = points.get(pos);
 		return c != null ? Collections.unmodifiableCollection(c) : null;
+	}
+
+	public static Collection<RiverPoint> getPointsWithin(EntityPlayer ep, double range) {
+		int x = MathHelper.floor_double(ep.posX)/16;
+		int z = MathHelper.floor_double(ep.posZ)/16;
+		Collection<RiverPoint> c2 = new HashSet();
+		for (int i = -(int)range-1; i <= range; i++) {
+			for (int k = -(int)range-1; k <= range; k++) {
+				Collection<RiverPoint> c = getPointsForChunk(x, z);
+				c2.addAll(c);
+			}
+		}
+		return c2;
+	}
+
+	public static RiverPoint getClosestPoint(EntityPlayer ep, double range) {
+		Collection<RiverPoint> c = getPointsWithin(ep, range);
+		Double d = Double.POSITIVE_INFINITY;
+		RiverPoint cl = null;
+		for (RiverPoint p : c) {
+			double dist = ep.getDistanceSq(p.position.xCoord, p.position.yCoord, p.position.zCoord);
+			if (dist < d && dist <= range*range) {
+				d = dist;
+				cl = p;
+			}
+		}
+		return cl;
 	}
 
 	private void generateRay(double ang, double r1, double r2) {
@@ -138,21 +169,23 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		private final ChunkCoordIntPair chunk;
 		public final DecimalPosition position;
 		public final DecimalPosition next;
+		public final DecimalPosition prev;
 
-		public RiverPoint(ChunkCoordIntPair ch, DecimalPosition p1, DecimalPosition p2) {
+		public RiverPoint(ChunkCoordIntPair ch, DecimalPosition p1, DecimalPosition pa, DecimalPosition pb) {
 			chunk = ch;
 			position = p1;
-			next = p2;
+			next = pb;
+			prev = pa;
 		}
 
 		@Override
 		public String toString() {
-			return position +" > "+next;
+			return prev+" > "+position+" > "+next;
 		}
 
 		public static RiverPoint readFromNBT(NBTTagCompound tag) {
 			ChunkCoordIntPair ch = new ChunkCoordIntPair(tag.getInteger("cx"), tag.getInteger("cz"));
-			return new RiverPoint(ch, DecimalPosition.readFromNBT("pos", tag), DecimalPosition.readFromNBT("next", tag));
+			return new RiverPoint(ch, DecimalPosition.readFromNBT("pos", tag), DecimalPosition.readFromNBT("pre", tag), DecimalPosition.readFromNBT("next", tag));
 		}
 
 		public void writeToNBT(NBTTagCompound tag) {
@@ -160,6 +193,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 			tag.setInteger("cz", chunk.chunkZPos);
 			position.writeToNBT("pos", tag);
 			next.writeToNBT("next", tag);
+			prev.writeToNBT("prev", tag);
 		}
 
 		public void writeToBuf(ByteBuf buf) {
@@ -167,6 +201,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 			buf.writeInt(chunk.chunkZPos);
 			position.writeToBuf(buf);
 			next.writeToBuf(buf);
+			prev.writeToBuf(buf);
 		}
 
 		public static RiverPoint readFromBuf(ByteBuf buf) {
@@ -174,7 +209,8 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 			int cz = buf.readInt();
 			DecimalPosition pos = DecimalPosition.readFromBuf(buf);
 			DecimalPosition nex = DecimalPosition.readFromBuf(buf);
-			return new RiverPoint(new ChunkCoordIntPair(cx, cz), pos, nex);
+			DecimalPosition pre = DecimalPosition.readFromBuf(buf);
+			return new RiverPoint(new ChunkCoordIntPair(cx, cz), pos, pre, nex);
 		}
 
 	}

@@ -244,7 +244,6 @@ public class RenderGravityTile extends ChromaRenderBase {
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GravityWarp gw = (GravityWarp)te;
 			Coordinate c = gw.getLink();
-			c = new Coordinate(te).offset(3, 0, 0);
 			GL11.glTranslated(0.5, te.getBlockType().getBlockBoundsMaxY()/2, 0.5);
 			if (c != null && gw.linkRender != null) {
 				gw.linkRender.update();

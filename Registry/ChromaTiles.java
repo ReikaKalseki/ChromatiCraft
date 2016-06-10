@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAIShutdown;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCaveLighter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
@@ -193,11 +194,12 @@ public enum ChromaTiles implements TileEnum {
 	ENCHANTDECOMP("chroma.enchantdecomp",ChromaBlocks.TILEMODELLED3,TileEntityEnchantDecomposer.class,	0, "RenderEnchantDecomposer"),
 	LUMENWIRE("chroma.lumenwire",		ChromaBlocks.TILEMODELLED3,	TileEntityLumenWire.class,			1, "RenderLumenWire"),
 	PARTICLES("chroma.particles",		ChromaBlocks.TILEMODELLED3,	TileEntityParticleSpawner.class,	2, "RenderParticleSpawner"),
-	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3/*, "RenderWirelessSource"*/),
+	WIRELESS("chroma.wireless",			ChromaBlocks.TILEMODELLED3,	TileEntityWirelessSource.class,		3, "RenderWirelessSource"),
 	HOVERPAD("chroma.hoverpad",			ChromaBlocks.TILEMODELLED3,	TileEntityHoverPad.class,			4/*, "RenderHoverPad"*/),
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
-	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,	7);
+	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,		7),
+	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker");
 
 	private final Class tile;
 	private final String name;
@@ -289,6 +291,7 @@ public enum ChromaTiles implements TileEnum {
 			case PARTICLES:
 			case METEOR:
 			case LUMENWIRE:
+			case AREABREAKER:
 				return true;
 			default:
 				return false;
@@ -658,6 +661,7 @@ public enum ChromaTiles implements TileEnum {
 			case ESSENTIARELAY:
 			case LUMENWIRE:
 			case PARTICLES:
+			case WIRELESS:
 				return true;
 			default:
 				return false;

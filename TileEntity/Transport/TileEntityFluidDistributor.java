@@ -69,7 +69,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 			if (te instanceof IFluidHandler) {
 				int give = this.tryGiveFluid(fs, simulate, (IFluidHandler)te);
 				if (give > 0) {
-					this.sendFluid(new FluidStack(fs.getFluid(), give), loc, (IFluidHandler)te);
+					if (!worldObj.isRemote)
+						this.sendFluid(new FluidStack(fs.getFluid(), give), loc, (IFluidHandler)te);
 					fs.amount -= give;
 					add += give;
 					if (fs.amount <= 0)

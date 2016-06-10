@@ -45,6 +45,7 @@ public class MystPages implements MystcraftPageRegistry {
 
 	}
 
+	@Override
 	public void register() {
 		for (int i = 0; i < Symbols.list.length; i++) {
 			Symbols p = Symbols.list[i];

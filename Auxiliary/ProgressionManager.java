@@ -899,6 +899,9 @@ public class ProgressionManager implements ProgressRegistry {
 				ProgressStage.STRUCTCOMPLETE.stepPlayerTo(ep);
 				this.checkPlayerStructures(ep);
 			}
+			else {
+				this.setPlayerStage(ep, ProgressStage.ALLCORES, false, notify);
+			}
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
@@ -912,8 +915,9 @@ public class ProgressionManager implements ProgressRegistry {
 
 	private void checkPlayerStructures(EntityPlayer ep) {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
-			if (!this.hasPlayerCompletedStructureColor(ep, CrystalElement.elements[i]))
+			if (!this.hasPlayerCompletedStructureColor(ep, CrystalElement.elements[i])) {
 				return;
+			}
 		}
 		ProgressStage.ALLCORES.stepPlayerTo(ep);
 	}

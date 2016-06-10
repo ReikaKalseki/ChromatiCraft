@@ -60,31 +60,58 @@ public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
 		GL11.glColor4f(1, 1, 1, 1);
 		ReikaRenderHelper.disableEntityLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
-		Tessellator.instance.startDrawingQuads();
-		Tessellator.instance.setColorOpaque_I(0xffffff);
-		Tessellator.instance.setBrightness(240);
-		Tessellator.instance.addTranslation(0, -0.08F, 0);
-		for (int pass = 0; pass <= 1; pass++) {
-			List<IIcon> li = type.getIcons(pass);
-			for (IIcon ico : li) {
-				float f = 0.5F;
-				Tessellator.instance.setColorOpaque_F(f, f, f);
-				rb.renderFaceYNeg(block, 0, 0, 0, ico);
-				f = 1F;
-				Tessellator.instance.setColorOpaque_F(f, f, f);
-				rb.renderFaceYPos(block, 0, 0, 0, ico);
-				f = 0.66F;
-				Tessellator.instance.setColorOpaque_F(f, f, f);
-				rb.renderFaceXNeg(block, 0, 0, 0, ico);
-				rb.renderFaceXPos(block, 0, 0, 0, ico);
-				f = 0.8F;
-				Tessellator.instance.setColorOpaque_F(f, f, f);
-				rb.renderFaceZNeg(block, 0, 0, 0, ico);
-				rb.renderFaceZPos(block, 0, 0, 0, ico);
-			}
+		if (block instanceof BlockDimensionDecoTile) {
+			GL11.glRotated(45, 0, 1, 0);
+			GL11.glRotated(60, 1, 0, 0);
+			GL11.glTranslated(-0.79, 0, -0.79);
+			double s = 1.6;
+			GL11.glScaled(s, s, s);
+			Tessellator.instance.startDrawingQuads();
+			Tessellator.instance.setColorOpaque_I(0xffffff);
+			Tessellator.instance.setBrightness(240);
+			Tessellator.instance.addTranslation(0, -0.08F, 0);
+
+			IIcon ico = DimDecoTileTypes.list[metadata].getItemIcon();
+			float u = ico.getMinU();
+			float v = ico.getMinV();
+			float du = ico.getMaxU();
+			float dv = ico.getMaxV();
+
+			Tessellator.instance.addVertexWithUV(0, 0, 1, u, dv);
+			Tessellator.instance.addVertexWithUV(1, 0, 1, du, dv);
+			Tessellator.instance.addVertexWithUV(1, 0, 0, du, v);
+			Tessellator.instance.addVertexWithUV(0, 0, 0, u, v);
+
+			Tessellator.instance.addTranslation(0, 0.08F, 0);
+			Tessellator.instance.draw();
 		}
-		Tessellator.instance.addTranslation(0, 0.08F, 0);
-		Tessellator.instance.draw();
+		else {
+			Tessellator.instance.startDrawingQuads();
+			Tessellator.instance.setColorOpaque_I(0xffffff);
+			Tessellator.instance.setBrightness(240);
+			Tessellator.instance.addTranslation(0, -0.08F, 0);
+			for (int pass = 0; pass <= 1; pass++) {
+				List<IIcon> li = type.getIcons(pass);
+				for (IIcon ico : li) {
+					float f = 0.5F;
+					Tessellator.instance.setColorOpaque_F(f, f, f);
+					rb.renderFaceYNeg(block, 0, 0, 0, ico);
+					f = 1F;
+					Tessellator.instance.setColorOpaque_F(f, f, f);
+					rb.renderFaceYPos(block, 0, 0, 0, ico);
+					f = 0.66F;
+					Tessellator.instance.setColorOpaque_F(f, f, f);
+					rb.renderFaceXNeg(block, 0, 0, 0, ico);
+					rb.renderFaceXPos(block, 0, 0, 0, ico);
+					f = 0.8F;
+					Tessellator.instance.setColorOpaque_F(f, f, f);
+					rb.renderFaceZNeg(block, 0, 0, 0, ico);
+					rb.renderFaceZPos(block, 0, 0, 0, ico);
+				}
+			}
+			Tessellator.instance.addTranslation(0, 0.08F, 0);
+			Tessellator.instance.draw();
+		}
 		GL11.glPopAttrib();
 	}
 

@@ -18,10 +18,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.Bees.AlleleRegistry.BeeGene;
@@ -52,6 +54,8 @@ public class ChromaBeeHelpers {
 		public ItemHashMap<ProductCondition> getConditions();
 
 		public ArrayList<String> getGeneralRequirements();
+
+		public void sendStatusInfo(World world, int x, int y, int z, StatusLogger log, IBeeGenome ibg, IBeeHousing ibh);
 
 	}
 
@@ -97,6 +101,16 @@ public class ChromaBeeHelpers {
 				li.add(c.getDescription());
 			}
 			return li;
+		}
+
+		@Override
+		public void sendStatusInfo(World world, int x, int y, int z, StatusLogger log, IBeeGenome ibg, IBeeHousing ibh) {
+			for (ConditionalProductProvider p : list) {
+				p.sendStatusInfo(world, x, y, z, log, ibg, ibh);
+			}
+			for (ProductCondition p : extras) {
+				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
+			}
 		}
 
 	}

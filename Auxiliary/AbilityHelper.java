@@ -1280,6 +1280,10 @@ public class AbilityHelper {
 			return false;
 		if (b == Blocks.netherrack || b == Blocks.end_stone)
 			return false;
+		if (b == Blocks.stained_hardened_clay || b == Blocks.hardened_clay)
+			return false;
+		if (b == Blocks.snow || b == Blocks.snow_layer)
+			return false;
 		if (b == Blocks.bedrock)
 			return y == 0 || (y >= 128 && world.provider.dimensionId == -1);
 		if (ReikaBlockHelper.isLeaf(b, meta) || ReikaBlockHelper.isWood(b, meta))
@@ -1767,22 +1771,41 @@ public class AbilityHelper {
 	}
 
 	@SubscribeEvent
-	@ModDependent(ModList.FORESTRY)
-	public void analyzeBees(EntityItemPickupEvent evt) {
+	public void analyzeGenes(EntityItemPickupEvent evt) {
 		if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
 			ItemStack is = evt.item.getEntityItem();
-			ReikaBeeHelper.analyzeBee(is);
+			if (is != null)
+				this.analyzeGenes(is);
 		}
 	}
 
 	@SubscribeEvent
-	@ModDependent(ModList.FORESTRY)
-	public void analyzeBees(AddToSlotEvent evt) {
+	public void analyzeGenes(AddToSlotEvent evt) {
 		IInventory ii = evt.inventory;
 		if (ii instanceof InventoryPlayer) {
 			if (Chromabilities.BEEALYZE.enabledOn(((InventoryPlayer)ii).player)) {
 				ItemStack is = ii.getStackInSlot(evt.slotID);
-				ReikaBeeHelper.analyzeBee(is);
+				if (is != null)
+					this.analyzeGenes(is);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	//@ModDependent(ModList.AGRICRAFT)
+	public void analyzeGenes(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_BLOCK || evt.action == Action.LEFT_CLICK_BLOCK) {
+			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+				TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
+				if (te instanceof IInventory) {
+					IInventory ii = (IInventory)te;
+					for (int i = 0; i < ii.getSizeInventory(); i++) {
+						ItemStack is = ii.getStackInSlot(i);
+						if (is != null) {
+							this.analyzeGenes(is);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1815,6 +1838,18 @@ public class AbilityHelper {
 							ReikaBeeHelper.analyzeBee(ii2.getStackInSlot(i));
 						}
 					}
+				}
+			}
+		}
+	}
+
+	private void analyzeGenes(ItemStack is) {
+		if (ModList.FORESTRY.isLoaded())
+			ReikaBeeHelper.analyzeBee(is);
+		if (ModList.AGRICRAFT.isLoaded()) {
+			if (is.stackTagCompound != null) {
+				if (is.stackTagCompound.hasKey("gain") || is.stackTagCompound.hasKey("growth") || is.stackTagCompound.hasKey("strength")) {
+					is.stackTagCompound.setBoolean("analyzed", true);
 				}
 			}
 		}

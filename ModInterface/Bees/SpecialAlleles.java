@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
+import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -319,7 +320,7 @@ public class SpecialAlleles {
 		}
 
 		private boolean areConditionalsAvailable(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			if (!(ibg.getFlowerProvider() instanceof FlowerProviderMulti))
+			if (!this.matchFlowerGene(ibg))
 				return false;
 			if (CrystalBees.rand.nextFloat() > ibg.getSpeed()/4)
 				return false;
@@ -345,6 +346,10 @@ public class SpecialAlleles {
 			return false;
 		}
 
+		private boolean matchFlowerGene(IBeeGenome ibg) {
+			return ibg.getFlowerProvider() instanceof FlowerProviderMulti;
+		}
+
 		@Override
 		public ItemHashMap<ProductCondition> getConditions() {
 			return conditions;
@@ -361,6 +366,20 @@ public class SpecialAlleles {
 			li.add("33% boost from '"+ProgressStage.DIMENSION.getTitle()+"' progression");
 			li.add("Linear gains from faster production speeds");
 			return li;
+		}
+
+		@Override
+		public void sendStatusInfo(World world, int x, int y, int z, StatusLogger log, IBeeGenome ibg, IBeeHousing ibh) {
+			log.addStatus("Flower Allele", this.matchFlowerGene(ibg));
+			log.addStatus("Flowering Level", ibg.getFlowering() >= CrystalBees.superFlowering.getAllele().getValue());
+			log.addStatus("Temperature", ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)));
+			log.addStatus("Rainbow Forest", ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)));
+			log.addStatus("Gene Superiority", ChromaBeeHelpers.isBestPossibleBee(ibg));
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			log.addStatus("Dimension Progression", ep != null && ProgressStage.DIMENSION.isPlayerAtStage(ep));
+			for (ProductCondition p : this.getConditions().values()) {
+				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
+			}
 		}
 
 		/*
@@ -430,9 +449,7 @@ public class SpecialAlleles {
 		}
 
 		private boolean areConditionalsAvailable(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			if (!(ibg.getFlowerProvider() instanceof FlowerProviderCrystal))
-				return false;
-			if (((FlowerProviderCrystal)ibg.getFlowerProvider()).color != color)
+			if (!this.matchFlowerGene(ibg))
 				return false;
 			if (CrystalBees.rand.nextFloat() > ibg.getSpeed())
 				return false;
@@ -458,6 +475,10 @@ public class SpecialAlleles {
 			return false;
 		}
 
+		private boolean matchFlowerGene(IBeeGenome ibg) {
+			return ibg.getFlowerProvider() instanceof FlowerProviderCrystal && ((FlowerProviderCrystal)ibg.getFlowerProvider()).color == color;
+		}
+
 		@Override
 		public ItemHashMap<ProductCondition> getConditions() {
 			return CrystalBees.productConditions.get(color);
@@ -474,6 +495,20 @@ public class SpecialAlleles {
 			li.add("33% boost from '"+ProgressStage.SHARDCHARGE.getTitle()+"' progression");
 			li.add("Linear gains from faster production speeds");
 			return li;
+		}
+
+		@Override
+		public void sendStatusInfo(World world, int x, int y, int z, StatusLogger log, IBeeGenome ibg, IBeeHousing ibh) {
+			log.addStatus("Flower Allele", this.matchFlowerGene(ibg));
+			log.addStatus("Flowering Level", ibg.getFlowering() >= Flowering.AVERAGE.getAllele().getValue());
+			log.addStatus("Temperature", ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)));
+			log.addStatus("Rainbow Forest", ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)));
+			log.addStatus("Gene Superiority", ChromaBeeHelpers.isBestPossibleBee(ibg));
+			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
+			log.addStatus("Boosted Shard Progression", ep != null && ProgressStage.SHARDCHARGE.isPlayerAtStage(ep));
+			for (ProductCondition p : this.getConditions().values()) {
+				log.addStatus(p.getDescription(), p.check(world, x, y, z, ibg, ibh));
+			}
 		}
 
 		/*

@@ -35,7 +35,7 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		Collection<WirelessSource> c = CrystalNetworker.instance.getNearTilesOfType(worldObj, xCoord, yCoord, zCoord, WirelessSource.class, this.getReceiveRange(e));
 		for (WirelessSource s : c) {
 			if (s.canConduct() && s.canTransmitTo(this)) {
-				if (s.request(e, amt)) {
+				if (s.request(e, amt, xCoord, yCoord, zCoord)) {
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.WIRELESS.ordinal(), this, 64, s.getX(), s.getY(), s.getZ(), e.ordinal(), amt);
 					return true;
 				}

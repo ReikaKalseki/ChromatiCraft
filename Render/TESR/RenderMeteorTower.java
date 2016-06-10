@@ -66,13 +66,13 @@ public class RenderMeteorTower extends ChromaRenderBase {
 
 			ChromaIcons[] icons = ACTIVE_ICONS;
 
-			if (!te.canConduct() && !StructureRenderer.isRenderingTiles()) {
+			if (!te.hasStructure() && !StructureRenderer.isRenderingTiles()) {
 				s = 0.5;
 				icons = INACTIVE_ICONS;
 			}
 
-			double hmin = te.canConduct() ? -1.5 : 0;
-			double hmax = te.canConduct() ? 2 : 0;
+			double hmin = te.hasStructure() ? -1.5 : 0;
+			double hmax = te.hasStructure() ? 2 : 0;
 			for (double h = hmin; h <= hmax; h += 0.5) {
 				GL11.glPushMatrix();
 				GL11.glTranslated(0, h, 0);

@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.Items;
 
 import net.minecraft.item.ItemStack;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Base.ItemChromaMulti;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
@@ -77,6 +77,8 @@ public class ItemTieredResource extends ItemChromaMulti implements TieredItem {
 				return TieredPlants.POD.level;
 			case 22:
 				return TieredPlants.ROOT.level;
+			case 23:
+				return TieredOres.RAINBOW.level;
 			default:
 				return null;
 		}

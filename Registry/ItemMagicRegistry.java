@@ -49,6 +49,9 @@ public class ItemMagicRegistry {
 		this.addElement(Blocks.dirt, CrystalElement.GREEN, 1);
 		this.addElement(Blocks.dirt, CrystalElement.BROWN, 1);
 
+		this.addElement(new ItemStack(Blocks.dirt, 1, 2), CrystalElement.BROWN, 1);
+		this.addElement(new ItemStack(Blocks.dirt, 1, 2), CrystalElement.GREEN, 1);
+
 		this.addElement("gemDiamond", CrystalElement.BROWN, 6);
 		this.addElement("gemDiamond", CrystalElement.PURPLE, 4);
 		this.addElement("gemDiamond", CrystalElement.WHITE, 1);

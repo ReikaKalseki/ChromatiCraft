@@ -30,7 +30,7 @@ public class WorldGenIslandArch extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.04F;
+		return 0.02F;
 	}
 
 	@Override

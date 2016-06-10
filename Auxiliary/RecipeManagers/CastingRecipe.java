@@ -462,6 +462,8 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		private MultiBlockCastingRecipe addAuxItem(ItemMatch is, int dx, int dz) {
+			if (dx == 0 && dz == 0)
+				throw new RegistrationException(ChromatiCraft.instance, "Tried adding an item to the center of a recipe "+this+": "+is);
 			inputs.put(Arrays.asList(dx, dz), is);
 			return this;
 		}
