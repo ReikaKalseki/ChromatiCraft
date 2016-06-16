@@ -17,11 +17,11 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTarget;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTiles;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityWarp;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTarget;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTiles;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityWarp;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;

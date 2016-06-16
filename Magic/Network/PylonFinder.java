@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
@@ -69,6 +70,7 @@ public class PylonFinder {
 	private int stepsThisTick = 0;
 	private boolean suspended = false;
 	public static final int MAX_STEPS_PER_TICK = 1000;
+	private final boolean isValidWorld;
 
 	private static boolean invalid = false;
 
@@ -87,6 +89,7 @@ public class PylonFinder {
 		net = CrystalNetworker.instance;
 		blacklist.add(this.getLocation(r));
 		user = ep;
+		isValidWorld = PylonGenerator.instance.canGenerateIn(r.getWorld());
 	}
 
 	CrystalPath findPylon() {
@@ -94,6 +97,8 @@ public class PylonFinder {
 	}
 
 	CrystalPath findPylonWith(int thresh) {
+		if (!isValidWorld)
+			return null;
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths(thresh);
 		//ReikaJavaLibrary.pConsole(p != null ? p.nodes.size() : "null", Side.SERVER);
@@ -118,6 +123,8 @@ public class PylonFinder {
 	}
 
 	CrystalFlow findPylon(int amount, int maxthru, int thresh) {
+		if (!isValidWorld)
+			return null;
 		invalid = false;
 		CrystalPath p = this.checkExistingPaths(thresh);
 		//ReikaJavaLibrary.pConsole(element+" to "+this.getLocation(target)+": "+p);

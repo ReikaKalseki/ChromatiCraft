@@ -45,16 +45,16 @@ public class OuterRegionsEvents {
 	}
 
 	public void tickPlayerInOuterRegion(EntityPlayer ep) {
-		if (ep.worldObj.rand.nextInt(100) == 0) {
+		if (ep.worldObj.rand.nextInt(2000) == 0) {
 			this.spawnFlare(ep.worldObj, ep, 256);
 		}
 	}
 
 	private EntityDimensionFlare spawnFlare(World world, EntityPlayer ep, double r) {
 		EntityDimensionFlare f = new EntityDimensionFlare(world, ep);
-		double dx = ReikaRandomHelper.getRandomBetween(ep.posX, r);
-		double dy = ReikaRandomHelper.getRandomBetween(ep.posY, r/2);
-		double dz = ReikaRandomHelper.getRandomBetween(ep.posZ, r);
+		double dx = ReikaRandomHelper.getRandomPlusMinus(ep.posX, r);
+		double dy = ReikaRandomHelper.getRandomPlusMinus(ep.posY, r/2);
+		double dz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, r);
 		f.setLocationAndAngles(dx, dy, dz, 0, 0);
 		if (!world.isRemote) {
 			world.spawnEntityInWorld(f);

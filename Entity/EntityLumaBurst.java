@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile.GravityTiles;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile.GravityTiles;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;

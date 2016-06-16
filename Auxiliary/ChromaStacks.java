@@ -100,6 +100,10 @@ public class ChromaStacks {
 	public static final ItemStack crysleaf			= ChromaItems.DIMGEN.getStackOfMetadata(6);
 	public static final ItemStack oceanrock			= ChromaItems.DIMGEN.getStackOfMetadata(7);
 	public static final ItemStack cliffshard		= ChromaItems.DIMGEN.getStackOfMetadata(8);
+	//public static final ItemStack forestloot		= ChromaItems.DIMGEN.getStackOfMetadata(16);
+	//public static final ItemStack islandloot		= ChromaItems.DIMGEN.getStackOfMetadata(17);
+	//public static final ItemStack plainsloot		= ChromaItems.DIMGEN.getStackOfMetadata(18);
+	//public static final ItemStack skylandloot		= ChromaItems.DIMGEN.getStackOfMetadata(19);
 
 	public static final ItemStack blackShard 		= ChromaItems.SHARD.getStackOfMetadata(0);
 	public static final ItemStack redShard 			= ChromaItems.SHARD.getStackOfMetadata(1);

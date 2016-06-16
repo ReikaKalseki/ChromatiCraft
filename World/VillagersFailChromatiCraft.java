@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.VillageBuilding.StructureEntry;
 import Reika.DragonAPI.Instantiable.VillageBuilding.VillagePiece;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
@@ -785,6 +786,8 @@ public class VillagersFailChromatiCraft {
 		protected boolean generate(World world, Random rand) {
 
 			Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+			ReikaJavaLibrary.pConsole(boundingBox);
 
 			this.placeBlockAtCurrentPosition(world, 1, 0, 4, b);
 			this.placeBlockAtCurrentPosition(world, 1, 0, 6, b);

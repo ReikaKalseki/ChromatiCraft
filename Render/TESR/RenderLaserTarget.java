@@ -18,7 +18,7 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector.TargetTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.TargetTile;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Effects.TruncatedCube;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;

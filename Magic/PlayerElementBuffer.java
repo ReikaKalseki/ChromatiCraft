@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.UUID;
 
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +22,6 @@ import Reika.ChromatiCraft.Items.Tools.ItemPendant;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Command.DragonCommandBase;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -284,33 +282,6 @@ public class PlayerElementBuffer {
 	public void copyTo(EntityPlayer from, EntityPlayer to) {
 		NBTTagCompound data = this.getTag(from);
 		to.getEntityData().setTag(NBT_TAG, data);
-	}
-
-	public static class PlayerEnergyCommand extends DragonCommandBase {
-
-		@Override
-		public void processCommand(ICommandSender ics, String[] args) {
-			EntityPlayer sender = this.getCommandSenderAsPlayer(ics);
-			EntityPlayer tg = args.length == 2 ? sender : sender.worldObj.getPlayerEntityByName(args[0]);
-			String es = args[args.length-2].toUpperCase();
-			CrystalElement[] en = es.equals("ALL") ? CrystalElement.elements : new CrystalElement[]{CrystalElement.valueOf(es)};
-			int amt = Integer.parseInt(args[args.length-1]);
-			for (CrystalElement e : en)
-				instance.setToPlayer(tg, e, amt);
-			if (tg instanceof EntityPlayerMP)
-				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)tg);
-		}
-
-		@Override
-		public String getCommandString() {
-			return "chromabuffer";
-		}
-
-		@Override
-		protected boolean isAdminOnly() {
-			return true;
-		}
-
 	}
 
 }

@@ -15,7 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 
 public class ItemBlockLockKey extends ItemBlockMultiType {

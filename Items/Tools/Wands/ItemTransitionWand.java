@@ -14,12 +14,15 @@ import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -29,7 +32,6 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
-import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -213,11 +215,13 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	@Override
 	public void onFinish(ProgressiveBreaker b) {
 		BlockReplace r = breakers.get(b.hashCode());
-		if (!r.player.capabilities.isCreativeMode) {
+		EntityPlayer ep = r.player;
+		if (!ep.capabilities.isCreativeMode) {
 			for (ItemStack is : r.drops) {
-				boolean add = ReikaInventoryHelper.addToIInv(is, r.player.inventory);
-				if (!add)
-					r.player.dropPlayerItemWithRandomChoice(is, true);
+				if (MinecraftForge.EVENT_BUS.post(new EntityItemPickupEvent(ep, new EntityItem(ep.worldObj, ep.posX, ep.posY, ep.posZ, is)))) {
+					continue;
+				}
+				ReikaPlayerAPI.addOrDropItem(is, ep);
 			}
 		}
 		breakers.remove(b.hashCode());

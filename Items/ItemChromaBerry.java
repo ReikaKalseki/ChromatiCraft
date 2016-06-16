@@ -14,19 +14,31 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Data.RecentEventCounter;
+import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class ItemChromaBerry extends ItemCrystalBasic {
+
+	private final PlayerMap<RecentEventCounter> eatingTimers = new PlayerMap();
+
+	private static final int BERRY_EAT_LIFE = 600;
+	private static final int BERRY_MIN_TRIGGER = 4;
+	private static final int BERRY_CHANCE_PER_EAT = (100/((BERRY_EAT_LIFE/20)-BERRY_MIN_TRIGGER))*4;
 
 	public ItemChromaBerry(int tex) {
 		super(tex);
@@ -96,10 +108,33 @@ public class ItemChromaBerry extends ItemCrystalBasic {
 		is.stackSize--;
 		CrystalElement e = CrystalElement.elements[is.getItemDamage()%16];
 		if (ReikaRandomHelper.doWithChance(20)) {
-			if (PlayerElementBuffer.instance.hasElement(ep, e) && PlayerElementBuffer.instance.getPlayerFraction(ep, e) < 0.25)
+			if (PlayerElementBuffer.instance.hasElement(ep, e) && PlayerElementBuffer.instance.getPlayerFraction(ep, e) < 0.25) {
 				PlayerElementBuffer.instance.addToPlayer(ep, e, 1);
+			}
+		}
+		if (!ep.worldObj.isRemote) {
+			int num = this.getOrCreateCounter(ep).addEntry(world.getTotalWorldTime(), BERRY_EAT_LIFE);
+			double d = Math.min(1, ((num-BERRY_MIN_TRIGGER)*BERRY_CHANCE_PER_EAT)/100D);
+			ReikaJavaLibrary.pConsole(num+" > "+d+" for "+BERRY_CHANCE_PER_EAT);
+			if (num >= BERRY_MIN_TRIGGER && ReikaRandomHelper.doWithChance(d) || true) {
+				PotionEffect get = ep.getActivePotionEffect(ChromatiCraft.lumarhea);
+				int lvl = get != null ? get.getAmplifier()+1 : 0;
+				int tmin = 50*(1+lvl);
+				int tmax = 2*ReikaMathLibrary.intpow2(lvl+1, 6);
+				int dur = tmax <= tmin ? tmin : ReikaRandomHelper.getRandomBetween(tmin, tmax);
+				ep.addPotionEffect(new PotionEffect(ChromatiCraft.lumarhea.id, dur, lvl));
+			}
 		}
 		return is;
+	}
+
+	private RecentEventCounter getOrCreateCounter(EntityPlayer ep) {
+		RecentEventCounter r = eatingTimers.get(ep);
+		if (r == null) {
+			r = new RecentEventCounter();
+			eatingTimers.put(ep, r);
+		}
+		return r;
 	}
 
 	@Override

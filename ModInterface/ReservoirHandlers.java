@@ -36,7 +36,7 @@ public class ReservoirHandlers {
 
 	private static final Random rand = new Random();
 
-	public static int ACCEL_FACTOR = 2;
+	public static final int ACCEL_FACTOR = 2;
 
 	private static abstract class ChromaReservoirRecipeHandlerBase implements TankHandler {
 

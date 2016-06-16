@@ -45,10 +45,12 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
@@ -70,6 +72,7 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -144,6 +147,12 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			this.onCraftingTick(world, x, y, z);
 		}
 
+		if (isEnhanced && hasPylonConnections) {
+			if (world.isRemote) {
+				this.doEnhancedParticles(world, x, y, z);
+			}
+		}
+
 		//ChromaStructures.getCastingLevelThree(world, x, y-1, z).place();
 
 		if (DragonAPICore.debugtest) {
@@ -177,6 +186,23 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 	}
+
+	@SideOnly(Side.CLIENT)
+	private void doEnhancedParticles(World world, int x, int y, int z) {
+		EntityFloatingSeedsFX fx = new EntityFloatingSeedsFX(world, x+0.5, y+0.5, z+0.5, rand.nextDouble()*360, ReikaRandomHelper.getRandomPlusMinus(0, 45D));
+		fx.angleVelocity *= 16;
+		fx.freedom *= 0.25;
+		fx.tolerance *= 2;
+		fx.particleVelocity *= 1.25;
+		fx.setRapidExpand().setScale(1.5F);
+		fx.setIcon(ChromaIcons.HOLE);
+		//fx.setColor(CrystalElement.getBlendedColor(this.getTicksExisted(), 15));
+		fx.setColor(ReikaColorAPI.getModifiedHue(0xff0000, (this.getTicksExisted()*3)%360));
+		fx.setColliding();
+		fx.setGravity(-0.03125F*8);
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
 	/*
 	@SideOnly(Side.CLIENT)
 	private void spawnIdleParticles(World world, int x, int y, int z) {
@@ -216,7 +242,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 		else if (craftSoundTimer >= this.getSoundLength() && activeRecipe.getDuration() > 20) {
 			craftSoundTimer = 0;
-			ChromaSounds.CRAFTING.playSoundAtBlock(this);
+			ChromaSounds s = isEnhanced ? ChromaSounds.CRAFTING_BOOST : ChromaSounds.CRAFTING;
+			s.playSoundAtBlock(this);
 		}
 		//ReikaJavaLibrary.pConsole(craftingTick, Side.SERVER);
 		activeRecipe.onRecipeTick(this);

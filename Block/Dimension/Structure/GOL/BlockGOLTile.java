@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension.Structure;
+package Reika.ChromatiCraft.Block.Dimension.Structure.GOL;
 
 import java.util.Random;
 

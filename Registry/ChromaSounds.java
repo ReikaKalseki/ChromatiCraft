@@ -29,6 +29,7 @@ public enum ChromaSounds implements SoundEnum {
 	CAST("cast3"),
 	POWER("ambient"),
 	CRAFTING("ambient1_short"),
+	CRAFTING_BOOST("ambient1_short_boost"),
 	CRAFTDONE("craftdone2"),
 	UPGRADE("upgrade"),
 	ABILITY("ability"),
@@ -226,6 +227,7 @@ public enum ChromaSounds implements SoundEnum {
 			case MONUMENT:
 			case MONUMENTCOMPLETE:
 			case CRAFTING:
+			case CRAFTING_BOOST:
 			case POWERCRAFT:
 			case INFUSION:
 			case ABILITY:

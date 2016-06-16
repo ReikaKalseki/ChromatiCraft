@@ -134,7 +134,7 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 			CrystalPotionController.applyEffectFromColor(10, 0, ep, CrystalElement.WHITE, true);
 		}
 		else if (e instanceof EntityItem) {
-			((EntityItem)e).age = 0;
+			((EntityItem)e).age = ((EntityItem)e).age%Math.max(40, ((EntityItem)e).lifespan-40);
 		}
 	}
 

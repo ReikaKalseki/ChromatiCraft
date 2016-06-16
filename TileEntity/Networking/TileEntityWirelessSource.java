@@ -20,6 +20,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class TileEntityWirelessSource extends CrystalReceiverBase implements WirelessSource {
@@ -37,6 +39,7 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, int x, int y, int z) {
 		if (rand.nextInt(1+Minecraft.getMinecraft().gameSettings.particleSetting) == 0) {
 			int c = CrystalElement.getBlendedColor(this.getTicksExisted()+15, 25);

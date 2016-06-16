@@ -26,6 +26,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -151,7 +152,7 @@ public class BlockLootChest extends BlockContainer {
 		if (world.getBlockMetadata(x, y, z) >= 8 || world.isSideSolid(x, y+1, z, DOWN))
 			return false;
 		TileEntity te = world.getTileEntity(x, y, z);
-		return te instanceof TileEntityLootChest && ((TileEntityLootChest)te).isUseableByPlayer(ep);
+		return te instanceof TileEntityLootChest && (ep == null || ((TileEntityLootChest)te).isUseableByPlayer(ep));
 	}
 
 	public TileEntity createNewTileEntity(World world, int meta)
@@ -243,7 +244,7 @@ public class BlockLootChest extends BlockContainer {
 
 	}
 
-	public static final class TileEntityLootChest extends TileEntity implements IInventory {
+	public static final class TileEntityLootChest extends TileEntity implements ISidedInventory {
 
 		protected ItemStack[] inv = new ItemStack[this.getSizeInventory()];
 
@@ -386,7 +387,11 @@ public class BlockLootChest extends BlockContainer {
 
 		@Override
 		public boolean isItemValidForSlot(int slot, ItemStack is) {
-			return true;
+			return this.isUsable();
+		}
+
+		private boolean isUsable() {
+			return canOpen(worldObj, xCoord, yCoord, zCoord, null);
 		}
 
 		@Override
@@ -485,6 +490,21 @@ public class BlockLootChest extends BlockContainer {
 
 		public void addProgress(ProgressElement e) {
 			triggers.add(e);
+		}
+
+		@Override
+		public int[] getAccessibleSlotsFromSide(int side) {
+			return this.isUsable() ? ReikaInventoryHelper.getWholeInventoryForISided(this) : new int[0];
+		}
+
+		@Override
+		public boolean canInsertItem(int i, ItemStack is, int side) {
+			return this.isItemValidForSlot(i, is);
+		}
+
+		@Override
+		public boolean canExtractItem(int i, ItemStack is, int side) {
+			return this.isUsable();
 		}
 	}
 

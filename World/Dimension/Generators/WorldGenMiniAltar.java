@@ -17,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -144,13 +145,13 @@ public class WorldGenMiniAltar extends ChromaWorldGenerator {
 	private ItemStack getRandomBiomeItem(ChromaDimensionBiome biome) {
 		switch(biome.biomeType) {
 			case FOREST:
-				return null;
+				return ChromaStacks.multiShard;//ChromaStacks.forestloot;
 			case ISLANDS:
-				return null;
+				return null;//ChromaStacks.islandloot; //maybe generates in oceans?
 			case PLAINS:
-				return null;
+				return ChromaStacks.iridCrystal;//ChromaStacks.plainsloot;
 			case SKYLANDS:
-				return null;
+				return null;//ChromaStacks.skylandloot; //currently cannot generate here
 			default:
 				return null;
 		}

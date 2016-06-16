@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingAuto;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 
 public class IridescentCrystalRecipe extends PylonRecipe {
@@ -58,5 +59,22 @@ public class IridescentCrystalRecipe extends PylonRecipe {
 	public int getTypicalCraftedAmount() {
 		return 128;
 	}
+
+	@Override
+	public boolean canBeStacked() {
+		return true;
+	}
+
+	@Override
+	public float getConsecutiveStackingTimeFactor(TileEntityCastingTable te) {
+		return 0.975F;
+	}
+
+	@Override
+	public float getAutomationCostFactor(TileEntityCastingAuto ae, TileEntityCastingTable te, ItemStack is) {
+		return is == null ? 4 : 2;
+	}
+
+
 
 }

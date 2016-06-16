@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockPinballTile.TileBouncePad;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile.TileBouncePad;
 import Reika.ChromatiCraft.Models.ModelPinball;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 

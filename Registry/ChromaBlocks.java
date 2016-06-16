@@ -71,21 +71,22 @@ import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLog;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedSapling;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockColoredLock;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLController;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGravityTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLaserEffector;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFence;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockFreeze;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockPinballTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftKey;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockTeleport;
+import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLController;
+import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockFence;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockFreeze;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
+import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -194,6 +195,7 @@ public enum ChromaBlocks implements BlockEnum {
 	TILEMODELLED3(BlockModelledChromaTile.class, 								"Modelled Chromatic Tile 3"),
 	PAD(BlockHoverPad.class,													"chroma.hoverpad"),
 	ADJACENCY(BlockAdjacencyUpgrade.class,										"Adjacency Upgrade"),
+	ANTKEY(BlockAntKey.class,					ItemBlockMultiType.class,		"chroma.antkey"),
 	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
 	PINBALL(BlockPinballTile.class,				ItemBlockMultiType.class,		"chroma.pinball"),
 	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity"),
@@ -398,6 +400,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chromablock.pinball."+BlockPinballTile.PinballRerouteType.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case GRAVITY:
 				return StatCollector.translateToLocal("chromablock.gravity."+BlockGravityTile.GravityTiles.list[meta].name().toLowerCase(Locale.ENGLISH));
+			case ANTKEY:
+				return this.getBasicName()+" Size "+(meta+1);
 			default:
 				return "";
 		}
@@ -478,6 +482,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockPinballTile.PinballRerouteType.list.length;
 			case GRAVITY:
 				return BlockGravityTile.GravityTiles.list.length;
+			case ANTKEY:
+				return 16;
 			default:
 				return 1;
 		}

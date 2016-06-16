@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityHoverPad;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityVillageRepair;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
@@ -123,7 +124,7 @@ public enum ChromaTiles implements TileEnum {
 
 	CHROMAFLOWER("chroma.flower", 		ChromaBlocks.TILEPLANT, 	TileEntityChromaFlower.class, 		0, "ChromaFlowerRenderer"),
 	ENCHANTER("chroma.enchanter", 		ChromaBlocks.TILEENTITY, 	TileEntityAutoEnchanter.class, 		0),
-	VILLAGEREPAIR("chroma.unused", 		ChromaBlocks.TILEENTITY, 	TileEntityChromaticBase.class,		1),
+	VILLAGEREPAIR("chroma.unused", 		ChromaBlocks.TILEENTITY, 	TileEntityVillageRepair.class,		1),
 	REPROGRAMMER("chroma.reprogrammer", ChromaBlocks.TILEMODELLED, 	TileEntitySpawnerReprogrammer.class, 0, "RenderSpawnerProgrammer"),
 	COLLECTOR("chroma.collector", 		ChromaBlocks.TILEENTITY, 	TileEntityCollector.class, 			4),
 	TABLE("chroma.table", 				ChromaBlocks.TILEENTITY, 	TileEntityCastingTable.class, 		5),
@@ -642,7 +643,17 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isTextureFace() {
-		return this == PERSONAL || this == AUTOMATOR || this == CLOAKING || this == LIGHTER || this == ESSENTIARELAY || this == METEOR;
+		switch(this) {
+			case PERSONAL:
+			case AUTOMATOR:
+			case CLOAKING:
+			case LIGHTER:
+			case ESSENTIARELAY:
+			case METEOR:
+			case WIRELESS:
+			default:
+				return false;
+		}
 	}
 
 	public boolean needsSilkTouch() {

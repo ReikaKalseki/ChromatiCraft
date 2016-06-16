@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockMusicMemory;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;

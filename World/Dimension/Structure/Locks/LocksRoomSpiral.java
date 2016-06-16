@@ -12,7 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import Reika.ChromatiCraft.Base.LockLevel;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockLockKey.LockChannel;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey.LockChannel;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;

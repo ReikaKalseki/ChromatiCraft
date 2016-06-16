@@ -21,6 +21,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	GROWTHID(		"Potion IDs", 			"Growth Hormone ID", 			36, 	Potion.class),
 	SATID(			"Potion IDs", 			"Saturation ID", 				38, 	Potion.class),
 	REGENID(		"Potion IDs", 			"Regen ID", 					39, 	Potion.class),
+	LUMARHEAID(		"Potion IDs", 			"Lumarhea ID", 					40, 	Potion.class),
 	RAINBOWFOREST(	"Biome IDs", 			"Rainbow Forest Biome ID", 		48, 	BiomeGenBase.class),
 	ENDERFOREST(	"Biome IDs", 			"Ender Forest Biome ID", 		47, 	BiomeGenBase.class),
 	ISLANDS(		"Dimension Biome IDs", 	"Skyland Biome ID", 			100, 	BiomeGenBase.class),

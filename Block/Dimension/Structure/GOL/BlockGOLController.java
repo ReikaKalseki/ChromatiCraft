@@ -7,7 +7,7 @@
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
  ******************************************************************************/
-package Reika.ChromatiCraft.Block.Dimension.Structure;
+package Reika.ChromatiCraft.Block.Dimension.Structure.GOL;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
-import Reika.ChromatiCraft.Block.Dimension.Structure.BlockGOLTile.GOLTile;
+import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLTile.GOLTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 

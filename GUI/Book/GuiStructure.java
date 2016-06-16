@@ -295,6 +295,11 @@ public class GuiStructure extends GuiBookSection {
 					is2.stackTagCompound.setInteger("tier", 2);
 				}
 			}
+			else if (page.name().toLowerCase(Locale.ENGLISH).contains("casting")) {
+				if (ChromaBlocks.getEntryByID(ChromaTiles.STAND.getBlock()).match(is2) && is2.getItemDamage() == ChromaTiles.STAND.getBlockMetadata()) {
+					is2 = ChromaTiles.STAND.getCraftedProduct();
+				}
+			}
 			if (ChromaBlocks.PYLON.match(is2)) {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
