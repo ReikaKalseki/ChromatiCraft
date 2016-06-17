@@ -288,6 +288,28 @@ public class ChromaAspectManager {
 
 		ReikaThaumHelper.addAspects(ChromaStacks.resonanceDust, Aspect.AURA, 2);
 
+		ReikaThaumHelper.addAspects(ChromaStacks.lumaDust, Aspect.LIGHT, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.lumaDust, Aspect.ENERGY, 4);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.echoCrystal, Aspect.MAGIC, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.echoCrystal, Aspect.SENSES, 6);
+		ReikaThaumHelper.addAspects(ChromaStacks.echoCrystal, SIGNAL, 6);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.fireEssence, Aspect.FIRE, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.fireEssence, Aspect.AURA, 4);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.thermiticCrystal, Aspect.FIRE, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.thermiticCrystal, Aspect.CRYSTAL, 4);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.glowbeans, Aspect.EXCHANGE, 8);
+		ReikaThaumHelper.addAspects(ChromaStacks.glowbeans, Aspect.ENERGY, 4);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.boostroot, Aspect.GREED, 8);
+		ReikaThaumHelper.addAspects(ChromaStacks.boostroot, Aspect.MAGIC, 4);
+
+		ReikaThaumHelper.addAspects(ChromaStacks.lumenGem, Aspect.ENERGY, 4);
+		ReikaThaumHelper.addAspects(ChromaStacks.lumenGem, SIGNAL, 4);
+
 		for (PoolRecipe r : PoolRecipes.instance.getAllPoolRecipes()) {
 			Collection<ItemStack> ins = r.getInputs();
 			ItemStack main = r.getMainInput();

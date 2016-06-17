@@ -26,10 +26,10 @@ public class ItemCollectorRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.auraIngot, -4, 4);
 		this.addAuxItem(ChromaStacks.auraIngot, 4, 4);
 
-		this.addAuxItem(ChromaStacks.auraIngot, 0, -4);
-		this.addAuxItem(ChromaStacks.auraIngot, 0, 4);
-		this.addAuxItem(ChromaStacks.auraIngot, 4, 0);
-		this.addAuxItem(ChromaStacks.auraIngot, -4, 0);
+		this.addAuxItem(ChromaStacks.voidDust, 0, -4);
+		this.addAuxItem(ChromaStacks.voidDust, 0, 4);
+		this.addAuxItem(ChromaStacks.teleDust, 4, 0);
+		this.addAuxItem(ChromaStacks.teleDust, -4, 0);
 
 		this.addAuxItem(Blocks.iron_bars, -2, -4);
 		this.addAuxItem(Blocks.iron_bars, 2, -4);

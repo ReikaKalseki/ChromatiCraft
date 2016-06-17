@@ -51,6 +51,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -1287,7 +1288,7 @@ public class AbilityHelper {
 		if (b == Blocks.bedrock)
 			return y == 0 || (y >= 128 && world.provider.dimensionId == -1);
 		if (ReikaBlockHelper.isLeaf(b, meta) || ReikaBlockHelper.isWood(b, meta))
-			return false;
+			return b instanceof IPlantable;
 		if (RailcraftHandler.Blocks.QUARRIED.match(b, meta) || RailcraftHandler.Blocks.ABYSSAL.match(b, meta))
 			return false;
 		if (ChiselBlockHandler.isWorldgenBlock(b, meta))
@@ -1855,8 +1856,11 @@ public class AbilityHelper {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public boolean canRenderEntityXRay(Entity e) {
 		if (ModList.VOIDMONSTER.isLoaded() && e instanceof EntityVoidMonster)
+			return false;
+		if (e == Minecraft.getMinecraft().thePlayer)
 			return false;
 		int x = MathHelper.floor_double(e.posX+TileEntityRendererDispatcher.staticPlayerX);
 		int y = MathHelper.floor_double(e.posY+TileEntityRendererDispatcher.staticPlayerY);

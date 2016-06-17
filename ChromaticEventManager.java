@@ -239,11 +239,10 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void applyNoclipSuffocationPrevention(LivingHurtEvent evt) {
-		if (evt.entityLiving instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)evt.entityLiving) && evt.source == DamageSource.inWall) {
-			evt.ammount = 0;
-			evt.setCanceled(true);
-			ChromatiCraft.logger.debug("Prevented suffocation damage when noclipping");
+	public void applyNoclipDanagePrevention(LivingAttackEvent evt) {
+		if (evt.entityLiving instanceof EntityPlayer && Chromabilities.ORECLIP.enabledOn((EntityPlayer)evt.entityLiving)) {
+			if (evt.source == DamageSource.inWall || evt.source == DamageSource.cactus || evt.source == DamageSource.inFire)
+				evt.setCanceled(true);
 		}
 	}
 

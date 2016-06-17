@@ -652,7 +652,7 @@ public enum ChromaResearch implements ProgressElement {
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.DEFAULT.apply();
 			ReikaTextureHelper.bindTerrainTexture();
-			//GL11.glTranslated(0, 0, 65);
+			GL11.glTranslated(0, 0, -240);
 			int s = 32;
 			int ds = (s-16)/2;
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-ds, y-ds, ChromaIcons.PURPLESPIN.getIcon(), s, s);

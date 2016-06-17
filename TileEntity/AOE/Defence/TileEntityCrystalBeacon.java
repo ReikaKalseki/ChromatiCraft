@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -115,6 +116,55 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		CrystalElement c = CrystalElement.randomElement();//CrystalElement.elements[(this.getTicksExisted()/16)%16];
 		EntityBlurFX fx = new EntityBlurFX(c, world, px, py, pz, 0, 0, 0).setScale(2F).setLife(10).setIcon(ChromaIcons.CENTER);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+		if (energy.contains(CrystalElement.RED) && hasStructure) {
+			double a = rand.nextDouble()*360;
+			double v = rand.nextBoolean() ? 0.03125 : -0.03125;
+			double r = 0.25;
+			px = x+0.5+r*Math.cos(Math.toRadians(a));
+			pz = z+0.5+r*Math.sin(Math.toRadians(a));
+			py = y+ReikaRandomHelper.getRandomBetween(0.25, 1.5);
+			float g = (float)ReikaRandomHelper.getRandomPlusMinus(0, 0.125);
+			fx = new EntityBlurFX(c, world, px, py, pz, 0, v, 0).setScale(1F).setLife(30).setIcon(ChromaIcons.FADE_GENTLE).setColor(CrystalElement.RED.getColor()).setRapidExpand().setGravity(g);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+			int[][] dir = {
+					{-2, -2},
+					{-2, 2},
+					{2, 2},
+					{2, -2},
+			};
+			for (int t = 0; t < 80; t += 30) {
+				int i = this.getTicksExisted()%4;
+				//for (int i = 0; i < 4; i++) {
+				int dx = dir[i][0];//rand.nextBoolean() ? 2 : -2;
+				int dz = dir[i][1];//rand.nextBoolean() ? 2 : -2;
+				int dy = 1;
+				d = 1-(((this.getTicksExisted()+t+i*20)%80)/80D);//rand.nextDouble();
+				px = x+0.5+dx*d;
+				pz = z+0.5+dz*d;
+				py = y+0.5+dy*d;
+				/*
+				v = ReikaRandomHelper.getRandomBetween(0.03125, 0.0625);
+				double vx = v*Math.signum(dx);
+				double vy = v*Math.signum(dy);
+				double vz = v*Math.signum(dz);
+				if (rand.nextBoolean()) {
+					vx = -vx;
+					vy = -vy;
+					vz = -vz;
+				}
+				 */
+				double vx = 0;
+				double vy = 0;
+				double vz = 0;
+				fx = new EntityBlurFX(c, world, px, py, pz, vx, vy, vz).setScale(1.5F).setLife(10).setIcon(ChromaIcons.NODE2).setColor(CrystalElement.RED.getColor());
+				EntityFX fx2 = new EntityBlurFX(c, world, px, py, pz, vx, vy, vz).setScale(0.75F).setLife(10).setIcon(ChromaIcons.NODE2).setColor(0xffffff);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+			}
+			//}
+		}
 	}
 
 	@Override

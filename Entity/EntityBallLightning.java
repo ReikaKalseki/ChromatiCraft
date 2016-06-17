@@ -145,43 +145,47 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		if (ReikaMathLibrary.approxr(velocity.inclination, targetTheta, 2)) {
-			targetTheta = rand.nextInt(360);
-		}
-		else {
-			if (targetTheta > velocity.inclination)
-				velocity.inclination++;
-			else
-				velocity.inclination--;
-		}
 
-		if (ReikaMathLibrary.approxr(velocity.rotation, targetPhi, 2)) {
-			targetPhi = rand.nextInt(360);
-		}
-		else {
-			if (targetPhi > velocity.rotation)
-				velocity.rotation++;
-			else
-				velocity.rotation--;
-		}
+		if (!worldObj.isRemote) {
+			if (ReikaMathLibrary.approxr(velocity.inclination, targetTheta, 2)) {
+				targetTheta = rand.nextInt(360);
+			}
+			else {
+				if (targetTheta > velocity.inclination)
+					velocity.inclination++;
+				else
+					velocity.inclination--;
+			}
 
-		if (ReikaMathLibrary.approxr(velocity.rotation, targetPhi, 0.05)) {
-			targetVelocity = ReikaRandomHelper.getRandomPlusMinus(0.1, 0.1);
-		}
-		else {
-			if (targetVelocity > velocity.magnitude)
-				velocity.magnitude += 0.01D;
-			else
-				velocity.magnitude -= 0.01D;
-		}
+			if (ReikaMathLibrary.approxr(velocity.rotation, targetPhi, 2)) {
+				targetPhi = rand.nextInt(360);
+			}
+			else {
+				if (targetPhi > velocity.rotation)
+					velocity.rotation++;
+				else
+					velocity.rotation--;
+			}
 
-		velocityChanged = true;
-		//ReikaJavaLibrary.pConsole(velocity.inclination+"/"+targetTheta+"; "+velocity.rotation+"/"+targetPhi, Side.SERVER);
+			if (ReikaMathLibrary.approxr(velocity.rotation, targetPhi, 0.05)) {
+				targetVelocity = ReikaRandomHelper.getRandomPlusMinus(0.1, 0.1);
+			}
+			else {
+				if (targetVelocity > velocity.magnitude)
+					velocity.magnitude += 0.01D;
+				else
+					velocity.magnitude -= 0.01D;
+			}
 
-		double[] v = velocity.getCartesian();
-		motionX = v[0];
-		motionY = v[1];
-		motionZ = v[2];
+			velocityChanged = true;
+			//ReikaJavaLibrary.pConsole(velocity.inclination+"/"+targetTheta+"; "+velocity.rotation+"/"+targetPhi, Side.SERVER);
+
+			double[] v = velocity.getCartesian();
+
+			motionX = v[0];
+			motionY = v[1];
+			motionZ = v[2];
+		}
 
 		if (targetColor != null) {
 			colorTransitionFraction += 0.1F;
