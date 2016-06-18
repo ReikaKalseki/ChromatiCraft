@@ -21,10 +21,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Rendering.EdgeDetectionRenderer;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
 
-public class SpecialShieldRenderer implements ISimpleBlockRenderingHandler {
+public class SpecialShieldRenderer implements ISBRH {
 
 	private final EdgeDetectionRenderer edge = new EdgeDetectionRenderer(ChromaBlocks.SPECIALSHIELD.getBlockInstance()).setIcons(BlockSpecialShield.edgeIcons);
 

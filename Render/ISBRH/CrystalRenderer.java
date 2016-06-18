@@ -20,10 +20,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class CrystalRenderer implements ISimpleBlockRenderingHandler {
+public class CrystalRenderer implements ISBRH {
 
 	public static int renderPass;
 	public static boolean renderAllArmsInInventory = false;

@@ -27,11 +27,11 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 
-public class SelectiveGlassRenderer implements ISimpleBlockRenderingHandler {
+public class SelectiveGlassRenderer implements ISBRH {
 
 	private static final Random rand = new Random();
 

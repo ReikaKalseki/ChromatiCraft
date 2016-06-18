@@ -21,11 +21,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 
-public class TankBlockRenderer implements ISimpleBlockRenderingHandler {
+public class TankBlockRenderer implements ISBRH {
 
 	private static final ForgeDirection[] dirs = ForgeDirection.values();
 

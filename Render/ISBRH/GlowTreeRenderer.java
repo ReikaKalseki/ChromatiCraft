@@ -20,10 +20,10 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class GlowTreeRenderer implements ISimpleBlockRenderingHandler {
+public class GlowTreeRenderer implements ISBRH {
 
 	public static int renderPass;
 

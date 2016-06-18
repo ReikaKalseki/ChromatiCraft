@@ -15,10 +15,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
 
-public class DecoFlowerRenderer implements ISimpleBlockRenderingHandler {
+public class DecoFlowerRenderer implements ISBRH {
 
 	public int renderPass;
 

@@ -24,9 +24,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class CrystallineStoneRenderer implements ISimpleBlockRenderingHandler {
+public class CrystallineStoneRenderer implements ISBRH {
 
 	public static int renderPass;
 

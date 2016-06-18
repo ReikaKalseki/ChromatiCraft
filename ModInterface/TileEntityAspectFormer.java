@@ -192,7 +192,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 20000;
+		return 40000;
 	}
 
 	@Override

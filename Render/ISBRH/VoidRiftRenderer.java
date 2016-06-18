@@ -14,9 +14,9 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class VoidRiftRenderer implements ISimpleBlockRenderingHandler {
+public class VoidRiftRenderer implements ISBRH {
 
 	//public static int renderPass;
 

@@ -18,9 +18,9 @@ import net.minecraft.world.IBlockAccess;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.BlockDecoPlant;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class DecoPlantRenderer implements ISimpleBlockRenderingHandler {
+public class DecoPlantRenderer implements ISBRH {
 
 	public int renderPass;
 

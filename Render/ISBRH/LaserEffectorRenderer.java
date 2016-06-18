@@ -20,11 +20,11 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.La
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 
-public class LaserEffectorRenderer implements ISimpleBlockRenderingHandler {
+public class LaserEffectorRenderer implements ISBRH {
 
 	public static int renderPass;
 

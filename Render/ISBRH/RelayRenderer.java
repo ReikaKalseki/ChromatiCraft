@@ -19,9 +19,9 @@ import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class RelayRenderer implements ISimpleBlockRenderingHandler {
+public class RelayRenderer implements ISBRH {
 
 	public static int renderPass;
 

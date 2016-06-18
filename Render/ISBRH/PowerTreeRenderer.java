@@ -17,10 +17,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree.TileEntityPowerTreeAux;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class PowerTreeRenderer implements ISimpleBlockRenderingHandler {
+public class PowerTreeRenderer implements ISBRH {
 
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks rb) {

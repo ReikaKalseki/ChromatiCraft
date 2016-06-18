@@ -19,10 +19,10 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class LampRenderer implements ISimpleBlockRenderingHandler {
+public class LampRenderer implements ISBRH {
 
 	public static int renderPass;
 

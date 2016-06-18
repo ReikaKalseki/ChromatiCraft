@@ -24,10 +24,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class TieredOreRenderer implements ISimpleBlockRenderingHandler {
+public class TieredOreRenderer implements ISBRH {
 
 	//private final GeodeModel geode = new GeodeModel();
 

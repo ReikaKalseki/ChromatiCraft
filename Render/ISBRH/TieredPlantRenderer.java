@@ -20,11 +20,11 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class TieredPlantRenderer implements ISimpleBlockRenderingHandler {
+public class TieredPlantRenderer implements ISBRH {
 
 	public int renderPass;
 

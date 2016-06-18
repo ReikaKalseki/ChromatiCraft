@@ -30,12 +30,12 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDecoTile.DimDecoTileTyp
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class DimensionDecoRenderer implements ISimpleBlockRenderingHandler {
+public class DimensionDecoRenderer implements ISBRH {
 
 	public static int renderPass;
 

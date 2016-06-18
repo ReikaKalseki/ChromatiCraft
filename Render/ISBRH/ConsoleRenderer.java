@@ -22,11 +22,11 @@ import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 
-public class ConsoleRenderer implements ISimpleBlockRenderingHandler {
+public class ConsoleRenderer implements ISBRH {
 
 	private static final ForgeDirection[] dirs = ForgeDirection.values();
 

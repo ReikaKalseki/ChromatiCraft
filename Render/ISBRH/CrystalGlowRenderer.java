@@ -24,10 +24,10 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class CrystalGlowRenderer implements ISimpleBlockRenderingHandler {
+public class CrystalGlowRenderer implements ISBRH {
 
 	public static int renderPass;
 

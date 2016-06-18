@@ -20,9 +20,9 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlass;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import Reika.DragonAPI.Interfaces.ISBRH;
 
-public class CrystalGlassRenderer implements ISimpleBlockRenderingHandler {
+public class CrystalGlassRenderer implements ISBRH {
 
 	@Override
 	public void renderInventoryBlock(Block b, int metadata, int modelId, RenderBlocks rb) {

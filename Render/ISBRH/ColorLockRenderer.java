@@ -23,10 +23,10 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class ColorLockRenderer implements ISimpleBlockRenderingHandler {
+public class ColorLockRenderer implements ISBRH {
 
 	public static int renderPass;
 
