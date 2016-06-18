@@ -1,12 +1,3 @@
-/*******************************************************************************
- * @author Reika Kalseki
- * 
- * Copyright 2016
- * 
- * All rights reserved.
- * Distribution of the software in any form is only allowed with
- * explicit, prior permission from the owner.
- ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.DataStorage;
 
 import java.util.HashMap;
@@ -17,51 +8,43 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
-import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator.MazeState;
+import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.ShiftMazeState;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 public class ShiftMazeData extends StructureData {
 
-	private int state;
-	private final int length;
-	private final ShiftMazeGenerator shift;
+	private final ShiftMazeGenerator gen;
 
-	public ShiftMazeData(ShiftMazeGenerator gen, int len, int baseState) {
+	public ShiftMazeData(ShiftMazeGenerator gen) {
 		super(gen);
-		length = len;
-		shift = (ShiftMazeGenerator)generator;
-		state = baseState;
+		this.gen = gen;
 	}
 
 	@Override
-	public void load(HashMap<String, Object> map) {
-
-	}
+	public void load(HashMap<String, Object> map) {}
 
 	@Override
 	public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
-		this.cycle(world, x, y, z);
+		this.cycleState(world, x, y, z);
 	}
 
-	private void cycle(World world, int x, int y, int z) {
-		MazeState last = shift.getState(state);
-		state = (state+1)%length;
-		MazeState active = shift.getState(state);
-		for (Coordinate c : shift.getLocks()) {
-			int dx = c.xCoord;
-			int dz = c.zCoord;
-			if (last.isPositionOpen(dx, dz) && !active.isPositionOpen(dx, dz)) {
-				this.toggleLock(world, c, false);
+	private void cycleState(World world, int x, int y, int z) {
+		ShiftMazeState lastState = gen.getActiveState();
+		gen.cycleState();
+		ShiftMazeState newState = gen.getActiveState();
+		for (Coordinate c : gen.getAllToggleDoors()) {
+			if(lastState.isDoorOpen(c) && !newState.isDoorOpen(c)) {
+				this.toggleDoor(world, c, false);
 			}
-			else if (!last.isPositionOpen(dx, dz) && active.isPositionOpen(dx, dz)) {
-				this.toggleLock(world, c, true);
+			if(!lastState.isDoorOpen(c) && newState.isDoorOpen(c)) {
+				this.toggleDoor(world, c, true);
 			}
 		}
 		ReikaSoundHelper.playBreakSound(world, x, y, z, Blocks.stone);
 	}
 
-	private void toggleLock(World world, Coordinate c, boolean open) {
+	private void toggleDoor(World world, Coordinate c, boolean open) {
 		int meta = open ? 1 : 0;
 		c.setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), meta);
 		c.triggerBlockUpdate(world, false);
