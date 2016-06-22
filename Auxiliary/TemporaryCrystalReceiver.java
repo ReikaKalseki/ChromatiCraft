@@ -19,8 +19,8 @@ import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 
 
@@ -147,6 +147,10 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 	@Override
 	public Class getTileClass() {
 		return this.getClass();
+	}
+
+	public boolean canConductInterdimensionally() {
+		return false;
 	}
 
 }

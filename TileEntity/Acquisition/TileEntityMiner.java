@@ -488,10 +488,10 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	@Override
-	public void onAdjacentUpdate(Block b) {
+	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
 		this.calcSilkTouch();
 		this.updateRange();
-		super.onAdjacentUpdate(b);
+		super.onAdjacentUpdate(world, x, y, z, b);
 	}
 
 	private void dropItems(World world, int x, int y, int z, Collection<ItemStack> li) {

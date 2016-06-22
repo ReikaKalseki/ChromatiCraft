@@ -33,7 +33,7 @@ import Reika.ChromatiCraft.Items.ItemCrystalShard;
 import Reika.ChromatiCraft.Items.ItemDimGen;
 import Reika.ChromatiCraft.Items.ItemElementalStone;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
-import Reika.ChromatiCraft.Items.ItemRiftPlacer;
+import Reika.ChromatiCraft.Items.ItemLinkedTilePlacer;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Items.ItemTieredResource;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
@@ -90,7 +90,7 @@ public enum ChromaItems implements ItemEnum {
 	BUCKET(16, true, 		"chroma.bucket", 		ItemChromaBucket.class),
 	PLACER(0, true,			"chroma.placer",		ItemChromaPlacer.class),
 	LINK(0,	false,			"chroma.invlink",		ItemInventoryLinker.class),
-	RIFT(0, false,			"chroma.rift",			ItemRiftPlacer.class),
+	RIFT(0, false,			"chroma.rift",			ItemLinkedTilePlacer.class),
 	ADJACENCY(0, true,		"chroma.adjacency",		ItemAdjacencyPlacer.class),
 	TOOL(32, false,			"chroma.tool",			ItemManipulator.class),
 	SHARD(64, true, 		"crystal.shard", 		ItemCrystalShard.class),

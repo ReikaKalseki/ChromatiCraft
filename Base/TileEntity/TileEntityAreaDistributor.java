@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -18,6 +17,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 
 
 public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase implements RangeUpgradeable {
@@ -31,7 +31,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 	private final HashSet<WorldLocation> storages = new HashSet();
 	private final HashSet<WorldLocation> inputs = new HashSet();
 
-	private final HashMap<WorldLocation, Integer> particleCooldowns = new HashMap();
+	private final TimerMap<WorldLocation> particleCooldowns = new TimerMap();
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -42,18 +42,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 		}
 
 		if (world.isRemote) {
-			HashSet<WorldLocation> remove = new HashSet();
-			for (WorldLocation loc : particleCooldowns.keySet()) {
-				int get = particleCooldowns.get(loc);
-				if (get > 1) {
-					particleCooldowns.put(loc, get-1);
-				}
-				else {
-					remove.add(loc);
-				}
-			}
-			for (WorldLocation loc : remove)
-				particleCooldowns.remove(loc);
+			particleCooldowns.tick();
 		}
 	}
 

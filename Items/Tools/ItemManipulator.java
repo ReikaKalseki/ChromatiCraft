@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
@@ -157,6 +158,13 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.LUMENWIRE) {
 			TileEntityLumenWire ir = (TileEntityLumenWire)tile;
 			ir.cycleMode();
+			return true;
+		}
+
+		if (t == ChromaTiles.INSERTER) {
+			TileEntityItemInserter ir = (TileEntityItemInserter)tile;
+			ir.consumeLast = !ir.consumeLast;
+			ChromaSounds.USE.playSoundAtBlock(ir);
 			return true;
 		}
 

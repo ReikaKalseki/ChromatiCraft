@@ -121,4 +121,8 @@ public abstract class TileEntityCrystalBase extends TileEntityChromaticBase impl
 		return ResearchLevel.PYLONCRAFT;
 	}
 
+	public boolean canConductInterdimensionally() {
+		return false;
+	}
+
 }

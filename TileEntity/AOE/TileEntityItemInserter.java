@@ -62,13 +62,14 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 	private final ItemHashMap<ArrayList<Coordinate>> routing = new ItemHashMap();
 	private boolean[][] connections = new boolean[6][6];
 	private int maxCoord = 0;
+	public boolean consumeLast = false;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote)
 			return;
 		int slot = this.getTicksExisted()%this.getSizeInventory();
-		if (inv[slot] != null && inv[slot].stackSize > 1 && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
+		if (inv[slot] != null && (consumeLast || inv[slot].stackSize > 1) && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
 			Coordinate c = this.sendItem(inv[slot]);
 			if (c != null) {
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSERTERACTION.ordinal(), this, 64, Item.getIdFromItem(inv[slot].getItem()), inv[slot].getItemDamage(), c.xCoord, c.yCoord, c.zCoord);
@@ -301,6 +302,8 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		}
 
 		NBT.setInteger("maxc", maxCoord);
+
+		NBT.setBoolean("uselast", consumeLast);
 	}
 
 	@Override
@@ -330,6 +333,8 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		}
 
 		maxCoord = NBT.getInteger("maxc");
+
+		consumeLast = NBT.getBoolean("uselast");
 	}
 
 	public static enum InsertionType {

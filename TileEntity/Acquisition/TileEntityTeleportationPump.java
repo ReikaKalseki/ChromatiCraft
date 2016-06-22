@@ -99,9 +99,9 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	}
 
 	@Override
-	public void onAdjacentUpdate(Block b) {
+	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
 		this.updateRange();
-		super.onAdjacentUpdate(b);
+		super.onAdjacentUpdate(world, x, y, z, b);
 	}
 
 	@Override

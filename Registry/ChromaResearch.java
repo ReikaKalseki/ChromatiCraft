@@ -1144,6 +1144,11 @@ public enum ChromaResearch implements ProgressElement {
 		Dependency dep = this.getDependency();
 		if (dep != null && !dep.isLoaded())
 			return true;
+		for (int i = 0; i < progress.length; i++) {
+			if (!progress[i].active) {
+				return true;
+			}
+		}
 		return false;
 	}
 

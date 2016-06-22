@@ -42,26 +42,20 @@ import vazkii.botania.api.internal.IManaBurst;
 import vazkii.botania.api.mana.IManaCollisionGhost;
 import vazkii.botania.api.mana.IManaReceiver;
 import Reika.ChromatiCraft.API.Interfaces.WorldRift;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Base.TileEntity.LinkedTile;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
-import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
-import Reika.DragonAPI.Base.BlockTEBase;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cofh.api.energy.IEnergyHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -74,14 +68,12 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 		"thaumcraft.api.aspects.IAspectContainer", "vazkii.botania.api.mana.IManaCollisionGhost", "vazkii.botania.api.mana.IManaReceiver"})
 @Injectable(value = {"dan200.computercraft.api.peripheral.IPeripheral", "li.cil.oc.api.network.Environment",
 		"li.cil.oc.api.network.ManagedPeripheral", "li.cil.oc.api.network.SidedEnvironment"})
-public class TileEntityRift extends TileEntityChromaticBase implements WorldRift, SneakPop, IFluidHandler, IEnergyHandler,
+public class TileEntityRift extends LinkedTile implements WorldRift, IFluidHandler, IEnergyHandler,
 IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCollisionGhost, IManaReceiver {
 
-	private WorldLocation target;
 	private int color = 0xffffff;
 	private int[] redstoneCache = new int[6];
 	private ForgeDirection singleDirection;
-	private boolean shouldDrop;
 
 	private final Object[] sidedOCNode = new Object[6];
 
@@ -100,10 +92,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (shouldDrop) {
-			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, ChromaItems.RIFT.getStackOf());
-			this.delete();
-		}
+		super.updateEntity(world, x, y, z, meta);
 		if (!world.isRemote && this.isLinked() && this.getOther() != null) {
 			AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);//.expand(0.15, 0.15, 0.15);
 			List<Entity> li = world.getEntitiesWithinAABB(Entity.class, box);
@@ -169,28 +158,21 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 		return singleDirection;
 	}
 
-	public void drop() {
-		shouldDrop = true;
-		TileEntityRift te = this.getOther();
-		if (te != null)
-			te.shouldDrop = true;
-		this.reset();
-	}
-
 	public boolean canDrop(EntityPlayer ep) {
 		return ep.getUniqueID().equals(placerUUID);
 	}
 
 	public void passThrough() {
 		if (this.isLinked()) {
+			WorldLocation loc = this.getLinkTarget();
 			TileEntityRift te = this.getOther();
 			if (te != null) {
 				for (int i = 0; i < 6; i++) {
 					ForgeDirection dir = dirs[i];
 					ForgeDirection opp = dir.getOpposite();
-					int dx = target.xCoord+dir.offsetX;
-					int dy = target.yCoord+dir.offsetY;
-					int dz = target.zCoord+dir.offsetZ;
+					int dx = loc.xCoord+dir.offsetX;
+					int dy = loc.yCoord+dir.offsetY;
+					int dz = loc.zCoord+dir.offsetZ;
 					int ddx = xCoord-dir.offsetX;
 					int ddy = yCoord-dir.offsetY;
 					int ddz = zCoord-dir.offsetZ;
@@ -207,7 +189,7 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 					}
 				}
 			}
-			target.triggerBlockUpdate(true);
+			loc.triggerBlockUpdate(true);
 		}
 	}
 
@@ -220,53 +202,29 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 
 	}
 
-	public boolean isLinked() {
-		return target != null;
+	@Override
+	protected void createRandomLinkID() {
+		color = this.getRandomColor();
 	}
 
-	public boolean linkTo(World world, int x, int y, int z) {
-		if (!world.isRemote && this.canLinkTo(world, x, y, z)) {
-			this.resetOther();
-			target = new WorldLocation(world, x, y, z);
-			color = this.getRandomColor();
-			TileEntityRift te = this.getOther();
-			te.target = new WorldLocation(worldObj, xCoord, yCoord, zCoord);
-			te.color = color;
-			this.onLink(true);
-			if (ModList.OPENCOMPUTERS.isLoaded()) {
-				for (int i = 0; i < 6; i++) {
-					((Node)te.sidedOCNode[dirs[i].getOpposite().ordinal()]).connect((Node)sidedOCNode[i]);
-				}
-			}
-			return true;
-		}
-		return false;
+	@Override
+	protected void assignLinkID(LinkedTile other) {
+		TileEntityRift te = (TileEntityRift)other;
+		color = te.color;
 	}
 
-	private void onLink(boolean other) {
-		ChromaSounds.RIFT.playSoundAtBlock(worldObj, xCoord, yCoord, zCoord);
-		for (int i = 0; i < 6; i++) {
-			ForgeDirection dir = dirs[i];
-			int dx = xCoord+dir.offsetX;
-			int dy = yCoord+dir.offsetY;
-			int dz = zCoord+dir.offsetZ;
-			Block b = worldObj.getBlock(dx, dy, dz);
-			if (b instanceof BlockTEBase) {
-				((BlockTEBase)b).updateTileCache(worldObj, dx, dy, dz);
+	@Override
+	protected void onLinkTo(World world, int x, int y, int z, LinkedTile tile) {
+		TileEntityRift te = (TileEntityRift)tile;
+		if (ModList.OPENCOMPUTERS.isLoaded()) {
+			for (int i = 0; i < 6; i++) {
+				((Node)te.sidedOCNode[dirs[i].getOpposite().ordinal()]).connect((Node)sidedOCNode[i]);
 			}
 		}
-		if (other && this.isLinked()) {
-			this.getOther().onLink(false);
-		}
 	}
 
-	public boolean linkTo(WorldLocation loc) {
-		return !loc.equals(worldObj, xCoord, yCoord, zCoord) && this.linkTo(loc.getWorld(), loc.xCoord, loc.yCoord, loc.zCoord);
-	}
-
-	public void reset() {
-		this.resetOther();
-		target = null;
+	@Override
+	protected void onReset() {
 		color = 0xffffff;
 		redstoneCache = new int[6];
 		singleDirection = null;
@@ -276,23 +234,16 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 					((Node)sidedOCNode[i]).disconnect(((Node)this.getOther().sidedOCNode[i]));
 			}
 		}
-
-		this.onLink(true);
 	}
 
-	public void resetOther() {
-		if (this.isLinked()) {
-			TileEntityRift te = this.getOther();
-			if (te != null) {
-				te.target = null;
-				te.color = 0xffffff;
-				if (ModList.OPENCOMPUTERS.isLoaded()) {
-					for (int i = 0; i < 6; i++) {
-						if (te.sidedOCNode[i] != null)
-							((Node)te.sidedOCNode[i]).disconnect(((Node)sidedOCNode[i]));
-					}
-				}
-				this.onLink(true);
+	@Override
+	protected void onResetOther(LinkedTile tile) {
+		TileEntityRift te = (TileEntityRift)tile;
+		te.color = 0xffffff;
+		if (ModList.OPENCOMPUTERS.isLoaded()) {
+			for (int i = 0; i < 6; i++) {
+				if (te.sidedOCNode[i] != null)
+					((Node)te.sidedOCNode[i]).disconnect(((Node)sidedOCNode[i]));
 			}
 		}
 	}
@@ -305,16 +256,17 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 		return Color.HSBtoRGB(rand.nextFloat(), 1, 1);
 	}
 
-	private boolean canLinkTo(World world, int x, int y, int z) {
-		return new WorldLocation(world, x, y, z).getBlock() == ChromaBlocks.RIFT.getBlockInstance();
+	@Override
+	public boolean canLinkTo(World world, int x, int y, int z) {
+		return ChromaTiles.getTile(world, x, y, z) == this.getTile();
 	}
 
-	private TileEntityRift getOther() {
-		return this.isLinked() ? ((TileEntityRift)target.getTileEntity()) : null;
+	public TileEntityRift getOther() {
+		return this.isLinked() ? ((TileEntityRift)this.getLinkTarget().getTileEntity()) : null;
 	}
 
 	public WorldLocation getBlockFrom(ForgeDirection from) {
-		return this.isLinked() ? target.move(from.getOpposite(), 1) : null;
+		return this.isLinked() ? this.getLinkTarget().move(from.getOpposite(), 1) : null;
 	}
 
 	private TileEntity getAdjacentTargetTile(ForgeDirection dir) {
@@ -341,17 +293,10 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	}
 
 	@Override
-	public WorldLocation getLinkTarget() {
-		return target;
-	}
-
-	@Override
 	protected void writeSyncTag(NBTTagCompound NBT)
 	{
 		super.writeSyncTag(NBT);
 
-		if (this.isLinked())
-			target.writeToNBT("target", NBT);
 		NBT.setInteger("color", color);
 		NBT.setIntArray("redstone", redstoneCache);
 		NBT.setInteger("dir", singleDirection != null ? singleDirection.ordinal() : -1);
@@ -362,8 +307,6 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	{
 		super.readSyncTag(NBT);
 
-		if (NBT.hasKey("target"))
-			target = WorldLocation.readFromNBT("target", NBT);
 		color = NBT.getInteger("color");
 		redstoneCache = NBT.getIntArray("redstone");
 		int dir = NBT.getInteger("dir");

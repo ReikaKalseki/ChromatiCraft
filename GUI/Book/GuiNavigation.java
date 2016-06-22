@@ -35,9 +35,9 @@ import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.RegionMap;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
@@ -465,7 +465,17 @@ public class GuiNavigation extends GuiScrollingPage {
 			float f = 0.2F+hoverTime/25F;
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glPushMatrix();
+			/*
+			if (hoverTime > 0) {
+				double t = System.currentTimeMillis()/250D;
+				double r = 1D*Math.pow(hoverTime/20D, 2);
+				GL11.glTranslated(r*Math.cos(-t), r*Math.sin(-t), 0);
+				//GL11.glTranslated(0, -4D*hoverTime/20D, 0);
+			}
+			 */
 			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
+			GL11.glPopMatrix();
 
 			GL11.glColor4f(1, 1, 1, 1);
 

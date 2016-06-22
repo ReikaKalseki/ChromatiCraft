@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
@@ -28,6 +29,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
 
 
@@ -161,6 +163,13 @@ public class GuiItemInserter extends GuiChromaBase {
 				}
 			}
 		}
+
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getFullTexturePath());
+		this.drawTexturedModalRect(31, 14, 227, 49, 8, 120);
+		float f = (float)(0.875+0.125*Math.sin(System.currentTimeMillis()/400D));
+		GL11.glColor4f(f, f, f, f);
+		int u = tile.consumeLast ? 227+8 : 227;
+		this.drawTexturedModalRect(31, 14, u+8, 49, 8, 120);
 	}
 
 	@Override

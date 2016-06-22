@@ -70,7 +70,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		for (double d = 0; d < 360; d += LAYER2_RAY_ANGLE) {
 			if (d%FULL_RAY_ANGLE != 0) {
 				double r1 = LAYER2_RADIUS_MIN+rand.nextDouble()*(LAYER2_RADIUS_MAX-LAYER2_RADIUS_MIN);
-				double r2 = LAYER2_RADIUS_MIN+rand.nextDouble()*(LAYER2_RADIUS_MAX-LAYER2_RADIUS_MIN);
+				double r2 = OUTER_RADIUS_MIN+rand.nextDouble()*(OUTER_RADIUS_MAX-OUTER_RADIUS_MIN);
 				this.generateRay(d, r1, r2);
 			}
 		}
@@ -133,6 +133,8 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 			double y = VERTICAL_POSITION_MIN+rand.nextDouble()*(VERTICAL_POSITION_MAX-VERTICAL_POSITION_MIN);
 			r.addPoint(x, y, z);
 		}
+		if (r.points.size() <= 2)
+			throw new RuntimeException(r1+">"+r2+"@"+ang);
 		r.spline();
 		rays.add(r);
 	}

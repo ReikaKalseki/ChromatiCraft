@@ -239,7 +239,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 	}
 
 	@Override
-	public void onAdjacentUpdate(Block b) {
+	public void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
 		this.updateBoostFactor();
 	}
 

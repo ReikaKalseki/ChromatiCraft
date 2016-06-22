@@ -95,7 +95,6 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
-import Reika.ChromatiCraft.Block.Worldgen.BlockDecoGen;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
@@ -200,8 +199,7 @@ public enum ChromaBlocks implements BlockEnum {
 	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
 	PINBALL(BlockPinballTile.class,				ItemBlockMultiType.class,		"chroma.pinball"),
 	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity"),
-	TRAIL(BlockChromaTrail.class,												"chroma.trail"),
-	DECOGEN(BlockDecoGen.class,					ItemBlockMultiType.class,		"chroma.decogen");
+	TRAIL(BlockChromaTrail.class,												"chroma.trail");
 
 	private Class blockClass;
 	private String blockName;
@@ -404,8 +402,6 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chromablock.gravity."+BlockGravityTile.GravityTiles.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case ANTKEY:
 				return this.getBasicName()+" Size "+(meta+1);
-			case DECOGEN:
-				return StatCollector.translateToLocal("chromablock.decogen."+meta);
 			default:
 				return "";
 		}
@@ -488,8 +484,6 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockGravityTile.GravityTiles.list.length;
 			case ANTKEY:
 				return 16;
-			case DECOGEN:
-				return BlockDecoGen.Deco.list.length;
 			default:
 				return 1;
 		}

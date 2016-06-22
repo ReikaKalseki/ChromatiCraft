@@ -222,7 +222,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 		if (te instanceof AdjacentUpdateWatcher) {
-			((AdjacentUpdateWatcher)te).onAdjacentUpdate(b);
+			((AdjacentUpdateWatcher)te).onAdjacentUpdate(world, x, y, z, b);
 		}
 	}
 

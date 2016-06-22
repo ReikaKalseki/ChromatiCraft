@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.Entity.EntityGluon;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
 import Reika.ChromatiCraft.Entity.EntityLumaBurst;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
+import Reika.ChromatiCraft.Entity.EntityParticleCluster;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityTNTPinball;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
@@ -67,6 +68,7 @@ import Reika.ChromatiCraft.Render.Entity.RenderGluon;
 import Reika.ChromatiCraft.Render.Entity.RenderLaserPulse;
 import Reika.ChromatiCraft.Render.Entity.RenderLumaBurst;
 import Reika.ChromatiCraft.Render.Entity.RenderMeteorShot;
+import Reika.ChromatiCraft.Render.Entity.RenderParticleCluster;
 import Reika.ChromatiCraft.Render.Entity.RenderSplashGunShot;
 import Reika.ChromatiCraft.Render.Entity.RenderTNTPinball;
 import Reika.ChromatiCraft.Render.Entity.RenderThrownGem;
@@ -79,7 +81,6 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystalGlowRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
-import Reika.ChromatiCraft.Render.ISBRH.DecoGenRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
@@ -156,7 +157,6 @@ public class ChromaClient extends ChromaCommon {
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
 	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
 	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
-	public static final DecoGenRenderer deco = new DecoGenRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -194,6 +194,7 @@ public class ChromaClient extends ChromaCommon {
 		RenderingRegistry.registerEntityRenderingHandler(EntityTNTPinball.class, new RenderTNTPinball());
 		RenderingRegistry.registerEntityRenderingHandler(EntityDimensionFlare.class, new RenderDimensionFlare());
 		RenderingRegistry.registerEntityRenderingHandler(EntityLumaBurst.class, new RenderLumaBurst());
+		RenderingRegistry.registerEntityRenderingHandler(EntityParticleCluster.class, new RenderParticleCluster());
 
 		this.registerSpriteSheets();
 		this.registerBlockSheets();
@@ -346,9 +347,6 @@ public class ChromaClient extends ChromaCommon {
 
 		flowerRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(flowerRender, flower);
-
-		decoRender = RenderingRegistry.getNextAvailableRenderId();
-		RenderingRegistry.registerBlockHandler(decoRender, deco);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

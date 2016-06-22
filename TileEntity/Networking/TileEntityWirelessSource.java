@@ -37,6 +37,19 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
+		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
+			this.checkAndRequest();
+		}
+	}
+
+	private void checkAndRequest() {
+		for (int i = 0; i < CrystalElement.elements.length; i++) {
+			CrystalElement e = CrystalElement.elements[i];
+			int space = this.getRemainingSpace(e);
+			if (space > this.getEnergy(e)) { // < 50% full
+				this.requestEnergy(e, space);
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)

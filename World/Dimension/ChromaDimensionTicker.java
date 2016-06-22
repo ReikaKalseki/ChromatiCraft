@@ -22,6 +22,9 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+
+import org.lwjgl.input.Keyboard;
+
 import paulscode.sound.StreamThread;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -35,6 +38,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.IO.CustomMusic;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
@@ -117,6 +121,10 @@ public class ChromaDimensionTicker implements TickHandler {
 					ReikaSoundHelper.restartStreamingSystem(sh);
 				}
 				//ReikaJavaLibrary.pConsole(s.path+":"+sh.isSoundPlaying(s));
+				if (currentMusic != null && ReikaObfuscationHelper.isDeObfEnvironment() && Keyboard.isKeyDown(Keyboard.KEY_END)) {
+					sh.stopSound(currentMusic);
+					musicCooldown = 0;
+				}
 				if (currentMusic != null && sh.isSoundPlaying(currentMusic)) {
 					return;
 				}
@@ -124,11 +132,13 @@ public class ChromaDimensionTicker implements TickHandler {
 					musicCooldown--;
 					return;
 				}
+
 				DimensionMusic s = music.get(rand.nextInt(music.size()));
 				while (!s.canPlay(Minecraft.getMinecraft().thePlayer)) {
 					s = music.get(rand.nextInt(music.size()));
 				}
 				s.play(sh);
+
 				currentMusic = s;
 				musicCooldown = 300+rand.nextInt(900);
 			}

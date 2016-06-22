@@ -21,8 +21,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Base.TileEntity.LinkedTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport.TileEntityTeleport;
-import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
@@ -43,8 +43,8 @@ public class ItemConnector extends ItemChromaTool {
 		if (world.isRemote)
 			return true;
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof TileEntityRift) {
-			return this.connectRift((TileEntityRift)te, world, x, y, z, is, ep);
+		if (te instanceof LinkedTile) {
+			return this.connectRift((LinkedTile)te, world, x, y, z, is, ep);
 		}
 		else if (te instanceof TileEntityTransportWindow) {
 			return this.connectWindow((TileEntityTransportWindow)te, world, x, y, z, is, ep);
@@ -120,7 +120,7 @@ public class ItemConnector extends ItemChromaTool {
 		return false;
 	}
 
-	private boolean connectRift(TileEntityRift te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
+	private boolean connectRift(LinkedTile te, World world, int x, int y, int z, ItemStack is, EntityPlayer ep) {
 		if (is.stackTagCompound == null) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setInteger("r1x", Integer.MIN_VALUE);
@@ -155,8 +155,8 @@ public class ItemConnector extends ItemChromaTool {
 
 		if (x1 != Integer.MIN_VALUE && y1 != Integer.MIN_VALUE && z1 != Integer.MIN_VALUE) {
 			if (x1 != Integer.MIN_VALUE && y2 != Integer.MIN_VALUE && z2 != Integer.MIN_VALUE) {
-				TileEntityRift rf1 = (TileEntityRift)world.getTileEntity(x1, y1, z1);
-				TileEntityRift rf2 = (TileEntityRift)world.getTileEntity(x2, y2, z2);
+				LinkedTile rf1 = (LinkedTile)world.getTileEntity(x1, y1, z1);
+				LinkedTile rf2 = (LinkedTile)world.getTileEntity(x2, y2, z2);
 
 				//ReikaJavaLibrary.pConsole(rec+"\n"+em);
 				if (rf1 == null) {
@@ -177,8 +177,10 @@ public class ItemConnector extends ItemChromaTool {
 				rf1.reset();
 				rf2.reset();
 				boolean flag = rf1.linkTo(w2, x2, y2, z2);
-				if (flag)
+				if (flag) {
 					ReikaChatHelper.sendChatToPlayer(ep, "Linked "+rf1+" and "+rf2);
+					rf1.setPrimary();
+				}
 				else
 					ReikaChatHelper.sendChatToPlayer(ep, "Link failed.");
 				is.stackTagCompound = null;

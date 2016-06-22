@@ -38,9 +38,9 @@ import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Network.CrystalPath;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
@@ -623,6 +623,10 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public ResearchLevel getResearchTier() {
 		return ResearchLevel.ENDGAME;
+	}
+
+	public boolean canConductInterdimensionally() {
+		return false;
 	}
 
 }

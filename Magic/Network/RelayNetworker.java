@@ -28,8 +28,11 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.CompoundPlayerTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -59,9 +62,9 @@ public final class RelayNetworker {
 	public TileEntityRelaySource findRelaySource(World world, int x, int y, int z, ForgeDirection dir, CrystalElement e, int amt, int dist) {
 		if (amt <= 0)
 			return null;
-		RelayFinder rf = new RelayFinder(world, new Coordinate(x, y, z), Math.min(dist, maxRange), maxDepth, e, amt);
+		RelayFinder rf = new RelayFinder(new Coordinate(x, y, z), Math.min(dist, maxRange), maxDepth, e, amt);
 		rf.look = dir;
-		RelayPath path = rf.find();
+		RelayPath path = rf.find(world);
 		if (path != null) {
 			if (path.source.getEnergy(e) > 0)
 				path.transmit(e);
@@ -121,7 +124,6 @@ public final class RelayNetworker {
 
 	private static class RelayFinder {
 
-		private final World world;
 		private final Coordinate target;
 		private final int maxRange;
 		private final int maxDepth;
@@ -132,22 +134,21 @@ public final class RelayNetworker {
 
 		private final LinkedList<Coordinate> path = new LinkedList();
 
-		private RelayFinder(World world, Coordinate loc, int r, int d, CrystalElement e, int amt) {
-			this.world = world;
+		private RelayFinder(Coordinate loc, int r, int d, CrystalElement e, int amt) {
 			target = loc;
 			maxRange = r;
 			maxDepth = d;
 			color = e;
 			amount = amt;
 			path.addFirst(target);
-			ModularLogger.instance.log(LOGGER_ID, "Relay pathfinding start @ "+loc+" in "+world.provider.dimensionId+" for "+amt+" of "+e);
+			ModularLogger.instance.log(LOGGER_ID, "Relay pathfinding start @ "+loc+" for "+amt+" of "+e);
 		}
 
-		private RelayPath find() {
-			return this.findFrom(target, 0);
+		private RelayPath find(World world) {
+			return this.findFrom(world, target, 0);
 		}
 
-		private RelayPath findFrom(Coordinate start, int depth) {
+		private RelayPath findFrom(World world, Coordinate start, int depth) {
 			if (depth > maxDepth)
 				return null;
 			for (int i = 1; i < maxRange; i++) {
@@ -163,7 +164,24 @@ public final class RelayNetworker {
 					TileEntityLumenRelay te = (TileEntityLumenRelay)c.getTileEntity(world);
 					if (te.canTransmit(color)) {
 						look = te.getInput();
-						return this.findFrom(c, depth+1);
+						return this.findFrom(world, c, depth+1);
+					}
+				}
+				if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.RIFT) {
+					TileEntityRift te = (TileEntityRift)c.getTileEntity(world);
+					WorldLocation loc = te.getLinkTarget();
+					if (loc != null) {
+						World world2 = loc.getWorld();
+						if (PylonGenerator.instance.canGenerateIn(world2)) {
+							path.addLast(c);
+							return this.findFrom(world2, new Coordinate(loc), depth+1);
+						}
+						else {
+							return null;
+						}
+					}
+					else {
+						return null;
 					}
 				}
 				else {

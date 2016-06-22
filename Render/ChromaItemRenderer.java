@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
@@ -60,7 +61,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 			return;
 		ChromaTiles machine = ChromaTiles.TEList[item.getItemDamage()];
 		if (ChromaItems.RIFT.matchWith(item))
-			machine = ChromaTiles.RIFT;
+			machine = ChromaTiles.getTileFromIDandMetadata(ChromaBlocks.RIFT.getBlockInstance(), item.getItemDamage());
 		if (ChromaItems.ADJACENCY.matchWith(item))
 			machine = ChromaTiles.ADJACENCY;
 		boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
