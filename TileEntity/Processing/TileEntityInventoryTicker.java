@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -77,7 +78,13 @@ public class TileEntityInventoryTicker extends InventoriedChromaticBase {
 				ItemStack is = inv[i];
 				if (is != null) {
 					for (int k = 0; k < ticks/* && energy.containsAtLeast(required)*/; k++) {
-						is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
+						try {
+							is.getItem().onUpdate(is, worldObj, ep, hotbar ? 0 : 9, hotbar);
+						}
+						catch (Exception e) {
+							ChromatiCraft.logger.logError("An item ("+is.getDisplayName()+") has thrown an exception when being ticked in "+this+": "+e);
+							//Thank you items that cannot be ticked by fake players >_<
+						}
 						//this.drainEnergy(required);
 					}
 				}

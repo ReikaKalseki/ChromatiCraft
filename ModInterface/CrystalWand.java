@@ -24,11 +24,13 @@ import thaumcraft.api.wands.WandRod;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.IO.DirectResourceManager;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -65,6 +67,8 @@ public class CrystalWand extends WandRod {
 		@Override
 		public void onUpdate(ItemStack is, EntityPlayer player) {
 
+			if (ReikaPlayerAPI.isFake(player))
+				return;
 			int n = ReikaItemHelper.matchStacks(is, player.getCurrentEquippedItem()) ? 100 : 800;
 			if (rand.nextInt(n) == 0) {
 
@@ -78,8 +82,8 @@ public class CrystalWand extends WandRod {
 					if (al.getAmount(a) > 0) {
 						int sp = ReikaThaumHelper.getWandSpaceFor(is, a);
 						if (sp > 0) {
+							PlayerElementBuffer.instance.removeFromPlayer(player, ChromaAspectManager.instance.getElementCost(a, 1));
 							ReikaThaumHelper.addVisToWand(is, a, Math.min(sp, 10));
-							tag.addTag(ChromaAspectManager.instance.getElementCost(a, 1));
 							flag = true;
 						}
 					}

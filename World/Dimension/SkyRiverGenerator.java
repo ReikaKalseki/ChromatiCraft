@@ -11,17 +11,21 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import io.netty.buffer.ByteBuf;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ThreadedGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Spline;
@@ -30,6 +34,7 @@ import Reika.DragonAPI.Instantiable.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
 public class SkyRiverGenerator extends ThreadedGenerator {
@@ -49,9 +54,12 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 	private static final double FULL_RAY_ANGLE = 45;
 	private static final double LAYER2_RAY_ANGLE = 22.5/2;
 	private static final double NODE_LENGTH = 64*2;
-	private static final double ANGLE_VARIATION = 10;
+	private static final double INNER_ANGLE_VARIATION = 10;
+	private static final double ANGLE_VARIATION = 10/2;
+	private static final double MAX_ANGLE_STEP = ANGLE_VARIATION/2;
 	private static final double VERTICAL_POSITION_MIN = 384;
 	private static final double VERTICAL_POSITION_MAX = 512;
+	private static final double ANGLE_VARIATION_FADE_RANGE = 384;
 
 	public SkyRiverGenerator(long seed) {
 		super(seed);
@@ -85,11 +93,43 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 				points.addValue(ch, p);
 			}
 		}
+
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
-			ChromatiCraft.logger.log("Generated rivers: "+points);
+			//ChromatiCraft.logger.log("Generated rivers: "+points);
+			this.exportAsImage();
 		}
+
 	}
 
+	private void exportAsImage() throws IOException {
+		File f = new File(DragonAPICore.getMinecraftDirectory(), "DimensionRiver/"+seed+"L/"+System.nanoTime()+".png");
+		if (f.exists())
+			f.delete();
+		f.getParentFile().mkdirs();
+		f.createNewFile();
+		int n = 0;
+		for (RiverPoint p : points.allValues(false)) {
+			DecimalPosition c = p.position;
+			n = Math.max(n, Math.max(1+(int)Math.abs(c.xCoord), 1+(int)Math.abs(c.zCoord)));
+		}
+		n /= 5;
+		BufferedImage img = new BufferedImage(n*2+1, n*2+1, BufferedImage.TYPE_INT_ARGB);
+		for (RiverPoint p : points.allValues(false)) {
+			int x = (int)p.position.xCoord/5+n;
+			int z = (int)p.position.zCoord/5+n;
+			for (int i = -1; i <= 1; i++) {
+				for (int k = -1; k <= 1; k++) {
+					try {
+						img.setRGB(x+i, z+k, 0xff000000);
+					}
+					catch (Exception e) {
+
+					}
+				}
+			}
+		}
+		ImageIO.write(img, "png", f);
+	}
 
 	public static Collection<RiverPoint> getPointsForChunk(int x, int z) {
 		ChunkCoordIntPair pos = new ChunkCoordIntPair(x, z);
@@ -126,12 +166,28 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 
 	private void generateRay(double ang, double r1, double r2) {
 		Ray r = new Ray();
-		for (double d = r1; d <= r2; d += NODE_LENGTH) {
-			double a = Math.toRadians(ang+rand.nextDouble()*ANGLE_VARIATION*2-ANGLE_VARIATION);
+		r.lastAngle = ang;
+		for (double d = r1; d <= r2; d += Math.max(NODE_LENGTH, 2*Math.sqrt(d))) {
+			double var = ANGLE_VARIATION;
+			if (d < LAYER2_RADIUS_MIN) {
+				if (d < LAYER2_RADIUS_MIN-ANGLE_VARIATION_FADE_RANGE) {
+					var = INNER_ANGLE_VARIATION;
+				}
+				else {
+					var = ReikaMathLibrary.linterpolate(d, LAYER2_RADIUS_MIN-ANGLE_VARIATION_FADE_RANGE, LAYER2_RADIUS_MIN, INNER_ANGLE_VARIATION, ANGLE_VARIATION);
+					//ReikaJavaLibrary.pConsole("Interpolating @ "+d+" for "+ang);
+				}
+			}
+			double a = ang+rand.nextDouble()*var*2-var;
+			while (Math.abs(a-r.lastAngle) > MAX_ANGLE_STEP)
+				a = ang+rand.nextDouble()*var*2-var;
+			r.lastAngle = a;
+			a = Math.toRadians(a);
 			double x = d*Math.cos(a);
 			double z = d*Math.sin(a);
 			double y = VERTICAL_POSITION_MIN+rand.nextDouble()*(VERTICAL_POSITION_MAX-VERTICAL_POSITION_MIN);
 			r.addPoint(x, y, z);
+			//ReikaJavaLibrary.pConsole("For ray "+ang+" @ "+d+", a="+Math.toDegrees(a)+" out of "+var);
 		}
 		if (r.points.size() <= 2)
 			throw new RuntimeException(r1+">"+r2+"@"+ang);
@@ -147,6 +203,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 	private static class Ray {
 
 		private List<DecimalPosition> points = new ArrayList();
+		private double lastAngle;
 
 		private void addPoint(double x, double y, double z) {
 			points.add(new DecimalPosition(x, y, z));

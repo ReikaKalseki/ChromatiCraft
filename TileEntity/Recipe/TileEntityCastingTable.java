@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -518,6 +519,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		super.readFromNBT(NBT);
 
 		this.readRecipes(NBT);
+
+		if (NBT.hasKey("crafter") && worldObj != null && craftingPlayer == null) {
+			UUID uid = UUID.fromString(NBT.getString("crafter"));
+			craftingPlayer = worldObj.func_152378_a(uid);
+		}
 	}
 
 	@Override
@@ -525,6 +531,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		super.writeToNBT(NBT);
 
 		this.writeRecipes(NBT);
+
+		if (craftingPlayer != null)
+			NBT.setString("crafter", craftingPlayer.getUniqueID().toString());
 	}
 
 	private void writeRecipes(NBTTagCompound NBT) {

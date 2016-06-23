@@ -30,7 +30,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.VillageBuilding.StructureEntry;
 import Reika.DragonAPI.Instantiable.VillageBuilding.VillagePiece;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.common.registry.VillagerRegistry;
 
@@ -771,6 +770,8 @@ public class VillagersFailChromatiCraft {
 			if (te != null)
 				te.addProgress(ProgressStage.VILLAGECASTING);
 
+			this.clearDroppedItems(world);
+
 			return true;
 		}
 
@@ -787,7 +788,7 @@ public class VillagersFailChromatiCraft {
 
 			Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
 
-			ReikaJavaLibrary.pConsole(boundingBox);
+			//ReikaJavaLibrary.pConsole(boundingBox);
 
 			this.placeBlockAtCurrentPosition(world, 1, 0, 4, b);
 			this.placeBlockAtCurrentPosition(world, 1, 0, 6, b);
@@ -1044,6 +1045,8 @@ public class VillagersFailChromatiCraft {
 				ts.signText = new String[]{"Propertee", "of Villager", "#73", "~angryface"};
 
 			this.placeBlockAtCurrentPosition(world, 1, 6, 10, Blocks.flowing_water);
+
+			this.clearDroppedItems(world);
 
 			return true;
 		}

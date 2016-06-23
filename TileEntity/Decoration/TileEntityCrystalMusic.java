@@ -54,6 +54,10 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 
 	private static final MusicScore demoTrack = new MIDIInterface(ChromatiCraft.class, "Resources/music-demo.mid").fillToScore().scaleSpeed(11);
 
+	static {
+		ChromatiCraft.logger.log("Loaded demo track "+demoTrack);
+	}
+
 	private static final EnumMap<CrystalElement, Coordinate> colorPositions = new EnumMap(CrystalElement.class);
 
 	static {

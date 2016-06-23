@@ -96,6 +96,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 	private PylonGenerator() {
 		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
 	}
 
 	public void savePylonLocations(NBTTagCompound NBT) {
