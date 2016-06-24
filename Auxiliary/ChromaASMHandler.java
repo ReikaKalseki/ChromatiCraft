@@ -284,7 +284,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						}
 						AbstractInsnNode ain = ReikaASMHelper.getFirstOpcode(m.instructions, Opcodes.GETFIELD);
 						if (ain == null)
-							ReikaASMHelper.throwConflict(this, cn, m, "Could not find field lookup");
+							ReikaASMHelper.throwConflict(this.toString(), cn, m, "Could not find field lookup");
 						m.instructions.insert(ain, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "applyNoclipPhase", "(Lnet/minecraft/entity/player/EntityPlayer;)Z", false));
 						m.instructions.remove(ain);
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");

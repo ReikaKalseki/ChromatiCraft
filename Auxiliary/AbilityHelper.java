@@ -69,6 +69,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -115,9 +116,13 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
 import Reika.VoidMonster.Entity.EntityVoidMonster;
+import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
+import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
+import WayofTime.alchemicalWizardry.api.event.SacrificeKnifeUsedEvent;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -1868,6 +1873,65 @@ public class AbilityHelper {
 		if (e.worldObj.getBlock(x, y, z) == Blocks.mob_spawner)
 			return false;
 		return e instanceof EntityLivingBase && e.worldObj != null;
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.BLOODMAGIC)
+	public void interceptSoulNet(PlayerDrainNetworkEvent evt) {
+		EntityPlayer ep = evt.player;
+		if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+			float amt = evt.drainAmount;
+			ElementTagCompound tag1 = TileEntityLifeEmitter.getLumensPerHundredLP().scale(amt/100F);
+			ElementTagCompound tag2 = PlayerElementBuffer.instance.getPlayerBuffer(ep);
+			tag2.intersectWith(tag1);
+			float ratio = tag2.getSmallestRatio(tag1);
+			if (ratio >= 1) {
+				PlayerElementBuffer.instance.removeFromPlayer(ep, tag1);
+				evt.drainAmount = 0;
+				if (evt instanceof ItemDrainNetworkEvent) {
+					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
+					ev.damageAmount = 0;
+					ev.shouldDamage = false;
+				}
+				else
+					evt.setCanceled(true);
+			}
+			else if (ratio > 0) {
+				ElementTagCompound rem = tag1.copy();
+				rem.scale(ratio);
+				float rat = 1-ratio;
+				PlayerElementBuffer.instance.removeFromPlayer(ep, rem);
+				evt.drainAmount *= rat;
+				if (evt instanceof ItemDrainNetworkEvent) {
+					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
+					ev.damageAmount *= rat;
+					if (rat < 0.25)
+						ev.shouldDamage = false;
+				}
+			}
+			else {
+
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.BLOODMAGIC)
+	public void onUseSacrificeOrb(SacrificeKnifeUsedEvent evt) {
+		EntityPlayer ep = evt.player;
+		ItemStack is = ep.getCurrentEquippedItem();
+		if (is != null) {
+			if (is.getItem() == BloodMagicHandler.getInstance().orbID || BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
+				if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+					ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
+					tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
+					if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
+						Chromabilities.LIFEPOINT.trigger(ep, 3);
+						evt.shouldDrainHealth = false;
+					}
+				}
+			}
+		}
 	}
 
 }

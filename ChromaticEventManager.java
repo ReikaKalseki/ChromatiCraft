@@ -63,8 +63,6 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -101,7 +99,6 @@ import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
 import Reika.ChromatiCraft.ModInterface.MystPages;
-import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -158,10 +155,7 @@ import Reika.DragonAPI.ModInteract.ReikaTwilightHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
-import WayofTime.alchemicalWizardry.api.event.ItemDrainNetworkEvent;
-import WayofTime.alchemicalWizardry.api.event.PlayerDrainNetworkEvent;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
 
 import com.xcompwiz.mystcraft.api.event.LinkEvent;
@@ -995,66 +989,6 @@ public class ChromaticEventManager {
 
 	private boolean isMovable(TileEntity te) {
 		return !(te instanceof TileEntityCrystalBase);
-	}
-
-	@SubscribeEvent
-	@ModDependent(ModList.BLOODMAGIC)
-	public void interceptSoulNet(PlayerDrainNetworkEvent evt) {
-		EntityPlayer ep = evt.player;
-		if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
-			float amt = evt.drainAmount;
-			ElementTagCompound tag1 = TileEntityLifeEmitter.getLumensPerHundredLP().scale(amt/100F);
-			ElementTagCompound tag2 = PlayerElementBuffer.instance.getPlayerBuffer(ep);
-			tag2.intersectWith(tag1);
-			float ratio = tag2.getSmallestRatio(tag1);
-			if (ratio >= 1) {
-				PlayerElementBuffer.instance.removeFromPlayer(ep, tag1);
-				evt.drainAmount = 0;
-				if (evt instanceof ItemDrainNetworkEvent) {
-					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
-					ev.damageAmount = 0;
-					ev.shouldDamage = false;
-				}
-				else
-					evt.setCanceled(true);
-			}
-			else if (ratio > 0) {
-				ElementTagCompound rem = tag1.copy();
-				rem.scale(ratio);
-				float rat = 1-ratio;
-				PlayerElementBuffer.instance.removeFromPlayer(ep, rem);
-				evt.drainAmount *= rat;
-				if (evt instanceof ItemDrainNetworkEvent) {
-					ItemDrainNetworkEvent ev = (ItemDrainNetworkEvent)evt;
-					ev.damageAmount *= rat;
-					if (rat < 0.25)
-						ev.shouldDamage = false;
-				}
-			}
-			else {
-
-			}
-		}
-	}
-
-	@SubscribeEvent
-	@ModDependent(ModList.BLOODMAGIC)
-	public void onUseSacrificeOrb(PlayerInteractEvent evt) {
-		if (evt.action == Action.RIGHT_CLICK_AIR) {
-			EntityPlayer ep = evt.entityPlayer;
-			ItemStack is = ep.getCurrentEquippedItem();
-			if (is != null) {
-				if (is.getItem() == BloodMagicHandler.getInstance().orbID || BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
-					if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
-						ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
-						tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
-						if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
-							Chromabilities.LIFEPOINT.trigger(ep, 3);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	@SubscribeEvent

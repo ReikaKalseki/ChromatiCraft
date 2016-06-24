@@ -87,6 +87,7 @@ public class ItemBuilderWand extends ItemWandBase {
 		int ry = ep.isSneaking() ? 0 : r;
 		int rz = KeyWatcher.instance.isKeyDown(ep, Key.LCTRL) ? 0 : r;
 		boolean fill = !KeyWatcher.instance.isKeyDown(ep, Key.TAB);
+		boolean fill2 = !KeyWatcher.instance.isKeyDown(ep, Key.TILDE);
 		int edge = KeyWatcher.instance.isKeyDown(ep, Key.END) ? ep.isSneaking() ? 2 : 1 : 0;
 
 		BlockArray base = new BlockArray();
@@ -127,7 +128,7 @@ public class ItemBuilderWand extends ItemWandBase {
 				}
 			}
 		}
-		if (!fill) {
+		if (!fill || !fill2) {
 			HashSet<Coordinate> cp = new HashSet(li);
 			Iterator<Coordinate> it = li.iterator();
 			while (it.hasNext()) {
@@ -143,7 +144,12 @@ public class ItemBuilderWand extends ItemWandBase {
 					}
 				}
 				if (n > 6) {
-					it.remove();
+					if (!fill)
+						it.remove();
+				}
+				else {
+					if (!fill2)
+						it.remove();
 				}
 			}
 		}
