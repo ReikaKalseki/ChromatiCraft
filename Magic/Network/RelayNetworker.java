@@ -172,7 +172,7 @@ public final class RelayNetworker {
 					WorldLocation loc = te.getLinkTarget();
 					if (loc != null) {
 						World world2 = loc.getWorld();
-						if (PylonGenerator.instance.canGenerateIn(world2)) {
+						if (world2.provider.dimensionId == world.provider.dimensionId || PylonGenerator.instance.canGenerateIn(world2)) {
 							path.addLast(c);
 							return this.findFrom(world2, new Coordinate(loc), depth+1);
 						}

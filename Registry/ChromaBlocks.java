@@ -74,6 +74,8 @@ import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockSpecialShield;
 import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.Structure.AntFarm.BlockAntKey;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Bridge.BlockBridgeControl;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Bridge.BlockDynamicBridge;
 import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile;
@@ -199,7 +201,9 @@ public enum ChromaBlocks implements BlockEnum {
 	LASEREFFECT(BlockLaserEffector.class,		ItemBlockMultiType.class,		"chroma.lasereffect"),
 	PINBALL(BlockPinballTile.class,				ItemBlockMultiType.class,		"chroma.pinball"),
 	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity"),
-	TRAIL(BlockChromaTrail.class,												"chroma.trail");
+	TRAIL(BlockChromaTrail.class,												"chroma.trail"),
+	BRIDGE(BlockDynamicBridge.class,			ItemBlockMultiType.class,		"chroma.bridge"),
+	BRIDGECONTROL(BlockBridgeControl.class,		ItemBlockMultiType.class,		"chroma.bridgecontrol");
 
 	private Class blockClass;
 	private String blockName;
@@ -238,6 +242,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case TIEREDPLANT:
 			case DECOPLANT:
 			case DECOFLOWER:
+			case PLANT:
 				return Material.plants;
 			case CHROMA:
 				//case ACTIVECHROMA:
@@ -367,7 +372,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case LAMPBLOCK:
 			case POWERTREE:
 			case VOIDRIFT:
-				return CrystalElement.elements[meta].displayName+" "+this.getBasicName();
+				return CrystalElement.elements[meta%16].displayName+" "+this.getBasicName();
 			case HIVE:
 				return meta == 0 ? "Crystal Hive" : "Pure Hive";
 			case PYLON:
@@ -402,6 +407,9 @@ public enum ChromaBlocks implements BlockEnum {
 				return StatCollector.translateToLocal("chromablock.gravity."+BlockGravityTile.GravityTiles.list[meta].name().toLowerCase(Locale.ENGLISH));
 			case ANTKEY:
 				return this.getBasicName()+" Size "+(meta+1);
+			case BRIDGE:
+			case BRIDGECONTROL:
+				return this.getBasicName();
 			default:
 				return "";
 		}
@@ -439,6 +447,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case SELECTIVEGLASS:
 			case PAD:
 			case TRAIL:
+			case BRIDGE:
+			case BRIDGECONTROL:
 				return false;
 			default:
 				return true;

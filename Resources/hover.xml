@@ -48,6 +48,9 @@
 	<ore_spacerift>
 		This material might provide a key to being able to relocate oneself at will.
 	</ore_spacerift>
+	<ore_rainbow>
+		Refractory gems are embedded in this stone. Maybe they can be used to help focus the energy from pylons.
+	</ore_rainbow>
 	<plant_flower>
 		This gently glowing flower seems to weakly radiate energy; if extracted, its contents likely are crucial in maintaining an aura.
 	</plant_flower>

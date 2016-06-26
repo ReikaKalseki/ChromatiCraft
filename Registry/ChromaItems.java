@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.ItemCrystalCell;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
 import Reika.ChromatiCraft.ModInterface.ItemWarpProofer;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Exception.RegistrationException;
@@ -83,6 +84,7 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public enum ChromaItems implements ItemEnum {
@@ -358,7 +360,7 @@ public enum ChromaItems implements ItemEnum {
 			case COLOREDMOD:
 				return ChromaNames.coloredModInteractNames.length*CrystalElement.elements.length;
 			case SEED:
-				return 16; //was 32
+				return ReikaMathLibrary.intpow2(2, Modifier.list.length+4);//16; //was 32
 			case ENDERCRYSTAL:
 				return 2;
 			case CRAFTING:

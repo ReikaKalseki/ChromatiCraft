@@ -36,6 +36,7 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		for (WirelessSource s : c) {
 			if (s.canConduct() && s.canTransmitTo(this)) {
 				if (s.request(e, amt, xCoord, yCoord, zCoord)) {
+					energy.addValueToColor(e, amt);
 					ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.WIRELESS.ordinal(), this, 64, s.getX(), s.getY(), s.getZ(), e.ordinal(), amt);
 					return true;
 				}

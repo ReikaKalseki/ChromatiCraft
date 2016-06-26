@@ -36,7 +36,7 @@ public class ChromaCheck implements TileEntityCheck {
 		Block b = world.getBlock(x, y, z);
 		if (b == ChromaBlocks.CHROMA.getBlockInstance()) {
 			TileEntityChroma te = (TileEntityChroma)world.getTileEntity(x, y, z);
-			return te.getElement() == color && te.getBerryCount() == TileEntityChroma.BERRY_SATURATION;
+			return te != null && te.getElement() == color && te.getBerryCount() == TileEntityChroma.BERRY_SATURATION;
 		}
 		return false;
 	}

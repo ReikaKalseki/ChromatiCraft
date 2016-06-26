@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary;
@@ -22,6 +24,8 @@ import net.minecraftforge.common.DimensionManager;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome.ChromaDimensionSubBiome;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCentral;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenChromaMountains;
@@ -39,11 +43,15 @@ import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromaDimensionManager {
 
 	private static final HashSet<BlockKey> bannedBlocks = new HashSet();
+	private static final PlayerMap<DimensionStructureGenerator> playersInStructures = new PlayerMap();
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -217,6 +225,7 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimension(World world) {
+		playersInStructures.clear();
 		if (world instanceof WorldServer)
 			((WorldServer)world).flush(); //Hopefully kill all I/O
 		getChunkProvider(world).clearCaches();
@@ -229,6 +238,7 @@ public class ChromaDimensionManager {
 	}
 
 	public static void resetDimensionClient() {
+		playersInStructures.clear();
 		System.gc();
 		String path = DragonAPICore.getMinecraftDirectoryString()+"mods/VoxelMods/voxelMap/cache/";
 		File f = new File(path);
@@ -248,6 +258,32 @@ public class ChromaDimensionManager {
 
 	public static boolean isBannedDimensionBlock(Block b, int meta) {
 		return bannedBlocks.contains(new BlockKey(b, meta));
+	}
+
+	public static void tickPlayersInStructures(World world) {
+		for (UUID id : playersInStructures.keySet()) {
+			EntityPlayer ep = world.func_152378_a(id);
+			if (ep != null) {
+				playersInStructures.directGet(id).tickPlayer(ep);
+			}
+		}
+	}
+
+	public static DimensionStructureGenerator getStructurePlayerIsIn(EntityPlayer ep) {
+		return playersInStructures.get(ep);
+	}
+
+	public static void addPlayerToStructure(EntityPlayer ep, DimensionStructureGenerator structure) {
+		playersInStructures.put(ep, structure);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void addPlayerToStructureClient(EntityPlayer ep, DimensionStructureType structure) {
+		playersInStructures.put(ep, structure.createGenerator());
+	}
+
+	public static void removePlayerFromStructure(EntityPlayer ep) {
+		playersInStructures.remove(ep);
 	}
 
 	static {

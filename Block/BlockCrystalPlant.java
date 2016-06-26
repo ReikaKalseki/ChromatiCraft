@@ -13,6 +13,8 @@ import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,21 +27,31 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
+import Reika.DragonAPI.Instantiable.ParticleController.SpiralMotionController;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockCrystalPlant extends Block {
 
 	private IIcon colorIcon;
+	private IIcon colorIcon2;
 	private IIcon fastIcon;
+	private IIcon fastIcon2;
 	private IIcon center;
 
 	private static final Random rand = new Random();
 
-	public BlockCrystalPlant(Material xMaterial) {
-		super(Material.plants);
+	public BlockCrystalPlant(Material mat) {
+		super(mat);
 		this.setTickRandomly(true);
 		this.setLightOpacity(0);
 		this.setHardness(0);
@@ -81,8 +93,55 @@ public class BlockCrystalPlant extends Block {
 	}
 
 	@Override
-	public void randomDisplayTick(World world, int x, int y, int z, Random random) {
+	@SideOnly(Side.CLIENT)
+	public void randomDisplayTick(World world, int x, int y, int z, Random r) {
+		TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+		if (te.isPure()) {
+			double rad = ReikaRandomHelper.getRandomPlusMinus(0.375, 0.125);
+			double a = Math.toRadians(r.nextDouble()*360);
+			double px = x+0.5+rad*Math.cos(a);
+			double pz = z+0.5+rad*Math.sin(a);
+			EntityBlurFX fx = new EntityBlurFX(world, px, y+r.nextDouble(), pz);
+			fx.setIcon(ChromaIcons.BIGFLARE).setLife(5);
+			fx.setColor(ReikaColorAPI.mixColors(te.getColor().getColor(), 0xffffff, 0.8F));
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
+			if (te.canHarvest()) {
+				for (int i = 0; i < 4; i++) {
+					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1);
+					fx = new EntityBlurFX(world, x+0.5, y+1.03125+0.1875*r.nextDouble(), z+0.5).setLife(20).setRapidExpand().setScale(s);
+					fx.setColor(ReikaColorAPI.mixColors(te.getColor().getColor(), 0xffffff, 0.5F)).setIcon(ChromaIcons.FADE_CLOUD);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
+
+			if (te.is(Modifier.BOOSTED)) {
+				px = x+r.nextDouble();
+				pz = z+r.nextDouble();
+				fx = new EntityBlurFX(world, px, y+r.nextDouble(), pz).setColor(te.getColor().getColor());
+				fx.setGravity(-0.03125F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				float fs = (float)ReikaRandomHelper.getRandomBetween(0.125, 0.75);
+				EntityFX fx2 = new EntityBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+			}
+			if (te.is(Modifier.PRIMAL)) {
+				rad = 0.25;
+				a = System.currentTimeMillis()/40D;
+				px = x+0.5;
+				pz = z+0.5;
+				double v = 0;//0.03125;
+				double vx = v*Math.cos(a);
+				double vz = v*Math.sin(a);
+				fx = new EntityBlurFX(world, px, y+0.9375, pz, vx, 0, vz).setColor(te.getColor().getColor()).setRapidExpand();
+				SpiralMotionController m = new SpiralMotionController(x+0.5, z+0.5, 15, 0.015, rad, 0, a);
+				fx.setMotionController(m).setPositionController(m).setLife(100);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				float fs = (float)ReikaRandomHelper.getRandomBetween(0.125, 0.75);
+				EntityFX fx2 = new EntityBlurFX(world, px, fx.posY, pz).setColor(0xffffff).lockTo(fx).setScale(fs).setRapidExpand().setLife(100);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+			}
+		}
 	}
 
 	@Override
@@ -101,7 +160,7 @@ public class BlockCrystalPlant extends Block {
 	@Override
 	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
 		TileEntityCrystalPlant te = (TileEntityCrystalPlant)iba.getTileEntity(x, y, z);
-		return te.emitsLight() ? 15 : 0;
+		return te.emitsLight() ? te.isPure() ? 15 : 12 : 0;
 	}
 
 	@Override
@@ -141,7 +200,7 @@ public class BlockCrystalPlant extends Block {
 
 	@Override
 	public int damageDropped(int meta) {
-		return meta+16;
+		return meta%16+16;
 	}
 
 	@Override
@@ -172,6 +231,12 @@ public class BlockCrystalPlant extends Block {
 	}
 
 	@Override
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) {
+		TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+		return te.is(Modifier.PRIMAL) ? fastIcon2 : fastIcon;
+	}
+
+	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer ep, int s, float a, float b, float c) {
 		TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
 		if (te.canHarvest()) {
@@ -183,7 +248,9 @@ public class BlockCrystalPlant extends Block {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		fastIcon = ico.registerIcon("chromaticraft:plant");
+		fastIcon2 = ico.registerIcon("chromaticraft:plant_primal");
 		colorIcon = ico.registerIcon("chromaticraft:plant_gray");
+		colorIcon2 = ico.registerIcon("chromaticraft:plant_gray_primal");
 		center = ico.registerIcon("chromaticraft:crystal/bloom");
 	}
 
@@ -222,7 +289,7 @@ public class BlockCrystalPlant extends Block {
 	}*/
 
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z)
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer ep)
 	{
 		int meta = world.getBlockMetadata(x, y, z);
 		return new ItemStack(ChromaBlocks.PLANT.getBlockInstance(), 1, meta);

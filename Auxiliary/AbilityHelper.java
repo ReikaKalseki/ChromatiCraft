@@ -1919,15 +1919,30 @@ public class AbilityHelper {
 	@ModDependent(ModList.BLOODMAGIC)
 	public void onUseSacrificeOrb(SacrificeKnifeUsedEvent evt) {
 		EntityPlayer ep = evt.player;
-		ItemStack is = ep.getCurrentEquippedItem();
-		if (is != null) {
-			if (is.getItem() == BloodMagicHandler.getInstance().orbID || BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
-				if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
-					ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
-					tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
-					if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
-						Chromabilities.LIFEPOINT.trigger(ep, 3);
-						evt.shouldDrainHealth = false;
+		if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+			ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
+			tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
+			if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
+				Chromabilities.LIFEPOINT.trigger(ep, 0);
+				evt.shouldDrainHealth = false;
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	@ModDependent(ModList.BLOODMAGIC)
+	public void onUseBloodOrb(PlayerInteractEvent evt) {
+		if (evt.action == Action.RIGHT_CLICK_AIR) {
+			EntityPlayer ep = evt.entityPlayer;
+			ItemStack is = ep.getCurrentEquippedItem();
+			if (is != null) {
+				if (BloodMagicHandler.getInstance().isBloodOrb(is.getItem())) {
+					if (Chromabilities.LIFEPOINT.enabledOn(ep)) {
+						ElementTagCompound tag = AbilityHelper.instance.getUsageElementsFor(Chromabilities.LIFEPOINT, ep);
+						tag.maximizeWith(TileEntityLifeEmitter.getLumensPerHundredLP());
+						if (PlayerElementBuffer.instance.playerHas(ep, tag)) {
+							Chromabilities.LIFEPOINT.trigger(ep, 2);
+						}
 					}
 				}
 			}

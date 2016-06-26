@@ -63,6 +63,8 @@ import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.entity.player.PlayerPickupXpEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent;
@@ -121,6 +123,7 @@ import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
@@ -176,6 +179,18 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void dioramaSpawners(PlayerInteractEvent evt) {
+		if (ChromaDimensionManager.getStructurePlayerIsIn(evt.entityPlayer) instanceof BridgeGenerator) {
+			if (evt.action == Action.RIGHT_CLICK_BLOCK) {
+				if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.BRIDGECONTROL.getBlockInstance()) {
+					return;
+				}
+			}
+			evt.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent

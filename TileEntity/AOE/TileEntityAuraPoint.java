@@ -23,6 +23,9 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -48,6 +51,7 @@ import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
@@ -81,6 +85,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	private static final int NEW_CROPS_PER_TICK = 256;
 	private static final int CROPS_PER_TICK = 16;
 	private static final int CROP_UPDATES = 8;
+
+	private static final CropType sugarcane = new SugarCaneCrop();
 
 	private int hue;
 	private float saturation;
@@ -273,6 +279,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 	private CropType getCropAt(World world, Coordinate c) {
 		Block b = c.getBlock(world);
+		if (b == Blocks.reeds)
+			return sugarcane;
 		int meta = c.getBlockMetadata(world);
 		CropType type = ReikaCropHelper.getCrop(b);
 		if (type == null)
@@ -424,6 +432,65 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 		EntityPlayer ep = this.getPlacer();
 		NBTTagCompound tag = ReikaPlayerAPI.getDeathPersistentNBT(ep);
 		tag.removeTag(NBT_TAG);
+	}
+
+	private static class SugarCaneCrop implements CropType {
+
+		@Override
+		public boolean existsInGame() {
+			return true;
+		}
+
+		@Override
+		public boolean isRipe(World world, int x, int y, int z) {
+			return false;
+		}
+
+		@Override
+		public void setHarvested(World world, int x, int y, int z) {
+			y++;
+			while(world.getBlock(x, y, z) == Blocks.reeds) {
+				world.setBlockToAir(x, y, z);
+				y++;
+			}
+			world.setBlockMetadataWithNotify(x, y, z, 0, 3);
+		}
+
+		@Override
+		public void makeRipe(World world, int x, int y, int z) {
+			world.setBlockMetadataWithNotify(x, y, z, 15, 3);
+		}
+
+		@Override
+		public int getGrowthState(World world, int x, int y, int z) {
+			return world.getBlockMetadata(x, y, z);
+		}
+
+		@Override
+		public boolean isSeedItem(ItemStack is) {
+			return false;
+		}
+
+		@Override
+		public boolean destroyOnHarvest() {
+			return true;
+		}
+
+		@Override
+		public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int fortune) {
+			return ReikaJavaLibrary.makeListFrom(new ItemStack(Items.reeds));
+		}
+
+		@Override
+		public boolean isCrop(Block id, int meta) {
+			return id == Blocks.reeds;
+		}
+
+		@Override
+		public boolean neverDropsSecondSeed() {
+			return false;
+		}
+
 	}
 
 }

@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.World.Dimension.Structure.AltarGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GravityPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
@@ -281,7 +282,8 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		ANTFARM(AntFarmGenerator.class, "Fading Light"),
 		LASER(LaserPuzzleGenerator.class, "Chromatic Beams"),
 		PINBALL(PinballGenerator.class, "Expanding Motion"),
-		GRAVITY(GravityPuzzleGenerator.class, "Luma Bursts");
+		GRAVITY(GravityPuzzleGenerator.class, "Luma Bursts"),
+		BRIDGE(BridgeGenerator.class, "Dynamic Bridges");
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;
@@ -396,6 +398,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	public final void generateLootChest(int x, int y, int z, ForgeDirection dir, String chest, int bonus, ItemStack... extras) {
 		world.setTileEntity(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), BlockLootChest.getMeta(dir), new LootChestCallback(chest, bonus, extras));
+	}
+
+	public void tickPlayer(EntityPlayer ep) {
+
 	}
 
 	private static final class StructureDataCallback implements TileCallback {

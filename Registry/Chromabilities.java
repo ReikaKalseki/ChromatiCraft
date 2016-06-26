@@ -1331,8 +1331,9 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void convertBufferToLP(EntityPlayer ep, int data) {
-		//ep.heal(data); //undo damage dealt
-		PlayerElementBuffer.instance.removeFromPlayer(ep, TileEntityLifeEmitter.getLumensPerHundredLP().scale(100));
+		if (data > 0)
+			ep.heal(data); //undo damage dealt
+		PlayerElementBuffer.instance.removeFromPlayer(ep, TileEntityLifeEmitter.getLumensPerHundredLP());
 	}
 
 	public static boolean canPlayerExecuteAt(EntityPlayer ep, Ability a) {

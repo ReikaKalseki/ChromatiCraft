@@ -75,6 +75,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Iridesc
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenChunkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.LumenCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.RawCrystalRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.ThrowableGemRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.TransformationCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
@@ -268,6 +269,8 @@ public class RecipesCastingTable {
 			this.addRecipe(new CrystalLampRecipe(lamp, sr));
 
 			this.addRecipe(new RelayRecipe(e));
+
+			this.addRecipe(new ThrowableGemRecipe(e));
 
 			for (int k = 0; k < Bases.baseList.length; k++) {
 				Bases b = Bases.baseList[k];

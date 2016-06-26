@@ -89,7 +89,7 @@ public class PylonFinder {
 		net = CrystalNetworker.instance;
 		blacklist.add(this.getLocation(r));
 		user = ep;
-		isValidWorld = PylonGenerator.instance.canGenerateIn(r.getWorld());
+		isValidWorld = r.getWorld().provider.dimensionId == 0 || PylonGenerator.instance.canGenerateIn(r.getWorld());
 	}
 
 	CrystalPath findPylon() {

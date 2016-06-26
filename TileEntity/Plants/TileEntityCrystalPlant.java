@@ -27,7 +27,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityCrystalPlant extends TileEntity {
 
-	private final Random random = new Random();
+	private static final Random random = new Random();
+
+	private int flags;
 
 	private int growthTick = 2;
 	private long lastShardTick = -1;
@@ -43,27 +45,55 @@ public class TileEntityCrystalPlant extends TileEntity {
 	public void grow() {
 		if (growthTick > 0) {
 			growthTick--;
-			for (int i = 2; i < 6; i++) {
-				if (ReikaRandomHelper.doWithChance(25)) {
-					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-					int dx = xCoord+dir.offsetX;
-					int dy = yCoord+dir.offsetY;
-					int dz = zCoord+dir.offsetZ;
-					Block id = worldObj.getBlock(dx, dy, dz);
-					int meta = worldObj.getBlockMetadata(dx, dy, dz);
-					if (id == ChromaBlocks.PLANT.getBlockInstance() && meta == this.getColor().ordinal()) {
-						TileEntityCrystalPlant te = (TileEntityCrystalPlant)worldObj.getTileEntity(dx, dy, dz);
-						te.grow();
+			if (this.isPure()) {
+				for (int i = 2; i < 6; i++) {
+					if (ReikaRandomHelper.doWithChance(this.is(Modifier.PRIMAL) ? 80 : this.is(Modifier.BOOSTED) ? 30 : 5)) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						int dx = xCoord+dir.offsetX;
+						int dy = yCoord+dir.offsetY;
+						int dz = zCoord+dir.offsetZ;
+						Block id = worldObj.getBlock(dx, dy, dz);
+						int meta = worldObj.getBlockMetadata(dx, dy, dz);
+						if (id == ChromaBlocks.PLANT.getBlockInstance() && meta == this.getColor().ordinal()) {
+							TileEntityCrystalPlant te = (TileEntityCrystalPlant)worldObj.getTileEntity(dx, dy, dz);
+							te.grow();
+						}
 					}
 				}
 			}
 		}
+		else if (!this.is(Modifier.PRIMAL)) {
+			this.tryGrowPrimal();
+		}
 		this.updateLight();
 	}
 
+	private void tryGrowPrimal() {
+		if (random.nextInt(60) > 0)
+			return;
+		for (int i = 2; i < 6; i++) {
+			boolean flag = false;
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+			int dx = xCoord+dir.offsetX;
+			int dy = yCoord+dir.offsetY;
+			int dz = zCoord+dir.offsetZ;
+			Block id = worldObj.getBlock(dx, dy, dz);
+			int meta = worldObj.getBlockMetadata(dx, dy, dz);
+			if (id == ChromaBlocks.PLANT.getBlockInstance() && meta == this.getColor().ordinal()) {
+				TileEntityCrystalPlant te = (TileEntityCrystalPlant)worldObj.getTileEntity(dx, dy, dz);
+				if (te.is(Modifier.BOOSTED)) {
+					flag = true;
+				}
+			}
+			if (!flag)
+				return;
+		}
+		flags |= Modifier.PRIMAL.flag;
+	}
+
 	public void makeRipe() {
-		this.grow();
-		this.grow();
+		while(!this.canHarvest())
+			this.grow();
 	}
 
 	public void updateLight() {
@@ -74,21 +104,33 @@ public class TileEntityCrystalPlant extends TileEntity {
 	public void harvest(boolean drops) {
 		growthTick = 2;
 		if (drops) {
-			int rand = random.nextInt(20);
-			int num = 0;
-			if (rand == 0) {
-				num = 2;
-			}
-			else if (rand < 5) {
-				num = 1;
-			}
-			int meta = this.getColor().ordinal();
-			for (int i = 0; i < num; i++)
-				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(meta+16));
-			long time = worldObj.getTotalWorldTime();
-			if (ChromaOptions.CRYSTALFARM.getState() && time-lastShardTick >= 600 && ReikaRandomHelper.doWithChance(2)) {
-				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
-				lastShardTick = time;
+			if (this.isPure() || random.nextInt(4) == 0) {
+				int meta = this.getColor().ordinal();
+				if (this.isPure() && !this.is(Modifier.PRIMAL)) {
+					int rand = random.nextInt(20);
+					int num = 0;
+					if (rand == 0) {
+						num = 2;
+					}
+					else if (rand < 5) {
+						num = 1;
+					}
+					for (int i = 0; i < num; i++) {
+						int smeta = meta+Modifier.IMPURE.flag;
+						if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
+							smeta = meta+Modifier.BOOSTED.flag;
+						ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(smeta));
+					}
+				}
+				long time = worldObj.getTotalWorldTime();
+				if (ChromaOptions.CRYSTALFARM.getState()) {
+					if (time-lastShardTick >= (this.is(Modifier.PRIMAL) ? 60 : this.is(Modifier.BOOSTED) ? 150 : 600)) {
+						if (ReikaRandomHelper.doWithChance(this.is(Modifier.PRIMAL) ? 10 : this.is(Modifier.BOOSTED) ? 5 : 2)) {
+							ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
+							lastShardTick = time;
+						}
+					}
+				}
 			}
 		}
 		this.updateLight();
@@ -123,24 +165,73 @@ public class TileEntityCrystalPlant extends TileEntity {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound NBT)
-	{
+	public void readFromNBT(NBTTagCompound NBT) {
 		super.readFromNBT(NBT);
 		growthTick = NBT.getInteger("growth");
 		lastShardTick = NBT.getLong("shard");
+		flags = NBT.getInteger("flags");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound NBT)
-	{
+	public void writeToNBT(NBTTagCompound NBT) {
 		super.writeToNBT(NBT);
 
 		NBT.setInteger("growth", growthTick);
 		NBT.setLong("shard", lastShardTick);
+		NBT.setInteger("flags", flags);
 	}
 
 	public int getGrowthState() {
 		return growthTick;
+	}
+
+	public void setStates(int meta) {
+		for (int i = 0; i < Modifier.list.length; i++) {
+			Modifier m = Modifier.list[i];
+			if (m.present(meta)) {
+				flags |= m.flag;
+			}
+		}
+	}
+
+	public boolean is(Modifier m) {
+		return m.present(flags);
+	}
+
+	public boolean isPure() {
+		return !this.is(Modifier.IMPURE);
+	}
+
+	public static enum Modifier {
+		IMPURE("Impure"),
+		BOOSTED("Enriched"),
+		PRIMAL("Primal");
+
+		private final int flag;
+		public final String displayName;
+
+		public static final Modifier[] list = values();
+
+		private Modifier(String s) {
+			flag = 1 << (this.ordinal()+4);
+			displayName = s;
+		}
+
+		public boolean present(int flags) {
+			return (flags & flag) != 0;
+		}
+
+		public static Modifier getFromFlag(int flags) {
+			for (int i = 0; i < list.length; i++) {
+				if (list[i].present(flags))
+					return list[i];
+			}
+			return null;
+		}
+
+		public boolean showsInCreative() {
+			return this != PRIMAL;
+		}
 	}
 
 }

@@ -35,9 +35,11 @@ public class CrystalPlantRenderer extends ChromaRenderBase {
 		TileEntityCrystalPlant tile = (TileEntityCrystalPlant)te;
 		if (tile.renderPod()) {
 			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDepthMask(false);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
 			GL11.glScalef(1.0F, -1.0F, -1.0F);
@@ -77,12 +79,8 @@ public class CrystalPlantRenderer extends ChromaRenderBase {
 				BlendMode.DEFAULT.apply();
 			}
 
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glDisable(GL11.GL_BLEND);
-			if (te.hasWorldObj())
-				GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+			GL11.glPopAttrib();
 			GL11.glPopMatrix();
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 

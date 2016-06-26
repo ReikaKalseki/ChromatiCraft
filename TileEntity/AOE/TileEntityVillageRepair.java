@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 
 
 public class TileEntityVillageRepair extends TileEntityChromaticBase {
@@ -30,8 +33,14 @@ public class TileEntityVillageRepair extends TileEntityChromaticBase {
 			this.findVillage(world, x, y, z);
 		}
 
-		if (village != null) {
-
+		if (village != null && world.isRemote) {
+			for (int i = 0; i < 16; i++) {
+				double a = Math.toRadians(rand.nextDouble()*360);
+				double px = village.getCenter().posX+0.5+village.getVillageRadius()*Math.cos(a);
+				double pz = village.getCenter().posZ+0.5+village.getVillageRadius()*Math.sin(a);
+				EntityFX fx = new EntityBlurFX(world, px, y, pz).setScale(2).setGravity(-0.03125F);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
 	}
 

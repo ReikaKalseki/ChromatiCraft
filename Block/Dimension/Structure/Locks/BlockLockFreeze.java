@@ -94,7 +94,8 @@ public class BlockLockFreeze extends BlockContainer {
 		}
 
 		private void freeze(int time) {
-			this.getGenerator().freezeLocks(worldObj, this.getChannel(), time);
+			if (this.getGenerator() != null)
+				this.getGenerator().freezeLocks(worldObj, this.getChannel(), time);
 			this.setTime(time);
 		}
 

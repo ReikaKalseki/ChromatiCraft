@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -16,7 +18,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant.Modifier;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
@@ -24,6 +31,17 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 
 	public ItemCrystalSeeds(int tex) {
 		super(tex);
+	}
+
+	@Override
+	public int getNumberTypes() {
+		return ChromaItems.getEntryByID(this).getNumberMetadatas();
+	}
+
+	@Override
+	protected boolean isMetaInCreative(int meta) {
+		meta = meta & 0xfffffff0;
+		return ReikaMathLibrary.isPowerOfTwo(meta) && (DragonAPICore.isReikasComputer() || Modifier.getFromFlag(meta).showsInCreative());
 	}
 
 	/*
@@ -63,8 +81,20 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 			if (!player.capabilities.isCreativeMode)
 				--item.stackSize;
 			world.setBlock(x, y, z, ChromaBlocks.PLANT.getBlockInstance(), item.getItemDamage()%16, 3);
+			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+			te.setStates(item.getItemDamage());
 			ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.grass);
 			return true;
+		}
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		for (int i = 0; i < Modifier.list.length; i++) {
+			Modifier m = Modifier.list[i];
+			if (m.present(is.getItemDamage())) {
+				li.add(m.displayName);
+			}
 		}
 	}
 

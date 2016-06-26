@@ -216,9 +216,10 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	@Override
 	protected void onLinkTo(World world, int x, int y, int z, LinkedTile tile) {
 		TileEntityRift te = (TileEntityRift)tile;
-		if (ModList.OPENCOMPUTERS.isLoaded()) {
+		if (ModList.OPENCOMPUTERS.isLoaded() && !world.isRemote) {
 			for (int i = 0; i < 6; i++) {
-				((Node)te.sidedOCNode[dirs[i].getOpposite().ordinal()]).connect((Node)sidedOCNode[i]);
+				if (sidedOCNode[i] != null && te.sidedOCNode[i] != null)
+					((Node)te.sidedOCNode[dirs[i].getOpposite().ordinal()]).connect((Node)sidedOCNode[i]);
 			}
 		}
 	}
@@ -228,10 +229,13 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 		color = 0xffffff;
 		redstoneCache = new int[6];
 		singleDirection = null;
-		if (ModList.OPENCOMPUTERS.isLoaded() && this.getOther() != null) {
-			for (int i = 0; i < 6; i++) {
-				if (sidedOCNode[i] != null)
-					((Node)sidedOCNode[i]).disconnect(((Node)this.getOther().sidedOCNode[i]));
+		if (ModList.OPENCOMPUTERS.isLoaded() && !worldObj.isRemote) {
+			TileEntityRift te = this.getOther();
+			if (te != null) {
+				for (int i = 0; i < 6; i++) {
+					if (sidedOCNode[i] != null && te.sidedOCNode[i] != null)
+						((Node)sidedOCNode[i]).disconnect(((Node)te.sidedOCNode[i]));
+				}
 			}
 		}
 	}
@@ -240,9 +244,9 @@ IEssentiaTransport, IAspectContainer, ISidedInventory, ChunkLoadingTile, IManaCo
 	protected void onResetOther(LinkedTile tile) {
 		TileEntityRift te = (TileEntityRift)tile;
 		te.color = 0xffffff;
-		if (ModList.OPENCOMPUTERS.isLoaded()) {
+		if (ModList.OPENCOMPUTERS.isLoaded() && !worldObj.isRemote) {
 			for (int i = 0; i < 6; i++) {
-				if (te.sidedOCNode[i] != null)
+				if (sidedOCNode[i] != null && te.sidedOCNode[i] != null)
 					((Node)te.sidedOCNode[i]).disconnect(((Node)sidedOCNode[i]));
 			}
 		}

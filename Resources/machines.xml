@@ -560,22 +560,22 @@
 
 		</note>
 	</villagerepair>
-	<name>
+	<wireless>
 		<desc>
-
+			You are already very familiar with the fact that certain constructs require energy. Most draw that energy directly off the repeater network, and some use the relay system. However, others seem to need to be in proximity to a node of sorts, which weakly radiates energy around it. It even appears to be capable of passing through solid barriers, though it unsuprisingly is rather less efficient when it does.
 		</desc>
 		<note>
 
 		</note>
-	</name>
-	<name>
+	</wireless>
+	<areabreaker>
 		<desc>
-
+			For some reason, you decided that the bulk of your home would be underground. That of course means clearing away the rock, gravel, and other materials in the way, and this presents something of a problem. You could spent hours whacking at the rock with a pickaxe, hammer, or other tool, but that is a waste of your time. You have in the past tried a mechanical device to clear areas, but it was only capable of rectangular areas, and worse it destroyed the minerals in its target volume (or, with modification, yielded the materials, but then left orange piping all over the room). You need another alternative.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</areabreaker>
 	<name>
 		<desc>
 

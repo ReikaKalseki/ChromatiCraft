@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -130,6 +131,14 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Ability c = abilities.get(index);
 		boolean has = Chromabilities.playerHasAbility(player, c);
+
+		int move = Mouse.getDWheel();
+		if (move != 0 && dx == 0) {
+			this.markButtons(false);
+			if (!((move < 0 && index == 0) || (move > 0 && index == abilities.size()-1)))
+				dx += Math.signum(move);
+		}
+
 		double px = 2D*Math.abs(dx)/width;
 		int sp = Math.max(1, (int)(360D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px))));
 		if (dx > 0) {

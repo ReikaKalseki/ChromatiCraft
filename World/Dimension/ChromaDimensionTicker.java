@@ -91,6 +91,8 @@ public class ChromaDimensionTicker implements TickHandler {
 					if (!world.isRemote) {
 						this.unloadChunks();
 					}
+
+					ChromaDimensionManager.tickPlayersInStructures(world);
 				}
 				break;
 			case CLIENT:

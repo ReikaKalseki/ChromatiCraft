@@ -50,6 +50,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -296,6 +297,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			if (!sentPlayers.contains(uid)) {
 				sentPlayers.add(uid);
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.STRUCTUREENTRY.ordinal(), ep, structure.ordinal());
+				ChromaDimensionManager.addPlayerToStructure(ep, this.getStructure());
 			}
 		}
 	}
@@ -351,6 +353,8 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			case PINBALL:
 				break;
 			case GRAVITY:
+				break;
+			case BRIDGE:
 				break;
 		}
 	}
@@ -565,8 +569,12 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 
 	@Override
 	public boolean breakByPlayer(EntityPlayer ep) {
-		if (worldObj.isRemote)
+		if (worldObj.isRemote) {
+			if (this.hasStructure()) {
+				ChromaDimensionManager.removePlayerFromStructure(ep);
+			}
 			return true;
+		}
 		if (ep.capabilities.isCreativeMode) {
 			if (this.hasStructure())
 				this.openStructure();
@@ -597,6 +605,7 @@ public class TileEntityDimensionCore extends TileEntityLocusPoint implements NBT
 			//}
 			//else {
 			ProgressionManager.instance.markPlayerCompletedStructureColor(ep, color, true, true);
+			ChromaDimensionManager.removePlayerFromStructure(ep);
 			this.openStructure();
 			//}
 		}

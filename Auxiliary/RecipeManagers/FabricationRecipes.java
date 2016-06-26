@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
@@ -27,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 
 public class FabricationRecipes {
 
@@ -118,6 +120,18 @@ public class FabricationRecipes {
 				tag.addValueToColor(CrystalElement.BLACK, 20000);
 				tag.addValueToColor(CrystalElement.GREEN, 20000);
 				this.addRecipe(item, tag);
+			}
+		}
+
+		if (ModList.BLOODMAGIC.isLoaded()) {
+			Item item = BloodMagicHandler.getInstance().demonShardID;
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 80000);
+				tag.addValueToColor(CrystalElement.BLACK, 20000);
+				tag.addValueToColor(CrystalElement.MAGENTA, 40000);
+				tag.addValueToColor(CrystalElement.LIGHTGRAY, 20000);
+				this.addRecipe(new ItemStack(item), tag);
 			}
 		}
 

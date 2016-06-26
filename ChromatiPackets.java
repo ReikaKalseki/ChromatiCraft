@@ -548,7 +548,9 @@ public class ChromatiPackets implements PacketHandler {
 					DimensionPingEvent.addPing(data[0], data[1], data[2]);
 					break;
 				case STRUCTUREENTRY:
-					ChromaOverlays.instance.addStructureText(DimensionStructureType.types[data[0]]);
+					DimensionStructureType type = DimensionStructureType.types[data[0]];
+					ChromaDimensionManager.addPlayerToStructureClient(ep, type);
+					ChromaOverlays.instance.addStructureText(type);
 					break;
 				case CRYSTALMUS:
 					((TileEntityCrystalMusic)tile).doParticles(world, data[0], data[1], data[2], CrystalElement.elements[data[3]]);

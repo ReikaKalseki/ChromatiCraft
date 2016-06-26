@@ -87,6 +87,7 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 				br.silkTouch = EnchantmentHelper.getSilkTouchModifier(ep);
 				BlockReplace brp = new BlockReplace(ep, id, meta, mode);
 				brp.silkTouch = br.silkTouch;
+				br.causeUpdates = false;
 				if (mode == TransitionMode.VOLUMETRIC) {
 					br.bounds = this.getStoredBox(is);
 					br.isOmni = true;
