@@ -9,8 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Rendering;
 
-import java.util.Collection;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -19,8 +17,6 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator;
-import Reika.ChromatiCraft.World.Dimension.SkyRiverGenerator.RiverPoint;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import cpw.mods.fml.relauncher.Side;
@@ -72,7 +68,7 @@ public class SkyRiverRenderer {
 	}
 
 	private void doRenderRiver() {
-		Collection<RiverPoint> c = SkyRiverGenerator.getPointsWithin(Minecraft.getMinecraft().thePlayer, 128);
+
 	}
 
 }

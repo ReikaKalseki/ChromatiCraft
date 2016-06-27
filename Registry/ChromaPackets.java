@@ -133,6 +133,8 @@ public enum ChromaPackets {
 	COLLECTORRANGE(1),
 	LEAVEDIM(),
 	DIMSOUND(),
+	SKYRIVER_SYNC(),
+	SKYRIVER_STATE(1),
 	;
 
 	public final int numInts;

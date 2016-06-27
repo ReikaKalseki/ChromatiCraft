@@ -113,6 +113,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
+import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.PacketHandler;
@@ -738,6 +739,12 @@ public class ChromatiPackets implements PacketHandler {
 				case DIMSOUND:
 					if (ChromaOptions.RECEIVEDIMSOUND.getState())
 						ReikaSoundHelper.playClientSound(ChromaSounds.GOTODIM, ep, 0.75F, 1);
+					break;
+				case SKYRIVER_SYNC:
+					SkyRiverManagerClient.handleRayUpdatePacket(NBT);
+					break;
+				case SKYRIVER_STATE:
+					SkyRiverManagerClient.handleClientState(data[0]);
 					break;
 			}
 		}
