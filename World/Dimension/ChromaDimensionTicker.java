@@ -93,11 +93,13 @@ public class ChromaDimensionTicker implements TickHandler {
 					}
 
 					ChromaDimensionManager.tickPlayersInStructures(world);
+					SkyRiverManager.tickSkyRiverServer(world);
 				}
 				break;
 			case CLIENT:
 				if (!music.isEmpty())
 					this.playMusic();
+				SkyRiverManagerClient.handleSkyRiverMovementClient();
 				break;
 			case PLAYER:
 				EntityPlayer ep = (EntityPlayer)tickData[0];
