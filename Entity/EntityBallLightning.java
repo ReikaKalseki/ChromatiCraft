@@ -129,6 +129,12 @@ public class EntityBallLightning extends EntityLiving implements IEntityAddition
 	}
 
 	@Override
+	public String getCommandSenderName()
+	{
+		return color.displayName+" Ball Lightning";
+	}
+
+	@Override
 	protected void entityInit() {
 		super.entityInit();
 		velocity = new SphericalVector(0.15, rand.nextInt(360), rand.nextInt(360));

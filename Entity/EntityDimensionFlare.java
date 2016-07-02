@@ -93,6 +93,9 @@ public class EntityDimensionFlare extends Entity/*Living*/ {
 							if (target instanceof EntityPlayerMP)
 								this.sendMessageToPlayer();
 						}
+						if (rand.nextInt(80) == 0 && state == RelationState.ATTACK) {
+							OuterRegionsEvents.instance.doRejectAttack(this, target);
+						}
 					}
 				}
 			}

@@ -71,6 +71,7 @@ import Reika.ChromatiCraft.GUI.Tile.GuiLampController;
 import Reika.ChromatiCraft.GUI.Tile.GuiParticleSpawner;
 import Reika.ChromatiCraft.GUI.Tile.GuiRangedLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiRitualTable;
+import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCrystalBrewer;
@@ -118,6 +119,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Base.OneSlotContainer;
 import Reika.DragonAPI.Base.OneSlotMachine;
@@ -271,6 +273,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
 				if (te instanceof TileEntityParticleSpawner)
 					return new GuiParticleSpawner(player, (TileEntityParticleSpawner)te);
+				if (te instanceof TileEntityTeleportGate)
+					return new GuiTeleportGate(player, (TileEntityTeleportGate)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

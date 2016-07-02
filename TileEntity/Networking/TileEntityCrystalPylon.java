@@ -106,6 +106,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	private int energyStep = 1;
 	private long lastWorldTick;
 	private boolean forceLoad;
+	private boolean placedByHand = false;
 
 	public static final int RANGE = 48;
 
@@ -139,6 +140,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		crystalPositions.add(new Coordinate(-1, -3, 3));
 		crystalPositions.add(new Coordinate(3, -3, 1));
 		crystalPositions.add(new Coordinate(1, -3, 3));
+	}
+
+	public void markPlaced() {
+		placedByHand = true;
 	}
 
 	@Override
@@ -654,6 +659,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		super.writeToNBT(NBT);
 
 		NBT.setBoolean("load", forceLoad);
+		NBT.setBoolean("placed", placedByHand);
 	}
 
 	@Override
@@ -661,6 +667,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		super.readFromNBT(NBT);
 
 		forceLoad = NBT.getBoolean("load");
+		placedByHand = NBT.getBoolean("placed");
 	}
 
 	@Override
@@ -898,7 +905,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	@Override
 	public boolean canSupply(CrystalReceiver te) {
-		return true;
+		if (!placedByHand)
+			return true;
+		return TileEntityCreativeSource.canSupply(this, te);
 	}
 
 	@Override

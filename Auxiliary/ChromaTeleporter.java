@@ -59,8 +59,8 @@ public class ChromaTeleporter extends Teleporter {
 	}
 
 	@Override
-	public boolean makePortal(Entity e) { //NOOP - custom worldgen for return portal
-		return false;//super.makePortal(e);
+	public boolean makePortal(Entity e) {
+		return false;
 	}
 
 }

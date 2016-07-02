@@ -15,6 +15,7 @@ import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -94,7 +95,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return is != null && (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book) && this.areEnchantsValid(is);
+		return is != null && (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book || is.getItem() instanceof ItemShears) && this.areEnchantsValid(is);
 	}
 
 	private boolean areEnchantsValid(ItemStack is) {

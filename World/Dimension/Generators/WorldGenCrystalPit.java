@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.DimensionGenerators;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -36,7 +37,7 @@ public class WorldGenCrystalPit extends ChromaWorldGenerator {
 
 	@Override
 	public float getGenerationChance(World world, int cx, int cz, ChromaDimensionBiome biome) {
-		return 0.00625F;
+		return biome == Biomes.CENTER.getBiome() ? 0.00625F : 0.01875F;
 	}
 
 	@Override

@@ -110,12 +110,14 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -745,6 +747,16 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case SKYRIVER_STATE:
 					SkyRiverManagerClient.handleClientState(data[0]);
+					break;
+				case ACTIVEGATE:
+					((TileEntityTeleportGate)tile).activateClientside(world, x, y, z);
+					break;
+				case GATECACHE:
+					TileEntityTeleportGate.loadCacheFromNBT(NBT);
+					break;
+				case TRIGGERTELEPORT:
+					TileEntityTeleportGate.startTriggerTeleport((TileEntityTeleportGate)new WorldLocation(data[0], data[1], data[2], data[3]).getTileEntity(), (TileEntityTeleportGate)new WorldLocation(data[4], data[5], data[6], data[7]).getTileEntity());
+					ep.rotationPitch = 0;
 					break;
 			}
 		}

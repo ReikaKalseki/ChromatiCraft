@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
@@ -90,11 +91,7 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 
 	@Override
 	public boolean canSupply(CrystalReceiver te) {
-		EntityPlayer ep = this.getPlacer();
-		UUID other = te.getPlacerUUID();
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
-			return true;
-		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
+		return canSupply(this, te);
 	}
 
 	@Override
@@ -105,6 +102,14 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	@Override
 	public boolean playerCanUse(EntityPlayer ep) {
 		return ep.capabilities.isCreativeMode;
+	}
+
+	public static boolean canSupply(TileEntityChromaticBase src, CrystalReceiver te) {
+		EntityPlayer ep = src.getPlacer();
+		UUID other = te.getPlacerUUID();
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			return true;
+		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
 	}
 
 }

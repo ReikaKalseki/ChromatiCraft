@@ -108,6 +108,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -200,7 +201,8 @@ public enum ChromaTiles implements TileEnum {
 	METEOR("chroma.meteor",				ChromaBlocks.TILEMODELLED3,	TileEntityMeteorTower.class,		5, "RenderMeteorTower"),
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
 	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,		7),
-	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker");
+	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker"),
+	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate");
 
 	private final Class tile;
 	private final String name;
@@ -293,6 +295,7 @@ public enum ChromaTiles implements TileEnum {
 			case METEOR:
 			case LUMENWIRE:
 			case AREABREAKER:
+			case TELEPORT:
 				return true;
 			default:
 				return false;
@@ -580,6 +583,8 @@ public enum ChromaTiles implements TileEnum {
 				return 29;
 			case CLOAKING:
 				return 27;
+			case TELEPORT:
+				return 15;
 			default:
 				return 21;
 		}
@@ -673,6 +678,7 @@ public enum ChromaTiles implements TileEnum {
 			case LUMENWIRE:
 			case PARTICLES:
 			case WIRELESS:
+			case TELEPORT:
 				return true;
 			default:
 				return false;

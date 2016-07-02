@@ -176,6 +176,7 @@ public enum ChromaResearch implements ProgressElement {
 	VILLAGEREPAIR(	ChromaTiles.VILLAGEREPAIR,	ResearchLevel.MULTICRAFT,		ProgressStage.VILLAGECASTING),
 	AREABREAKER(	ChromaTiles.AREABREAKER,	ResearchLevel.MULTICRAFT),
 	WIRELESS(		ChromaTiles.WIRELESS,		ResearchLevel.MULTICRAFT,		ProgressStage.USEENERGY),
+	GATE(			ChromaTiles.TELEPORT,		ResearchLevel.ENDGAME,			ProgressStage.END),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -311,6 +312,7 @@ public enum ChromaResearch implements ProgressElement {
 	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
 	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END);
 	;
 
 	private final ItemStack iconItem;

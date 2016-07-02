@@ -1,45 +1,45 @@
 package Reika.ChromatiCraft.World.Dimension;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerChunkTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 public class SkyRiverManager {
 
 	public static final PlayerChunkTracker.TrackingCondition skyRiverCondition = new TrackingConditionSkyRiver();
 	private static final List<DelayedSkyRiverPacketEvent> delayedPackets = new LinkedList();
 	private static final Map<EntityPlayer, Integer> recentlyLeftSkyRiver = new HashMap(); // Allows
-																							// the
-																							// server
-																							// to
-																							// keep
-																							// up
-																							// after
-																							// leaving
-																							// the
-																							// SkyRiver
+	// the
+	// server
+	// to
+	// keep
+	// up
+	// after
+	// leaving
+	// the
+	// SkyRiver
 	private static final int SKYRIVER_ENTER_DELAY = 60; // ticks - allows the
-														// server to catch up
-														// after untrack.
+	// server to catch up
+	// after untrack.
 
 	public static void tickSkyRiverServer(World w) {
 		if (!w.isRemote) {
@@ -91,7 +91,7 @@ public class SkyRiverManager {
 		// checks if the player is between RiverPoint.position and
 		// RiverPoint.next
 		dst = ReikaVectorHelper.getDistFromPointToLine(rp.next.xCoord, rp.next.yCoord, rp.next.zCoord, rp.position.xCoord, rp.position.yCoord, rp.position.zCoord, player.posX, player.posY, player.posZ);
-		if (dst < SkyRiverGenerator.RIVER_TUNNLE_RADIUS) {
+		if (dst < SkyRiverGenerator.RIVER_TUNNEL_RADIUS) {
 			pullVector = Vec3.createVectorHelper(rp.next.xCoord - rp.position.xCoord, rp.next.yCoord - rp.position.yCoord, rp.next.zCoord - rp.position.zCoord);
 			nodeVector = Vec3.createVectorHelper(rp.next.xCoord - plPos.xCoord, rp.next.yCoord - plPos.yCoord, rp.next.zCoord - plPos.zCoord);
 		}
@@ -99,7 +99,7 @@ public class SkyRiverManager {
 			// checks if the player is between RiverPoint.prev and
 			// RiverPoint.position
 			dst = ReikaVectorHelper.getDistFromPointToLine(rp.position.xCoord, rp.position.yCoord, rp.position.zCoord, rp.prev.xCoord, rp.prev.yCoord, rp.prev.zCoord, player.posX, player.posY, player.posZ);
-			if (dst < SkyRiverGenerator.RIVER_TUNNLE_RADIUS) {
+			if (dst < SkyRiverGenerator.RIVER_TUNNEL_RADIUS) {
 				pullVector = Vec3.createVectorHelper(rp.position.xCoord - rp.prev.xCoord, rp.position.yCoord - rp.prev.yCoord, rp.position.zCoord - rp.prev.zCoord);
 				nodeVector = Vec3.createVectorHelper(rp.position.xCoord - plPos.xCoord, rp.position.yCoord - plPos.yCoord, rp.position.zCoord - plPos.zCoord);
 			}
@@ -109,10 +109,10 @@ public class SkyRiverManager {
 		}
 
 		pullVector = pullVector.normalize(); // Normalized vector parallel in
-												// the direction of the SkyRiver
+		// the direction of the SkyRiver
 		nodeVector = nodeVector.normalize(); // Normalized vector pointing from
-												// the player towards the next
-												// node.
+		// the player towards the next
+		// node.
 		pullVector = Vec3.createVectorHelper(pullVector.xCoord * 0.95 + nodeVector.xCoord * 0.05, pullVector.yCoord * 0.95 + nodeVector.yCoord * 0.05, pullVector.zCoord * 0.95 + nodeVector.zCoord * 0.05);
 		double multiplier = 3D;
 		player.motionX = pullVector.xCoord * multiplier;
@@ -150,7 +150,7 @@ public class SkyRiverManager {
 
 	public static void clearClientRiver(EntityPlayer player) {
 		synchronized (delayedPackets) { // Remove packets in queue. That way we
-										// don't send wrong data.
+			// don't send wrong data.
 			for (DelayedSkyRiverPacketEvent event : delayedPackets) {
 				if (event.recipient.equals(player))
 					event.aborted = true;
@@ -208,12 +208,12 @@ public class SkyRiverManager {
 			if (rp != null) {
 				DecimalPosition pos = rp.position;
 				for (int i = 0; i < SkyRiverGenerator.rays.size(); i++) { // Make
-																			// this
-																			// a
-																			// bit
-																			// prettier
-																			// one
-																			// day...
+					// this
+					// a
+					// bit
+					// prettier
+					// one
+					// day...
 					SkyRiverGenerator.Ray r = SkyRiverGenerator.rays.get(i);
 					if (r.getPoints().contains(pos)) {
 						startIndex = i;
@@ -226,15 +226,15 @@ public class SkyRiverManager {
 			int index = (startIndex + i) % SkyRiverGenerator.rays.size();
 			SkyRiverGenerator.Ray toSend = SkyRiverGenerator.rays.get(index);
 			schedulePacketSending(player, toSend, ticksDelay + (i * 10)); // 10
-																			// Ticks
-																			// as
-																			// delay
-																			// between
-																			// packets
-																			// to
-																			// split
-																			// the
-																			// load.
+			// Ticks
+			// as
+			// delay
+			// between
+			// packets
+			// to
+			// split
+			// the
+			// load.
 		}
 	}
 
@@ -266,7 +266,7 @@ public class SkyRiverManager {
 		private boolean aborted = false;
 
 		public DelayedSkyRiverPacketEvent(EntityPlayer player, SkyRiverGenerator.Ray toSend) {
-			this.recipient = player;
+			recipient = player;
 			this.toSend = toSend;
 		}
 

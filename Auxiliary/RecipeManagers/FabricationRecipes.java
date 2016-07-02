@@ -133,6 +133,17 @@ public class FabricationRecipes {
 				tag.addValueToColor(CrystalElement.LIGHTGRAY, 20000);
 				this.addRecipe(new ItemStack(item), tag);
 			}
+
+			item = BloodMagicHandler.getInstance().resourceID;
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.PINK, 20000);
+				tag.addValueToColor(CrystalElement.BLACK, 5000);
+				tag.addValueToColor(CrystalElement.MAGENTA, 10000);
+				tag.addValueToColor(CrystalElement.LIGHTGRAY, 5000);
+				this.addRecipe(new ItemStack(item, 1, BloodMagicHandler.BLUE_SHARD_META), tag);
+				this.addRecipe(new ItemStack(item, 1, BloodMagicHandler.RED_SHARD_META), tag);
+			}
 		}
 
 	}

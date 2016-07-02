@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.DragonAPI.ModList;
@@ -190,6 +191,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 		}
 		if (m == ChromaTiles.CONSOLE) {
 			((TileEntityCrystalConsole)te).placedDir = ReikaEntityHelper.getDirectionFromEntityLook(ep, false).getOpposite();
+		}
+		if (m == ChromaTiles.PYLON) {
+			((TileEntityCrystalPylon)te).markPlaced();
 		}
 		if (te instanceof NBTTile && is.stackTagCompound != null) {
 			((NBTTile)te).setDataFromItemStackTag(is);

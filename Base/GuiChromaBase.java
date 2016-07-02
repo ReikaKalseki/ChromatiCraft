@@ -78,7 +78,8 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		api.drawCenteredStringNoShadow(fontRendererObj, this.getGuiName(), xSize/2, this.getTitlePosition(), 0xffffff);
+		if (this.drawTitle())
+			api.drawCenteredStringNoShadow(fontRendererObj, this.getGuiName(), xSize/2, this.getTitlePosition(), 0xffffff);
 
 		if (tile instanceof IInventory && this.labelInventory()) {
 			int dx = this.inventoryLabelLeft() ? 8 : xSize-58;
@@ -88,6 +89,10 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 
 	protected String getGuiName() {
 		return tile.getName();
+	}
+
+	protected boolean drawTitle() {
+		return true;
 	}
 
 	protected int getTitlePosition() {

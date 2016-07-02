@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
@@ -128,7 +128,12 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		energy.addValueToColor(e, amt);
 		this.clamp(e);
 		receiveCooldown = this.getCooldownLength();
+		this.onReceiveEnergy(e, amt);
 		return add;
+	}
+
+	protected void onReceiveEnergy(CrystalElement e, int amt) {
+
 	}
 
 	public final int getEnergy(CrystalElement e) {

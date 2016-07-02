@@ -85,6 +85,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	private static final int NEW_CROPS_PER_TICK = 256;
 	private static final int CROPS_PER_TICK = 16;
 	private static final int CROP_UPDATES = 8;
+	private static final int CROP_RANGE = 96;
 
 	private static final CropType sugarcane = new SugarCaneCrop();
 
@@ -166,6 +167,10 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 	private int getHealRange() {
 		return (int)(Math.min(4+this.getTileEntityAge()/64, 32));
+	}
+
+	private int getCropRange() {
+		return (int)(Math.min(1+this.getTileEntityAge()/128, CROP_RANGE));
 	}
 
 	private void attack(World world, int x, int y, int z, EntityLivingBase e) {
@@ -255,8 +260,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 			cache.removeBlock(c);
 
 		for (int k = 0; k < NEW_CROPS_PER_TICK; k++) {
-			int dx = ReikaRandomHelper.getRandomPlusMinus(x, 64);
-			int dz = ReikaRandomHelper.getRandomPlusMinus(z, 64);
+			int dx = ReikaRandomHelper.getRandomPlusMinus(x, this.getCropRange());
+			int dz = ReikaRandomHelper.getRandomPlusMinus(z, this.getCropRange());
 			int dy = rand.nextInt(1+ReikaWorldHelper.getTopNonAirBlock(world, x, z));
 			Coordinate c = new Coordinate(dx, dy, dz);
 			if (cache.containsBlock(c)) {
@@ -279,8 +284,9 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 	private CropType getCropAt(World world, Coordinate c) {
 		Block b = c.getBlock(world);
-		if (b == Blocks.reeds)
+		if (b == Blocks.reeds) {
 			return sugarcane;
+		}
 		int meta = c.getBlockMetadata(world);
 		CropType type = ReikaCropHelper.getCrop(b);
 		if (type == null)

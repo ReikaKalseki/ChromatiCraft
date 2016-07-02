@@ -100,6 +100,8 @@ public enum ChromaIcons {
 	RING2("ring2"),
 	RING3("ring3"),
 	WIDEBAR("widebar"),
+	PORTALRING("portalring"),
+	CONDENSEFLARE("condenseflare4"),
 	;
 
 	private IIcon icon;

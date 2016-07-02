@@ -135,6 +135,9 @@ public enum ChromaPackets {
 	DIMSOUND(),
 	SKYRIVER_SYNC(),
 	SKYRIVER_STATE(1),
+	ACTIVEGATE(),
+	GATECACHE(),
+	TRIGGERTELEPORT(8),
 	;
 
 	public final int numInts;

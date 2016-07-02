@@ -121,8 +121,8 @@ public class RenderCloakingTower extends ChromaRenderBase {
 		int c = flag ? ReikaColorAPI.GStoHex((int)(222+32*Math.sin(t*8))) : ReikaColorAPI.GStoHex((int)(128+64*Math.sin(t*32)));
 		DecimalPosition p1 = new DecimalPosition(tile);
 		DecimalPosition p2 = new DecimalPosition(tile).offset(0, h, 0);
-		ChromaFX.drawEnergyTransferBeam(p1, p2, c, 0.35, 0.35, (byte)6, t);
-		ChromaFX.drawEnergyTransferBeam(p1, p2.offset(0, -2*h, 0), c, 0.35, 0.35, (byte)6, t);
+		ChromaFX.drawEnergyTransferBeam(p1, p2, c, 0.35, 0.35, (byte)6, t, true);
+		ChromaFX.drawEnergyTransferBeam(p1, p2.offset(0, -2*h, 0), c, 0.35, 0.35, (byte)6, t, true);
 		GL11.glPopAttrib();
 
 		int f1 = flag ? 0 : 1;

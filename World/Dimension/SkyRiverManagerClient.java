@@ -1,17 +1,17 @@
 package Reika.ChromatiCraft.World.Dimension;
 
-import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-
-import java.util.List;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class SkyRiverManagerClient {
 
@@ -44,7 +44,7 @@ public class SkyRiverManagerClient {
 			DecimalPosition pb = points.get(i + 1);
 			DecimalPosition pa = points.get(i - 1);
 			ChunkCoordIntPair ch = new ChunkCoordIntPair(MathHelper.floor_double(p1.xCoord) / 16, MathHelper.floor_double(p1.zCoord) / 16);
-			SkyRiverGenerator.RiverPoint p = new SkyRiverGenerator.RiverPoint(ch, p1, pa, pb);
+			SkyRiverGenerator.RiverPoint p = new SkyRiverGenerator.RiverPoint(i, ch, p1, pa, pb);
 			if (prev != null) {
 				prev.nextRiverPoint = p;
 			}
@@ -67,17 +67,17 @@ public class SkyRiverManagerClient {
 		switch (state) {
 			case 0:
 				handleRayClearPacket();
-			break;
+				break;
 			case 1:
 				SkyRiverManager.debugMessage("Client> StateChange: ALLOW");
 				allowClientSkyRiverMovement = true;
-			break;
+				break;
 			case 2:
 				SkyRiverManager.debugMessage("Client> StateChange: DENY");
 				allowClientSkyRiverMovement = false;
-			break;
+				break;
 			default:
-			break;
+				break;
 		}
 	}
 

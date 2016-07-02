@@ -245,6 +245,10 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, 
 
 		e.noClip = false;
 		e.velocityChanged = true;
+
+		if (e instanceof EntityDimensionFlare) {
+			((EntityDimensionFlare)e).aggroTo(firingPlayer);
+		}
 	}
 
 	@Override

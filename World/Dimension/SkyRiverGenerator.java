@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension;
 
-import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +17,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,8 +34,8 @@ import Reika.DragonAPI.Instantiable.Spline.SplineType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
-
-import javax.imageio.ImageIO;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 public class SkyRiverGenerator extends ThreadedGenerator {
 
@@ -44,9 +43,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 	protected static final MultiMap<ChunkCoordIntPair, RiverPoint> clientPoints = new MultiMap().setNullEmpty();
 	protected static final MultiMap<ChunkCoordIntPair, RiverPoint> serverPoints = new MultiMap().setNullEmpty();
 
-	public static final double RIVER_TUNNLE_RADIUS = 12.0D; // The tunnle radius
-															// of the actual
-															// SkyRiver
+	public static final double RIVER_TUNNEL_RADIUS = 12.0D; // The tunnel radius of the actual SkyRiver
 
 	private static final double INNER_RADIUS_MIN = 64;
 	private static final double INNER_RADIUS_MAX = 256;
@@ -54,7 +51,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 	private static final double LAYER2_RADIUS_MIN = 1024;
 	private static final double LAYER2_RADIUS_MAX = 3072;
 
-	private static final double OUTER_RADIUS_MIN = StructureCalculator.getMaximumPossibleDistance() + RegionMapper.MAX_BUFFER;
+	private static final double OUTER_RADIUS_MIN = StructureCalculator.getMaximumPossibleDistance() + RegionMapper.MAX_BUFFER+512;
 	private static final double OUTER_RADIUS_MAX = OUTER_RADIUS_MIN + 2048;
 
 	private static final double FULL_RAY_ANGLE = 45;
@@ -76,7 +73,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		rays.clear();
 		serverPoints.clear();
 		SkyRiverManager.sendRiverClearPacketsToAll(); // Clear all outdated
-														// SkyRivers!
+		// SkyRivers!
 		for (double d = 0; d < 360; d += FULL_RAY_ANGLE) {
 			double r1 = INNER_RADIUS_MIN + rand.nextDouble() * (INNER_RADIUS_MAX - INNER_RADIUS_MIN);
 			double r2 = OUTER_RADIUS_MIN + rand.nextDouble() * (OUTER_RADIUS_MAX - OUTER_RADIUS_MIN);
@@ -98,7 +95,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 				DecimalPosition nextPos = r.points.get(i + 1);
 				DecimalPosition prevPos = r.points.get(i - 1);
 				ChunkCoordIntPair ch = new ChunkCoordIntPair(MathHelper.floor_double(pos.xCoord) / 16, MathHelper.floor_double(pos.zCoord) / 16);
-				RiverPoint p = new RiverPoint(ch, pos, prevPos, nextPos);
+				RiverPoint p = new RiverPoint(i, ch, pos, prevPos, nextPos);
 				if (prev != null) {
 					prev.nextRiverPoint = p;
 				}
@@ -108,11 +105,11 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		}
 		if ((DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment()) || DragonAPICore.debugtest) {
 			// ChromatiCraft.logger.log("Generated rivers: "+serverPoints);
-			exportAsImage();
+			//this.exportAsImage();
 		}
 		SkyRiverManager.startSendingRiverPacketsToAll(); // Send new SkyRivers
-															// to all online
-															// players.
+		// to all online
+		// players.
 	}
 
 	private void exportAsImage() throws IOException {
@@ -156,11 +153,11 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		int x = MathHelper.floor_double(ep.posX) / 16;
 		int z = MathHelper.floor_double(ep.posZ) / 16;
 		int chRange = MathHelper.floor_double(range) / 16; // We're interested
-															// in the
-															// chunkRadius
-															// though... Even if
-															// it might not be
-															// 100% accurate.
+		// in the
+		// chunkRadius
+		// though... Even if
+		// it might not be
+		// 100% accurate.
 		Collection<RiverPoint> c2 = new LinkedList();
 		if (chRange == 0) {
 			Collection<RiverPoint> c = getPointsForChunk(x, z, isServerSide);
@@ -193,7 +190,7 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 
 	public static boolean isBetween(DecimalPosition pos1, DecimalPosition pos2, DecimalPosition toCheck) {
 		double dst = ReikaVectorHelper.getDistFromPointToLine(pos1.xCoord, pos1.yCoord, pos1.zCoord, pos2.xCoord, pos2.yCoord, pos2.zCoord, toCheck.xCoord, toCheck.yCoord, toCheck.zCoord);
-		return dst < RIVER_TUNNLE_RADIUS;
+		return dst < RIVER_TUNNEL_RADIUS;
 	}
 
 	public static RiverPoint getClosestPoint(EntityPlayer ep, double range, boolean isServerSide) {
@@ -321,9 +318,12 @@ public class SkyRiverGenerator extends ThreadedGenerator {
 		public final DecimalPosition next;
 		public final DecimalPosition prev;
 
+		public final int positionID;
+
 		public RiverPoint nextRiverPoint; // Util nextNode.
 
-		public RiverPoint(ChunkCoordIntPair ch, DecimalPosition pos, DecimalPosition prev, DecimalPosition next) {
+		public RiverPoint(int id, ChunkCoordIntPair ch, DecimalPosition pos, DecimalPosition prev, DecimalPosition next) {
+			positionID = id;
 			chunk = ch;
 			position = pos;
 			this.next = next;

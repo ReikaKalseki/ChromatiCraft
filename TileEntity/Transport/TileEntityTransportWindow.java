@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.TileEntity.Transport;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,7 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.PlayerTimer;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -40,7 +39,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 	private static final HashSet<BlockKey> acceptedFrames = new HashSet();
 
 	private boolean hasStructure;
-	private final PlayerMap<Integer> cooldowns = new PlayerMap();
+	private final WindowTimer cooldowns = new WindowTimer();
 	private WorldLocation target;
 	private WorldLocation source;
 
@@ -73,18 +72,7 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 			}
 
 			//ReikaJavaLibrary.pConsole(cooldowns);
-			for (UUID uid : new HashSet<UUID>(cooldowns.keySet())) {
-				EntityPlayer ep = world.func_152378_a(uid);
-				if (ep != null && !this.canTeleportPosition(this.getFacing(), ep)) {
-					int time = cooldowns.directGet(uid);
-					if (time > 1) {
-						cooldowns.directPut(uid, time-1);
-					}
-					else {
-						cooldowns.directRemove(uid);
-					}
-				}
-			}
+			cooldowns.tick(world);
 		}
 		else {
 			this.doParticles(world, x, y, z, meta);
@@ -322,6 +310,15 @@ public class TileEntityTransportWindow extends TileEntityChromaticBase implement
 		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.ordinal()));
 		acceptedFrames.add(new BlockKey(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.COBBLE.metadata));
 		acceptedFrames.add(new BlockKey(ChromaBlocks.SPECIALSHIELD.getBlockInstance()));
+	}
+
+	private class WindowTimer extends PlayerTimer {
+
+		@Override
+		protected boolean shouldTickPlayer(EntityPlayer ep) {
+			return TileEntityTransportWindow.this.canTeleportPosition(TileEntityTransportWindow.this.getFacing(), ep);
+		}
+
 	}
 
 }

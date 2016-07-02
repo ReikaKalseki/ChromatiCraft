@@ -120,7 +120,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 						DecimalPosition p2 = new DecimalPosition(te).offset(0, h, 0);
 						TileEntityCrystalPylon tp = te.getPylon(te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 						if (tp != null) {
-							ChromaFX.drawEnergyTransferBeam(p1, p2, tp.getColor().getColor(), 0.35, 0.35, (byte)6, t);
+							ChromaFX.drawEnergyTransferBeam(p1, p2, tp.getColor().getColor(), 0.35, 0.35, 6, t, true);
 						}
 						GL11.glPopMatrix();
 					}

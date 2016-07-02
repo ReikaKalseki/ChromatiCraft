@@ -27,6 +27,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
+import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -149,6 +150,10 @@ public class GuiStructure extends GuiBookSection {
 
 		if (page != ChromaResearch.CAVERN) {
 			render.addBlockHook(ChromaBlocks.RUNE.getBlockInstance(), new RuneRenderHook());
+		}
+
+		if (page == ChromaResearch.GATESTRUCT) {
+			render.addOverride(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TELEPORT.getCraftedProduct());
 		}
 
 		if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
@@ -301,6 +306,9 @@ public class GuiStructure extends GuiBookSection {
 				}
 			}
 			if (ChromaBlocks.PYLON.match(is2)) {
+				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
+			}
+			if (Block.getBlockFromItem(is2.getItem()) instanceof BlockModelledChromaTile) {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();
 			}
 			api.drawItemStackWithTooltip(itemRender, fontRendererObj, is2, dx, dy);

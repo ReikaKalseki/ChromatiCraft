@@ -576,14 +576,14 @@
 
 		</note>
 	</areabreaker>
-	<name>
+	<teleport>
 		<desc>
-
+			Being the prudent designer you are, you have decided to split your base into multiple structures spread across the landscape. However, this created a problem: Simply getting to them becomes something of a chore. However, another idea occurs to you: You could build a link of sorts, a gate, at any number of locations and be able to link between any two points at will. As long as the purity of the link is maintained, the two gates should work in harmony, and the supremacy of this method of travel will act as an emancipation from your current commute.
 		</desc>
 		<note>
 
 		</note>
-	</name>
+	</teleport>
 	<name>
 		<desc>
 

@@ -142,6 +142,9 @@ public class GuiMachineDescription extends GuiDescription {
 				a = b = -1.25;
 				GL11.glTranslated(0, -0.5, 0);
 			}
+			if (m == ChromaTiles.TELEPORT) {
+				a = b = -0.125;
+			}
 			if (m == ChromaTiles.PERSONAL) {
 				double s = 0.75;
 				GL11.glScaled(s, s, s);

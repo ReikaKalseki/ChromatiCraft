@@ -252,13 +252,12 @@ public class ChromaFX {
 		if (!li.isEmpty()) {
 			double t = (System.currentTimeMillis()/600D)%360;
 			t /= 30D;
-			byte sides = 6;
 			//double r = 0.35;//+0.025*Math.sin(t*12);
-			drawEnergyTransferBeams(src, li, r, sides, t);
+			drawEnergyTransferBeams(src, li, r, 6, t);
 		}
 	}
 
-	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r, byte sides, double tick) {
+	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r, int sides, double tick) {
 		if (!li.isEmpty()) {
 			ReikaRenderHelper.disableLighting();
 			GL11.glDisable(GL11.GL_CULL_FACE);
@@ -274,7 +273,7 @@ public class ChromaFX {
 			for (ImmutablePair<DecimalPosition, Double> pos : map.keySet()) {
 				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 				int clr = getBlendedColorFromElementList(lc, tick, 0.125);
-				drawEnergyTransferBeam(src, pos.left, clr, r, pos.right, sides, tick);
+				drawEnergyTransferBeam(src, pos.left, clr, r, pos.right, sides, tick, false);
 			}
 
 			//BlendMode.DEFAULT.apply();
@@ -285,11 +284,15 @@ public class ChromaFX {
 		}
 	}
 
-	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r1, double r2, byte sides, double tick) {
-		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r1, r2, sides, tick);
+	public static void drawEnergyTransferBeam(WorldLocation src, DecimalPosition pos, int color, double r1, double r2, int sides, double tick, boolean spiralTex) {
+		drawEnergyTransferBeam(new DecimalPosition(src), pos, color, r1, r2, sides, tick, spiralTex);
 	}
 
-	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r1, double r2, byte sides, double tick) {
+	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color, double r1, double r2, int sides, double tick, boolean spiralTex) {
+		drawEnergyTransferBeam(src, tgt, color, color, r1, r2, sides, tick, spiralTex);
+	}
+
+	public static void drawEnergyTransferBeam(DecimalPosition src, DecimalPosition tgt, int color1, int color2, double r1, double r2, int sides, double tick, boolean spiralTex) {
 		//v5.setColorRGBA_I(te.getColor().color.getJavaColor().brighter().getRGB(), te.renderAlpha+255);
 		//v5.addVertex(src.xCoord-te.xCoord+0.5, src.yCoord-te.yCoord+0.5, src.zCoord-te.zCoord+0.5);
 		Tessellator v5 = Tessellator.instance;
@@ -306,7 +309,6 @@ public class ChromaFX {
 		GL11.glRotated(ang2, 1, 0, 0);
 
 		v5.startDrawing(GL11.GL_TRIANGLE_STRIP);
-		v5.setColorOpaque_I(color);
 		v5.setBrightness(240);
 		for (int i = 0; i <= sides; i++) {
 			double f11a = r1*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
@@ -314,8 +316,11 @@ public class ChromaFX {
 			double f11b = r2*Math.sin(i % sides * Math.PI * 2 / sides) * 0.75;
 			double f12b = r2*Math.cos(i % sides * Math.PI * 2 / sides) * 0.75;
 			double f13 = i % sides * 1 / sides;
-			v5.addVertexWithUV(f11a, f12a, 0, tick, tick+1);
-			v5.addVertexWithUV(f11b, f12b, f8, tick+1, tick);
+			double d = spiralTex ? i/(double)sides : 0;
+			v5.setColorOpaque_I(color1);
+			v5.addVertexWithUV(f11a, f12a, 0, tick+d, tick+1+d);
+			v5.setColorOpaque_I(color2);
+			v5.addVertexWithUV(f11b, f12b, f8, tick+1+d, tick+d);
 		}
 
 		v5.draw();

@@ -45,6 +45,7 @@ import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.RotaryCraft.Registry.BlockRegistry;
 
@@ -429,6 +430,9 @@ public class PylonFinder {
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
+		}
+		if (ModList.TINKERER.isLoaded()) {
+			tracer.addTransparentBlock(TinkerBlockHandler.getInstance().clearGlassID);
 		}
 
 		tracer.addOpaqueBlock(Blocks.deadbush);
