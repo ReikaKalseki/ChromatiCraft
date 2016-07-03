@@ -584,7 +584,7 @@ public enum ChromaTiles implements TileEnum {
 			case CLOAKING:
 				return 27;
 			case TELEPORT:
-				return 15;
+				return 8;
 			default:
 				return 21;
 		}
@@ -656,6 +656,8 @@ public enum ChromaTiles implements TileEnum {
 			case ESSENTIARELAY:
 			case METEOR:
 			case WIRELESS:
+			case TELEPORT:
+				return true;
 			default:
 				return false;
 		}

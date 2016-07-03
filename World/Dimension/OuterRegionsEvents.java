@@ -46,7 +46,9 @@ public class OuterRegionsEvents {
 
 	public void tickPlayerInOuterRegion(EntityPlayer ep) {
 		if (ep.worldObj.rand.nextInt(400) == 0) {
-			this.spawnFlare(ep.worldObj, ep, 192);
+			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 192);
+			if (ep.worldObj.getEntitiesWithinAABB(EntityDimensionFlare.class, box).size() < 8)
+				this.spawnFlare(ep.worldObj, ep, 192);
 		}
 	}
 

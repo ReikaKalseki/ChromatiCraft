@@ -41,6 +41,11 @@ public class WarpGateRecipe extends PylonRecipe {
 		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.LIME), 4, -2);
 		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.LIME), -4, 2);
 		this.addAuxItem(ChromaStacks.getChargedShard(CrystalElement.LIME), 4, 2);
+
+		this.addAuraRequirement(CrystalElement.LIME, 60000);
+		this.addAuraRequirement(CrystalElement.BLACK, 20000);
+		this.addAuraRequirement(CrystalElement.LIGHTBLUE, 10000);
+		this.addAuraRequirement(CrystalElement.PURPLE, 10000);
 	}
 
 }

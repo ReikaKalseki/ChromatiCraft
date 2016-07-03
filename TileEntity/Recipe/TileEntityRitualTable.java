@@ -40,6 +40,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -259,6 +260,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	public void validateMultiblock(World world, int x, int y, int z) {
 		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, isEnhanced, false);
 		hasStructure = array.matchInWorld();
+		ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
 		//ReikaJavaLibrary.pConsole(hasStructure+" / "+isEnhanced+": "+this.getSide()+" @ "+array);
 		hasEnhancedStructure = isEnhanced && hasStructure && ChromaStructures.getRitualStructure(world, x, y, z, true, true).matchInWorld();
 		if (!hasStructure && abilityTick > 0) {

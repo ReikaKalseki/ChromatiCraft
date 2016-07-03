@@ -94,6 +94,7 @@ public class ChromaDimensionTicker implements TickHandler {
 
 					ChromaDimensionManager.tickPlayersInStructures(world);
 					SkyRiverManager.tickSkyRiverServer(world);
+					world.setAllowedSpawnTypes(false, false);
 				}
 				break;
 			case CLIENT:

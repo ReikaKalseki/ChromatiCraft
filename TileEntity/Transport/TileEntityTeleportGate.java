@@ -1,11 +1,16 @@
 package Reika.ChromatiCraft.TileEntity.Transport;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+
+import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -19,6 +24,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ScreenShotHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
@@ -34,11 +40,15 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Orbit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerTimer;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.PlayerTarget;
 import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionController;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
@@ -47,8 +57,8 @@ import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
@@ -78,6 +88,8 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	private static final ArrayList<Orbit> activationOrbits = new ArrayList();
 
+	private static final HashMap<WorldLocation, BufferedImage> imageCache = new HashMap();
+
 	static {
 		required.addValueToColor(CrystalElement.LIME, 5000);
 		required.addValueToColor(CrystalElement.BLACK, 2000);
@@ -97,11 +109,11 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 
-		if (!world.isRemote && hasStructure && this.getCooldown() == 0 && checkTimer.checkCap()) {
+		if (!world.isRemote && this.hasStructure() && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
 		}
 
-		if (hasStructure && world.isRemote) {
+		if (this.hasStructure() && world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
 
@@ -121,7 +133,84 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			}
 		}
 
-		this.doGuiChecks(world, x, y, z);
+		if (this.hasStructure())
+			this.doGuiChecks(world, x, y, z);
+		else
+			cooldowns.clear();
+	}
+
+	private void tryCreateSnapshot() {
+		File f = new File(new File(this.getPreviewFolder(), "screenshots"), this.getPreviewFilename(new WorldLocation(this)));
+		if (f.exists())
+			return;
+		this.takeSnapshot();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void takeSnapshot() {
+		Minecraft mc = Minecraft.getMinecraft();
+		boolean flag = mc.gameSettings.hideGUI;
+		mc.gameSettings.hideGUI = true;
+		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new TakeImage(new WorldLocation(this), flag)), 2);
+	}
+
+	private static class TakeImage implements ScheduledEvent {
+
+		private final WorldLocation loc;
+		private final boolean unhideGUI;
+
+		public TakeImage(WorldLocation loc, boolean flag) {
+			this.loc = loc;
+			unhideGUI = flag;
+		}
+
+		@Override
+		public void fire() {
+			Minecraft mc = Minecraft.getMinecraft();
+			File dir = getPreviewFolder();
+			File f = new File(new File(getPreviewFolder(), "screenshots"), getPreviewFilename(loc));
+			if (f.exists())
+				f.delete();
+			f.getParentFile().mkdirs();
+			ScreenShotHelper.saveScreenshot(dir, getPreviewFilename(loc), mc.displayWidth, mc.displayHeight, mc.getFramebuffer());
+			mc.gameSettings.hideGUI = unhideGUI;
+		}
+
+		@Override
+		public boolean runOnSide(Side s) {
+			return s == Side.CLIENT;
+		}
+
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static File getPreviewFolder() {
+		return new File(DragonAPICore.getMinecraftDirectoryString(), "mods/Reika/ChromatiCraft/GateShots");
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static String getPreviewFilename(WorldLocation loc) {
+		return loc.toString().replaceAll(" ", "_")+".png";
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static BufferedImage getPreview(WorldLocation loc) {
+		BufferedImage img = imageCache.get(loc);
+		if (img == null) {
+			File f = new File(new File(getPreviewFolder(), "screenshots"), getPreviewFilename(loc));
+			if (!f.exists())
+				return null;
+			try {
+				img = ImageIO.read(f);
+				imageCache.put(loc, img);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				ReikaChatHelper.write("Could not load preview image: "+e.toString());
+				return null;
+			}
+		}
+		return img;
 	}
 
 	private void checkAndRequest() {
@@ -155,7 +244,10 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	private void openGui(World world, int x, int y, int z, EntityPlayer ep) {
 		this.updateCache();
-		if (!world.isRemote) {
+		if (world.isRemote) {
+			this.tryCreateSnapshot();
+		}
+		else {
 			ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.GATECACHE.ordinal(), getCacheAsNBT(), new PlayerTarget((EntityPlayerMP)ep));
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
 		}
@@ -239,7 +331,6 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			double py = y+0.5+(4-s);
 			l = 10;
 			float sc = 0.75F+s/3F;
-			ReikaJavaLibrary.pConsole(activationTick+" > "+s+" @ "+py+" = "+r+" #"+n);
 			for (i = 0; i < n; i++) {
 				double ang = rand.nextDouble()*360;
 				double px = x+0.5+r*Math.cos(ang);
@@ -315,7 +406,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		}
 		else {
 			if (e instanceof EntityLivingBase) {
-				((EntityLivingBase)e).setPositionAndUpdate(te2.xCoord+0.5+dx, te2.yCoord+0.5+dy+20, te2.zCoord+0.5+dz);
+				((EntityLivingBase)e).setPositionAndUpdate(te2.xCoord+0.5+dx, te2.yCoord+0.5+dy, te2.zCoord+0.5+dz);
 			}
 			else {
 				e.setLocationAndAngles(te2.xCoord+0.5, te2.yCoord+0.5, te2.zCoord+0.5, e.rotationYaw, e.rotationPitch);

@@ -104,7 +104,41 @@ public class RenderTeleportGate extends ChromaRenderBase {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glTranslated(par2, par4, par6);
 
-		if (!te.isInWorld() || (MinecraftForgeClient.getRenderPass() == 1 && te.hasStructure()) || StructureRenderer.isRenderingTiles()) {
+		if (!te.isInWorld() || (!te.hasStructure() && MinecraftForgeClient.getRenderPass() == 1)) {
+			if (te.isInWorld()) {
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glTranslated(0.5, 0.5, 0.5);
+				double s = 0.5;
+				GL11.glScaled(s, s, s);
+				RenderManager rm = RenderManager.instance;
+				GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+				GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+			}
+			else {
+				GL11.glRotated(45, 0, 1, 0);
+				GL11.glRotated(-30, 1, 0, 0);
+				GL11.glTranslated(0.04, 0.0625, 0);
+			}
+			Tessellator v5 = Tessellator.instance;
+			IIcon ico = ChromaIcons.CONDENSEFLARE.getIcon();
+			double u = ico.getMinU();
+			double v = ico.getMinV();
+			double du = ico.getMaxU();
+			double dv = ico.getMaxV();
+			ReikaTextureHelper.bindTerrainTexture();
+			v5.startDrawingQuads();
+			v5.setBrightness(240);
+			int c = ReikaColorAPI.mixColors(te.PRIVATE_COLOR, te.PUBLIC_COLOR, 0.5F+0.5F*(float)Math.sin(System.currentTimeMillis()/400D));
+			v5.setColorOpaque_I(c);
+			double s = 1;
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(+s, -s, 0, du, v);
+			v5.addVertexWithUV(+s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.draw();
+		}
+
+		if ((MinecraftForgeClient.getRenderPass() == 1 && te.hasStructure()) || StructureRenderer.isRenderingTiles()) {
 
 			if (!te.isInWorld()) {
 				double is = 0.25;

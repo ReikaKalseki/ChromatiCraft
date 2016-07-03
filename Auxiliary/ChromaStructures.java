@@ -2019,10 +2019,10 @@ public class ChromaStructures {
 				array.setBlock(x+i, y+1, z-4, b, 1);
 				array.setBlock(x+i, y+1, z+4, b, 1);
 				if (allowEnhance) {
-					array.setBlock(x-4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
-					array.setBlock(x+4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
-					array.setBlock(x+i, y+1, z-4, b, StoneTypes.GLOWBEAM.ordinal());
-					array.setBlock(x+i, y+1, z+4, b, StoneTypes.GLOWBEAM.ordinal());
+					array.addBlock(x-4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+					array.addBlock(x+4, y+1, z+i, b, StoneTypes.GLOWBEAM.ordinal());
+					array.addBlock(x+i, y+1, z-4, b, StoneTypes.GLOWBEAM.ordinal());
+					array.addBlock(x+i, y+1, z+4, b, StoneTypes.GLOWBEAM.ordinal());
 				}
 			}
 		}

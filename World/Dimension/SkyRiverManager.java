@@ -22,6 +22,7 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import cpw.mods.fml.relauncher.Side;
 
 public class SkyRiverManager {
 
@@ -278,6 +279,11 @@ public class SkyRiverManager {
 			if (aborted)
 				return;
 			sendRiverPoints(recipient, toSend);
+		}
+
+		@Override
+		public boolean runOnSide(Side s) {
+			return s == Side.SERVER;
 		}
 
 	}

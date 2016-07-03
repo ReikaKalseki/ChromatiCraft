@@ -9,8 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import java.awt.image.BufferedImage;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -92,6 +95,11 @@ public class GuiTeleportGate extends GuiChromaBase {
 			}
 			ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
 		}
+		else if (x >= j && y >= k && x <= j+fontRendererObj.getStringWidth("Reload Preview")+3 && y <= k+fontRendererObj.FONT_HEIGHT+3) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
+			player.closeScreen();
+			gate.takeSnapshot();
+		}
 	}
 
 	@Override
@@ -103,6 +111,11 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 		pointLocs.clear();
 		web.render(j, k, SIZE);
+
+		String s = "Reload Preview";
+		int c = ReikaColorAPI.mixColors(0xffffffff, 0x80808080, Math.min(1, 0.625F+0.5F*(float)Math.sin(System.currentTimeMillis()/400D)));
+		api.drawRectFrame(0, 0, fontRendererObj.getStringWidth(s)+3, fontRendererObj.FONT_HEIGHT+3, c);
+		fontRendererObj.drawString(s, 2, 2, 0xffffff);
 	}
 
 	@Override
@@ -203,7 +216,30 @@ public class GuiTeleportGate extends GuiChromaBase {
 				api.drawTexturedModelRectFromIcon(l.renderX, l.renderZ, ChromaIcons.DIAMOND.getIcon(), s, s);
 				pointLocs.addRegionByWH(l.renderX, l.renderZ, s, s, l);
 				if (mbox) {
-					api.drawTooltip(fontRendererObj, l.location.toString(), -40, -10);
+					BufferedImage img = gate.getPreview(l.location);
+					if (img == null) {
+						ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GateNotFound.png");
+					}
+					else {
+						ReikaTextureHelper.bindRawTexture(img, "telegate "+l.location.toString());
+					}
+					double w = img == null ? 854/8D : img.getWidth()/8D;
+					double h = img == null ? 480/8D : img.getHeight()/8D;
+					GL11.glColor3f(1, 1, 1);
+					double x = api.getMouseRealX()-w/1.25;
+					double y = api.getMouseRealY()-h/4D;
+					x = Math.min(x, xSize-w);
+					y = Math.min(y, ySize-h);
+					Tessellator.instance.startDrawingQuads();
+					Tessellator.instance.setColorOpaque_I(0xffffff);
+					Tessellator.instance.addVertexWithUV(x, y+h, 0, 0, 1);
+					Tessellator.instance.addVertexWithUV(x+w, y+h, 0, 1, 1);
+					Tessellator.instance.addVertexWithUV(x+w, y, 0, 1, 0);
+					Tessellator.instance.addVertexWithUV(x, y, 0, 0, 0);
+					Tessellator.instance.draw();
+					ReikaTextureHelper.bindTerrainTexture();
+					String sg = l.location.toString();
+					api.drawTooltipAt(fontRendererObj, sg, (int)x+fontRendererObj.getStringWidth(sg)+19, (int)y-(fontRendererObj.FONT_HEIGHT-8));
 				}
 			}
 			GL11.glPopAttrib();

@@ -1225,6 +1225,11 @@ public class AbilityHelper {
 			player.stepHeight = prevHeight;
 		}
 
+		@Override
+		public boolean runOnSide(Side s) {
+			return true;
+		}
+
 	}
 
 	public boolean tryAndDoDoubleJump(EntityPlayer ep) {

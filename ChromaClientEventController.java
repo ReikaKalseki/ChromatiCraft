@@ -98,6 +98,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
@@ -146,6 +147,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
 import cpw.mods.fml.relauncher.Side;
@@ -199,6 +201,24 @@ public class ChromaClientEventController {
 		}
 	}
 	 */
+
+	@SubscribeEvent
+	public void clearOnLogout(ClientDisconnectionFromServerEvent evt) {
+		SkyRiverManagerClient.handleRayClearPacket();
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void clearOnLogout(ClientLogoutEvent evt) {
+		SkyRiverManagerClient.handleRayClearPacket();
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
+		SkyRiverManagerClient.handleRayClearPacket();
+	}
+
 	@SubscribeEvent
 	public void renderDimensionSkyriver(EntityRenderingLoopEvent evt) {
 		if (MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())

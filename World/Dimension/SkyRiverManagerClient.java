@@ -60,6 +60,7 @@ public class SkyRiverManagerClient {
 		synchronized (SkyRiverGenerator.clientPoints) {
 			SkyRiverGenerator.clientPoints.clear();
 		}
+		allowClientSkyRiverMovement = false;
 		SkyRiverManager.debugMessage("Client> Cleared Client-SkyRiver.");
 	}
 
