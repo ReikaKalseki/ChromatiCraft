@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Models.ModelRelaySource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
@@ -70,10 +71,144 @@ public class RenderRelaySource extends ChromaRenderBase {
 			this.renderCrystal(te, par2, par4, par6, par8);
 			GL11.glPopAttrib();
 			;//this.renderPaths(te);
+
+			if (te.isEnhanced()) {
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				this.renderEnhancedArea(te, par8);
+				GL11.glPopAttrib();
+			}
 		}
 		GL11.glPopMatrix();
 
 		GL11.glPopMatrix();
+	}
+
+	private void renderEnhancedArea(TileEntityRelaySource te, float ptick) {
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDepthMask(false);
+		ReikaRenderHelper.disableEntityLighting();
+		BlendMode.ADDITIVEDARK.apply();
+		Tessellator v5 = Tessellator.instance;
+		IIcon ico = ChromaIcons.CAUSTICS_GENTLE.getIcon();
+		float u = ico.getMinU();
+		float v = ico.getMinV();
+		float du = ico.getMaxU();
+		float dv = ico.getMaxV();
+
+		v5.startDrawingQuads();
+
+		double h = 1.25;
+		double o = 2;
+
+		v5.addVertexWithUV(0.5-o, 0, o+0.5, u, v);
+		v5.addVertexWithUV(0.5+o, 0, o+0.5, du, v);
+		v5.addVertexWithUV(1, h, 1, du, dv);
+		v5.addVertexWithUV(0, h, 1, u, dv);
+
+		v5.addVertexWithUV(0, h, 0, u, dv);
+		v5.addVertexWithUV(1, h, 0, du, dv);
+		v5.addVertexWithUV(0.5+o, 0, -o+0.5, du, v);
+		v5.addVertexWithUV(0.5-o, 0, -o+0.5, u, v);
+
+		v5.addVertexWithUV(1, h, 0, u, dv);
+		v5.addVertexWithUV(1, h, 1, du, dv);
+		v5.addVertexWithUV(o+0.5, 0, 0.5+o, du, v);
+		v5.addVertexWithUV(o+0.5, 0, 0.5-o, u, v);
+
+		v5.addVertexWithUV(-o+0.5, 0, 0.5-o, u, v);
+		v5.addVertexWithUV(-o+0.5, 0, 0.5+o, du, v);
+		v5.addVertexWithUV(0, h, 1, du, dv);
+		v5.addVertexWithUV(0, h, 0, u, dv);
+
+		v5.addVertexWithUV(0, h, 1, u, dv);
+		v5.addVertexWithUV(1, h, 1, du, dv);
+		v5.addVertexWithUV(1, h, 0, du, v);
+		v5.addVertexWithUV(0, h, 0, u, v);
+
+		v5.addVertexWithUV(0.5-o-0.5, -1, o+0.5, u, dv);
+		v5.addVertexWithUV(0.5+o+0.5, -1, o+0.5, du, dv);
+		v5.addVertexWithUV(0.5+o+0.5, 0, o+0.5, du, v);
+		v5.addVertexWithUV(0.5-o-0.5, 0, o+0.5, u, v);
+
+		v5.addVertexWithUV(0.5-o-0.5, 0, -o+0.5, u, v);
+		v5.addVertexWithUV(0.5+o+0.5, 0, -o+0.5, du, v);
+		v5.addVertexWithUV(0.5+o+0.5, -1, -o+0.5, du, dv);
+		v5.addVertexWithUV(0.5-o-0.5, -1, -o+0.5, u, dv);
+
+		v5.addVertexWithUV(-o+0.5, -1, 0.5-o-0.5, u, dv);
+		v5.addVertexWithUV(-o+0.5, -1, 0.5+o+0.5, du, dv);
+		v5.addVertexWithUV(-o+0.5, 0, 0.5+o+0.5, du, v);
+		v5.addVertexWithUV(-o+0.5, 0, 0.5-o-0.5, u, v);
+
+		v5.addVertexWithUV(o+0.5, 0, 0.5-o-0.5, u, v);
+		v5.addVertexWithUV(o+0.5, 0, 0.5+o+0.5, du, v);
+		v5.addVertexWithUV(o+0.5, -1, 0.5+o+0.5, du, dv);
+		v5.addVertexWithUV(o+0.5, -1, 0.5-o-0.5, u, dv);
+
+		v5.draw();
+
+		/*
+		float uu = du-u;
+		float vv = dv-v;
+		v5.startDrawingQuads();
+
+		double[] sec = {0, 1/3D, 2/3D, 1};
+
+		for (int i = 0; i < sec.length-1; i++) {
+			double s1a = sec[i];
+			double s2a = sec[i+1];
+			for (int k = 0; k < sec.length-1; k++) {
+				double s1b = sec[k];
+				double s2b = sec[k+1];
+				double u1 = u+uu*s1a;
+				double u2 = u+uu*s2a;
+				double v1 = v+vv*s1b;
+				double v2 = v+vv*s2b;
+				double x1 = s1a*5-2;
+				double x2 = s2a*5-2;
+				double z1 = s1b*5-2;
+				double z2 = s2b*5-2;
+				v5.addVertexWithUV(x1, hs[i], z2, u1, v1);
+				v5.addVertexWithUV(x2, hs[i], z2, u2, v1);
+				v5.addVertexWithUV(x2, hs[i], z1, u2, v2);
+				v5.addVertexWithUV(x1, hs[i], z1, u1, v2);
+			}
+		}
+
+		/*
+		v5.addVertexWithUV(0, h, 0, u, dv);
+		v5.addVertexWithUV(1, h, 0, du, dv);
+		v5.addVertexWithUV(1, 0, -1, du, v);
+		v5.addVertexWithUV(0, 0, -1, u, v);
+
+		v5.addVertexWithUV(0, 0, 2, u, v);
+		v5.addVertexWithUV(1, 0, 2, du, v);
+		v5.addVertexWithUV(1, h, 1, du, dv);
+		v5.addVertexWithUV(0, h, 1, u, dv);
+
+		v5.addVertexWithUV(1, h, 0, u, dv);
+		v5.addVertexWithUV(1, h, 1, du, dv);
+		v5.addVertexWithUV(2, 0, 1, du, v);
+		v5.addVertexWithUV(2, 0, 0, u, v);
+
+		v5.addVertexWithUV(-1, 0, 0, u, v);
+		v5.addVertexWithUV(-1, 0, 1, du, v);
+		v5.addVertexWithUV(0, h, 1, du, dv);
+		v5.addVertexWithUV(0, h, 0, u, dv);
+
+		v5.addVertexWithUV(0, 0, 2, u, dv);
+		v5.addVertexWithUV(0, h, 1, du, dv);
+		v5.addVertexWithUV(-1, 0, 1, du, v);
+		v5.addVertexWithUV(-1, 0, 2, u, v);
+
+		v5.addVertexWithUV(2, 0, -1, u, v);
+		v5.addVertexWithUV(1, 0, -1, du, v);
+		v5.addVertexWithUV(1, h, 0, du, dv);
+		v5.addVertexWithUV(2, 0, 0, u, dv);
+		 */
+		//v5.draw();
 	}
 
 	private void renderCrystal(TileEntityRelaySource te, double par2, double par4, double par6, float par8) {

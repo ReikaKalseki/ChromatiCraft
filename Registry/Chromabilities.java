@@ -44,7 +44,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
@@ -1208,13 +1207,15 @@ public enum Chromabilities implements Ability {
 			if (!(e instanceof EntityEnderman || e instanceof EntityPigZombie)) {
 				if (e.getEntityToAttack() == ep || e.getEntityToAttack() == null) {
 					//e.setAttackTarget(null);
-					e.attackEntityFrom(DamageSource.causeMobDamage(ReikaEntityHelper.getDummyMob(ep.worldObj)), 0);
+					//e.attackEntityFrom(DamageSource.causeMobDamage(ReikaEntityHelper.getDummyMob(ep.worldObj, e.posX, e.posY, e.posZ)), 0);
 				}
 				if (e instanceof EntityCreeper) {
 					EntityCreeper ec = (EntityCreeper)e;
-					ec.setCreeperState(-1);
-					ec.getDataWatcher().updateObject(18, (byte)0);
-					ec.timeSinceIgnited = 0;
+					if (ec.getEntityToAttack() != ep) {
+						ec.setCreeperState(-1);
+						ec.getDataWatcher().updateObject(18, (byte)0);
+						ec.timeSinceIgnited = 0;
+					}
 				}
 			}
 			/*

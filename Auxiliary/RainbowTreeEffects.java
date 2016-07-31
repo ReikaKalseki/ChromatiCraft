@@ -58,11 +58,13 @@ public class RainbowTreeEffects {
 	}
 
 	public static void fightInstability(World world, int x, int y, int z) {
-		ReikaMystcraftHelper.decrInstabilityForAge(world, 1);
+		if (ModList.MYSTCRAFT.isLoaded())
+			ReikaMystcraftHelper.decrInstabilityForAge(world, 1);
 	}
 
 	public static void addInstability(World world, int x, int y, int z) {
-		ReikaMystcraftHelper.addInstabilityForAge(world, (short)1);
+		if (ModList.MYSTCRAFT.isLoaded())
+			ReikaMystcraftHelper.addInstabilityForAge(world, (short)1);
 	}
 
 	public static void convertPureNodeMagic(World world, int x, int y, int z, double rangeFactor) {

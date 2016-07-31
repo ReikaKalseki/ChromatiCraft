@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.ChromatiCraft.World.DungeonGenerator;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -95,7 +96,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			monument.tick();
 		}
 
-		if (!triggered && struct != null) {
+		if (!triggered && struct != null && this.getTicksExisted()%4 == 0) {
 			List<EntityPlayer> li = world.playerEntities;
 			for (EntityPlayer ep : li) {
 				if (ep.boundingBox.intersectsWith(this.getBox(x, y, z))) {
@@ -182,7 +183,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 			case OCEAN:
 				return aabb.offset(0, 2, 0).expand(1, 1, 1);
 			case DESERT:
-				return aabb.expand(5, 3, 5);
+				return aabb.expand(5, 2, 5).offset(0, 1, 0);
 			default:
 				return aabb;
 		}
@@ -408,6 +409,7 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				copy.offset(-7, -3, -7);
 			}
 			copy.placeExcept(new Coordinate(this));
+			DungeonGenerator.populateChests(struct, copy, rand);
 			if (struct == Structures.OCEAN) {
 				BlockLootChest.setMaxReach(worldObj, xCoord-2, yCoord-1, zCoord, 2);
 				BlockLootChest.setMaxReach(worldObj, xCoord, yCoord-1, zCoord-1, 2);

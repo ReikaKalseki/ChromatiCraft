@@ -17,8 +17,10 @@ import java.util.Map;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -37,13 +39,16 @@ import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.RuneShape.RuneViewer;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -58,6 +63,8 @@ public class GuiBasicInfo extends GuiBookSection {
 	private int modifier;
 
 	private ArrayList<EnchantmentRecipe> enchants = new ArrayList();
+	private static final Map<Enchantment, Integer> enchantMap = TileEntityAutoEnchanter.getBoostedLevels();
+	private static final ArrayList<Enchantment> enchantIndices = new ArrayList(enchantMap.keySet());
 
 	public GuiBasicInfo(EntityPlayer ep, ChromaResearch r) {
 		super(ChromaGuis.INFO, ep, r, 256, 220, false);
@@ -149,6 +156,8 @@ public class GuiBasicInfo extends GuiBookSection {
 			return CrystalElement.elements.length;
 		else if (page == ChromaResearch.USINGRUNES)
 			return 1;
+		else if (page == ChromaResearch.ENCHANTS)
+			return ChromaEnchants.enchantmentList.length+enchantMap.size();
 		else if (page == ChromaResearch.ENCHANTING)
 			return enchants.size()+1;
 		return 0;
@@ -210,6 +219,29 @@ public class GuiBasicInfo extends GuiBookSection {
 			else
 				this.renderEnchantment(posX, posY, enchants.get(subpage-2));
 		}
+		else if (page == ChromaResearch.ENCHANTS && subpage >= 1) {
+			this.renderEnchantDesc(posX, posY, px, c);
+		}
+	}
+
+	private void renderEnchantDesc(int posX, int posY, int px, int c) {
+		Enchantment e = this.getActiveEnchant();
+		String s = StatCollector.translateToLocal(e.getName())+": Up to "+e.getTranslatedName(e.getMaxLevel())+"\n\n";
+		if (ReikaEnchantmentHelper.isVanillaEnchant(e)) {
+			s = "";
+			s += ChromaDescriptions.getNotes(page, ChromaEnchants.enchantmentList.length+1);
+			s = String.format(s, e.getTranslatedName(e.getMaxLevel()), e.getTranslatedName(enchantMap.get(e)));
+		}
+		else {
+			s += ChromaDescriptions.getNotes(page, subpage);
+		}
+		fontRendererObj.drawSplitString(s, px, posY+descY, 242, c);
+	}
+
+	private Enchantment getActiveEnchant() {
+		if (subpage <= ChromaEnchants.enchantmentList.length)
+			return ChromaEnchants.enchantmentList[subpage-1].getEnchantment();
+		return enchantIndices.get(subpage-ChromaEnchants.enchantmentList.length-1);
 	}
 
 	private void renderEnchantmentRunes(int posX, int posY) {

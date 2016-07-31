@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityMinecartChest;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,6 +44,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -53,6 +55,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -92,6 +95,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerHasItemEvent;
 import Reika.DragonAPI.Instantiable.Event.PostItemUseEvent;
 import Reika.DragonAPI.Instantiable.Event.RawKeyPressEvent;
@@ -102,6 +106,7 @@ import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -175,11 +180,14 @@ public class AbilityHelper {
 	//private int savedAOSetting;
 
 	public boolean isNoClipEnabled;
+	private boolean applyingLyingAOE;
 
 	private static final Random rand = new Random();
 
 	private final PlayerMap<ItemStack> refillItem = new PlayerMap();
 	private static final String AE_LOC_TAG = "AELoc";
+
+	private static final int LYING_DURATION = 1200;
 
 	private AbilityHelper() {
 		List<Ability> li = Chromabilities.getAbilities();
@@ -1293,7 +1301,7 @@ public class AbilityHelper {
 			return false;
 		if (b == Blocks.stained_hardened_clay || b == Blocks.hardened_clay)
 			return false;
-		if (b == Blocks.snow || b == Blocks.snow_layer)
+		if (b == Blocks.snow || b == Blocks.snow_layer || b == Blocks.mycelium)
 			return false;
 		if (b == Blocks.bedrock)
 			return y == 0 || (y >= 128 && world.provider.dimensionId == -1);
@@ -1954,4 +1962,58 @@ public class AbilityHelper {
 		}
 	}
 
+	@SubscribeEvent(priority=EventPriority.LOWEST)
+	public void nonHostileMobs(MobTargetingEvent.Pre evt) {
+		if (Chromabilities.COMMUNICATE.enabledOn(evt.player)) {
+			long pre = evt.player.getEntityData().getLong("ignoreNoAggro");
+			long time = evt.player.worldObj.getTotalWorldTime();
+			double f = time-pre >= LYING_DURATION ? 1 : Math.pow((time-pre)/(float)LYING_DURATION, 0.625);
+			if (ReikaRandomHelper.doWithChance(f))
+				evt.setResult(Result.DENY);
+		}
+	}
+
+	@SubscribeEvent
+	public void applyAOE(LivingAttackEvent evt) {
+		if (applyingLyingAOE)
+			return;
+		DamageSource src = evt.source;
+		if (src.getEntity() instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)src.getEntity();
+			if (Chromabilities.COMMUNICATE.enabledOn(ep)) {
+				EntityLivingBase mob = evt.entityLiving;
+				if (mob instanceof EntityCreature && ((EntityCreature)mob).getEntityToAttack() != ep) {
+					applyingLyingAOE = true;
+					double r = 8;
+					AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(evt.entityLiving, r);
+					Class<? extends EntityLivingBase> cat = ReikaEntityHelper.getEntityCategoryClass(mob);
+					List<EntityLivingBase> li = mob.worldObj.getEntitiesWithinAABB(cat, box);
+					for (EntityLivingBase e : li) {
+						if (e != mob) {
+							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
+							if (cat2 == cat) {
+								e.attackEntityFrom(src, 0);
+							}
+						}
+					}
+
+					r = 24;
+					box = ReikaAABBHelper.getEntityCenteredAABB(evt.entityLiving, r);
+					cat = ReikaEntityHelper.getEntityCategoryClass(mob);
+					li = mob.worldObj.getEntitiesWithinAABB(cat, box);
+					for (EntityLivingBase e : li) {
+						if (e != mob && e instanceof EntityCreature && ((EntityCreature)e).getEntityToAttack() != ep) {
+							Class<? extends EntityLivingBase> cat2 = ReikaEntityHelper.getEntityCategoryClass(e);
+							if (cat2 == cat && rand.nextInt(8) == 0) {
+								long time = ep.worldObj.getTotalWorldTime();
+								ep.getEntityData().setLong("ignoreNoAggro", time);
+							}
+						}
+					}
+				}
+				applyingLyingAOE = false;
+			}
+		}
+
+	}
 }

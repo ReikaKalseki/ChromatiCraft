@@ -11,11 +11,15 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.BiomeDictionary;
@@ -42,8 +46,12 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.BiomeCollisionTracker;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -51,7 +59,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ChromaDimensionManager {
 
 	private static final HashSet<BlockKey> bannedBlocks = new HashSet();
+	private static final HashSet<KeyedItemStack> bannedItems = new HashSet();
+
 	private static final PlayerMap<DimensionStructureGenerator> playersInStructures = new PlayerMap();
+	private static final HashMap<Integer, ChromaDimensionBiomeType> IDMap = new HashMap();
 
 	public static enum Biomes implements ChromaDimensionBiomeType {
 		PLAINS(BiomeGenCrystalPlains.class,	"Crystal Plains",			8, 0,	ExtraChromaIDs.PLAINS, 		SubBiomes.MOUNTAINS, 	Type.MAGICAL, Type.PLAINS),
@@ -91,6 +102,7 @@ public class ChromaDimensionManager {
 		private void create() {
 			id = config.getValue();
 			BiomeCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
+			IDMap.put(id, this);
 
 			if (subBiome != null) {
 				subBiome.create(this);
@@ -129,6 +141,10 @@ public class ChromaDimensionManager {
 		public int getBaseHeightDelta() {
 			return baseHeightDelta;
 		}
+
+		public static ChromaDimensionBiomeType getFromID(int id) {
+			return IDMap.get(id);
+		}
 	}
 
 	public static enum SubBiomes implements ChromaDimensionBiomeType {
@@ -163,6 +179,7 @@ public class ChromaDimensionManager {
 			parent = b;
 			id = config.getValue();
 			BiomeCollisionTracker.instance.addBiomeID(ChromatiCraft.instance, id, biomeClass);
+			IDMap.put(id, this);
 
 			try {
 				Constructor c = biomeClass.getConstructor(int.class, String.class, SubBiomes.class);
@@ -265,7 +282,31 @@ public class ChromaDimensionManager {
 			EntityPlayer ep = world.func_152378_a(id);
 			if (ep != null) {
 				playersInStructures.directGet(id).tickPlayer(ep);
+				disallowBannedItems(ep);
 			}
+		}
+	}
+
+	private static void disallowBannedItems(EntityPlayer ep) {
+		ItemStack held = ep.getCurrentEquippedItem();
+		if (held != null && bannedItems.contains(new KeyedItemStack(held).setSimpleHash(true))) {
+			/*
+			boolean flag = false;
+			for (int i = 0; i < ep.inventory.getSizeInventory(); i++) {
+				if (ep.inventory.getStackInSlot(i) == null) {
+					ep.inventory.setInventorySlotContents(i, held);
+					flag = true;
+					break;
+				}
+			}
+			if (!flag) {
+			 */
+			ReikaItemHelper.dropItem(ep, held);
+			ReikaSoundHelper.playSoundAtEntity(ep.worldObj, ep, "random.explode");
+			ReikaParticleHelper.EXPLODE.spawnAt(ep);
+			ep.attackEntityFrom(DamageSource.generic, 1);
+			//}
+			ep.setCurrentItemOrArmor(0, null);
 		}
 	}
 
@@ -295,6 +336,10 @@ public class ChromaDimensionManager {
 			b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockTelePad");
 			if (b != null)
 				bannedBlocks.add(new BlockKey(b));
+
+			Item i = GameRegistry.findItem(ModList.ENDERIO.modLabel, "itemTravelStaff");
+			if (i != null)
+				bannedItems.add(new KeyedItemStack(i));
 		}
 
 		if (ModList.THAUMICTINKER.isLoaded()) {

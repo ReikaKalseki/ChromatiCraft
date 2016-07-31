@@ -16,6 +16,9 @@ import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentFastSinking;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentHarvestLevel;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentRareLoot;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentUseRepair;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentWeaponAOE;
 import Reika.DragonAPI.Interfaces.Registry.EnchantmentEnum;
@@ -26,7 +29,10 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	WEAPONAOE(EnchantmentWeaponAOE.class, ExtraChromaIDs.WEAPONAOEID),
 	AGGROMASK(EnchantmentAggroMask.class, ExtraChromaIDs.AGGROMASKID),
 	ENDERLOCK(EnchantmentEnderLock.class, ExtraChromaIDs.ENDERLOCKID),
-	USEREPAIR(EnchantmentUseRepair.class, ExtraChromaIDs.USEREPAIRID);
+	USEREPAIR(EnchantmentUseRepair.class, ExtraChromaIDs.USEREPAIRID),
+	RARELOOT(EnchantmentRareLoot.class, ExtraChromaIDs.RARELOOTID),
+	FASTSINK(EnchantmentFastSinking.class, ExtraChromaIDs.FASTSINKID),
+	HARVESTLEVEL(EnchantmentHarvestLevel.class, ExtraChromaIDs.HARVESTLEVELID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

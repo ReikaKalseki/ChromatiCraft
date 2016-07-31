@@ -19,7 +19,14 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemHoe;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemShears;
+import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -38,6 +45,8 @@ import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ItemElementAPI.ItemInOutHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes.PoolRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.ModInterface.ChromaAspectManager;
@@ -104,6 +113,9 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.firaxite, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0));
 		cache.put(ChromaStacks.spaceDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.elementDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+		cache.put(ChromaStacks.lumenGem, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1));
+		cache.put(ChromaStacks.lumaDust, new ElementTagCompound(1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.echoCrystal, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0));
 
 		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
@@ -111,6 +123,20 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.teleDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.livingEssence, new ElementTagCompound(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.etherBerries, new ElementTagCompound(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+
+		cache.put(ChromaStacks.complexIngot, ElementTagCompound.getUniformTag(1));
+
+		cache.put(ChromaStacks.iridCrystal, new ElementTagCompound(2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+
+		cache.put(ChromaStacks.miasma, new ElementTagCompound(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.floatstone, new ElementTagCompound(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.aqua, new ElementTagCompound(1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.lifegel, new ElementTagCompound(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0));
+		cache.put(ChromaStacks.orthocrystal, new ElementTagCompound(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+		cache.put(ChromaStacks.gem, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.crysleaf, new ElementTagCompound(1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+		cache.put(ChromaStacks.oceanrock, new ElementTagCompound(1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.cliffshard, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.STONE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.COBBLE.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -145,6 +171,18 @@ public class ItemElementCalculator {
 		if (is.isItemEnchanted()) {
 			tag.addValueToColor(CrystalElement.BLACK, 5);
 			tag.addValueToColor(CrystalElement.PURPLE, 2);
+		}
+		if (is.getItem() instanceof ItemSword) {
+			tag.addValueToColor(CrystalElement.PINK, 4);
+		}
+		if (is.getItem() instanceof ItemSpade || is.getItem() instanceof ItemPickaxe) {
+			tag.addValueToColor(CrystalElement.BROWN, 2);
+		}
+		if (is.getItem() instanceof ItemAxe || is.getItem() instanceof ItemHoe || is.getItem() instanceof ItemShears) {
+			tag.addValueToColor(CrystalElement.GREEN, 2);
+		}
+		if (is.getItem() instanceof ItemArmor) {
+			tag.addValueToColor(CrystalElement.RED, 4);
 		}
 		//ChromatiCraft.logger.log("Found data for "+is+": "+tag);
 		return tag;
@@ -181,6 +219,17 @@ public class ItemElementCalculator {
 			tag2.addValueToColor(CrystalElement.BLACK, 2);
 			tag.addButMinimizeWith(tag2);
 		}
+		return tag;
+	}
+
+	private ElementTagCompound getFromChromaAlloying(ItemStack is, int step) {
+		ElementTagCompound tag = new ElementTagCompound();
+		PoolRecipe c = PoolRecipes.instance.getPoolRecipeByOutput(is);
+		if (c == null)
+			return tag;
+		ElementTagCompound tag2 = c.getInputElements();
+		tag2.addValueToColor(CrystalElement.BLACK, 2);
+		tag.addButMinimizeWith(tag2);
 		return tag;
 	}
 
@@ -443,6 +492,7 @@ public class ItemElementCalculator {
 		tag.addButMinimizeWith(this.getFromVanillaCrafting(is, step));
 		tag.addButMinimizeWith(this.getFromVanillaSmelting(is, step));
 		tag.addButMinimizeWith(this.getFromChromaCasting(is, step));
+		tag.addButMinimizeWith(this.getFromChromaAlloying(is, step));
 		if (ModList.ROTARYCRAFT.isLoaded())
 			tag.addButMinimizeWith(this.getFromRCWorktable(is, step));
 		if (ModList.THERMALEXPANSION.isLoaded())

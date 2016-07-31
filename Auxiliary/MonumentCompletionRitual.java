@@ -161,8 +161,8 @@ public class MonumentCompletionRitual {
 	private void manipulateCamera() {
 		Minecraft.getMinecraft().gameSettings.hideGUI = true;
 		Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-		double ang = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode())/2D);
-		double angPrev = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()-1)/2D);
+		double ang = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000)/2D);
+		double angPrev = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000-1)/2D);
 		//double r = 15+7.5*Math.sin(ang/32D);
 		//double cx = x+0.5+r*Math.cos(Math.toRadians(ang));
 		//double cz = z+0.5+r*Math.sin(Math.toRadians(ang));

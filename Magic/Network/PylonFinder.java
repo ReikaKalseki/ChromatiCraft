@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -48,6 +49,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.ExtraUtilsHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import Reika.RotaryCraft.Registry.BlockRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class PylonFinder {
 
@@ -426,13 +428,19 @@ public class PylonFinder {
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			addRCGlass();
 		}
-		if (ModList.EXTRAUTILS.isLoaded()) {
+		if (ModList.EXTRAUTILS.isLoaded() && ExtraUtilsHandler.getInstance().initializedProperly()) {
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
 		}
-		if (ModList.TINKERER.isLoaded()) {
+		if (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().initializedProperly()) {
 			tracer.addTransparentBlock(TinkerBlockHandler.getInstance().clearGlassID);
+		}
+		if (ModList.ENDERIO.isLoaded()) {
+			Block b = GameRegistry.findBlock(ModList.ENDERIO.modLabel, "blockFusedQuartz");
+			if (b != null) {
+				tracer.addTransparentBlock(b, 1);
+			}
 		}
 
 		tracer.addOpaqueBlock(Blocks.deadbush);

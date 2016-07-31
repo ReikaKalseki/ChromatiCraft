@@ -159,9 +159,9 @@ public class ItemDuplicationWand extends ItemWandBase {
 			Integer get = items.get(is);
 			items.remove(is);
 			if (!ReikaFluidHelper.isInfinite(f)) {
-				ItemStack fill = ReikaFluidHelper.getFilledContainerFor(f);
-				if (fill != null) {
-					items.put(fill, get);
+				ArrayList<ItemStack> fill = ReikaFluidHelper.getAllContainersFor(f);
+				if (!fill.isEmpty()) {
+					items.put(fill.get(0), get);
 				}
 			}
 		}

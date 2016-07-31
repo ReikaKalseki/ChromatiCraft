@@ -399,6 +399,8 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			return true;
 		if (b == Blocks.sand)
 			return true;
+		if (b == Blocks.hardened_clay)
+			return true;
 		if (b.getMaterial() == Material.ground)
 			return true;
 		if (b == Blocks.log || b == Blocks.log2 || ModWoodList.isModWood(b, meta))

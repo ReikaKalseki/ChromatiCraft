@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
+import Reika.DragonAPI.Interfaces.Block.Submergeable;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -51,7 +52,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"thaumcraft.api.crafting.IInfusionStabiliser"})
-public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRenderedBlock, IInfusionStabiliser, SemiUnbreakable {
+public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRenderedBlock, IInfusionStabiliser, SemiUnbreakable, Submergeable {
 
 	protected final IIcon[] icons = new IIcon[CrystalElement.elements.length];
 
@@ -261,6 +262,11 @@ public abstract class CrystalBlock extends CrystalTypeBlock implements CrystalRe
 	}
 
 	public final boolean canStabaliseInfusion(World world, int x, int y, int z) {
+		return true;
+	}
+
+	@Override
+	public final boolean isSubmergeable(IBlockAccess iba, int x, int y, int z) {
 		return true;
 	}
 }

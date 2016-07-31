@@ -77,7 +77,9 @@ public enum ChromaSounds implements SoundEnum {
 	NOCLIPOFF("rumble-out"),
 	NOCLIPRUN("rumble"),
 	FLAREATTACK("flareattack"),
-	BOUNCE("bounce");
+	BOUNCE("bounce"),
+	SKYRIVER("lumenstream"),
+	PING("ping");
 
 	public static final ChromaSounds[] soundList = values();
 

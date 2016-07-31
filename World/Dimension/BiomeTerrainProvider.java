@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension;
 import java.util.ArrayList;
 import java.util.Random;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Base.ChromaDimensionBiome;
@@ -49,10 +50,17 @@ public class BiomeTerrainProvider {
 				int top = world.getTopSolidOrLiquidBlock(dx, dz)-1;
 				for (ChromaDimensionBiomeTerrainShaper s : terrain) {
 					if (s.canGenerateIn(b)) {
+						//this.clearColumn(world, dx, dz);
 						s.generateColumn(world, chunkX, chunkZ, i, k, top, rand, this.getEdgeFactor(world, dx, dz, s));
 					}
 				}
 			}
+		}
+	}
+
+	private void clearColumn(World world, int dx, int dz) {
+		for (int y = 0; y <= 255; y++) {
+			world.setBlock(dx, y, dz, Blocks.stone, 0, 4);
 		}
 	}
 

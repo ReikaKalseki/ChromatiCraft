@@ -18,6 +18,7 @@ import Reika.ChromatiCraft.Block.BlockActiveChroma.TileEntityChroma;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Interfaces.BlockCheck;
 import Reika.DragonAPI.Interfaces.BlockCheck.TileEntityCheck;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -75,6 +76,11 @@ public class ChromaCheck implements TileEntityCheck {
 		te.worldObj = Minecraft.getMinecraft().theWorld;
 		te.activate(color, TileEntityChroma.BERRY_SATURATION);
 		return te;
+	}
+
+	@Override
+	public boolean match(BlockCheck bc) {
+		return bc instanceof ChromaCheck && ((ChromaCheck)bc).color == color;
 	}
 
 }

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0"?>
+<enchants>
+	<weaponaoe>
+		Your sword of an unbreakable alloy of metal and the world's very foundation is wonderful, but even it is somewhat outmatched should you find yourself in the midst of a crowd. With some luck, that will no longer be an obstacle.
+	</weaponaoe>
+	<aggromask>
+		Unsurprisingly, one of the fastest ways to anger any creature in the world is to attack them. It makes sense, but what if you could somehow deal that damage without them being any the wiser? Even better, you would be able to kill the nether pigmen without being swarmed by ten of them.
+	</aggromask>
+	<enderlock>
+		Ranged weapons like bows are extremely convenient, letting you kill a mob at a safe distance, but they have long been unable to deal any damage to Endermen, who just mockingly teleport away. Time to put an end to that.
+	</enderlock>
+	<userepair>
+		You put your heart, soul, half your platinum and who knows how much experience into the ultimate weapon, but the damn thing has a durability of 200 uses and you almost want to never use it. Perhaps if you could leech some of the health off the mobs you kill to heal your weapon.
+	</userepair>
+	<rareloot>
+		Looting III helps, sure, but it seems to do little for some particularly uncommon drops, including heads, equipment, and the occasional metal ingot. This may not help improve your yields of gunpowder, string, or blaze rods, but it will help with the rarer ones.
+	</rareloot>
+	<fastsink>
+		You wish to build a base out of the dark stone that forms geodes across the ocean floor, but having to dive for it from the surface - and expend half your air just on the way down - severely hampers its acquisition. You would not have thought one would want to sink like a rock, but apparently you now do.
+	</fastsink>
+	<harvestlevel>
+		Wood mines stone. Stone mines iron. Iron mines diamond. Diamond mines obsidian. This progression is indelibly set into nearly everyone's mind. Now you get to break it.
+	</harvestlevel>
+	<boostedlevel>
+		%s is the best you have been able to achieve thus far, but you want more. With the power of liquid chroma, %s is within your reach.
+	</boostedlevel>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+</enchants>

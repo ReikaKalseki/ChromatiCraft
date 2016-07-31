@@ -59,30 +59,19 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	public static final int MAX_UPGRADES = 4;
 
-	//public boolean hasPassiveUpgrade;
-	//public boolean hasPlayerUpgrade;
-
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.TURRET;
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
-
-		//NBT.setBoolean("passive", hasPassiveUpgrade);
-		//NBT.setBoolean("player", hasPlayerUpgrade);
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
-
-		//hasPassiveUpgrade = NBT.getBoolean("passive");
-		//hasPlayerUpgrade = NBT.getBoolean("player");
 	}
 
 	@Override
@@ -175,7 +164,7 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	private void doAttackEntity(World world, int x, int y, int z, EntityLivingBase e) {
 		attackCooldown.put(e.getUniqueID(), this.getAttackCooldown(e));
-		e.attackEntityFrom(new LumenTurretDamage(this), this.getAttackDamage(e));
+		e.attackEntityFrom(new LumenTurretDamage(this, TurretUpgrades.NONPLAYER.check(this)), this.getAttackDamage(e));
 		e.hurtResistantTime = 0;
 		if (TurretUpgrades.FIRE.check(this))
 			e.setFire(2);
@@ -245,7 +234,8 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 		DAMAGE(CrystalElement.PINK),
 		FIRERATE(CrystalElement.LIGHTBLUE),
 		SKY(CrystalElement.BLUE),
-		FIRE(CrystalElement.ORANGE);
+		FIRE(CrystalElement.ORANGE),
+		NONPLAYER(CrystalElement.LIGHTGRAY);
 
 		public final CrystalElement color;
 

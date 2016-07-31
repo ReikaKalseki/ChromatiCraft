@@ -84,10 +84,14 @@ public class TerrainGenCrystalMountain extends ChromaDimensionBiomeTerrainShaper
 		double gmin = Math.min(g1, g2);
 		int h = (int)dat.maxHeight;
 		//ReikaJavaLibrary.pConsole(dx+", "+dz+": "+h);
+		int my = 63+ChunkProviderChroma.VERTICAL_OFFSET;
+		if (this.isFlatWorld(world))
+			my = 3;
+		for (int y = 0; y < my; y++) {
+			world.setBlock(dx, y, dz, Blocks.stone, 0, 2);
+		}
 		for (int j = 0; j <= h; j++) {
-			int dy = 64+ChunkProviderChroma.VERTICAL_OFFSET+j;
-			if (this.isFlatWorld(world))
-				dy = 3+j;
+			int dy = my+j;
 			int m = 0;
 			Block b = Blocks.stone;
 			if (j == h)

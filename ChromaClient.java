@@ -215,16 +215,12 @@ public class ChromaClient extends ChromaCommon {
 
 	@Override
 	public void addArmorRenders() {
+		//NVHelmet = RenderingRegistry.addNewArmourRendererPrefix("NVHelmet");
+		armor = RenderingRegistry.addNewArmourRendererPrefix("CC");
 		/*
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/bedrock_1.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/bedrock_2.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/steel_1.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/steel_2.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/IOGoggles.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/NVGoggles.png");
-		ReikaTextureHelper.forceArmorTexturePath("/Reika/ChromatiCraft/Textures/Misc/NVHelmet.png");*/
+		ReikaTextureHelper.forceArmorTexturePath("/Reika/RotaryCraft/Textures/Misc/bedrock_1.png");*/
 
-		//addArmorTexture(ChromatiItems.JETPACK, "/Reika/ChromatiCraft/Textures/Misc/jet.png");
+		addArmorTexture(ChromaItems.FLOATBOOTS, "/Reika/ChromatiCraft/Textures/Misc/floatboots.png");
 	}
 
 	private static void addArmorTexture(ChromaItems item, String tex) {
@@ -232,7 +228,7 @@ public class ChromaClient extends ChromaCommon {
 		armorTextures.put(item, new ForcedTextureArmorModel(ChromatiCraft.class, tex, item.getArmorType()));
 		String[] s = tex.split("/");
 		String file = s[s.length-1];
-		String defaultTex = "Chromaticraft:textures/models/armor/"+file;
+		String defaultTex = "chromaticraft:textures/models/armor/"+file;
 		//ReikaJavaLibrary.pConsole(defaultTex);
 		armorAssets.put(item, defaultTex);
 	}

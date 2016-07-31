@@ -13,15 +13,18 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CrystalRenderedBlock;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;
 import Reika.DragonAPI.Interfaces.ISBRH;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class CrystalRenderer implements ISBRH {
 
@@ -144,6 +147,9 @@ public class CrystalRenderer implements ISBRH {
 				this.renderZAngledSpike(u, v, xu, xv, 0.1875, w); //2,3,6,7,10,11,14,15
 			if ((val & 1) == 1)
 				this.renderZAngledSpike(u, v, xu, xv, -0.1875, w); //1,3,5,7,9,11,13,15
+
+			v5.setColorOpaque_I(0xffffff);
+			this.renderWater(world, x, y, z, b, meta, v5);
 		}
 
 		//v5.setColorOpaque(0, 0, 0);
@@ -166,6 +172,34 @@ public class CrystalRenderer implements ISBRH {
 		//v5.addVertex(0, 0, 0);
 
 		return true;
+	}
+
+	private void renderWater(IBlockAccess world, int x, int y, int z, Block block, int meta, Tessellator v5) {
+		Block above = world.getBlock(x, y+1, z);
+		if (above != Blocks.water && above != Blocks.flowing_water && (above != block || world.getBlockMetadata(x, y+1, z) != meta)) {
+			boolean flag = ReikaWorldHelper.hasAdjacentWater(world, x, y, z, false, true);
+			if (!flag) {
+				for (int i = 2; i < 6 && !flag; i++) {
+					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+					int dx = x+dir.offsetX;
+					int dy = y+dir.offsetY;
+					int dz = z+dir.offsetZ;
+					flag = flag || ReikaWorldHelper.hasAdjacentWater(world, dx, dy, dz, false, true);
+				}
+			}
+			if (flag) {
+				IIcon ico = FluidRegistry.WATER.getIcon();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+				double h = 0.888;
+				v5.addVertexWithUV(0, h, 1, u, dv);
+				v5.addVertexWithUV(1, h, 1, du, dv);
+				v5.addVertexWithUV(1, h, 0, du, v);
+				v5.addVertexWithUV(0, h, 0, u, v);
+			}
+		}
 	}
 
 	private void renderBase(Tessellator v5, IBlockAccess world, int x, int y, int z, CrystalRenderedBlock b) {

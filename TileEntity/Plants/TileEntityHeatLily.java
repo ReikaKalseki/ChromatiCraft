@@ -21,10 +21,11 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class TileEntityHeatLily extends TileEntityMagicPlant implements LocationCached {
 
-	private StepTimer timer = new StepTimer(100);
+	private StepTimer timer = new StepTimer(40);
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
@@ -71,19 +72,15 @@ public class TileEntityHeatLily extends TileEntityMagicPlant implements Location
 
 	private void meltIce(World world, int x, int y, int z) {
 		int r = 3;
-		for (int i = -r; i <= r; i++) {
-			for (int k = -r; k <= r; k++) {
-				int dx = x+i;
-				int dy = y-1;
-				int dz = z+k;
-				Block b = world.getBlock(dx, dy, dz);
-				if (b == Blocks.ice) {
-					world.setBlock(dx, dy, dz, Blocks.flowing_water);
-				}
-				else if (b == Blocks.snow_layer) {
-					world.setBlock(dx, dy, dz, Blocks.air);
-				}
-			}
+		int dx = ReikaRandomHelper.getRandomPlusMinus(x, r);
+		int dy = y-1;
+		int dz = ReikaRandomHelper.getRandomPlusMinus(z, r);
+		Block b = world.getBlock(dx, dy, dz);
+		if (b == Blocks.ice) {
+			world.setBlock(dx, dy, dz, Blocks.flowing_water);
+		}
+		else if (b == Blocks.snow_layer) {
+			world.setBlock(dx, dy, dz, Blocks.air);
 		}
 	}
 

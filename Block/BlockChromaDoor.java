@@ -46,7 +46,6 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
-import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -178,7 +177,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-		return this.isOpen(world, x, y, z) ? null : ReikaAABBHelper.getBlockAABB(x, y, z);
+		this.setBlockBoundsBasedOnState(world, x, y, z);
+		return this.isOpen(world, x, y, z) ? null : super.getCollisionBoundingBoxFromPool(world, x, y, z);
 	}
 
 	@Override

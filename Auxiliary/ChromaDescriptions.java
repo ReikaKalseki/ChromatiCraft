@@ -23,9 +23,13 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -42,8 +46,6 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWeakRepeater;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
@@ -95,6 +97,7 @@ public final class ChromaDescriptions {
 	private static final XMLInterface infos = new XMLInterface(ChromatiCraft.class, PARENT+"info.xml", mustLoad);
 	private static final XMLInterface hover = new XMLInterface(ChromatiCraft.class, PARENT+"hover.xml", mustLoad);
 	private static final XMLInterface progress = new XMLInterface(ChromatiCraft.class, PARENT+"progression.xml", mustLoad);
+	private static final XMLInterface enchants = new XMLInterface(ChromatiCraft.class, PARENT+"enchants.xml", mustLoad);
 
 	private static String getParent() {
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? getLocalizedParent() : "Resources/";
@@ -170,6 +173,7 @@ public final class ChromaDescriptions {
 		structures.reread();
 		hover.reread();
 		progress.reread();
+		enchants.reread();
 
 		loadData();
 	}
@@ -233,6 +237,15 @@ public final class ChromaDescriptions {
 						desc += "\nThis machine depends on another mod.";
 					aux += "\nNote: Dummied Out";
 				}
+				if (m.isCrystalNetworkTile()) {
+					CrystalNetworkTile te = (CrystalNetworkTile)m.createTEInstanceForRender(0);
+					if (te instanceof CrystalReceiver) {
+						aux += String.format("Lumen Reception Range: %d m\n", ((CrystalReceiver)te).getReceiveRange());
+					}
+					if (te instanceof CrystalTransmitter) {
+						aux += String.format("Lumen Transmission Range: %d m\n", ((CrystalTransmitter)te).getSendRange());
+					}
+				}
 				if (m.hasPrerequisite()) {
 					String sg = m.getPrerequisite().getModLabel().replaceAll("[|]", "");
 					aux += "\nDependencies: "+ReikaStringParser.splitCamelCase(sg).replaceAll(" Craft", "Craft");
@@ -240,6 +253,8 @@ public final class ChromaDescriptions {
 				if (m.isIncomplete()) {
 					desc += "\nThis machine is incomplete. Use at your own risk.";
 				}
+				while(aux.startsWith("\n"))
+					aux = aux.substring("\n".length());
 
 				addEntry(h, desc);
 				notes.put(aux, h, 0);
@@ -307,6 +322,14 @@ public final class ChromaDescriptions {
 				desc = reveal;
 			progressText.put(p, new ProgressNote(title.replaceAll("\\n", ""), hint.replaceAll("\\n", ""), reveal.replaceAll("\\n", ""), desc.replaceAll("\\n", "")));
 		}
+
+		for (int i = 0; i < ChromaEnchants.enchantmentList.length; i++) {
+			ChromaEnchants e = ChromaEnchants.enchantmentList[i];
+			String desc = enchants.getValueAtNode("enchants:"+e.name().toLowerCase(Locale.ENGLISH));
+			notes.put(desc, ChromaResearch.ENCHANTS, i+1);
+		}
+		String desc = enchants.getValueAtNode("enchants:boostedlevel");
+		notes.put(desc, ChromaResearch.ENCHANTS, ChromaEnchants.enchantmentList.length+1);
 	}
 
 	public static String getAbilityDescription(Chromabilities c) {
@@ -361,13 +384,11 @@ public final class ChromaDescriptions {
 		addData(ChromaTiles.LIGHTER, CrystalElement.BLUE.displayName);
 
 		addNotes(ChromaTiles.ADJACENCY, TileEntityAdjacencyUpgrade.MAX_TIER);
-		addNotes(ChromaTiles.ENCHANTER, TileEntityAutoEnchanter.CHROMA_PER_LEVEL);
+		addNotes(ChromaTiles.ENCHANTER, TileEntityAutoEnchanter.CHROMA_PER_LEVEL_BASE);
 		addNotes(ChromaTiles.GUARDIAN, TileEntityGuardianStone.RANGE);
 		addNotes(ChromaTiles.TELEPUMP, TileEntityTeleportationPump.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.MINER, TileEntityMiner.getRequiredEnergy().toDisplay());
 		//addNotes(ChromaTiles.REPROGRAMMER, TileEntitySpawnerReprogrammer.getRequiredEnergy().toDisplay());
-		addNotes(ChromaTiles.REPEATER, TileEntityCrystalRepeater.RANGE);
-		addNotes(ChromaTiles.WEAKREPEATER, TileEntityWeakRepeater.WEAK_RANGE, TileEntityWeakRepeater.WEAK_RECEIVE_RANGE);
 		addNotes(ChromaTiles.TANK, TileEntityCrystalTank.FACTOR/1000, TileEntityCrystalTank.MAXCAPACITY/1000);
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		//addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
@@ -391,8 +412,12 @@ public final class ChromaDescriptions {
 				addData(e, e.displayName);
 		}
 
+		addData(ChromaItems.SHARE, ChromaTiles.TABLE.getName(), ChromaTiles.RITUAL.getName());
+
 		abilityData.put(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
 		abilityData.put(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});
+
+		miscData.put(ChromaResearch.ENCHANTS, new Object[]{ChromaTiles.ENCHANTER.getName()});
 	}
 
 	public static String getParentPage() {

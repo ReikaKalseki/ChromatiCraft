@@ -7,7 +7,7 @@
 		The pylon compass scans the energy field that permeates the world and analyzes it to calculate the location of the nearest pylon of each crystal element. Due to the fact that the energy is always in flux, there is some inaccuracy to the calculation, but the location you are directed to should be within a short walk of the actual pylon.
 	</finder>
 	<excavator>
-		By concentrating elements associated with energy and minerals, you have found that you can apply them to the terrain and excavate a large area. When you release the energy into the ground, it seems to only get conducted along identical materials, but this nonetheless allows you to clear a large area of rock, ores, or other materials with a single stroke.
+		By concentrating elements associated with energy and minerals, you have found that you can apply them to the terrain and excavate a large area. When you release the energy into the ground, it seems to only get conducted along identical materials, but this nonetheless allows you to clear a large area of rock, ores, or other materials with a single stroke. To avoid accidentally creating large holes, making it unable to mine the basic stone of the world is probably for the best.
 	</excavator>
 	<transition>
 		Gray-colored energy seems to have the power to transmute and change, so it is a reasonable guess to think that if applied to the world, with some information of what blocks to place and replace, this power could be used to change large swaths of one block into another, greatly expediting the landscaping process.
@@ -81,6 +81,9 @@
 	<doorkey>
 		Doors are generally useless without keys. To that end, your ethereal barrier needs a key. After shift-right-clicking the key on the door, you linked the two and now using the key will open the door. Surely this key cannot open someone else's door.
 	</doorkey>
+	<ownerkey>
+		You are sharing your house with a friend, but when they tried to use any of your constructions, from the %s to the %s, all they got in return was a clear message of "not yours". Time to rectify this.
+	</ownerkey>
 	<crystalcell>
 		A great many types of items come in sixteen variants, one for each color of crystal energy. Sure, you could just dump them all into your magical etched-crystal storage device, but after mining out a dungeon and finding 23 different tools of six materials (who leaves a bronze sword in a random area underground?), the limit on item types is becoming insurmountable. Perhaps a storage cell dedicated to these crystalline items would mitigate the issue.
 	</crystalcell>

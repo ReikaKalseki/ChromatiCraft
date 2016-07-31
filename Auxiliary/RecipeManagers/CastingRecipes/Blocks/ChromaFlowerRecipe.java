@@ -21,7 +21,7 @@ public class ChromaFlowerRecipe extends CastingRecipe {
 
 	@Override
 	public float getPenaltyMultiplier() {
-		return 8;
+		return 0.25F;
 	}
 
 	@Override

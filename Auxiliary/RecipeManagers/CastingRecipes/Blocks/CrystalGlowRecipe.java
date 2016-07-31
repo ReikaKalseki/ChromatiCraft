@@ -32,7 +32,7 @@ public class CrystalGlowRecipe extends CastingRecipe implements CoreRecipe {
 
 	@Override
 	public float getPenaltyMultiplier() {
-		return 2;
+		return 0.5F;
 	}
 
 	@Override

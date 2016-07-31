@@ -39,6 +39,7 @@ public class SkyRiverManager {
 	// the
 	// SkyRiver
 	private static final int SKYRIVER_ENTER_DELAY = 60; // ticks - allows the
+
 	// server to catch up
 	// after untrack.
 
@@ -71,7 +72,7 @@ public class SkyRiverManager {
 							sendSkyriverEnterStatePacket(pl, true);
 							debugMessage("Player " + pl.getCommandSenderName() + " has entered a SkyRiver.");
 						}
-						movePlayer(pl, closest);
+						movePlayer(pl, closest, false);
 					}
 				}
 			}
@@ -81,10 +82,12 @@ public class SkyRiverManager {
 	// Can/Will be called from Server and Client
 	// Set motionX, motionY, motionZ according to the RiverPoints
 	// TODO redo.
-	protected static void movePlayer(EntityPlayer player, SkyRiverGenerator.RiverPoint rp) {
+	// Can/Will be called from Server and Client
+	// Set motionX, motionY, motionZ according to the RiverPoints
+	protected static void movePlayer(EntityPlayer player, SkyRiverGenerator.RiverPoint rp, boolean doesMove) {
 		DecimalPosition plPos = new DecimalPosition(player);
 		double dst;
-		Vec3 pullVector, nodeVector;
+		Vec3 pullVector, nodeVector, moveVector;
 
 		// It's important to check for pos->next before checking for prev->pos
 		// That way, pulling further is preferred over pulling backwards...
@@ -114,11 +117,15 @@ public class SkyRiverManager {
 		nodeVector = nodeVector.normalize(); // Normalized vector pointing from
 		// the player towards the next
 		// node.
-		pullVector = Vec3.createVectorHelper(pullVector.xCoord * 0.95 + nodeVector.xCoord * 0.05, pullVector.yCoord * 0.95 + nodeVector.yCoord * 0.05, pullVector.zCoord * 0.95 + nodeVector.zCoord * 0.05);
-		double multiplier = 3D;
-		player.motionX = pullVector.xCoord * multiplier;
-		player.motionY = pullVector.yCoord * multiplier;
-		player.motionZ = pullVector.zCoord * multiplier;
+		moveVector = Vec3.createVectorHelper(pullVector.xCoord * 0.6 + nodeVector.xCoord * 0.4, pullVector.yCoord * 0.6 + nodeVector.yCoord * 0.4, pullVector.zCoord * 0.6 + nodeVector.zCoord * 0.4);
+		if (doesMove) {
+			Vec3 playerMove = Vec3.createVectorHelper(player.motionX, player.motionY, player.motionZ).normalize();
+			moveVector = Vec3.createVectorHelper(moveVector.xCoord * 0.1 + playerMove.xCoord * 0.9, moveVector.yCoord, moveVector.zCoord * 0.1 + playerMove.zCoord * 0.9);
+		}
+		double multiplier = 7D;
+		player.motionX = moveVector.xCoord * multiplier;
+		player.motionY = moveVector.yCoord * multiplier;
+		player.motionZ = moveVector.zCoord * multiplier;
 	}
 
 	protected static void debugMessage(String message) {

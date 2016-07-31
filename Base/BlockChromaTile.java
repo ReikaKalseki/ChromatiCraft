@@ -414,10 +414,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			return true;
 		}
 
-		if (te != null && ChromaAux.hasGui(world, x, y, z, ep) && ((TileEntityBase)te).isPlayerAccessible(ep)) {
-			ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
-			return true;
-		}
+		if (m != ChromaTiles.TELEPORT)
+			if (te != null && ChromaAux.hasGui(world, x, y, z, ep) && ((TileEntityBase)te).isPlayerAccessible(ep)) {
+				ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
+				return true;
+			}
 
 		((TileEntityBase)te).syncAllData(true);
 		return false;

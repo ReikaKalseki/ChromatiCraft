@@ -25,6 +25,7 @@ import thaumcraft.api.nodes.INode;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
@@ -56,6 +57,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
@@ -263,6 +265,28 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			ChromaSounds.ERROR.playSoundAtBlock(tile);
 			//}
 			return true;
+		}
+
+		if (t == ChromaTiles.TELEPORT) {
+			TileEntityTeleportGate te = (TileEntityTeleportGate)tile;
+			if (DragonAPICore.debugtest) {
+				ChromaStructures.getGateStructure(world, x, y, z).place();
+				te.validateStructure();
+			}
+			else {
+				if (te.isOwnedByPlayer(ep)) {
+					if (ep.isSneaking()) {
+						te.incrementDirection();
+					}
+					else {
+						te.publicMode = !te.publicMode;
+					}
+					ChromaSounds.USE.playSoundAtBlock(te);
+				}
+				else {
+					ChromaSounds.ERROR.playSoundAtBlock(te);
+				}
+			}
 		}
 
 		if (t != null && t.isRepeater()) {

@@ -15,7 +15,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -96,21 +95,33 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 	protected void actionPerformed(GuiButton b) {
 		switch(b.id) {
 			case 0:
-				if (dx == 0 && index > 0) {
-					//index--;
-					dx++;
-					this.markButtons(false);
-				}
+				this.scrollRight(1);
 				break;
 			case 1:
-				if (dx == 0 && index < abilities.size()-1) {
-					//index++;
-					dx--;
-					this.markButtons(false);
-				}
+				this.scrollLeft(1);
 				break;
 		}
 		//this.initGui();
+	}
+
+	protected final void scrollLeft(int n) {
+		if (dx == 0 && index < abilities.size()-1) {
+			for (int i = 0; i < n-1 && index < abilities.size()-2; i++)
+				index++;
+			//index++;
+			dx--;
+			this.markButtons(false);
+		}
+	}
+
+	protected final void scrollRight(int n) {
+		if (dx == 0 && index > 0) {
+			for (int i = 0; i < n-1 && index > 1; i++)
+				index--;
+			//index--;
+			dx++;
+			this.markButtons(false);
+		}
 	}
 
 	private void markButtons(boolean on) {
@@ -131,13 +142,6 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		Ability c = abilities.get(index);
 		boolean has = Chromabilities.playerHasAbility(player, c);
-
-		int move = Mouse.getDWheel();
-		if (move != 0 && dx == 0) {
-			this.markButtons(false);
-			if (!((move < 0 && index == 0) || (move > 0 && index == abilities.size()-1)))
-				dx += Math.signum(move);
-		}
 
 		double px = 2D*Math.abs(dx)/width;
 		int sp = Math.max(1, (int)(360D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px))));

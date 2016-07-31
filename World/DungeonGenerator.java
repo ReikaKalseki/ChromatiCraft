@@ -419,7 +419,25 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 	}
 
-	private void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
+	public static void populateChests(ChromaStructures.Structures struct, FilledBlockArray arr, Random r) {
+		for (int k = 0; k < arr.getSize(); k++) {
+			Coordinate c = arr.getNthBlock(k);
+			Block b = c.getBlock(arr.world);
+			if (b == ChromaStructures.getChestGen()) {
+				TileEntityLootChest te = (TileEntityLootChest)c.getTileEntity(arr.world);
+				if (te.isUntouchedWorldgen()) {
+					int bonus = 0;
+					if (struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4)
+						bonus = 4;
+					if (struct == Structures.DESERT && c.yCoord-arr.getMinY() < 4)
+						bonus = 2;
+					populateChest(te, struct, bonus, r);
+				}
+			}
+		}
+	}
+
+	public static void populateChest(TileEntityLootChest te, Structures struct, int bonus, Random r) {
 		String s = null;
 		switch (struct) {
 			case CAVERN:
@@ -438,19 +456,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		}
 		if (s == null)
 			return;
-		for (int k = 0; k < arr.getSize(); k++) {
-			Coordinate c = arr.getNthBlock(k);
-			Block b = c.getBlock(arr.world);
-			if (b == ChromaStructures.getChestGen()) {
-				TileEntityLootChest te = (TileEntityLootChest)arr.world.getTileEntity(c.xCoord, c.yCoord, c.zCoord);
-				int bonus = 0;
-				if (struct == Structures.OCEAN && c.yCoord-arr.getMinY() == 4)
-					bonus = 4;
-				if (struct == Structures.DESERT && c.yCoord-arr.getMinY() < 4)
-					bonus = 2;
-				te.populateChest(s, struct, bonus, r);
-			}
-		}
+		te.populateChest(s, struct, bonus, r);
 	}
 
 	private void convertDirtToGrass(FilledBlockArray arr) {
@@ -636,7 +642,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			}
 		}
 		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
-			return false;
+			;//return false;
 		if (world.provider.dimensionId == 0)
 			return true;
 		if (Math.abs(world.provider.dimensionId) == 1)

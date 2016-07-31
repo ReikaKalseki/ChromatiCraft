@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -57,7 +56,6 @@ public class EntitySparkleFX extends EntityFX {
 	@Override
 	public void renderParticle(Tessellator v5, float par2, float par3, float par4, float par5, float par6, float par7)
 	{
-		ReikaTextureHelper.bindTerrainTexture();
 		super.renderParticle(v5, par2, par3, par4, par5, par6, par7);
 	}
 
@@ -70,7 +68,7 @@ public class EntitySparkleFX extends EntityFX {
 	@Override
 	public int getFXLayer()
 	{
-		return 2;
+		return 1;
 	}
 
 }

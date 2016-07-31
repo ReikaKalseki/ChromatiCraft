@@ -67,7 +67,7 @@ public class WeakRepeaterRecipe extends TempleCastingRecipe implements CoreRecip
 
 	@Override
 	public ItemStack getCentralLeftover(ItemStack is) {
-		return new ItemStack(Items.bucket, is.stackSize, 1);
+		return new ItemStack(Items.bucket, 1, is.stackSize);
 	}
 
 }

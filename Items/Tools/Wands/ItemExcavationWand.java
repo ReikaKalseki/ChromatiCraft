@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
@@ -30,6 +31,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
+import Reika.GeoStrata.Registry.GeoBlocks;
 
 public class ItemExcavationWand extends ItemWandBase implements BreakerCallback {
 
@@ -93,6 +95,11 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			else if (bk == Blocks.redstone_ore)
 				b.addBlock(new BlockKey(Blocks.lit_redstone_ore));
 			else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
+				for (int i = 0; i < 16; i++) {
+					b.addBlock(new BlockKey(bk, i));
+				}
+			}
+			else if (ModList.GEOSTRATA.isLoaded() && bk == GeoBlocks.LAVAROCK.getBlockInstance()) {
 				for (int i = 0; i < 16; i++) {
 					b.addBlock(new BlockKey(bk, i));
 				}

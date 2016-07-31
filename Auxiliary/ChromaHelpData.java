@@ -22,6 +22,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
@@ -49,6 +50,10 @@ public class ChromaHelpData {
 		this.addKey(ChromaTiles.DIMENSIONCORE.getBlock(), ChromaTiles.DIMENSIONCORE.getBlockMetadata(), "dimensioncore");
 
 		this.addKey(ChromaBlocks.RUNE, "rune");
+
+		if (ModList.FORESTRY.isLoaded()) {
+			this.addKey(ChromaBlocks.HIVE, "hive");
+		}
 
 		for (int i = 0; i < TieredOres.list.length; i++) {
 			this.addKey(ChromaBlocks.TIEREDORE, i, "ore_"+TieredOres.list[i].name().toLowerCase(Locale.ENGLISH));

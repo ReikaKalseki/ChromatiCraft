@@ -19,9 +19,9 @@ public class LumenTurretDamage extends CustomStringDamageSource {
 
 	private final EntityPlayer player;
 
-	public LumenTurretDamage(TileEntityLumenTurret te) {
+	public LumenTurretDamage(TileEntityLumenTurret te, boolean fake) {
 		super("got too close to "+te.getPlacerName()+"'s "+te.getName());
-		player = te.getPlacer();
+		player = fake ? te.getFakePlacer() : te.getPlacer();
 	}
 
 	@Override

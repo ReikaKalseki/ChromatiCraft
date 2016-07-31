@@ -16,6 +16,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -36,6 +38,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 public class GuiTeleportGate extends GuiChromaBase {
 
@@ -46,11 +49,15 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 	private static final int SIZE = 16;
 
+	private double offsetX = 0;
+	private double offsetZ = 0;
+	private double scaleFactor = 1;
+
 	public GuiTeleportGate(EntityPlayer ep, TileEntityTeleportGate te) {
 		super(new CoreContainer(ep, te), ep, te);
 		gate = te;
 		xSize = 240;
-		ySize = 190;
+		ySize = 200;
 	}
 
 	@Override
@@ -85,20 +92,23 @@ public class GuiTeleportGate extends GuiChromaBase {
 		LinkNode l = pointLocs.getRegion(-j+x, -k+y);
 		if (l != null) {
 			if (!l.location.equals(gate.worldObj, gate.xCoord, gate.yCoord, gate.zCoord)) {
-				if (TileEntityTeleportGate.canTeleport(new WorldLocation(gate), l.location, player)) {
-					ReikaSoundHelper.playClientSound(ChromaSounds.USE, player, 1, 1);
-					ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRIGGERTELEPORT.ordinal(), new PacketTarget.ServerTarget(), gate.worldObj.provider.dimensionId, gate.xCoord, gate.yCoord, gate.zCoord, l.location.dimensionID, l.location.xCoord, l.location.yCoord, l.location.zCoord);
-					player.closeScreen();
-					player.rotationPitch = 0;
-					return;
-				}
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TRIGGERTELEPORT.ordinal(), new PacketTarget.ServerTarget(), gate.worldObj.provider.dimensionId, gate.xCoord, gate.yCoord, gate.zCoord, l.location.dimensionID, l.location.xCoord, l.location.yCoord, l.location.zCoord);
 			}
-			ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+			else
+				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
 		}
 		else if (x >= j && y >= k && x <= j+fontRendererObj.getStringWidth("Reload Preview")+3 && y <= k+fontRendererObj.FONT_HEIGHT+3) {
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 1, 1);
 			player.closeScreen();
 			gate.takeSnapshot();
+		}
+	}
+
+	public void handleTriggerConfirm(boolean success) {
+		ReikaSoundHelper.playClientSound(success ? ChromaSounds.USE : ChromaSounds.ERROR, player, 1, 1);
+		if (success) {
+			player.closeScreen();
+			player.rotationPitch = 0;
 		}
 	}
 
@@ -124,6 +134,37 @@ public class GuiTeleportGate extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		api.drawRectFrame(j, k, xSize, ySize, 0xffffffff);
+	}
+
+	@Override
+	public void drawScreen(int mx, int my, float ptick) {
+		super.drawScreen(mx, my, ptick);
+
+		double d = Math.max(-40, -6*scaleFactor);
+		if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
+			scaleFactor *= 0.95;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_NEXT)) {
+			scaleFactor *= 1.05;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			offsetZ -= d;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			offsetX -= d;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			offsetZ += d;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			offsetX += d;
+		}
+		else if (Keyboard.isKeyDown(Keyboard.KEY_HOME)) {
+			scaleFactor = 1;
+			offsetX = 0;
+			offsetZ = 0;
+		}
 	}
 
 	@Override
@@ -140,10 +181,10 @@ public class GuiTeleportGate extends GuiChromaBase {
 
 		private final ObjectWeb<LinkNode> web = new ObjectWeb();
 
-		private int minX = Integer.MAX_VALUE;
-		private int minZ = Integer.MAX_VALUE;
-		private int maxX = Integer.MIN_VALUE;
-		private int maxZ = Integer.MIN_VALUE;
+		private double minX = Integer.MAX_VALUE;
+		private double minZ = Integer.MAX_VALUE;
+		private double maxX = Integer.MIN_VALUE;
+		private double maxZ = Integer.MIN_VALUE;
 
 		private void addNode(LinkNode l) {
 			web.addNode(l);
@@ -186,24 +227,38 @@ public class GuiTeleportGate extends GuiChromaBase {
 			}
 			maxX -= minX;
 			maxZ -= minZ;
-			double sx = sizeX/(double)maxX;
-			double sz = sizeY/(double)maxZ;
+			double sx = sizeX/maxX;
+			double sz = sizeY/maxZ;
+			double sm = Math.min(sx, sz);
 			for (LinkNode l : web.objects()) {
-				l.renderX *= sx;
-				l.renderZ *= sz;
+				l.renderX *= sm;
+				l.renderZ *= sm;
 			}
+			maxX *= sm;
+			maxZ *= sm;
 		}
 
 		private void render(int j, int k, int s) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
+			int dx = (int)(-maxX/2D*scaleFactor)+xSize/2+(int)offsetX;
+			int dz = (int)(-maxZ/2D*scaleFactor)+ySize/2+(int)offsetZ;
 			BlendMode.ADDITIVEDARK.apply();
 			for (LinkNode l : web.objects()) {
-				boolean mbox = api.isMouseInBox(j+l.renderX+3, j+l.renderX+s-4, k+l.renderZ+3, k+l.renderZ+s-4);
+				int lx = (int)Math.round(l.renderX*scaleFactor)+dx;
+				int lz = (int)Math.round(l.renderZ*scaleFactor)+dz;
+				//if (lx >= 0 && lx <= xSize && lz >= 0 && lz < ySize) {
+				boolean mbox = api.isMouseInBox(j+lx+3, j+lx+s-4, k+lz+3, k+lz+s-4);
 				for (LinkNode l2 : web.getChildren(l)) {
-					int lc = mbox ? 0xffffffff : 0x04040404;
-					api.drawLine(l.renderX+s/2, l.renderZ+s/2, l2.renderX+s/2, l2.renderZ+s/2, lc);
+					int lx2 = (int)Math.round(l2.renderX*scaleFactor)+dx;
+					int lz2 = (int)Math.round(l2.renderZ*scaleFactor)+dz;
+					ImmutablePair<java.awt.Point, java.awt.Point> ps = ReikaVectorHelper.clipLine(lx+s/2, lx2+s/2, lz+s/2, lz2+s/2, 0, 0, xSize, ySize);
+					if (ps != null) {
+						int lc = mbox ? 0xffffffff : 0x04040404;
+						api.drawLine(ps.left.x, ps.left.y, ps.right.x, ps.right.y, lc);
+					}
 				}
+				//}
 			}
 
 			BlendMode.DEFAULT.apply();
@@ -211,35 +266,39 @@ public class GuiTeleportGate extends GuiChromaBase {
 			ReikaTextureHelper.bindTerrainTexture();
 			for (LinkNode l : web.objects()) {
 				int c = l.getRenderColor();
-				boolean mbox = api.isMouseInBox(j+l.renderX+3, j+l.renderX+s-4, k+l.renderZ+3, k+l.renderZ+s-4);
-				GL11.glColor3f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F);
-				api.drawTexturedModelRectFromIcon(l.renderX, l.renderZ, ChromaIcons.DIAMOND.getIcon(), s, s);
-				pointLocs.addRegionByWH(l.renderX, l.renderZ, s, s, l);
-				if (mbox) {
-					BufferedImage img = gate.getPreview(l.location);
-					if (img == null) {
-						ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GateNotFound.png");
+				int lx = (int)Math.round(l.renderX*scaleFactor)+dx;
+				int lz = (int)Math.round(l.renderZ*scaleFactor)+dz;
+				if (lx >= 0 && lx <= xSize-s && lz >= 0 && lz < ySize-s) {
+					boolean mbox = api.isMouseInBox(j+lx+3, j+lx+s-4, k+lz+3, k+lz+s-4);
+					GL11.glColor3f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F);
+					api.drawTexturedModelRectFromIcon(lx, lz, ChromaIcons.DIAMOND.getIcon(), s, s);
+					pointLocs.addRegionByWH(lx, lz, s, s, l);
+					if (mbox) {
+						BufferedImage img = gate.getPreview(l.location);
+						if (img == null) {
+							ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GateNotFound.png");
+						}
+						else {
+							ReikaTextureHelper.bindRawTexture(img, l.getTextureID());
+						}
+						double w = img == null ? 854/8D : img.getWidth()/8D;
+						double h = img == null ? 480/8D : img.getHeight()/8D;
+						GL11.glColor3f(1, 1, 1);
+						double x = api.getMouseRealX()-w/1.25;
+						double y = api.getMouseRealY()-h/4D;
+						x = Math.min(x, xSize-w);
+						y = Math.min(y, ySize-h);
+						Tessellator.instance.startDrawingQuads();
+						Tessellator.instance.setColorOpaque_I(0xffffff);
+						Tessellator.instance.addVertexWithUV(x, y+h, 0, 0, 1);
+						Tessellator.instance.addVertexWithUV(x+w, y+h, 0, 1, 1);
+						Tessellator.instance.addVertexWithUV(x+w, y, 0, 1, 0);
+						Tessellator.instance.addVertexWithUV(x, y, 0, 0, 0);
+						Tessellator.instance.draw();
+						ReikaTextureHelper.bindTerrainTexture();
+						String sg = l.location.toString();
+						api.drawTooltipAt(fontRendererObj, sg, (int)x+fontRendererObj.getStringWidth(sg)+19, (int)y-(fontRendererObj.FONT_HEIGHT-8));
 					}
-					else {
-						ReikaTextureHelper.bindRawTexture(img, "telegate "+l.location.toString());
-					}
-					double w = img == null ? 854/8D : img.getWidth()/8D;
-					double h = img == null ? 480/8D : img.getHeight()/8D;
-					GL11.glColor3f(1, 1, 1);
-					double x = api.getMouseRealX()-w/1.25;
-					double y = api.getMouseRealY()-h/4D;
-					x = Math.min(x, xSize-w);
-					y = Math.min(y, ySize-h);
-					Tessellator.instance.startDrawingQuads();
-					Tessellator.instance.setColorOpaque_I(0xffffff);
-					Tessellator.instance.addVertexWithUV(x, y+h, 0, 0, 1);
-					Tessellator.instance.addVertexWithUV(x+w, y+h, 0, 1, 1);
-					Tessellator.instance.addVertexWithUV(x+w, y, 0, 1, 0);
-					Tessellator.instance.addVertexWithUV(x, y, 0, 0, 0);
-					Tessellator.instance.draw();
-					ReikaTextureHelper.bindTerrainTexture();
-					String sg = l.location.toString();
-					api.drawTooltipAt(fontRendererObj, sg, (int)x+fontRendererObj.getStringWidth(sg)+19, (int)y-(fontRendererObj.FONT_HEIGHT-8));
 				}
 			}
 			GL11.glPopAttrib();
@@ -252,8 +311,8 @@ public class GuiTeleportGate extends GuiChromaBase {
 		private int statusFlags;
 		private final WorldLocation location;
 
-		private int renderX;
-		private int renderZ;
+		private double renderX;
+		private double renderZ;
 
 		private LinkNode(GateData dat) {
 			location = dat.location;
@@ -261,6 +320,10 @@ public class GuiTeleportGate extends GuiChromaBase {
 				this.setFlag(Statuses.DIMENSION);
 			if (dat.isOwnedBy(player))
 				this.setFlag(Statuses.OWNED);
+		}
+
+		private String getTextureID() {
+			return TileEntityTeleportGate.getTextureID(location);
 		}
 
 		private LinkNode setFlag(Statuses s) {

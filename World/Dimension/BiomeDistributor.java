@@ -22,6 +22,8 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -65,6 +67,28 @@ public class BiomeDistributor extends ThreadedGenerator {
 
 	public BiomeDistributor(long seed) {
 		super(seed);
+	}
+
+	public static NBTTagList getDataForPacket() {
+		int n = 8;
+		NBTTagList tag = new NBTTagList();
+		for (int i = 0; i < SIZE; i += n) {
+			for (int k = 0; k < SIZE; k += n) {
+				tag.appendTag(new NBTTagByte((byte)biomes[i][k].getBiome().biomeID));
+			}
+		}
+		return tag;
+	}
+
+	public static void fillFromPacket(NBTTagList tag) {
+		int n = 8;
+		for (int i = 0; i < SIZE; i += n) {
+			for (int k = 0; k < SIZE; k += n) {
+				int idx = (i*SIZE+k)/n;
+				byte id = ((NBTTagByte)tag.tagList.get(idx)).func_150290_f();
+				biomes[i][k] = Biomes.getFromID(id);
+			}
+		}
 	}
 
 	public static ChromaDimensionBiome getBiome(int x, int z) {

@@ -109,7 +109,7 @@
 			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, and were prone to often violent failure as they were used. In hindsight, wood was a monumentally foolish material to choose. Clearly the crystal you have used so much of would be a better choice. A rune to focus the color would improve them even better, though that would mean restricting it to only one color of transmission. You may find a way around that too...later.
 		</desc>
 		<note>
-			Range: %d blocks receiving and transmitting
+			
 		</note>
 	</repeater>
 	<weakrepeater>
@@ -117,7 +117,7 @@
 			The transmission range of a Crystal Pylon is limited to %d blocks, and its beams are blocked by just about anything aside from air and glass; this means that unless you built your base next to one of every pylon - a dangerous endeavour - you need some way to relay the signal. This is exactly the function of a repeater, which can repeat a signal and do so around obstacles. However, repeaters do incur a small signal attenuation, so optimizing the path is a good idea. This is only a first attempt at such repeaters, and as a result its quality is...questionable. Surely you will need to improve your designs with experience.
 		</desc>
 		<note>
-			Range: %d blocks transmitting and %d receiving
+			
 		</note>
 	</weakrepeater>
 	<rift>

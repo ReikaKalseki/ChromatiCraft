@@ -21,13 +21,18 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
+import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Interfaces.Item.ToolSprite;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
 public class ItemOrePick extends ItemChromaTool implements ToolSprite {
@@ -64,6 +69,31 @@ public class ItemOrePick extends ItemChromaTool implements ToolSprite {
 		}
 		else
 			is.stackTagCompound = null;
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		is.damageItem(2, ep);
+		if (world.isRemote) {
+			int x = MathHelper.floor_double(ep.posX);
+			int y = MathHelper.floor_double(ep.posY);
+			int z = MathHelper.floor_double(ep.posZ);
+			int r = 8;
+			for (int i = -r; i <= r; i++) {
+				for (int j = -r; j <= r; j++) {
+					for (int k = -r; k <= r; k++) {
+						int dx = x+i;
+						int dy = y+j;
+						int dz = z+k;
+						if (ReikaBlockHelper.isOre(world.getBlock(dx, dy, dz), world.getBlockMetadata(dx, dy, dz))) {
+							OreOverlayRenderer.instance.addCoordinate(world, dx, dy, dz);
+						}
+					}
+				}
+			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.PING, ep, 1, 0.5F);
+		}
+		return is;
 	}
 
 	public static OreType getOreTypeByMetadata(ItemStack is) {

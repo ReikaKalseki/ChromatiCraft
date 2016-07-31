@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -151,6 +152,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Duplica
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EfficiencyCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnhancedPendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.FloatstoneBootsRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.GrowthWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.InventoryLinkRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.KillAuraRecipe;
@@ -192,6 +194,7 @@ import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
+import Reika.RotaryCraft.Registry.ItemRegistry;
 
 import com.google.common.collect.HashBiMap;
 
@@ -651,6 +654,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new WirelessTransmitterRecipe(ChromaTiles.WIRELESS.getCraftedProduct(), ChromaStacks.elementUnit));
 
 		this.addRecipe(new WarpGateRecipe(ChromaTiles.TELEPORT.getCraftedProduct(), ChromaStacks.voidCoreHigh));
+
+		this.addRecipe(new FloatstoneBootsRecipe(ChromaItems.FLOATBOOTS.getStackOf(), new ItemStack(Items.iron_boots), false));
+		if (ModList.ROTARYCRAFT.isLoaded()) {
+			this.addRecipe(new FloatstoneBootsRecipe(ChromaItems.FLOATBOOTS.getStackOf(), ItemRegistry.BEDBOOTS.getStackOf(), true));
+			this.addRecipe(new FloatstoneBootsRecipe(ChromaItems.FLOATBOOTS.getStackOf(), ItemRegistry.BEDJUMP.getStackOfMetadata(OreDictionary.WILDCARD_VALUE), true));
+		}
 
 		this.addSpecialRecipes();
 	}

@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval.OperationState
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
+import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemOrePick;
@@ -177,15 +178,19 @@ public class ChromaOverlays {
 		int gsc = evt.resolution.getScaleFactor();
 		if (evt.type == ElementType.HELMET) {
 			if (ChromaItems.TOOL.matchWith(is)) {
+				this.renderTileOverlays(ep, gsc);
+			}
+
+			if (this.isEnergyDisplayTool(is)) {
 				if (!holding)
 					this.syncBuffer(ep);
 				holding = true;
 				this.renderElementPie(ep, gsc);
-				this.renderTileOverlays(ep, gsc);
 			}
 			else {
 				holding = false;
 			}
+
 			if (ChromaItems.OREPICK.matchWith(is)) {
 				this.renderOreHUD(ep, evt.resolution, is);
 			}
@@ -217,6 +222,10 @@ public class ChromaOverlays {
 		}
 		GL11.glPopMatrix();
 		GL11.glPopAttrib();
+	}
+
+	private boolean isEnergyDisplayTool(ItemStack is) {
+		return is != null && (ChromaItems.TOOL.matchWith(is) || is.getItem() instanceof ItemWandBase);
 	}
 
 	public boolean isWashoutActive() {

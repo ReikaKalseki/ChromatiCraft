@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -60,7 +61,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 		if (ChromatiCraft.instance.isLocked()) {
 			for (int i = 0; i < ChromaItems.itemList.length; i++) {
 				ChromaItems ir = ChromaItems.itemList[i];
-				API.hideItem(new ItemStack(ir.getItemInstance()));
+				API.hideItem(new ItemStack(ir.getItemInstance(), 1, OreDictionary.WILDCARD_VALUE));
 			}
 			for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 				ChromaBlocks b = ChromaBlocks.blockList[i];
@@ -70,7 +71,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 	}
 
 	private void hideBlock(Block b) {
-		API.hideItem(new ItemStack(b));
+		API.hideItem(new ItemStack(b, 1, OreDictionary.WILDCARD_VALUE));
 	}
 
 	@Override

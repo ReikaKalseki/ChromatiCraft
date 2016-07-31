@@ -126,6 +126,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			ChromaSounds.UPGRADE.playSoundAtBlock(this);
 			if (worldObj.isRemote)
 				this.particleBurst();
+			this.validateStructure(worldObj, xCoord, yCoord, zCoord);
 		}
 	}
 
@@ -495,7 +496,8 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		int t = r.getDuration();
 		if (isEnhanced)
 			t = Math.max(t/r.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
-		t *= r.getRecipeStackedTimeFactor(this, craftingAmount);
+		if (r.canBeStacked())
+			t *= r.getRecipeStackedTimeFactor(this, craftingAmount);
 		craftingTick = t;
 	}
 
@@ -645,7 +647,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					ReikaInventoryHelper.decrStack(i, inv);
 				}
 			}
-			count += activeRecipe.getOutput().stackSize;
+			count += 1;
 			ProgressStage.CASTING.stepPlayerTo(craftingPlayer);
 			if (activeRecipe instanceof PylonRecipe) {
 				energy.subtract(((PylonRecipe)activeRecipe).getRequiredAura());
@@ -662,7 +664,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			}
 		}
 		ItemStack out = activeRecipe.getOutput();
-		inv[9] = ReikaItemHelper.getSizedItemStack(out, count);
+		inv[9] = ReikaItemHelper.getSizedItemStack(out, count*activeRecipe.getOutput().stackSize);
 		this.addCrafted(out, count);
 		if (inv[9] != null) {
 			if (NBTin != null) {
@@ -701,9 +703,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private float getXPModifier(CastingRecipe recipe) {
 		Integer get = craftedItems.get(recipe.getOutput());
-		if (get != null && get.intValue() >= recipe.getPenaltyThreshold()) {
+		int max = recipe.getPenaltyThreshold();
+		if (get != null && get.intValue() >= max) {
 			float mult = recipe.getPenaltyMultiplier();
-			return mult > 0 ? Math.max(0.05F, 65536F/(get.intValue()*get.intValue()*mult)) : 0;
+			float fac = (float)Math.pow(mult, get.intValue()-max);
+			return fac;
 		}
 		return 1;
 	}

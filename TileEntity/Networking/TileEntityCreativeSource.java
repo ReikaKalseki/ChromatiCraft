@@ -109,6 +109,8 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 		UUID other = te.getPlacerUUID();
 		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
 			return true;
+		if (ep.getUniqueID().equals(DragonAPICore.Reika_UUID))
+			return true;
 		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
 	}
 

@@ -256,9 +256,9 @@ public class CastingRecipe implements APICastingRecipe {
 		return this instanceof CoreRecipe ? Integer.MAX_VALUE : Math.max(1, this.getTypicalCraftedAmount()*3/4);
 	}
 
-	/** Return zero to make all over-threshold yield zero XP */
+	/** Multiplicative factor. Return zero to make all over-threshold yield zero XP */
 	public float getPenaltyMultiplier() {
-		return 1;
+		return 0.75F;
 	}
 
 	public final int getIDCode() {

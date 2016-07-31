@@ -53,7 +53,7 @@ public class DimensionJoinHandler implements PlayerTracker {
 
 	@Override
 	public void onPlayerLogout(EntityPlayer player) {
-		SkyRiverManager.clearClientRiver(player);
+
 	}
 
 	@Override

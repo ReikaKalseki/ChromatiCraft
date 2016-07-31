@@ -194,8 +194,6 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	private static boolean isIvySolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
 		Block b = world.getBlock(x, y, z);
-		if (b.isOpaqueCube())
-			return true;
 		return ReikaBlockHelper.isFacade(b) && b.isSideSolid(world, x, y, z, dir);
 	}
 

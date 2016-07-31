@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import java.util.HashSet;
+import java.util.HashMap;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
@@ -35,7 +35,11 @@ import Reika.RotaryCraft.TileEntities.Production.TileEntityFermenter;
 public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 
 	private static final BlockMap<Integer> blockTemps = new BlockMap();
-	private static final HashSet<String> tileList = new HashSet();
+	private static final HashMap<String, Integer> tileList = new HashMap();
+
+	private static final int machineHeat = 0;
+	private static final int tieredMachineHeat = 1;
+	private static final int reactorHeat = 10;
 
 	private static final double[] factors = {
 		0.03125,
@@ -63,11 +67,11 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 
 	@ModDependent(ModList.ROTARYCRAFT)
 	private static void addRC() {
-		tileList.add(TileEntityBlastFurnace.class.getName());
-		tileList.add(TileEntityCompactor.class.getName());
-		tileList.add(TileEntityComposter.class.getName());
-		tileList.add(TileEntityCrystallizer.class.getName());
-		tileList.add(TileEntityFermenter.class.getName());
+		tileList.put(TileEntityBlastFurnace.class.getName(), tieredMachineHeat);
+		tileList.put(TileEntityCompactor.class.getName(), machineHeat);
+		tileList.put(TileEntityComposter.class.getName(), machineHeat);
+		tileList.put(TileEntityCrystallizer.class.getName(), machineHeat);
+		tileList.put(TileEntityFermenter.class.getName(), machineHeat);
 	}
 
 	@ModDependent(ModList.REACTORCRAFT)
@@ -75,12 +79,12 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 		for (int i = 0; i < ReactorTiles.TEList.length; i++) {
 			ReactorTiles r = ReactorTiles.TEList[i];
 			if (r.isReactorCore()) {
-				tileList.add(r.getTEClass().getName());
+				tileList.put(r.getTEClass().getName(), reactorHeat);
 			}
 		}
 
-		tileList.add(TileEntitySynthesizer.class.getName());
-		tileList.add(TileEntityElectrolyzer.class.getName());
+		tileList.put(TileEntitySynthesizer.class.getName(), machineHeat);
+		tileList.put(TileEntityElectrolyzer.class.getName(), machineHeat);
 	}
 
 	@Override
@@ -92,14 +96,17 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 	protected void doCollectiveTick(World world, int x, int y, int z) {
 		int Tavg = 0;
 		int n = 0;
-		HashSet<ThermalTile> set = new HashSet();
+		HashMap<ThermalTile, Integer> set = new HashMap();
+		int tierThisCycle = Integer.MAX_VALUE;
 		double f = this.getEqualizationFactor();
 		for (int i = 0; i < 6; i++) {
 			BlockKey bk = BlockKey.getAt(world, x+dirs[i].offsetX, y+dirs[i].offsetY, z+dirs[i].offsetZ);
 			TileEntity te = this.getAdjacentTileEntity(dirs[i]);
-			if (te instanceof ThermalTile && tileList.contains(te.getClass().getName())) {
+			if (te instanceof ThermalTile && tileList.containsKey(te.getClass().getName())) {
 				n++;
-				set.add((ThermalTile)te);
+				int tier = tileList.get(te.getClass().getName());
+				set.put((ThermalTile)te, tier);
+				tierThisCycle = Math.min(tierThisCycle, tier);
 				Tavg += ((ThermalTile)te).getTemperature();
 			}
 			else if (blockTemps.get(bk) != null) {
@@ -110,10 +117,13 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade {
 		if (n <= 1)
 			return;
 		Tavg = Tavg/n;
-		for (ThermalTile te : set) {
-			int t1 = te.getTemperature();
-			int t2 = (int)(this.getEqualizationFactor()*Tavg+(1-this.getEqualizationFactor())*t1);
-			te.setTemperature(t2);
+		for (ThermalTile te : set.keySet()) {
+			int hr = set.get(te);
+			if (hr <= tierThisCycle) {
+				int t1 = te.getTemperature();
+				int t2 = (int)(this.getEqualizationFactor()*Tavg+(1-this.getEqualizationFactor())*t1);
+				te.setTemperature(t2);
+			}
 		}
 	}
 

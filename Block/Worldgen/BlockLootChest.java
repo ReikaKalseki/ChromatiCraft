@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -121,6 +122,7 @@ public class BlockLootChest extends BlockContainer {
 				e.giveToPlayer(ep, true);
 			}
 		}
+		te.opened = true;
 		MinecraftForge.EVENT_BUS.post(new LootChestAccessEvent(world, x, y, z, ep, b));
 	}
 
@@ -200,6 +202,7 @@ public class BlockLootChest extends BlockContainer {
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase e, ItemStack is)
 	{
 		world.setBlockMetadataWithNotify(x, y, z, ChromaAux.get4SidedMetadataFromPlayerLook(e), 3);
+		((TileEntityLootChest)world.getTileEntity(x, y, z)).placer = e.getUniqueID();
 	}
 
 	public static void setMaxReach(World world, int x, int y, int z, int max) {
@@ -256,6 +259,9 @@ public class BlockLootChest extends BlockContainer {
 		private int ticksSinceSync;
 
 		private int maxReachAccess = 8;
+
+		private UUID placer;
+		private boolean opened;
 
 		private final Collection<ProgressElement> triggers = new HashSet();
 
@@ -387,7 +393,7 @@ public class BlockLootChest extends BlockContainer {
 
 		@Override
 		public boolean isItemValidForSlot(int slot, ItemStack is) {
-			return this.isUsable();
+			return true;//this.isUsable();
 		}
 
 		private boolean isUsable() {
@@ -421,6 +427,11 @@ public class BlockLootChest extends BlockContainer {
 				li.appendTag(new NBTTagInt(ChromaResearchManager.instance.getID(e)));
 			}
 			NBT.setTag("flags", li);
+
+			if (placer != null)
+				NBT.setString("placer", placer.toString());
+
+			NBT.setBoolean("opened", opened);
 		}
 
 		@Override
@@ -450,6 +461,15 @@ public class BlockLootChest extends BlockContainer {
 			for (NBTTagInt tag : ((List<NBTTagInt>)li.tagList)) {
 				triggers.add(ChromaResearchManager.instance.getProgressForID(tag.func_150287_d()));
 			}
+
+			if (NBT.hasKey("placer"))
+				placer = UUID.fromString(NBT.getString("placer"));
+
+			opened = NBT.getBoolean("opened");
+		}
+
+		public boolean isUntouchedWorldgen() {
+			return placer == null && !opened;
 		}
 
 		@Override
@@ -465,6 +485,8 @@ public class BlockLootChest extends BlockContainer {
 		}
 
 		public void populateChest(String s, Structures struct, int bonus, Random r) {
+			ReikaInventoryHelper.clearInventory(this);
+
 			WeightedRandomChestContent[] loot = ChestGenHooks.getItems(s, r);
 			int count = 1+ChestGenHooks.getCount(s, r);
 			if (struct == Structures.BURROW)
@@ -472,14 +494,18 @@ public class BlockLootChest extends BlockContainer {
 			WeightedRandomChestContent.generateChestContents(r, loot, this, count);
 			if (bonus > 0)
 				ReikaInventoryHelper.generateMultipliedLoot(bonus, r, s, this);
-			int n1 = 3;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
+			int n1 = struct == Structures.BURROW ? 3 : 5;//struct == Structures.OCEAN ? r.nextInt(5) == 0 ? 3 : 1 : 3;
 			int n2 = 2;//struct == Structures.OCEAN ? 8 : 3;
+
+			//ReikaJavaLibrary.pConsole("CC DEBUG: Generating loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));
 
 			if (r.nextInt(n1) > 0) {
 				ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
 				if (r.nextInt(n2) == 0)
 					ReikaInventoryHelper.addToIInv(ChromaItems.FRAGMENT.getItemInstance(), this);
 			}
+
+			//ReikaJavaLibrary.pConsole("CC DEBUG: Generated loot chest @ "+xCoord+", "+yCoord+", "+zCoord+", inv="+Arrays.toString(inv));
 
 			StructureChestPopulationEvent evt = new StructureChestPopulationEvent(struct != null ? struct.name() : "No structure", s, r);
 			MinecraftForge.EVENT_BUS.post(evt);

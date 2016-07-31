@@ -64,7 +64,8 @@ public class ChromaStructures {
 		METEOR1(),
 		METEOR2(),
 		METEOR3(),
-		TELEGATE();
+		TELEGATE(),
+		RELAY();
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {
@@ -120,6 +121,8 @@ public class ChromaStructures {
 					return getMeteorTowerStructure(w, 0, 0, 0, 2);
 				case TELEGATE:
 					return getGateStructure(w, 0, 0, 0);
+				case RELAY:
+					return getBoostedRelayStructure(w, 0, 0, 0);
 			}
 			return null;
 		}
@@ -500,17 +503,14 @@ public class ChromaStructures {
 		array.setBlock(x+5, y+24, z+7, b, 15);
 		array.setBlock(x+5, y+25, z+6, b, 0);
 		array.setBlock(x+6, y+0, z+5, b, 0);
-		array.setBlock(x+6, y+0, z+6, b, 0);
 		array.setBlock(x+6, y+0, z+7, b, 0);
 		array.setBlock(x+6, y+1, z+4, b, 0);
 		array.setBlock(x+6, y+1, z+5, b, 0);
-		array.setBlock(x+6, y+1, z+6, b, 12);
 		array.setBlock(x+6, y+1, z+7, b, 0);
 		array.setBlock(x+6, y+1, z+8, b, 0);
 		array.setBlock(x+6, y+2, z+3, b, 0);
 		array.setBlock(x+6, y+2, z+4, b, 0);
 		array.setBlock(x+6, y+2, z+5, b, 0);
-		array.setBlock(x+6, y+2, z+6, b, 2);
 		array.setBlock(x+6, y+2, z+7, b, 0);
 		array.setBlock(x+6, y+2, z+8, b, 0);
 		array.setBlock(x+6, y+2, z+9, b, 0);
@@ -520,7 +520,6 @@ public class ChromaStructures {
 		array.setBlock(x+6, y+3, z+3, b, 11);
 		array.setBlock(x+6, y+3, z+4, b, 0);
 		array.setBlock(x+6, y+3, z+5, b, 0);
-		array.setBlock(x+6, y+3, z+6, b, 13);
 		array.setBlock(x+6, y+3, z+7, b, 0);
 		array.setBlock(x+6, y+3, z+8, b, 0);
 		array.setBlock(x+6, y+3, z+9, b, 11);
@@ -529,11 +528,9 @@ public class ChromaStructures {
 		array.setBlock(x+6, y+3, z+12, b, 11);
 		array.setBlock(x+6, y+4, z+4, b, 1);
 		array.setBlock(x+6, y+4, z+5, b, 0);
-		array.setBlock(x+6, y+4, z+6, b, 2);
 		array.setBlock(x+6, y+4, z+7, b, 0);
 		array.setBlock(x+6, y+4, z+8, b, 1);
 		array.setBlock(x+6, y+5, z+5, b, 0);
-		array.setBlock(x+6, y+5, z+6, b, 12);
 		array.setBlock(x+6, y+5, z+7, b, 0);
 		array.setBlock(x+6, y+7, z+4, b, 1);
 		array.setBlock(x+6, y+7, z+5, b, 0);
@@ -610,10 +607,8 @@ public class ChromaStructures {
 		array.setBlock(x+6, y+22, z+5, b, 12);
 		array.setBlock(x+6, y+22, z+7, b, 12);
 		array.setBlock(x+6, y+24, z+5, b, 15);
-		array.setBlock(x+6, y+24, z+6, b, 0);
 		array.setBlock(x+6, y+24, z+7, b, 15);
 		array.setBlock(x+6, y+25, z+5, b, 0);
-		array.setBlock(x+6, y+25, z+6, b, 0);
 		array.setBlock(x+6, y+25, z+7, b, 0);
 		array.setBlock(x+7, y+0, z+5, b, 0);
 		array.setBlock(x+7, y+0, z+6, b, 0);
@@ -888,6 +883,19 @@ public class ChromaStructures {
 
 		array.setBlock(x+6, y+6, z+6, ChromaTiles.COMPOUND.getBlock(), ChromaTiles.COMPOUND.getBlockMetadata());
 		array.setBlock(x+6, y+23, z+6, ChromaTiles.BROADCAST.getBlock(), ChromaTiles.BROADCAST.getBlockMetadata());
+
+		array.setBlock(x+6, y+0, z+6, b, 0);
+
+		array.setBlock(x+6, y+1, z+6, b, 12);
+		array.setBlock(x+6, y+2, z+6, b, 2);
+		array.addBlock(x+6, y+2, z+6, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(x+6, y+3, z+6, b, 13);
+		array.setBlock(x+6, y+4, z+6, b, 2);
+		array.addBlock(x+6, y+4, z+6, b, StoneTypes.GLOWCOL.ordinal());
+		array.setBlock(x+6, y+5, z+6, b, 12);
+
+		array.setBlock(x+6, y+24, z+6, b, 0);
+		array.setBlock(x+6, y+25, z+6, b, 0);
 
 		array.setBlock(x+6, y+20, z+6, Blocks.air);
 
@@ -3410,6 +3418,52 @@ public class ChromaStructures {
 
 		array.setBlock(x, y, z, ChromaTiles.TELEPORT.getBlock(), ChromaTiles.TELEPORT.getBlockMetadata());
 
+		return array;
+	}
+
+	public static FilledBlockArray getBoostedRelayStructure(World world, int x, int y, int z) {
+		FilledBlockArray array = new FilledBlockArray(world);
+
+		for (int i = -2; i <= 2; i++) {
+			for (int k = -2; k <= 2; k++) {
+				array.setBlock(x+i, y-2, z+k, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+			}
+		}
+
+		array.setBlock(x-1, y-2, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.GROOVE1.ordinal());
+		array.setBlock(x+1, y-2, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.GROOVE1.ordinal());
+		array.setBlock(x, y-2, z-1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.GROOVE2.ordinal());
+		array.setBlock(x, y-2, z+1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.GROOVE2.ordinal());
+
+		array.setBlock(x+1, y-2, z+1, ChromaBlocks.CHROMA.getBlockInstance(), 0);
+		array.setBlock(x-1, y-2, z+1, ChromaBlocks.CHROMA.getBlockInstance(), 0);
+		array.setBlock(x+1, y-2, z-1, ChromaBlocks.CHROMA.getBlockInstance(), 0);
+		array.setBlock(x-1, y-2, z-1, ChromaBlocks.CHROMA.getBlockInstance(), 0);
+
+		array.setBlock(x+1, y-3, z+1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+		array.setBlock(x-1, y-3, z+1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+		array.setBlock(x+1, y-3, z-1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+		array.setBlock(x-1, y-3, z-1, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+
+		for (int i = -2; i <= 2; i++) {
+			for (int k = -2; k <= 2; k++) {
+				array.setEmpty(x+i, y-1, z+k, false, false);
+			}
+		}
+
+		array.setBlock(x, y-1, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.FOCUSFRAME.ordinal());
+
+		array.setBlock(x-2, y-1, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.BRICKS.ordinal());
+		array.setBlock(x+2, y-1, z, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.BRICKS.ordinal());
+		array.setBlock(x, y-1, z-2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.BRICKS.ordinal());
+		array.setBlock(x, y-1, z+2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.BRICKS.ordinal());
+
+		array.setBlock(x+2, y-1, z+2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.EMBOSSED.ordinal());
+		array.setBlock(x-2, y-1, z+2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.EMBOSSED.ordinal());
+		array.setBlock(x+2, y-1, z-2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.EMBOSSED.ordinal());
+		array.setBlock(x-2, y-1, z-2, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.EMBOSSED.ordinal());
+
+		array.setBlock(x, y, z, ChromaTiles.RELAYSOURCE.getBlock(), ChromaTiles.RELAYSOURCE.getBlockMetadata());
 		return array;
 	}
 

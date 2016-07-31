@@ -24,6 +24,8 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -82,6 +84,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			RAYTRACEHOOK1("net.minecraft.entity.projectile.EntityArrow", "zc"),
 			RAYTRACEHOOK2("net.minecraft.entity.projectile.EntityThrowable", "zk"),
 			RAYTRACEHOOK3("net.minecraft.entity.projectile.EntityFireball", "ze"),
+			STOPSLOWFALL("net.minecraft.entity.EntityLivingBase", "sv"),
 			;
 
 			private final String obfName;
@@ -340,6 +343,20 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						}
 
 						//ReikaJavaLibrary.pConsole(ReikaASMHelper.clearString(m.instructions));
+						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
+						break;
+					}
+					case STOPSLOWFALL: {
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_70612_e", "moveEntityWithHeading", "(FF)V");
+
+						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_72899_e" : "blockExists";
+						MethodInsnNode blockExistsNode = ReikaASMHelper.getFirstMethodCall(cn, m, "net/minecraft/world/World", func, "(III)Z");
+						JumpInsnNode ifEqJump = (JumpInsnNode) ReikaASMHelper.getLastOpcodeBefore(m.instructions, m.instructions.indexOf(blockExistsNode), Opcodes.IFEQ);
+						LabelNode jumpTo = ifEqJump.label;
+						InsnList ins = new InsnList();
+						ins.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/World/Dimension/SkyRiverManagerClient", "stopSlowFall", "()Z", false));
+						ins.add(new JumpInsnNode(Opcodes.IFEQ, jumpTo));
+						m.instructions.insert(ifEqJump, ins);
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
 						break;
 					}

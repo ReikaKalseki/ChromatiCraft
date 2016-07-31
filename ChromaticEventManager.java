@@ -32,9 +32,12 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
@@ -91,6 +94,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Items.ItemInfoFragment;
+import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemPurifyCrystal;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -133,14 +137,19 @@ import Reika.DragonAPI.Instantiable.Event.BlockConsumedByFireEvent;
 import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
 import Reika.DragonAPI.Instantiable.Event.EnderAttackTPEvent;
 import Reika.DragonAPI.Instantiable.Event.EntitySpawnerCheckEvent;
+import Reika.DragonAPI.Instantiable.Event.FarmlandTrampleEvent;
 import Reika.DragonAPI.Instantiable.Event.GetPlayerLookEvent;
+import Reika.DragonAPI.Instantiable.Event.HarvestLevelEvent;
 import Reika.DragonAPI.Instantiable.Event.IceFreezeEvent;
+import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.ItemUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.MobTargetingEvent;
 import Reika.DragonAPI.Instantiable.Event.PigZombieAggroSpreadEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerKeepInventoryEvent;
 import Reika.DragonAPI.Instantiable.Event.PlayerSprintEvent;
 import Reika.DragonAPI.Instantiable.Event.SetBlockEvent;
+import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
+import Reika.DragonAPI.Instantiable.Event.SlotEvent.RemoveFromSlotEvent;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -148,6 +157,7 @@ import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -159,6 +169,9 @@ import Reika.DragonAPI.ModInteract.DeepInteract.FrameBlacklist.FrameUsageEvent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolPartType;
+import Reika.DragonAPI.ModRegistry.InterfaceCache;
 import WayofTime.alchemicalWizardry.api.event.TeleposeEvent;
 
 import com.xcompwiz.mystcraft.api.event.LinkEvent;
@@ -179,6 +192,136 @@ public class ChromaticEventManager {
 
 	private ChromaticEventManager() {
 
+	}
+
+	@SubscribeEvent
+	public void onRemoveArmor(AddToSlotEvent evt) {
+		int id = evt.slotID;
+		if (evt.inventory instanceof InventoryPlayer && evt.slotID == 36) { //foot armor
+			ItemStack is = evt.getItem();
+			if (is == null || !ItemFloatstoneBoots.isFloatBoots(is)) {
+				if (!((InventoryPlayer)evt.inventory).player.capabilities.isCreativeMode)
+					((InventoryPlayer)evt.inventory).player.capabilities.allowFlying = false;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRemoveArmor(RemoveFromSlotEvent evt) {
+		int id = evt.slotID;
+		if (evt.slotID == 36) { //foot armor
+			ItemStack is = evt.getItem();
+			if (is != null && ItemFloatstoneBoots.isFloatBoots(is)) {
+				if (!evt.player.capabilities.isCreativeMode)
+					evt.player.capabilities.allowFlying = false;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void noFloatstoneTrample(FarmlandTrampleEvent ev) {
+		if (ev.entity instanceof EntityLivingBase) {
+			ItemStack boots = ((EntityLivingBase)ev.entity).getEquipmentInSlot(1);
+			if (boots != null && ItemFloatstoneBoots.isFloatBoots(boots)) {
+				ev.setResult(Result.DENY);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void noFloatstoneFall(LivingFallEvent ev) {
+		ItemStack boots = ev.entityLiving.getEquipmentInSlot(1);
+		if (boots != null && ItemFloatstoneBoots.isFloatBoots(boots)) {
+			ev.setCanceled(true);
+			ev.distance = 0;
+		}
+	}
+
+	@SubscribeEvent
+	public void sinkingEnchantment(LivingUpdateEvent ev) {
+		ItemStack boots = ev.entityLiving.getEquipmentInSlot(1);
+		if (boots != null) {
+			if (ReikaEnchantmentHelper.hasEnchantment(ChromaEnchants.FASTSINK.getEnchantment(), boots)) {
+				if (!ev.entityLiving.onGround && ev.entityLiving.handleWaterMovement() && ev.entityLiving.motionY < 0) {
+					ev.entityLiving.motionY -= 0.0625;
+					ev.entityLiving.velocityChanged = true;
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void boostHarvestLevel(HarvestLevelEvent ev) {
+		int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.HARVESTLEVEL.getEnchantment(), ev.getItem());
+		if (level > 0) {
+			ev.harvestLevel += level;
+		}
+	}
+
+	@SubscribeEvent
+	public void rareLootBoost(LivingDropsEvent ev) {
+		if (ev.source.getEntity() instanceof EntityLivingBase) {
+			EntityLivingBase src = (EntityLivingBase)ev.source.getEntity();
+			ItemStack is = src.getHeldItem();
+			if (is != null) {
+				int level = ReikaEnchantmentHelper.getEnchantmentLevel(ChromaEnchants.RARELOOT.getEnchantment(), is);
+				if (level > 0) {
+					EntityLivingBase e = ev.entityLiving;
+					ArrayList<EntityItem> li = ev.drops;
+					e.captureDrops = true;
+					try {
+						int sum = 100+100*level*level;
+						ReikaObfuscationHelper.getMethod("dropEquipment").invoke(e, true, sum);
+						if (rand.nextInt(sum) >= 100) {
+							ReikaObfuscationHelper.getMethod("dropRareDrop").invoke(e, 1);
+							if (rand.nextBoolean()) {
+								ReikaEntityHelper.dropHead(e);
+							}
+						}
+					}
+					catch (Exception ex) {
+						ChromatiCraft.logger.debug("Could not process rare loot drops event!");
+						if (ChromatiCraft.logger.shouldDebug())
+							ex.printStackTrace();
+					}
+					e.captureDrops = false;
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@ModDependent(ModList.TINKERER)
+	public void chromastoneTools(ItemStackUpdateEvent evt) {
+		if (evt.held) {
+			if (InterfaceCache.TINKERTOOL.instanceOf(evt.item.getItem())) {
+				NBTTagCompound tags = evt.item.getTagCompound().getCompoundTag("InfiTool");
+				boolean allMats = true;
+				if (!tags.getBoolean("Broken")) {
+					for (int i = 0; i < ToolPartType.types.length; i++) {
+						int mat = TinkerToolHandler.getInstance().getToolMaterial(evt.item, ToolPartType.types[i]);
+						if (mat == ExtraChromaIDs.CHROMAMATID.getValue()) {
+							if (rand.nextInt(4) == 0) {
+								int dmg = tags.getInteger("Damage");
+								if (dmg > 0) {
+									dmg--;
+								}
+								tags.setInteger("Damage", dmg);
+							}
+						}
+						else {
+							allMats = false;
+						}
+					}
+				}
+				if (allMats) {
+					int[] arr = new int[]{450, 5};
+					tags.setTag("Lapis", new NBTTagIntArray(arr));
+					ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.fortune, 5, false);
+					ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.looting, 5, false);
+				}
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -210,6 +353,8 @@ public class ChromaticEventManager {
 				ArrayList<ItemStack> li = b.getDrops(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, meta, 0);
 				evt.world.setBlock(evt.xCoord, evt.yCoord, evt.zCoord, Blocks.air);
 				ReikaItemHelper.dropItems(evt.world, evt.xCoord+0.5, evt.yCoord+0.5, evt.zCoord+0.5, li);
+				ReikaSoundHelper.playSoundAtBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, "random.explode");
+				ReikaParticleHelper.EXPLODE.spawnAroundBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, 2);
 			}
 		}
 	}
@@ -823,7 +968,7 @@ public class ChromaticEventManager {
 	public void doPoolRecipes(ItemUpdateEvent evt) {
 		EntityItem ei = evt.entityItem;
 		if (rand.nextInt(5) == 0) {
-			if (this.canAlloyItem(ei)) {
+			if (PoolRecipes.instance.canAlloyItem(ei)) {
 				PoolRecipe out = PoolRecipes.instance.getPoolRecipe(ei);
 				if (out != null) {
 					if (ei.worldObj.isRemote) {
@@ -844,16 +989,6 @@ public class ChromaticEventManager {
 				}
 			}
 		}
-	}
-
-	private boolean canAlloyItem(EntityItem ei) {
-		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
-		if (ep != null) {
-			if (ProgressStage.ALLOY.playerHasPrerequisites(ep)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@SubscribeEvent
@@ -1027,13 +1162,6 @@ public class ChromaticEventManager {
 		}
 		else if (evt.toDim == ReikaTwilightHelper.getDimensionID()) {
 			ProgressStage.TWILIGHT.stepPlayerTo(evt.player);
-		}
-	}
-
-	@SubscribeEvent(priority=EventPriority.LOWEST)
-	public void nonHostileMobs(MobTargetingEvent.Pre evt) {
-		if (Chromabilities.COMMUNICATE.enabledOn(evt.player)) {
-			evt.setResult(Result.DENY);
 		}
 	}
 

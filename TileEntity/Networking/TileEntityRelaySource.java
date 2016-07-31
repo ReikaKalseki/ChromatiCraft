@@ -9,27 +9,40 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
+import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 public class TileEntityRelaySource extends InventoriedCrystalReceiver implements InertIInv, ItemOnRightClick {
 
 	private static final int CAPACITY = 720000;
+	private static final int CAPACITY_BOOSTED = 3600000;
 
 	private int cooldown = 200;
 
 	private int[] drainValue = new int[16];
+
+	private boolean enhanced;
 
 	@Override
 	protected int getCooldownLength() {
@@ -47,6 +60,10 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 		if (!world.isRemote && this.getCooldown() == 0 && checkTimer.checkCap()) {
 			this.checkAndRequest();
+		}
+
+		if (world.isRemote && enhanced) {
+			this.spawnParticles(world, x, y, z);
 		}
 
 		int maxDrain = 0;
@@ -72,6 +89,46 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		}
 	}
 
+	private void spawnParticles(World world, int x, int y, int z) {
+		if (rand.nextInt(3) == 0) {
+			int dx = rand.nextBoolean() ? x+1 : x-1;
+			int dz = rand.nextBoolean() ? z+1 : z-1;
+			int dy = y-2;
+			double px = dx+rand.nextDouble();
+			double py = dy+rand.nextDouble();
+			double pz = dz+rand.nextDouble();
+			double v = 0.03125;
+			double vx = (x+0.5-px)*v;
+			double vz = (z+0.5-pz)*v;
+			double vy = ReikaRandomHelper.getRandomBetween(0.125, 0.1875);
+			EntityChromaFluidFX fx = new EntityChromaFluidFX(world, px, py, pz, vx, vy, vz).setGravity((float)vy*0.75F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+
+		if (rand.nextInt(2) == 0) {
+			int color = CrystalElement.getBlendedColor(this.getTicksExisted(), 50);
+			double px = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 2.25);
+			double pz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 2.25);
+			double py = ReikaRandomHelper.getRandomPlusMinus(y+0.25, 0.5)+0.5;
+			float g = (float)ReikaRandomHelper.getRandomBetween(0.03125, 0.1);
+			int l = ReikaRandomHelper.getRandomPlusMinus(40, 100);
+			EntityBlurFX fx = new EntityBlurFX(world, px, py, pz).setColor(color).setGravity(g).setLife(l).setScale(1.25F).setRapidExpand().setIcon(ChromaIcons.FADE_GENTLE);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		super.onFirstTick(world, x, y, z);
+		EntityPlayer ep = this.getPlacer();
+		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && ChromaStructures.getBoostedRelayStructure(world, x, y, z).matchInWorld();
+		}
+		else {
+			enhanced = false;
+		}
+	}
+
 	private void checkAndRequest() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
@@ -84,7 +141,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int getReceiveRange() {
-		return 32;
+		return enhanced ? 48 : 32;
 	}
 
 	@Override
@@ -94,7 +151,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int maxThroughput() {
-		return 6000;
+		return enhanced ? 12000 : 4000;
 	}
 
 	@Override
@@ -121,14 +178,14 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	public void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-
+		enhanced = NBT.getBoolean("enhance");
 	}
 
 	@Override
 	public void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-
+		NBT.setBoolean("enhance", enhanced);
 	}
 
 	@Override
@@ -168,6 +225,15 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	public void onDrain(CrystalElement e, int amt) {
 		drainValue[e.ordinal()] += amt;
+	}
+
+	public boolean isEnhanced() {
+		return enhanced;
+	}
+
+	@Override
+	public AxisAlignedBB getRenderBoundingBox() {
+		return enhanced ? ReikaAABBHelper.getBlockAABB(this).expand(3, 2, 3) : ReikaAABBHelper.getBlockAABB(this);
 	}
 
 }

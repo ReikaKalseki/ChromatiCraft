@@ -25,6 +25,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -38,6 +39,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -45,6 +47,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
 import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -91,10 +94,14 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 		if (!this.canPlaceOn(world, x-dir.offsetX, y-dir.offsetY, z-dir.offsetZ, meta)) {
 			ReikaSoundHelper.playBreakSound(world, x, y, z, this);
 			TileEntityHeatLamp te = (TileEntityHeatLamp)world.getTileEntity(x, y, z);
-			ItemStack is = new ItemStack(this);
-			ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
-			world.setBlock(x, y, z, Blocks.air);
+			this.drop(world, x, y, z);
 		}
+	}
+
+	private static void drop(World world, int x, int y, int z) {
+		ItemStack is = new ItemStack(ChromaBlocks.HEATLAMP.getBlockInstance());
+		ReikaItemHelper.dropItem(world, x+0.5, y+0.5, z+0.5, is);
+		world.setBlock(x, y, z, Blocks.air);
 	}
 
 	@Override
@@ -277,12 +284,36 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 			if (te instanceof ThermalTile) {
 				//((ThermalTile)te).setTemperature(((ThermalTile) te).getTemperature()+(int)Math.signum(temperature-((ThermalTile) te).getTemperature()));
 				ThermalTile tl = (ThermalTile)te;
-				if (temperature > tl.getTemperature()) {
-					tl.setTemperature(tl.getTemperature()+1);
-					if (ModList.ROTARYCRAFT.isLoaded() && te instanceof BasicTemperatureMachine)
-						((BasicTemperatureMachine)te).resetAmbientTemperatureTimer();
+				if (this.canHeat(tl)) {
+					if (temperature > tl.getTemperature()) {
+						tl.setTemperature(tl.getTemperature()+1);
+						if (ModList.ROTARYCRAFT.isLoaded() && te instanceof BasicTemperatureMachine)
+							((BasicTemperatureMachine)te).resetAmbientTemperatureTimer();
+					}
+				}
+				else {
+					drop(worldObj, xCoord, yCoord, zCoord);
 				}
 			}
+			else if (te instanceof TileEntityFurnace) {
+				TileEntityFurnace tf = (TileEntityFurnace)te;
+				double c = Math.min(1, 1.25*temperature/1000D);
+				if (ReikaRandomHelper.doWithChance(c)) {
+					if (tf.furnaceBurnTime == 0 && ReikaRandomHelper.doWithChance(c)) {
+						tf.furnaceBurnTime = 20;
+					}
+					te.updateEntity();
+				}
+			}
+		}
+
+		private boolean canHeat(ThermalTile tl) {
+			return !ModList.REACTORCRAFT.isLoaded() || !this.isReactorTile(tl);
+		}
+
+		@ModDependent(ModList.REACTORCRAFT)
+		private boolean isReactorTile(ThermalTile tl) {
+			return tl instanceof ReactorCoreTE;
 		}
 
 		@Override

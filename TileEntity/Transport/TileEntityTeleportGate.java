@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
+import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.Orbit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -59,6 +60,7 @@ import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
@@ -72,6 +74,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	private boolean hasStructure = true;
 	public boolean publicMode = true;
+	private Directionality direction = Directionality.BOTH;
 
 	private int activationTick;
 	private TileEntityTeleportGate teleportEnd;
@@ -90,12 +93,16 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	private static final HashMap<WorldLocation, BufferedImage> imageCache = new HashMap();
 
+	private static final String LOGGER_ID = "telegate";
+
 	static {
 		required.addValueToColor(CrystalElement.LIME, 5000);
 		required.addValueToColor(CrystalElement.BLACK, 2000);
 		required.addValueToColor(CrystalElement.WHITE, 1000);
 		required.addValueToColor(CrystalElement.LIGHTBLUE, 1000);
 		required.addValueToColor(CrystalElement.PURPLE, 500);
+
+		ModularLogger.instance.addLogger(ChromatiCraft.instance, LOGGER_ID);
 
 		double r = 7.5;
 		for (int i = -30; i <= 30; i += 15) {
@@ -154,6 +161,11 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new TakeImage(new WorldLocation(this), flag)), 2);
 	}
 
+	@SideOnly(Side.CLIENT)
+	public static String getTextureID(WorldLocation loc) {
+		return "telegate "+loc.toString();
+	}
+
 	private static class TakeImage implements ScheduledEvent {
 
 		private final WorldLocation loc;
@@ -174,6 +186,8 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			f.getParentFile().mkdirs();
 			ScreenShotHelper.saveScreenshot(dir, getPreviewFilename(loc), mc.displayWidth, mc.displayHeight, mc.getFramebuffer());
 			mc.gameSettings.hideGUI = unhideGUI;
+			imageCache.remove(loc);
+			ReikaTextureHelper.resetTexture(null, getTextureID(loc));
 		}
 
 		@Override
@@ -232,7 +246,7 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 			AxisAlignedBB gui = ReikaAABBHelper.getBlockAABB(this).contract(0.25, 0, 0.25);
 			List<EntityPlayer> li = world.getEntitiesWithinAABB(EntityPlayer.class, gui);
 			for (EntityPlayer ep : li) {
-				if (ep.onGround && this.isOwnedByPlayer(ep)) {
+				if (ep.onGround && (publicMode || this.isOwnedByPlayer(ep))) {
 					if (!cooldowns.containsKey(ep)) {
 						this.openGui(world, x, y, z, ep);
 					}
@@ -243,11 +257,11 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	}
 
 	private void openGui(World world, int x, int y, int z, EntityPlayer ep) {
-		this.updateCache();
 		if (world.isRemote) {
 			this.tryCreateSnapshot();
 		}
 		else {
+			this.updateCache();
 			ReikaPacketHelper.sendNBTPacket(ChromatiCraft.packetChannel, ChromaPackets.GATECACHE.ordinal(), getCacheAsNBT(), new PlayerTarget((EntityPlayerMP)ep));
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.TILE.ordinal(), world, x, y, z);
 		}
@@ -344,7 +358,8 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
-		cache.add(new GateData(this));
+		if (!world.isRemote)
+			cache.add(new GateData(this));
 		this.validateStructure();
 		if (hasStructure)
 			ChunkManager.instance.loadChunks(this);
@@ -359,16 +374,24 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		hasStructure = !worldObj.isRemote && ChromaStructures.getGateStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
-	public static boolean canTeleport(WorldLocation loc1, WorldLocation loc2, EntityPlayer caller) {
+	private static boolean canTeleport(WorldLocation loc1, WorldLocation loc2, EntityPlayer caller) {
 		TileEntity te1 = loc1.getTileEntity();
 		TileEntity te2 = loc2.getTileEntity();
+		ModularLogger.instance.log(LOGGER_ID, "Attempting teleport from "+loc1+" to "+loc2+" of "+caller.getCommandSenderName());
 		if (te1 instanceof TileEntityTeleportGate && te2 instanceof TileEntityTeleportGate) {
 			TileEntityTeleportGate tg1 = (TileEntityTeleportGate)te1;
 			TileEntityTeleportGate tg2 = (TileEntityTeleportGate)te2;
+			ModularLogger.instance.log(LOGGER_ID, "Both tiles exist");
 			if (tg1.hasStructure() && tg2.hasStructure()) {
-				if (tg1.canPlayerUse(caller) && tg2.canPlayerUse(caller)) {
-					ElementTagCompound cost = getCost(tg1, tg2);
-					return tg1.energy.containsAtLeast(cost) || tg2.energy.containsAtLeast(cost);
+				ModularLogger.instance.log(LOGGER_ID, "Both tiles have structures");
+				if (tg1.direction.canSend && tg2.direction.canReceive) {
+					ModularLogger.instance.log(LOGGER_ID, "Directions permit");
+					if (tg1.canPlayerUse(caller) && tg2.canPlayerUse(caller)) {
+						ModularLogger.instance.log(LOGGER_ID, "Both tiles can be used");
+						ElementTagCompound cost = getCost(tg1, tg2);
+						ModularLogger.instance.log(LOGGER_ID, "Cost is "+cost+", has1: "+tg1.energy.containsAtLeast(cost)+", has2: "+tg2.energy.containsAtLeast(cost));
+						return tg1.energy.containsAtLeast(cost) || tg2.energy.containsAtLeast(cost);
+					}
 				}
 			}
 		}
@@ -379,10 +402,18 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		return publicMode || this.isOwnedByPlayer(ep);
 	}
 
-	public static void startTriggerTeleport(TileEntityTeleportGate te1, TileEntityTeleportGate te2) {
-		te1.teleportEnd = te2;
-		te2.teleportEnd = te1;
-		te1.startActivate();
+	public static void startTriggerTeleport(WorldLocation loc1, WorldLocation loc2, EntityPlayerMP ep) {
+		if (canTeleport(loc1, loc2, ep)) {
+			TileEntityTeleportGate te1 = (TileEntityTeleportGate)loc1.getTileEntity();
+			TileEntityTeleportGate te2 = (TileEntityTeleportGate)loc2.getTileEntity();
+			te1.teleportEnd = te2;
+			te2.teleportEnd = te1;
+			te1.startActivate();
+			ep.rotationPitch = 0;
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORTCONFIRM.ordinal(), ep, 1);
+		}
+		else
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.TELEPORTCONFIRM.ordinal(), ep, 0);
 	}
 
 	private static void triggerTeleport(TileEntityTeleportGate te1, TileEntityTeleportGate te2) {
@@ -418,11 +449,11 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	}
 
 	private static ElementTagCompound getCost(TileEntityTeleportGate te1, TileEntityTeleportGate te2) {
-		double d = te1.getDistanceSqTo(te2.xCoord, te2.yCoord, te2.zCoord);
+		double d = Math.sqrt(te1.getDistanceSqTo(te2.xCoord, te2.yCoord, te2.zCoord));
 		if (te1.worldObj.provider.dimensionId != te2.worldObj.provider.dimensionId)
 			d = Math.pow(d, 1.25)*1.125;
-		double f = MathHelper.clamp_double(Math.pow(1.05, 1+d/1024D), 1, 10);
-		return required.scale((float)f);
+		double f = MathHelper.clamp_double(Math.pow(1.125, 1+d/1024D), 1, 10);
+		return required.copy().scale((float)f);
 	}
 
 	private void startActivate() {
@@ -480,75 +511,91 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 	@SideOnly(Side.CLIENT)
 	private void doParticles(World world, int x, int y, int z) {
+		float pf = 1;
+		double dd = Minecraft.getMinecraft().thePlayer.getDistanceSq(x+0.5, y+0.5, z+0.5);
+		if (dd >= 16384) {
+			pf = 0.125F;
+		}
+		else if (dd >= 4096) {
+			pf = 0.25F;
+		}
+		else if (dd >= 1024) {
+			pf = 0.5F;
+		}
+		else if (dd >= 256) {
+			pf = 0.75F;
+		}
+
 		double dt = this.getTicksExisted();
 		double r = 3.25;
 		int l = 30;
 		int c = this.getRenderColor();
 
 		for (double t = dt; t <= dt+0.75; t += 0.25) {
+			if (ReikaRandomHelper.doWithChance(pf)) {
+				float s = 2.75F/MathHelper.sqrt_float(pf)*(float)(1-(t-dt)/4D);
+				double ang1 = t/12D;
+				double px = x+0.5+r*Math.cos(ang1);
+				double pz = z+0.5+r*Math.sin(ang1);
+				double py = y+0.5+1.5+0.5*Math.sin(t/32D);
+				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-			float s = 2.75F*(float)(1-(t-dt)/4D);
-			double ang1 = t/12D;
-			double px = x+0.5+r*Math.cos(ang1);
-			double pz = z+0.5+r*Math.sin(ang1);
-			double py = y+0.5+1.5+0.5*Math.sin(t/32D);
-			EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				py += 0.375;
 
-			py += 0.375;
-
-			px = x+0.5+r*Math.cos(-ang1);
-			pz = z+0.5+r*Math.sin(-ang1);
-			fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-
-			double ang2 = ang1+Math.toRadians(180);
-			py = y+0.5+1.5+0.5*Math.sin((t+16)/32D);
-
-			px = x+0.5+r*Math.cos(ang2);
-			pz = z+0.5+r*Math.sin(ang2);
-			fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-
-			py += 0.375;
-
-			px = x+0.5+r*Math.cos(-ang2);
-			pz = z+0.5+r*Math.sin(-ang2);
-			fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-
-			for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
-				px = x+0.5+0.5*Math.sin(t/32D);
-				py = y+0.5+r*Math.cos(-ang4);
-				pz = z+0.5+r*Math.sin(-ang4);
+				px = x+0.5+r*Math.cos(-ang1);
+				pz = z+0.5+r*Math.sin(-ang1);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-				px = x+0.5+0.5*Math.sin((t+16)/32D);
-				py = y+0.5+r*Math.cos(ang4);
-				pz = z+0.5+r*Math.sin(ang4);
-				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-			}
+				double ang2 = ang1+Math.toRadians(180);
+				py = y+0.5+1.5+0.5*Math.sin((t+16)/32D);
 
-			for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
-				pz = z+0.5+0.5*Math.sin(t/32D);
-				py = y+0.5+r*Math.cos(-ang4+Math.PI/2);
-				px = x+0.5+r*Math.sin(-ang4+Math.PI/2);
+				px = x+0.5+r*Math.cos(ang2);
+				pz = z+0.5+r*Math.sin(ang2);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 
-				pz = z+0.5+0.5*Math.sin((t+16)/32D);
-				py = y+0.5+r*Math.cos(ang4+Math.PI/2);
-				px = x+0.5+r*Math.sin(ang4+Math.PI/2);
+				py += 0.375;
+
+				px = x+0.5+r*Math.cos(-ang2);
+				pz = z+0.5+r*Math.sin(-ang2);
 				fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+				for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
+					px = x+0.5+0.5*Math.sin(t/32D);
+					py = y+0.5+r*Math.cos(-ang4);
+					pz = z+0.5+r*Math.sin(-ang4);
+					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+					px = x+0.5+0.5*Math.sin((t+16)/32D);
+					py = y+0.5+r*Math.cos(ang4);
+					pz = z+0.5+r*Math.sin(ang4);
+					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+
+				for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
+					pz = z+0.5+0.5*Math.sin(t/32D);
+					py = y+0.5+r*Math.cos(-ang4+Math.PI/2);
+					px = x+0.5+r*Math.sin(-ang4+Math.PI/2);
+					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+
+					pz = z+0.5+0.5*Math.sin((t+16)/32D);
+					py = y+0.5+r*Math.cos(ang4+Math.PI/2);
+					px = x+0.5+r*Math.sin(ang4+Math.PI/2);
+					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
 			}
 		}
 
-		float s = 2.75F;
+		float s = 2.75F/MathHelper.sqrt_float(pf);
 
-		int n = 1+rand.nextInt(4);
+		int n = 1+(int)(rand.nextInt(4)*pf);
 		for (int i = 0; i < n; i++) {
 			double ang3 = rand.nextDouble()*360;
 			r = 3.125;
@@ -628,6 +675,8 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		publicMode = NBT.getBoolean("public");
 
 		activationTick = NBT.getInteger("active");
+
+		direction = Directionality.list[NBT.getInteger("senddir")];
 	}
 
 	@Override
@@ -638,6 +687,8 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 		NBT.setBoolean("public", publicMode);
 
 		NBT.setInteger("active", activationTick);
+
+		NBT.setInteger("senddir", direction.ordinal());
 	}
 
 	public boolean isPowered() {
@@ -650,7 +701,19 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 	}
 
 	public int getRenderColor() {
-		return publicMode ? PUBLIC_COLOR : PRIVATE_COLOR;
+		switch(direction) {
+			case BOTH:
+			default:
+				return publicMode ? PUBLIC_COLOR : PRIVATE_COLOR;
+			case SEND:
+				return EMANCIPATION_COLOR;
+			case RECEIVE:
+				return EXODUS_COLOR;
+		}
+	}
+
+	public void incrementDirection() {
+		direction = direction.next();
 	}
 
 	private static class GateTeleporter extends Teleporter {
@@ -771,6 +834,28 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 
 		public boolean check(int flags) {
 			return (flags & flag) != 0 == (this != DIMENSION);
+		}
+
+	}
+
+	private static enum Directionality {
+
+		BOTH(true, true),
+		SEND(true, false),
+		RECEIVE(false, true);
+
+		private final boolean canSend;
+		private final boolean canReceive;
+
+		private static final Directionality[] list = values();
+
+		private Directionality(boolean s, boolean r) {
+			canSend = s;
+			canReceive = r;
+		}
+
+		private Directionality next() {
+			return list[(this.ordinal()+1)%list.length];
 		}
 
 	}

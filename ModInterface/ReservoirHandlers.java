@@ -111,13 +111,15 @@ public class ReservoirHandlers {
 			for (EntityItem ei : li) {
 				ItemStack is = ei.getEntityItem();
 				if (e != null && is.getItemDamage() == e.ordinal() && ChromaItems.SHARD.matchWith(is) && dye == TileEntityChroma.BERRY_SATURATION) {
-					boolean done = false;
-					for (int i = 0; i < ACCEL_FACTOR && !done; i++) {
-						done = ItemCrystalShard.tickShardCharging(ei, e, ether, te.xCoord, te.yCoord, te.zCoord);
-					}
-					if (!te.worldObj.isRemote && done) {
-						fs.tag = null;
-						return 200;
+					if (ItemCrystalShard.canCharge(ei)) {
+						boolean done = false;
+						for (int i = 0; i < ACCEL_FACTOR && !done; i++) {
+							done = ItemCrystalShard.tickShardCharging(ei, e, ether, te.xCoord, te.yCoord, te.zCoord);
+						}
+						if (!te.worldObj.isRemote && done) {
+							fs.tag = null;
+							return 200;
+						}
 					}
 				}
 			}
@@ -135,21 +137,23 @@ public class ReservoirHandlers {
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(te.xCoord, te.yCoord, te.zCoord);
 				List<EntityItem> li = te.worldObj.getEntitiesWithinAABB(EntityItem.class, box);
 				for (EntityItem ei : li) {
-					PoolRecipe pr = PoolRecipes.instance.getPoolRecipe(ei, li, false);
-					if (pr != null) {
-						if (ei.worldObj.isRemote) {
-							for (int i = 0; i < ACCEL_FACTOR; i++) {
-								ChromaFX.poolRecipeParticles(ei);
+					if (PoolRecipes.instance.canAlloyItem(ei)) {
+						PoolRecipe pr = PoolRecipes.instance.getPoolRecipe(ei, li, false);
+						if (pr != null) {
+							if (ei.worldObj.isRemote) {
+								for (int i = 0; i < ACCEL_FACTOR; i++) {
+									ChromaFX.poolRecipeParticles(ei);
+								}
 							}
+							else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
+								PoolRecipes.instance.makePoolRecipe(ei, pr, ether, te.xCoord, te.yCoord, te.zCoord);
+								fs.tag = null;
+								return 1000;
+							}
+							break;
 						}
-						else if (ei.ticksExisted > 20 && rand.nextInt(20/ACCEL_FACTOR) == 0 && (ei.ticksExisted >= 600 || rand.nextInt((600-ei.ticksExisted)/ACCEL_FACTOR) == 0)) {
-							PoolRecipes.instance.makePoolRecipe(ei, pr, ether, te.xCoord, te.yCoord, te.zCoord);
-							fs.tag = null;
-							return 1000;
-						}
-						break;
+						ei.lifespan = Integer.MAX_VALUE;
 					}
-					ei.lifespan = Integer.MAX_VALUE;
 				}
 			}
 			return 0;

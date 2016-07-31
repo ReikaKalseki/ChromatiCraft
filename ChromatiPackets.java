@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -59,6 +61,7 @@ import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Entity.EntitySplashGunShot;
 import Reika.ChromatiCraft.Entity.EntityThrownGem;
 import Reika.ChromatiCraft.Entity.EntityVacuum;
+import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
@@ -112,6 +115,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.OuterRegionsEvents;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
@@ -120,6 +124,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.PacketHandler;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
@@ -127,6 +132,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ChromatiPackets implements PacketHandler {
 
@@ -755,8 +762,13 @@ public class ChromatiPackets implements PacketHandler {
 					TileEntityTeleportGate.loadCacheFromNBT(NBT);
 					break;
 				case TRIGGERTELEPORT:
-					TileEntityTeleportGate.startTriggerTeleport((TileEntityTeleportGate)new WorldLocation(data[0], data[1], data[2], data[3]).getTileEntity(), (TileEntityTeleportGate)new WorldLocation(data[4], data[5], data[6], data[7]).getTileEntity());
-					ep.rotationPitch = 0;
+					TileEntityTeleportGate.startTriggerTeleport(new WorldLocation(data[0], data[1], data[2], data[3]), new WorldLocation(data[4], data[5], data[6], data[7]), (EntityPlayerMP)ep);
+					break;
+				case TELEPORTCONFIRM:
+					this.handleTeleconfirm(data[0], ep);
+					break;
+				case BIOMELOCS:
+					BiomeDistributor.fillFromPacket(NBT.getTagList("data", NBTTypes.BYTE.ID));
 					break;
 			}
 		}
@@ -766,6 +778,11 @@ public class ChromatiPackets implements PacketHandler {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void handleTeleconfirm(int data, EntityPlayer ep) {
+		((GuiTeleportGate)Minecraft.getMinecraft().currentScreen).handleTriggerConfirm(data > 0);
 	}
 
 }

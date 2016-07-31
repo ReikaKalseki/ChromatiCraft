@@ -21,6 +21,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.stats.Achievement;
@@ -33,6 +34,7 @@ import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.BiomeManager.BiomeEntry;
 import net.minecraftforge.common.BiomeManager.BiomeType;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -74,6 +76,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.TransmutationRecipes;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaHelpHUD;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
+import Reika.ChromatiCraft.Auxiliary.Render.OreOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.PylonFinderOverlay;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
@@ -153,6 +156,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.DeepInteract.TimeTorchHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThermalHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler.Pulses;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 import Reika.MeteorCraft.API.MeteorSpawnAPI;
 import Reika.RotaryCraft.API.ReservoirAPI;
@@ -188,6 +192,8 @@ public class ChromatiCraft extends DragonAPIMod {
 	public static final TabChromatiCraft tabChromaTools = new TabChromatiCraft("ChromatiCraft Tools");
 	public static final TabChromatiCraft tabChromaItems = new TabChromatiCraft("ChromatiCraft Items");
 	public static final FragmentTab tabChromaFragments = new FragmentTab("CC Info Fragments");
+
+	public static final ArmorMaterial FLOATSTONE = EnumHelper.addArmorMaterial("Floatstone", 65536, new int[]{0, 0, 0, 0}, ArmorMaterial.GOLD.getEnchantability()*3/2);
 
 	static final Random rand = new Random();
 
@@ -288,6 +294,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		FMLCommonHandler.instance().bus().register(ChromaticEventManager.instance);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaClientEventController.instance);
+			FMLCommonHandler.instance().bus().register(ChromaClientEventController.instance);
 			MinecraftForge.EVENT_BUS.register(ChromaHelpHUD.instance);
 			MinecraftForge.EVENT_BUS.register(PylonFinderOverlay.instance);
 		}
@@ -380,6 +387,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(ChromaOverlays.instance);
+			MinecraftForge.EVENT_BUS.register(OreOverlayRenderer.instance);
+			FMLCommonHandler.instance().bus().register(OreOverlayRenderer.instance);
 			ParticleEngine.instance.register();
 		}
 
@@ -491,6 +500,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.FRAGMENT.getStackOf());
 		FMLInterModComms.sendMessage("aura", "lootblacklist", ChromaItems.SHARD.getStackOf());
+
+		FMLInterModComms.sendMessage("Randomod", "blacklist", this.getModContainer().getModId());
 
 		ModInteraction.addMicroblocks();
 
@@ -645,6 +656,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.RFTOOLS.isLoaded()) {
 			ModInteraction.blacklistRFToolsTeleport();
+		}
+
+		if (ModList.TINKERER.isLoaded() && (Pulses.TOOLS.isLoaded() || Pulses.WEAPONS.isLoaded())) {
+			ModInteraction.addChromastoneTools();
 		}
 
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {

@@ -49,7 +49,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 		}
 
 		Collections.sort(validEnchants, ReikaEnchantmentHelper.enchantmentNameSorter);
-		Collections.sort(validEnchants, ReikaEnchantmentHelper.enchantmentTypeSorter);
+		//Collections.sort(validEnchants, ReikaEnchantmentHelper.enchantmentTypeSorter);
 	}
 
 

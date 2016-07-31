@@ -13,6 +13,9 @@ import java.util.Iterator;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.input.Keyboard;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton.CustomSoundImagedGuiButton;
@@ -84,6 +87,19 @@ public class GuiRitualTable extends GuiChromability {
 			return;
 		}
 		super.actionPerformed(b);
+	}
+
+	@Override
+	protected void keyTyped(char c, int key) {
+		super.keyTyped(c, key);
+		if (key == Keyboard.KEY_PRIOR)
+			this.scrollRight(1);
+		if (key == Keyboard.KEY_NEXT)
+			this.scrollLeft(1);
+		if (key == Keyboard.KEY_END)
+			this.scrollLeft(999);
+		if (key == Keyboard.KEY_HOME)
+			this.scrollRight(999);
 	}
 
 	@Override

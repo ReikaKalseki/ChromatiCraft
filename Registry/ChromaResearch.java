@@ -95,6 +95,7 @@ public enum ChromaResearch implements ProgressElement {
 	STRUCTURES("Structures",			ChromaBlocks.PYLONSTRUCT.getStackOf(),					ResearchLevel.RAWEXPLORE),
 	TRANSMISSION("Signal Transmission", ChromaStacks.beaconDust, 								ResearchLevel.ENERGYEXPLORE),
 	CRAFTING("Casting",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
+	ENCHANTS("Enchantments",			ChromaTiles.ENCHANTER.getCraftedProduct(),				ResearchLevel.BASICCRAFT),
 	CRAFTING2("Casting II",				ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.RUNECRAFT,	ProgressStage.RUNEUSE),
 	BALLLIGHTNING("Ball Lightning",		ChromaStacks.auraDust,									ResearchLevel.ENERGYEXPLORE, ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
@@ -236,6 +237,7 @@ public enum ChromaResearch implements ProgressElement {
 	PURIFY(				ChromaItems.PURIFY,			ResearchLevel.ENDGAME,			ProgressStage.RAINBOWLEAF, ProgressStage.ALLOY),
 	EFFICIENCY(			ChromaItems.EFFICIENCY,			ResearchLevel.CTM),
 	KILLAURA(			ChromaItems.KILLAURAGUN,	ResearchLevel.ENDGAME),
+	FLOATBOOTS(			ChromaItems.FLOATBOOTS,		ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -312,7 +314,8 @@ public enum ChromaResearch implements ProgressElement {
 	METEOR2(		Structures.METEOR2,		12,	ResearchLevel.ENDGAME),
 	METEOR3(		Structures.METEOR3,		12,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
-	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END);
+	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END),
+	RELAYSTRUCT(	Structures.RELAY,		9,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	;
 
 	private final ItemStack iconItem;
@@ -636,9 +639,9 @@ public enum ChromaResearch implements ProgressElement {
 			ri.zLevel = 0;
 		}
 		GL11.glPushMatrix();
-		if (this == DIMENSION3) {
-			GL11.glTranslated(0, 0, -50);
-		}
+		//if (this == DIMENSION3) {
+		GL11.glTranslated(0, 0, -50);
+		//}
 
 		ItemStack ico = this.getTabIcon().copy();
 		if (ico.stackTagCompound == null)

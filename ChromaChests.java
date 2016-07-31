@@ -30,6 +30,11 @@ public class ChromaChests {
 			data.addItem(1, Location.JUNGLE_DISPENSER, ChromaStacks.getShard(CrystalElement.elements[i]), 2, 9, 3);
 		}
 
+		data.addItem(2, Location.BONUS, ChromaItems.HELP.getStackOf(), 1, 1, 3);
+		data.addItem(2, Location.DUNGEON, ChromaItems.HELP.getStackOf(), 1, 1, 2);
+		data.addItem(2, Location.VILLAGE, ChromaItems.HELP.getStackOf(), 1, 1, 1);
+		data.addItem(2, Location.STRONGHOLD_LIBRARY, ChromaItems.HELP.getStackOf(), 1, 1, 8);
+
 		data.addItem(1, Location.DUNGEON, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 10);
 		data.addItem(1, Location.JUNGLE_PUZZLE, ChromaItems.FRAGMENT.getStackOf(), 1, 2, 20);
 		data.addItem(1, Location.PYRAMID, ChromaItems.FRAGMENT.getStackOf(), 1, 1, 20);

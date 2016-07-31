@@ -66,9 +66,9 @@
 	<dimension3>
 		Long ago, you met someone who told you tall tales of equally tall (and broken) terrain, found only if one was to venture a ludicrous distance into the world. He also went on about his absurd plan to venture there...on foot. Lunacy, sure, but perhaps that volatile realm you have recently frequented has a similar (and hopefully nearer) outer region; You could call them the far...regions?. You never were very good at names.
 	</dimension3>
-	<name>
-		
-	</name>
+	<enchants>
+		You have found a way to magically imbue your tools with a purple glow and improve their usefulness, and later a way to even control what kind of bonus you wish to obtain. However, you have noticed something else: Using the %s, there are a series of powers not previously available to you, and on top of that others can be made more powerful.
+	</enchants>
 	<name>
 		
 	</name>

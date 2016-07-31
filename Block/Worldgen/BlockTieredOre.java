@@ -298,7 +298,7 @@ public class BlockTieredOre extends BlockChromaTiered {
 	@SideOnly(Side.CLIENT)
 	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff)
 	{
-		ReikaRenderHelper.spawnDropParticles(world, tg.blockX, tg.blockY, tg.blockZ, Blocks.stone, 0);
+		ReikaRenderHelper.spawnDropParticles(world, tg.blockX, tg.blockY, tg.blockZ, Blocks.stone, 0, 1);
 		return true;
 	}
 

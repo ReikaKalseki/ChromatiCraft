@@ -15,6 +15,7 @@ import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,9 +23,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
+import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
@@ -33,10 +36,48 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	private HashMap<Enchantment, Integer> selected = new HashMap();
 
-	public static final int CHROMA_PER_LEVEL = 500;
+	public static final int CHROMA_PER_LEVEL_BASE = 500;
+	private static final HashMap<Enchantment, EnchantmentTier> tiers = new HashMap();
+	private static final HashMap<Enchantment, Integer> boostedLevels = new HashMap();
+
+	static {
+		tiers.put(Enchantment.baneOfArthropods, EnchantmentTier.WORTHLESS);
+		tiers.put(Enchantment.smite, EnchantmentTier.WORTHLESS);
+
+		tiers.put(Enchantment.knockback, EnchantmentTier.BASIC);
+		tiers.put(Enchantment.punch, EnchantmentTier.BASIC);
+		tiers.put(Enchantment.field_151369_A, EnchantmentTier.BASIC);
+		tiers.put(ChromaEnchants.FASTSINK.getEnchantment(), EnchantmentTier.BASIC);
+
+		tiers.put(Enchantment.fortune, EnchantmentTier.VALUABLE);
+		tiers.put(Enchantment.sharpness, EnchantmentTier.VALUABLE);
+		tiers.put(Enchantment.looting, EnchantmentTier.VALUABLE);
+		tiers.put(Enchantment.power, EnchantmentTier.VALUABLE);
+		tiers.put(Enchantment.protection, EnchantmentTier.VALUABLE);
+		tiers.put(ChromaEnchants.USEREPAIR.getEnchantment(), EnchantmentTier.VALUABLE);
+		tiers.put(ChromaEnchants.ENDERLOCK.getEnchantment(), EnchantmentTier.VALUABLE);
+		tiers.put(ChromaEnchants.AGGROMASK.getEnchantment(), EnchantmentTier.VALUABLE);
+
+		tiers.put(Enchantment.silkTouch, EnchantmentTier.RARE);
+		tiers.put(Enchantment.infinity, EnchantmentTier.RARE);
+		tiers.put(ChromaEnchants.RARELOOT.getEnchantment(), EnchantmentTier.RARE);
+		tiers.put(ChromaEnchants.WEAPONAOE.getEnchantment(), EnchantmentTier.RARE);
+		tiers.put(ChromaEnchants.HARVESTLEVEL.getEnchantment(), EnchantmentTier.RARE);
+
+		boostedLevels.put(Enchantment.fortune, 5);
+		boostedLevels.put(Enchantment.looting, 5);
+		boostedLevels.put(Enchantment.respiration, 5);
+		boostedLevels.put(Enchantment.field_151370_z, 5); //luck of sea
+		boostedLevels.put(Enchantment.power, 10);
+		boostedLevels.put(Enchantment.sharpness, 10);
+	}
 
 	private StepTimer progress = new StepTimer(40);
 	public int progressTimer;
+
+	public static Map<Enchantment, Integer> getBoostedLevels() {
+		return Collections.unmodifiableMap(boostedLevels);
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -95,17 +136,28 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	}
 
 	private boolean isValid(ItemStack is) {
-		return is != null && (is.getItem().getItemEnchantability() > 0 || is.getItem() == Items.book || is.getItem() instanceof ItemShears) && this.areEnchantsValid(is);
+		return is != null && this.isItemEnchantable(is) && this.areEnchantsValid(is);
+	}
+
+	private boolean isItemEnchantable(ItemStack is) {
+		if (is.getItem() == Items.book)
+			return true;
+		if (is.getItem() instanceof EnchantableItem)
+			return true;
+		if (is.getItem() instanceof ItemShears)
+			return true;
+		return is.getItem().getItemEnchantability(is) > 0;
 	}
 
 	private boolean areEnchantsValid(ItemStack is) {
+		Item i = is.getItem();
 		for (Enchantment e : selected.keySet()) {
-			if (is.getItem() == Items.book) {
+			if (i == Items.book) {
 				if (!e.isAllowedOnBooks()) {
 					return false;
 				}
 			}
-			else if (!e.canApply(is)) {
+			else if (!e.canApply(is) && !(i instanceof EnchantableItem && ((EnchantableItem)i).isEnchantValid(e, is))) {
 				return false;
 			}
 
@@ -126,10 +178,18 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 	private int getConsumedChroma() {
 		int total = 0;
-		for (int level : selected.values()) {
-			total += level;
+		for (Enchantment e : selected.keySet()) {
+			int level = selected.get(e);
+			total += level*CHROMA_PER_LEVEL_BASE*this.getCostFactor(e);
 		}
-		return total*CHROMA_PER_LEVEL;
+		return total;
+	}
+
+	private float getCostFactor(Enchantment e) {
+		EnchantmentTier t = tiers.get(e);
+		if (t == null)
+			t = EnchantmentTier.NORMAL;
+		return t.costFactor;
 	}
 
 	public boolean setEnchantment(Enchantment e, int level) {
@@ -155,6 +215,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (e == Enchantment.looting)
 			return 5;
 		if (e == Enchantment.respiration)
+			return 5;
+		if (e == Enchantment.field_151370_z) //luck of sea
 			return 5;
 		if (e == Enchantment.power)
 			return 10;
@@ -266,6 +328,20 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	@Override
 	public OperationState getState() {
 		return this.isValid(inv[0]) && this.enchanting() ? (this.hasSufficientChroma() ? OperationState.RUNNING : OperationState.PENDING) : OperationState.INVALID;
+	}
+
+	private static enum EnchantmentTier {
+		WORTHLESS(0.25F),
+		BASIC(0.75F),
+		NORMAL(1F),
+		VALUABLE(1.5F),
+		RARE(2);
+
+		public final float costFactor;
+
+		private EnchantmentTier(float f) {
+			costFactor = f;
+		}
 	}
 
 }

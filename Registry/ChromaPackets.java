@@ -138,6 +138,8 @@ public enum ChromaPackets {
 	ACTIVEGATE(),
 	GATECACHE(),
 	TRIGGERTELEPORT(8),
+	TELEPORTCONFIRM(1),
+	BIOMELOCS(),
 	;
 
 	public final int numInts;

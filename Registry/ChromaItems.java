@@ -47,6 +47,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemCrystalPotion;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
 import Reika.ChromatiCraft.Items.Tools.ItemEfficiencyCrystal;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderCrystal;
+import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Items.Tools.ItemKillAuraGun;
 import Reika.ChromatiCraft.Items.Tools.ItemManipulator;
@@ -148,7 +149,8 @@ public enum ChromaItems implements ItemEnum {
 	EFFICIENCY(37, false,	"chroma.efficiency",	ItemEfficiencyCrystal.class),
 	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class),
 	KILLAURAGUN(38, false,	"chroma.killauragun",	ItemKillAuraGun.class),
-	THROWGEM(0,	true,		"chroma.throwgem",		ItemThrowableGem.class);
+	THROWGEM(0,	true,		"chroma.throwgem",		ItemThrowableGem.class),
+	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class);
 	;
 
 	private final int index;
@@ -305,6 +307,12 @@ public enum ChromaItems implements ItemEnum {
 	public int getArmorRender() {
 		if (!this.isArmor())
 			throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" is not an armor yet was called for its render!");
+		switch(this) {
+			case FLOATBOOTS:
+				return ChromatiCraft.proxy.armor;
+			default:
+				break;
+		}
 		throw new RegistrationException(ChromatiCraft.instance, "Item "+name+" is an armor yet has no specified render!");
 	}
 
@@ -390,6 +398,8 @@ public enum ChromaItems implements ItemEnum {
 
 	public boolean isArmor() {
 		switch(this) {
+			case FLOATBOOTS:
+				return true;
 			default:
 				return false;
 		}

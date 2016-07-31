@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,8 @@ import net.minecraft.util.MathHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
+import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -175,6 +178,12 @@ public class PoolRecipes {
 			return output.copy();
 		}
 
+		public ElementTagCompound getInputElements() {
+			ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(main);
+			for (ItemStack is : inputs.keySet())
+				tag.addButMinimizeWith(ItemElementCalculator.instance.getValueForItem(is));
+			return tag;
+		}
 	}
 
 	public Collection<PoolRecipe> getRecipesForItem(ItemStack is) {
@@ -202,6 +211,16 @@ public class PoolRecipes {
 				c.add(pr.output.copy());
 		}
 		return c;
+	}
+
+	public boolean canAlloyItem(EntityItem ei) {
+		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+		if (ep != null) {
+			if (ProgressStage.ALLOY.playerHasPrerequisites(ep)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

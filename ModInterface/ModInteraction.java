@@ -19,9 +19,11 @@ import java.util.Set;
 import mekanism.api.MekanismAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.EnumChatFormatting;
 import thaumcraft.api.ThaumcraftApi;
 import vazkii.botania.api.BotaniaAPI;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
@@ -38,6 +40,8 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerMaterialHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.TinkerMaterialHelper.CustomTinkerMaterial;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks;
 import Reika.DragonAPI.ModInteract.DeepInteract.TwilightForestLootHooks.LootLevels;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
@@ -332,5 +336,21 @@ public class ModInteraction {
 		for (int i = 0; i < SubBiomes.biomeList.length; i++) {
 			ReikaMystcraftHelper.disableBiomePage(SubBiomes.biomeList[i].getBiome());
 		}
+	}
+
+	public static void addChromastoneTools() {
+		int id = ExtraChromaIDs.CHROMAMATID.getValue();
+		CustomTinkerMaterial mat = TinkerMaterialHelper.instance.createMaterial(id, ChromatiCraft.instance, "Chromastone");
+		mat.durability = 200;
+		mat.damageBoost = 10;
+		mat.harvestLevel = 1200;
+		mat.miningSpeed = 2700;
+		mat.handleModifier = 0.25F;
+		mat.chatColor = EnumChatFormatting.GOLD.toString();
+		mat.renderColor = 0x22aaff;
+
+		mat.register(true).registerTexture("tinkertools/chromastone/chromastone", false);
+		mat.registerPatternBuilder(ChromaStacks.complexIngot);
+		mat.registerWeapons(ChromaStacks.complexIngot, 10, 0.5F, 5F, 4F, 15F, 0);
 	}
 }

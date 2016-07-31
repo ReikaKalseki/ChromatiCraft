@@ -83,7 +83,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		return false;
 	}
 
-	private boolean canCharge(EntityItem ei) {
+	public static boolean canCharge(EntityItem ei) {
 		EntityPlayer ep = ReikaItemHelper.getDropper(ei);
 		if (ep != null) {
 			if (ProgressStage.SHARDCHARGE.playerHasPrerequisites(ep)) {
