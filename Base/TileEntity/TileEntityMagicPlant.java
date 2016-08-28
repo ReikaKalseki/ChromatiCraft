@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.EffectPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityAccelerationPlant;
@@ -35,5 +36,7 @@ public abstract class TileEntityMagicPlant extends TileEntityChromaticBase imple
 		}
 		return n;
 	}
+
+	public abstract boolean isPlantable(World world, int x, int y, int z);
 
 }

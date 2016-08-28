@@ -18,19 +18,16 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class BlockShiftLock extends Block {
+public class BlockShiftLock extends BlockDimensionStructure {
 
 	private IIcon[] icons = new IIcon[2];
 
 	public BlockShiftLock(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 	/*
 	@Override

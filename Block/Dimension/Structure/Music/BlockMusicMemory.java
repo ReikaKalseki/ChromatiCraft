@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Music;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -26,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
@@ -45,15 +45,12 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockMusicMemory extends BlockContainer {
+public class BlockMusicMemory extends BlockDimensionStructureTile {
 
 	private final IIcon[] icons = new IIcon[2];
 
 	public BlockMusicMemory(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

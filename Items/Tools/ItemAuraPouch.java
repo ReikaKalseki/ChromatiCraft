@@ -44,6 +44,7 @@ public class ItemAuraPouch extends ItemChromaTool implements ActivatedInventoryI
 				inv[i].getItem().onUpdate(inv[i], world, e, slot, false);
 			}
 		}
+		this.setItems(is, inv);
 	}
 
 	public boolean[] getActiveSlots(ItemStack is) {

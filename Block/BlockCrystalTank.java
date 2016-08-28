@@ -524,4 +524,16 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		return false;
 	}
 
+	@Override
+	public final boolean hasComparatorInputOverride() {
+		return true;
+	}
+
+	@Override
+	public final int getComparatorInputOverride(World world, int x, int y, int z, int par5) {
+		CrystalTankAuxTile te = (CrystalTankAuxTile)world.getTileEntity(x, y, z);
+		TileEntityCrystalTank con = te.getTankController();
+		return con != null ? con.getRedstoneOverride() : 0;
+	}
+
 }

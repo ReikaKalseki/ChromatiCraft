@@ -144,7 +144,11 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	private boolean isCoordValid(Coordinate c, Block b, World world, int x, int y, int z) {
-		return c != null && !b.isAir(world, c.xCoord, c.yCoord, c.zCoord) && !c.equals(x, y, z) && c.getTileEntity(world) == null && shape.isBlockInShape(c.xCoord-x, c.yCoord-y, c.zCoord-z, range);
+		return c != null && this.shouldTryBreaking(world, c.xCoord, c.yCoord, c.zCoord, b) && !c.equals(x, y, z) && c.getTileEntity(world) == null && shape.isBlockInShape(c.xCoord-x, c.yCoord-y, c.zCoord-z, range);
+	}
+
+	private boolean shouldTryBreaking(World world, int x, int y, int z, Block b) {
+		return !b.isAir(world, x, y, z) && !ReikaBlockHelper.isLiquid(b);
 	}
 
 	private void createBolts(Coordinate c) {
@@ -255,6 +259,10 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 		range = (range+1)%(MAX_RANGE+1);
 		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), this, range);
 		ChromaSounds.USE.playSoundAtBlock(this);
+	}
+
+	public int getRange() {
+		return range;
 	}
 
 	@Override

@@ -112,6 +112,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.World.PylonGenerator;
@@ -769,6 +770,12 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case BIOMELOCS:
 					BiomeDistributor.fillFromPacket(NBT.getTagList("data", NBTTypes.BYTE.ID));
+					break;
+				case RELAYPRESSURE:
+					((TileEntityFluidRelay)tile).changePressure(data[0]);
+					break;
+				case RELAYFLUID:
+					((TileEntityFluidRelay)tile).sendFluidParticles(world, x, y, z, FluidRegistry.getFluid(data[0]));
 					break;
 			}
 		}

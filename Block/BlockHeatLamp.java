@@ -49,6 +49,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.ReactorCraft.Auxiliary.ReactorCoreTE;
 import Reika.RotaryCraft.API.Interfaces.BasicTemperatureMachine;
+import Reika.RotaryCraft.Auxiliary.Interfaces.TemperatureTE;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -308,7 +309,14 @@ public class BlockHeatLamp extends Block implements SidedBlock {
 		}
 
 		private boolean canHeat(ThermalTile tl) {
+			if (ModList.ROTARYCRAFT.isLoaded() && this.isRotaryHeatTile(tl))
+				return false;
 			return !ModList.REACTORCRAFT.isLoaded() || !this.isReactorTile(tl);
+		}
+
+		@ModDependent(ModList.ROTARYCRAFT)
+		private boolean isRotaryHeatTile(ThermalTile tl) {
+			return tl instanceof TemperatureTE && !((TemperatureTE)tl).allowExternalHeating();
 		}
 
 		@ModDependent(ModList.REACTORCRAFT)

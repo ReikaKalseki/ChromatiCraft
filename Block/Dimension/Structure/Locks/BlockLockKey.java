@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomRecurse;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomSpiral;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomTriple;
 import Reika.ChromatiCraft.World.Dimension.Structure.Locks.LocksRoomWhite;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
@@ -90,7 +91,7 @@ public class BlockLockKey extends Block {
 	public BlockLockKey(Material mat) {
 		super(mat);
 		this.setHardness(0.15F);
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
+		this.setCreativeTab(DragonAPICore.isReikasComputer() ? ChromatiCraft.tabChromaGen : null);
 		this.setLightLevel(1);
 	}
 

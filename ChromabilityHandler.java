@@ -39,22 +39,29 @@ public class ChromabilityHandler implements TickHandler {
 		Collection<Ability> li = Chromabilities.getAbilitiesForTick((Phase)tickData[1]);
 		for (Ability c : li) {
 			if (Chromabilities.playerHasAbility(ep, c) && Chromabilities.enabledOn(ep, c)) {
-				if (ep.ticksExisted%20 > 0 || c.isAvailableToPlayer(ep)) { //only check this every 1s
-					if (Chromabilities.canPlayerExecuteAt(ep, c))
-						c.apply(ep);
-					if (ReikaRandomHelper.doWithChance(0.002)) { //was 0.0002
-						ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
-						if (tag != null) {
-							if (PlayerElementBuffer.instance.playerHas(ep, tag))
-								PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
-							else {
-								Chromabilities.setToPlayer(ep, false, c);
-							}
+				if (Chromabilities.canPlayerExecuteAt(ep, c))
+					c.apply(ep);
+				if (ReikaRandomHelper.doWithChance(0.002)) { //was 0.0002
+					ElementTagCompound tag = Chromabilities.getTickCost(c, ep);
+					if (tag != null) {
+						if (PlayerElementBuffer.instance.playerHas(ep, tag))
+							PlayerElementBuffer.instance.removeFromPlayer(ep, tag);
+						else {
+							Chromabilities.setToPlayer(ep, false, c);
 						}
 					}
 				}
-				else {
-					Chromabilities.removeFromPlayer(ep, c);
+			}
+		}
+		if (ep.ticksExisted%40 == 0) {
+			for (Ability a : Chromabilities.getAbilities()) {
+				if (Chromabilities.playerHasAbility(ep, a)) {
+					if (a.isAvailableToPlayer(ep)) {
+
+					}
+					else {
+						Chromabilities.removeFromPlayer(ep, a);
+					}
 				}
 			}
 		}

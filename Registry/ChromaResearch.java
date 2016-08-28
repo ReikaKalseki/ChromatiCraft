@@ -178,6 +178,9 @@ public enum ChromaResearch implements ProgressElement {
 	AREABREAKER(	ChromaTiles.AREABREAKER,	ResearchLevel.MULTICRAFT),
 	WIRELESS(		ChromaTiles.WIRELESS,		ResearchLevel.MULTICRAFT,		ProgressStage.USEENERGY),
 	GATE(			ChromaTiles.TELEPORT,		ResearchLevel.ENDGAME,			ProgressStage.END),
+	FLUIDRELAY(		ChromaTiles.FLUIDRELAY,		ResearchLevel.RUNECRAFT),
+	BOOKDECOMP(		ChromaTiles.BOOKDECOMP,		ResearchLevel.RUNECRAFT),
+	PLANTHARVEST(	ChromaTiles.HARVESTPLANT,	ResearchLevel.RUNECRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -238,6 +241,7 @@ public enum ChromaResearch implements ProgressElement {
 	EFFICIENCY(			ChromaItems.EFFICIENCY,			ResearchLevel.CTM),
 	KILLAURA(			ChromaItems.KILLAURAGUN,	ResearchLevel.ENDGAME),
 	FLOATBOOTS(			ChromaItems.FLOATBOOTS,		ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	TELECAPSULE(		ChromaItems.WARPCAPSULE,	ResearchLevel.RUNECRAFT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -316,6 +320,7 @@ public enum ChromaResearch implements ProgressElement {
 	RITUAL2	(		Structures.RITUAL2,		7,	ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END),
 	RELAYSTRUCT(	Structures.RELAY,		9,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
+	PYLONBROADCAST(	Structures.PYLONBROADCAST,5,ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	;
 
 	private final ItemStack iconItem;

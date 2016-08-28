@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -120,25 +121,9 @@ public class ItemChromaPlacer extends Item implements ISize {
 		if (m == ChromaTiles.HEATLILY)
 			return false;
 		if (m.getBlock() == ChromaBlocks.DECOPLANT.getBlockInstance()) {
-			if (m == ChromaTiles.COBBLEGEN && (!world.getBlock(x, y+1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y+1, z) != ChromaTiles.PLANTACCEL)) {
+			TileEntityMagicPlant te = (TileEntityMagicPlant)m.createTEInstanceForRender(0);
+			if (!te.isPlantable(world, x, y, z))
 				return false;
-			}
-			else if (m == ChromaTiles.PLANTACCEL) {
-				if (ChromaTiles.getTile(world, x, y-1, z) == m || ChromaTiles.getTile(world, x, y+1, z) == m) {
-
-				}
-				else if (world.getBlock(x, y-1, z).isOpaqueCube() || world.getBlock(x, y+1, z).isOpaqueCube()) {
-
-				}
-				else {
-					return false;
-				}
-			}
-			else if (m == ChromaTiles.CROPSPEED && world.getBlock(x, y-1, z) != Blocks.farmland && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)
-				return false;
-			else if ((m != ChromaTiles.COBBLEGEN && m != ChromaTiles.CROPSPEED) && (!world.getBlock(x, y-1, z).isOpaqueCube() && ChromaTiles.getTile(world, x, y-1, z) != ChromaTiles.PLANTACCEL)) {
-				return false;
-			}
 		}
 		if (m == ChromaTiles.ADJACENCY) { //prevent place of old item
 			return false;

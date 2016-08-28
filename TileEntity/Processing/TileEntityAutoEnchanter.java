@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Processing;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
@@ -23,14 +24,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Interfaces.EnchantableItem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaPowered;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
+import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
+import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval {
 
@@ -39,6 +43,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 	public static final int CHROMA_PER_LEVEL_BASE = 500;
 	private static final HashMap<Enchantment, EnchantmentTier> tiers = new HashMap();
 	private static final HashMap<Enchantment, Integer> boostedLevels = new HashMap();
+	private static final HashSet<Enchantment> blacklist = new HashSet();
 
 	static {
 		tiers.put(Enchantment.baneOfArthropods, EnchantmentTier.WORTHLESS);
@@ -63,6 +68,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		tiers.put(ChromaEnchants.RARELOOT.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.WEAPONAOE.getEnchantment(), EnchantmentTier.RARE);
 		tiers.put(ChromaEnchants.HARVESTLEVEL.getEnchantment(), EnchantmentTier.RARE);
+
+		//Enchantment multishot = ReikaEnchantmentHelper.getEnchantmentByName("Multishot");
+		//if (multishot != null)
+		//	tiers.put(multishot, EnchantmentTier.RARE);
 
 		boostedLevels.put(Enchantment.fortune, 5);
 		boostedLevels.put(Enchantment.looting, 5);
@@ -341,6 +350,23 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 
 		private EnchantmentTier(float f) {
 			costFactor = f;
+		}
+	}
+
+	public static boolean isBlacklisted(Enchantment e) {
+		return blacklist.contains(e);
+	}
+
+	public static void blacklistEnchantment(Enchantment e) {
+		if (ReikaEnchantmentHelper.isVanillaEnchant(e)) {
+			ChromatiCraft.logger.logError("You cannot blacklist vanilla enchantments!");
+		}
+		else if (e instanceof ChromaticEnchantment) {
+			ChromatiCraft.logger.logError("You cannot blacklist ChromatiCraft enchantments!");
+		}
+		else {
+			blacklist.add(e);
+			ChromatiCraft.logger.log("Received request to blacklist enchantment "+e.getName()+" from "+ReikaRegistryHelper.getActiveLoadingMod());
 		}
 	}
 

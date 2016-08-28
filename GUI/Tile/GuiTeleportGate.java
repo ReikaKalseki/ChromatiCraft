@@ -43,6 +43,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 public class GuiTeleportGate extends GuiChromaBase {
 
 	private final TileEntityTeleportGate gate;
+	private final WorldLocation gateLoc;
 
 	private final ConnectionWeb web = new ConnectionWeb();
 	private final RegionMap<LinkNode> pointLocs = new RegionMap();
@@ -56,6 +57,7 @@ public class GuiTeleportGate extends GuiChromaBase {
 	public GuiTeleportGate(EntityPlayer ep, TileEntityTeleportGate te) {
 		super(new CoreContainer(ep, te), ep, te);
 		gate = te;
+		gateLoc = new WorldLocation(te);
 		xSize = 240;
 		ySize = 200;
 	}
@@ -272,6 +274,10 @@ public class GuiTeleportGate extends GuiChromaBase {
 					boolean mbox = api.isMouseInBox(j+lx+3, j+lx+s-4, k+lz+3, k+lz+s-4);
 					GL11.glColor3f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F);
 					api.drawTexturedModelRectFromIcon(lx, lz, ChromaIcons.DIAMOND.getIcon(), s, s);
+					if (l.location.equals(gateLoc)) {
+						int clr = ReikaColorAPI.mixColors(0xffffff, 0xa0a0a0, (float)(0.5F+0.5F*Math.sin(System.currentTimeMillis()/200D)));
+						api.drawRectFrame(lx+1, lz+1, 14, 14, clr);
+					}
 					pointLocs.addRegionByWH(lx, lz, s, s, l);
 					if (mbox) {
 						BufferedImage img = gate.getPreview(l.location);

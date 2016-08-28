@@ -16,8 +16,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 
-public class BlockShiftKey extends Block {
+public class BlockShiftKey extends BlockDimensionStructure {
 
 	private long lastPlace = -1;
 

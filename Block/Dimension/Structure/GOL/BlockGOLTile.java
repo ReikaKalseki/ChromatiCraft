@@ -23,6 +23,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -31,15 +32,12 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
-public class BlockGOLTile extends Block {
+public class BlockGOLTile extends BlockDimensionStructure {
 
 	private final IIcon[] icons = new IIcon[4];
 
 	public BlockGOLTile(Material mat) {
 		super(mat);
-		this.setBlockUnbreakable();
-		this.setResistance(60000);
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

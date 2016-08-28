@@ -14,7 +14,6 @@ import java.util.EnumMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -30,10 +29,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Recharger;
 import Reika.ChromatiCraft.Auxiliary.Recharger.RechargeWaiter;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -64,7 +63,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockGravityTile extends BlockContainer {
+public class BlockGravityTile extends BlockDimensionStructureTile {
 
 	private static IIcon overlay;
 	private static IIcon underlay;
@@ -72,9 +71,6 @@ public class BlockGravityTile extends BlockContainer {
 	public BlockGravityTile(Material mat) {
 		super(mat);
 
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 		//this.setLightLevel(1);
 	}
 

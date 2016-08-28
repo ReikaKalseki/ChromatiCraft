@@ -102,4 +102,9 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 
 	}
 
+	@Override
+	public boolean isPlantable(World world, int x, int y, int z) {
+		return world.getBlock(x, y-1, z) == Blocks.farmland || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL;
+	}
+
 }

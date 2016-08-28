@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.aspects.Aspect;
@@ -29,13 +30,14 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class FabricationRecipes {
 
 	private static final FabricationRecipes instance = new FabricationRecipes();
 
 	private final HashMap<KeyedItemStack, ElementTagCompound> data = new HashMap();
-	private static final float SCALE = 0.8F;
+	public static final float SCALE = 0.8F;
 
 	public static final float INITFACTOR = 0.5F;
 	public static final int FACTOR = 400;
@@ -51,9 +53,7 @@ public class FabricationRecipes {
 		Collection<KeyedItemStack> c = ItemMagicRegistry.instance.keySet();
 		for (KeyedItemStack k : c) {
 			ElementTagCompound tag = ItemMagicRegistry.instance.getItemValue(k);
-			tag.scale(INITFACTOR);
-			tag.power(POWER);
-			tag.scale(FACTOR);
+			tag = this.processTag(tag);
 			k.setSimpleHash(true);
 			data.put(k, tag);
 			max = Math.max(max, tag.getMaximumValue());
@@ -146,6 +146,25 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.APPENG.isLoaded()) {
+			Block item = GameRegistry.findBlock(ModList.APPENG.modLabel, "tile.BlockSkyStone");
+			if (item != null) {
+				tag = new ElementTagCompound();
+				tag.addValueToColor(CrystalElement.BROWN, 500);
+				tag.addValueToColor(CrystalElement.LIME, 200);
+				tag.addValueToColor(CrystalElement.WHITE, 100);
+				this.addRecipe(new ItemStack(item, 1, 0), tag);
+			}
+		}
+
+	}
+
+	public ElementTagCompound processTag(ElementTagCompound tag) {
+		tag = tag.copy();
+		tag.scale(INITFACTOR);
+		tag.power(POWER);
+		tag.scale(FACTOR);
+		return tag;
 	}
 
 	private void addRecipe(ItemStack is, ElementTagCompound tag) {
@@ -163,8 +182,13 @@ public class FabricationRecipes {
 		return items;
 	}
 
+	public boolean isItemFabricable(ItemStack is) {
+		KeyedItemStack ks = new KeyedItemStack(is).setSimpleHash(true);
+		return data.containsKey(ks);
+	}
+
 	public boolean isItemFabricable(ItemStack is, ElementTagCompound tag) {
-		KeyedItemStack ks = new KeyedItemStack(is);
+		KeyedItemStack ks = new KeyedItemStack(is).setSimpleHash(true);
 		return data.containsKey(ks) && tag.containsAtLeast(this.getItemCost(ks));
 	}
 

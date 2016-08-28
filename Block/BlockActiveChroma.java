@@ -132,7 +132,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 	}
 
 	public static float getDoublingChance(int ether) {
-		return /*0.75F*/1*(float)(Math.pow(ether, 2)/Math.pow(TileEntityChroma.ETHER_SATURATION, 2));
+		return /*0.75F*/(float)(Math.pow(ether, 2)/Math.pow(TileEntityChroma.ETHER_SATURATION, 2));
 	}
 
 	public static int getSpeedMultiplier(int ether) {
@@ -159,6 +159,7 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 		private CrystalElement element;
 
 		private int etherCount;
+		private boolean elementalBoost;
 
 		public int activate(CrystalElement e, int amt) {
 			int add = Math.min(BERRY_SATURATION-berryCount, amt);
@@ -182,6 +183,17 @@ public class BlockActiveChroma extends BlockLiquidChroma {
 				this.update();
 			}
 			return add;
+		}
+
+		public boolean addElementalStone(CrystalElement e) {
+			if (element != null && element == e) {
+				if (!elementalBoost) {
+					elementalBoost = true;
+					this.update();
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void update() {

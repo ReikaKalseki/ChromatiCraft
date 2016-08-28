@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Laser;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -24,6 +23,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Entity.EntityLaserPulse;
@@ -46,14 +46,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class BlockLaserEffector extends BlockContainer {
+public class BlockLaserEffector extends BlockDimensionStructureTile {
 
 	public BlockLaserEffector(Material mat) {
 		super(mat);
-
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

@@ -17,12 +17,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.CustomCropHandler;
 import Reika.DragonAPI.Interfaces.Registry.ModEntry;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 public class CrystalPlantHandler implements CustomCropHandler {
 
@@ -58,18 +56,8 @@ public class CrystalPlantHandler implements CustomCropHandler {
 	@Override
 	public ArrayList<ItemStack> getAdditionalDrops(World world, int x, int y, int z, Block id, int meta, int fortune) {
 		if (ModList.CHROMATICRAFT.isLoaded()) {
-			if (ChromaOptions.CRYSTALFARM.getState() && ReikaRandomHelper.doWithChance(0.01)) {
-				ArrayList li = new ArrayList();
-				ItemStack shard = ChromaItems.SHARD.getStackOfMetadata(world.getBlockMetadata(x, y, z));
-				li.add(shard);
-				return li;
-			}
-			if (ReikaRandomHelper.doWithChance(0.04)) {
-				ArrayList li = new ArrayList();
-				ItemStack shard = ChromaItems.SEED.getStackOfMetadata(16+world.getBlockMetadata(x, y, z));
-				li.add(shard);
-				return li;
-			}
+			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+			return te.getDrops();
 		}
 		return null;
 	}
@@ -89,7 +77,7 @@ public class CrystalPlantHandler implements CustomCropHandler {
 
 	@Override
 	public ArrayList<ItemStack> getDropsOverride(World world, int x, int y, int z, Block id, int meta, int fortune) {
-		return null;
+		return new ArrayList();
 	}
 
 	@Override

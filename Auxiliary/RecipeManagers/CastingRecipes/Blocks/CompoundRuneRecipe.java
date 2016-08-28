@@ -49,7 +49,12 @@ public class CompoundRuneRecipe extends MultiBlockCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 256;
+		return 32;
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 4;
 	}
 
 }

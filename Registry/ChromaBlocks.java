@@ -97,7 +97,9 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
+import Reika.ChromatiCraft.Block.Worldgen.BlockEtherealLuma;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
@@ -122,6 +124,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
 import Reika.DragonAPI.Interfaces.Registry.BlockEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 public enum ChromaBlocks implements BlockEnum {
 
@@ -203,7 +206,10 @@ public enum ChromaBlocks implements BlockEnum {
 	GRAVITY(BlockGravityTile.class,				ItemBlockMultiType.class,		"chroma.gravity"),
 	TRAIL(BlockChromaTrail.class,												"chroma.trail"),
 	BRIDGE(BlockDynamicBridge.class,			ItemBlockMultiType.class,		"chroma.bridge"),
-	BRIDGECONTROL(BlockBridgeControl.class,		ItemBlockMultiType.class,		"chroma.bridgecontrol");
+	BRIDGECONTROL(BlockBridgeControl.class,		ItemBlockMultiType.class,		"chroma.bridgecontrol"),
+	SPARKLE(BlockSparkle.class,					ItemBlockMultiType.class,		"chroma.sparkle"),
+	LUMA(BlockEtherealLuma.class,				ChromatiCraft.luma,				"fluid.luma"),
+	TILEENTITY2(BlockChromaTile.class, 											"Chromatic Tile 2");
 
 	private Class blockClass;
 	private String blockName;
@@ -247,6 +253,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case CHROMA:
 				//case ACTIVECHROMA:
 			case ENDER:
+			case LUMA:
 				return Material.water;
 			case TILECRYSTAL:
 			case TILECRYSTALNONCUBE:
@@ -269,6 +276,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return ChromatiCraft.airMat;
 			case LIGHT:
 				return Material.circuits;
+			case SPARKLE:
+				return Material.ground;
 			default:
 				return Material.rock;
 		}
@@ -309,7 +318,7 @@ public enum ChromaBlocks implements BlockEnum {
 	}
 
 	public boolean isTechnical() {
-		return BlockChromaTile.class.isAssignableFrom(blockClass);
+		return BlockChromaTile.class.isAssignableFrom(blockClass) || ReikaBlockHelper.isLiquid(this.getBlockInstance());
 	}
 
 	@Override
@@ -410,6 +419,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case BRIDGE:
 			case BRIDGECONTROL:
 				return this.getBasicName();
+			case SPARKLE:
+				return "Sparkling "+new ItemStack(BlockSparkle.BlockTypes.list[meta].getBlockProxy()).getDisplayName();
 			default:
 				return "";
 		}
@@ -449,6 +460,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case TRAIL:
 			case BRIDGE:
 			case BRIDGECONTROL:
+			case LUMA:
 				return false;
 			default:
 				return true;
@@ -494,6 +506,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return BlockGravityTile.GravityTiles.list.length;
 			case ANTKEY:
 				return 16;
+			case SPARKLE:
+				return BlockSparkle.BlockTypes.list.length;
 			default:
 				return 1;
 		}

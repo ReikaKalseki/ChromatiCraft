@@ -43,7 +43,7 @@ public class GuiAutoEnchanter extends GuiChromaBase {
 	static {
 		for (int i = 0; i < Enchantment.enchantmentsList.length; i++) {
 			Enchantment e = Enchantment.enchantmentsList[i];
-			if (e != null) {
+			if (e != null && !TileEntityAutoEnchanter.isBlacklisted(e)) {
 				validEnchants.add(e);
 			}
 		}

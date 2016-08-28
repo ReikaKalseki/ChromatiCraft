@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,18 +19,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 
-public class BlockStructureDataStorage extends BlockContainer {
+public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 
 	private final IIcon[] icons = new IIcon[2];
 
 	public BlockStructureDataStorage(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
 	}
 
 	@Override

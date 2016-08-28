@@ -19,8 +19,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -29,13 +31,12 @@ import net.minecraftforge.common.IPlantable;
 import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -101,39 +102,7 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 
 	@Override
 	public boolean canBlockStay(World world, int x, int y, int z) {
-		int meta = world.getBlockMetadata(x, y, z);
-		switch(meta) {
-			case 0:
-				return ReikaPlantHelper.LILYPAD.canPlantAt(world, x, y, z);
-			case 2:
-				if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL)
-					return true;
-				return (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid());// || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.COBBLEGEN;
-			case 3:
-				BlockArray b = new BlockArray();
-				b.recursiveAddWithBoundsMetadata(world, x, y, z, this, meta, x, y-256, z, x, y+256, z);
-				if (!(world.getBlock(x, b.getMaxY()+1, z).isOpaqueCube() && world.getBlock(x, b.getMaxY()+1, z).getMaterial().isSolid()))
-					if (!(world.getBlock(x, b.getMinY()-1, z).isOpaqueCube() && world.getBlock(x, b.getMinY()-1, z).getMaterial().isSolid()))
-						return false;
-				if (ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL)
-					return true;
-				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
-					return true;
-				if (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid())
-					return true;
-				if (world.getBlock(x, y-1, z).isOpaqueCube() && world.getBlock(x, y-1, z).getMaterial().isSolid())
-					return true;
-				return false;
-			case 4:
-				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
-					return true;
-				return world.getBlock(x, y-1, z) == Blocks.farmland;
-			default:
-				if (ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL)
-					return true;
-				boolean light = world.getFullBlockLightValue(x, y, z) >= 8 || world.canBlockSeeTheSky(x, y, z);
-				return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) && light;
-		}
+		return ((TileEntityMagicPlant)world.getTileEntity(x, y, z)).isPlantable(world, x, y, z);
 	}
 
 	@Override
@@ -159,6 +128,13 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.1875*2);
 				double ry = y+0.25+r.nextDouble()*0.75;
 				ReikaParticleHelper.spawnColoredParticleAt(world, rx, ry, rz, 1, 0, 0);
+				break;
+			}
+			case 5: {
+				double rx = ReikaRandomHelper.getRandomPlusMinus(x+0.5, 0.5);
+				double rz = ReikaRandomHelper.getRandomPlusMinus(z+0.5, 0.5);
+				double ry = y+r.nextDouble();
+				ReikaParticleHelper.spawnColoredParticleAt(world, rx, ry, rz, 1, 1	, 0);
 				break;
 			}
 		}
@@ -248,8 +224,13 @@ public class BlockDecoPlant extends BlockChromaTile implements IPlantable {
 				if (e instanceof EntityLivingBase)
 					((EntityLivingBase)e).addPotionEffect(new PotionEffect(ChromatiCraft.betterRegen.id, 20, 0));
 				break;
+			case 5:
+				e.attackEntityFrom(DamageSource.cactus, 1);
+				if (e instanceof EntityLivingBase)
+					((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.hunger.id, 20, 1));
+				break;
 			default:
-
+				break;
 		}
 	}
 

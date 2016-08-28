@@ -131,13 +131,14 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			return;
 		}
 		EntityPlayer ep = args.length == 4 ? ReikaPlayerAPI.getPlayerByNameAnyWorld(args[0]) : this.getCommandSenderAsPlayer(ics);
-		if (!ep.capabilities.isCreativeMode && !ReikaPlayerAPI.isReika(caller) && ep != caller) {
+		if (!caller.capabilities.isCreativeMode && !ReikaPlayerAPI.isReika(caller) && ep != caller) {
 			this.sendChatToSender(ics, EnumChatFormatting.RED+"This command can only be called from players in creative mode.");
 			return;
 		}
 		if (args.length == 4)
 			args = Arrays.copyOfRange(args, 1, args.length);
 		boolean set = Boolean.valueOf(args[2]);
+		boolean rerender = true;
 		switch(args[0]) {
 			case "color": {
 				CrystalElement e = this.getColor(args[1]);
@@ -274,6 +275,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				break;
 			}
 			case "debug": {
+				rerender = false;
 				if (args[1].equals("all") || args[1].equals("fragment") || args[1].equals("research")) {
 					for (int i = 0; i < ResearchLevel.levelList.length; i++) {
 						ResearchLevel rl = ResearchLevel.levelList[i];
@@ -307,7 +309,8 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				this.sendChatToSender(ics, EnumChatFormatting.RED+" Unrecognized progress action/type '"+args[0]+"'.");
 				break;
 		}
-		ProgressionManager.instance.updateChunks(ep);
+		if (rerender)
+			ProgressionManager.instance.updateChunks(ep);
 		ReikaJavaLibrary.pConsole("Player "+ep.getCommandSenderName()+" used /chromaprog with args "+Arrays.toString(args));
 	}
 

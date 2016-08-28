@@ -140,6 +140,8 @@ public enum ChromaPackets {
 	TRIGGERTELEPORT(8),
 	TELEPORTCONFIRM(1),
 	BIOMELOCS(),
+	RELAYPRESSURE(1),
+	RELAYFLUID(1),
 	;
 
 	public final int numInts;

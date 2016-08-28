@@ -19,6 +19,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -200,6 +201,16 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		if (is.stackTagCompound == null)
 			return;
 		energy.readFromNBT("energy", is.stackTagCompound);
+	}
+
+	@Override
+	public boolean canReceiveFrom(CrystalTransmitter r) {
+		return true;
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter() {
+		return true;
 	}
 
 }

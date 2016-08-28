@@ -108,7 +108,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Essenti
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FabricatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FarmerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidDistributorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidRelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GlowFireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GuardianStoneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HarvestPlantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HeatLilyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.InfuserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.InvTickerRecipe;
@@ -124,6 +127,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MEDistr
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MeteorTowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MinerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.MusicRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PageExtractorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ParticleSpawnerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PlantAccelerationRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.PylonTurboRecipe;
@@ -377,12 +381,10 @@ public class RecipesCastingTable {
 			ItemStack cave = new ItemStack(ChromaBlocks.CRYSTAL.getBlockInstance(), 1, i);
 			ItemStack supercry = new ItemStack(ChromaBlocks.SUPER.getBlockInstance(), 1, i);
 			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
-			ItemStack pendant = ChromaItems.PENDANT.getStackOfMetadata(i);
-			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOfMetadata(i);
 
-			this.addRecipe(new PendantRecipe(pendant, cave));
-			this.addRecipe(new EnhancedPendantRecipe(pendant3, supercry));
-			this.addRecipe(new PotionCrystalRecipe(supercry, cave));
+			this.addRecipe(new PendantRecipe(e));
+			this.addRecipe(new EnhancedPendantRecipe(e));
+			this.addRecipe(new PotionCrystalRecipe(e));
 
 			sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.rawCrystal, " F ", "FSF", " F ", 'F', ChromaStacks.purityDust, 'S', shard);
 			this.addRecipe(new RawCrystalRecipe(ChromaStacks.rawCrystal, sr));
@@ -660,6 +662,36 @@ public class RecipesCastingTable {
 			this.addRecipe(new FloatstoneBootsRecipe(ChromaItems.FLOATBOOTS.getStackOf(), ItemRegistry.BEDBOOTS.getStackOf(), true));
 			this.addRecipe(new FloatstoneBootsRecipe(ChromaItems.FLOATBOOTS.getStackOf(), ItemRegistry.BEDJUMP.getStackOfMetadata(OreDictionary.WILDCARD_VALUE), true));
 		}
+
+		is = ChromaTiles.FLUIDRELAY.getCraftedProduct();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " D ", "LAL", "IGI", 'D', ChromaStacks.beaconDust, 'A', ChromaStacks.auraDust, 'L', ReikaItemHelper.lapisDye, 'I', Items.iron_ingot, 'G', Blocks.glass);
+		this.addRecipe(new FluidRelayRecipe(is, sr));
+
+		is = ChromaItems.WARPCAPSULE.getStackOf();
+		sr = ReikaRecipeHelper.getShapedRecipeFor(is, " ig", "aea", "li", 'e', ChromaItems.ELEMENTAL.getStackOf(CrystalElement.LIME), 'g', ChromaStacks.limeShard, 'l', ChromaStacks.lightBlueShard, 'a', ChromaStacks.auraDust, 'i', Items.iron_ingot);
+		this.addRecipe(new FluidRelayRecipe(is, sr));
+
+		if (ModList.MYSTCRAFT.isLoaded()) {
+			is = ChromaTiles.BOOKDECOMP.getCraftedProduct();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is, " g ", "dcd", "SSS", 'g', Items.glowstone_dust, 'd', Items.diamond, 'S', ReikaItemHelper.stoneSlab, 'c', ChromaStacks.enderDust);
+			this.addRecipe(new PageExtractorRecipe(is, sr));
+		}
+
+		is = ChromaTiles.HARVESTPLANT.getCraftedProduct();
+		Object root = ModList.BOTANIA.isLoaded() ? ReikaItemHelper.lookupItem(ModList.BOTANIA, "manaResource", 6) : null;
+		if (root == null)
+			root = Items.redstone;
+		ItemStack in = ModList.BOTANIA.isLoaded() ? ReikaItemHelper.lookupBlock(ModList.BOTANIA, "specialFlower", 0) : null;
+		if (in != null) {
+			in.stackTagCompound = new NBTTagCompound();
+			in.stackTagCompound.setString("type", "munchdew");
+		}
+		if (in == null)
+			in = ChromaStacks.auraDust;
+		sr = new ShapedOreRecipe(is, "FAF", "fEf", "LRL", 'E', in, 'f', "flower", 'L', "treeLeaves", 'R', root, 'F', ChromaStacks.livingEssence, 'A', ChromaStacks.auraDust);
+		this.addRecipe(new HarvestPlantRecipe(is, sr));
+
+		this.addRecipe(new GlowFireRecipe(ChromaTiles.GLOWFIRE.getCraftedProduct(), ChromaStacks.transformCore));
 
 		this.addSpecialRecipes();
 	}

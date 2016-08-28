@@ -61,6 +61,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Items.Tools.ItemSplashGun;
 import Reika.ChromatiCraft.Items.Tools.ItemThrowableGem;
 import Reika.ChromatiCraft.Items.Tools.ItemVacuumGun;
+import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -150,7 +151,8 @@ public enum ChromaItems implements ItemEnum {
 	//FADETORCH(38, true,		"chroma.torch",			ItemFadingTorch.class),
 	KILLAURAGUN(38, false,	"chroma.killauragun",	ItemKillAuraGun.class),
 	THROWGEM(0,	true,		"chroma.throwgem",		ItemThrowableGem.class),
-	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class);
+	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class),
+	WARPCAPSULE(41, false,	"chroma.warpitem",		ItemWarpCapsule.class),
 	;
 
 	private final int index;

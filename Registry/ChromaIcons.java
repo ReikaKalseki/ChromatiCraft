@@ -102,6 +102,7 @@ public enum ChromaIcons {
 	WIDEBAR("widebar"),
 	PORTALRING("portalring"),
 	CONDENSEFLARE("condenseflare4"),
+	STARFLARE("starflare"),
 	;
 
 	private IIcon icon;

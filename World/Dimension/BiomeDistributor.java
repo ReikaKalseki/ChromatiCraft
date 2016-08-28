@@ -154,12 +154,16 @@ public class BiomeDistributor extends ThreadedGenerator {
 					if (rand.nextDouble() < s.spawnWeight) {
 						int dx = getAdj(p.x, rand.nextInt(33)-16);
 						int dz = getAdj(p.y, rand.nextInt(33)-16);
-						while (biomes[dx][dz] != b) {
+						int tries = 0;
+						while (biomes[dx][dz] != b && tries < 200) {
 							dx = getAdj(p.x, rand.nextInt(33)-16);
 							dz = getAdj(p.y, rand.nextInt(33)-16);
+							tries++;
 						}
-						double f = 0.25+rand.nextDouble()*0.5;
-						this.placeBlob(s, dx, dz, f, b);
+						if (biomes[dx][dz] == b) {
+							double f = 0.25+rand.nextDouble()*0.5;
+							this.placeBlob(s, dx, dz, f, b);
+						}
 					}
 				}
 			}

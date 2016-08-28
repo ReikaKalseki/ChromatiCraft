@@ -30,9 +30,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
+import Reika.ChromatiCraft.API.Event.ProgressionEvent;
+import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
@@ -47,6 +50,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 import com.google.common.collect.HashBiMap;
 
@@ -132,7 +136,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		ArrayList<ChromaResearch> li = new ArrayList();
 		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			if (!this.playerHasFragment(ep, r)) {
-				if (r.level == null || this.getPlayerResearchLevel(ep).ordinal() >= r.level.ordinal()) {
+				if (r.level == null || this.getPlayerResearchLevel(ep).isAtLeast(r.level)) {
 					boolean missingdep = false;
 					if (!r.playerHasProgress(ep)) {
 						missingdep = true;
@@ -212,6 +216,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
+			MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, r.name(), ResearchType.FRAGMENT));
 			return true;
 		}
 		return false;
@@ -365,6 +370,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	public void notifyPlayerOfProgression(EntityPlayer ep, ProgressElement p) {
 		if (ep.worldObj.isRemote) {
 			ChromaOverlays.instance.addProgressionNote(p);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GAINPROGRESS, ep, 1, 1);
 		}
 		else if (ep instanceof EntityPlayerMP) {
 			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.PROGRESSNOTE.ordinal(), (EntityPlayerMP)ep, this.getID(p));
@@ -508,6 +514,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		@Override
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 			return ChromaResearchManager.instance.setPlayerResearchLevel(ep, this, notify);
+		}
+
+		public boolean isAtLeast(ResearchLevel rl) {
+			return rl.ordinal() <= this.ordinal();
 		}
 	}
 

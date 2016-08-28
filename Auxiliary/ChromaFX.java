@@ -25,13 +25,13 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.lwjgl.opengl.GL11;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
+import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRelayPathFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityAtmosphericRelay;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Spline;
 import Reika.DragonAPI.Instantiable.Spline.BasicSplinePoint;
@@ -224,19 +225,20 @@ public class ChromaFX {
 			double t = (System.currentTimeMillis()/600D)%360+2; //+2 to compensate for particle delay
 			t /= 30D;
 
-			MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
-
-			for (ImmutablePair<DecimalPosition, Double> pos : map.keySet()) {
+			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+			for (TargetData pos : map.keySet()) {
+				if (pos.targetClass == TileEntityAtmosphericRelay.class)
+					continue;
 				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 				int clr = getBlendedColorFromElementList(lc, t, 0.125);
 				int p = Minecraft.getMinecraft().gameSettings.particleSetting;
 				if (rand.nextInt(1+p*2) == 0) {
-					double dx = pos.left.xCoord-x-0.5;
-					double dy = pos.left.yCoord-y-0.5;
-					double dz = pos.left.zCoord-z-0.5;
+					double dx = pos.position.xCoord-x-0.5;
+					double dy = pos.position.yCoord-y-0.5;
+					double dz = pos.position.zCoord-z-0.5;
 					double dd = ReikaMathLibrary.py3d(dx, dy, dz);
 					double dr = rand.nextDouble();
-					float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.right));
+					float s = (float)(15D/0.35*ReikaMathLibrary.linterpolate(dr, 0, 1, r, pos.targetWidth));
 					//ReikaJavaLibrary.pConsole(dr+" @ "+r+" > "+pos.right+" = "+s);
 					double px = dx*dr+x+0.5;
 					double py = dy*dr+y+0.5;
@@ -259,6 +261,7 @@ public class ChromaFX {
 
 	public static void drawEnergyTransferBeams(WorldLocation src, Collection<CrystalTarget> li, double r, int sides, double tick) {
 		if (!li.isEmpty()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			ReikaRenderHelper.disableLighting();
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			//GL11.glEnable(GL11.GL_BLEND);
@@ -268,19 +271,31 @@ public class ChromaFX {
 			GL11.glTranslated(0.5, 0.5, 0.5);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
 
-			MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
-
-			for (ImmutablePair<DecimalPosition, Double> pos : map.keySet()) {
+			MultiMap<TargetData, CrystalElement> map = ChromaAux.getBeamColorMixes(li);
+			for (TargetData pos : map.keySet()) {
 				List<CrystalElement> lc = (List<CrystalElement>)map.get(pos);
 				int clr = getBlendedColorFromElementList(lc, tick, 0.125);
-				drawEnergyTransferBeam(src, pos.left, clr, r, pos.right, sides, tick, false);
+				if (pos.targetClass == TileEntityAtmosphericRelay.class) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					GL11.glEnable(GL11.GL_BLEND);
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam_trans.png");
+					DecimalPosition pos2 = DecimalPosition.interpolate(new DecimalPosition(src), pos.position, 0.5).offset(0, 192, 0);
+					drawEnergyTransferBeam(src, pos2, clr, r, pos.targetWidth, sides, tick, false);
+					GL11.glPushMatrix();
+					GL11.glTranslated(pos2.xCoord-src.xCoord-0.5, pos2.yCoord-src.yCoord-0.5, pos2.zCoord-src.zCoord-0.5);
+					drawEnergyTransferBeam(pos2, pos.position, clr, r, pos.targetWidth, sides, tick, false);
+					GL11.glPopMatrix();
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "/Reika/ChromatiCraft/Textures/beam.png");
+					GL11.glPopAttrib();
+				}
+				else
+					drawEnergyTransferBeam(src, pos.position, clr, r, pos.targetWidth, sides, tick, false);
 			}
 
 			//BlendMode.DEFAULT.apply();
 			//GL11.glDisable(GL11.GL_BLEND);
 			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			ReikaRenderHelper.enableLighting();
+			GL11.glPopAttrib();
 		}
 	}
 

@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -183,14 +184,22 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private boolean canAbsorbItem(ItemStack is) {
 		for (int i = 0; i < filter.length; i++) {
-			if (ReikaItemHelper.matchStacks(is, filter[i]) && ItemStack.areItemStackTagsEqual(is, filter[i])) {
-				return true;
-			}
-			else {
+			if (filter[i] != null) {
+				if (this.match(is, filter[i])) {
+					return true;
+				}
+				else {
 
+				}
 			}
 		}
 		return false;
+	}
+
+	private boolean match(ItemStack is, ItemStack filter) {
+		if (ChromaItems.SEED.matchWith(is))
+			return ChromaItems.SEED.matchWith(filter) && is.getItemDamage()%16 == filter.getItemDamage()%16;
+		return ReikaItemHelper.matchStacks(is, filter) && ItemStack.areItemStackTagsEqual(is, filter);
 	}
 
 	private boolean absorbItem(World world, int x, int y, int z, EntityItem ent) {

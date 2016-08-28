@@ -36,9 +36,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.Fluid;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
@@ -49,6 +46,7 @@ import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
+import Reika.ChromatiCraft.Magic.Network.TargetData;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
@@ -63,7 +61,6 @@ import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
@@ -248,11 +245,10 @@ public class ChromaAux {
 		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn
 	}
 
-	public static MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
-		MultiMap<ImmutablePair<DecimalPosition, Double>, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
+	public static MultiMap<TargetData, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {
+		MultiMap<TargetData, CrystalElement> map = new MultiMap(new MultiMap.ListFactory());
 		for (CrystalTarget t : c) {
-			DecimalPosition loc = new DecimalPosition(t.location).offset(t.offsetX, t.offsetY, t.offsetZ);
-			map.addValue(new ImmutablePair(loc, t.endWidth), t.color);
+			map.addValue(new TargetData(t), t.color);
 		}
 		return map;
 	}

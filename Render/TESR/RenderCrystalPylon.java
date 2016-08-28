@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.TESR;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.tileentity.TileEntity;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -41,12 +43,15 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			float v = ico.getMinV();
 			float du = ico.getMaxU();
 			float dv = ico.getMaxV();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_LIGHTING);
-			//GL11.glDisable(GL11.GL_ALPHA_TEST);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			BlendMode.ADDITIVEDARK.apply();
+			if (VoidGazeLevels.PYLONXRAY.isActiveOnPlayer(Minecraft.getMinecraft().thePlayer))
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glPushMatrix();
 			GL11.glTranslated(par2, par4, par6);
 
@@ -104,12 +109,7 @@ public class RenderCrystalPylon extends CrystalTransmitterRender {
 			}
 
 			GL11.glPopMatrix();
-			BlendMode.DEFAULT.apply();
-			//GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_BLEND);
-			ReikaRenderHelper.enableEntityLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopAttrib();
 		}
 		else if (!tile.hasWorldObj()) {
 			IIcon ico = ChromaIcons.ROUNDFLARE.getIcon();

@@ -98,12 +98,17 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	private boolean hasMultiblock = false;
 	private boolean enhanced = false;
+	private boolean broadcast = false;
+
 	private CrystalElement color = CrystalElement.WHITE;
 	public int randomOffset = rand.nextInt(360);
+
 	public static final int MAX_ENERGY = 180000;
 	public static final int MAX_ENERGY_ENHANCED = 900000;
+
 	private int energy = MAX_ENERGY;
 	private int energyStep = 1;
+
 	private long lastWorldTick;
 	private boolean forceLoad;
 	private boolean placedByHand = false;
@@ -157,8 +162,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public boolean needsLineOfSight() {
-		return true;
+	public boolean needsLineOfSightToReceiver() {
+		return !this.hasBroadcastUpgrade();
 	}
 
 	public CrystalElement getColor() {
@@ -217,7 +222,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		if (DragonAPICore.debugtest) {
 			if (!hasMultiblock) {
 				CrystalElement e = CrystalElement.randomElement();
-				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y-9, z, e);
+				FilledBlockArray b = ChromaStructures.getPylonStructure(world, x, y, z, e);
 				b.place();
 				//world.setBlock(x, y+9, z, this.getTile().getBlock(), this.getTile().getBlockMetadata(), 3);
 				//TileEntityCrystalPylon te = (TileEntityCrystalPylon)world.getTileEntity(x, y+9, z);
@@ -601,6 +606,9 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public void validateMultiblock() {
 		hasMultiblock = true;
+
+		broadcast = !worldObj.isRemote && ChromaStructures.getPylonBroadcastStructure(worldObj, xCoord, yCoord, zCoord, color).matchInWorld();
+
 		this.syncAllData(true);
 	}
 
@@ -642,6 +650,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		hasMultiblock = NBT.getBoolean("multi");
 		energy = NBT.getInteger("energy");
 		enhanced = NBT.getBoolean("enhance");
+		broadcast = NBT.getBoolean("broadcast");
 	}
 
 	@Override
@@ -652,6 +661,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("energy", energy);
 		NBT.setBoolean("enhance", enhanced);
+		NBT.setBoolean("broadcast", broadcast);
 	}
 
 	@Override
@@ -998,6 +1008,15 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	@Override
 	public Coordinate getChargeParticleOrigin(EntityPlayer ep, CrystalElement e) {
 		return new Coordinate(this);
+	}
+
+	@Override
+	public int getPathPriority() {
+		return this.getSourcePriority();
+	}
+
+	public boolean hasBroadcastUpgrade() {
+		return broadcast;
 	}
 
 }

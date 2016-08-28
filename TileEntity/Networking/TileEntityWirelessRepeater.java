@@ -15,6 +15,8 @@ import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalTransmitterBase;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -72,7 +74,7 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	}
 
 	@Override
-	public boolean needsLineOfSight() {
+	public boolean needsLineOfSightToReceiver() {
 		return false;
 	}
 
@@ -106,6 +108,21 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 	@Override
 	public boolean canTransmitTo(CrystalReceiver r) {
 		return !(r instanceof CrystalRepeater);
+	}
+
+	@Override
+	public boolean canReceiveFrom(CrystalTransmitter r) {
+		return r instanceof NaturalCrystalSource && r.getX() == xCoord && r.getZ() == zCoord && r.getY() == yCoord+9;
+	}
+
+	@Override
+	public int getPathPriority() {
+		return 500;
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter() {
+		return true;
 	}
 
 }

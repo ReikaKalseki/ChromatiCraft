@@ -236,7 +236,7 @@ public class RenderTeleportGate extends ChromaRenderBase {
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glPopMatrix();
 
-			if (te.isInWorld()) {
+			if (te.isInWorld() || StructureRenderer.isRenderingTiles()) {
 
 				if (this.checkRayTrace(te)) {
 					GL11.glPushMatrix();

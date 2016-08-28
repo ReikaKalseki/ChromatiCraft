@@ -450,7 +450,7 @@ public class ParticleEngine extends EffectRenderer {
 					break;
 
 				case DEPTH:
-					if (set) {
+					if (set && !ThrottleableEffectRenderer.renderThroughWalls()) {
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 					}
 					else {

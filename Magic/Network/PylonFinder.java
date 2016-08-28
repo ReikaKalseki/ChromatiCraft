@@ -293,8 +293,9 @@ public class PylonFinder {
 			WorldLocation loc2 = getLocation(te);
 			if (!blacklist.contains(loc2) && !duplicates.containsValue(loc2)) {
 				CrystalLink l = net.getLink(loc2, loc);
+
 				if (te != target) {
-					if (te.needsLineOfSight() && !l.hasLineOfSight()) {
+					if ((te.needsLineOfSightToReceiver() || r.needsLineOfSightFromTransmitter()) && !l.hasLineOfSight()) {
 						l.recalculateLOS();
 						if (!l.hasLineOfSight())
 							continue;
@@ -432,6 +433,11 @@ public class PylonFinder {
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 1);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 2);
 			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().deco2ID, 4);
+
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().ethereal);
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().invethereal);
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().ineffable);
+			tracer.addTransparentBlock(ExtraUtilsHandler.getInstance().etherealBlockID, ExtraUtilsHandler.getInstance().invineffable);
 		}
 		if (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().initializedProperly()) {
 			tracer.addTransparentBlock(TinkerBlockHandler.getInstance().clearGlassID);
@@ -574,7 +580,7 @@ static class ChunkRequest {
 		@Override
 		public int compare(CrystalTransmitter o1, CrystalTransmitter o2) {
 			if (o1 instanceof CrystalSource && o2 instanceof CrystalSource) {
-				return ((CrystalSource)o2).getSourcePriority()-((CrystalSource)o1).getSourcePriority();
+				return -Integer.compare(((CrystalSource)o1).getSourcePriority(), ((CrystalSource)o2).getSourcePriority());
 			}
 			else if (o1 instanceof CrystalSource) {
 				return Integer.MIN_VALUE;
@@ -583,7 +589,7 @@ static class ChunkRequest {
 				return Integer.MAX_VALUE;
 			}
 			else {
-				return 0;
+				return -Integer.compare(o1.getPathPriority(), o2.getPathPriority());
 			}
 		}
 

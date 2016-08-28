@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -35,6 +36,12 @@ public class PotionLumarhea extends Potion {
 
 	public PotionLumarhea(int id) {
 		super(id, true, /*0x4A7CD3*/0x2391FF);
+	}
+
+	@Override
+	public String getName()
+	{
+		return StatCollector.translateToLocal("chromapotion.lumarhea");
 	}
 
 	@Override

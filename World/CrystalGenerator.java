@@ -19,6 +19,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.MinecraftForge;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.ModInterface.MystPages;
@@ -135,8 +136,10 @@ public class CrystalGenerator implements RetroactiveGenerator, ChromaDecorator {
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		if (world.provider.dimensionId == ReikaTwilightHelper.getDimensionID())
 			return 2F;
-		if (biome == BiomeGenBase.mushroomIsland || biome == BiomeGenBase.mushroomIslandShore)
+		if (ChromatiCraft.isRainbowForest(biome))
 			return 1.5F;
+		if (biome == BiomeGenBase.mushroomIsland || biome == BiomeGenBase.mushroomIslandShore)
+			return 1.375F;
 		if (biome == BiomeGenBase.ocean || biome == BiomeGenBase.frozenOcean)
 			return 1.25F;
 		if (biome == BiomeGenBase.extremeHills || biome == BiomeGenBase.extremeHillsEdge)

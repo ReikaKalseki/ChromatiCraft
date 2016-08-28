@@ -12,7 +12,13 @@ package Reika.ChromatiCraft.TileEntity.Acquisition;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidHandler;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 
@@ -23,6 +29,7 @@ import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -51,6 +58,16 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		}
 	}
 
+	private static class FluidRecipe extends Recipe {
+
+		private final Fluid fluid;
+
+		private FluidRecipe(ElementTagCompound tag, ItemStack is, Fluid f) {
+			super(tag, is);
+			fluid = f;
+		}
+	}
+
 	private Recipe recipe = null;
 	private int craftingTick = 0;
 	private EntityItem entity;
@@ -62,8 +79,13 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		}
 		else if (recipe == null || !ReikaItemHelper.matchStacks(recipe.output, out) || craftingTick == 0) {
 			ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(out);
+			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(out);
+			Fluid f = fs != null ? fs.getFluid() : null;
+			if (f != null) {
+				tag = FabricationRecipes.recipes().processTag(ItemMagicRegistry.instance.getFluidValue(f)).scale(1/FabricationRecipes.SCALE);
+			}
 			if (tag != null) {
-				recipe = new Recipe(tag, out);
+				recipe = f != null ? new FluidRecipe(tag, out, f) : new Recipe(tag, out);
 				this.onRecipeChanged();
 			}
 		}
@@ -132,13 +154,27 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	}
 
 	private boolean canCraft() {
+		if (recipe instanceof FluidRecipe) {
+			return this.canExportFluid(((FluidRecipe)recipe).fluid);
+		}
 		if (inv[1] == null)
 			return true;
 		return ReikaItemHelper.matchStacks(inv[1], recipe.output) && inv[1].stackSize+recipe.output.stackSize <= inv[1].getMaxStackSize();
 	}
 
+	private boolean canExportFluid(Fluid f) {
+		TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
+		return te instanceof IFluidHandler && ((IFluidHandler)te).fill(ForgeDirection.UP, new FluidStack(f, 1000), false) == 1000;
+	}
+
 	private void craft(World world, int x, int y, int z) {
-		ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, 1);
+		if (recipe instanceof FluidRecipe) {
+			TileEntity te = this.getAdjacentTileEntity(ForgeDirection.DOWN);
+			((IFluidHandler)te).fill(ForgeDirection.UP, new FluidStack(((FluidRecipe)recipe).fluid, 1000), true);
+		}
+		else {
+			ReikaInventoryHelper.addOrSetStack(recipe.output.copy(), inv, 1);
+		}
 		energy.subtract(recipe.energy);
 		progress = 0;
 		this.markDirty();
@@ -169,7 +205,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 
 	@Override
 	public int maxThroughput() {
-		return 500;
+		return 1000;
 	}
 
 	@Override

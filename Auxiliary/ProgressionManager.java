@@ -33,10 +33,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.common.MinecraftForge;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CrystalElementProxy;
 import Reika.ChromatiCraft.API.ResearchFetcher;
 import Reika.ChromatiCraft.API.ResearchFetcher.ProgressRegistry;
+import Reika.ChromatiCraft.API.Event.ProgressionEvent;
+import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
@@ -56,11 +59,13 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -553,6 +558,9 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
+		ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
+		ReikaJavaLibrary.pConsole("NBT PRE: ");
+		ReikaJavaLibrary.pCollConsole(ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)));
 		if (ReikaPlayerAPI.isFake(ep))
 			return;
 		if (ep.worldObj.isRemote && !allowClient)
@@ -608,6 +616,7 @@ public class ProgressionManager implements ProgressRegistry {
 				if (notify)
 					ChromaResearchManager.instance.notifyPlayerOfProgression(ep, s);
 				this.giveAuxiliaryResearch(ep, s);
+				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, s.name(), ResearchType.PROGRESS));
 			}
 			else {
 				playerMap.remove(ep.getCommandSenderName(), s);
@@ -615,6 +624,8 @@ public class ProgressionManager implements ProgressRegistry {
 			if (notify)
 				this.updateChunks(ep);
 		}
+		ReikaJavaLibrary.pConsole("NBT POST: ");
+		ReikaJavaLibrary.pCollConsole(ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)));
 	}
 
 	public void resetPlayerProgression(EntityPlayer ep, boolean notify) {
@@ -671,6 +682,8 @@ public class ProgressionManager implements ProgressRegistry {
 				this.updateChunks(ep);
 			if (disc && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
+			if (disc)
+				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.COLOR));
 			return true;
 		}
 		return false;
@@ -877,6 +890,10 @@ public class ProgressionManager implements ProgressRegistry {
 		}
 	}
 
+	public boolean hasPlayerDiscoveredAGeneratedStructure(EntityPlayer ep) {
+		return ProgressStage.BURROW.isPlayerAtStage(ep) || ProgressStage.CAVERN.isPlayerAtStage(ep) || ProgressStage.OCEAN.isPlayerAtStage(ep) || ProgressStage.DESERTSTRUCT.isPlayerAtStage(ep);
+	}
+
 	@Override
 	public boolean playerDiscoveredElement(EntityPlayer ep, CrystalElementProxy e) {
 		return this.hasPlayerDiscoveredColor(ep, CrystalElement.getFromAPI(e));
@@ -908,6 +925,8 @@ public class ProgressionManager implements ProgressRegistry {
 				this.updateChunks(ep);
 			if (set && notify)
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
+			if (set)
+				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.DIMSTRUCT));
 			return true;
 		}
 		return false;

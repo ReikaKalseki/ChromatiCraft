@@ -614,14 +614,16 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	private void craft() {
 		CastingRecipe recipe = activeRecipe;
+		CastingRecipe cachedRecipe = recipe;
 		//ReikaJavaLibrary.pConsole(recipe, Side.SERVER);
 		int count = 0;
 		boolean repeat = false;
 		NBTTagCompound NBTin = null;
+		int xpToAdd = 0;
 		while (activeRecipe == recipe && count < activeRecipe.getOutput().getMaxStackSize()) {
 			if (inv[4] != null)
 				NBTin = recipe.getOutputTag(inv[4].stackTagCompound);
-			this.addXP((int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe)));
+			xpToAdd += (int)(activeRecipe.getExperience()*this.getXPModifier(activeRecipe));
 			if (activeRecipe instanceof MultiBlockCastingRecipe) {
 				MultiBlockCastingRecipe mult = (MultiBlockCastingRecipe)activeRecipe;
 				HashMap<WorldLocation, ItemMatch> map = mult.getOtherInputs(worldObj, xCoord, yCoord, zCoord);
@@ -678,18 +680,24 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				TileEntity te = this.getAdjacentTileEntity(dirs[i]);
 				if (te instanceof IInventory) {
 					int amt = Math.min(inv[9].getMaxStackSize(), push);
-					if (ReikaInventoryHelper.addToIInv(ReikaItemHelper.getSizedItemStack(inv[9], amt), (IInventory)te)) {
-						ReikaInventoryHelper.decrStack(9, this, amt);
-						push -= amt;
-						if (push <= 0)
-							break;
+					boolean flag = false;
+					do {
+						if (ReikaInventoryHelper.addToIInv(ReikaItemHelper.getSizedItemStack(inv[9], amt), (IInventory)te)) {
+							flag = true;
+							ReikaInventoryHelper.decrStack(9, this, amt);
+							push -= amt;
+						}
 					}
+					while (flag && inv[9] != null);
+					if (inv[9] == null)
+						break;
 				}
 			}
 		}
+		this.addXP(xpToAdd);
 		if (inv[9] != null)
 			repeat = false;
-		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, activeRecipe.type);
+		RecipesCastingTable.setPlayerHasCrafted(craftingPlayer, cachedRecipe.type);
 		if (!repeat) {
 			activeRecipe = null;
 			craftSoundTimer = 20000;

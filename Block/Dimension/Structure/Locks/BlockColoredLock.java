@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +28,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -39,7 +39,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class BlockColoredLock extends BlockContainer {
+public class BlockColoredLock extends BlockDimensionStructureTile {
 
 	//private static int[][] keyCodes = new int[BlockLockKey.LockChannel.lockList.length][16];
 	//private static int[] gateCodes = new int[BlockLockKey.LockChannel.lockList.length];
@@ -49,9 +49,6 @@ public class BlockColoredLock extends BlockContainer {
 
 	public BlockColoredLock(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 	/*
 	@Override

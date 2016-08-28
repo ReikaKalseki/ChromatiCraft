@@ -96,9 +96,9 @@
 	<killaura>
 		Amazingly, up until now you have been out of options for attacking a mob whose position you know but which you cannot see. Sure, you could break the barrier, but far better would be to simply attack them through walls. Accuracy, however, is not your strength, and the attack power can suffer for it.
 	</killaura>
-	<name>
-		
-	</name>
+	<floatboots>
+		Much to your chagrin, it seems nearly every build you make requires that you hover at some arbitrary distance off the ground, at neither the ceiling nor the floor, and not even at the right height for a pillar of dirt to help. You could use the flying attachment to your chestplate, but hovering in one place burns an excessive amount of fuel. With that in mind, you recall the floating stone deposits in the world you recently visited. They may be exactly what you need. Attaching some floatstone to your boots - whatever type they may be - will not only grant you the ability to hover, but dampen any fall.
+	</floatboots>
 	<name>
 		
 	</name>

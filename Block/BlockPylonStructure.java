@@ -448,7 +448,10 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		for (int h = 9; h < 16; h++) {
 			TileEntity te = world.getTileEntity(mx, my+h, mz);
 			if (te instanceof TileEntityCrystalPylon) {
-				((TileEntityCrystalPylon)te).invalidateMultiblock();
+				if (!ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
+					((TileEntityCrystalPylon)te).invalidateMultiblock();
+					break;
+				}
 			}
 		}
 
@@ -533,10 +536,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		int mz = blocks.getMidZ();
 
 		for (int h = 9; h < 16; h++) {
-			TileEntity te = world.getTileEntity(mx, my+9, mz);
+			TileEntity te = world.getTileEntity(mx, my+h, mz);
 			if (te instanceof TileEntityCrystalPylon) {
-				if (ChromaStructures.getPylonStructure(world, mx, my, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
+				if (ChromaStructures.getPylonStructure(world, mx, my+h, mz, ((TileEntityCrystalPylon)te).getColor()).matchInWorld()) {
 					((TileEntityCrystalPylon)te).validateMultiblock();
+					break;
 				}
 			}
 		}

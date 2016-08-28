@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -37,6 +39,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalBattery;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -65,6 +68,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 	private final EnumMap<CrystalElement, Integer> growth = new EnumMap(CrystalElement.class);
 	private final EnumMap<CrystalElement, Integer> steps = new EnumMap(CrystalElement.class);
+	private final EnumMap<CrystalElement, Integer> boost = new EnumMap(CrystalElement.class);
 
 	private ArrayList<CrystalTarget> targets = new ArrayList(); //need to reset some way
 
@@ -77,6 +81,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public static final int RATIO = 4000;
 	public static final int POWER = 3;
 	public static final int POWER_TURBO = 4;
+
+	public static final int BOOST_LENGTH = 5400; //4m 30s
 
 	static {
 		addOrigin(CrystalElement.WHITE, 	new BlockVector(ForgeDirection.NORTH, 1, -3, -2));
@@ -248,12 +254,18 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 
 		if (this.canConduct()) {
 			if (!world.isRemote) {
-				if (rand.nextInt(150) == 0)
-					this.grow();
+				for (int i = 0; i < 16; i++) {
+					CrystalElement e = CrystalElement.elements[i];
+					boolean acc = this.growAndTickBoost(e);
+					int base = acc ? 40 : 150;
+					if (rand.nextInt(base*16) == 0) {
+						this.grow(e);
+					}
+				}
 
 				if (DragonAPICore.debugtest) {
 					for (int i = 0; i < 64; i++)
-						this.grow();
+						this.grow(CrystalElement.randomElement());
 				}
 
 				if (rand.nextInt(100) == 0) {
@@ -284,6 +296,40 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			}
 		}
 	}
+
+	private boolean growAndTickBoost(CrystalElement e) {
+		Integer get = boost.get(e);
+		if (get != null && get.intValue() > 0) {
+			get--;
+			boost.put(e, get);
+			return true;
+		}
+		else if (rand.nextInt(20) == 0 && this.findBoost(e)) {
+			boost.put(e, BOOST_LENGTH);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean findBoost(CrystalElement e) {
+		AxisAlignedBB box = AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord-1, xCoord+2, yCoord+1, zCoord+1).expand(7, 7, 7).offset(0, -6, 0);
+		List<EntityItem> li = worldObj.getEntitiesWithinAABB(EntityItem.class, box);
+		for (EntityItem ei : li) {
+			if (!ei.isDead && ei.delayBeforeCanPickup == 0) {
+				ItemStack is = ei.getEntityItem();
+				if (is.stackSize > 0 && ReikaItemHelper.matchStacks(is, ChromaItems.ELEMENTAL.getStackOf(e))) {
+					is.stackSize--;
+					if (is.stackSize > 0)
+						ei.setEntityItemStack(is);
+					else
+						ei.setDead();
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/*
 	@SideOnly(Side.CLIENT)
 	private void spawnBeamParticles(World world, int x, int y, int z) {
@@ -342,8 +388,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		energy.clear();
 	}
 
-	private void grow() {
-		CrystalElement e = CrystalElement.randomElement();
+	private void grow(CrystalElement e) {
 		int stage = growth.get(e);
 		ArrayList<Coordinate> li = locations.get(e);
 		if (this.getRemainingSpace(e) == 0) {
@@ -475,7 +520,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	public boolean drain(CrystalElement e, int amt) {
 		if (energy.containsAtLeast(e, amt)) {
 			this.drainEnergy(e, amt);
-			this.grow();
+			this.grow(e);
 			return true;
 		}
 		return false;
@@ -518,7 +563,7 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public boolean needsLineOfSight() {
+	public boolean needsLineOfSightToReceiver() {
 		return true;
 	}
 
@@ -702,6 +747,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public int getPathPriority() {
+		return this.getSourcePriority();
 	}
 
 }

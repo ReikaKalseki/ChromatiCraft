@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Tile.Inventory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.EntityList;
@@ -45,6 +46,7 @@ public class GuiSpawnerProgrammer extends GuiChromaBase {
 				validMobs.add(name);
 			}
 		}
+		Collections.sort(validMobs);
 	}
 
 	public GuiSpawnerProgrammer(EntityPlayer ep, TileEntitySpawnerReprogrammer tile) {

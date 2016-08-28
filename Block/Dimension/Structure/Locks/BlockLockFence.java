@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Locks;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -19,17 +18,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 
-public class BlockLockFence extends Block {
+public class BlockLockFence extends BlockDimensionStructure {
 
 	public BlockLockFence(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

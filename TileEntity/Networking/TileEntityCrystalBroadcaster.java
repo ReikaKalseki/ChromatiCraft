@@ -133,4 +133,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		return 1.125F;
 	}
 
+	@Override
+	public int getPathPriority() {
+		return -50;
+	}
+
 }

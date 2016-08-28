@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
+import Reika.ChromatiCraft.Magic.Interfaces.PylonConnector;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
@@ -443,6 +444,10 @@ public class CrystalNetworker implements TickHandler {
 		return li;
 	}
 
+	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(CrystalNetworkTile te, double range) {
+		return this.getAllNearbyPylons(te.getWorld(), te.getX(), te.getY(), te.getZ(), range);
+	}
+
 	public Collection<TileEntityCrystalPylon> getAllNearbyPylons(World world, int x, int y, int z, double range) {
 		Collection<TileEntityCrystalPylon> li = new ArrayList();
 		//MultiMap<CrystalElement, WorldLocation> remove = new MultiMap(new HashSetFactory());
@@ -451,7 +456,7 @@ public class CrystalNetworker implements TickHandler {
 			if (c != null) {
 				WorldLocation p = new WorldLocation(world, x, y, z);
 				for (WorldLocation loc : c.getAllLocationsNear(p, range)) {
-					if (loc.getDistanceTo(x, y, z) <= range) {
+					if (range == Double.POSITIVE_INFINITY || loc.getDistanceTo(x, y, z) <= range) {
 						TileEntityCrystalPylon te = c.get(loc);
 						if (te == null) {
 							ChromatiCraft.logger.logError("Null tile returned for location "+loc+"; "+loc.getBlockKey().getLocalized());
@@ -530,7 +535,19 @@ public class CrystalNetworker implements TickHandler {
 	ArrayList<CrystalTransmitter> getTransmittersTo(CrystalReceiver r, CrystalElement e) {
 		ArrayList<CrystalTransmitter> li = new ArrayList();
 		WorldLocation loc = PylonFinder.getLocation(r);
-		Collection<WorldLocation> locs = tiles.getAllLocationsNear(loc, r.getReceiveRange());
+		Collection<WorldLocation> locs;
+		if (r instanceof PylonConnector) {
+			Collection<TileEntityCrystalPylon> c = this.getAllNearbyPylons(r, ((PylonConnector)r).getPylonRange());
+			locs = new ArrayList();
+			for (TileEntityCrystalPylon te : c) {
+				if (r.canReceiveFrom(te)) {
+					locs.add(PylonFinder.getLocation(te));
+				}
+			}
+		}
+		else {
+			locs = tiles.getAllLocationsNear(loc, r.getReceiveRange());
+		}
 		if (ModularLogger.instance.isEnabled(NBT_TAG))
 			ModularLogger.instance.log(NBT_TAG, "Found "+locs.size()+" transmitters to "+r+": "+locs);
 		for (WorldLocation c : locs) {
@@ -539,11 +556,12 @@ public class CrystalNetworker implements TickHandler {
 				CrystalTransmitter te = (CrystalTransmitter)tile;
 				if (te.canConduct() && te.canTransmitTo(r)) {
 					if (e == null || te.isConductingElement(e)) {
-						double d = te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
+						boolean flag = r instanceof PylonConnector;
+						double d = flag ? 0 : te.getDistanceSqTo(r.getX(), r.getY(), r.getZ());
 						//ReikaJavaLibrary.pConsole(e+": "+d+": "+te);
 						double send = te.getSendRange();
 						double dist = r.getReceiveRange();
-						if (d <= Math.min(dist*dist, send*send)) {
+						if (flag || d <= Math.min(dist*dist, send*send)) {
 							li.add(te);
 						}
 					}

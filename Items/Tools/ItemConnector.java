@@ -150,8 +150,10 @@ public class ItemConnector extends ItemChromaTool {
 		int x2 = is.stackTagCompound.getInteger("r2x");
 		int y2 = is.stackTagCompound.getInteger("r2y");
 		int z2 = is.stackTagCompound.getInteger("r2z");
-		World w1 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w1"));
-		World w2 = DimensionManager.getWorld(is.stackTagCompound.getInteger("w2"));
+		int dim1 = is.stackTagCompound.getInteger("w1");
+		int dim2 = is.stackTagCompound.getInteger("w2");
+		World w1 = DimensionManager.getWorld(dim1);
+		World w2 = DimensionManager.getWorld(dim2);
 
 		if (x1 != Integer.MIN_VALUE && y1 != Integer.MIN_VALUE && z1 != Integer.MIN_VALUE) {
 			if (x1 != Integer.MIN_VALUE && y2 != Integer.MIN_VALUE && z2 != Integer.MIN_VALUE) {

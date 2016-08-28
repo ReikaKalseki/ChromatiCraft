@@ -419,4 +419,8 @@ public final class ElementTagCompound {
 		return true;
 	}
 
+	public boolean containsAllColors() {
+		return data.size() == 16;
+	}
+
 }

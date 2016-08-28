@@ -33,6 +33,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructure;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
@@ -50,16 +51,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 @Strippable(value="mcp.mobius.waila.api.IWailaDataProvider")
-public class BlockTeleport extends Block implements IWailaDataProvider {
+public class BlockTeleport extends BlockDimensionStructure implements IWailaDataProvider {
 
 	private static boolean debug = ReikaObfuscationHelper.isDeObfEnvironment() && DragonAPICore.isReikasComputer();
 
 	public BlockTeleport(Material mat) {
 		super(mat);
-
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

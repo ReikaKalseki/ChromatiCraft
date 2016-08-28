@@ -118,10 +118,13 @@ public class OuterRegionsEvents {
 		for (EntityDimensionFlare e : li) {
 			e.aggroTo(ep);
 		}
+		box = ReikaAABBHelper.getEntityCenteredAABB(ep, 192);
 		int n = 1+ep.worldObj.rand.nextInt(12);
 		for (int i = 0; i < n; i++) {
-			EntityDimensionFlare e = this.spawnFlare(ep.worldObj, ep, 64);
-			e.aggroTo(ep);
+			if (ep.worldObj.getEntitiesWithinAABB(EntityDimensionFlare.class, box).size() < 12) {
+				EntityDimensionFlare e = this.spawnFlare(ep.worldObj, ep, 64);
+				e.aggroTo(ep);
+			}
 		}
 	}
 

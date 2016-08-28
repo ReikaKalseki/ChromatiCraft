@@ -68,7 +68,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	PROGRESSNOTIFY_SELF("Notify players via chat of their own progress gains", false),
 	CAVELIGHTERRANGE("Cave Lighter Range", 128),
 	CAVELIGHTERSIZE("Cave Lighter Zone Size", 8),
-	BIOMEFX("Biome FX", true),
+	//BIOMEFX("Biome FX", true),
 	CONNECTEDCRYSTALSTONE("Connected Crystalline Stone Textures", false),
 	POWEREDACCEL("Adjacency Upgrades Require Energy", false),
 	PROGRESSDURATION("Progression Notification Duration", 800),
@@ -234,7 +234,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 			case DYNAMICHANDBOOK:
 			case KEYBINDABILITY:
 			case PIELOC:
-			case BIOMEFX:
+				//case BIOMEFX:
 			case CONNECTEDCRYSTALSTONE:
 			case RECEIVEDIMSOUND:
 			case PROGRESSDURATION:

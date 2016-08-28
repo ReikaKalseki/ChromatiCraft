@@ -194,7 +194,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 
 	private static boolean isIvySolid(IBlockAccess world, int x, int y, int z, ForgeDirection dir) {
 		Block b = world.getBlock(x, y, z);
-		return ReikaBlockHelper.isFacade(b) && b.isSideSolid(world, x, y, z, dir);
+		return (b.getMaterial() == Material.rock || ReikaBlockHelper.isFacade(b)) && b.isSideSolid(world, x, y, z, dir);
 	}
 
 	@Override
@@ -459,7 +459,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		private boolean onActiveGrass(World world, int x, int y, int z) {
 			while (world.getBlock(x, y, z) == ChromaBlocks.DECOFLOWER.getBlockInstance())
 				y--;
-			if (world.getBlock(x, y, z) != Blocks.grass)
+			if (world.getBlock(x, y, z) != Blocks.grass && world.getBlock(x, y, z) != Blocks.leaves)
 				return false;
 			Block b = world.getBlock(x, y-1, z);
 			return b instanceof IFluidBlock && ((IFluidBlock)b).getFluid() == FluidRegistry.getFluid("ender");

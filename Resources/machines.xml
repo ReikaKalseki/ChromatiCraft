@@ -147,7 +147,7 @@
 			Repeaters are all well and good, but they suffer two problems. One, if you have a number of pylons all along the same path, laying multiple tracks of repeaters is messy and costly. Two, if your base is not easily accessed from the outside, you are forced to punch one hole for each color channel. The multi-aura repeater solves both of these; though larger and much more costly, they can carry all sixteen colors - including simultaneously. They do, however, have a larger per-node attenuation, meaning you will want to keep their use to a minimum.
 		</desc>
 		<note>
-
+			Can be built horizontally by using beams in place of columns
 		</note>
 	</compound>
 	<charger>
@@ -391,6 +391,14 @@
 
 		</note>
 	</rfdistributor>
+	<fluiddistributor>
+		<desc>
+			Noting the similarity between this red-tinted magic power and the way fluids tend to flow - one would almost think they were designed by the same person - you figure: If you can make one to radiate the power, surely you can make one to radiate fluid as well.
+		</desc>
+		<note>
+
+		</note>
+	</fluiddistributor>
 	<window>
 		<desc>
 			Some say a special kind of window exists, one that should you gaze into it, might just find that the view on the other side becomes your reality.
@@ -584,22 +592,14 @@
 
 		</note>
 	</teleport>
-	<name>
+	<harvestplant>
 		<desc>
-
+			Flowers. You cannot get enough of them, especially ones that come in 16 colors. However, though you have the ability to create them using nothing but raw magic, harvesting them automatically has proven somewhat more difficult. On the advice of someone else, you made a drum and started banging on it with the same magic used to summon the flowers. Though it worked, your tree farm and crops nearby were also affected, causing you to revert to the loud and space-consuming piston and water contraptions. Now it finally hits you: You are planting flowers; a flower might be used to harvest as well.
 		</desc>
 		<note>
-
+			Checks the flowers adjacent to it to know what to break
 		</note>
-	</name>
-	<name>
-		<desc>
-
-		</desc>
-		<note>
-
-		</note>
-	</name>
+	</harvestplant>
 	<name>
 		<desc>
 

@@ -14,17 +14,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.client.IRenderHandler;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaSkyRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaWeatherRenderer;
+import Reika.DragonAPI.Interfaces.CustomBiomeDistributionWorld;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class WorldProviderChroma extends WorldProvider {
+public class WorldProviderChroma extends WorldProvider implements CustomBiomeDistributionWorld {
 
 	private ChunkProviderChroma chunkGen;
 
@@ -259,6 +261,11 @@ public class WorldProviderChroma extends WorldProvider {
 	@Override
 	public ChunkCoordinates getSpawnPoint() {
 		return new ChunkCoordinates(0, 1024, 0);
+	}
+
+	@Override
+	public int getBiomeID(World world, int x, int z) {
+		return BiomeDistributor.getBiome(x, z).biomeID;
 	}
 
 }

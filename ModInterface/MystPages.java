@@ -49,7 +49,7 @@ public class MystPages implements MystcraftPageRegistry {
 	public void register() {
 		for (int i = 0; i < Symbols.list.length; i++) {
 			Symbols p = Symbols.list[i];
-			WordAPI api = ReikaMystcraftHelper.getAPI(APISegment.WORD, 1);
+			WordAPI api = ReikaMystcraftHelper.getAPI(APISegment.WORD);
 			if (api != null)
 				api.registerWord(p.getID(), p.word);
 		}
@@ -62,7 +62,7 @@ public class MystPages implements MystcraftPageRegistry {
 			ChromatiCraft.logger.log("Registering custom MystCraft page '"+p.name+"'");
 		}
 
-		SymbolValuesAPI api = ReikaMystcraftHelper.getAPI(APISegment.SYMBOLVALUES, 1);
+		SymbolValuesAPI api = ReikaMystcraftHelper.getAPI(APISegment.SYMBOLVALUES);
 		if (api != null) {
 			for (int i = 0; i < Pages.list.length; i++) {
 				Pages p = Pages.list[i];

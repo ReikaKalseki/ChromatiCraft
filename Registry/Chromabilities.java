@@ -43,6 +43,7 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -380,7 +381,7 @@ public enum Chromabilities implements Ability {
 		if (a == HEALTH)
 			use.scale(10);
 		if (a == SHIFT)
-			use.scale(25);
+			use.scale(10);
 		if (a == LIGHTNING)
 			use.scale(10*(1+data*data));
 		if (a == BREADCRUMB)
@@ -1058,7 +1059,7 @@ public enum Chromabilities implements Ability {
 								if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(ep.worldObj, dx, dy, dz, meta)) {
 									continue;
 								}
-								if (power > b.blockResistance/12F) {
+								if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/12F) {
 									ArrayList<ItemStack> li = b.getDrops(ep.worldObj, dx, dy, dz, meta, 0);
 									if (b instanceof BlockTieredResource) {
 										BlockTieredResource bt = (BlockTieredResource)b;
@@ -1140,7 +1141,7 @@ public enum Chromabilities implements Ability {
 		}
 		moved.offset(dir, dist);
 
-		int factor = (int)(Math.pow((box.getVolume()-air), 1.5)*dist/4D);
+		int factor = (int)(Math.pow((box.getVolume()-air), 1.25)*dist/5D);
 		ElementTagCompound cost = AbilityHelper.instance.getUsageElementsFor(SHIFT, ep).scale(factor);
 		boolean nrg = PlayerElementBuffer.instance.playerHas(ep, cost);
 		boolean flag = false;
@@ -1186,16 +1187,18 @@ public enum Chromabilities implements Ability {
 	}
 
 	private static void stopArrows(EntityPlayer ep) {
-		AxisAlignedBB box = ep.boundingBox.expand(6, 4, 6);
-		List<EntityArrow> li = ep.worldObj.getEntitiesWithinAABB(EntityArrow.class, box);
-		for (EntityArrow e : li) {
-			if (e.shootingEntity != ep && !e.worldObj.isRemote) { //bounceback code
-				e.motionX *= -0.10000000149011612D;
-				e.motionY *= -0.10000000149011612D;
-				e.motionZ *= -0.10000000149011612D;
-				e.rotationYaw += 180.0F;
-				e.prevRotationYaw += 180.0F;
-				e.ticksInAir = 0;
+		if (!ep.worldObj.isRemote) {
+			AxisAlignedBB box = ep.boundingBox.expand(6, 4, 6);
+			List<EntityArrow> li = ep.worldObj.getEntitiesWithinAABB(EntityArrow.class, box);
+			for (EntityArrow e : li) {
+				if (e.shootingEntity != ep && (!(e.shootingEntity instanceof EntityPlayer) || MinecraftServer.getServer().isPVPEnabled())) { //bounceback code
+					e.motionX *= -0.10000000149011612D;
+					e.motionY *= -0.10000000149011612D;
+					e.motionZ *= -0.10000000149011612D;
+					e.rotationYaw += 180.0F;
+					e.prevRotationYaw += 180.0F;
+					e.ticksInAir = 0;
+				}
 			}
 		}
 	}

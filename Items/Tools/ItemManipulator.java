@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalFence;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -121,6 +122,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (t == ChromaTiles.CONSOLE) {
 			TileEntityCrystalConsole tc = (TileEntityCrystalConsole)tile;
 			tc.setFacing(ForgeDirection.VALID_DIRECTIONS[s]);
+			return true;
+		}
+		if (t == ChromaTiles.AURAPOINT) {
+			TileEntityAuraPoint tp = (TileEntityAuraPoint)tile;
+			tp.doPVP = !tp.doPVP;
 			return true;
 		}
 		if (t == ChromaTiles.PYLONTURBO) {

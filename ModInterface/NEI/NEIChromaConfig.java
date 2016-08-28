@@ -15,6 +15,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.DragonAPI.DragonAPICore;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
@@ -54,7 +55,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 			ChromaBlocks b = ChromaBlocks.blockList[i];
-			if (b.isTechnical())
+			if (b.isTechnical() || (!DragonAPICore.isReikasComputer() && b.isDimensionStructureBlock()))
 				this.hideBlock(b.getBlockInstance());
 		}
 

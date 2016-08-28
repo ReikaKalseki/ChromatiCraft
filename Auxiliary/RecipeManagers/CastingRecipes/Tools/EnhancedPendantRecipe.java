@@ -10,18 +10,18 @@
 package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class EnhancedPendantRecipe extends PylonRecipe {
 
-	public EnhancedPendantRecipe(ItemStack out, ItemStack main) {
-		super(out, main);
+	public EnhancedPendantRecipe(CrystalElement e) {
+		super(ChromaItems.PENDANT3.getStackOf(e), ChromaBlocks.SUPER.getStackOfMetadata(e.ordinal()));
 
 		this.addAuxItem(Items.diamond, -2, -2);
-		this.addAuxItem(ChromaItems.PENDANT.getStackOfMetadata(out.getItemDamage()), 0, -2);
+		this.addAuxItem(ChromaItems.PENDANT.getStackOf(e), 0, -2);
 		this.addAuxItem(Items.diamond, 2, -2);
 
 		this.addAuxItem(Items.gold_ingot, -2, 0);
@@ -34,7 +34,7 @@ public class EnhancedPendantRecipe extends PylonRecipe {
 
 		this.addAuraRequirement(CrystalElement.PURPLE, 8000);
 		this.addAuraRequirement(CrystalElement.WHITE, 2000);
-		this.addAuraRequirement(CrystalElement.elements[out.getItemDamage()], 16000);
+		this.addAuraRequirement(e, 16000);
 	}
 
 	@Override

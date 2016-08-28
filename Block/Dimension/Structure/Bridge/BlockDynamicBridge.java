@@ -3,7 +3,6 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Bridge;
 import java.util.HashSet;
 import java.util.UUID;
 
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +13,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
@@ -22,15 +21,12 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 
 
-public class BlockDynamicBridge extends BlockContainer {
+public class BlockDynamicBridge extends BlockDimensionStructureTile {
 
 	private final IIcon[] icons = new IIcon[2];
 
 	public BlockDynamicBridge(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

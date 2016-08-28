@@ -75,11 +75,13 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
 		if (m == null)
 			return ReikaAABBHelper.getBlockAABB(x, y, z);
+		if (m.providesCustomHitbox()) {
+			AxisAlignedBB box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
+			this.setBounds(box, x, y, z);
+			if (!m.isIntangible())
+				return box;
+		}
 		if (m.isIntangible()) {
-			if (m.providesCustomHitbox()) {
-				AxisAlignedBB box = ((CustomHitbox)world.getTileEntity(x, y, z)).getHitbox();
-				this.setBounds(box, x, y, z);
-			}
 			return null;
 		}
 		TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);

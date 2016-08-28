@@ -79,7 +79,8 @@ public enum ChromaSounds implements SoundEnum {
 	FLAREATTACK("flareattack"),
 	BOUNCE("bounce"),
 	SKYRIVER("lumenstream"),
-	PING("ping");
+	PING("ping"),
+	GAINPROGRESS("progress");
 
 	public static final ChromaSounds[] soundList = values();
 

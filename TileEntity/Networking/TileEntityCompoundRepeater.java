@@ -191,4 +191,9 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater {
 		return 1.25F;
 	}
 
+	@Override
+	public int getPathPriority() {
+		return -10;
+	}
+
 }

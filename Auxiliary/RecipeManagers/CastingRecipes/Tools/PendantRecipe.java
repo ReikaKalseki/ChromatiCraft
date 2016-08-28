@@ -11,14 +11,15 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 public class PendantRecipe extends MultiBlockCastingRecipe {
 
-	public PendantRecipe(ItemStack out, ItemStack main) {
-		super(out, main);
+	public PendantRecipe(CrystalElement e) {
+		super(ChromaItems.PENDANT.getStackOf(e), ChromaBlocks.CRYSTAL.getStackOfMetadata(e.ordinal()));
 
 		this.addAuxItem(Blocks.glowstone, -2, -2);
 		this.addAuxItem(Items.string, 0, -2);
@@ -32,8 +33,7 @@ public class PendantRecipe extends MultiBlockCastingRecipe {
 
 		this.addAuxItem(Items.diamond, 0, 2);
 
-		int idx = out.getItemDamage();
-		this.addRuneRingRune(CrystalElement.elements[idx]);
+		this.addRuneRingRune(e);
 
 		//this.addAuraRequirement(CrystalElement.PURPLE, 2000);
 		//this.addAuraRequirement(CrystalElement.WHITE, 1000);

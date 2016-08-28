@@ -3,28 +3,24 @@ package Reika.ChromatiCraft.Block.Dimension.Structure.Bridge;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 
 
-public class BlockBridgeControl extends BlockContainer {
+public class BlockBridgeControl extends BlockDimensionStructureTile {
 
 	private final IIcon[] icons = new IIcon[4];
 
 	public BlockBridgeControl(Material mat) {
 		super(mat);
-		this.setResistance(60000);
-		this.setBlockUnbreakable();
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

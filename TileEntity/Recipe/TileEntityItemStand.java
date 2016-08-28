@@ -9,7 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
-import java.util.HashSet;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -36,6 +36,8 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.HashSetFactory;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -51,7 +53,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	private InertItem item;
 	private Coordinate tile;
 
-	private static final HashSet<WorldLocation> spreadSet = new HashSet();
+	private static final MultiMap<UUID, WorldLocation> spreadSet = new MultiMap(new HashSetFactory());
 
 	@Override
 	public int getSizeInventory() {
@@ -146,9 +148,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		}
 		  */
 
+		UUID uid = ep.getUniqueID();
+
 		if (!spreadSet.isEmpty() && !worldObj.isRemote) {
-			ItemStack ret = item == null && spreadSet.contains(new WorldLocation(this)) ? null : spreadItems(ep, item);
-			spreadSet.clear();
+			ItemStack ret = item == null && spreadSet.containsValueForKey(uid, new WorldLocation(this)) ? null : spreadItems(ep, item);
+			spreadSet.remove(uid);
 			return ret;
 		}
 
@@ -186,7 +190,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		//if (is != null) {
 		//if (inv[0] == null || ReikaItemHelper.matchStacks(is, inv[0])) {
 		if (inv[0] == null)
-			spreadSet.add(new WorldLocation(this));
+			spreadSet.addValue(ep.getUniqueID(), new WorldLocation(this));
 		//}
 		//spreadItems(ep, is);
 		//}
@@ -195,9 +199,10 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 	private static ItemStack spreadItems(EntityPlayer ep, ItemStack is) {
 		if (is == null)
 			return null;
-		int n = spreadSet.size();
+		UUID uid = ep.getUniqueID();
+		int n = spreadSet.get(uid).size();
 		int amt = is.stackSize;
-		for (WorldLocation loc : spreadSet) {
+		for (WorldLocation loc : spreadSet.get(uid)) {
 			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
 			if (te.inv[0] != null)
 				amt += te.inv[0].stackSize;
@@ -205,7 +210,7 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		int div = amt/n;
 		int left = amt-div*n;
 		//ReikaJavaLibrary.pConsole(amt+" by "+n+", = "+div+" leaving "+left);
-		for (WorldLocation loc : spreadSet) {
+		for (WorldLocation loc : spreadSet.get(uid)) {
 			TileEntityItemStand te = (TileEntityItemStand)loc.getTileEntity();
 			te.inv[0] = ReikaItemHelper.getSizedItemStack(is, div);
 			ChromaSounds.ITEMSTAND.playSoundAtBlock(te);

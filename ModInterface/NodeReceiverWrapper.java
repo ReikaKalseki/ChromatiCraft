@@ -32,6 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
@@ -627,6 +628,16 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	public boolean canConductInterdimensionally() {
 		return false;
+	}
+
+	@Override
+	public boolean canReceiveFrom(CrystalTransmitter r) {
+		return true;
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter() {
+		return true;
 	}
 
 }

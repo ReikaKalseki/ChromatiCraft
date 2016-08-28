@@ -27,9 +27,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 import net.minecraftforge.fluids.BlockFluidBase;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
+import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle.BlockTypes;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
@@ -54,6 +57,7 @@ public class RainbowForestDecorator extends BiomeDecorator {
 		if (ModList.THAUMCRAFT.isLoaded() && ChromaOptions.ETHEREAL.getState() && randomGenerator.nextInt(3) == 0)
 			this.generateEtherealPlants();
 		this.generateDyeFlowers();
+		this.generateUndergroundLight();
 
 		this.auxDeco(biome);
 
@@ -79,6 +83,45 @@ public class RainbowForestDecorator extends BiomeDecorator {
 				}
 			}
 		}*/
+	}
+
+	private void generateUndergroundLight() {
+		if (randomGenerator.nextInt(2) == 0) {
+			int y = 4+randomGenerator.nextInt(64);
+			int x = chunk_X + randomGenerator.nextInt(16)+8;
+			int z = chunk_Z + randomGenerator.nextInt(16)+8;
+			BlockTypes type = BlockTypes.list[randomGenerator.nextInt(BlockSparkle.BlockTypes.list.length)];
+			double r1 = 1D+randomGenerator.nextDouble()*5;
+			double r2 = 1D+randomGenerator.nextDouble()*5;
+			double r3 = 1D+randomGenerator.nextDouble()*5;
+			for (int i = -(int)r1-1; i <= r1+1; i++) {
+				for (int j = -(int)r2-1; j <= r2+1; j++) {
+					for (int k = -(int)r3-1; k <= r3+1; k++) {
+						if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r1, r2, r3)) {
+							int dx = x+i;
+							int dy = y+j;
+							int dz = z+k;
+							Block b = currentWorld.getBlock(dx, dy, dz);
+							if (b == type.getBlockProxy()) {
+								currentWorld.setBlock(dx, dy, dz, ChromaBlocks.SPARKLE.getBlockInstance(), type.ordinal(), 3);
+							}
+						}
+					}
+				}
+			}
+		}
+		int n = 8+randomGenerator.nextInt(24);
+		for (int i = 0; i < n; i++) {
+			int y = 4+randomGenerator.nextInt(64);
+			int x = chunk_X + randomGenerator.nextInt(16)+8;
+			int z = chunk_Z + randomGenerator.nextInt(16)+8;
+			Block b = currentWorld.getBlock(x, y, z);
+			if (b.isAir(currentWorld, x, y, z)) {
+				currentWorld.setBlock(x, y, z, ChromaBlocks.LIGHT.getBlockInstance());
+				currentWorld.markBlockForUpdate(x, y, z);
+				currentWorld.func_147451_t(x, y, z);
+			}
+		}
 	}
 
 	private void generateDyeFlowers() {

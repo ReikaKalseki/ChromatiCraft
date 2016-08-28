@@ -10,7 +10,6 @@
 package Reika.ChromatiCraft.Block.Dimension.Structure.GOL;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,22 +18,19 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.BlockDimensionStructureTile;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.TileEntity.StructureBlockTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLTile.GOLTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 
-public class BlockGOLController extends BlockContainer {
+public class BlockGOLController extends BlockDimensionStructureTile {
 
 	private final IIcon[] icons = new IIcon[3];
 
 	public BlockGOLController(Material mat) {
 		super(mat);
-		this.setBlockUnbreakable();
-		this.setResistance(60000);
-		this.setCreativeTab(ChromatiCraft.tabChromaGen);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 
 public class TileEntityHeatLily extends TileEntityMagicPlant implements LocationCached {
 
@@ -87,6 +88,11 @@ public class TileEntityHeatLily extends TileEntityMagicPlant implements Location
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public boolean isPlantable(World world, int x, int y, int z) {
+		return ReikaPlantHelper.LILYPAD.canPlantAt(world, x, y, z);
 	}
 
 }

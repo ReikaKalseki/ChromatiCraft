@@ -14,6 +14,7 @@ import java.util.HashSet;
 
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColorController;
@@ -94,6 +95,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 			alphaTest = false;
 			additiveBlend = true;
 		}
+		return this;
+	}
+
+	public EntityBlurFX setIcon(IIcon ii) {
+		particleIcon = ii;
 		return this;
 	}
 
@@ -307,10 +313,11 @@ public class EntityBlurFX extends EntityFX implements CustomRenderFX {
 		}
 
 		if (cyclescale > 0) {
-			CrystalElement e = CrystalElement.elements[(int)((age*cyclescale)%16)];
-			particleRed = e.getRed()/255F;
-			particleGreen = e.getGreen()/255F;
-			particleBlue = e.getBlue()/255F;
+			//CrystalElement e = CrystalElement.elements[(int)((age*cyclescale)%16)];
+			int c = CrystalElement.getBlendedColor((int)(age*cyclescale), 5);
+			particleRed = ReikaColorAPI.getRed(c)/255F;
+			particleGreen = ReikaColorAPI.getGreen(c)/255F;
+			particleBlue = ReikaColorAPI.getBlue(c)/255F;
 		}
 
 		if (bounds != null) {

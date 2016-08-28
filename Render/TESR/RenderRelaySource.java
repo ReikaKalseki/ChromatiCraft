@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -66,7 +67,7 @@ public class RenderRelaySource extends ChromaRenderBase {
 		GL11.glPopMatrix();
 
 		GL11.glPushMatrix();
-		if (MinecraftForgeClient.getRenderPass() == 1) {
+		if (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles()) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			this.renderCrystal(te, par2, par4, par6, par8);
 			GL11.glPopAttrib();
@@ -91,6 +92,7 @@ public class RenderRelaySource extends ChromaRenderBase {
 		ReikaRenderHelper.disableEntityLighting();
 		BlendMode.ADDITIVEDARK.apply();
 		Tessellator v5 = Tessellator.instance;
+		ReikaTextureHelper.bindTerrainTexture();
 		IIcon ico = ChromaIcons.CAUSTICS_GENTLE.getIcon();
 		float u = ico.getMinU();
 		float v = ico.getMinV();

@@ -84,6 +84,9 @@ public class MonumentCompletionRitual {
 
 	private static int runningRituals;
 
+	private static boolean reShowGui;
+	private static boolean reBobView;
+
 	public static boolean areRitualsRunning() {
 		return runningRituals > 0;
 	}
@@ -123,6 +126,9 @@ public class MonumentCompletionRitual {
 		if (s != null) {
 			Minecraft.getMinecraft().getSoundHandler().stopSound(s);
 		}
+
+		reBobView = Minecraft.getMinecraft().gameSettings.viewBobbing;
+		reShowGui = !Minecraft.getMinecraft().gameSettings.hideGUI;
 	}
 
 	public void tick() {
@@ -160,6 +166,7 @@ public class MonumentCompletionRitual {
 	@SideOnly(Side.CLIENT)
 	private void manipulateCamera() {
 		Minecraft.getMinecraft().gameSettings.hideGUI = true;
+		Minecraft.getMinecraft().gameSettings.viewBobbing = false;
 		Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
 		double ang = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000)/2D);
 		double angPrev = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000-1)/2D);
@@ -409,6 +416,9 @@ public class MonumentCompletionRitual {
 
 		//ReikaSoundHelper.playClientSound(ChromaSounds.PYLONTURBO, x+0.5, y+0.5, z+0.5, 1, 2F, false);
 		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTCOMPLETE, x+0.5, y+0.5, z+0.5, 2, 0.9439F, false);
+
+		Minecraft.getMinecraft().gameSettings.hideGUI = !reShowGui;
+		Minecraft.getMinecraft().gameSettings.viewBobbing = reBobView;
 	}
 
 	@SideOnly(Side.CLIENT)

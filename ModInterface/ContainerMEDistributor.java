@@ -20,7 +20,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 public class ContainerMEDistributor extends CoreContainer {
 
 	private TileEntityMEDistributor tile;
-	private boolean noUpdate;
 
 	public ContainerMEDistributor(EntityPlayer player, TileEntityMEDistributor te) {
 		super(player, te);

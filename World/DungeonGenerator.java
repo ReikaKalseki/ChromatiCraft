@@ -625,7 +625,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case OCEAN:
 				return r.nextInt(32) == 0 && ReikaBiomeHelper.isOcean(world.getBiomeGenForCoords(x, z));
 			case CAVERN:
-				return r.nextInt(64) == 0;
+				return r.nextInt(48) == 0;
 			case BURROW:
 				return r.nextInt(64) == 0 && world.getBiomeGenForCoords(x, z).topBlock == Blocks.grass;
 			case DESERT:

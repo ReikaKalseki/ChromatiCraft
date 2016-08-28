@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenCrystalPlains;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenGlowingForest;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenIslands;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSkylands;
+import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenSparkle;
 import Reika.ChromatiCraft.World.Dimension.Biome.BiomeGenVoidlands;
 import Reika.ChromatiCraft.World.Dimension.Biome.StructureBiome;
 import Reika.DragonAPI.DragonAPICore;
@@ -69,6 +70,7 @@ public class ChromaDimensionManager {
 		ISLANDS(BiomeGenIslands.class,		"Iridescent Archipelago",	6, -5,	ExtraChromaIDs.ISLANDS, 	SubBiomes.DEEPOCEAN, 	Type.MAGICAL, Type.BEACH, Type.WET),
 		SKYLANDS(BiomeGenSkylands.class,	"Lumen Skylands",			2, 0,	ExtraChromaIDs.SKYLANDS,	SubBiomes.VOIDLANDS,	Type.MAGICAL, Type.COLD),
 		FOREST(BiomeGenGlowingForest.class,	"Glowing Forest",			10, 10,	ExtraChromaIDs.FOREST, 		SubBiomes.CRYSFOREST,	Type.MAGICAL, Type.FOREST),
+		SPARKLE(BiomeGenSparkle.class,		"Sparkling Sands",			4, 0,	ExtraChromaIDs.SPARKLE,								Type.MAGICAL, Type.BEACH, Type.SANDY),
 		STRUCTURE(StructureBiome.class,		"Structure Field",			0, 0,	ExtraChromaIDs.STRUCTURE, 							Type.MAGICAL, Type.PLAINS),
 		CENTER(BiomeGenCentral.class, 		"Luminescent Sanctuary",	0, 0,	ExtraChromaIDs.CENTRAL,								Type.MAGICAL, Type.FOREST, Type.DENSE);
 

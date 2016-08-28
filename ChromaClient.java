@@ -90,6 +90,7 @@ import Reika.ChromatiCraft.Render.ISBRH.PowerTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RelayRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.RuneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.SelectiveGlassRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.SparklingBlockRender;
 import Reika.ChromatiCraft.Render.ISBRH.SpecialShieldRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TankBlockRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.TieredOreRenderer;
@@ -157,6 +158,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final TieredPlantRenderer plant = new TieredPlantRenderer();
 	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
 	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
+	public static final SparklingBlockRender sparkle = new SparklingBlockRender();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -343,6 +345,9 @@ public class ChromaClient extends ChromaCommon {
 
 		flowerRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(flowerRender, flower);
+
+		sparkleRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(sparkleRender, sparkle);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

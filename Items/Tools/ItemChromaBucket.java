@@ -88,6 +88,8 @@ public class ItemChromaBucket extends ItemChromaTool {
 				return ChromaBlocks.CHROMA.getBlockInstance();
 			case 1:
 				return ChromaBlocks.ENDER.getBlockInstance();
+			case 3:
+				return ChromaBlocks.LUMA.getBlockInstance();
 			default:
 				return Blocks.air;
 		}

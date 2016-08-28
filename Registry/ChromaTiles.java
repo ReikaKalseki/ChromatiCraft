@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.ModInterface.TileEntityFluxGooCreator;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
+import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
@@ -72,6 +73,7 @@ import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityParticleSpawner;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityAtmosphericRelay;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCreativeSource;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
@@ -85,6 +87,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityBiomeReverter;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityChromaFlower;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCobbleGen;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCropSpeedPlant;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHarvesterPlant;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
@@ -104,7 +107,9 @@ import Reika.ChromatiCraft.TileEntity.Storage.TileEntityMultiStorage;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityConduitBridge;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
@@ -184,7 +189,7 @@ public enum ChromaTiles implements TileEnum {
 	HOLOGRAM("chroma.hologram",			ChromaBlocks.TILEMODELLED2, TileEntityAreaHologram.class,		11, "RenderAreaHologram"),
 	LIGHTER("chroma.lighter",			ChromaBlocks.TILEMODELLED2,	TileEntityCaveLighter.class,		12, "RenderCaveLighter"),
 	STORAGE("chroma.itemstorage",		ChromaBlocks.TILEENTITY,	TileEntityMultiStorage.class,		14),
-	GLOWFIRE("chroma.glowfire",			ChromaBlocks.TILEMODELLED2,	TileEntityGlowFire.class,			13),
+	GLOWFIRE("chroma.glowfire",			ChromaBlocks.TILEMODELLED2,	TileEntityGlowFire.class,			13, "RenderGlowFire"),
 	ESSENTIARELAY("chroma.essentia",	ChromaBlocks.TILEMODELLED2,	TileEntityEssentiaRelay.class,		14, "RenderEssentiaRelay"),
 	INSERTER("chroma.inserter",			ChromaBlocks.TILEENTITY,	TileEntityItemInserter.class,		15),
 	REVERTER("chroma.reverter",			ChromaBlocks.DECOPLANT,		TileEntityBiomeReverter.class,		1),
@@ -202,7 +207,12 @@ public enum ChromaTiles implements TileEnum {
 	FLUIDDISTRIBUTOR("chroma.fluiddistrib",ChromaBlocks.TILEMODELLED3,TileEntityFluidDistributor.class,	6, "RenderFluidDistributor"),
 	FLUXMAKER("chroma.taintmaker",		ChromaBlocks.TILEMODELLED3,	TileEntityFluxGooCreator.class,		7),
 	AREABREAKER("chroma.areabreaker",	ChromaBlocks.TILEMODELLED3, TileEntityAreaBreaker.class,		8, "RenderAreaBreaker"),
-	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate");
+	TELEPORT("chroma.gate",				ChromaBlocks.TILEMODELLED3,	TileEntityTeleportGate.class,		9, "RenderTeleportGate"),
+	FLUIDRELAY("chroma.fluidrelay",		ChromaBlocks.TILEMODELLED3,	TileEntityFluidRelay.class,			10, "RenderFluidRelay"),
+	IONOSPHERIC("chroma.atmospheric",	ChromaBlocks.PYLON,			TileEntityAtmosphericRelay.class,	10),
+	BOOKDECOMP("chroma.bookdecomp",		ChromaBlocks.TILEMODELLED3,	TileEntityPageExtractor.class,		11, "RenderPageExtractor", ModList.MYSTCRAFT),
+	HARVESTPLANT("chroma.harvestplant",	ChromaBlocks.DECOPLANT,		TileEntityHarvesterPlant.class,		5),
+	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0);
 
 	private final Class tile;
 	private final String name;
@@ -296,6 +306,8 @@ public enum ChromaTiles implements TileEnum {
 			case LUMENWIRE:
 			case AREABREAKER:
 			case TELEPORT:
+			case FLUIDRELAY:
+			case BOOKDECOMP:
 				return true;
 			default:
 				return false;
@@ -391,6 +403,8 @@ public enum ChromaTiles implements TileEnum {
 
 	public boolean hasSneakActions() {
 		if (this == STAND)
+			return true;
+		if (this == BOOKDECOMP)
 			return true;
 		return false;
 	}
@@ -502,7 +516,10 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public double getMinY(TileEntityChromaticBase te) {
-		return 0;
+		switch(this) {
+			default:
+				return 0;
+		}
 	}
 
 	public double getMinZ(TileEntityChromaticBase te) {
@@ -549,6 +566,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.625;
 			case ENCHANTDECOMP:
 				return 0.5625;
+			case BOOKDECOMP:
+				return 0.25;
 			default:
 				return 1;
 		}
@@ -585,6 +604,8 @@ public enum ChromaTiles implements TileEnum {
 				return 27;
 			case TELEPORT:
 				return 8;
+			case FLUIDRELAY:
+				return 55;
 			default:
 				return 21;
 		}
@@ -657,6 +678,7 @@ public enum ChromaTiles implements TileEnum {
 			case METEOR:
 			case WIRELESS:
 			case TELEPORT:
+			case BOOKDECOMP:
 				return true;
 			default:
 				return false;
@@ -714,11 +736,11 @@ public enum ChromaTiles implements TileEnum {
 	}
 
 	public boolean isRotateableRepeater() {
-		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER;
+		return this.isRepeater() && TileEntityCrystalRepeater.class.isAssignableFrom(tile) && this != BROADCAST && this != WEAKREPEATER;
 	}
 
 	public boolean isTurbochargeableRepeater() {
-		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER;
+		return this.isRepeater() && this != BROADCAST && this != WEAKREPEATER && this != IONOSPHERIC;
 	}
 
 }

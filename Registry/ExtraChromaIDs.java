@@ -22,6 +22,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	SATID(			"Potion IDs", 			"Saturation ID", 				38, 	Potion.class),
 	REGENID(		"Potion IDs", 			"Regen ID", 					39, 	Potion.class),
 	LUMARHEAID(		"Potion IDs", 			"Lumarhea ID", 					40, 	Potion.class),
+	VOIDGAZEID(		"Potion IDs", 			"Void Gaze ID",					41, 	Potion.class),
 	RAINBOWFOREST(	"Biome IDs", 			"Rainbow Forest Biome ID", 		48, 	BiomeGenBase.class),
 	ENDERFOREST(	"Biome IDs", 			"Ender Forest Biome ID", 		47, 	BiomeGenBase.class),
 	ISLANDS(		"Dimension Biome IDs", 	"Skyland Biome ID", 			100, 	BiomeGenBase.class),
@@ -34,6 +35,7 @@ public enum ExtraChromaIDs implements IDRegistry {
 	STRUCTURE(		"Dimension Biome IDs", 	"Structure Biome ID", 			107, 	BiomeGenBase.class),
 	VOID(			"Dimension Biome IDs", 	"Voidland Biome ID", 			108, 	BiomeGenBase.class),
 	CENTRAL(		"Dimension Biome IDs", 	"Central Biome ID", 			109, 	BiomeGenBase.class),
+	SPARKLE(		"Dimension Biome IDs", 	"Sparkling Sands Biome ID",		110, 	BiomeGenBase.class),
 	WEAPONAOEID(	"Enchantment IDs", 		"Weapon AOE ID", 				90, 	Enchantment.class),
 	ENDERLOCKID(	"Enchantment IDs", 		"Ender Lock ID", 				91, 	Enchantment.class),
 	AGGROMASKID(	"Enchantment IDs", 		"Aggro Mask ID", 				92, 	Enchantment.class),
@@ -82,6 +84,31 @@ public enum ExtraChromaIDs implements IDRegistry {
 
 	public boolean isDummiedOut() {
 		return type == null;
+	}
+
+	@Override
+	public boolean enforceMatch() {
+		return true;
+	}
+
+	@Override
+	public Class getPropertyType() {
+		return int.class;
+	}
+
+	@Override
+	public String getLabel() {
+		return this.getName();
+	}
+
+	@Override
+	public boolean isEnforcingDefaults() {
+		return false;
+	}
+
+	@Override
+	public boolean shouldLoad() {
+		return true;
 	}
 
 }

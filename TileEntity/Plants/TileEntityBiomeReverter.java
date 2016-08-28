@@ -22,6 +22,7 @@ import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
+import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 public class TileEntityBiomeReverter extends TileEntityMagicPlant implements LocationCached {
@@ -101,6 +102,11 @@ public class TileEntityBiomeReverter extends TileEntityMagicPlant implements Loc
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	@Override
+	public boolean isPlantable(World world, int x, int y, int z) {
+		return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL;
 	}
 
 }

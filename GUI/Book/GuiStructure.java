@@ -89,12 +89,18 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.PYLON) {
 			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
 		}
+		if (page == ChromaResearch.PYLONBROADCAST) {
+			array.setBlock(array.getMidX(), array.getMinY()+10, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
+		}
 		if (page == ChromaResearch.CLOAKTOWER) {
 			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
 		}
 		render = new StructureRenderer(array);
 		if (page == ChromaResearch.PYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
+		}
+		else if (page == ChromaResearch.PYLONBROADCAST) {
+			render.addOverride(array.getMidX(), array.getMinY()+10, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.MINIPYLON) {
 			render.addOverride(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getCraftedProduct());

@@ -189,7 +189,9 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 		ItemStack is = this.getSpecialItem(armor);
 		if (is != null && is.getItem() instanceof ISpecialArmor)
 			return ((ISpecialArmor)is.getItem()).getProperties(player, is, source, damage, slot);
-		return new ArmorProperties(0, ((ItemArmor)is.getItem()).damageReduceAmount / 25D, is.getMaxDamage() + 1 - is.getItemDamage()); //default
+		ItemStack isa = is != null ? is : armor.copy();
+		ItemArmor ia = is != null ? (ItemArmor)is.getItem() : this;
+		return new ArmorProperties(0, ia.damageReduceAmount / 25D, isa.getMaxDamage() + 1 - isa.getItemDamage()); //default
 	}
 
 	@Override
@@ -197,7 +199,7 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 		ItemStack is = this.getSpecialItem(armor);
 		if (is != null && is.getItem() instanceof ISpecialArmor)
 			return ((ISpecialArmor)is.getItem()).getArmorDisplay(player, is, slot);
-		return ((ItemArmor)is.getItem()).damageReduceAmount;
+		return is != null ? ((ItemArmor)is.getItem()).damageReduceAmount : 0;
 	}
 
 	@Override
@@ -206,7 +208,7 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 		if (is != null && is.getItem() instanceof ISpecialArmor) {
 			((ISpecialArmor)is.getItem()).damageArmor(entity, is, source, damage, slot);
 		}
-		else {
+		else if (is != null) {
 			is.damageItem(1, entity);
 		}
 	}

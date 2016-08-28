@@ -58,6 +58,7 @@ public class BlockCrystalPlant extends Block {
 		this.setResistance(1F);
 		this.setStepSound(soundTypeGrass);
 		this.setCreativeTab(ChromatiCraft.tabChromaDeco);
+		this.setBlockBounds(0, 0, 0, 0.9375F, 0.9375F, 0.9375F);
 	}
 
 	@Override

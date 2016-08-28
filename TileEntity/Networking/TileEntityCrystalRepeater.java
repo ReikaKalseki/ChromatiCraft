@@ -318,7 +318,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	 */
 
 	@Override
-	public final boolean needsLineOfSight() {
+	public final boolean needsLineOfSightToReceiver() {
 		return true;
 	}
 
@@ -383,6 +383,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return true;
 	}
 
+	@Override
+	public boolean canReceiveFrom(CrystalTransmitter r) {
+		return true;
+	}
+
 	public void triggerConnectionRender() {
 		if (worldObj.isRemote) {
 			connectionRenderTick = 100;
@@ -419,7 +424,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 					}
 					if (flag) {
 						if (this.getDistanceSqTo(te.xCoord, te.yCoord, te.zCoord) <= r*r) {
-							if (!this.needsLineOfSight() || (PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord))) {
+							if (!this.needsLineOfSightToReceiver() || (PylonFinder.lineOfSight(worldObj, xCoord, yCoord, zCoord, te.xCoord, te.yCoord, te.zCoord))) {
 								c.add(new WorldLocation(te));
 							}
 						}
@@ -529,6 +534,16 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public void onTransfer(CrystalElement e, int amt) {
 
+	}
+
+	@Override
+	public int getPathPriority() {
+		return 10;
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter() {
+		return true;
 	}
 
 }

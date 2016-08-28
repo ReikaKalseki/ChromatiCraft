@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -55,6 +57,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 
 	public static final int MAX_BRANCHES = 6;
 
+	private static final float BASE_ITEM_FACTOR = 10;
 	public static final String DROP_TAG = "GlowFire";
 
 	private final ElementTagCompound energy = new ElementTagCompound();
@@ -202,8 +205,10 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 	}
 
 	public static ElementTagCompound getCost(ItemStack is) {
-		ElementTagCompound tag = FabricationRecipes.recipes().getItemCost(is);
-		tag = tag != null ? ItemElementCalculator.instance.getValueForItem(is).copy().power(4).scale(0.0625F)/*tag.copy().scale(0.01F)*/ : null;
+		if (!FabricationRecipes.recipes().isItemFabricable(is))
+			return null;
+		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is).copy();
+		tag = scaleCostTag(is, tag);
 		return tag != null && !tag.isEmpty() ? tag : null;
 	}
 
@@ -211,7 +216,30 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 		ElementTagCompound tag = ItemElementCalculator.instance.getValueForItem(is);
 		if (tag == null || tag.isEmpty())
 			return null;
-		return tag.copy();
+		tag = tag.copy();
+		tag = scaleDecompositionTag(is, tag);
+		return tag;
+	}
+
+	private static ElementTagCompound scaleCostTag(ItemStack is, ElementTagCompound tag) {
+		boolean sc = tag.getMaximumValue() == 1;
+		tag.power(1.15).scale(1.5F);
+		if (ChromaBlocks.CRYSTAL.match(is)) {
+			tag.power(1.1);
+			tag.scale(2);
+		}
+		tag.scale(BASE_ITEM_FACTOR);
+		if (is.getItem() == Items.dye)
+			tag.scale(0.25F);
+		if (sc)
+			tag.scale(1.2F);
+		return tag;
+	}
+
+	private static ElementTagCompound scaleDecompositionTag(ItemStack is, ElementTagCompound tag) {
+		if (is.getItem() != Items.dye)
+			tag.scale(BASE_ITEM_FACTOR);
+		return tag;
 	}
 
 	@SideOnly(Side.CLIENT)

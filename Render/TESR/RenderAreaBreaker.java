@@ -150,10 +150,24 @@ public class RenderAreaBreaker extends ChromaRenderBase {
 			GL11.glPopMatrix();
 
 			if (te.isInWorld()) {
+
 				GL11.glPushMatrix();
 				GL11.glTranslated(-te.xCoord, -te.yCoord, -te.zCoord);
 
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				GL11.glPushMatrix();
+				GL11.glTranslated(0, te.getRange()*0.75-0.99, 0);
+				GL11.glScaled(1, 0.5, 1);
+				v5.startDrawing(GL11.GL_LINES);
+				v5.setBrightness(240);
+				v5.addTranslation(te.xCoord+0.5F, te.yCoord+0.5F, te.zCoord+0.5F);
+				v5.setColorOpaque_I(0xffffff);
+				te.getShape().renderPreview(v5, te.getRange());
+				v5.addTranslation(-te.xCoord-0.5F, -te.yCoord-0.5F, -te.zCoord-0.5F);
+				v5.addVertex(0, 0, 0);
+				v5.draw();
+				GL11.glPopMatrix();
+
 				Map<Coordinate, ImmutablePair<Integer, Integer>> map = te.getBreakLocs();
 				for (Coordinate c : map.keySet()) {
 					BlendMode.ADDITIVEDARK.apply();

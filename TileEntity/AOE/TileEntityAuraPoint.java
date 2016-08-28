@@ -98,6 +98,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 	private final FastBlockCache cache = new FastBlockCache();
 	private final FastPlayerCache hostilePlayers = new FastPlayerCache();
 
+	public boolean doPVP = true;
+
 	@Override
 	public void breakBlock() {
 		super.breakBlock();
@@ -220,6 +222,8 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 		if (e.getHealth() <= 0 || e.isDead)
 			return false;
 		if (e instanceof EntityPlayer) {
+			if (!doPVP)
+				return false;
 			EntityPlayer ep = (EntityPlayer)e;
 			if (this.isPlacer(ep))
 				return false;
@@ -409,6 +413,20 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint implements OwnedTi
 
 		cache.readFromNBT(NBT.getCompoundTag("crops"));
 		hostilePlayers.readFromNBT(NBT.getCompoundTag("hostile"));
+	}
+
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("pvp", doPVP);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		doPVP = NBT.getBoolean("pvp");
 	}
 
 	public void savePoint() {

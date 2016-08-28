@@ -313,12 +313,12 @@ public class ChromaticEventManager {
 							allMats = false;
 						}
 					}
-				}
-				if (allMats) {
-					int[] arr = new int[]{450, 5};
-					tags.setTag("Lapis", new NBTTagIntArray(arr));
-					ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.fortune, 5, false);
-					ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.looting, 5, false);
+					if (allMats) {
+						int[] arr = new int[]{450, 5};
+						tags.setTag("Lapis", new NBTTagIntArray(arr));
+						ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.fortune, 5, false);
+						ReikaEnchantmentHelper.addEnchantment(evt.item.stackTagCompound, Enchantment.looting, 5, false);
+					}
 				}
 			}
 		}
@@ -1311,6 +1311,12 @@ public class ChromaticEventManager {
 			world.setBlockToAir(x, y, z);
 			event.setResult(Result.ALLOW);
 			event.result = ChromaItems.BUCKET.getStackOfMetadata(1);
+			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
+		}
+		else if (b == ChromaBlocks.LUMA.getBlockInstance()) {
+			world.setBlockToAir(x, y, z);
+			event.setResult(Result.ALLOW);
+			event.result = ChromaItems.BUCKET.getStackOfMetadata(3);
 			//event.entityPlayer.setCurrentItemOrArmor(0, event.result);
 		}
 	}

@@ -112,7 +112,6 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 
 	public static boolean isBlank(ItemStack is) {
 		return is.stackTagCompound == null;
-		//return is.getItemDamage() == 0;
 	}
 
 	public static ChromaResearch getResearch(ItemStack is) {
@@ -121,21 +120,18 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 			return null;
 		}
 		return ChromaResearch.getByName(is.stackTagCompound.getString("page"));
-		//return ChromaResearch.getResearch(is.getItemDamage());
 	}
 
 	public static ItemStack getItem(ChromaResearch r) {
 		ItemStack is = ChromaItems.FRAGMENT.getStackOf();
 		setResearch(is, r);
 		return is;
-		//return ChromaItems.FRAGMENT.getStackOfMetadata(r.index());
 	}
 
 	private static void setResearch(ItemStack is, ChromaResearch r) {
 		if (ChromaItems.FRAGMENT.matchWith(is)) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setString("page", r.name());
-			//is.setItemDamage(r.index());
 		}
 	}
 

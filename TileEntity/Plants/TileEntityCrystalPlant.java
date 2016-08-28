@@ -9,9 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Plants;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -104,36 +106,43 @@ public class TileEntityCrystalPlant extends TileEntity {
 	public void harvest(boolean drops) {
 		growthTick = 2;
 		if (drops) {
-			if (this.isPure() || random.nextInt(4) == 0) {
-				int meta = this.getColor().ordinal();
-				if (this.isPure() && !this.is(Modifier.PRIMAL)) {
-					int rand = random.nextInt(20);
-					int num = 0;
-					if (rand == 0) {
-						num = 2;
-					}
-					else if (rand < 5) {
-						num = 1;
-					}
-					for (int i = 0; i < num; i++) {
-						int smeta = meta+Modifier.IMPURE.flag;
-						if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
-							smeta = meta+Modifier.BOOSTED.flag;
-						ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SEED.getStackOfMetadata(smeta));
-					}
+			ArrayList<ItemStack> li = this.getDrops();
+			ReikaItemHelper.dropItems(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, li);
+		}
+		this.updateLight();
+	}
+
+	public ArrayList<ItemStack> getDrops() {
+		ArrayList<ItemStack> li = new ArrayList();
+		if (this.isPure() || random.nextInt(4) == 0) {
+			int meta = this.getColor().ordinal();
+			if (this.isPure() && !this.is(Modifier.PRIMAL)) {
+				int rand = random.nextInt(20);
+				int num = 0;
+				if (rand == 0) {
+					num = 2;
 				}
-				long time = worldObj.getTotalWorldTime();
-				if (ChromaOptions.CRYSTALFARM.getState()) {
-					if (time-lastShardTick >= (this.is(Modifier.PRIMAL) ? 60 : this.is(Modifier.BOOSTED) ? 150 : 600)) {
-						if (ReikaRandomHelper.doWithChance(this.is(Modifier.PRIMAL) ? 10 : this.is(Modifier.BOOSTED) ? 5 : 2)) {
-							ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, ChromaItems.SHARD.getStackOfMetadata(meta));
-							lastShardTick = time;
-						}
+				else if (rand < 5) {
+					num = 1;
+				}
+				for (int i = 0; i < num; i++) {
+					int smeta = meta+Modifier.IMPURE.flag;
+					if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
+						smeta = meta+Modifier.BOOSTED.flag;
+					li.add(ChromaItems.SEED.getStackOfMetadata(smeta));
+				}
+			}
+			long time = worldObj.getTotalWorldTime();
+			if (ChromaOptions.CRYSTALFARM.getState()) {
+				if (time-lastShardTick >= (this.is(Modifier.PRIMAL) ? 60 : this.is(Modifier.BOOSTED) ? 150 : 600)) {
+					if (ReikaRandomHelper.doWithChance(this.is(Modifier.PRIMAL) ? 10 : this.is(Modifier.BOOSTED) ? 5 : 2)) {
+						li.add(ChromaItems.SHARD.getStackOfMetadata(meta));
+						lastShardTick = time;
 					}
 				}
 			}
 		}
-		this.updateLight();
+		return li;
 	}
 
 	public boolean canHarvest() {

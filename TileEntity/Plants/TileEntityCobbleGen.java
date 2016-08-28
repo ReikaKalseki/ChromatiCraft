@@ -514,4 +514,9 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 		return activeRecipe != null ? OperationState.RUNNING : OperationState.INVALID;
 	}
 
+	@Override
+	public boolean isPlantable(World world, int x, int y, int z) {
+		return (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid()) || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL;
+	}
+
 }

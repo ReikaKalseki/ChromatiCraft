@@ -450,7 +450,7 @@ public final class PylonGenerator implements RetroactiveGenerator {
 		if (rand.nextInt(25) > 0)
 			tag.clipToPrimaries();
 		CrystalElement e = CrystalElement.randomElement();//tag.asWeightedRandom().getRandomEntry();
-		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y, z, e);
+		FilledBlockArray array = ChromaStructures.getPylonStructure(world, x, y+9, z, e);
 
 		boolean broken = ChromaOptions.BROKENPYLON.getState() && rand.nextInt(2) == 0;
 		if (broken)

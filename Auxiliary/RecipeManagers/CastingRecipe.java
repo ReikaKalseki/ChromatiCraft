@@ -49,7 +49,6 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;
 import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -309,26 +308,26 @@ public class CastingRecipe implements APICastingRecipe {
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneRecipe {
 
-		private static final BlockArray runeRing = new BlockArray();
+		private static final ArrayList<Coordinate> runeRing = new ArrayList();
 		private static final HashMap<Coordinate, CrystalElement> allRunes = new HashMap();
 
 		static {
-			runeRing.addBlockCoordinate(-2, -1, -2);
-			runeRing.addBlockCoordinate(-1, -1, -2);
-			runeRing.addBlockCoordinate(0, -1, -2);
-			runeRing.addBlockCoordinate(1, -1, -2);
-			runeRing.addBlockCoordinate(2, -1, -2);
-			runeRing.addBlockCoordinate(2, -1, -1);
-			runeRing.addBlockCoordinate(2, -1, 0);
-			runeRing.addBlockCoordinate(2, -1, 1);
-			runeRing.addBlockCoordinate(2, -1, 2);
-			runeRing.addBlockCoordinate(1, -1, 2);
-			runeRing.addBlockCoordinate(0, -1, 2);
-			runeRing.addBlockCoordinate(-1, -1, 2);
-			runeRing.addBlockCoordinate(-2, -1, 2);
-			runeRing.addBlockCoordinate(-2, -1, 1);
-			runeRing.addBlockCoordinate(-2, -1, 0);
-			runeRing.addBlockCoordinate(-2, -1, -1);
+			runeRing.add(new Coordinate(-2, -1, -2));
+			runeRing.add(new Coordinate(-1, -1, -2));
+			runeRing.add(new Coordinate(0, -1, -2));
+			runeRing.add(new Coordinate(1, -1, -2));
+			runeRing.add(new Coordinate(2, -1, -2));
+			runeRing.add(new Coordinate(2, -1, -1));
+			runeRing.add(new Coordinate(2, -1, 0));
+			runeRing.add(new Coordinate(2, -1, 1));
+			runeRing.add(new Coordinate(2, -1, 2));
+			runeRing.add(new Coordinate(1, -1, 2));
+			runeRing.add(new Coordinate(0, -1, 2));
+			runeRing.add(new Coordinate(-1, -1, 2));
+			runeRing.add(new Coordinate(-2, -1, 2));
+			runeRing.add(new Coordinate(-2, -1, 1));
+			runeRing.add(new Coordinate(-2, -1, 0));
+			runeRing.add(new Coordinate(-2, -1, -1));
 		}
 
 		private final RuneShape runes = new RuneShape();
@@ -348,7 +347,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		protected TempleCastingRecipe addRuneRingRune(CrystalElement e) {
-			Coordinate c = runeRing.getNthBlock(e.ordinal());
+			Coordinate c = runeRing.get(e.ordinal());
 			return this.addRune(e, c.xCoord, c.yCoord, c.zCoord);
 		}
 
@@ -371,9 +370,26 @@ public class CastingRecipe implements APICastingRecipe {
 			CrystalElement e = allRunes.get(c);
 			if (e != null) {
 				if (e != color)
-					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+e+" & "+color);
+					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+e+" & "+color+"; map:=\n"+this.getRuneMap());
 			}
 			allRunes.put(c, color);
+		}
+
+		private String getRuneMap() {
+			StringBuilder sb = new StringBuilder();
+			for (int i = -5; i <= 5; i++) {
+				for (int k = -5; k <= 5; k++) {
+					Coordinate c = new Coordinate(i, 0, k);
+					CrystalElement e = allRunes.get(c);
+					if (e == null && runeRing.contains(c))
+						e = CrystalElement.elements[runeRing.indexOf(c)];
+					sb.append("[");
+					sb.append(e != null ? e.ordinal()+(e.ordinal() < 10 ? " " : "") : (i == 0 && k == 0 ? "TB" : "XX"));
+					sb.append("]");
+				}
+				sb.append("\n");
+			}
+			return sb.toString();
 		}
 
 		protected CastingRecipe addRunes(RuneViewer view) {

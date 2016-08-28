@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalCharger;
 import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
+import Reika.ChromatiCraft.Container.ContainerFluidRelay;
 import Reika.ChromatiCraft.Container.ContainerInventoryLinker;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
@@ -66,6 +67,7 @@ import Reika.ChromatiCraft.GUI.Tile.GuiCastingAuto;
 import Reika.ChromatiCraft.GUI.Tile.GuiCrystalMusic;
 import Reika.ChromatiCraft.GUI.Tile.GuiCrystalTank;
 import Reika.ChromatiCraft.GUI.Tile.GuiEnderTNT;
+import Reika.ChromatiCraft.GUI.Tile.GuiFluidRelay;
 import Reika.ChromatiCraft.GUI.Tile.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiLampController;
 import Reika.ChromatiCraft.GUI.Tile.GuiParticleSpawner;
@@ -118,6 +120,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCrystalBrewer;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.DragonAPI.Base.CoreContainer;
@@ -179,6 +182,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerItemInserter(player, (TileEntityItemInserter)te);
 				if (te instanceof TileEntityEnchantDecomposer)
 					return new ContainerEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
+				if (te instanceof TileEntityFluidRelay)
+					return new ContainerFluidRelay(player, (TileEntityFluidRelay)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -275,6 +280,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiParticleSpawner(player, (TileEntityParticleSpawner)te);
 				if (te instanceof TileEntityTeleportGate)
 					return new GuiTeleportGate(player, (TileEntityTeleportGate)te);
+				if (te instanceof TileEntityFluidRelay)
+					return new GuiFluidRelay(player, (TileEntityFluidRelay)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

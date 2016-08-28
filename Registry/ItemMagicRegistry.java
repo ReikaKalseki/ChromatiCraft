@@ -18,7 +18,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.ModRegistry.ModOreList;
@@ -31,6 +34,7 @@ public class ItemMagicRegistry {
 	public static final ItemMagicRegistry instance = new ItemMagicRegistry();
 
 	private final HashBiMap<KeyedItemStack, ElementTagCompound> data = HashBiMap.create();
+	private final HashBiMap<Fluid, ElementTagCompound> fluidData = HashBiMap.create();
 
 	private ItemMagicRegistry() {
 		this.addElement("stone", CrystalElement.RED, 1);
@@ -46,6 +50,10 @@ public class ItemMagicRegistry {
 		this.addElement("treeSapling", CrystalElement.GREEN, 1);
 		this.addElement("treeLeaves", CrystalElement.GREEN, 1);
 
+		this.addElement("flower", CrystalElement.GREEN, 1);
+		this.addElement("seed", CrystalElement.GREEN, 1);
+		this.addElement("seed", CrystalElement.GRAY, 1);
+
 		this.addElement(Blocks.dirt, CrystalElement.GREEN, 1);
 		this.addElement(Blocks.dirt, CrystalElement.BROWN, 1);
 
@@ -60,11 +68,11 @@ public class ItemMagicRegistry {
 		this.addElement("gemEmerald", CrystalElement.WHITE, 1);
 		this.addElement("gemQuartz", CrystalElement.BROWN, 4);
 		this.addElement("gemQuartz", CrystalElement.YELLOW, 2);
-		this.addElement("ingotIron", CrystalElement.BROWN, 4);
+		this.addElement("ingotIron", CrystalElement.BROWN, 3);
 		this.addElement("ingotGold", CrystalElement.BROWN, 4);
 		this.addElement("ingotGold", CrystalElement.PURPLE, 2);
-		this.addElement(Items.coal, CrystalElement.YELLOW, 4);
-		this.addElement(Items.coal, CrystalElement.ORANGE, 4);
+		this.addElement(Items.coal, CrystalElement.YELLOW, 3);
+		this.addElement(Items.coal, CrystalElement.ORANGE, 3);
 		this.addElement("redstone", CrystalElement.YELLOW, 2);
 		this.addElement("redstone", CrystalElement.LIME, 2);
 		this.addElement("dustRedstone", CrystalElement.YELLOW, 2);
@@ -76,20 +84,54 @@ public class ItemMagicRegistry {
 		this.addElement(ModOreList.APATITE.getProductOreDictName(), CrystalElement.WHITE, 1);
 		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.BROWN, 2);
 		this.addElement(ModOreList.SULFUR.getProductOreDictName(), CrystalElement.ORANGE, 2);
+		this.addElement(ModOreList.NIKOLITE.getProductOreDictName(), CrystalElement.BROWN, 2);
+		this.addElement(ModOreList.NIKOLITE.getProductOreDictName(), CrystalElement.YELLOW, 2);
 
 		this.addElement("ingotCopper", CrystalElement.BROWN, 2);
 		this.addElement("ingotTin", CrystalElement.BROWN, 2);
 		this.addElement("ingotSilver", CrystalElement.BROWN, 3);
 		this.addElement("ingotLead", CrystalElement.BROWN, 3);
+		this.addElement("ingotLead", CrystalElement.RED, 1);
 		this.addElement("ingotNickel", CrystalElement.BROWN, 2);
+		this.addElement("ingotTitanium", CrystalElement.BROWN, 3);
+		this.addElement("ingotTitanium", CrystalElement.RED, 1);
 		this.addElement("ingotAluminum", CrystalElement.BROWN, 2);
+		this.addElement("ingotZinc", CrystalElement.BROWN, 2);
 		this.addElement("ingotUranium", CrystalElement.BROWN, 4);
+		this.addElement("ingotUranium", CrystalElement.GRAY, 3);
+		this.addElement("ingotUranium", CrystalElement.YELLOW, 3);
 		this.addElement("ingotIridium", CrystalElement.BROWN, 8);
 		this.addElement("ingotIridium", CrystalElement.WHITE, 2);
 		this.addElement("ingotIridium", CrystalElement.PURPLE, 8);
 		this.addElement("ingotPlatinum", CrystalElement.BROWN, 6);
 		this.addElement("ingotPlatinum", CrystalElement.WHITE, 1);
 		this.addElement("ingotPlatinum", CrystalElement.PURPLE, 6);
+		this.addElement("gemRuby", CrystalElement.BROWN, 6);
+		this.addElement("gemRuby", CrystalElement.PURPLE, 5);
+		this.addElement("gemRuby", CrystalElement.WHITE, 2);
+		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.BROWN, 6);
+		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.WHITE, 1);
+		this.addElement(ModOreList.DRACONIUM.getProductOreDictName(), CrystalElement.PURPLE, 6);
+		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.BROWN, 6);
+		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.WHITE, 2);
+		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.PURPLE, 6);
+		this.addElement(ModOreList.AMETHYST.getProductOreDictName(), CrystalElement.MAGENTA, 3);
+
+		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDAIR.getProductOreDictName(), CrystalElement.WHITE, 4);
+		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDEARTH.getProductOreDictName(), CrystalElement.GREEN, 4);
+		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.CYAN, 4);
+		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.ORANGE, 4);
+		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.LIGHTGRAY, 4);
+		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.BLACK, 2);
+		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.WHITE, 4);
+
+		this.addElement(ModOreList.FLUORITE.getProductOreDictName(), CrystalElement.WHITE, 2);
+		this.addElement(ModOreList.CALCITE.getProductOreDictName(), CrystalElement.WHITE, 2);
 
 		this.addElement(Blocks.sand, CrystalElement.BROWN, 1);
 		this.addElement(Blocks.grass, CrystalElement.GREEN, 1);
@@ -137,9 +179,6 @@ public class ItemMagicRegistry {
 		this.addElement(Items.carrot, CrystalElement.BROWN, 1);
 		this.addElement(Items.potato, CrystalElement.GREEN, 1);
 		this.addElement(Items.potato, CrystalElement.BROWN, 1);
-
-		//this.addElement(FluidRegistry.WATER, CrystalElement.CYAN, 5);
-		//this.addElement(FluidRegistry.LAVA, CrystalElement.ORANGE, 5);
 
 		this.addElement(Blocks.ice, CrystalElement.CYAN, 2);
 		this.addElement(Blocks.ice, CrystalElement.GRAY, 1);
@@ -225,6 +264,39 @@ public class ItemMagicRegistry {
 			this.addElement(vdye, e, 1);
 			this.addElement(dye, e, 1);
 		}
+
+		this.addFluids();
+	}
+
+	private void addFluids() {
+
+
+		this.addElement(FluidRegistry.WATER, CrystalElement.CYAN, 3);
+
+		this.addElement(FluidRegistry.LAVA, CrystalElement.CYAN, 2);
+		this.addElement(FluidRegistry.LAVA, CrystalElement.ORANGE, 3);
+
+		this.addElement(ChromatiCraft.luma, CrystalElement.CYAN, 1);
+		this.addElement(ChromatiCraft.luma, CrystalElement.WHITE, 4);
+		this.addElement(ChromatiCraft.luma, CrystalElement.BLACK, 4);
+
+		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.CYAN, 1);
+		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.PINK, 1);
+		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.LIME, 5);
+		this.addElement(FluidRegistry.getFluid("ender"), CrystalElement.BLACK, 5);
+
+		this.addElement(FluidRegistry.getFluid("oil"), CrystalElement.CYAN, 2);
+		this.addElement(FluidRegistry.getFluid("oil"), CrystalElement.YELLOW, 4);
+		this.addElement(FluidRegistry.getFluid("oil"), CrystalElement.BROWN, 4);
+
+		this.addElement(FluidRegistry.getFluid("essence"), CrystalElement.CYAN, 3);
+		this.addElement(FluidRegistry.getFluid("essence"), CrystalElement.BLACK, 4);
+
+		this.addElement(FluidRegistry.getFluid("poison"), CrystalElement.CYAN, 2);
+		this.addElement(FluidRegistry.getFluid("poison"), CrystalElement.PINK, 3);
+
+		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.CYAN, 2);
+		this.addElement(FluidRegistry.getFluid("milk"), CrystalElement.GREEN, 3);
 	}
 
 	private void addElement(String s, CrystalElement e, int amt) {
@@ -254,6 +326,17 @@ public class ItemMagicRegistry {
 		return li2;
 		 */
 		return li;
+	}
+
+	private void addElement(Fluid f, CrystalElement e, int amt) {
+		if (f == null)
+			return;
+		ElementTagCompound tag = fluidData.get(f);
+		if (tag == null) {
+			tag = new ElementTagCompound();
+			fluidData.put(f, tag);
+		}
+		tag.addTag(e, amt);
 	}
 
 	private void addElement(Block b, CrystalElement e, int amt) {
@@ -293,6 +376,11 @@ public class ItemMagicRegistry {
 
 	public Collection<KeyedItemStack> keySet() {
 		return Collections.unmodifiableCollection(data.keySet());
+	}
+
+	public ElementTagCompound getFluidValue(Fluid f) {
+		ElementTagCompound tag = fluidData.get(f);
+		return tag != null ? tag.copy() : null;
 	}
 
 }

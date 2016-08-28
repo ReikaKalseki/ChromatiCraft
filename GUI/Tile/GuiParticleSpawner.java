@@ -150,11 +150,11 @@ public class GuiParticleSpawner extends GuiChromaBase {
 					b.iconHeight = b.iconWidth = 16;
 					buttonList.add(b);
 				}
-				for (int i = 0; i < 6; i++) {
+				for (int i = 0; i < 8; i++) {
 					int x = j+29+(i%2)*122;
-					int y = k+60+(i/2)*24;
+					int y = k+58+(i/2)*20;
 					int u = i%2 == 1 ? 126 : 106;
-					int v = 173;
+					int v = i >= 6 ? 193 : 173;
 					GuiButton b = new ImagedGuiButton(i+200, x, y, 20, 20, u, v, file, ChromatiCraft.class);
 					buttonList.add(b);
 				}
@@ -458,6 +458,12 @@ public class GuiParticleSpawner extends GuiChromaBase {
 				}
 				this.calcColors(0);
 			}
+			if (id-200 == 6) {
+				tile.particles.cyclingColor = false;
+			}
+			if (id-200 == 7) {
+				tile.particles.cyclingColor = true;
+			}
 		}
 		else if (id >= 100) {
 			color = CrystalElement.elements[id-100].getColor();
@@ -519,12 +525,12 @@ public class GuiParticleSpawner extends GuiChromaBase {
 		int k = (height - ySize) / 2;
 
 		int i = 0;
-		int sy = page == GuiPage.MODIFIER ? 20 : 24;
+		int sy = page == GuiPage.MODIFIER || page == GuiPage.COLOR ? 20 : 24;
 		for (Option o : page.options) {
 			int dx = j+49;
 			int dy = k+19+sy*i;
 			if (page == GuiPage.COLOR)
-				dy += 41;
+				dy += 39;
 			i++;
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getFullTexturePath());
 			api.drawTexturedModalRect(dx, dy, 0, 173, 102, 20);
@@ -595,6 +601,7 @@ public class GuiParticleSpawner extends GuiChromaBase {
 						options.add(new SliderOption("Saturation", new BoundedValue(0F, 1, sat).setStep(0.03125F)));
 						options.add(new SliderOption("Luminosity", new BoundedValue(0F, 1, lum).setStep(0.03125F)));
 					}
+					options.add(new ToggleOption("Cycling Color", p.particles.cyclingColor));
 					break;
 				case ICON:
 					break;

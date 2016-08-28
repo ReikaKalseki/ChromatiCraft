@@ -32,6 +32,8 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityRelaySource extends InventoriedCrystalReceiver implements InertIInv, ItemOnRightClick {
 
@@ -77,6 +79,8 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		else if (cooldown < 200)
 			cooldown++;
 
+		checkTimer.setCap(cooldown);
+
 		if (inv[0] != null && ChromaItems.STORAGE.matchWith(inv[0])) {
 			for (CrystalElement e : ItemStorageCrystal.getStoredTags(inv[0]).elementSet()) {
 				int amt = ItemStorageCrystal.getStoredEnergy(inv[0], e);
@@ -89,6 +93,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
 		if (rand.nextInt(3) == 0) {
 			int dx = rand.nextBoolean() ? x+1 : x-1;
@@ -121,8 +126,8 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		EntityPlayer ep = this.getPlacer();
-		if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
-			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && ChromaStructures.getBoostedRelayStructure(world, x, y, z).matchInWorld();
+		if (ep != null && !ReikaPlayerAPI.isFake(ep) && !world.isRemote) {
+			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && ChromaStructures.getBoostedRelayStructure(world, x, y, z, false).matchInWorld();
 		}
 		else {
 			enhanced = false;
@@ -229,6 +234,11 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	public boolean isEnhanced() {
 		return enhanced;
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void setEnhanced(boolean en) {
+		enhanced = en;
 	}
 
 	@Override

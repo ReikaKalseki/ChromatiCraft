@@ -373,4 +373,9 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		}
 	}
 
+	@Override
+	public final int getRedstoneOverride() {
+		return (int)Math.round(15*this.getFillPercentage());
+	}
+
 }

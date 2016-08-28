@@ -114,6 +114,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		public boolean rapidExpand = false;
 		public boolean noSlowdown = false;
 		public boolean alphaFade = false;
+		public boolean cyclingColor = false;
 
 		public ChromaIcons particleIcon = ChromaIcons.FADE;
 
@@ -147,6 +148,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 					fx.setNoSlowdown();
 				if (alphaFade)
 					fx.setAlphaFading();
+				if (cyclingColor)
+					fx.setCyclingColor(1);
 				return fx;
 			}
 			else {
@@ -169,6 +172,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			NBT.setBoolean("rapid", rapidExpand);
 			NBT.setBoolean("noslow", noSlowdown);
 			NBT.setBoolean("afade", alphaFade);
+			NBT.setBoolean("cycle", cyclingColor);
 
 			NBT.setString("icon", particleIcon.name());
 
@@ -204,6 +208,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 			rapidExpand = NBT.getBoolean("rapid");
 			noSlowdown = NBT.getBoolean("noslow");
 			alphaFade = NBT.getBoolean("afade");
+			cyclingColor = NBT.getBoolean("cycle");
 
 			try {
 				particleIcon = ChromaIcons.valueOf(NBT.getString("icon"));

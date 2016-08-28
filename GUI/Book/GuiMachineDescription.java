@@ -38,6 +38,8 @@ public class GuiMachineDescription extends GuiDescription {
 
 	private float renderq = 22.5F;
 
+	public static boolean runningRender = false;
+
 	public GuiMachineDescription(EntityPlayer ep, ChromaResearch r) {
 		super(ChromaGuis.MACHINEDESC, ep, r, 256, 220);
 	}
@@ -123,6 +125,7 @@ public class GuiMachineDescription extends GuiDescription {
 		GL11.glPushMatrix();
 
 		if (m.hasRender()) {
+			runningRender = true;
 			double dx = x;
 			double dy = y+m.getRenderOffset();
 			double dz = 0;
@@ -145,6 +148,9 @@ public class GuiMachineDescription extends GuiDescription {
 			if (m == ChromaTiles.TELEPORT) {
 				a = b = -0.125;
 			}
+			if (m == ChromaTiles.FLUIDRELAY) {
+				a = b = -1.5;
+			}
 			if (m == ChromaTiles.PERSONAL) {
 				double s = 0.75;
 				GL11.glScaled(s, s, s);
@@ -158,6 +164,7 @@ public class GuiMachineDescription extends GuiDescription {
 			}
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, 0, b, 0);
 			GL11.glPopMatrix();
+			runningRender = false;
 		}
 		if (m.hasBlockRender()) {
 			double dx = x;

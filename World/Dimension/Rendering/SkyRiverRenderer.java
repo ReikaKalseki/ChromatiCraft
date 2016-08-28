@@ -88,86 +88,88 @@ public class SkyRiverRenderer {
 
 			GL11.glPopMatrix();
 
-			if (p.positionID == 1) {
-				int n = ReikaRandomHelper.getRandomBetween(1, 3);
+			if (!Minecraft.getMinecraft().isGamePaused()) {
+				if (p.positionID == 1) {
+					int n = ReikaRandomHelper.getRandomBetween(1, 3);
 
-				double lx = p.next.xCoord-p.position.xCoord;
-				double ly = p.next.yCoord-p.position.yCoord;
-				double lz = p.next.zCoord-p.position.zCoord;
+					double lx = p.next.xCoord-p.position.xCoord;
+					double ly = p.next.yCoord-p.position.yCoord;
+					double lz = p.next.zCoord-p.position.zCoord;
 
-				for (int i = 0; i < n; i++) {
-					double d = ReikaRandomHelper.getRandomBetween(0.5, 0.9375);
+					for (int i = 0; i < n; i++) {
+						double d = ReikaRandomHelper.getRandomBetween(0.5, 0.9375);
 
-					double px = p.position.xCoord-lx*d;
-					double py = p.position.yCoord-ly*d;
-					double pz = p.position.zCoord-lz*d;
+						double px = p.position.xCoord-lx*d;
+						double py = p.position.yCoord-ly*d;
+						double pz = p.position.zCoord-lz*d;
 
-					double tx = p.position.xCoord+lx/32D;
-					double ty = p.position.yCoord+ly/32D;
-					double tz = p.position.zCoord+lz/32D;
+						double tx = p.position.xCoord+lx/32D;
+						double ty = p.position.yCoord+ly/32D;
+						double tz = p.position.zCoord+lz/32D;
 
-					double dx = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
-					double dy = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
-					double dz = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
+						double dx = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
+						double dy = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
+						double dz = ReikaRandomHelper.getRandomPlusMinus(0, r1/2);
 
-					double dd = ReikaRandomHelper.getRandomBetween(1.25, 2);
+						double dd = ReikaRandomHelper.getRandomBetween(1.25, 2);
 
-					px += dx*dd;
-					py += dy*dd;
-					pz += dz*dd;
+						px += dx*dd;
+						py += dy*dd;
+						pz += dz*dd;
 
-					tx += dx;
-					ty += dy;
-					tz += dz;
+						tx += dx;
+						ty += dy;
+						tz += dz;
 
-					int l = ReikaRandomHelper.getRandomBetween(15, 30);
-					PositionController pc = new CollectingPositionController(px, py, pz, tx, ty, tz, l);
-					EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz).setLife(l).setScale(14).setPositionController(pc).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
+						int l = ReikaRandomHelper.getRandomBetween(15, 30);
+						PositionController pc = new CollectingPositionController(px, py, pz, tx, ty, tz, l);
+						EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz).setLife(l).setScale(14).setPositionController(pc).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
 
-					//ReikaJavaLibrary.pConsole(fx);
+						//ReikaJavaLibrary.pConsole(fx);
 
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
-			}
-			else if (p.nextRiverPoint.nextRiverPoint == null) {
-				int n = ReikaRandomHelper.getRandomBetween(1, 3);
+				else if (p.nextRiverPoint.nextRiverPoint == null) {
+					int n = ReikaRandomHelper.getRandomBetween(1, 3);
 
-				double lx = p.next.xCoord-p.position.xCoord;
-				double ly = p.next.yCoord-p.position.yCoord;
-				double lz = p.next.zCoord-p.position.zCoord;
+					double lx = p.next.xCoord-p.position.xCoord;
+					double ly = p.next.yCoord-p.position.yCoord;
+					double lz = p.next.zCoord-p.position.zCoord;
 
-				for (int i = 0; i < n; i++) {
-					double d = ReikaRandomHelper.getRandomBetween(0.03125, 0.375);
+					for (int i = 0; i < n; i++) {
+						double d = ReikaRandomHelper.getRandomBetween(0.03125, 0.375);
 
-					double px = p.position.xCoord+lx*d;
-					double py = p.position.yCoord+ly*d;
-					double pz = p.position.zCoord+lz*d;
+						double px = p.position.xCoord+lx*d;
+						double py = p.position.yCoord+ly*d;
+						double pz = p.position.zCoord+lz*d;
 
-					double dx = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
-					double dy = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
-					double dz = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
+						double dx = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
+						double dy = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
+						double dz = ReikaRandomHelper.getRandomPlusMinus(0, r1/4);
 
-					double dd = ReikaRandomHelper.getRandomBetween(1.25, 2);
+						double dd = ReikaRandomHelper.getRandomBetween(1.25, 2);
 
-					px += dx*dd;
-					py += dy*dd;
-					pz += dz*dd;
+						px += dx*dd;
+						py += dy*dd;
+						pz += dz*dd;
 
-					double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.25)/8D;
-					double vx = v*lx;
-					double vy = v*ly;
-					double vz = v*lz;
+						double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.25)/8D;
+						double vx = v*lx;
+						double vy = v*ly;
+						double vz = v*lz;
 
-					vx = ReikaRandomHelper.getRandomPlusMinus(vx, 0.125);
-					vy = ReikaRandomHelper.getRandomPlusMinus(vy, 0.125);
-					vz = ReikaRandomHelper.getRandomPlusMinus(vz, 0.125);
+						vx = ReikaRandomHelper.getRandomPlusMinus(vx, 0.125);
+						vy = ReikaRandomHelper.getRandomPlusMinus(vy, 0.125);
+						vz = ReikaRandomHelper.getRandomPlusMinus(vz, 0.125);
 
-					int l = ReikaRandomHelper.getRandomBetween(30, 80);
-					EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setLife(l).setScale(14).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
+						int l = ReikaRandomHelper.getRandomBetween(30, 80);
+						EntityFX fx = new EntityBlurFX(Minecraft.getMinecraft().theWorld, px, py, pz, vx, vy, vz).setLife(l).setScale(14).setColor(clr).setIcon(ChromaIcons.FADE_GENTLE);
 
-					//ReikaJavaLibrary.pConsole(fx);
+						//ReikaJavaLibrary.pConsole(fx);
 
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
 			}
 		}

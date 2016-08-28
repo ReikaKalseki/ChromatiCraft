@@ -48,7 +48,12 @@ public class FarmerRecipe extends PylonRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 32;
+		return 8;
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 3;
 	}
 
 }

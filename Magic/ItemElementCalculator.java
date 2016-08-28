@@ -32,6 +32,9 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import thaumcraft.api.ThaumcraftApi;
@@ -81,23 +84,26 @@ public class ItemElementCalculator {
 	private ItemElementCalculator() {
 		for (int i = 0; i < CrystalElement.elements.length; i++) {
 			CrystalElement e = CrystalElement.elements[i];
-			ElementTagCompound tag = new ElementTagCompound();
 			ElementTagCompound tag1 = new ElementTagCompound();
+			ElementTagCompound tag2 = new ElementTagCompound();
+			ElementTagCompound tag4 = new ElementTagCompound();
 			tag1.addValueToColor(e, 1);
-			tag.addValueToColor(e, 2);
-			cache.put(ChromaItems.ELEMENTAL.getStackOf(e), tag);
-			cache.put(ChromaBlocks.RUNE.getStackOfMetadata(i), tag);
+			tag2.addValueToColor(e, 2);
+			tag4.addValueToColor(e, 4);
+			cache.put(ChromaItems.ELEMENTAL.getStackOf(e), tag4);
+			cache.put(ChromaBlocks.RUNE.getStackOfMetadata(i), tag4);
 			cache.put(ChromaBlocks.DYELEAF.getStackOfMetadata(i), tag1);
-			cache.put(ChromaBlocks.GLOW.getStackOfMetadata(i), tag1);
+			cache.put(ChromaBlocks.GLOW.getStackOfMetadata(i), tag2);
 			cache.put(ChromaItems.DYE.getStackOfMetadata(i), tag1);
+			cache.put(ChromaItems.SEED.getStackOfMetadata(i), tag1);
 			cache.put(new ItemStack(Items.dye, 1, i), tag1);
 
-			ElementTagCompound tag2 = tag1.copy();
-			tag2.addValueToColor(CrystalElement.GREEN, 1);
-			cache.put(new ItemStack(Blocks.wool, 1, 16-i), tag2);
+			ElementTagCompound tagc = tag1.copy();
+			tagc.addValueToColor(CrystalElement.GREEN, 1);
+			cache.put(new ItemStack(Blocks.wool, 1, 16-i), tagc);
 			Block rockwool = GameRegistry.findBlock(ModList.THERMALEXPANSION.modLabel, "Rockwool");
 			if (rockwool != null) {
-				cache.put(new ItemStack(rockwool, 1, 16-i), tag2);
+				cache.put(new ItemStack(rockwool, 1, 16-i), tagc);
 			}
 		}
 
@@ -115,7 +121,9 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.elementDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.lumenGem, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1));
 		cache.put(ChromaStacks.lumaDust, new ElementTagCompound(1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-		cache.put(ChromaStacks.echoCrystal, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.echoCrystal, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.glowbeans, new ElementTagCompound(1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
+		cache.put(ChromaStacks.boostroot, new ElementTagCompound(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
 		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
@@ -184,6 +192,14 @@ public class ItemElementCalculator {
 		if (is.getItem() instanceof ItemArmor) {
 			tag.addValueToColor(CrystalElement.RED, 4);
 		}
+		FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+		if (fs != null) {
+			Fluid f = fs.getFluid();
+			ElementTagCompound ftag = ItemMagicRegistry.instance.getFluidValue(f);
+			if (ftag != null) {
+				tag.add(ftag);
+			}
+		}
 		//ChromatiCraft.logger.log("Found data for "+is+": "+tag);
 		return tag;
 	}
@@ -193,6 +209,9 @@ public class ItemElementCalculator {
 		ElementTagCompound tag = new ElementTagCompound();
 		for (IRecipe ir : li) {
 			tag.addButMinimizeWith(this.getIRecipeTotal(ir, step+1));
+			if (tag.containsAllColors() && tag.getMaximumValue() == 1) { //since can never reduce
+				return tag;
+			}
 		}
 		return tag;
 	}
@@ -206,6 +225,9 @@ public class ItemElementCalculator {
 				ElementTagCompound tag2 = this.getValueForItem(in, step+1);
 				tag2.addValueToColor(CrystalElement.ORANGE, 1);
 				tag.addButMinimizeWith(tag2);
+				if (tag.containsAllColors() && tag.getMaximumValue() == 1) { //since can never reduce
+					return tag;
+				}
 			}
 		}
 		return tag;

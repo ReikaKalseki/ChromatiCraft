@@ -17,6 +17,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.WrapperTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
@@ -151,6 +152,16 @@ public class TemporaryCrystalReceiver implements CrystalReceiver, WrapperTile {
 
 	public boolean canConductInterdimensionally() {
 		return false;
+	}
+
+	@Override
+	public boolean canReceiveFrom(CrystalTransmitter r) {
+		return true;
+	}
+
+	@Override
+	public boolean needsLineOfSightFromTransmitter() {
+		return true;
 	}
 
 }

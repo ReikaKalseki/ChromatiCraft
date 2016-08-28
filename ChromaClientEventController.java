@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -44,6 +45,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
@@ -56,6 +58,7 @@ import net.minecraftforge.client.event.RenderBlockOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderWorldEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -70,6 +73,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.AbilityHelper.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
@@ -88,6 +92,7 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -97,6 +102,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
+import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
@@ -117,7 +123,6 @@ import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.GameFinishedLoadingEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
@@ -140,6 +145,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -147,6 +153,7 @@ import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.GameRegistry.UniqueIdentifier;
@@ -163,7 +170,7 @@ public class ChromaClientEventController {
 
 	private boolean editedSlimeModel = false;
 
-	public boolean textureLoadingComplete = false;
+	//public boolean textureLoadingComplete = false;
 
 	private Coordinate excavatorOverlayOrigin;
 	private BlockKey excavatorOverlayBlock;
@@ -171,11 +178,48 @@ public class ChromaClientEventController {
 	private BlockArray cachedExcavatorOverlay;
 
 	private ChromaClientEventController() {
+		/*
 		if (ChromaOptions.BIOMEFX.getState()) {
 			BiomeFXRenderer.instance.initialize();
 		}
 		else {
 			textureLoadingComplete = true;
+		}
+		 */
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void flipFaces(RenderWorldEvent.Pre evt) {
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+		if (VoidGazeLevels.FACEFLIP.isActiveOnPlayer(Minecraft.getMinecraft().thePlayer))
+			GL11.glFrontFace(GL11.GL_CW);
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void flipFaces(RenderWorldEvent.Post evt) {
+		GL11.glPopAttrib();
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void createCaveParticles(ClientTickEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (!Minecraft.getMinecraft().isGamePaused() && ep != null && VoidGazeLevels.CAVEPARTICLES.isActiveOnPlayer(ep)) {
+			int n = 9-Minecraft.getMinecraft().gameSettings.particleSetting*2;
+			for (int i = 0; i < n; i++) {
+				double dx = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 12);
+				double dz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 12);
+				double dy = ReikaRandomHelper.getRandomPlusMinus(ep.posY, 8);
+				int mdx = MathHelper.floor_double(dx);
+				int mdy = MathHelper.floor_double(dy);
+				int mdz = MathHelper.floor_double(dz);
+				if (ep.worldObj.getBlock(mdx, mdy, mdz).isAir(ep.worldObj, mdx, mdy, mdz)) {
+					EntityFX fx = new EntityBlurFX(ep.worldObj, dx, dy, dz).setLife(8).setAlphaFading().setIcon(ChromaIcons.FLARE).setScale(1.5F);
+					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				}
+			}
 		}
 	}
 
@@ -399,6 +443,7 @@ public class ChromaClientEventController {
 		 */
 	}
 
+	/*
 	@SubscribeEvent
 	public void waitForTextures(GameFinishedLoadingEvent evt) throws InterruptedException {
 		long dur = 0;
@@ -409,6 +454,7 @@ public class ChromaClientEventController {
 				ChromatiCraft.logger.log("Waiting for texture loading to complete...");
 		}
 	}
+	 */
 	/*
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void controlBrightness(LightmapEvent evt) {
@@ -417,8 +463,8 @@ public class ChromaClientEventController {
 	 */
 	@SubscribeEvent
 	public void biomeFX(EntityRenderingLoopEvent evt) {
-		if (ChromaOptions.BIOMEFX.getState() && Minecraft.getMinecraft().theWorld.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
-			BiomeFXRenderer.instance.render();
+		//if (ChromaOptions.BIOMEFX.getState() && Minecraft.getMinecraft().theWorld.provider.dimensionId != ExtraChromaIDs.DIMID.getValue())
+		BiomeFXRenderer.instance.render();
 	}
 
 	@SubscribeEvent

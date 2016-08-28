@@ -41,6 +41,8 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 	@Override
 	protected boolean isMetaInCreative(int meta) {
 		meta = meta & 0xfffffff0;
+		if (meta == 0)
+			return true;
 		return ReikaMathLibrary.isPowerOfTwo(meta) && (DragonAPICore.isReikasComputer() || Modifier.getFromFlag(meta).showsInCreative());
 	}
 

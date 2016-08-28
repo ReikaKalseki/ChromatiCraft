@@ -30,7 +30,7 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	}
 
 	@Override
-	public boolean needsLineOfSight() {
+	public boolean needsLineOfSightToReceiver() {
 		return true;
 	}
 
@@ -112,6 +112,11 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 		if (ep.getUniqueID().equals(DragonAPICore.Reika_UUID))
 			return true;
 		return ep != null && other != null && ep.getUniqueID().equals(other) && ep.capabilities.isCreativeMode;
+	}
+
+	@Override
+	public int getPathPriority() {
+		return Integer.MAX_VALUE;
 	}
 
 }
