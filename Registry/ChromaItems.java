@@ -73,6 +73,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemMobilityWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemResetWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemShooWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
+import Reika.ChromatiCraft.ModInterface.ItemChromaBeeFrame;
 import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.ItemCrystalCell;
 import Reika.ChromatiCraft.ModInterface.ItemVoidStorage;
@@ -153,6 +154,7 @@ public enum ChromaItems implements ItemEnum {
 	THROWGEM(0,	true,		"chroma.throwgem",		ItemThrowableGem.class),
 	FLOATBOOTS(40, false,	"chroma.floatboots",	ItemFloatstoneBoots.class),
 	WARPCAPSULE(41, false,	"chroma.warpitem",		ItemWarpCapsule.class),
+	BEEFRAME(208, false, 	"chroma.beeframe",		ItemChromaBeeFrame.class, ModList.FORESTRY),
 	;
 
 	private final int index;

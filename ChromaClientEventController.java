@@ -11,7 +11,6 @@ package Reika.ChromatiCraft;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
@@ -90,7 +89,6 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemExcavationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Models.ColorizableSlimeModel;
-import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -149,7 +147,6 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
-import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -1370,13 +1367,39 @@ public class ChromaClientEventController {
 							RenderBlocks.getInstance().renderBlockAsItem(b, meta, 1);
 						}
 						else {
-							ArrayList<ItemStack> li = b.getDrops(Minecraft.getMinecraft().theWorld, x, y, z, meta, 0);
-							if (!li.isEmpty()) {
-								ItemStack is = li.get((int)((System.currentTimeMillis()/1000)%li.size()));
-								if (is.getItem() != null)
-									ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+							/*
+							if (b.hasTileEntity(meta)) {
+								TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
+								TileEntitySpecialRenderer tesr = TileEntityRendererDispatcher.instance.getSpecialRenderer(te);
+								if (tesr != null) {
+									dx *= 1.375;
+									dy *= 1.375;
+									GL11.glTranslated(dx-54, dy-16, 0);
+									GL11.glRotated(180, 0, 0, 1);
+									GL11.glRotated(45, 0, 1, 0);
+									double d = 16;
+									GL11.glScaled(d, d, d);
+									tesr.renderTileEntityAt(te, 0, 0, 0, ReikaRenderHelper.getPartialTickTime());
+									GL11.glPopAttrib();
+									GL11.glPopMatrix();
+									return;
+								}
 							}
-							else {
+							 */
+							try {
+								ArrayList<ItemStack> li = b.getDrops(Minecraft.getMinecraft().theWorld, x, y, z, meta, 0);
+								if (!li.isEmpty()) {
+									ItemStack is = li.get((int)((System.currentTimeMillis()/1000)%li.size()));
+									if (is.getItem() != null)
+										ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+								}
+								else {
+									ItemStack is = new ItemStack(b, 1, meta);
+									if (is.getItem() != null)
+										ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+								}
+							}
+							catch (Exception e) { //because some mods are derps and make getDrops crash on the client or use it to set states
 								ItemStack is = new ItemStack(b, 1, meta);
 								if (is.getItem() != null)
 									ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
@@ -1396,34 +1419,37 @@ public class ChromaClientEventController {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (Chromabilities.REACH.enabledOn(ep)) {
 				GL11.glPushMatrix();
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				World world = Minecraft.getMinecraft().theWorld;
 				int x = evt.target.blockX;
 				int y = evt.target.blockY;
 				int z = evt.target.blockZ;
-				double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
-				double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
-				double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
-				GL11.glTranslated(p2, p4, p6);
-				//GL11.glEnable(GL11.GL_BLEND);
-				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-				GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
-				GL11.glLineWidth(3.0F);
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-				GL11.glDepthMask(false);
-				float f1 = 0.002F;
-				double d = 0.005;
-				Block b = world.getBlock(x, y, z);
-				b.setBlockBoundsBasedOnState(world, x, y, z);
-				AxisAlignedBB box = b.getSelectedBoundingBoxFromPool(world, x, y, z);
-				box = box.offset(-x, -y, -z).expand(d, d, d);
-				float r = (float)(0.5+Math.sin(System.currentTimeMillis()/500D));
-				r = Math.max(0, Math.min(1, r));
-				int c = ReikaColorAPI.mixColors(CrystalElement.LIME.getColor(), CrystalElement.PURPLE.getColor(), r);
-				RenderGlobal.drawOutlinedBoundingBox(box, c);
+
+				if (ChromaTiles.getTile(world, x, y, z) != ChromaTiles.PYLON) {
+					double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
+					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
+					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
+					GL11.glTranslated(p2, p4, p6);
+					//GL11.glEnable(GL11.GL_BLEND);
+					OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+					GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
+					GL11.glLineWidth(3.0F);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					GL11.glDepthMask(false);
+					float f1 = 0.002F;
+					double d = 0.005;
+					Block b = world.getBlock(x, y, z);
+					b.setBlockBoundsBasedOnState(world, x, y, z);
+					AxisAlignedBB box = b.getSelectedBoundingBoxFromPool(world, x, y, z);
+					box = box.offset(-x, -y, -z).expand(d, d, d);
+					float r = (float)(0.5+Math.sin(System.currentTimeMillis()/500D));
+					r = Math.max(0, Math.min(1, r));
+					int c = ReikaColorAPI.mixColors(CrystalElement.LIME.getColor(), CrystalElement.PURPLE.getColor(), r);
+					RenderGlobal.drawOutlinedBoundingBox(box, c);
+				}
 
 
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
-
+				GL11.glPopAttrib();
 				GL11.glPopMatrix();
 
 				GL11.glDepthMask(true);
@@ -1558,27 +1584,8 @@ public class ChromaClientEventController {
 		if (cachedExcavatorOverlay == null) {
 			cachedExcavatorOverlay = new BlockArray();
 			cachedExcavatorOverlay.maxDepth = ItemExcavationWand.getDepth(Minecraft.getMinecraft().thePlayer)-1;
-			Set<BlockKey> set = new HashSet();
+			Set<BlockKey> set = ItemExcavationWand.getSpreadBlocks(world, x, y, z);
 			set.add(new BlockKey(id, meta));
-			if (id == Blocks.lit_redstone_ore)
-				set.add(new BlockKey(Blocks.redstone_ore));
-			else if (id == Blocks.redstone_ore)
-				set.add(new BlockKey(Blocks.lit_redstone_ore));
-			else if (id == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
-				for (int i = 0; i < 16; i++) {
-					set.add(new BlockKey(id, i));
-				}
-			}
-			else if (id == TwilightForestHandler.BlockEntry.NAGASTONE.getBlock()) {
-				for (int i = 0; i < 16; i++) {
-					set.add(new BlockKey(id, i));
-				}
-			}
-			else if (id == TwilightForestHandler.BlockEntry.AURORA.getBlock()) {
-				for (int i = 0; i < 16; i++) {
-					set.add(new BlockKey(id, i));
-				}
-			}
 			if (Minecraft.getMinecraft().thePlayer.isSneaking())
 				cachedExcavatorOverlay.extraSpread = true;
 			cachedExcavatorOverlay.taxiCabDistance = true;

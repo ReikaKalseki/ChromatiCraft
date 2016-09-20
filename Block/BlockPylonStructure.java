@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
@@ -502,6 +503,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			((TileEntityTeleportGate)te).validateStructure();
 		}
 
+		te = world.getTileEntity(mx, my+3, mz);
+		if (te instanceof TileEntityRelaySource) {
+			((TileEntityRelaySource)te).validateStructure(world, te.xCoord, te.yCoord, te.zCoord);
+		}
+
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -591,6 +597,11 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 		te = world.getTileEntity(mx, my+1, mz);
 		if (te instanceof TileEntityTeleportGate) {
 			((TileEntityTeleportGate)te).validateStructure();
+		}
+
+		te = world.getTileEntity(mx, my+3, mz);
+		if (te instanceof TileEntityRelaySource) {
+			((TileEntityRelaySource)te).validateStructure(world, te.xCoord, te.yCoord, te.zCoord);
 		}
 
 		for (int k = 0; k < 6; k++) {

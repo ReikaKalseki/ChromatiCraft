@@ -652,8 +652,8 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
-	public boolean canSupply(CrystalReceiver te) {
-		return !(te instanceof TileEntityPowerTree);
+	public boolean canSupply(CrystalReceiver te, CrystalElement e) {
+		return !(te instanceof TileEntityPowerTree) && this.getEnergy(e) >= 60000;
 	}
 
 	@Override

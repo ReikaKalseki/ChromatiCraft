@@ -67,8 +67,8 @@ public class TieredWorldGenerator implements RetroactiveGenerator, ChromaDecorat
 			for (int i = 0; i < TieredOres.list.length; i++) {
 				TieredOres p = TieredOres.list[i];
 				boolean flag = false;
-				if (random.nextInt(p.getGenerationChance()) == 0) {
-					int n = p.getGenerationCount();
+				if (random.nextInt(p.genChance) == 0) {
+					int n = p.veinCount;
 					for (int k = 0; k < n; k++) {
 						int posX = chunkX + random.nextInt(16);
 						int posZ = chunkZ + random.nextInt(16);

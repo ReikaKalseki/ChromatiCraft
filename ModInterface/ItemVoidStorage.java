@@ -26,10 +26,10 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.BasicInventory;
+import Reika.DragonAPI.Instantiable.ModInteract.AECellFormat;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
-import Reika.DragonAPI.ModInteract.Instantiable.AECellFormat;
 import appeng.api.AEApi;
 import appeng.api.config.FuzzyMode;
 import appeng.api.implementations.items.IStorageCell;
@@ -87,7 +87,7 @@ public class ItemVoidStorage extends ItemChromaTool implements SpriteRenderCallb
 
 	@Override
 	public IInventory getConfigInventory(ItemStack is) {
-		return new AECellFormat(is, "config", 1);
+		return new AECellFormat(is, "config", 63);
 	}
 
 	@Override

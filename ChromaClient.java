@@ -25,6 +25,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaRenderList;
 import Reika.ChromatiCraft.Auxiliary.Render.DonatorPylonRender;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
+import Reika.ChromatiCraft.Block.BlockAvoLamp.TileEntityAvoLamp;
 import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar.TileEntityColoredAltar;
 import Reika.ChromatiCraft.Block.Dimension.BlockVoidRift.TileEntityVoidRift;
@@ -60,6 +61,7 @@ import Reika.ChromatiCraft.Render.ChromaItemRenderer;
 import Reika.ChromatiCraft.Render.EnderCrystalRenderer;
 import Reika.ChromatiCraft.Render.LootChestRenderer;
 import Reika.ChromatiCraft.Render.PortalItemRenderer;
+import Reika.ChromatiCraft.Render.TESRItemRenderer;
 import Reika.ChromatiCraft.Render.Entity.RenderAurora;
 import Reika.ChromatiCraft.Render.Entity.RenderBallLightning;
 import Reika.ChromatiCraft.Render.Entity.RenderChainGunShot;
@@ -98,6 +100,7 @@ import Reika.ChromatiCraft.Render.ISBRH.TieredPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.VoidRiftRenderer;
 import Reika.ChromatiCraft.Render.TESR.CrystalPlantRenderer;
 import Reika.ChromatiCraft.Render.TESR.RenderAntKey;
+import Reika.ChromatiCraft.Render.TESR.RenderAvoLamp;
 import Reika.ChromatiCraft.Render.TESR.RenderBouncePad;
 import Reika.ChromatiCraft.Render.TESR.RenderColoredAltar;
 import Reika.ChromatiCraft.Render.TESR.RenderCrystalPortal;
@@ -271,6 +274,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TargetTile.class, new RenderLaserTarget());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileBouncePad.class, new RenderBouncePad());
 		ClientRegistry.bindTileEntitySpecialRenderer(GravityTile.class, new RenderGravityTile());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAvoLamp.class, new RenderAvoLamp());
 
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.PLACER.getItemInstance(), placer);
 		MinecraftForgeClient.registerItemRenderer(ChromaItems.RIFT.getItemInstance(), placer);
@@ -361,6 +365,7 @@ public class ChromaClient extends ChromaCommon {
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.PORTAL.getItem(), new PortalItemRenderer());
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.COLORALTAR.getItem(), new AltarItemRenderer());
 		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.LOOTCHEST.getItem(), new LootChestRenderer());
+		MinecraftForgeClient.registerItemRenderer(ChromaBlocks.AVOLAMP.getItem(), new TESRItemRenderer());
 	}
 
 

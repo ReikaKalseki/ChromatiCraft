@@ -51,6 +51,9 @@
 	<ore_rainbow>
 		Refractory gems are embedded in this stone. Maybe they can be used to help focus the energy from pylons.
 	</ore_rainbow>
+	<ore_avolite>
+		These crystals glow with energy. They can probably act as a reservoir for it.
+	</ore_avolite>
 	<plant_flower>
 		This gently glowing flower seems to weakly radiate energy; if extracted, its contents likely are crucial in maintaining an aura.
 	</plant_flower>

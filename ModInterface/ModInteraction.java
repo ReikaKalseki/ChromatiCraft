@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.SubBiomes;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -350,7 +351,12 @@ public class ModInteraction {
 		mat.renderColor = 0x22aaff;
 
 		mat.register(true).registerTexture("tinkertools/chromastone/chromastone", false);
-		mat.registerPatternBuilder(ChromaStacks.complexIngot);
+		//mat.registerPatternBuilder(ChromaStacks.complexIngot);
 		mat.registerWeapons(ChromaStacks.complexIngot, 10, 0.5F, 5F, 4F, 15F, 0);
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	public static void addCrystalBackpack() {
+		CrystalBackpack.instance.register();
 	}
 }

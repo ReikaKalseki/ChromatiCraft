@@ -49,6 +49,18 @@ public class GuiCrystalFurnace extends GuiChromaBase {
 			}
 			i++;
 		}
+
+		int dx = 154;
+		int x1 = j+dx;
+		int x2 = x1+11;
+		int y1 = k+16;
+		int y2 = y1+53;
+		if (api.isMouseInBox(x1, x2, y1, y2)) {
+			int level = tile.getEnergy(CrystalElement.LIGHTBLUE);
+			int max = tile.getMaxStorage(CrystalElement.LIGHTBLUE);
+			String s = String.format("%s: %d/%d", CrystalElement.LIGHTBLUE.displayName, level, max);
+			api.drawTooltipAt(fontRendererObj, s, mx-32, my);
+		}
 	}
 
 	@Override

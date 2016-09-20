@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.ModInterface.TileEntityEssentiaRelay;
 import Reika.ChromatiCraft.ModInterface.TileEntityFluxGooCreator;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
+import Reika.ChromatiCraft.ModInterface.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.ModInterface.TileEntityMEDistributor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
@@ -56,6 +57,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityVillageRepair;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityAvoLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
@@ -212,7 +214,9 @@ public enum ChromaTiles implements TileEnum {
 	IONOSPHERIC("chroma.atmospheric",	ChromaBlocks.PYLON,			TileEntityAtmosphericRelay.class,	10),
 	BOOKDECOMP("chroma.bookdecomp",		ChromaBlocks.TILEMODELLED3,	TileEntityPageExtractor.class,		11, "RenderPageExtractor", ModList.MYSTCRAFT),
 	HARVESTPLANT("chroma.harvestplant",	ChromaBlocks.DECOPLANT,		TileEntityHarvesterPlant.class,		5),
-	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0);
+	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0),
+	AVOLASER("chroma.avolaser",			ChromaBlocks.TILEMODELLED3,	TileEntityAvoLaser.class,			12, "RenderAvoLaser"),
+	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary");
 
 	private final Class tile;
 	private final String name;
@@ -308,6 +312,7 @@ public enum ChromaTiles implements TileEnum {
 			case TELEPORT:
 			case FLUIDRELAY:
 			case BOOKDECOMP:
+			case AVOLASER:
 				return true;
 			default:
 				return false;
@@ -425,6 +430,7 @@ public enum ChromaTiles implements TileEnum {
 			case PYLONTURBO:
 			case CLOAKING:
 			case ADJACENCY:
+			case ALVEARY:
 				return false;
 			default:
 				return true;
@@ -613,7 +619,7 @@ public enum ChromaTiles implements TileEnum {
 
 	@SideOnly(Side.CLIENT)
 	public boolean hasBlockRender() {
-		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE;
+		return !this.hasRender() || this == TANK || this == TABLE || this == CONSOLE || this == ALVEARY;
 	}
 
 	public boolean isPlant() {

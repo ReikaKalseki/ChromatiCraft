@@ -160,7 +160,7 @@ public class ItemCrystalShard extends ItemCrystalBasic implements AnimatedSprite
 		CrystalElement dye = CrystalElement.elements[is.getItemDamage()];
 		switch(dye) {
 			case BLACK:
-				ret += PotionHelper.fermentedSpiderEyeEffect;
+				ret += PotionHelper.redstoneEffect;//PotionHelper.fermentedSpiderEyeEffect;
 				break;
 			case BLUE:
 				ret += PotionHelper.goldenCarrotEffect;

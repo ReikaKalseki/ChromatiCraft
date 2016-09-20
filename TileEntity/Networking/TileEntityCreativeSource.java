@@ -90,7 +90,7 @@ public class TileEntityCreativeSource extends CrystalTransmitterBase implements 
 	}
 
 	@Override
-	public boolean canSupply(CrystalReceiver te) {
+	public boolean canSupply(CrystalReceiver te, CrystalElement e) {
 		return canSupply(this, te);
 	}
 

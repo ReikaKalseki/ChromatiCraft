@@ -567,28 +567,36 @@ public class TileEntityTeleportGate extends CrystalReceiverBase implements Locat
 					px = x+0.5+0.5*Math.sin(t/32D);
 					py = y+0.5+r*Math.cos(-ang4);
 					pz = z+0.5+r*Math.sin(-ang4);
-					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					if (py >= y-0.5) {
+						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 
 					px = x+0.5+0.5*Math.sin((t+16)/32D);
 					py = y+0.5+r*Math.cos(ang4);
 					pz = z+0.5+r*Math.sin(ang4);
-					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					if (py >= y-0.5) {
+						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
 
 				for (double ang4 = ang2; ang4 <= ang2+Math.PI; ang4 += Math.PI) {
 					pz = z+0.5+0.5*Math.sin(t/32D);
 					py = y+0.5+r*Math.cos(-ang4+Math.PI/2);
 					px = x+0.5+r*Math.sin(-ang4+Math.PI/2);
-					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					if (py >= y-0.5) {
+						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 
 					pz = z+0.5+0.5*Math.sin((t+16)/32D);
 					py = y+0.5+r*Math.cos(ang4+Math.PI/2);
 					px = x+0.5+r*Math.sin(ang4+Math.PI/2);
-					fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					if (py >= y-0.5) {
+						fx = new EntityBlurFX(world, px, py, pz).setColor(c).setRapidExpand().setScale(s).setLife(l);
+						Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+					}
 				}
 			}
 		}

@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Block.BlockAdjacencyUpgrade;
+import Reika.ChromatiCraft.Block.BlockAvoLamp;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaPlantTile;
 import Reika.ChromatiCraft.Block.BlockChromaPortal;
@@ -103,6 +104,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockAvoLamp;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -209,7 +211,8 @@ public enum ChromaBlocks implements BlockEnum {
 	BRIDGECONTROL(BlockBridgeControl.class,		ItemBlockMultiType.class,		"chroma.bridgecontrol"),
 	SPARKLE(BlockSparkle.class,					ItemBlockMultiType.class,		"chroma.sparkle"),
 	LUMA(BlockEtherealLuma.class,				ChromatiCraft.luma,				"fluid.luma"),
-	TILEENTITY2(BlockChromaTile.class, 											"Chromatic Tile 2");
+	TILEENTITY2(BlockChromaTile.class, 											"Chromatic Tile 2"),
+	AVOLAMP(BlockAvoLamp.class,					ItemBlockAvoLamp.class,			"chroma.avolamp");
 
 	private Class blockClass;
 	private String blockName;
@@ -263,6 +266,8 @@ public enum ChromaBlocks implements BlockEnum {
 			case RELAY:
 			case ADJACENCY:
 				return ChromatiCraft.crystalMat;
+			case AVOLAMP:
+				return Material.iron;
 			case TNT:
 				return Material.tnt;
 			case PORTAL:
@@ -461,6 +466,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case BRIDGE:
 			case BRIDGECONTROL:
 			case LUMA:
+			case AVOLAMP:
 				return false;
 			default:
 				return true;

@@ -588,7 +588,8 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityPylonTurboCharger)tile).doCompleteParticlesClient(world, x, y, z);
 					break;
 				case PYLONTURBOEVENT:
-					((TileEntityPylonTurboCharger)tile).doEventClient(world, x, y, z, data[0], data[1]);
+					if (tile != null)
+						((TileEntityPylonTurboCharger)tile).doEventClient(world, x, y, z, data[0], data[1]);
 					break;
 				case PYLONTURBOFAIL:
 					((TileEntityPylonTurboCharger)tile).doFailParticlesClient(world, x, y, z, data[0] > 0);

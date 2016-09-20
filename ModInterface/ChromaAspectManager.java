@@ -327,7 +327,7 @@ public class ChromaAspectManager {
 		}
 
 		Aspect[] tierores = {
-				Aspect.ENERGY,
+				Aspect.MAGIC,
 				Aspect.CRAFT,
 				Aspect.TRAP,
 				Aspect.LIGHT,
@@ -340,7 +340,8 @@ public class ChromaAspectManager {
 				Aspect.ELDRITCH,
 				Aspect.GREED,
 				Aspect.WEAPON,
-				Aspect.CRYSTAL
+				Aspect.CRYSTAL,
+				Aspect.ENERGY,
 		};
 
 		Aspect[] tierplants = {

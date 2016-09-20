@@ -40,8 +40,10 @@ import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
@@ -129,6 +131,11 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			tp.doPVP = !tp.doPVP;
 			return true;
 		}
+		if (t == ChromaTiles.BIOMEPAINTER) {
+			TileEntityBiomePainter tb = (TileEntityBiomePainter)tile;
+			tb.safeMode = !tb.safeMode;
+			return true;
+		}
 		if (t == ChromaTiles.PYLONTURBO) {
 			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)tile;
 			if (te.trigger(ep)) {
@@ -171,7 +178,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 		if (t == ChromaTiles.INSERTER) {
 			TileEntityItemInserter ir = (TileEntityItemInserter)tile;
-			ir.consumeLast = !ir.consumeLast;
+			ir.omniMode = !ir.omniMode;
 			ChromaSounds.USE.playSoundAtBlock(ir);
 			return true;
 		}
@@ -376,7 +383,8 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 	@Override
 	public void onUsingTick(ItemStack stack, EntityPlayer player, int count) {
-		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, 24, false);
+		int r = Chromabilities.REACH.enabledOn(player) ? 96 : 24;
+		MovingObjectPosition mov = ReikaPlayerAPI.getLookedAtBlock(player, r, false);
 		if (DragonAPICore.debugtest) {
 			if (player.isSneaking())
 				player.getEntityData().removeTag("CrystalBuffer");

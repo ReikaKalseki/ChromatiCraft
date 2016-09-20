@@ -195,7 +195,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
-	public void onRemoveArmor(AddToSlotEvent evt) {
+	public void onAddArmor(AddToSlotEvent evt) {
 		int id = evt.slotID;
 		if (evt.inventory instanceof InventoryPlayer && evt.slotID == 36) { //foot armor
 			ItemStack is = evt.getItem();
@@ -737,6 +737,18 @@ public class ChromaticEventManager {
 	public void triggerLumenDash(PlayerSprintEvent evt) {
 		if (Chromabilities.DASH.enabledOn(evt.entityPlayer) && AbilityHelper.instance.getPlayerDashCooldown(evt.entityPlayer) == 0) {
 			AbilityHelper.instance.doLumenDash(evt.entityPlayer);
+		}
+	}
+
+	@SubscribeEvent
+	public void negateFlyMiningSlowdown(net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed evt) {
+		if (!evt.entityPlayer.onGround) {
+			if (!Chromabilities.REACH.enabledOn(evt.entityPlayer)) {
+				ItemStack is = evt.entityPlayer.getCurrentEquippedItem();
+				if (is != null && ReikaEnchantmentHelper.hasEnchantment(ChromaEnchants.AIRMINER.getEnchantment(), is)) {
+					evt.newSpeed *= 5;
+				}
+			}
 		}
 	}
 

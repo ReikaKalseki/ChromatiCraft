@@ -235,4 +235,20 @@ public class CrystalMusicManager {
 		return sourceElements.containsKey(key);
 	}
 
+	public CrystalNote getNote(CrystalElement e, int step) {
+		return new CrystalNote(e, allKeys.get(e).get(step));
+	}
+
+	public static class CrystalNote {
+
+		public final CrystalElement color;
+		public final MusicKey key;
+
+		private CrystalNote(CrystalElement e, MusicKey m) {
+			color = e;
+			key = m;
+		}
+
+	}
+
 }

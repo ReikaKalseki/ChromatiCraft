@@ -59,6 +59,7 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.DimensionGeneratorCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
+import Reika.ChromatiCraft.Auxiliary.Command.PlaceStructureCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.ProgressModifyCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.PylonCacheCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.RecipeReloadCommand;
@@ -351,7 +352,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		proxy.registerKeys();
 
 		tabChroma.setIcon(ChromaItems.RIFT.getStackOf());
-		tabChromaDeco.setIcon(ChromaTiles.CHROMAFLOWER.getCraftedProduct());
+		tabChromaDeco.setIcon(ChromaBlocks.COLORALTAR.getStackOfMetadata(CrystalElement.BLUE.ordinal()));
 		tabChromaGen.setIcon(ChromaBlocks.RAINBOWSAPLING.getStackOf());
 		tabChromaTools.setIcon(ChromaItems.TOOL.getStackOf());
 		tabChromaItems.setIcon(ChromaStacks.getShard(CrystalElement.RED));
@@ -369,6 +370,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		//CompatibilityTracker.instance.registerIncompatibility(ModList.CHROMATICRAFT, ModList.OPTIFINE, CompatibilityTracker.Severity.GLITCH, "Optifine is known to break some rendering and cause framerate drops.");
+
+		if (ModList.FORESTRY.isLoaded()) {
+			ModInteraction.addCrystalBackpack();
+		}
 
 		FMLInterModComms.sendMessage("zzzzzcustomconfigs", "blacklist-mod-as-output", this.getModContainer().getModId());
 
@@ -700,6 +705,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new CrystalNetCommand());
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
+		evt.registerServerCommand(new PlaceStructureCommand());
 	}
 
 	@EventHandler

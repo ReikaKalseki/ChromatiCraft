@@ -38,13 +38,14 @@ public class MEDistributorRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.iron_ingot, 4, 2);
 		this.addAuxItem(Items.iron_ingot, 4, 4);
 
-		this.addAuxItem(ChromaStacks.enderIngot, -2, 0);
-		this.addAuxItem(ChromaStacks.enderIngot, 2, 0);
+		this.addAuxItem(ChromaStacks.auraIngot, -2, 0);
+		this.addAuxItem(ChromaStacks.auraIngot, 2, 0);
 
-		this.addAuxItem(ChromaStacks.auraIngot, -4, -2);
-		this.addAuxItem(ChromaStacks.auraIngot, 4, -2);
-		this.addAuxItem(ChromaStacks.auraIngot, -2, -4);
-		this.addAuxItem(ChromaStacks.auraIngot, 2, -4);
+		this.addAuxItem(Items.iron_ingot, -4, -2);
+		this.addAuxItem(Items.iron_ingot, 4, -2);
+
+		this.addAuxItem(ChromaStacks.conductiveIngot, -2, -4);
+		this.addAuxItem(ChromaStacks.conductiveIngot, 2, -4);
 	}
 
 }

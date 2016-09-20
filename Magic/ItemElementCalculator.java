@@ -107,6 +107,7 @@ public class ItemElementCalculator {
 			}
 		}
 
+		cache.put(ChromaStacks.chromaDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.auraDust, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1));
 		cache.put(ChromaStacks.beaconDust, new ElementTagCompound(1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
 		cache.put(ChromaStacks.bindingCrystal, new ElementTagCompound(1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
@@ -124,6 +125,7 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.echoCrystal, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.glowbeans, new ElementTagCompound(1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
 		cache.put(ChromaStacks.boostroot, new ElementTagCompound(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		cache.put(ChromaStacks.avolite, new ElementTagCompound(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0));
 
 		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
@@ -154,6 +156,9 @@ public class ItemElementCalculator {
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.LIGHT.ordinal()), new ElementTagCompound(2, 4, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), new ElementTagCompound(2, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0));
+
+		cache.put(Items.bucket, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(3)); //to prevent exploits with Metallurgy
+		cache.put(Items.shears, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(2)); //to prevent exploits with Metallurgy
 	}
 
 	public ElementTagCompound getValueForItem(ItemStack is) {

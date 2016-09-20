@@ -78,6 +78,9 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolParts;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.WeaponParts;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -181,6 +184,8 @@ public enum ChromaResearch implements ProgressElement {
 	FLUIDRELAY(		ChromaTiles.FLUIDRELAY,		ResearchLevel.RUNECRAFT),
 	BOOKDECOMP(		ChromaTiles.BOOKDECOMP,		ResearchLevel.RUNECRAFT),
 	PLANTHARVEST(	ChromaTiles.HARVESTPLANT,	ResearchLevel.RUNECRAFT),
+	AVOLASER(		ChromaTiles.AVOLASER,		ResearchLevel.ENDGAME),
+	ALVEARY(		ChromaTiles.ALVEARY,		ResearchLevel.PYLONCRAFT,		ProgressStage.HIVE),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -205,6 +210,7 @@ public enum ChromaResearch implements ProgressElement {
 	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT),
 	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
 	TRAIL(			ChromaBlocks.TRAIL,												ResearchLevel.BASICCRAFT),
+	AVOLAMP(		ChromaBlocks.AVOLAMP,											ResearchLevel.PYLONCRAFT),
 
 	TOOLDESC("Tools", ""),
 	WAND(				ChromaItems.TOOL,			ResearchLevel.ENTRY),
@@ -213,7 +219,7 @@ public enum ChromaResearch implements ProgressElement {
 	TRANSITION(			ChromaItems.TRANSITION, 	ResearchLevel.CHARGESELF),
 	INVLINK(			ChromaItems.LINK, 			ResearchLevel.ENERGYEXPLORE),
 	PENDANT(			ChromaItems.PENDANT, 		ResearchLevel.ENERGYEXPLORE),
-	LENS(				ChromaItems.LENS, 			ResearchLevel.BASICCRAFT),
+	LENS(				ChromaItems.LENS, 			ResearchLevel.ENERGYEXPLORE),
 	STORAGE(			ChromaItems.STORAGE, 		ResearchLevel.ENERGYEXPLORE),
 	LINKTOOL(			ChromaItems.LINKTOOL, 		ResearchLevel.RUNECRAFT),
 	WARP(				ChromaItems.WARP, 			ResearchLevel.PYLONCRAFT),
@@ -242,6 +248,7 @@ public enum ChromaResearch implements ProgressElement {
 	KILLAURA(			ChromaItems.KILLAURAGUN,	ResearchLevel.ENDGAME),
 	FLOATBOOTS(			ChromaItems.FLOATBOOTS,		ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
 	TELECAPSULE(		ChromaItems.WARPCAPSULE,	ResearchLevel.RUNECRAFT),
+	BEEFRAME(			ChromaItems.BEEFRAME,		ResearchLevel.RUNECRAFT,		ProgressStage.HIVE),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -258,6 +265,7 @@ public enum ChromaResearch implements ProgressElement {
 	AUGMENT("Upgrades",				ChromaStacks.speedUpgrade,								ResearchLevel.PYLONCRAFT,	ProgressStage.STORAGE),
 	ALLOYS("Alloying",				ChromaStacks.chromaIngot,								ResearchLevel.RUNECRAFT,	ProgressionManager.instance.getPrereqsArray(ProgressStage.ALLOY)),
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
+	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -503,6 +511,10 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == BEES) {
 			return CrystalBees.getCrystalBee().getBeeItem(Minecraft.getMinecraft().theWorld, EnumBeeType.QUEEN);
 		}
+		if (this == TINKERTOOLS) {
+			int mat = ExtraChromaIDs.CHROMAMATID.getValue();
+			return TinkerToolHandler.Tools.HAMMER.getToolOfMaterials(mat, mat, mat, mat);
+		}
 		if (this == ENDERCRYS) {
 			return item.getStackOfMetadata(1);
 		}
@@ -710,6 +722,8 @@ public enum ChromaResearch implements ProgressElement {
 			return false;
 		if (this == BEES)
 			return false;
+		if (this == TINKERTOOLS)
+			return false;
 		if (this == BALLLIGHTNING)
 			return false;
 		return struct == null || !struct.isNatural();
@@ -739,6 +753,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == ALLOYS)
 			return true;
 		if (this == IRID)
+			return true;
+		if (this == TINKERTOOLS)
 			return true;
 		if (this == SEED)
 			return true;
@@ -777,6 +793,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == MUSICTRIGGER)
 			return true;
 		if (this == SELECTIVEGLASS)
+			return true;
+		if (this == AVOLAMP)
 			return true;
 		return false;
 	}
@@ -982,6 +1000,18 @@ public enum ChromaResearch implements ProgressElement {
 
 			return li;
 		}
+		if (this == TINKERTOOLS) {
+			ArrayList<ItemStack> li = new ArrayList();
+
+			for (int i = 0; i < ToolParts.partList.length; i++) {
+				li.add(ToolParts.partList[i].getItem(ExtraChromaIDs.CHROMAMATID.getValue()));
+			}
+			for (int i = 0; i < WeaponParts.partList.length; i++) {
+				li.add(ToolParts.partList[i].getItem(ExtraChromaIDs.CHROMAMATID.getValue()));
+			}
+
+			return li;
+		}
 		if (block != null) {
 			Item item = Item.getItemFromBlock(block.getBlockInstance());
 			ArrayList<ItemStack> li = new ArrayList();
@@ -1166,6 +1196,8 @@ public enum ChromaResearch implements ProgressElement {
 		switch(this) {
 			case BEES:
 				return ModList.FORESTRY;
+			case TINKERTOOLS:
+				return ModList.TINKERER;
 			case RFDISTRIB:
 				return PowerTypes.RF;
 			case BALLLIGHTNING:

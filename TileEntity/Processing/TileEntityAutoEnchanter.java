@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemShears;
@@ -31,10 +32,13 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.ChromaticEnchantment;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverInventoryBase;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implements ChromaPowered, OperationInterval {
 
@@ -155,6 +159,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return true;
 		if (is.getItem() instanceof ItemShears)
 			return true;
+		if (ChromaItems.BEEFRAME.matchWith(is))
+			return true;
+		if (ModList.TINKERER.isLoaded() && (TinkerToolHandler.getInstance().isTool(is) || TinkerToolHandler.getInstance().isWeapon(is)))
+			return true;
 		return is.getItem().getItemEnchantability(is) > 0;
 	}
 
@@ -166,9 +174,27 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 					return false;
 				}
 			}
+			else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
+				if (!(e instanceof ChromaticEnchantment))
+					return false;
+				if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
+					return false;
+				}
+			}
+			else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
+				if (!(e instanceof ChromaticEnchantment))
+					return false;
+				if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
+					return false;
+				}
+			}
 			else if (!e.canApply(is) && !(i instanceof EnchantableItem && ((EnchantableItem)i).isEnchantValid(e, is))) {
 				return false;
 			}
+
+			if (ChromaItems.BEEFRAME.matchWith(is))
+				if (e != Enchantment.unbreaking)
+					return false;
 
 			if (ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
 				return false;
@@ -231,6 +257,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return 10;
 		if (e == Enchantment.sharpness)
 			return 10;
+		if (e == Enchantment.unbreaking)
+			return 5;
 		return e.getMaxLevel();
 	}
 

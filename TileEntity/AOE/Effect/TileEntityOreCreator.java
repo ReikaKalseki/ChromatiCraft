@@ -116,7 +116,7 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 		int tier = this.getTier();
 		if (ReikaRandomHelper.doWithChance(this.getOreChance(tier))) {
 			OreRarity max = this.getMaxSpawnableRarity(tier);
-			int list = rand.nextInt(max.ordinal());
+			int list = rand.nextInt(1+max.ordinal());
 			ArrayList<OreType>[] arr = oreLists[list];
 			ArrayList<OreType> li = arr[loc.ordinal()];
 			if (li.isEmpty())

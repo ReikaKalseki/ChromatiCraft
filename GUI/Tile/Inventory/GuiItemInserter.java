@@ -168,7 +168,7 @@ public class GuiItemInserter extends GuiChromaBase {
 		this.drawTexturedModalRect(31, 14, 227, 49, 8, 120);
 		float f = (float)(0.875+0.125*Math.sin(System.currentTimeMillis()/400D));
 		GL11.glColor4f(f, f, f, f);
-		int u = tile.consumeLast ? 227+8 : 227;
+		int u = tile.omniMode ? 227+8 : 227;
 		this.drawTexturedModalRect(31, 14, u+8, 49, 8, 120);
 	}
 

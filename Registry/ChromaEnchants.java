@@ -15,6 +15,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.StatCollector;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAggroMask;
+import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentAirMiner;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentEnderLock;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentFastSinking;
 import Reika.ChromatiCraft.Magic.Enchantment.EnchantmentHarvestLevel;
@@ -32,7 +33,8 @@ public enum ChromaEnchants implements EnchantmentEnum {
 	USEREPAIR(EnchantmentUseRepair.class, ExtraChromaIDs.USEREPAIRID),
 	RARELOOT(EnchantmentRareLoot.class, ExtraChromaIDs.RARELOOTID),
 	FASTSINK(EnchantmentFastSinking.class, ExtraChromaIDs.FASTSINKID),
-	HARVESTLEVEL(EnchantmentHarvestLevel.class, ExtraChromaIDs.HARVESTLEVELID);
+	HARVESTLEVEL(EnchantmentHarvestLevel.class, ExtraChromaIDs.HARVESTLEVELID),
+	AIRMINER(EnchantmentAirMiner.class, ExtraChromaIDs.AIRMINERID);
 
 	private final Class enchantmentClass;
 	private final ExtraChromaIDs enchantmentID;

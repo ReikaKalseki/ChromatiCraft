@@ -1015,7 +1015,15 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public float getOperationFraction() {
-		return activeRecipe == null ? 0 : 1F-(craftingTick/(activeRecipe.getDuration()*activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount)))*(isEnhanced ? activeRecipe.getEnhancedTableAccelerationFactor() : 1);
+		if (activeRecipe == null)
+			return 0;
+		float denom = activeRecipe.getDuration();
+		if (craftingAmount > 1 && activeRecipe.canBeStacked())
+			denom /= activeRecipe.getRecipeStackedTimeFactor(this, craftingAmount);
+		if (isEnhanced)
+			denom /= activeRecipe.getEnhancedTableAccelerationFactor();
+		float f = 1F-craftingTick/denom;
+		return f;
 	}
 
 	@Override

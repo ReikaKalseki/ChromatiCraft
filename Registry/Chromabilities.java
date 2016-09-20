@@ -106,7 +106,6 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.ReactorCraft.Entities.EntityRadiation;
 
@@ -150,7 +149,7 @@ public enum Chromabilities implements Ability {
 	RECHARGE(null, false),
 	MEINV(null, false, ModList.APPENG),
 	MOBSEEK(null, true),
-	BEEALYZE(Phase.START, true);
+	BEEALYZE(null, true);
 
 	private final boolean tickBased;
 	private final Phase tickPhase;
@@ -654,25 +653,27 @@ public enum Chromabilities implements Ability {
 								continue;
 							if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(world, dpx, dpy, dpz, meta))
 								continue;
-							boolean flag = false;
-							if ((0.5+0.5*world.rand.nextDouble())*d < r*(0.5+world.rand.nextDouble()*0.5)) {
-								if (ReikaBlockHelper.isOre(b, meta)) {
-									ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta, ep, false);
-									ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(is);
-									if (out != null) {
-										out = out.copy();
-										out.stackSize *= 2;
-										EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, out);
-										ReikaEntityHelper.setInvulnerable(ei, true);
+							if (ReikaPlayerAPI.playerCanBreakAt((WorldServer)world, dpx, dpy, dpz, (EntityPlayerMP)ep)) {
+								boolean flag = false;
+								if ((0.5+0.5*world.rand.nextDouble())*d < r*(0.5+world.rand.nextDouble()*0.5)) {
+									if (ReikaBlockHelper.isOre(b, meta)) {
+										ItemStack is = ReikaBlockHelper.getSilkTouch(world, dpx, dpy, dpz, b, meta, ep, false);
+										ItemStack out = FurnaceRecipes.smelting().getSmeltingResult(is);
+										if (out != null) {
+											out = out.copy();
+											out.stackSize *= 2;
+											EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, out);
+											ReikaEntityHelper.setInvulnerable(ei, true);
+										}
 									}
-								}
-								else if (b instanceof BlockTieredResource && ((BlockTieredResource)b).isPlayerSufficientTier(world, dpx, dpy, dpz, ep)) {
-									for (ItemStack is : ((BlockTieredResource)b).getHarvestResources(world, dpx, dpy, dpz, 3, ep)) {
-										EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, is);
-										ReikaEntityHelper.setInvulnerable(ei, true);
+									else if (b instanceof BlockTieredResource && ((BlockTieredResource)b).isPlayerSufficientTier(world, dpx, dpy, dpz, ep)) {
+										for (ItemStack is : ((BlockTieredResource)b).getHarvestResources(world, dpx, dpy, dpz, 3, ep)) {
+											EntityItem ei = ReikaItemHelper.dropItem(world, dx, dy, dz, is);
+											ReikaEntityHelper.setInvulnerable(ei, true);
+										}
 									}
+									world.setBlock(dpx, dpy, dpz, Blocks.air);
 								}
-								world.setBlock(dpx, dpy, dpz, Blocks.air);
 							}
 						}
 					}
@@ -1059,25 +1060,27 @@ public enum Chromabilities implements Ability {
 								if (b instanceof SemiUnbreakable && ((SemiUnbreakable)b).isUnbreakable(ep.worldObj, dx, dy, dz, meta)) {
 									continue;
 								}
-								if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/12F) {
-									ArrayList<ItemStack> li = b.getDrops(ep.worldObj, dx, dy, dz, meta, 0);
-									if (b instanceof BlockTieredResource) {
-										BlockTieredResource bt = (BlockTieredResource)b;
-										li.clear();
-										if (bt.isPlayerSufficientTier(ep.worldObj, dx, dy, dz, ep))
-											li.addAll(bt.getHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
-										else
-											li.addAll(bt.getNoHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
+								if (ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, dx, dy, dz, (EntityPlayerMP)ep)) {
+									if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/12F) {
+										ArrayList<ItemStack> li = b.getDrops(ep.worldObj, dx, dy, dz, meta, 0);
+										if (b instanceof BlockTieredResource) {
+											BlockTieredResource bt = (BlockTieredResource)b;
+											li.clear();
+											if (bt.isPlayerSufficientTier(ep.worldObj, dx, dy, dz, ep))
+												li.addAll(bt.getHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
+											else
+												li.addAll(bt.getNoHarvestResources(ep.worldObj, dx, dy, dz, 0, ep));
+										}
+										ForgeEventFactory.fireBlockHarvesting(li, ep.worldObj, b, dx, dy, dz, meta, 0, 1, false, ep);
+										for (ItemStack is : li) {
+											Integer get = drops.get(is);
+											int val = get == null ? 0 : get.intValue();
+											drops.put(is, val+is.stackSize);
+										}
+										b.removedByPlayer(ep.worldObj, ep, dx, dy, dz, true);
+										ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
+										ep.worldObj.setBlockToAir(dx, dy, dz);
 									}
-									ForgeEventFactory.fireBlockHarvesting(li, ep.worldObj, b, dx, dy, dz, meta, 0, 1, false, ep);
-									for (ItemStack is : li) {
-										Integer get = drops.get(is);
-										int val = get == null ? 0 : get.intValue();
-										drops.put(is, val+is.stackSize);
-									}
-									b.removedByPlayer(ep.worldObj, ep, dx, dy, dz, true);
-									ReikaSoundHelper.playBreakSound(ep.worldObj, dx, dy, dz, b, 0.1F, 1F);
-									ep.worldObj.setBlockToAir(dx, dy, dz);
 								}
 							}
 						}
@@ -1237,7 +1240,7 @@ public enum Chromabilities implements Ability {
 	private static void analyzeBees(EntityPlayer ep) {
 		int slot = (int)(ep.worldObj.getTotalWorldTime()%ep.inventory.mainInventory.length);
 		ItemStack is = ep.inventory.mainInventory[slot];
-		ReikaBeeHelper.analyzeBee(is);
+		AbilityHelper.instance.analyzeGenes(is);
 	}
 
 	private static void setNoclipState(EntityPlayer ep, boolean set) {

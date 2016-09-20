@@ -22,6 +22,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.ModRegistry.ModOreList;
@@ -264,6 +265,9 @@ public class ItemMagicRegistry {
 			this.addElement(vdye, e, 1);
 			this.addElement(dye, e, 1);
 		}
+
+		this.addElement(ChromaStacks.crystalPowder, CrystalElement.BLACK, 1);
+		this.addElement(ChromaStacks.crystalPowder, CrystalElement.WHITE, 1);
 
 		this.addFluids();
 	}

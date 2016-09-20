@@ -45,6 +45,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 	private int[] drainValue = new int[16];
 
 	private boolean enhanced;
+	private boolean hasEnhancedStructure;
 
 	@Override
 	protected int getCooldownLength() {
@@ -127,11 +128,16 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		super.onFirstTick(world, x, y, z);
 		EntityPlayer ep = this.getPlacer();
 		if (ep != null && !ReikaPlayerAPI.isFake(ep) && !world.isRemote) {
-			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && ChromaStructures.getBoostedRelayStructure(world, x, y, z, false).matchInWorld();
+			this.validateStructure(world, x, y, z);
+			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && hasEnhancedStructure;
 		}
 		else {
-			enhanced = false;
+			//enhanced = false;
 		}
+	}
+
+	public void validateStructure(World world, int x, int y, int z) {
+		hasEnhancedStructure = ChromaStructures.getBoostedRelayStructure(world, x, y, z, false).matchInWorld();
 	}
 
 	private void checkAndRequest() {
@@ -166,7 +172,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return CAPACITY;
+		return enhanced ? CAPACITY_BOOSTED : CAPACITY;
 	}
 
 	@Override
@@ -184,6 +190,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		super.readSyncTag(NBT);
 
 		enhanced = NBT.getBoolean("enhance");
+		hasEnhancedStructure = NBT.getBoolean("enstruct");
 	}
 
 	@Override
@@ -191,6 +198,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		super.writeSyncTag(NBT);
 
 		NBT.setBoolean("enhance", enhanced);
+		NBT.setBoolean("enstruct", hasEnhancedStructure);
 	}
 
 	@Override

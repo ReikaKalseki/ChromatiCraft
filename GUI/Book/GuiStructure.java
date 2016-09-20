@@ -245,6 +245,9 @@ public class GuiStructure extends GuiBookSection {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
+		String s = "("+array.getSizeX()+"x"+array.getSizeY()+"x"+array.getSizeZ()+")";
+		fontRendererObj.drawString(s, j+6, k+10, 0xffffff);
+
 		tick++;
 
 		//FilledBlockArray arr = page.getStructure().getStructureForDisplay();

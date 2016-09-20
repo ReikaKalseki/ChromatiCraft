@@ -55,6 +55,8 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		new IC2ReactorInterface();
 	}
 
+	protected double cachedValue = Double.NaN;
+
 	@Override
 	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
@@ -67,7 +69,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 					boost = Math.pow(1+boost, f)-1;
 				}
 				try {
-					e.tick(te, boost);
+					e.tick(this, te, boost);
 				}
 				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not tick energy interface "+e+" for "+te+" @ "+this);
@@ -130,7 +132,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 			}
 		}
 
-		protected abstract void tick(TileEntity te, double boost) throws Exception;
+		protected abstract void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception;
 
 		protected abstract void init() throws Exception;
 
@@ -156,7 +158,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 	private static abstract class EnergyInjectionInterface extends BasicEnergyInterface {
 
 		@Override
-		protected final void tick(TileEntity te, double boost) throws Exception {
+		protected final void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			double gen = this.getBaseGeneration(te)*boost; //not 1+ since tile is still doing its own 1x
 			this.inject(te, gen);
 		}
@@ -168,7 +170,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 	private static abstract class EnergyFieldSetInterface extends EnergyInterface {
 
 		@Override
-		protected final void tick(TileEntity te, double boost) throws Exception {
+		protected final void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			te = this.getActingTileEntity(te);
 			Field f = this.getOutputField(te);
 			Number get = (Number)f.get(te);
@@ -199,7 +201,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 	private static abstract class EnergyDumpInterface extends BasicEnergyInterface {
 
 		@Override
-		protected final void tick(TileEntity te, double boost) throws Exception {
+		protected final void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			double gen = this.getBaseGeneration(te)*boost; //not 1+ since tile is still doing its own 1x
 			ForgeDirection dir = this.getFacing(te);
 			TileEntity rec = te.worldObj.getTileEntity(te.xCoord+dir.offsetX, te.yCoord+dir.offsetY, te.zCoord+dir.offsetZ);
@@ -218,7 +220,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 		private static final NoInterface instance = new NoInterface();
 
 		@Override
-		protected void tick(TileEntity te, double boost) throws Exception {
+		protected void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 
 		}
 
@@ -331,12 +333,19 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 		@Override
 		@ModDependent(ModList.IC2)
-		protected void tick(TileEntity te, double boost) throws Exception {
+		protected void tick(TileEntityEnergyIncrease booster, TileEntity te, double boost) throws Exception {
 			te = this.getActingTileEntity(te);
 			IReactor ir = (IReactor)te;
 			//processChambers.invoke(te);
-			if (updateTicker.getInt(te)%20 == 1) //one tick after reactor recalculates
-				ir.addOutput((float)(boost*ir.getReactorEnergyOutput()));
+			if (updateTicker.getInt(te)%20 == 1) { //one tick after reactor recalculates
+				float defaultval = ir.getReactorEnergyOutput();
+				/*
+				if (booster.cachedValue != Double.NaN) {
+					defaultval = (float)booster.cachedValue;
+				}
+				 */
+				ir.addOutput((float)(boost*defaultval));
+			}
 		}
 
 		@Override
@@ -603,7 +612,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade {
 
 		@Override
 		protected int getBaseGeneration(TileEntity te) throws Exception {
-			return (int)genLevel.invoke(te);
+			return ((Double)genLevel.invoke(te)).intValue();
 		}
 
 		@Override

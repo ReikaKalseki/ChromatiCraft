@@ -41,33 +41,99 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ChromaStructures {
 
 	public static enum Structures {
-		PYLON(),
-		CASTING1(),
-		CASTING2(),
-		CASTING3(),
-		RITUAL(),
-		RITUAL2(),
-		INFUSION(),
-		TREE(),
-		TREE_BOOSTED(),
-		REPEATER(),
-		COMPOUND(),
-		CAVERN(),
-		BURROW(),
-		OCEAN(),
-		DESERT(),
-		PORTAL(),
-		PERSONAL(),
-		BROADCAST(),
-		CLOAKTOWER(),
-		PROTECT(),
-		WEAKREPEATER(),
-		METEOR1(),
-		METEOR2(),
-		METEOR3(),
-		TELEGATE(),
-		RELAY(),
-		PYLONBROADCAST();
+		PYLON(true),
+		CASTING1(false),
+		CASTING2(false),
+		CASTING3(false),
+		RITUAL(false),
+		RITUAL2(false),
+		INFUSION(false),
+		TREE(false),
+		TREE_BOOSTED(false),
+		REPEATER(true),
+		COMPOUND(false),
+		CAVERN(false),
+		BURROW(true),
+		OCEAN(false),
+		DESERT(false),
+		PORTAL(false),
+		PERSONAL(true),
+		BROADCAST(false),
+		CLOAKTOWER(false),
+		PROTECT(false),
+		WEAKREPEATER(false),
+		METEOR1(false),
+		METEOR2(false),
+		METEOR3(false),
+		TELEGATE(false),
+		RELAY(false),
+		PYLONBROADCAST(true);
+
+		public final boolean requiresColor;
+
+		private Structures(boolean c) {
+			requiresColor = c;
+		}
+
+		public FilledBlockArray getArray(World world, int x, int y, int z, CrystalElement e) {
+			switch(this) {
+				case PYLON:
+					return getPylonStructure(world, x, y, z, e);
+				case CASTING1:
+					return getCastingLevelOne(world, x, y, z);
+				case CASTING2:
+					return getCastingLevelTwo(world, x, y, z);
+				case CASTING3:
+					return getCastingLevelThree(world, x, y, z);
+				case RITUAL:
+					return getRitualStructure(world, x, y, z, false, false);
+				case RITUAL2:
+					return getRitualStructure(world, x, y, z, true, true);
+				case INFUSION:
+					return getInfusionStructure(world, x, y, z);
+				case TREE:
+					return getTreeStructure(world, x, y, z);
+				case TREE_BOOSTED:
+					return getBoostedTreeStructure(world, x, y, z);
+				case REPEATER:
+					return getRepeaterStructure(world, x, y, z, e);
+				case COMPOUND:
+					return getCompoundRepeaterStructure(world, x, y, z);
+				case CAVERN:
+					return getCavernStructure(world, x, y, z);
+				case BURROW:
+					return getBurrowStructure(world, x, y, z, e);
+				case OCEAN:
+					return getOceanStructure(world, x, y, z);
+				case DESERT:
+					return getDesertStructure(world, x, y, z);
+				case PORTAL:
+					return getPortalStructure(world, x, y, z, false);
+				case PERSONAL:
+					return getPersonalStructure(world, x, y, z, e);
+				case BROADCAST:
+					return getBroadcastStructure(world, x, y, z);
+				case CLOAKTOWER:
+					return getCloakingTower(world, x, y, z);
+				case PROTECT:
+					return getProtectionBeaconStructure(world, x, y, z);
+				case WEAKREPEATER:
+					return getWeakRepeaterStructure(world, x, y, z);
+				case METEOR1:
+					return getMeteorTowerStructure(world, x, y, z, 0);
+				case METEOR2:
+					return getMeteorTowerStructure(world, x, y, z, 1);
+				case METEOR3:
+					return getMeteorTowerStructure(world, x, y, z, 2);
+				case TELEGATE:
+					return getGateStructure(world, x, y, z);
+				case RELAY:
+					return getBoostedRelayStructure(world, x, y, z, false);
+				case PYLONBROADCAST:
+					return getPylonBroadcastStructure(world, x, y, z, e);
+			}
+			return null;
+		}
 
 		@SideOnly(Side.CLIENT)
 		public FilledBlockArray getStructureForDisplay() {
@@ -3226,7 +3292,7 @@ public class ChromaStructures {
 		}
 		for (int i = 0; i < ModWoodList.woodList.length; i++) {
 			ModWoodList tree = ModWoodList.woodList[i];
-			if (tree.exists()) {
+			if (tree.exists() && tree != ModWoodList.SLIME) {
 				array.addBlock(x, y-1, z, tree.getLogID(), tree.getLogMetadatas().get(0));
 			}
 		}

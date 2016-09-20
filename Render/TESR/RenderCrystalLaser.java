@@ -51,30 +51,30 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 			int dz = 0;
 			int dy = 0;
 			switch(tile.getBlockMetadata()) {
-			case 0:
-				rot = 270;
-				dx = 1;
-				break;
-			case 1:
-				rot = 90;
-				dz = 1;
-				break;
-			case 2:
-				rot = 180;
-				dx = 1;
-				dz = 1;
-				break;
-			case 3:
-				rot = 0;
-				break;
-			case 4:
-				rotx = 270;
-				dz = 1;
-				break;
-			case 5:
-				rotx = 90;
-				dy = 1;
-				break;
+				case 0:
+					rot = 270;
+					dx = 1;
+					break;
+				case 1:
+					rot = 90;
+					dz = 1;
+					break;
+				case 2:
+					rot = 180;
+					dx = 1;
+					dz = 1;
+					break;
+				case 3:
+					rot = 0;
+					break;
+				case 4:
+					rotx = 270;
+					dz = 1;
+					break;
+				case 5:
+					rotx = 90;
+					dy = 1;
+					break;
 			}
 			GL11.glTranslated(dx, dy, dz);
 			GL11.glRotated(rot, 0, 1, 0);
@@ -87,23 +87,23 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 			rot = 0;
 			rotx = 0;
 			switch(tile.getBlockMetadata()) {
-			case 0:
-				rot = 180;
-				break;
-			case 1:
-				break;
-			case 2:
-				rot = 90;
-				break;
-			case 3:
-				rot = 270;
-				break;
-			case 4:
-				rotx = 90;
-				break;
-			case 5:
-				rotx = 270;
-				break;
+				case 0:
+					rot = 180;
+					break;
+				case 1:
+					break;
+				case 2:
+					rot = 90;
+					break;
+				case 3:
+					rot = 270;
+					break;
+				case 4:
+					rotx = 90;
+					break;
+				case 5:
+					rotx = 270;
+					break;
 			}
 			GL11.glTranslated(0.5, 0, 0.5);
 			GL11.glRotated(rot, 0, 1, 0);
@@ -149,6 +149,7 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 
 	private void renderBeam(TileEntityCrystalLaser te) {
 		Tessellator v5 = Tessellator.instance;
+		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		ReikaRenderHelper.disableLighting();
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -190,12 +191,8 @@ public class RenderCrystalLaser extends ChromaRenderBase {
 		v5.addVertex(0, 0.5, 0);
 		v5.addVertex(r-0.25, 0.5, 0);
 		v5.draw();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-		BlendMode.DEFAULT.apply();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		ReikaRenderHelper.enableLighting();
+		GL11.glPopAttrib();
 	}
 
 }

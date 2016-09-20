@@ -97,6 +97,10 @@ public class TileEntitySpawnerReprogrammer extends InventoriedRelayPowered imple
 		addDisallowedMob("Linkbook");
 
 		addDisallowedMob("Robit");
+
+		addDisallowedMob("etfuturum.ender_dragon");
+
+		addDisallowedMob("DraconicEvolution.EnderDragon");
 	}
 
 	@Override

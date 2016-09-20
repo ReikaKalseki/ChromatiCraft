@@ -46,6 +46,9 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 
 	public final CubeRotation rotation = new CubeRotation().randomize(rand);
 
+	private BiomeGenBase placedBiome;
+	public boolean safeMode = false;
+
 	public BiomeGenBase getNaturalBiomeAt(int dx, int dz) {
 		return ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, xCoord+dx-RANGE, zCoord+dz-RANGE);
 	}
@@ -61,6 +64,11 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 		if (world.isRemote) {
 			this.doParticles(world, x, y, z);
 		}
+	}
+
+	@Override
+	protected void onFirstTick(World world, int x, int y, int z) {
+		placedBiome = world.getBiomeGenForCoords(x, z);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -82,15 +90,17 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 	}
 
 	public void changeBiomeAt(int dx, int dz, BiomeGenBase biome) {
-		if (!worldObj.isRemote) {
-			//ReikaJavaLibrary.pConsole(xCoord+dx);
-			ReikaWorldHelper.setBiomeForXZ(worldObj, dx, dz, biome);
-			//ReikaJavaLibrary.pConsole("Setting biome "+biome+" @ "+dx+", "+dz);
-		}
-		else {
-			int id = biome != null ? biome.biomeID : -1;
-			//ReikaJavaLibrary.pConsole("Setting biome "+biome+" with ID "+id+" @ "+dx+", "+dz);
-			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, id);
+		if (this.canChangeBiomeAt(dx, dz, worldObj.getBiomeGenForCoords(dx, dz))) {
+			if (!worldObj.isRemote) {
+				//ReikaJavaLibrary.pConsole(xCoord+dx);
+				ReikaWorldHelper.setBiomeForXZ(worldObj, dx, dz, biome);
+				//ReikaJavaLibrary.pConsole("Setting biome "+biome+" @ "+dx+", "+dz);
+			}
+			else {
+				int id = biome != null ? biome.biomeID : -1;
+				//ReikaJavaLibrary.pConsole("Setting biome "+biome+" with ID "+id+" @ "+dx+", "+dz);
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.BIOMEPAINT.ordinal(), this, dx, dz, id);
+			}
 		}
 	}
 
@@ -104,8 +114,26 @@ public class TileEntityBiomePainter extends TileEntityChromaticBase implements G
 		super.readFromNBT(NBT);
 	}
 
+	@Override
+	protected void writeSyncTag(NBTTagCompound NBT) {
+		super.writeSyncTag(NBT);
+
+		NBT.setBoolean("safe", safeMode);
+	}
+
+	@Override
+	protected void readSyncTag(NBTTagCompound NBT) {
+		super.readSyncTag(NBT);
+
+		safeMode = NBT.getBoolean("safe");
+	}
+
 	static {
 		blacklist.add(new ChromaBiomeBlacklist());
+	}
+
+	public boolean canChangeBiomeAt(int dx, int dz, BiomeGenBase from) {
+		return !safeMode || from == placedBiome;
 	}
 
 	public static void buildBiomeList() {

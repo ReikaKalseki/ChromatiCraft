@@ -59,13 +59,11 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.SequenceMap.Topology;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
-import Reika.DragonAPI.Libraries.ReikaNBTHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -558,9 +556,10 @@ public class ProgressionManager implements ProgressRegistry {
 	}
 
 	private void setPlayerStage(EntityPlayer ep, ProgressStage s, boolean set, boolean allowClient, boolean notify) {
-		ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
-		ReikaJavaLibrary.pConsole("NBT PRE: ");
-		ReikaJavaLibrary.pCollConsole(ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)));
+		//ReikaJavaLibrary.pConsole("Giving "+ep.getCommandSenderName()+" progress '"+s+"': "+set+"/"+allowClient+"/"+notify);
+		//ReikaJavaLibrary.pConsole("NBT PRE: ");
+		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)))
+		//	ReikaJavaLibrary.pConsole(sg);
 		if (ReikaPlayerAPI.isFake(ep))
 			return;
 		if (ep.worldObj.isRemote && !allowClient)
@@ -624,8 +623,9 @@ public class ProgressionManager implements ProgressRegistry {
 			if (notify)
 				this.updateChunks(ep);
 		}
-		ReikaJavaLibrary.pConsole("NBT POST: ");
-		ReikaJavaLibrary.pCollConsole(ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)));
+		//ReikaJavaLibrary.pConsole("NBT POST: ");
+		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)))
+		//	ReikaJavaLibrary.pConsole(sg);
 	}
 
 	public void resetPlayerProgression(EntityPlayer ep, boolean notify) {

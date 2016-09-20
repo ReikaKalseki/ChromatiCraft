@@ -914,7 +914,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 	}
 
 	@Override
-	public boolean canSupply(CrystalReceiver te) {
+	public boolean canSupply(CrystalReceiver te, CrystalElement e) {
 		if (!placedByHand)
 			return true;
 		return TileEntityCreativeSource.canSupply(this, te);

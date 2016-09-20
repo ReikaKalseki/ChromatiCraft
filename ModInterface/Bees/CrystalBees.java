@@ -36,9 +36,6 @@ import Reika.ChromatiCraft.ModInterface.ItemColoredModInteract;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.CompoundConditionalProductProvider;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductBee;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.GeneticImprovementEffect;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.GeneticStabilityEffect;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.SpecialGeneticEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.AreaBlockCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.AuraLocusCheck;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ChargedShardCheck;
@@ -131,8 +128,6 @@ public class CrystalBees {
 	static Life blinkLife;
 	//static IAlleleTolerance anyTemperature; green
 	//static IAlleleTolerance anyHumidity; gray
-	static SpecialGeneticEffect geneImprovement;
-	static SpecialGeneticEffect geneStability;
 
 	static BeeBranch crystalBranch;
 
@@ -184,7 +179,6 @@ public class CrystalBees {
 
 	static final EnumMap<CrystalElement, CrystalBee> beeMap = new EnumMap(CrystalElement.class);
 	static final EnumMap<CrystalElement, CrystalEffect> effectMap = new EnumMap(CrystalElement.class);
-	static final EnumMap<CrystalElement, SpecialGeneticEffect> specialGenes = new EnumMap(CrystalElement.class);
 	static final EnumMap<CrystalElement, CrystalAllele> flowerMap = new EnumMap(CrystalElement.class);
 	static final EnumMap<CrystalElement, ItemHashMap<ProductCondition>> productConditions = new EnumMap(CrystalElement.class);
 	static final Collection<ConditionalProductBee> conditionalBees = new ArrayList();
@@ -224,8 +218,6 @@ public class CrystalBees {
 		superTerritory = Territory.createNew("exploratory", 32, 16, false);
 		superLife = Life.createNew("eon", 600, false);
 		blinkLife = Life.createNew("blink", 2, false);
-		geneImprovement = new GeneticImprovementEffect();
-		geneStability = new GeneticStabilityEffect();
 		//anyTemperature = Tolerance.createNew("", new OmniToleranceCheck(), false);
 		//anyHumidity = Tolerance.createNew("", new OmniToleranceCheck(), false);
 

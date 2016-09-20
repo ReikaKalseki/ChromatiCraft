@@ -103,6 +103,10 @@ public enum ChromaIcons {
 	PORTALRING("portalring"),
 	CONDENSEFLARE("condenseflare4"),
 	STARFLARE("starflare"),
+	AVOLASER("avolaser"),
+	AVOLASER_CORE("avolaser_2"),
+	HIVE("hive"),
+	HIVESPARKS("hivesparks"),
 	;
 
 	private IIcon icon;

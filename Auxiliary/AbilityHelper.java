@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -45,6 +46,7 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -59,6 +61,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
@@ -139,8 +142,6 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import forestry.api.apiculture.IBeeHousing;
-import forestry.api.apiculture.IBeeHousingInventory;
 
 
 
@@ -1829,6 +1830,7 @@ public class AbilityHelper {
 		}
 	}
 
+	/*
 	@SubscribeEvent
 	@ModDependent(ModList.FORESTRY)
 	public void analyzeBees(PlayerInteractEvent evt) {
@@ -1861,15 +1863,42 @@ public class AbilityHelper {
 			}
 		}
 	}
+	 */
 
-	private void analyzeGenes(ItemStack is) {
+	public void analyzeGenes(ItemStack is) {
 		if (ModList.FORESTRY.isLoaded())
-			ReikaBeeHelper.analyzeBee(is);
+			;//ReikaBeeHelper.analyzeBee(is); use tooltips
 		if (ModList.AGRICRAFT.isLoaded()) {
 			if (is.stackTagCompound != null) {
 				if (is.stackTagCompound.hasKey("gain") || is.stackTagCompound.hasKey("growth") || is.stackTagCompound.hasKey("strength")) {
 					is.stackTagCompound.setBoolean("analyzed", true);
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	@ModDependent(ModList.FORESTRY)
+	public void showBeeGenes(ItemTooltipEvent evt) {
+		if (ReikaBeeHelper.isBee(evt.itemStack)) {
+			if (Chromabilities.BEEALYZE.enabledOn(evt.entityPlayer)) {
+				Iterator<String> it = evt.toolTip.iterator();
+				boolean primed = false;
+				while (it.hasNext()) {
+					String s = it.next();
+					if (s.contains("Pristine Stock") || s.contains("Ignoble Stock"))
+						primed = true;
+					if (s.contains("<Unknown genome>"))
+						primed = true;
+					if (s.contains("Forestry"))
+						primed = false;
+					if (primed)
+						it.remove();
+				}
+				ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
+				evt.toolTip.add(evt.toolTip.size(), EnumChatFormatting.YELLOW.toString()+EnumChatFormatting.ITALIC.toString()+(ReikaBeeHelper.isPristine(evt.itemStack) ? "Pristine Stock" : "Ignoble Stock"));
+				evt.toolTip.addAll(evt.toolTip.size(), li);
 			}
 		}
 	}

@@ -62,15 +62,15 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 	private final ItemHashMap<ArrayList<Coordinate>> routing = new ItemHashMap();
 	private boolean[][] connections = new boolean[6][6];
 	private int maxCoord = 0;
-	public boolean consumeLast = false;
+	public boolean omniMode = false;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote)
 			return;
 		int slot = this.getTicksExisted()%this.getSizeInventory();
-		if (inv[slot] != null && (consumeLast || inv[slot].stackSize > 1) && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
-			Coordinate c = this.sendItem(inv[slot]);
+		if (inv[slot] != null && (omniMode || inv[slot].stackSize > 1) && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
+			Coordinate c = this.sendItem(slot);
 			if (c != null) {
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSERTERACTION.ordinal(), this, 64, Item.getIdFromItem(inv[slot].getItem()), inv[slot].getItemDamage(), c.xCoord, c.yCoord, c.zCoord);
 				ReikaInventoryHelper.decrStack(slot, inv);
@@ -114,7 +114,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 	@Override
 	protected void onPreSlotSet(int slot, ItemStack is) {
-		if (!ReikaItemHelper.matchStacks(is, inv[slot])) {
+		if (!omniMode && !ReikaItemHelper.matchStacks(is, inv[slot])) {
 			for (int i = 0; i < 6; i++) {
 				connections[slot][i] = false;
 			}
@@ -255,21 +255,28 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
-		return ReikaItemHelper.matchStacks(inv[slot], is);
+		return omniMode ? targets[slot] != null : ReikaItemHelper.matchStacks(inv[slot], is);
 	}
 
-	public Coordinate sendItem(ItemStack is) {
-		ArrayList<Coordinate> li = routing.get(is);
-		if (li == null || li.isEmpty())
-			return null;
-		Coordinate c = li.get(rand.nextInt(li.size()));
-		while (c.getBlock(worldObj) == Blocks.air && !li.isEmpty()) {
-			li.remove(c);
-			if (!li.isEmpty()) {
-				c = li.get(rand.nextInt(li.size()));
-			}
-			else {
-				c = null;
+	private Coordinate sendItem(int slot) {
+		Coordinate c;
+		ItemStack is = inv[slot];
+		if (omniMode) {
+			c = this.isLinkEnabled(slot, slot) ? targets[slot] : null;
+		}
+		else {
+			ArrayList<Coordinate> li = routing.get(is);
+			if (li == null || li.isEmpty())
+				return null;
+			c = li.get(rand.nextInt(li.size()));
+			while (c.getBlock(worldObj) == Blocks.air && !li.isEmpty()) {
+				li.remove(c);
+				if (!li.isEmpty()) {
+					c = li.get(rand.nextInt(li.size()));
+				}
+				else {
+					c = null;
+				}
 			}
 		}
 		return c != null ? (locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer()) ? c : null) : null;
@@ -303,7 +310,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 		NBT.setInteger("maxc", maxCoord);
 
-		NBT.setBoolean("uselast", consumeLast);
+		NBT.setBoolean("uselast", omniMode);
 	}
 
 	@Override
@@ -334,7 +341,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 		maxCoord = NBT.getInteger("maxc");
 
-		consumeLast = NBT.getBoolean("uselast");
+		omniMode = NBT.getBoolean("uselast");
 	}
 
 	public static enum InsertionType {

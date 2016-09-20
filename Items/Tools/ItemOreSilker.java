@@ -28,6 +28,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -64,7 +65,7 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
 		int meta = world.getBlockMetadata(x, y, z);
 		if (id == Blocks.glowstone || ReikaOreHelper.isVanillaOre(id) || ModOreList.isModOre(id, meta)) {
 			if (id.canSilkHarvest(world, ep, x, y, z, meta)) {
-				this.dropSilkedOre(world, x, y, z, id, meta);
+				this.dropSilkedOre(world, x, y, z, id, meta, ep);
 				is.damageItem(1, ep);
 				return true;
 			}
@@ -72,13 +73,14 @@ public class ItemOreSilker extends ItemChromaTool implements ToolSprite {
 		return false;
 	}
 
-	private void dropSilkedOre(World world, int x, int y, int z, Block b, int meta) {
+	private void dropSilkedOre(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep) {
 		world.setBlockToAir(x, y, z);
 		ReikaSoundHelper.playBreakSound(world, x, y, z, b);
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			ReikaRenderHelper.spawnDropParticles(world, x, y, z, b, meta);
 		}
-		ReikaItemHelper.dropItem(world, x+itemRand.nextDouble(), y+itemRand.nextDouble(), z+itemRand.nextDouble(), new ItemStack(b, 1, meta));
+		ItemStack is = ReikaBlockHelper.getSilkTouch(world, x, y, z, b, meta, ep, false);
+		ReikaItemHelper.dropItem(world, x+itemRand.nextDouble(), y+itemRand.nextDouble(), z+itemRand.nextDouble(), is);
 	}
 
 	@Override

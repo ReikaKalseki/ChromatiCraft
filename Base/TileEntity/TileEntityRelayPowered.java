@@ -39,7 +39,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 				energy.addValueToColor(e, 500);
 		}
 
-		if (!world.isRemote) {
+		if (!world.isRemote && this.makeRequests()) {
 			if (requestTimer == 0) {
 				ElementTagCompound tag = this.getRequiredEnergy();
 				for (CrystalElement e : tag.elementSet()) {
@@ -60,6 +60,10 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 				lastRequestDecrTime = time;
 			}
 		}
+	}
+
+	protected boolean makeRequests() {
+		return true;
 	}
 
 	protected abstract boolean canReceiveFrom(CrystalElement e, ForgeDirection dir);

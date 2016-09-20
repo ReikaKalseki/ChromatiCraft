@@ -27,6 +27,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -216,7 +217,7 @@ public class BlockChromaPortal extends Block {
 			else {
 				charge = 0;
 			}
-			int pos = this.getPortalPosition();
+			int pos = this.getPortalPosition(worldObj, xCoord, yCoord, zCoord);
 			if (worldObj.isRemote) {
 				if (pos == 5 && this.isFull9x9()) {
 					if (worldObj.isRemote)
@@ -429,11 +430,7 @@ public class BlockChromaPortal extends Block {
 			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(8, 8, 8);
 		}
 
-		public int getPortalPosition() {
-			World world = worldObj;
-			int x = xCoord;
-			int y = yCoord;
-			int z = zCoord;
+		public int getPortalPosition(IBlockAccess world, int x, int y, int z) {
 			if (world.getBlock(x-1, y, z) != ChromaBlocks.PORTAL.getBlockInstance()) {
 				if (world.getBlock(x, y, z-1) != ChromaBlocks.PORTAL.getBlockInstance()) {
 					return 7;

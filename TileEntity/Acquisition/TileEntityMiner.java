@@ -89,6 +89,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	public int progress;
 
 	private boolean dropFlag = false;
+	private long lastWarning;
 
 	private boolean chunkloaded;
 
@@ -513,8 +514,11 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	private void doDropWarning(World world, int x, int y, int z) {
-		ChromaSounds.ERROR.playSoundAtBlock(this);
-		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MINERJAM.ordinal(), this, 32);
+		if (lastWarning != world.getTotalWorldTime()) {
+			ChromaSounds.ERROR.playSoundAtBlock(this);
+			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MINERJAM.ordinal(), this, 32);
+		}
+		lastWarning = world.getTotalWorldTime();
 	}
 
 	@SideOnly(Side.CLIENT)

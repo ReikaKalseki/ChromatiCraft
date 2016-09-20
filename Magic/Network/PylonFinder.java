@@ -335,7 +335,7 @@ public class PylonFinder {
 	}
 
 	private boolean isConnectableSource(CrystalSource te, int thresh) {
-		return te.canSupply(target) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user)) && (!(te instanceof TileEntityCrystalPylon) || !((TileEntityCrystalPylon)te).enhancing);
+		return te.canSupply(target, element) && te.getEnergy(element) >= thresh && (user == null || te.playerCanUse(user)) && (!(te instanceof TileEntityCrystalPylon) || !((TileEntityCrystalPylon)te).enhancing);
 	}
 
 	/*

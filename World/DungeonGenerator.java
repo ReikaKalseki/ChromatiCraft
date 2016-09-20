@@ -26,7 +26,6 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.BiomeGenMesa;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ChestGenHooks;
@@ -238,7 +237,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 	}
 
 	private boolean isValidBiomeForDesertStruct(BiomeGenBase biome) {
-		return BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) && !(biome instanceof BiomeGenMesa);
+		return BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.SANDY) && !BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.MESA);
 	}
 
 	private boolean isValidDesertLocation(World world, int x, int y, int z, FilledBlockArray struct) {

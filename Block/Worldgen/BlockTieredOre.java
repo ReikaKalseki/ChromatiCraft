@@ -44,7 +44,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTieredOre extends BlockChromaTiered {
 
-	public static final int ARR_LENGTH = 14;
+	public static final int ARR_LENGTH = 15;
 
 	private final IIcon[] overlay = new IIcon[ARR_LENGTH];
 	private final IIcon[] back = new IIcon[ARR_LENGTH];
@@ -59,51 +59,45 @@ public class BlockTieredOre extends BlockChromaTiered {
 
 	public static enum TieredOres {
 
-		INFUSED(Blocks.stone, ProgressStage.CRYSTALS),
-		STONES(Blocks.stone, ProgressStage.RUNEUSE),
-		BINDING(Blocks.stone, ProgressStage.CHARGE),
-		FOCAL(Blocks.stone, ProgressStage.MULTIBLOCK),
-		TELEPORT(Blocks.stone, ProgressStage.END),
-		WATERY(Blocks.stone, ProgressStage.OCEAN),
-		FIRAXITE(Blocks.stone, ProgressStage.NETHER),
-		LUMA(Blocks.stone, ProgressStage.DIMENSION),
-		ECHO(Blocks.stone, ProgressStage.CTM),
-		FIRESTONE(Blocks.netherrack, ProgressStage.LINK),
-		THERMITE(Blocks.netherrack, ProgressStage.END),
-		RESO(Blocks.end_stone, ProgressStage.ABILITY),
-		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON),
-		RAINBOW(Blocks.stone, ProgressStage.USEENERGY);
+		INFUSED(Blocks.stone, ProgressStage.CRYSTALS,			1, 4, 12),
+		STONES(Blocks.stone, ProgressStage.RUNEUSE,				1, 4, 8),
+		BINDING(Blocks.stone, ProgressStage.CHARGE,				1, 4, 8),
+		FOCAL(Blocks.stone, ProgressStage.MULTIBLOCK,			1, 4, 8),
+		TELEPORT(Blocks.stone, ProgressStage.END,				1, 2, 8),
+		WATERY(Blocks.stone, ProgressStage.OCEAN,				2, 2, 8),
+		FIRAXITE(Blocks.stone, ProgressStage.NETHER,			1, 2, 8),
+		LUMA(Blocks.stone, ProgressStage.STRUCTCOMPLETE,		1, 1, 8),
+		ECHO(Blocks.stone, ProgressStage.CTM,					2, 1, 8),
+		FIRESTONE(Blocks.netherrack, ProgressStage.LINK,		1, 4, 16),
+		THERMITE(Blocks.netherrack, ProgressStage.END,			1, 4, 16),
+		RESO(Blocks.end_stone, ProgressStage.ABILITY,			1, 8, 8),
+		SPACERIFT(Blocks.end_stone, ProgressStage.KILLDRAGON,	1, 12, 8),
+		RAINBOW(Blocks.stone, ProgressStage.USEENERGY,			1, 2, 8),
+		AVOLITE(Blocks.stone, ProgressStage.POWERCRYSTAL,		2, 1, 18);
 
 		public final ProgressStage level;
 		private final Block genBlock;
 
+		public final int veinSize;
+		public final int veinCount;
+		public final int genChance;
+
 		public static final TieredOres[] list = values();
 
-		private TieredOres(Block b, ProgressStage lvl) {
+		private TieredOres(Block b, ProgressStage lvl, int gc, int vc, int vs) {
 			level = lvl;
 			genBlock = b;
+
+			genChance = gc;
+			veinCount = vc;
+			veinSize = vs;
 		}
 
 		public boolean generate(World world, int x, int z, Random r) {
 			int y = this.ordinal() >= FIRESTONE.ordinal() ? r.nextInt(128) : r.nextBoolean() ? r.nextInt(32) : r.nextInt(64);
 			if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 				y = r.nextInt(200);
-			int n = genBlock == Blocks.netherrack ? 16 : 8;
-			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), n, genBlock).generate(world, r, x, y, z);
-		}
-
-		public int getGenerationCount() {
-			if (genBlock == Blocks.netherrack)
-				return 4;
-			if (this == RESO)
-				return 8;
-			if (this == SPACERIFT)
-				return 12;
-			return this == ECHO ? 1 : this.ordinal() < TELEPORT.ordinal() ? 4 : 2;
-		}
-
-		public int getGenerationChance() {
-			return this == ECHO ? 2 : 1;
+			return new WorldGenMinable(ChromaBlocks.TIEREDORE.getBlockInstance(), this.ordinal(), veinSize, genBlock).generate(world, r, x, y, z);
 		}
 
 		public boolean renderAsGeode() {
@@ -194,6 +188,11 @@ public class BlockTieredOre extends BlockChromaTiered {
 				n = 1+fortune+rand.nextInt(1+fortune)/2;
 				for (int i = 0; i < n; i++)
 					li.add(ChromaStacks.lumenGem.copy());
+				break;
+			case AVOLITE:
+				n = 1+rand.nextInt(1+fortune/2)/2;
+				for (int i = 0; i < n; i++)
+					li.add(ChromaStacks.avolite.copy());
 				break;
 		}
 		return li;

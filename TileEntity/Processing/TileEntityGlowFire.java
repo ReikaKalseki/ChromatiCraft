@@ -44,7 +44,6 @@ import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -124,7 +123,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			if (!flags[i]) {
 				CrystalElement e = CrystalElement.elements[i];
 				if (e.isPrimary()) {
-					ReikaJavaLibrary.pConsole("Insufficient "+e+", have "+energy.getValue(e)+", need "+cost.getValue(e));
+					//ReikaJavaLibrary.pConsole("Insufficient "+e+", have "+energy.getValue(e)+", need "+cost.getValue(e));
 					return false;
 				}
 				ElementTagCompound combine = this.getCompositionCost(e, cost.getValue(e));
@@ -139,7 +138,7 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			if (energy.getValue(e) < val)
 				return false;
 		}
-		ReikaJavaLibrary.pConsole(in+" costs "+cost+", rem "+remove);
+		//ReikaJavaLibrary.pConsole(in+" costs "+cost+", rem "+remove);
 		energy.subtract(remove);
 		return true;
 	}

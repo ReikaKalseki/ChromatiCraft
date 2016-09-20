@@ -79,6 +79,8 @@ public class ItemTieredResource extends ItemChromaMulti implements TieredItem {
 				return TieredPlants.ROOT.level;
 			case 23:
 				return TieredOres.RAINBOW.level;
+			case 24:
+				return TieredOres.AVOLITE.level;
 			default:
 				return null;
 		}

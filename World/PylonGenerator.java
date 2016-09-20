@@ -461,6 +461,9 @@ public final class PylonGenerator implements RetroactiveGenerator {
 
 		y -= array.sink(world, Material.wood, Material.leaves);
 
+		if (array.getMaxY() >= 255)
+			return;
+
 		for (int n = -4; n < 0; n++) {
 			int dy = y+n;
 			for (int i = 2; i < 6; i++) {

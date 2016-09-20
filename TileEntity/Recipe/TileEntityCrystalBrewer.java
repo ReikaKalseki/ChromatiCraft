@@ -63,7 +63,7 @@ public class TileEntityCrystalBrewer extends InventoriedChromaticBase implements
 			if (CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]))
 				return ReikaPotionHelper.isActualPotion(is.getItemDamage());
 			else
-				return true;
+				return !ReikaPotionHelper.isActualPotion(is.getItemDamage());
 		}
 		else if (is.getItem() == ChromaItems.POTION.getItemInstance()) {
 			return CrystalPotionController.isPotionModifier(CrystalElement.elements[zd%16]);

@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Block.BlockChromaPortal.TileEntityCrystalPortal;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
@@ -46,7 +47,7 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityCrystalPortal te = (TileEntityCrystalPortal)tile;
-		int p = te.getPortalPosition();
+		int p = te.getPortalPosition(StructureRenderer.isRenderingTiles() ? StructureRenderer.getRenderAccess() : te.worldObj, te.xCoord, te.yCoord, te.zCoord);
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		GL11.glTranslated(par2, par4, par6);
@@ -55,8 +56,8 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 		ReikaRenderHelper.disableEntityLighting();
 		GL11.glEnable(GL11.GL_BLEND);
 		Tessellator v5 = Tessellator.instance;
-		if (MinecraftForgeClient.getRenderPass() == 1) {
-			if (te.isFull9x9()) {
+		if (MinecraftForgeClient.getRenderPass() == 1 || StructureRenderer.isRenderingTiles()) {
+			if (StructureRenderer.isRenderingTiles() || te.isFull9x9()) {
 				if (p == 5) {
 					ReikaTextureHelper.bindTerrainTexture();
 					IIcon ico = ChromaIcons.RIFT.getIcon();
@@ -73,7 +74,7 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 					v5.addVertexWithUV(-1, 1, -1, u, v);
 					v5.draw();
 
-					if (te.isComplete()) {
+					if (StructureRenderer.isRenderingTiles() || te.isComplete()) {
 						BlendMode.ADDITIVEDARK.apply();
 
 
@@ -90,7 +91,7 @@ public class RenderCrystalPortal extends ChromaRenderBase {
 						v5.addVertexWithUV(-1, 1, -1, u, v);
 						v5.draw();
 
-						boolean half = te.getCharge() >= te.MINCHARGE/2;
+						boolean half = StructureRenderer.isRenderingTiles() || te.getCharge() >= te.MINCHARGE/2;
 
 						v5.startDrawingQuads();
 						ReikaTextureHelper.bindTerrainTexture();

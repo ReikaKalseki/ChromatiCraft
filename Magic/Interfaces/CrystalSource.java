@@ -21,7 +21,7 @@ public interface CrystalSource extends CrystalTransmitter, LumenTile {
 	/** Higher number = higher priority */
 	public int getSourcePriority();
 
-	public boolean canSupply(CrystalReceiver te);
+	public boolean canSupply(CrystalReceiver te, CrystalElement e);
 
 	public void onUsedBy(EntityPlayer ep, CrystalElement e);
 

@@ -304,7 +304,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (ModList.THAUMCRAFT.isLoaded() && te instanceof TileEntityAspectJar && is != null && is.getItem() instanceof IEssentiaContainerItem) {
+		if (ModList.THAUMCRAFT.isLoaded() && te instanceof TileEntityAspectJar && is != null && is.getItem() instanceof IEssentiaContainerItem && is.stackSize == 1) {
 			IEssentiaContainerItem ieci = (IEssentiaContainerItem)is.getItem();
 			TileEntityAspectJar jar = (TileEntityAspectJar)te;
 			AspectList al = ieci.getAspects(is);
@@ -315,9 +315,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
 				if (!ep.capabilities.isCreativeMode) {
 					al.remove(a, added);
-					if (al.aspects.isEmpty()) {
-						is.stackSize--;
-					}
+					ieci.setAspects(is, al);
 				}
 				return true;
 			}

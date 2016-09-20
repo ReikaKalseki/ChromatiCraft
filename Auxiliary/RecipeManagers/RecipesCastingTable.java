@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.AvoLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.ChromaFlowerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRelayRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CompoundRuneRecipe;
@@ -83,10 +84,12 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidSto
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.EnchantmentRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.TinkerToolPartRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AdjacencyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectFormerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AspectJarRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AutomatorRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.AvoLaserRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BatteryRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BeaconRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.BiomePainterRecipe;
@@ -120,6 +123,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemCol
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ItemInserterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampControlRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LampRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenAlvearyRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenBroadcastRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenTurretRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.LumenWireRecipe;
@@ -148,6 +152,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WeakRep
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.WirelessTransmitterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraCleanerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.AuraPouchRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BeeFrameRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BreakerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.BuilderWandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.CaptureWandRecipe;
@@ -181,6 +186,7 @@ import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.Crystal.BlockCrystalGlow.Bases;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.ModInterface.CrystalBackpack;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -196,11 +202,16 @@ import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayLis
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.ToolParts;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler.WeaponParts;
 import Reika.DragonAPI.ModRegistry.PowerTypes;
 import Reika.RotaryCraft.Registry.ItemRegistry;
 
 import com.google.common.collect.HashBiMap;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class RecipesCastingTable {
 
@@ -693,6 +704,10 @@ public class RecipesCastingTable {
 
 		this.addRecipe(new GlowFireRecipe(ChromaTiles.GLOWFIRE.getCraftedProduct(), ChromaStacks.transformCore));
 
+		this.addRecipe(new AvoLampRecipe(ChromaBlocks.AVOLAMP.getStackOf(), ChromaStacks.avolite));
+
+		this.addRecipe(new AvoLaserRecipe(ChromaTiles.AVOLASER.getCraftedProduct(), ChromaStacks.avolite));
+
 		this.addSpecialRecipes();
 	}
 
@@ -707,6 +722,34 @@ public class RecipesCastingTable {
 			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 4);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
 			this.addRecipe(new CastingRecipe(is, sr));
+		}
+
+		if (ModList.FORESTRY.isLoaded()) {
+			ItemStack is = new ItemStack(CrystalBackpack.instance.getItem1());
+			IRecipe sr = ReikaRecipeHelper.getShapedRecipeFor(is, "SWS", "cCc", "SWS", 'S', Items.string, 'C', Blocks.chest, 'W', Blocks.wool, 'c', ChromaItems.SHARD.getAnyMetaStack());
+			this.addRecipe(new CastingRecipe(is, sr));
+
+			ItemStack is2 = new ItemStack(CrystalBackpack.instance.getItem2());
+			sr = ReikaRecipeHelper.getShapedRecipeFor(is2, "WDW", "WCW", "WWW", 'D', Items.diamond, 'C', is, 'W', ForestryHandler.CraftingMaterials.WOVENSILK.getItem());
+			this.addRecipe(new CastingRecipe(is2, sr));
+
+			ItemStack frame = ChromaItems.BEEFRAME.getStackOf();
+			sr = ReikaRecipeHelper.getShapedRecipeFor(frame, "agb", "gfg", "bga", 'a', ChromaStacks.auraDust, 'b', ChromaStacks.chromaDust, 'g', ChromaStacks.lightBlueShard, 'f', ForestryHandler.ItemEntry.IMPREGFRAME.getItem());
+			this.addRecipe(new BeeFrameRecipe(frame, sr));
+
+			Block ctr = GameRegistry.findBlock("MagicBees", "magicApiary");
+			if (ctr == null)
+				ctr = GameRegistry.findBlock(ModList.FORESTRY.modLabel, "alveary");
+			this.addRecipe(new LumenAlvearyRecipe(ChromaTiles.ALVEARY.getCraftedProduct(), new ItemStack(ctr)));
+		}
+
+		if (ModList.TINKERER.isLoaded()) {
+			for (int i = 0; i < ToolParts.partList.length; i++) {
+				this.addRecipe(new TinkerToolPartRecipe(ToolParts.partList[i]));
+			}
+			for (int i = 0; i < WeaponParts.partList.length; i++) {
+				this.addRecipe(new TinkerToolPartRecipe(WeaponParts.partList[i]));
+			}
 		}
 
 		for (Object o : Item.itemRegistry.getKeys()) {

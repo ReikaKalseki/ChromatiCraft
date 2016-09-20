@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools.Wands;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
@@ -89,34 +90,43 @@ public class ItemExcavationWand extends ItemWandBase implements BreakerCallback 
 			b.taxiCabDistance = true;
 			b.player = ep;
 			b.hungerFactor = 0.125F;
-			Block bk = ep.worldObj.getBlock(x, y, z);
-			if (bk == Blocks.lit_redstone_ore)
-				b.addBlock(new BlockKey(Blocks.redstone_ore));
-			else if (bk == Blocks.redstone_ore)
-				b.addBlock(new BlockKey(Blocks.lit_redstone_ore));
-			else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
-				for (int i = 0; i < 16; i++) {
-					b.addBlock(new BlockKey(bk, i));
-				}
-			}
-			else if (ModList.GEOSTRATA.isLoaded() && bk == GeoBlocks.LAVAROCK.getBlockInstance()) {
-				for (int i = 0; i < 16; i++) {
-					b.addBlock(new BlockKey(bk, i));
-				}
-			}
-			else if (bk == TwilightForestHandler.BlockEntry.NAGASTONE.getBlock()) {
-				for (int i = 0; i < 16; i++) {
-					b.addBlock(new BlockKey(bk, i));
-				}
-			}
-			else if (bk == TwilightForestHandler.BlockEntry.AURORA.getBlock()) {
-				for (int i = 0; i < 16; i++) {
-					b.addBlock(new BlockKey(bk, i));
-				}
+			HashSet<BlockKey> set = getSpreadBlocks(world, x, y, z);
+			for (BlockKey bk : set) {
+				b.addBlock(bk);
 			}
 			breakers.put(b.hashCode(), ep);
 		}
 		return true;
+	}
+
+	public static HashSet<BlockKey> getSpreadBlocks(World world, int x, int y, int z) {
+		HashSet<BlockKey> set = new HashSet();
+		Block bk = world.getBlock(x, y, z);
+		if (bk == Blocks.lit_redstone_ore)
+			set.add(new BlockKey(Blocks.redstone_ore));
+		else if (bk == Blocks.redstone_ore)
+			set.add(new BlockKey(Blocks.lit_redstone_ore));
+		else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
+			for (int i = 0; i < 16; i++) {
+				set.add(new BlockKey(bk, i));
+			}
+		}
+		else if (ModList.GEOSTRATA.isLoaded() && bk == GeoBlocks.LAVAROCK.getBlockInstance()) {
+			for (int i = 0; i < 16; i++) {
+				set.add(new BlockKey(bk, i));
+			}
+		}
+		else if (bk == TwilightForestHandler.BlockEntry.NAGASTONE.getBlock()) {
+			for (int i = 0; i < 16; i++) {
+				set.add(new BlockKey(bk, i));
+			}
+		}
+		else if (bk == TwilightForestHandler.BlockEntry.AURORA.getBlock()) {
+			for (int i = 0; i < 16; i++) {
+				set.add(new BlockKey(bk, i));
+			}
+		}
+		return set;
 	}
 
 	public static int getDepth(EntityPlayer ep) {

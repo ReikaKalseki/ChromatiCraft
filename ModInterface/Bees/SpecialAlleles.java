@@ -33,7 +33,6 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.ConditionalProductProvider;
-import Reika.ChromatiCraft.ModInterface.Bees.ChromaBeeHelpers.SpecialGeneticEffect;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees.CrystalBee;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -126,10 +125,6 @@ public class SpecialAlleles {
 
 		@Override
 		public IEffectData doEffect(IBeeGenome ibg, IEffectData ied, IBeeHousing ibh) {
-			SpecialGeneticEffect spec = CrystalBees.specialGenes.get(color);
-			if (spec != null) {
-				spec.doEffect(ibg, ibh, CrystalBees.rand);
-			}
 			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();

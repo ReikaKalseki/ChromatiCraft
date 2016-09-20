@@ -184,6 +184,7 @@ public class BiomeFXRenderer {
 			double h = p.height;
 			int ty = ep.worldObj.getTopSolidOrLiquidBlock(px, pz);
 			double my = Math.max(ty-8, ep.posY-64);
+			my = Math.max(my, ep.worldObj.getPrecipitationHeight(MathHelper.floor_double(rx), MathHelper.floor_double(rz)));
 
 			for (double ry = my; ry <= ep.posY+64; ry += h*2) {
 				for (double a = 0; a <= 360; a += da) {

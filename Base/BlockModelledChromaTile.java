@@ -18,6 +18,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
@@ -54,6 +55,17 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		blockIcon = ico.registerIcon("chromaticraft:transparent");
+	}
+
+	@Override
+	public final void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
+		AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z);
+		ChromaTiles m = ChromaTiles.getTile(world, x, y, z);
+		if (m != null) {
+			TileEntityChromaticBase te = (TileEntityChromaticBase)world.getTileEntity(x, y, z);
+			box = AxisAlignedBB.getBoundingBox(x+m.getMinX(te), y+m.getMinY(te), z+m.getMinZ(te), x+m.getMaxX(te), y+m.getMaxY(te), z+m.getMaxZ(te));
+		}
+		this.setBounds(box, x, y, z);
 	}
 
 	@Override

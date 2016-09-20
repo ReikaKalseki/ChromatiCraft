@@ -25,7 +25,6 @@ import net.minecraftforge.common.BiomeDictionary;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CustomSoundGuiButton;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -36,6 +35,7 @@ import Reika.DragonAPI.Instantiable.GUI.ColorDistributor;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
+import Reika.DragonAPI.Libraries.IO.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
@@ -84,6 +84,8 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	private final TileEntityBiomePainter tile;
 	private final RegionMap<BiomeGenBase> biomeRegions = new RegionMap();
 
+	private static TileEntityBiomePainter staticTileRef;
+
 	private BiomePainter painter;
 	private GuiTextField search;
 	private GuiPages page = GuiPages.PAINT;
@@ -98,6 +100,8 @@ public class GuiBiomeChanger extends GuiChromaBase {
 
 		xSize = 256;
 		ySize = 212;
+
+		staticTileRef = te;
 	}
 
 	@Override
@@ -291,15 +295,18 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	}
 
 	private void redrawBiomes() {
-		int d = tile.RANGE*2+1;
-		int n = ReikaMathLibrary.intpow2(d, 2);
+		int r = tile.RANGE*2+1;
+		//int rn = painter.isPainted(r-1, r-1) ? 16 : 2;
+		int d = r;//r/rn;//r;
+		int n = ReikaMathLibrary.intpow2(r, 2);
 		//int d1 = frame%n;
 		//int d2 = Math.min(d1+32, n-1);
 		//for (int ix = -tile.RANGE; ix <= tile.RANGE; ix++) {
 		//	for (int iz = -tile.RANGE; iz <= tile.RANGE; iz++) {
+
 		for (int i = 0; i < d; i++) {
-			int ix = refreshPosition%d-tile.RANGE;
-			int iz = refreshPosition/d-tile.RANGE;
+			int ix = refreshPosition%r-tile.RANGE;
+			int iz = refreshPosition/r-tile.RANGE;
 			int dx = tile.xCoord+ix;
 			int dz = tile.zCoord+iz;
 
@@ -364,7 +371,15 @@ public class GuiBiomeChanger extends GuiChromaBase {
 
 		@Override
 		public void draw(int x, int y, int s) {
-			api.drawRect(x, y, s, s, color, true);
+			int c = color;
+			int dx = staticTileRef.xCoord+x-TileEntityBiomePainter.RANGE;
+			int dz = staticTileRef.zCoord+y-TileEntityBiomePainter.RANGE;
+			if (!staticTileRef.canChangeBiomeAt(dx, dz, biome)) {
+				int n = 10;
+				c = ((dx+dz)%n+n)%n >= n/2 ? ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.5F) : ReikaColorAPI.getColorWithBrightnessMultiplier(color, 0.25F);
+				c = 0xff000000 | c;
+			}
+			api.drawRect(x, y, s, s, c, true);
 		}
 
 		@Override
@@ -379,15 +394,9 @@ public class GuiBiomeChanger extends GuiChromaBase {
 
 		@Override
 		public void onPaintedTo(int x, int y) {
-			GuiBiomeChanger gui = (GuiBiomeChanger)Minecraft.getMinecraft().currentScreen;
-			if (gui == null) {
-				//ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui: "+gui+"/"+gui != null ? gui.tile : "/?");
-				ChromatiCraft.logger.logError("Biome painter tried to paint with a null tile or a null gui");
-				return;
-			}
-			int dx = gui.tile.xCoord+x-TileEntityBiomePainter.RANGE;
-			int dz = gui.tile.zCoord+y-TileEntityBiomePainter.RANGE;
-			gui.tile.changeBiomeAt(dx, dz, biome);
+			int dx = staticTileRef.xCoord+x-TileEntityBiomePainter.RANGE;
+			int dz = staticTileRef.zCoord+y-TileEntityBiomePainter.RANGE;
+			staticTileRef.changeBiomeAt(dx, dz, biome);
 		}
 
 	}
