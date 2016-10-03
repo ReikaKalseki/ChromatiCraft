@@ -14,6 +14,7 @@ import java.util.HashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher.ProgressCache;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -220,7 +221,11 @@ public class ProductChecks {
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
 			EntityPlayer ep = world.func_152378_a(ibh.getOwner().getId());
-			return ep != null && progress.isPlayerAtStage(ep);
+			if (ep != null) {
+				return progress.isPlayerAtStage(ep);
+			}
+			ProgressCache c = ChromaBeeHelpers.getProgressCache(ibh);
+			return c != null && c.containsProgress(progress);
 		}
 
 		@Override

@@ -51,8 +51,10 @@ import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock.HoverType;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterNode;
 import Reika.ChromatiCraft.Block.Crystal.BlockPowerTree;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Music.BlockMusicMemory.TileMusicMemory;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
@@ -114,6 +116,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.ChromatiCraft.World.Dimension.BiomeDistributor;
@@ -777,6 +780,16 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				case RELAYFLUID:
 					((TileEntityFluidRelay)tile).sendFluidParticles(world, x, y, z, FluidRegistry.getFluid(data[0]));
+					break;
+				case RELAYFILTER:
+					((TileEntityRelayFilter)tile).setFlag(CrystalElement.elements[data[0]], data[1] > 0);
+					break;
+				case ROUTERFILTERFLAG:
+					((TileEntityRouterNode)tile).isBlacklist = data[1] > 0;
+					((TileEntityRouterNode)tile).update();
+					break;
+				case ROUTERLINK:
+					((TileEntityRouterHub)tile).addHighlight(new Coordinate(data[0], data[1], data[2]));
 					break;
 			}
 		}

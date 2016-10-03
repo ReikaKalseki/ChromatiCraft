@@ -22,6 +22,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
@@ -35,7 +36,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //Some sort of indicator? Cloaking?
-public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached {
+public class TileEntityCloakingTower extends TileEntityChromaticBase implements LocationCached, MultiBlockChromaTile {
 
 	private static final Collection<WorldLocation> cache = new ArrayList();
 
@@ -53,11 +54,11 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 		WorldLocation loc = new WorldLocation(this);
 		if (!cache.contains(loc))
 			cache.add(loc);
-		this.validateStructure(world, x, y, z);
+		this.validateStructure();
 	}
 
-	public void validateStructure(World world, int x, int y, int z) {
-		active = ChromaStructures.getCloakingTower(world, x, y, z).matchInWorld();
+	public void validateStructure() {
+		active = ChromaStructures.getCloakingTower(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 	}
 
 	@Override

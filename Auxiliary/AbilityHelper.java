@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -82,6 +83,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
@@ -90,6 +92,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
+import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
@@ -142,6 +145,9 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import forestry.api.apiculture.EnumBeeType;
+import forestry.api.apiculture.IBee;
+import forestry.api.apiculture.IBeeGenome;
 
 
 
@@ -1896,9 +1902,31 @@ public class AbilityHelper {
 					if (primed)
 						it.remove();
 				}
-				ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
-				evt.toolTip.add(evt.toolTip.size(), EnumChatFormatting.YELLOW.toString()+EnumChatFormatting.ITALIC.toString()+(ReikaBeeHelper.isPristine(evt.itemStack) ? "Pristine Stock" : "Ignoble Stock"));
-				evt.toolTip.addAll(evt.toolTip.size(), li);
+				if (GuiScreen.isCtrlKeyDown() || GuiScreen.isShiftKeyDown()) {
+					EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(evt.itemStack);
+					if (GuiScreen.isShiftKeyDown()) {
+						ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
+						if (type == EnumBeeType.QUEEN)
+							evt.toolTip.add(evt.toolTip.size(), EnumChatFormatting.YELLOW.toString()+EnumChatFormatting.ITALIC.toString()+(ReikaBeeHelper.isPristine(evt.itemStack) ? "Pristine Stock" : "Ignoble Stock"));
+						evt.toolTip.addAll(evt.toolTip.size(), li);
+					}
+					if (GuiScreen.isCtrlKeyDown()) {
+						if (type == EnumBeeType.QUEEN) {
+							IBee bee = ReikaBeeHelper.getBee(evt.itemStack);
+							IBeeGenome ibg = bee.getMate();
+							ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(ibg);
+							li.add(0, EnumChatFormatting.GOLD+"Mate:");
+							evt.toolTip.addAll(evt.toolTip.size(), li);
+						}
+					}
+				}
+				else {
+					evt.toolTip.add(evt.toolTip.size(), "Hold "+EnumChatFormatting.GREEN+"LSHIFT"+EnumChatFormatting.RESET+" to show genes");
+					EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(evt.itemStack);
+					if (type == EnumBeeType.QUEEN) {
+						evt.toolTip.add(evt.toolTip.size(), "Hold "+EnumChatFormatting.GREEN+"LCTRL"+EnumChatFormatting.RESET+" to show mate");
+					}
+				}
 			}
 		}
 	}
@@ -2044,5 +2072,15 @@ public class AbilityHelper {
 			}
 		}
 
+	}
+
+	public boolean canReachBoostSelect(World world, int x, int y, int z, EntityPlayer ep) {
+		if (ChromaTiles.getTile(world, x, y, z) == ChromaTiles.PYLON)
+			return false;
+		Block b = world.getBlock(x, y, z);
+		if (b instanceof BlockTieredResource) {
+			return ((BlockTieredResource)b).isPlayerSufficientTier(world, x, y, z, ep);
+		}
+		return true;
 	}
 }

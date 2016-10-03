@@ -24,24 +24,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
-import Reika.ChromatiCraft.TileEntity.TileEntityPersonalCharger;
-import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCloakingTower;
-import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
-import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingTable;
-import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
-import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -456,69 +447,24 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			}
 		}
 
-		TileEntity te = world.getTileEntity(mx, my+1, mz);
-		//ReikaJavaLibrary.pConsole(te+" @ "+mx+", "+(my+1)+", "+mz, Side.SERVER);
-		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).validateStructure(world, mx, my, mz);
-		}
-		if (te instanceof TileEntityAuraInfuser) {
-			((TileEntityAuraInfuser)te).validateMultiblock();
-		}
-
-		te = world.getTileEntity(mx, my+2, mz);
-		if (te instanceof TileEntityRitualTable) {
-			((TileEntityRitualTable)te).validateMultiblock(world, mx, my, mz);
-		}
-		if (te instanceof TileEntityAuraInfuser) {
-			((TileEntityAuraInfuser)te).validateMultiblock();
-		}
-
-		te = world.getTileEntity(mx, my+6, mz);
-		if (te instanceof TileEntityPersonalCharger) {
-			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
-		}
-
-		te = world.getTileEntity(mx, my+5, mz);
-		if (te instanceof TileEntityCloakingTower) {
-			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
-		}
-
-		te = world.getTileEntity(mx, my+23, mz);
-		if (te instanceof TileEntityCrystalBroadcaster) {
-			((TileEntityCrystalBroadcaster)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+1, mz);
-		if (te instanceof TileEntityCrystalBeacon) {
-			((TileEntityCrystalBeacon)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+14, mz);
-		if (te instanceof TileEntityMeteorTower) {
-			((TileEntityMeteorTower)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+1, mz);
-		if (te instanceof TileEntityTeleportGate) {
-			((TileEntityTeleportGate)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+3, mz);
-		if (te instanceof TileEntityRelaySource) {
-			((TileEntityRelaySource)te).validateStructure(world, te.xCoord, te.yCoord, te.zCoord);
+		for (int i = 0; i <= 23; i++) {
+			TileEntity te = world.getTileEntity(mx, my+i, mz);
+			if (te instanceof MultiBlockChromaTile) {
+				((MultiBlockChromaTile)te).validateStructure();
+			}
 		}
 
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
-				te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
 				if (te instanceof TileEntityCrystalRepeater) {
 					((TileEntityCrystalRepeater)te).validateStructure();
 				}
 			}
 		}
 
-		te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
+		TileEntity te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
 		if (te instanceof TileEntityPowerTree) {
 			((TileEntityPowerTree)te).validateStructure();
 		}
@@ -551,70 +497,24 @@ public class BlockPylonStructure extends Block implements ConnectedTextureGlass 
 			}
 		}
 
-		TileEntity te = world.getTileEntity(mx, my+1, mz);
-		if (te instanceof TileEntityCastingTable) {
-			((TileEntityCastingTable)te).validateStructure(world, mx, my, mz);
-		}
-		if (te instanceof TileEntityAuraInfuser) {
-			((TileEntityAuraInfuser)te).validateMultiblock();
-		}
-
-		te = world.getTileEntity(mx, my+2, mz);
-		if (te instanceof TileEntityRitualTable) {
-			((TileEntityRitualTable)te).validateMultiblock(world, mx, my, mz);
-		}
-
-		te = world.getTileEntity(mx, my+6, mz);
-		if (te instanceof TileEntityPersonalCharger) {
-			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
-		}
-
-		te = world.getTileEntity(mx, my+6, mz);
-		if (te instanceof TileEntityPersonalCharger) {
-			((TileEntityPersonalCharger)te).validateStructure(world, mx, my+6, mz);
-		}
-
-		te = world.getTileEntity(mx, my+5, mz);
-		if (te instanceof TileEntityCloakingTower) {
-			((TileEntityCloakingTower)te).validateStructure(world, mx, my+5, mz);
-		}
-
-		te = world.getTileEntity(mx, my+23, mz);
-		if (te instanceof TileEntityCrystalBroadcaster) {
-			((TileEntityCrystalBroadcaster)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+1, mz);
-		if (te instanceof TileEntityCrystalBeacon) {
-			((TileEntityCrystalBeacon)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+14, mz);
-		if (te instanceof TileEntityMeteorTower) {
-			((TileEntityMeteorTower)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+1, mz);
-		if (te instanceof TileEntityTeleportGate) {
-			((TileEntityTeleportGate)te).validateStructure();
-		}
-
-		te = world.getTileEntity(mx, my+3, mz);
-		if (te instanceof TileEntityRelaySource) {
-			((TileEntityRelaySource)te).validateStructure(world, te.xCoord, te.yCoord, te.zCoord);
+		for (int i = 0; i <= 23; i++) {
+			TileEntity te = world.getTileEntity(mx, my+i, mz);
+			if (te instanceof MultiBlockChromaTile) {
+				((MultiBlockChromaTile)te).validateStructure();
+			}
 		}
 
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
-				te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
+				TileEntity te = world.getTileEntity(x+dir.offsetX*i, y+dir.offsetY*i, z+dir.offsetZ*i);
 				if (te instanceof TileEntityCrystalRepeater) {
 					((TileEntityCrystalRepeater)te).validateStructure();
 				}
 			}
 		}
 
-		te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
+		TileEntity te = world.getTileEntity(blocks.getMidX()-1, blocks.getMaxY()+1, blocks.getMidZ());
 		if (te instanceof TileEntityPowerTree) {
 			((TileEntityPowerTree)te).validateStructure();
 		}

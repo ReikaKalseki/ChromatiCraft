@@ -12,11 +12,14 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher.ProgressCache;
 import Reika.ChromatiCraft.ModInterface.Bees.ProductChecks.ProductCondition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
@@ -132,6 +135,11 @@ public class ChromaBeeHelpers {
 	public static EntityPlayer getOwner(IBeeHousing ibh) {
 		GameProfile p = ibh.getOwner();
 		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
+	}
+
+	public static ProgressCache getProgressCache(IBeeHousing ibh) {
+		UUID uid = ibh.getOwner().getId();
+		return ProgressionCacher.instance.getProgressCache(ibh.getWorld(), uid);
 	}
 
 }

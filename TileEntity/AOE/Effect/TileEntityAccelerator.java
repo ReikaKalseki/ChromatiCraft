@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements Accelerator {
@@ -97,10 +98,17 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 	protected boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long time) {
 		TileEntity te = this.getAdjacentTileEntity(dir);
 		Acceleration a = this.getAccelerate(te);
+		//ReikaJavaLibrary.pConsole(te+": "+(a != null ? a.getClass() : null));
 		if (a != blacklistKey) {
 			int max = this.getAccel();
 			if (a != null) {
-				a.tick(te, max);
+				try {
+					a.tick(te, max);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					this.writeError(e);
+				}
 				if (System.nanoTime()-time >= MAX_LAG)
 					return false;
 			}
@@ -172,7 +180,19 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade implements
 
 	public static abstract class Acceleration {
 
-		protected abstract void tick(TileEntity te, int factor);
+		protected abstract void tick(TileEntity te, int factor) throws Exception;
+
+		protected final void registerClass(String sg) {
+			Class c = null;
+			try {
+				c = Class.forName(sg);
+			}
+			catch (Exception e) {
+				//e.printStackTrace();
+			}
+			if (c != null)
+				TileEntityAccelerator.customizeTile(c, this);
+		}
 
 	}
 

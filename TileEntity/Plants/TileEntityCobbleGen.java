@@ -516,7 +516,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 
 	@Override
 	public boolean isPlantable(World world, int x, int y, int z) {
-		return (world.getBlock(x, y+1, z).isOpaqueCube() && world.getBlock(x, y+1, z).getMaterial().isSolid()) || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL;
+		return (world.getBlock(x, y+1, z).isSideSolid(world, x, y+1, z, ForgeDirection.DOWN) && world.getBlock(x, y+1, z).getMaterial().isSolid()) || ChromaTiles.getTile(world, x, y+1, z) == ChromaTiles.PLANTACCEL;
 	}
 
 }

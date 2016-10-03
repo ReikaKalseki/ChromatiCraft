@@ -115,6 +115,7 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRFDistributor;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.DragonAPICore;
@@ -216,7 +217,8 @@ public enum ChromaTiles implements TileEnum {
 	HARVESTPLANT("chroma.harvestplant",	ChromaBlocks.DECOPLANT,		TileEntityHarvesterPlant.class,		5),
 	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0),
 	AVOLASER("chroma.avolaser",			ChromaBlocks.TILEMODELLED3,	TileEntityAvoLaser.class,			12, "RenderAvoLaser"),
-	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary");
+	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary"),
+	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			2, "RenderRouterHub");
 
 	private final Class tile;
 	private final String name;
@@ -313,6 +315,8 @@ public enum ChromaTiles implements TileEnum {
 			case FLUIDRELAY:
 			case BOOKDECOMP:
 			case AVOLASER:
+			case ALVEARY:
+			case ROUTERHUB:
 				return true;
 			default:
 				return false;
@@ -574,6 +578,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.5625;
 			case BOOKDECOMP:
 				return 0.25;
+			case ROUTERHUB:
+				return 0.875;
 			default:
 				return 1;
 		}

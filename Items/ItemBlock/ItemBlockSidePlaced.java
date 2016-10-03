@@ -35,7 +35,7 @@ public class ItemBlockSidePlaced extends ItemBlock {
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
-
+		super.addInformation(is, ep, li, vb);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class ItemBlockSidePlaced extends ItemBlock {
 	}
 
 	@Override
-	public String getItemStackDisplayName(ItemStack is) {
+	public final String getItemStackDisplayName(ItemStack is) {
 		ChromaBlocks b = ChromaBlocks.getEntryByID(field_150939_a);
 		return b.hasMultiValuedName() ? b.getMultiValuedName(is.getItemDamage()) : b.getBasicName();
 	}
@@ -61,6 +61,11 @@ public class ItemBlockSidePlaced extends ItemBlock {
 		}
 
 		return true;
+	}
+
+	@Override
+	public int getMetadata(int meta) {
+		return meta;
 	}
 
 }

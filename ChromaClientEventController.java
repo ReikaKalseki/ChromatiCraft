@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Render.BiomeFXRenderer;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
+import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
@@ -123,6 +124,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
@@ -186,7 +188,12 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
+	public void cancelBeeGlintForTESR(ItemEffectRenderEvent evt) {
+		if (!RenderAlveary.renderBeeGlint)
+			evt.setResult(Result.DENY);
+	}
+
+	@SubscribeEvent
 	public void flipFaces(RenderWorldEvent.Pre evt) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 		if (VoidGazeLevels.FACEFLIP.isActiveOnPlayer(Minecraft.getMinecraft().thePlayer))
@@ -194,13 +201,11 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
 	public void flipFaces(RenderWorldEvent.Post evt) {
 		GL11.glPopAttrib();
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
 	public void createCaveParticles(ClientTickEvent evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		if (!Minecraft.getMinecraft().isGamePaused() && ep != null && VoidGazeLevels.CAVEPARTICLES.isActiveOnPlayer(ep)) {
@@ -249,13 +254,11 @@ public class ChromaClientEventController {
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
 	public void clearOnLogout(ClientLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
 	}
 
 	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
 	public void clearOnLogout(SinglePlayerLogoutEvent evt) {
 		SkyRiverManagerClient.handleRayClearPacket();
 	}
@@ -1304,20 +1307,21 @@ public class ChromaClientEventController {
 					int x = mov.blockX;
 					int y = mov.blockY;
 					int z = mov.blockZ;
-					double dd = ReikaMathLibrary.py3d(x+0.5-ep.posX, y+0.5-ep.posY, z+0.5-ep.posZ);
-					GL11.glPushMatrix();
-					double s = 1.5;
-					GL11.glScaled(s, s, s);
-					String sg = String.format("%.3fm", dd);
-					FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
-					f.drawString(sg, evt.resolution.getScaledWidth()/3+4, evt.resolution.getScaledHeight()/3-9, 0xffffff);
-					GL11.glPopMatrix();
-					Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
-					if (b != null && b != Blocks.air) {
-						int sz = 16;
-						int dx = evt.resolution.getScaledWidth()/2-sz*5/4;
-						int dy = evt.resolution.getScaledHeight()/2-sz*5/4;
-						/*
+					if (AbilityHelper.instance.canReachBoostSelect(ep.worldObj, x, y, z, ep)) {
+						double dd = ReikaMathLibrary.py3d(x+0.5-ep.posX, y+0.5-ep.posY, z+0.5-ep.posZ);
+						GL11.glPushMatrix();
+						double s = 1.5;
+						GL11.glScaled(s, s, s);
+						String sg = String.format("%.3fm", dd);
+						FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
+						f.drawString(sg, evt.resolution.getScaledWidth()/3+4, evt.resolution.getScaledHeight()/3-9, 0xffffff);
+						GL11.glPopMatrix();
+						Block b = Minecraft.getMinecraft().theWorld.getBlock(x, y, z);
+						if (b != null && b != Blocks.air) {
+							int sz = 16;
+							int dx = evt.resolution.getScaledWidth()/2-sz*5/4;
+							int dy = evt.resolution.getScaledHeight()/2-sz*5/4;
+							/*
 						IIcon ico = b.getIcon(Minecraft.getMinecraft().theWorld, x, y, z, 1);
 						if (ico != null) {
 							float u = ico.getMinU();
@@ -1333,41 +1337,41 @@ public class ChromaClientEventController {
 							v5.addVertexWithUV(dx, dy, 0, u, v);
 							v5.draw();
 						}
-						 */
-						GL11.glPushMatrix();
-						GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-						GL11.glDepthMask(false);
+							 */
+							GL11.glPushMatrix();
+							GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+							GL11.glDepthMask(false);
 
-						boolean back = b == Blocks.chest;
-						if (back)
-							GL11.glFrontFace(GL11.GL_CW);
-						int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
-						ReikaTextureHelper.bindTerrainTexture();
-						//ReikaJavaLibrary.pConsole(b+":"+b.getRenderType());
-						if (b instanceof MachineRegistryBlock) {
-							TileEnum t = ((MachineRegistryBlock)b).getMachine(Minecraft.getMinecraft().theWorld, x, y, z);
-							if (t != null) {
-								ItemStack is = t.getCraftedProduct();
-								if (is != null) {
-									ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+							boolean back = b == Blocks.chest;
+							if (back)
+								GL11.glFrontFace(GL11.GL_CW);
+							int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
+							ReikaTextureHelper.bindTerrainTexture();
+							//ReikaJavaLibrary.pConsole(b+":"+b.getRenderType());
+							if (b instanceof MachineRegistryBlock) {
+								TileEnum t = ((MachineRegistryBlock)b).getMachine(Minecraft.getMinecraft().theWorld, x, y, z);
+								if (t != null) {
+									ItemStack is = t.getCraftedProduct();
+									if (is != null) {
+										ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+									}
 								}
 							}
-						}
-						else if (b.getRenderType() >= 0) {
-							RenderHelper.enableGUIStandardItemLighting();
-							double sc = 11;
-							GL11.glTranslated(dx+8, dy+8, 0);
-							GL11.glScaled(sc, sc, sc);
-							GL11.glRotated(180, 0, 0, 1);
-							GL11.glRotated(back ? 30 : -30, 1, 0, 0);
-							GL11.glRotated(135, 0, 1, 0);
-							GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-							GL11.glEnable(GL11.GL_LIGHTING);
-							//ReikaRenderHelper.enableEntityLighting();
-							RenderBlocks.getInstance().renderBlockAsItem(b, meta, 1);
-						}
-						else {
-							/*
+							else if (b.getRenderType() >= 0) {
+								RenderHelper.enableGUIStandardItemLighting();
+								double sc = 11;
+								GL11.glTranslated(dx+8, dy+8, 0);
+								GL11.glScaled(sc, sc, sc);
+								GL11.glRotated(180, 0, 0, 1);
+								GL11.glRotated(back ? 30 : -30, 1, 0, 0);
+								GL11.glRotated(135, 0, 1, 0);
+								GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+								GL11.glEnable(GL11.GL_LIGHTING);
+								//ReikaRenderHelper.enableEntityLighting();
+								RenderBlocks.getInstance().renderBlockAsItem(b, meta, 1);
+							}
+							else {
+								/*
 							if (b.hasTileEntity(meta)) {
 								TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity(x, y, z);
 								TileEntitySpecialRenderer tesr = TileEntityRendererDispatcher.instance.getSpecialRenderer(te);
@@ -1385,24 +1389,25 @@ public class ChromaClientEventController {
 									return;
 								}
 							}
-							 */
-							try {
-								ArrayList<ItemStack> li = b.getDrops(Minecraft.getMinecraft().theWorld, x, y, z, meta, 0);
-								if (!li.isEmpty()) {
-									ItemStack is = li.get((int)((System.currentTimeMillis()/1000)%li.size()));
-									if (is.getItem() != null)
-										ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+								 */
+								try {
+									ArrayList<ItemStack> li = b.getDrops(Minecraft.getMinecraft().theWorld, x, y, z, meta, 0);
+									if (!li.isEmpty()) {
+										ItemStack is = li.get((int)((System.currentTimeMillis()/1000)%li.size()));
+										if (is.getItem() != null)
+											ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+									}
+									else {
+										ItemStack is = new ItemStack(b, 1, meta);
+										if (is.getItem() != null)
+											ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
+									}
 								}
-								else {
+								catch (Exception e) { //because some mods are derps and make getDrops crash on the client or use it to set states
 									ItemStack is = new ItemStack(b, 1, meta);
 									if (is.getItem() != null)
 										ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
 								}
-							}
-							catch (Exception e) { //because some mods are derps and make getDrops crash on the client or use it to set states
-								ItemStack is = new ItemStack(b, 1, meta);
-								if (is.getItem() != null)
-									ReikaGuiAPI.instance.drawItemStack(itemRender, f, is, dx, dy);
 							}
 						}
 						GL11.glPopAttrib();
@@ -1425,7 +1430,7 @@ public class ChromaClientEventController {
 				int y = evt.target.blockY;
 				int z = evt.target.blockZ;
 
-				if (ChromaTiles.getTile(world, x, y, z) != ChromaTiles.PYLON) {
+				if (AbilityHelper.instance.canReachBoostSelect(world, x, y, z, ep)) {
 					double p2 = x-TileEntityRendererDispatcher.staticPlayerX;
 					double p4 = y-TileEntityRendererDispatcher.staticPlayerY;
 					double p6 = z-TileEntityRendererDispatcher.staticPlayerZ;
@@ -1446,17 +1451,16 @@ public class ChromaClientEventController {
 					r = Math.max(0, Math.min(1, r));
 					int c = ReikaColorAPI.mixColors(CrystalElement.LIME.getColor(), CrystalElement.PURPLE.getColor(), r);
 					RenderGlobal.drawOutlinedBoundingBox(box, c);
+
+					GL11.glPopAttrib();
+					GL11.glPopMatrix();
+
+					GL11.glDepthMask(true);
+					GL11.glDisable(GL11.GL_BLEND);
+					GL11.glLineWidth(2.0F);
+
+					evt.setCanceled(true);
 				}
-
-
-				GL11.glPopAttrib();
-				GL11.glPopMatrix();
-
-				GL11.glDepthMask(true);
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glLineWidth(2.0F);
-
-				evt.setCanceled(true);
 			}
 		}
 	}

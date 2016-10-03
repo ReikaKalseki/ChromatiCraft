@@ -29,8 +29,10 @@ public class ItemBlockMultiType extends ItemBlock {
 	public void getSubItems(Item item, CreativeTabs c, List li) {
 		ChromaBlocks cb = ChromaBlocks.getEntryByID(field_150939_a);
 		for (int i = 0; i < cb.getNumberMetadatas(); i++) {
-			ItemStack is = new ItemStack(item, 1, i);
-			li.add(is);
+			if (cb.isMetaInCreative(i)) {
+				ItemStack is = new ItemStack(item, 1, i);
+				li.add(is);
+			}
 		}
 	}
 

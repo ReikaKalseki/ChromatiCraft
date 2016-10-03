@@ -48,7 +48,6 @@ import Reika.ChromatiCraft.Block.BlockHeatLamp;
 import Reika.ChromatiCraft.Block.BlockHoverBlock;
 import Reika.ChromatiCraft.Block.BlockHoverPad;
 import Reika.ChromatiCraft.Block.BlockLiquidEnder;
-import Reika.ChromatiCraft.Block.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.BlockMultiStorage;
 import Reika.ChromatiCraft.Block.BlockMusicTrigger;
 import Reika.ChromatiCraft.Block.BlockPath;
@@ -56,6 +55,7 @@ import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure;
 import Reika.ChromatiCraft.Block.BlockRangeLamp;
 import Reika.ChromatiCraft.Block.BlockRift;
+import Reika.ChromatiCraft.Block.BlockRouterNode;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Crystal.BlockCaveCrystal;
 import Reika.ChromatiCraft.Block.Crystal.BlockColoredAltar;
@@ -81,6 +81,8 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLController;
 import Reika.ChromatiCraft.Block.Dimension.Structure.GOL.BlockGOLTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Gravity.BlockGravityTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector;
+import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightPanel;
+import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockFence;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockFreeze;
@@ -90,6 +92,7 @@ import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Pinball.BlockPinballTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftKey;
 import Reika.ChromatiCraft.Block.Dimension.Structure.ShiftMaze.BlockShiftLock;
+import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockEverFluid;
 import Reika.ChromatiCraft.Block.Dye.BlockDye;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeFlower;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeGrass;
@@ -97,6 +100,8 @@ import Reika.ChromatiCraft.Block.Dye.BlockDyeLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockDyeSapling;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowLeaf;
 import Reika.ChromatiCraft.Block.Dye.BlockRainbowSapling;
+import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
 import Reika.ChromatiCraft.Block.Worldgen.BlockEtherealLuma;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
@@ -104,7 +109,6 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockSparkle;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant;
-import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockAvoLamp;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaFlower;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockChromaTiered;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
@@ -121,6 +125,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockMultiType;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockPath;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowLeaf;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRainbowSapling;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockRouterNode;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockSidePlaced;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockStructShield;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
@@ -212,7 +217,12 @@ public enum ChromaBlocks implements BlockEnum {
 	SPARKLE(BlockSparkle.class,					ItemBlockMultiType.class,		"chroma.sparkle"),
 	LUMA(BlockEtherealLuma.class,				ChromatiCraft.luma,				"fluid.luma"),
 	TILEENTITY2(BlockChromaTile.class, 											"Chromatic Tile 2"),
-	AVOLAMP(BlockAvoLamp.class,					ItemBlockAvoLamp.class,			"chroma.avolamp");
+	AVOLAMP(BlockAvoLamp.class,					ItemBlockSidePlaced.class,		"chroma.avolamp"),
+	RELAYFILTER(BlockRelayFilter.class,											"chroma.relayfilter"),
+	ROUTERNODE(BlockRouterNode.class,			ItemBlockRouterNode.class,		"chroma.routernode"),
+	EVERFLUID(BlockEverFluid.class,												"chroma.everfluid"),
+	LIGHTPANEL(BlockLightPanel.class,			ItemBlockMultiType.class,		"chroma.lightpanel"),
+	PANELSWITCH(BlockLightSwitch.class,											"chroma.panelswitch");
 
 	private Class blockClass;
 	private String blockName;
@@ -257,6 +267,7 @@ public enum ChromaBlocks implements BlockEnum {
 				//case ACTIVECHROMA:
 			case ENDER:
 			case LUMA:
+			case EVERFLUID:
 				return Material.water;
 			case TILECRYSTAL:
 			case TILECRYSTALNONCUBE:
@@ -265,6 +276,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case POWERTREE:
 			case RELAY:
 			case ADJACENCY:
+			case RELAYFILTER:
 				return ChromatiCraft.crystalMat;
 			case AVOLAMP:
 				return Material.iron;
@@ -373,6 +385,8 @@ public enum ChromaBlocks implements BlockEnum {
 
 	@Override
 	public String getMultiValuedName(int meta) {
+		if (!this.hasMultiValuedName())
+			return this.getBasicName();
 		if (meta == OreDictionary.WILDCARD_VALUE)
 			return this.getBasicName()+" (Any)";
 		if (this == GLOW) {
@@ -426,6 +440,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return this.getBasicName();
 			case SPARKLE:
 				return "Sparkling "+new ItemStack(BlockSparkle.BlockTypes.list[meta].getBlockProxy()).getDisplayName();
+			case ROUTERNODE:
+				return StatCollector.translateToLocal("chromablock.routernode."+meta);
 			default:
 				return "";
 		}
@@ -467,6 +483,10 @@ public enum ChromaBlocks implements BlockEnum {
 			case BRIDGECONTROL:
 			case LUMA:
 			case AVOLAMP:
+			case RELAYFILTER:
+			case EVERFLUID:
+			case PANELSWITCH:
+			case LIGHTPANEL:
 				return false;
 			default:
 				return true;
@@ -514,6 +534,8 @@ public enum ChromaBlocks implements BlockEnum {
 				return 16;
 			case SPARKLE:
 				return BlockSparkle.BlockTypes.list.length;
+			case LIGHTPANEL:
+				return 6;
 			default:
 				return 1;
 		}
@@ -577,6 +599,12 @@ public enum ChromaBlocks implements BlockEnum {
 
 	public boolean isDimensionStructureBlock() {
 		return blockClass.getName().startsWith("Reika.ChromatiCraft.Block.Dimension.Structure");
+	}
+
+	public boolean isMetaInCreative(int meta) {
+		if (this == LIGHTPANEL)
+			return meta%2 == 0;
+		return true;
 	}
 
 }

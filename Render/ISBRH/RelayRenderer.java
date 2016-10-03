@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
-import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay.TileEntityLumenRelay;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.DragonAPI.Instantiable.Rendering.TessellatorVertexList;

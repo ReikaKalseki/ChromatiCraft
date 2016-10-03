@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -67,7 +68,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityTeleportGate extends CrystalReceiverBase implements LocationCached, OwnedTile, GuiController, ChunkLoadingTile {
+public class TileEntityTeleportGate extends CrystalReceiverBase implements LocationCached, OwnedTile, GuiController, ChunkLoadingTile, MultiBlockChromaTile {
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 	private static final HashSet<GateData> cache = new HashSet();

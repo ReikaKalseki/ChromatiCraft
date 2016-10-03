@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -35,7 +36,7 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRelaySource extends InventoriedCrystalReceiver implements InertIInv, ItemOnRightClick {
+public class TileEntityRelaySource extends InventoriedCrystalReceiver implements InertIInv, ItemOnRightClick, MultiBlockChromaTile {
 
 	private static final int CAPACITY = 720000;
 	private static final int CAPACITY_BOOSTED = 3600000;
@@ -128,7 +129,7 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		super.onFirstTick(world, x, y, z);
 		EntityPlayer ep = this.getPlacer();
 		if (ep != null && !ReikaPlayerAPI.isFake(ep) && !world.isRemote) {
-			this.validateStructure(world, x, y, z);
+			this.validateStructure();
 			enhanced = ProgressStage.POWERCRYSTAL.isPlayerAtStage(ep) && hasEnhancedStructure;
 		}
 		else {
@@ -136,8 +137,8 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		}
 	}
 
-	public void validateStructure(World world, int x, int y, int z) {
-		hasEnhancedStructure = ChromaStructures.getBoostedRelayStructure(world, x, y, z, false).matchInWorld();
+	public void validateStructure() {
+		hasEnhancedStructure = ChromaStructures.getBoostedRelayStructure(worldObj, xCoord, yCoord, zCoord, false).matchInWorld();
 	}
 
 	private void checkAndRequest() {

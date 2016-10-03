@@ -55,7 +55,9 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Potion
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeCaveTrail;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeEnderTNT;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RecipeTankBlock;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayFilterRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RouterNodeRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.RuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.SelectiveGlassRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalCellRecipe;
@@ -143,6 +145,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RelaySo
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.ReversionLotusRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RiftRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RitualTableRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.RouterHubRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.SpawnerReprogrammerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.StandRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.TelePumpRecipe;
@@ -707,6 +710,13 @@ public class RecipesCastingTable {
 		this.addRecipe(new AvoLampRecipe(ChromaBlocks.AVOLAMP.getStackOf(), ChromaStacks.avolite));
 
 		this.addRecipe(new AvoLaserRecipe(ChromaTiles.AVOLASER.getCraftedProduct(), ChromaStacks.avolite));
+
+		this.addRecipe(new RelayFilterRecipe(ChromaBlocks.RELAYFILTER.getStackOf(), ChromaItems.LENS.getAnyMetaStack()));
+
+		this.addRecipe(new RouterNodeRecipe(ChromaBlocks.ROUTERNODE.getStackOfMetadata(0), false));
+		this.addRecipe(new RouterNodeRecipe(ChromaBlocks.ROUTERNODE.getStackOfMetadata(1), true));
+
+		this.addRecipe(new RouterHubRecipe(ChromaTiles.ROUTERHUB.getCraftedProduct(), ChromaStacks.elementUnit));
 
 		this.addSpecialRecipes();
 	}

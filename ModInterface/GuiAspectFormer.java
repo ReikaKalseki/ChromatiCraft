@@ -61,7 +61,7 @@ public class GuiAspectFormer extends GuiChromaBase {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.clear();
+
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		int midx = j+xSize/2;
@@ -70,13 +70,15 @@ public class GuiAspectFormer extends GuiChromaBase {
 		int h = 48;
 		int out = xSize/2-14;
 
-		String tex = "Textures/GUIs/aspect.png";
-		if (mode == AspectMode.DEMAND) {
-			buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 184, 0, tex, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 176, 0, tex, ChromatiCraft.class, this));
+		//mode = tile.getMode();
 
-			buttonList.add(new CustomSoundImagedGuiButton(2, midx-w-out, midy-h/2-13, 10, 10, 90, 56, "Textures/GUIs/buttons.png", ChromatiCraft.class, this));
-		}
+		String tex = "Textures/GUIs/aspect.png";
+		//if (mode == AspectMode.DEMAND) {
+		buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 184, 0, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 176, 0, tex, ChromatiCraft.class, this));
+
+		buttonList.add(new CustomSoundImagedGuiButton(2, midx-w-out, midy-h/2-13, 10, 10, 90, 56, "Textures/GUIs/buttons.png", ChromatiCraft.class, this));
+		//}
 		buttonList.add(new CustomSoundImagedGuiButton(3, midx-w-out+15, midy-h/2-13, 10, 10, 90, 76, "Textures/GUIs/buttons.png", ChromatiCraft.class, this));
 	}
 
@@ -86,6 +88,11 @@ public class GuiAspectFormer extends GuiChromaBase {
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
+		//ReikaJavaLibrary.pConsole(this.getClickCooldown()+" @ "+b.id+" > "+buttonList.size()+":"+buttonList);
+		//ReikaJavaLibrary.pConsole(b.id+":"+this.getClickCooldown());
+		//Thread.dumpStack();
+		if (this.getClickCooldown() < 1)
+			return;
 		switch(b.id) {
 			case 0:
 				if (dx == 0) {
@@ -119,6 +126,8 @@ public class GuiAspectFormer extends GuiChromaBase {
 				index = 0;
 				ReikaPacketHelper.sendStringPacket(ChromatiCraft.packetChannel, ChromaPackets.ASPECT.ordinal(), "", tile);
 				this.initGui();
+				for (int i = 0; i < 3; i++)
+					((GuiButton)buttonList.get(i)).visible = mode == AspectMode.DEMAND;
 				break;
 		}
 		//this.initGui();

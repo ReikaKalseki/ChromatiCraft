@@ -12,7 +12,6 @@ package Reika.ChromatiCraft.World.Dimension.Structure.Locks;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -88,8 +87,7 @@ public class LockRoomConnector extends StructurePiece {
 
 		if (!openCeiling && openFloor == 0) {
 			if (ReikaRandomHelper.doWithChance(25)) {
-				ItemStack is = ReikaRandomHelper.doWithChance(25) ? ChromaStacks.iridChunk.copy() : ChromaStacks.glowChunk.copy();
-				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0, is);
+				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0, ChromaStacks.iridChunk.copy(), 10, ChromaStacks.avolite.copy(), 50);
 			}
 			else {
 				parent.generateLootChest(x-2, y+1, z, ForgeDirection.EAST, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 0);

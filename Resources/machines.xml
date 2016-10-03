@@ -600,6 +600,30 @@
 			Checks the flowers adjacent to it to know what to break
 		</note>
 	</harvestplant>
+	<alveary>
+		<desc>
+			Untold piles of wax, jelly, and pollen later, and now poorer some 27 drums of honey, you finally have it: The pinnacle of your apiculture abilities, large structures to keep your bees as happy as possible and to maximize their productivity (wooden boxes, treated or not, proved lacking in that regard). And they help, but you still want MORE. More speed, more products, more capabilities. So an idea occurs to you: Lumen-powered bees! Well, more accurately, using the lumen energy to enhance their capabilities, or of the housing itself. You might even be able to plug it into those crystal relays from that glowy sparky thing you made as well.
+		</desc>
+		<note>
+			%s
+		</note>
+	</alveary>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
 	<name>
 		<desc>
 

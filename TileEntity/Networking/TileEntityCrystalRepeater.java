@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
@@ -60,7 +61,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements CrystalRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
 	protected boolean hasMultiblock;

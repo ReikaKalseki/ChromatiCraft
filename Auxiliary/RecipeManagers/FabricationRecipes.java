@@ -146,6 +146,21 @@ public class FabricationRecipes {
 			}
 		}
 
+		if (ModList.THAUMICTINKER.isLoaded()) {
+			ElementTagCompound nether = new ElementTagCompound();
+			nether.addValueToColor(CrystalElement.ORANGE, 5000);
+			nether.addValueToColor(CrystalElement.PINK, 5000);
+			nether.addValueToColor(CrystalElement.BLACK, 2000);
+
+			ElementTagCompound end = new ElementTagCompound();
+			end.addValueToColor(CrystalElement.LIGHTGRAY, 5000);
+			end.addValueToColor(CrystalElement.PINK, 5000);
+			end.addValueToColor(CrystalElement.BLACK, 2000);
+
+			this.addRecipe(ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 6), nether);
+			this.addRecipe(ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 7), end);
+		}
+
 		if (ModList.APPENG.isLoaded()) {
 			Block item = GameRegistry.findBlock(ModList.APPENG.modLabel, "tile.BlockSkyStone");
 			if (item != null) {

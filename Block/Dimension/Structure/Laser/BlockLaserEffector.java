@@ -111,7 +111,7 @@ public class BlockLaserEffector extends BlockDimensionStructureTile {
 	@Override
 	public int getLightValue(IBlockAccess iba, int x, int y, int z) {
 		LaserEffectTile te = (LaserEffectTile)iba.getTileEntity(x, y, z);
-		return te instanceof TargetTile && ((TargetTile)te).isTriggered() ? (ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(te.getRenderColor(), 15) : 15) : 0;
+		return te instanceof TargetTile && ((TargetTile)te).isTriggered() ? (ModList.COLORLIGHT.isLoaded() ? ReikaColorAPI.getPackedIntForColoredLight(te.getRenderColor(), 15) : 15) : 2;
 	}
 
 	@Override

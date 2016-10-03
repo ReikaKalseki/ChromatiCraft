@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
@@ -59,7 +60,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile, WirelessSource {
+public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalBattery, OwnedTile, WirelessSource, MultiBlockChromaTile {
 
 	private static final EnumMap<CrystalElement, BlockVector> origins = new EnumMap(CrystalElement.class);
 	private static final EnumMap<CrystalElement, Integer> yOffsets = new EnumMap(CrystalElement.class);

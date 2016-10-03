@@ -39,13 +39,17 @@ import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.GravityPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LaserPuzzleGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.LightPanelGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.NonEuclideanGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.PinballGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ShiftMazeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.TessellationGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.ThreeDMazeGenerator;
+import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.Exception.RegistrationException;
+import Reika.DragonAPI.Instantiable.Data.Collections.ChancedOutputList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
@@ -283,7 +287,10 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		LASER(LaserPuzzleGenerator.class, "Chromatic Beams"),
 		PINBALL(PinballGenerator.class, "Expanding Motion"),
 		GRAVITY(GravityPuzzleGenerator.class, "Luma Bursts"),
-		BRIDGE(BridgeGenerator.class, "Dynamic Bridges");
+		BRIDGE(BridgeGenerator.class, "Dynamic Bridges"),
+		WATER(WaterPuzzleGenerator.class, "Channeled Flow"),
+		TESSELLATION(TessellationGenerator.class, "Spatial Satisfaction"),
+		LIGHTPANEL(LightPanelGenerator.class, "Glowing Logic");
 
 		private final Class generatorClass;
 		//private DimensionStructureGenerator generator;
@@ -396,7 +403,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 		world.setTileEntity(x, y, z, ChromaBlocks.DIMDATA.getBlockInstance(), 0, new StructureDataCallback(this, data));
 	}
 
-	public final void generateLootChest(int x, int y, int z, ForgeDirection dir, String chest, int bonus, ItemStack... extras) {
+	public final void generateLootChest(int x, int y, int z, ForgeDirection dir, String chest, int bonus, Object... extras) {
 		world.setTileEntity(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), BlockLootChest.getMeta(dir), new LootChestCallback(chest, bonus, extras));
 	}
 
@@ -448,9 +455,13 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 		private final String chest;
 		private final int bonus;
-		private final ItemStack[] extras;
+		private final ChancedOutputList extras;
 
-		public LootChestCallback(String s, int b, ItemStack... ex) {
+		public LootChestCallback(String s, int b, Object... ex) {
+			this(s, b, ChancedOutputList.parseFromArray(false, ex));
+		}
+
+		public LootChestCallback(String s, int b, ChancedOutputList ex) {
 			chest = s;
 			bonus = b;
 			extras = ex;
@@ -461,9 +472,11 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 			if (te instanceof TileEntityLootChest) {
 				TileEntityLootChest tc = (TileEntityLootChest)te;
 				tc.populateChest(chest, null, bonus, world.rand);
-				for (int i = 0; i < extras.length; i++) {
+
+				Collection<ItemStack> extra = extras.calculate();
+				for (ItemStack is : extra) {
 					int slot = world.rand.nextInt(tc.getSizeInventory());
-					tc.setInventorySlotContents(slot, extras[i]);
+					tc.setInventorySlotContents(slot, is);
 				}
 			}
 		}

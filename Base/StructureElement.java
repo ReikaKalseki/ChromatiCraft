@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import net.minecraft.world.World;
+
 
 public abstract class StructureElement {
 
@@ -20,6 +22,16 @@ public abstract class StructureElement {
 
 	protected final void placeCore(int x, int y, int z) {
 		parent.placeCore(x, y, z);
+	}
+
+	public static abstract class BasicStructurePiece extends StructureElement {
+
+		protected BasicStructurePiece(DimensionStructureGenerator s) {
+			super(s);
+		}
+
+		public abstract void generate(World world, int x, int y, int z);
+
 	}
 
 }

@@ -423,4 +423,10 @@ public final class ElementTagCompound {
 		return data.size() == 16;
 	}
 
+	public void clamp(int max) {
+		for (CrystalElement e : this.elementSet()) {
+			this.setTag(e, Math.min(max, this.getValue(e)));
+		}
+	}
+
 }

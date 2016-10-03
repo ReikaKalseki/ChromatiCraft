@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.API.ResearchFetcher.ResearchRegistry;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent;
 import Reika.ChromatiCraft.API.Event.ProgressionEvent.ResearchType;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
@@ -203,6 +204,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 			}
 			if (ep instanceof EntityPlayerMP)
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
+			ProgressionCacher.instance.updateProgressCache(ep);
 			return true;
 		}
 		return false;
@@ -216,6 +218,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
+			ProgressionCacher.instance.updateProgressCache(ep);
 			MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, r.name(), ResearchType.FRAGMENT));
 			return true;
 		}
@@ -273,6 +276,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 				ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 			if (notify)
 				this.notifyPlayerOfProgression(ep, r);
+			ProgressionCacher.instance.updateProgressCache(ep);
 			return true;
 		}
 		return false;

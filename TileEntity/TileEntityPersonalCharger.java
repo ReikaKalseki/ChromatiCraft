@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
@@ -33,7 +34,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint, OwnedTile {
+public class TileEntityPersonalCharger extends CrystalReceiverBase implements ChargingPoint, OwnedTile, MultiBlockChromaTile {
 
 	private CrystalElement color = CrystalElement.WHITE;
 	private boolean hasMultiblock = false;
@@ -123,10 +124,14 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 
-		this.validateStructure(world, x, y, z);
+		this.validateStructure();
 	}
 
-	public void validateStructure(World world, int x, int y, int z) {
+	public void validateStructure() {
+		World world = worldObj;
+		int x = xCoord;
+		int y = yCoord;
+		int z = zCoord;
 		int m1 = world.getBlockMetadata(x-2, y-4, z-2);
 		int m2 = world.getBlockMetadata(x+2, y-4, z-2);
 		int m3 = world.getBlockMetadata(x-2, y-4, z+2);

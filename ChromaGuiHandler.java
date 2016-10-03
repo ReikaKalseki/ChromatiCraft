@@ -18,6 +18,8 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockEnderTNT.TileEntityEnderTNT;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.Block.BlockRangeLamp.TileEntityRangedLamp;
+import Reika.ChromatiCraft.Block.BlockRouterNode.RouterFilter;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Container.ContainerAuraPouch;
 import Reika.ChromatiCraft.Container.ContainerAutoEnchanter;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Container.ContainerItemCollector;
 import Reika.ChromatiCraft.Container.ContainerItemFabricator;
 import Reika.ChromatiCraft.Container.ContainerItemInserter;
 import Reika.ChromatiCraft.Container.ContainerMiner;
+import Reika.ChromatiCraft.Container.ContainerRouterFilter;
 import Reika.ChromatiCraft.Container.ContainerSpawnerProgrammer;
 import Reika.ChromatiCraft.Container.ContainerTelePump;
 import Reika.ChromatiCraft.GUI.GuiAbilitySelect;
@@ -72,7 +75,9 @@ import Reika.ChromatiCraft.GUI.Tile.GuiHeatLamp;
 import Reika.ChromatiCraft.GUI.Tile.GuiLampController;
 import Reika.ChromatiCraft.GUI.Tile.GuiParticleSpawner;
 import Reika.ChromatiCraft.GUI.Tile.GuiRangedLamp;
+import Reika.ChromatiCraft.GUI.Tile.GuiRelayFilter;
 import Reika.ChromatiCraft.GUI.Tile.GuiRitualTable;
+import Reika.ChromatiCraft.GUI.Tile.GuiRouterFilter;
 import Reika.ChromatiCraft.GUI.Tile.GuiTeleportGate;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiAutoEnchanter;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
@@ -184,6 +189,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new ContainerEnchantDecomposer(player, (TileEntityEnchantDecomposer)te);
 				if (te instanceof TileEntityFluidRelay)
 					return new ContainerFluidRelay(player, (TileEntityFluidRelay)te);
+				if (te instanceof RouterFilter)
+					return new ContainerRouterFilter(player, (RouterFilter)te);
 
 				if (te instanceof ItemOnRightClick)
 					return null;
@@ -282,6 +289,10 @@ public class ChromaGuiHandler implements IGuiHandler {
 					return new GuiTeleportGate(player, (TileEntityTeleportGate)te);
 				if (te instanceof TileEntityFluidRelay)
 					return new GuiFluidRelay(player, (TileEntityFluidRelay)te);
+				if (te instanceof TileEntityRelayFilter)
+					return new GuiRelayFilter(player, (TileEntityRelayFilter)te);
+				if (te instanceof RouterFilter)
+					return new GuiRouterFilter(player, (RouterFilter)te);
 
 				if (te instanceof OneSlotMachine) {
 					return new GuiOneSlot(player, (TileEntityChromaticBase)te);

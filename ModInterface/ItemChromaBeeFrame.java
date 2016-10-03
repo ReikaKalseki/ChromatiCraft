@@ -49,18 +49,17 @@ public class ItemChromaBeeFrame extends ItemChromaTool implements IHiveFrame {
 
 		@Override
 		public float getTerritoryModifier(IBeeGenome genome, float f) {
-			return f;
+			return 1;
 		}
 
 		@Override
 		public float getMutationModifier(IBeeGenome genome, IBeeGenome mate, float f) {
-			return f;
+			return 1;
 		}
 
 		@Override
 		public float getLifespanModifier(IBeeGenome genome, IBeeGenome mate, float f) {
-			f *= 0.05;
-			return f;
+			return 0.1F;
 		}
 
 		@Override
@@ -75,8 +74,7 @@ public class ItemChromaBeeFrame extends ItemChromaTool implements IHiveFrame {
 
 		@Override
 		public float getGeneticDecay(IBeeGenome genome, float f) {
-			f *= 200;
-			return f;
+			return 200;
 		}
 
 		@Override

@@ -123,7 +123,7 @@ public class BlockCrystalTile extends BlockChromaTile {
 	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean harv)
 	{
 		if (this.canHarvest(world, player, x, y, z) && !world.isRemote) {
-			this.harvestBlock(world, player, x, y, z, 0);
+			this.harvestBlock(world, player, x, y, z, world.getBlockMetadata(x, y, z));
 		}
 		return world.setBlockToAir(x, y, z);
 	}

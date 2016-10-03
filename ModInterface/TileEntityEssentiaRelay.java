@@ -9,8 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,14 +22,20 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.IAspectContainer;
 import thaumcraft.api.aspects.IEssentiaTransport;
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaMovement;
 import Reika.ChromatiCraft.ModInterface.EssentiaNetwork.EssentiaPath;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -36,12 +45,17 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	//private static final int PATH_DURATION = 30;
 	public static final int SEARCH_RANGE = 8;
+	public static final int THROUGHPUT = 4;
+
+	private static Class jarClass;
+	private static Field filterField;
 
 	private final StepTimer scanTimer = new StepTimer(50);
 
 	EssentiaNetwork network;
 
 	private final Collection<EssentiaPath> activePaths = new ArrayList();
+	private final HashMap<Coordinate, Aspect> labelledJars = new HashMap();
 
 	@Override
 	public ChromaTiles getTile() {
@@ -50,10 +64,29 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		HashSet<Coordinate> activeTargets = new HashSet();
 		for (EssentiaPath p : activePaths) {
 			p.update(world, x, y, z);
+			if (p.target != null)
+				activeTargets.add(new Coordinate(p.target));
 		}
 		activePaths.clear();
+
+		for (Coordinate c : labelledJars.keySet()) {
+			if (!activeTargets.contains(c)) {
+				Aspect a = labelledJars.get(c);
+				IAspectContainer ia = (IAspectContainer)c.getTileEntity(world);
+				int amt = Math.min(THROUGHPUT, 64-ia.getAspects().getAmount(a));
+				if (amt > 0) {
+					int found = this.collectEssentiaToTarget(a, amt, new WorldLocation(world, c));
+					//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
+					if (found > 0) {
+						//ReikaJavaLibrary.pConsole(a.getName()+">"+amt+">"+found);
+						int ret = ia.addToContainer(a, found);
+					}
+				}
+			}
+		}
 
 		scanTimer.update();
 		if (scanTimer.checkCap()) {
@@ -69,6 +102,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 	void scan(World world, int x, int y, int z) {
 		if (world.isRemote)
 			return;
+		labelledJars.clear();
 		network = new EssentiaNetwork();
 		//network.addTile(this);
 		for (int i = -SEARCH_RANGE; i <= SEARCH_RANGE; i++) {
@@ -86,6 +120,18 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 									network.merge(tr.network);
 							}
 							network.addTile(this, te);
+						}
+						if (jarClass != null && jarClass.isAssignableFrom(te.getClass())) {
+							Aspect a;
+							try {
+								a = (Aspect)filterField.get(te);
+								if (a != null) {
+									labelledJars.put(new Coordinate(te), a);
+								}
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
@@ -135,7 +181,20 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public int takeEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		amount = Math.min(THROUGHPUT, amount);
 		EssentiaMovement r = network != null ? network.removeEssentia(this, face, aspect, amount) : null;
+		if (r != null) {
+			for (EssentiaPath p : r.paths()) {
+				this.addPath(p);
+			}
+			return r.totalAmount;
+		}
+		return 0;
+	}
+
+	private int collectEssentiaToTarget(Aspect a, int amt, WorldLocation tgt) {
+		amt = Math.min(THROUGHPUT, amt);
+		EssentiaMovement r = network != null ? network.removeEssentia(this, ForgeDirection.DOWN, a, amt, tgt) : null;
 		if (r != null) {
 			for (EssentiaPath p : r.paths()) {
 				this.addPath(p);
@@ -147,6 +206,7 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public int addEssentia(Aspect aspect, int amount, ForgeDirection face) {
+		amount = Math.min(THROUGHPUT, amount);
 		EssentiaMovement s = network != null ? network.addEssentia(this, face, aspect, amount) : null;
 		if (s != null) {
 			for (EssentiaPath p : s.paths()) {
@@ -181,7 +241,8 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	@Override
 	public void breakBlock() {
-		network.reset();
+		if (network != null)
+			network.reset();
 	}
 
 	@Override
@@ -198,6 +259,20 @@ public class TileEntityEssentiaRelay extends TileEntityChromaticBase implements 
 
 	public final boolean canDrop(EntityPlayer ep) {
 		return ep.getUniqueID().equals(placerUUID);
+	}
+
+	static {
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			try {
+				jarClass = Class.forName("thaumcraft.common.tiles.TileJarFillable");
+				filterField = jarClass.getField("aspectFilter");
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Could not fetch Warded Jar class");
+				e.printStackTrace();
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(ModList.THAUMCRAFT, e);
+			}
+		}
 	}
 
 }

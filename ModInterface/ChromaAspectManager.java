@@ -181,6 +181,8 @@ public class ChromaAspectManager {
 			ItemStack pendant3 = ChromaItems.PENDANT3.getStackOf(dye);
 			ItemStack acc = ChromaItems.ADJACENCY.getStackOfMetadata(i);
 			ItemStack stone = ChromaItems.ELEMENTAL.getStackOfMetadata(i);
+			ItemStack seed = ChromaItems.SEED.getStackOfMetadata(i);
+			ItemStack plant = ChromaBlocks.PLANT.getStackOfMetadata(i);
 			List<Aspect> li = new ArrayList();
 			li.addAll(aspectsColor.getForward(dye));
 			li.addAll(aspectsThematic.getForward(dye));
@@ -219,6 +221,9 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(acc, Aspect.TRAVEL, 4);
 			ReikaThaumHelper.addAspects(stone, Aspect.ENERGY, 1);
 			ReikaThaumHelper.addAspects(stone, Aspect.EARTH, 1);
+			ReikaThaumHelper.addAspects(plant, Aspect.PLANT, 2);
+			ReikaThaumHelper.addAspects(plant, Aspect.CROP, 1);
+			ReikaThaumHelper.addAspects(seed, Aspect.PLANT, 1);
 			for (Aspect a : li) {
 				ReikaThaumHelper.addAspects(shard, a, 2);
 				ReikaThaumHelper.addAspects(bshard, a, 5);
@@ -233,6 +238,8 @@ public class ChromaAspectManager {
 				ReikaThaumHelper.addAspects(pendant3, a, 24);
 				ReikaThaumHelper.addAspects(acc, a, 8);
 				ReikaThaumHelper.addAspects(stone, a, 4);
+				ReikaThaumHelper.addAspects(seed, a, 1);
+				ReikaThaumHelper.addAspects(plant, a, 3);
 			}
 		}
 
@@ -364,6 +371,10 @@ public class ChromaAspectManager {
 			ReikaThaumHelper.addAspects(ChromaBlocks.TIEREDPLANT.getStackOfMetadata(i), Aspect.MAGIC, 3);
 		}
 
+		ReikaThaumHelper.addAspects(ChromaBlocks.LOOTCHEST.getStackOf(), Aspect.MAGIC, 2, Aspect.GREED, 2, Aspect.TRAP, 1, Aspect.VOID, 20);
+		ReikaThaumHelper.addAspects(ChromaBlocks.SELECTIVEGLASS.getStackOf(), Aspect.MAGIC, 5, Aspect.CRYSTAL, 4, Aspect.AURA, 2, Aspect.ARMOR, 8, Aspect.MIND, 1);
+
+		ReikaThaumHelper.addAspects(ChromaBlocks.ENDER.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.TRAVEL, 5, Aspect.ENTROPY, 10, Aspect.EXCHANGE, 5, Aspect.ELDRITCH, 3, Aspect.VOID, 2);
 		ReikaThaumHelper.addAspects(ChromaBlocks.CHROMA.getStackOf(), Aspect.MAGIC, 10, Aspect.WATER, 5, Aspect.AURA, 3, Aspect.CRAFT, 5, Aspect.ORDER, 10, Aspect.EXCHANGE, 5, Aspect.HEAL, 3, Aspect.VOID, 1);
 
 		ReikaThaumHelper.addAspects(ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.SMOOTH.ordinal()), Aspect.EARTH, 4, Aspect.CRYSTAL, 4, Aspect.MAGIC, 2);

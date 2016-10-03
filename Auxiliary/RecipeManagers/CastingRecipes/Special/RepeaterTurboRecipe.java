@@ -91,7 +91,7 @@ public class RepeaterTurboRecipe extends PylonRecipe implements EnergyLinkingRec
 
 	@Override
 	protected void getRequiredProgress(Collection<ProgressStage> c) {
-		c.add(ProgressStage.CTM);
+		c.add(ProgressStage.TURBOCHARGE);
 	}
 
 	@Override

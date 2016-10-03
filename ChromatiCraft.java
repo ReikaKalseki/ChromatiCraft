@@ -54,6 +54,7 @@ import Reika.ChromatiCraft.Auxiliary.ExplorationMonitor;
 import Reika.ChromatiCraft.Auxiliary.GuardianStoneManager;
 import Reika.ChromatiCraft.Auxiliary.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.MusicLoader;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
@@ -90,6 +91,7 @@ import Reika.ChromatiCraft.ModInterface.NodeRecharger;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ChromaPrepHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.PoolRecipeHandler;
 import Reika.ChromatiCraft.ModInterface.ReservoirHandlers.ShardBoostingHandler;
+import Reika.ChromatiCraft.ModInterface.TileEntityAspectFormer;
 import Reika.ChromatiCraft.ModInterface.TreeCapitatorHandler;
 import Reika.ChromatiCraft.ModInterface.Lua.ChromaLuaMethods;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
@@ -177,6 +179,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -470,6 +473,7 @@ public class ChromatiCraft extends DragonAPIMod {
 			PlayerHandler.instance.registerTracker(LoginApplier.instance);
 			PlayerHandler.instance.registerTracker(PylonCacheLoader.instance);
 			PlayerHandler.instance.registerTracker(DimensionJoinHandler.instance);
+			PlayerHandler.instance.registerTracker(ProgressionCacher.instance);
 		}
 
 		if (ChromaOptions.HANDBOOK.getState())
@@ -622,6 +626,8 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ModInteraction.addThaumCraft();
+
+			TileEntityAspectFormer.initCapacity();
 		}
 
 		if (ModList.BLOODMAGIC.isLoaded() && BloodMagicHandler.getInstance().soulFrayID != -1) {
@@ -706,6 +712,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		evt.registerServerCommand(new ReshufflePylonCommand());
 		evt.registerServerCommand(new RedecorateCommand());
 		evt.registerServerCommand(new PlaceStructureCommand());
+
+		ProgressionCacher.instance.load();
 	}
 
 	@EventHandler
@@ -713,6 +721,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (!this.isLocked()) {
 			RecipesCastingTable.instance.reload();
 		}
+	}
+
+	@EventHandler
+	public void registerCommands(FMLServerStoppingEvent evt) {
+		ProgressionCacher.instance.saveAll();
 	}
 
 	private void setupClassFiles() {

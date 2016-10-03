@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
@@ -45,6 +46,19 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	private AspectMode mode = AspectMode.DEMAND;
 
 	private ElementTagCompound currentRequest = new ElementTagCompound();
+
+	private static int CAPACITY;
+
+	public static void initCapacity() {
+		int max = 0;
+		if (ModList.THAUMCRAFT.isLoaded()) {
+			for (Aspect a : Aspect.aspects.values()) {
+				ElementTagCompound cost = getAspectCost(a);
+				max = Math.max(max, cost.getMaximumValue());
+			}
+		}
+		CAPACITY = max*3/2;
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -146,6 +160,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	private void checkAndRequest(Aspect a) {
 		if (a != null) {
 			ElementTagCompound tag = this.getAspectCost(a).scale(64);
+			tag.clamp(CAPACITY);
 			currentRequest.add(tag);
 		}
 	}
@@ -182,7 +197,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public int maxThroughput() {
-		return 100;
+		return 250;
 	}
 
 	@Override
@@ -192,7 +207,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 
 	@Override
 	public int getMaxStorage(CrystalElement e) {
-		return 40000;
+		return CAPACITY;
 	}
 
 	@Override

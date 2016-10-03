@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -97,6 +98,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.DartItemHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
 public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock, IWailaDataProvider {
@@ -273,6 +275,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		if (is != null && ChromaItems.isRegistered(is) && ChromaItems.getEntry(is).overridesRightClick(is)) {
 			return false;
 		}
+		if (is != null && ReikaItemHelper.matchStackWithBlock(is, ChromaBlocks.ROUTERNODE.getBlockInstance()))
+			return false;
 
 		if (m == ChromaTiles.STAND && ep.isSneaking() && is == null) {
 			if (!world.isRemote)
@@ -316,6 +320,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				if (!ep.capabilities.isCreativeMode) {
 					al.remove(a, added);
 					ieci.setAspects(is, al);
+					if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
+						is.setItemDamage(al.size() == 0 ? 0 : 1);
 				}
 				return true;
 			}
@@ -325,6 +331,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 					al = new AspectList();
 					al.add(a, 8);
 					ieci.setAspects(is, al);
+					if (ieci == ThaumItemHelper.ItemEntry.PHIAL.getItem().getItem())
+						is.setItemDamage(al.size() == 0 ? 0 : 1);
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "game.neutral.swim", 0.6F, (float)ReikaRandomHelper.getRandomPlusMinus(1, 1F));
 					return true;
 				}

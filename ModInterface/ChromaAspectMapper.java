@@ -58,6 +58,11 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.REPEATER, Aspect.EXCHANGE, 6);
 		this.addAspect(ChromaTiles.REPEATER, ChromaAspectManager.instance.SIGNAL, 18);
 
+		this.addAspect(ChromaTiles.WEAKREPEATER, Aspect.ENERGY, 6);
+		this.addAspect(ChromaTiles.WEAKREPEATER, Aspect.LIGHT, 4);
+		this.addAspect(ChromaTiles.WEAKREPEATER, Aspect.EXCHANGE, 3);
+		this.addAspect(ChromaTiles.WEAKREPEATER, ChromaAspectManager.instance.SIGNAL, 9);
+
 		this.addAspect(ChromaTiles.COMPOUND, Aspect.ENERGY, 16);
 		this.addAspect(ChromaTiles.COMPOUND, Aspect.LIGHT, 12);
 		this.addAspect(ChromaTiles.COMPOUND, Aspect.EXCHANGE, 8);
@@ -189,6 +194,9 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.RFDISTRIBUTOR, Aspect.ENERGY, 8);
 		this.addAspect(ChromaTiles.RFDISTRIBUTOR, Aspect.AURA, 4);
 
+		this.addAspect(ChromaTiles.FLUIDDISTRIBUTOR, Aspect.WATER, 8);
+		this.addAspect(ChromaTiles.FLUIDDISTRIBUTOR, Aspect.AURA, 4);
+
 		this.addAspect(ChromaTiles.WINDOW, Aspect.TRAVEL, 12);
 
 		this.addAspect(ChromaTiles.TURRET, Aspect.WEAPON, 12);
@@ -196,6 +204,91 @@ public class ChromaAspectMapper {
 		this.addAspect(ChromaTiles.CLOAKING, Aspect.AURA, 4);
 		this.addAspect(ChromaTiles.CLOAKING, Aspect.TRAP, 6);
 		this.addAspect(ChromaTiles.CLOAKING, Aspect.MIND, 8);
+
+		this.addAspect(ChromaTiles.GLOWFIRE, Aspect.ENERGY, 4);
+		this.addAspect(ChromaTiles.GLOWFIRE, Aspect.GREED, 4);
+		this.addAspect(ChromaTiles.GLOWFIRE, Aspect.EXCHANGE, 8);
+
+		this.addAspect(ChromaTiles.ESSENTIARELAY, Aspect.ENERGY, 6);
+		this.addAspect(ChromaTiles.ESSENTIARELAY, Aspect.TRAVEL, 6);
+		this.addAspect(ChromaTiles.ESSENTIARELAY, Aspect.AURA, 3);
+
+		this.addAspect(ChromaTiles.INSERTER, Aspect.SOUL, 4);
+		this.addAspect(ChromaTiles.INSERTER, Aspect.TRAVEL, 2);
+
+		this.addAspect(ChromaTiles.REVERTER, Aspect.TAINT, 1);
+		this.addAspect(ChromaTiles.REVERTER, Aspect.EARTH, 4);
+		this.addAspect(ChromaTiles.REVERTER, Aspect.HEAL, 6);
+		this.addAspect(ChromaTiles.REVERTER, Aspect.PLANT, 3);
+
+		this.addAspect(ChromaTiles.COBBLEGEN, Aspect.EXCHANGE, 6);
+		this.addAspect(ChromaTiles.COBBLEGEN, Aspect.WATER, 4);
+		this.addAspect(ChromaTiles.COBBLEGEN, Aspect.FIRE, 4);
+		this.addAspect(ChromaTiles.COBBLEGEN, Aspect.PLANT, 3);
+
+		this.addAspect(ChromaTiles.PLANTACCEL, Aspect.PLANT, 3);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.PLANTACCEL, Aspect.getAspect("tempus"), 6);
+
+		this.addAspect(ChromaTiles.CROPSPEED, Aspect.PLANT, 3);
+		this.addAspect(ChromaTiles.CROPSPEED, Aspect.CROP, 6);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.CROPSPEED, Aspect.getAspect("tempus"), 4);
+
+		this.addAspect(ChromaTiles.HARVESTPLANT, Aspect.HUNGER, 4);
+		this.addAspect(ChromaTiles.HARVESTPLANT, Aspect.HARVEST, 6);
+		this.addAspect(ChromaTiles.HARVESTPLANT, Aspect.PLANT, 3);
+
+		this.addAspect(ChromaTiles.ENCHANTDECOMP, Aspect.EXCHANGE, 6);
+		this.addAspect(ChromaTiles.ENCHANTDECOMP, Aspect.CRAFT, 4);
+		this.addAspect(ChromaTiles.ENCHANTDECOMP, Aspect.MAGIC, 6);
+		this.addAspect(ChromaTiles.ENCHANTDECOMP, Aspect.MIND, 2);
+
+		this.addAspect(ChromaTiles.LUMENWIRE, Aspect.SENSES, 4);
+		this.addAspect(ChromaTiles.LUMENWIRE, ChromaAspectManager.instance.SIGNAL, 4);
+
+		this.addAspect(ChromaTiles.PARTICLES, Aspect.LIGHT, 4);
+
+		this.addAspect(ChromaTiles.WIRELESS, Aspect.ENERGY, 10);
+		this.addAspect(ChromaTiles.WIRELESS, Aspect.AURA, 8);
+
+		this.addAspect(ChromaTiles.METEOR, Aspect.WEAPON, 12);
+		this.addAspect(ChromaTiles.METEOR, Aspect.TRAVEL, 6);
+		this.addAspect(ChromaTiles.METEOR, Aspect.FIRE, 8);
+		this.addAspect(ChromaTiles.METEOR, Aspect.SENSES, 4);
+
+		this.addAspect(ChromaTiles.AREABREAKER, Aspect.MINE, 8);
+		this.addAspect(ChromaTiles.AREABREAKER, Aspect.MAGIC, 4);
+
+		this.addAspect(ChromaTiles.TELEPORT, Aspect.TRAVEL, 12);
+		this.addAspect(ChromaTiles.TELEPORT, Aspect.MAGIC, 8);
+		this.addAspect(ChromaTiles.TELEPORT, Aspect.AURA, 4);
+		this.addAspect(ChromaTiles.TELEPORT, Aspect.EXCHANGE, 6);
+
+		this.addAspect(ChromaTiles.FLUIDRELAY, Aspect.WATER, 6);
+		this.addAspect(ChromaTiles.FLUIDRELAY, Aspect.TRAVEL, 3);
+
+		this.addAspect(ChromaTiles.BOOKDECOMP, Aspect.MIND, 6);
+		this.addAspect(ChromaTiles.BOOKDECOMP, Aspect.GREED, 4);
+		this.addAspect(ChromaTiles.BOOKDECOMP, Aspect.ENTROPY, 2);
+
+		this.addAspect(ChromaTiles.AVOLASER, Aspect.WEAPON, 12);
+		this.addAspect(ChromaTiles.AVOLASER, Aspect.ENERGY, 8);
+		this.addAspect(ChromaTiles.AVOLASER, Aspect.MAGIC, 6);
+		this.addAspect(ChromaTiles.AVOLASER, Aspect.MECHANISM, 3);
+
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.BEAST, 8);
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.MAGIC, 4);
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.FIRE, 6);
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.WATER, 6);
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.AIR, 6);
+		this.addAspect(ChromaTiles.ALVEARY, Aspect.HEAL, 6);
+		if (Aspect.getAspect("tempus") != null)
+			this.addAspect(ChromaTiles.ALVEARY, Aspect.getAspect("tempus"), 6);
+
+		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.TRAVEL, 8);
+		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.MECHANISM, 6);
+		this.addAspect(ChromaTiles.ROUTERHUB, Aspect.HARVEST, 2);
 	}
 
 	private void addAspect(ChromaTiles m, Aspect a, int amt) {

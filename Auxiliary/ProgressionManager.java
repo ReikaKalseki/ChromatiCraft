@@ -622,6 +622,7 @@ public class ProgressionManager implements ProgressRegistry {
 			}
 			if (notify)
 				this.updateChunks(ep);
+			ProgressionCacher.instance.updateProgressCache(ep);
 		}
 		//ReikaJavaLibrary.pConsole("NBT POST: ");
 		//for (String sg : ReikaNBTHelper.parseNBTAsLines(ReikaPlayerAPI.getDeathPersistentNBT(ep)))
@@ -649,6 +650,7 @@ public class ProgressionManager implements ProgressRegistry {
 			ReikaPlayerAPI.syncCustomData((EntityPlayerMP)ep);
 		if (notify)
 			this.updateChunks(ep);
+		ProgressionCacher.instance.updateProgressCache(ep);
 	}
 
 	public void maxPlayerProgression(EntityPlayer ep, boolean notify) {
@@ -684,6 +686,7 @@ public class ProgressionManager implements ProgressRegistry {
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, colorDiscoveries.get(e));
 			if (disc)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.COLOR));
+			ProgressionCacher.instance.updateProgressCache(ep);
 			return true;
 		}
 		return false;
@@ -927,6 +930,7 @@ public class ProgressionManager implements ProgressRegistry {
 				ChromaResearchManager.instance.notifyPlayerOfProgression(ep, structureFlags.get(e));
 			if (set)
 				MinecraftForge.EVENT_BUS.post(new ProgressionEvent(ep, e.name(), ResearchType.DIMSTRUCT));
+			ProgressionCacher.instance.updateProgressCache(ep);
 			return true;
 		}
 		return false;

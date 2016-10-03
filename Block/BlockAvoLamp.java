@@ -12,10 +12,11 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SidedBlock;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 
 
-public class BlockAvoLamp extends BlockContainer {
+public class BlockAvoLamp extends BlockContainer implements SidedBlock {
 
 	public BlockAvoLamp(Material mat) {
 		super(mat);
@@ -48,10 +49,15 @@ public class BlockAvoLamp extends BlockContainer {
 		return false;
 	}
 
-	public void placeOnSide(World world, int x, int y, int z, int side) {
+	public void setSide(World world, int x, int y, int z, int side) {
 		TileEntityAvoLamp te = (TileEntityAvoLamp)world.getTileEntity(x, y, z);
 		te.direction = ForgeDirection.VALID_DIRECTIONS[side];
 		world.markBlockForUpdate(x, y, z);
+	}
+
+	@Override
+	public boolean canPlaceOn(World world, int x, int y, int z, int side) {
+		return true;
 	}
 
 	@Override

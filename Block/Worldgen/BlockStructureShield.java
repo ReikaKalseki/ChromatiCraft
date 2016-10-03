@@ -25,9 +25,11 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.Submergeable;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -139,7 +141,7 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	private boolean canBreakLitBlock(World world, int x, int y, int z, Block b) {
 		if (ReikaBlockHelper.isLiquid(b))
 			return false;
-		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
+		if (world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue() || (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())) {
 			if (b == ChromaBlocks.DOOR.getBlockInstance())
 				return false;
 			if (b instanceof BlockStructureShield)

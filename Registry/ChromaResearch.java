@@ -186,6 +186,7 @@ public enum ChromaResearch implements ProgressElement {
 	PLANTHARVEST(	ChromaTiles.HARVESTPLANT,	ResearchLevel.RUNECRAFT),
 	AVOLASER(		ChromaTiles.AVOLASER,		ResearchLevel.ENDGAME),
 	ALVEARY(		ChromaTiles.ALVEARY,		ResearchLevel.PYLONCRAFT,		ProgressStage.HIVE),
+	ROUTER(			ChromaTiles.ROUTERHUB,		ResearchLevel.MULTICRAFT),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -818,6 +819,13 @@ public enum ChromaResearch implements ProgressElement {
 			}
 			return li;
 		}
+		if (this == ROUTER) {
+			ArrayList<ItemStack> li = new ArrayList();
+			li.add(machine.getCraftedProduct());
+			li.add(ChromaBlocks.ROUTERNODE.getStackOfMetadata(0));
+			li.add(ChromaBlocks.ROUTERNODE.getStackOfMetadata(1));
+			return li;
+		}
 		if (this.isMachine())
 			return ReikaJavaLibrary.makeListFrom(machine.getCraftedProduct());
 		if (this == TURBOREPEATER) {
@@ -844,6 +852,7 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == RELAY) {
 			ArrayList<ItemStack> li = new ArrayList();
 			li.add(ChromaTiles.RELAYSOURCE.getCraftedProduct());
+			li.add(ChromaBlocks.RELAYFILTER.getStackOf());
 			for (int i = 0; i < 16; i++) {
 				li.add(ChromaBlocks.RELAY.getStackOfMetadata(i));
 			}

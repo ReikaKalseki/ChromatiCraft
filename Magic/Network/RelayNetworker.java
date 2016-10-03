@@ -16,11 +16,13 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Block.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay.TileEntityLumenRelay;
+import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
@@ -30,12 +32,14 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
 import Reika.ChromatiCraft.World.PylonGenerator;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.CompoundPlayerTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BoPBlockHandler;
 
 public final class RelayNetworker {
 
@@ -167,6 +171,14 @@ public final class RelayNetworker {
 						return this.findFrom(world, c, depth+1);
 					}
 				}
+				else if (b == ChromaBlocks.RELAYFILTER.getBlockInstance()) {
+					TileEntityRelayFilter te = (TileEntityRelayFilter)c.getTileEntity(world);
+					//ReikaJavaLibrary.pConsole(color+": "+te.canTransmit(color));
+					if (!te.canTransmit(color)) {
+						return null;
+					}
+					continue;
+				}
 				if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.RIFT) {
 					TileEntityRift te = (TileEntityRift)c.getTileEntity(world);
 					WorldLocation loc = te.getLinkTarget();
@@ -202,7 +214,13 @@ public final class RelayNetworker {
 		private boolean isBlockRelayTransparent(World world, int x, int y, int z) {
 			Block b = world.getBlock(x, y, z);
 			int meta = world.getBlockMetadata(x, y, z);
+			if (b == ChromaBlocks.ROUTERNODE.getBlockInstance())
+				return true;
 			if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && meta == Flowers.FLOWIVY.ordinal())
+				return true;
+			if (b == Blocks.yellow_flower || b == Blocks.red_flower)
+				return true;
+			if (ModList.BOP.isLoaded() && BoPBlockHandler.getInstance().isFlower(b))
 				return true;
 			return false;
 		}

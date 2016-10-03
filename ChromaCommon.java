@@ -38,6 +38,7 @@ public class ChromaCommon {
 	public static int plantRender2;
 	public static int flowerRender;
 	public static int sparkleRender;
+	public static int everfluidRender;
 
 	public static int armor;
 

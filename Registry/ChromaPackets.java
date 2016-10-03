@@ -142,6 +142,9 @@ public enum ChromaPackets {
 	BIOMELOCS(),
 	RELAYPRESSURE(1),
 	RELAYFLUID(1),
+	RELAYFILTER(2),
+	ROUTERFILTERFLAG(1),
+	ROUTERLINK(3),
 	;
 
 	public final int numInts;

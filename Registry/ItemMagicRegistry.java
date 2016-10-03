@@ -127,9 +127,9 @@ public class ItemMagicRegistry {
 		this.addElement(ModOreList.INFUSEDFIRE.getProductOreDictName(), CrystalElement.BLACK, 2);
 		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.ORANGE, 4);
 		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.LIGHTGRAY, 4);
+		this.addElement(ModOreList.INFUSEDENTROPY.getProductOreDictName(), CrystalElement.LIGHTGRAY, 4);
 		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.BLACK, 2);
-		this.addElement(ModOreList.INFUSEDWATER.getProductOreDictName(), CrystalElement.WHITE, 4);
+		this.addElement(ModOreList.INFUSEDORDER.getProductOreDictName(), CrystalElement.WHITE, 4);
 
 		this.addElement(ModOreList.FLUORITE.getProductOreDictName(), CrystalElement.WHITE, 2);
 		this.addElement(ModOreList.CALCITE.getProductOreDictName(), CrystalElement.WHITE, 2);

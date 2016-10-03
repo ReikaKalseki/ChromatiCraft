@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
+import Reika.ChromatiCraft.ModInterface.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -401,6 +402,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
+		addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
 

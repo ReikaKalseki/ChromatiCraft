@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
@@ -21,7 +22,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 
-public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile {
+public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater implements NotifiedNetworkTile, MultiBlockChromaTile {
 
 	public static int INTERFERENCE_RANGE = 384;
 	public static int MIN_RANGE = 512;

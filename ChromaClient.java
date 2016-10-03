@@ -85,6 +85,7 @@ import Reika.ChromatiCraft.Render.ISBRH.CrystallineStoneRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoFlowerRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DecoPlantRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.DimensionDecoRenderer;
+import Reika.ChromatiCraft.Render.ISBRH.EverFluidRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.GlowTreeRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LampRenderer;
 import Reika.ChromatiCraft.Render.ISBRH.LaserEffectorRenderer;
@@ -162,6 +163,7 @@ public class ChromaClient extends ChromaCommon {
 	public static final DecoPlantRenderer plant2 = new DecoPlantRenderer();
 	public static final DecoFlowerRenderer flower = new DecoFlowerRenderer();
 	public static final SparklingBlockRender sparkle = new SparklingBlockRender();
+	public static final EverFluidRenderer everfluid = new EverFluidRenderer();
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
@@ -352,6 +354,9 @@ public class ChromaClient extends ChromaCommon {
 
 		sparkleRender = RenderingRegistry.getNextAvailableRenderId();
 		RenderingRegistry.registerBlockHandler(sparkleRender, sparkle);
+
+		everfluidRender = RenderingRegistry.getNextAvailableRenderId();
+		RenderingRegistry.registerBlockHandler(everfluidRender, everfluid);
 
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGuardianStone.class, new GuardianStoneRenderer());
 		//ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPlant.class, new CrystalPlantRenderer());

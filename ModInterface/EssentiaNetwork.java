@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,6 +47,9 @@ public class EssentiaNetwork {
 	private final MultiMap<WorldLocation, WorldLocation> tiles = new MultiMap(new HashSetFactory());
 	private final MultiMap<WorldLocation, WorldLocation> nodes = new MultiMap(new MultiMap.ListFactory());
 	private final HashMap<ImmutablePair<WorldLocation, WorldLocation>, ArrayList<WorldLocation>> pathList = new HashMap();
+
+	private static final Comparator<NetworkEndpoint> pullComparator = new SuctionComparator(true);
+	private static final Comparator<NetworkEndpoint> pushComparator = new SuctionComparator(false);
 
 	public void addTile(TileEntityEssentiaRelay caller, TileEntity te) {
 		if (te instanceof TileEntityEssentiaRelay) {
@@ -133,84 +137,91 @@ public class EssentiaNetwork {
 
 	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
 		ArrayList<EssentiaPath> li = new ArrayList();
+
+		ArrayList<NetworkEndpoint> list = this.collectAllTiles();
+		Collections.sort(list, pushComparator);
+		for (NetworkEndpoint p : list) {
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (p.tile.canInputFrom(dir)) {
+					int added = p.tile.addEssentia(aspect, amount, dir);
+					if (added > 0) {
+						amount -= added;
+						ArrayList<WorldLocation> pt = this.getPath(new WorldLocation(caller), p.relayNode);
+						if (pt.isEmpty()) {
+							//ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+caller+" to "+loc);
+						}
+						else {
+
+						}
+						pt.add(p.point);
+						pt.add(0, new WorldLocation(caller).move(callDir, 1));
+						li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new WorldLocation(caller), node, loc)
+						if (amount <= 0) {
+							break;
+						}
+					}
+				}
+			}
+			if (amount <= 0) {
+				break;
+			}
+		}
+		return li.isEmpty() ? null : new EssentiaMovement(li);
+	}
+
+	private ArrayList<NetworkEndpoint> collectAllTiles() {
+		ArrayList<NetworkEndpoint> li = new ArrayList();
 		for (WorldLocation node : tiles.keySet()) {
 			Iterator<WorldLocation> it = tiles.get(node).iterator();
 			while (it.hasNext()) {
 				WorldLocation loc = it.next();
 				TileEntity te = loc.getTileEntity();
 				if (te instanceof IEssentiaTransport) {
-					IEssentiaTransport p = (IEssentiaTransport)te;
-					for (int i = 0; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						if (p.canInputFrom(dir)) {
-							int added = p.addEssentia(aspect, amount, dir);
-							if (added > 0) {
-								amount -= added;
-								ArrayList<WorldLocation> pt = this.getPath(new WorldLocation(caller), node);
-								if (pt.isEmpty()) {
-									ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+caller+" to "+loc);
-								}
-								else {
-									pt.add(loc);
-									pt.add(0, new WorldLocation(caller).move(callDir, 1));
-								}
-								li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new WorldLocation(caller), node, loc)
-								if (amount <= 0) {
-									break;
-								}
-							}
-						}
-					}
-					if (amount <= 0) {
-						break;
-					}
+					li.add(new NetworkEndpoint(node, loc, (IEssentiaTransport)te));
 				}
 				else {
 					it.remove();
 				}
 			}
 		}
-		return li.isEmpty() ? null : new EssentiaMovement(li);
+		return li;
 	}
 
 	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
+		return this.removeEssentia(caller, callDir, aspect, amount, new WorldLocation(caller).move(callDir, 1));
+	}
+
+	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, WorldLocation tgt) {
 		TileEntity target = caller.getAdjacentTileEntity(callDir);
 		ArrayList<EssentiaPath> li = new ArrayList();
-		for (WorldLocation node : tiles.keySet()) {
-			Iterator<WorldLocation> it = tiles.get(node).iterator();
-			while (it.hasNext()) {
-				WorldLocation loc = it.next();
-				TileEntity te = loc.getTileEntity();
-				if (te != target && te instanceof IEssentiaTransport) {
-					IEssentiaTransport p = (IEssentiaTransport)te;
-					for (int i = 0; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						if (p.canOutputTo(dir)) {
-							int rem = p.takeEssentia(aspect, amount, dir);
-							if (rem > 0) {
-								amount -= rem;
-								ArrayList<WorldLocation> pt = this.getPath(node, new WorldLocation(caller));
-								if (pt.isEmpty()) {
-									ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+loc+" to "+caller);
-								}
-								else {
-									pt.add(0, loc);
-									pt.add(new WorldLocation(caller).move(callDir, 1));
-								}
-								li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new WorldLocation(caller))
-								if (amount <= 0) {
-									break;
-								}
-							}
+		ArrayList<NetworkEndpoint> list = this.collectAllTiles();
+		Collections.sort(list, pullComparator);
+		for (NetworkEndpoint p : list) {
+			for (int i = 0; i < 6; i++) {
+				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+				if (p.tile.canOutputTo(dir)) {
+					int rem = p.tile.takeEssentia(aspect, amount, dir);
+					if (rem > 0) {
+						amount -= rem;
+						ArrayList<WorldLocation> pt = this.getPath(p.relayNode, new WorldLocation(caller));
+						if (pt.isEmpty()) {
+							//ChromatiCraft.logger.logError("Unable to find path for "+aspect.getName()+" from "+loc+" to "+caller);
+						}
+						else {
+
+						}
+						pt.add(0, p.point);
+						pt.add(tgt);
+						li.add(new EssentiaPath(aspect, rem, pt)); //ReikaJavaLibrary.makeListFrom(loc, node, new WorldLocation(caller))
+						if (amount <= 0) {
+							break;
 						}
 					}
-					if (amount <= 0) {
-						break;
-					}
 				}
-				else {
-					it.remove();
-				}
+			}
+			if (amount <= 0) {
+				break;
 			}
 		}
 		return li.isEmpty() ? null : new EssentiaMovement(li);
@@ -347,6 +358,9 @@ public class EssentiaNetwork {
 
 		private final ArrayList<WorldLocation> path;
 
+		public final WorldLocation target;
+		public final WorldLocation source;
+
 		public final Aspect aspect;
 		public final int amount;
 
@@ -354,6 +368,9 @@ public class EssentiaNetwork {
 			aspect = a;
 			amount = amt;
 			path = li;
+
+			target = li.isEmpty() ? null : li.get(0);
+			source = li.isEmpty() ? null : li.get(li.size()-1);
 		}
 
 		public void update(World world, int x, int y, int z) {
@@ -407,7 +424,7 @@ public class EssentiaNetwork {
 				double py = y1+0.5+dy*d/dd;
 				double pz = z1+0.5+dz*d/dd;
 				double ds = Math.min(dd-d, d);
-				float s = (float)(1.5+amt*ds/1D);
+				float s = (float)(1.5+(amt/4D)*ds/1D);
 				EntityFX fx = new EntityBlurFX(world, px, py, pz).setColor(a.getColor()).setLife(l).setScale(s).setRapidExpand();//.setIcon(ChromaIcons.TRANSFADE).setBasicBlend();
 				EntityFX fx2 = new EntityBlurFX(world, px, py, pz).setColor(0xffffff).setLife(l).setScale(s/2).setRapidExpand();//.setIcon(ChromaIcons.TRANSFADE).setBasicBlend();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
@@ -419,6 +436,46 @@ public class EssentiaNetwork {
 		@Override
 		public String toString() {
 			return amount+" of "+aspect.getName()+" along "+path;
+		}
+
+	}
+
+	private static class NetworkEndpoint {
+
+		public final WorldLocation relayNode;
+		public final WorldLocation point;
+		private final IEssentiaTransport tile;
+
+		public final int suction;
+
+		private NetworkEndpoint(WorldLocation node, WorldLocation loc, IEssentiaTransport te) {
+			relayNode = node;
+			point = loc;
+			tile = te;
+
+			int maxsuc = 0;
+			for (int i = 0; i < 6; i++) {
+				maxsuc = Math.max(maxsuc, te.getSuctionAmount(ForgeDirection.VALID_DIRECTIONS[i]));
+			}
+			suction = maxsuc;
+		}
+
+	}
+
+	private static class SuctionComparator implements Comparator<NetworkEndpoint> {
+
+		private final boolean suction;
+
+		private SuctionComparator(boolean suck) {
+			suction = suck;
+		}
+
+		@Override
+		public int compare(NetworkEndpoint o1, NetworkEndpoint o2) {
+			int ret = Integer.compare(o1.suction, o2.suction);
+			if (!suction)
+				ret = -ret;
+			return ret;
 		}
 
 	}

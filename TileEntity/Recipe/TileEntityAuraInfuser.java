@@ -19,9 +19,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.MultiBlockCheck;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
@@ -48,7 +50,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
-public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv, IPipeConnection, OperationInterval {
+public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv,
+IPipeConnection, OperationInterval, MultiBlockChromaTile {
 
 	private InertItem item;
 
@@ -83,10 +86,10 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.validateMultiblock();
+		this.validateStructure();
 	}
 
-	public void validateMultiblock() {
+	public void validateStructure() {
 		hasStructure = ChromaStructures.getInfusionStructure(worldObj, xCoord, yCoord, zCoord).matchInWorld();
 		if (!hasStructure) {
 			if (craftingTick > 0) {
@@ -155,7 +158,10 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 			if (arr.hasBlockAt(dx, dy, dz, ChromaBlocks.CHROMA.getBlockInstance(), 0))
 				worldObj.setBlock(dx, dy, dz, Blocks.air);
 		}
-		this.validateMultiblock();
+		this.validateStructure();
+		this.scheduleCallback(new MultiBlockCheck(this), 20);
+		this.scheduleCallback(new MultiBlockCheck(this), 100);
+		this.scheduleCallback(new MultiBlockCheck(this), 200);
 		this.markDirty();
 	}
 
@@ -269,13 +275,17 @@ public class TileEntityAuraInfuser extends InventoriedChromaticBase implements I
 	 */
 	@Override
 	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
+		if (!this.isOwnedByPlayer(ep))
+			return item;
+		if (!hasStructure)
+			return item;
 		if (item != null && !this.isItemValidForSlot(0, item))
 			return item;
 		if (inv[0] != null)
 			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
 		inv[0] = item != null ? item.copy() : null;
 		craftingPlayer = ep;
-		this.markDirty();
+		this.syncAllData(true);
 		return null;
 	}
 

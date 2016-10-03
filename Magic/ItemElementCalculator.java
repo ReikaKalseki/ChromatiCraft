@@ -126,6 +126,8 @@ public class ItemElementCalculator {
 		cache.put(ChromaStacks.glowbeans, new ElementTagCompound(1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
 		cache.put(ChromaStacks.boostroot, new ElementTagCompound(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.avolite, new ElementTagCompound(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0));
+		cache.put(ChromaStacks.fireEssence, new ElementTagCompound(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0));
+		cache.put(ChromaStacks.thermiticCrystal, new ElementTagCompound(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0));
 
 		cache.put(ChromaStacks.voidDust, new ElementTagCompound(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaStacks.energyPowder, new ElementTagCompound(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0));
@@ -157,8 +159,25 @@ public class ItemElementCalculator {
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.MOSS.ordinal()), new ElementTagCompound(2, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		cache.put(ChromaBlocks.STRUCTSHIELD.getStackOfMetadata(BlockStructureShield.BlockType.CLOAK.ordinal()), new ElementTagCompound(2, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0));
 
+		cache.put(ChromaStacks.rawCrystal, new ElementTagCompound(10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 20));
+
+		cache.put(ChromaBlocks.RAINBOWSAPLING.getBlockInstance(), new ElementTagCompound(1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1));
+
 		cache.put(Items.bucket, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(3)); //to prevent exploits with Metallurgy
 		cache.put(Items.shears, ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(2)); //to prevent exploits with Metallurgy
+
+		ElementTagCompound rtag = ItemMagicRegistry.instance.getItemValue(new ItemStack(Items.iron_ingot)).scale(6/16F);
+		rtag.addTag(CrystalElement.GREEN, 1);
+		cache.put(Blocks.rail, rtag); //to prevent exploits with RailCraft
+
+		for (int i = 0; i < 16; i++) {
+			ItemStack is = new ItemStack(Blocks.stained_hardened_clay, 1, i);
+			ElementTagCompound tag = new ElementTagCompound();
+			tag.addValueToColor(CrystalElement.elements[i], 1);
+			tag.addValueToColor(CrystalElement.BROWN, 2);
+			tag.addValueToColor(CrystalElement.ORANGE, 1);
+			cache.put(is, tag);
+		}
 	}
 
 	public ElementTagCompound getValueForItem(ItemStack is) {

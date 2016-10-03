@@ -39,8 +39,8 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader;
+import Reika.DragonAPI.ModInteract.DeepInteract.MESystemReader.MatchMode;
 import appeng.api.AEApi;
-import appeng.api.config.FuzzyMode;
 import appeng.api.networking.IGridBlock;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
@@ -68,55 +68,6 @@ public class TileEntityMEDistributor extends TileEntityChromaticBase implements 
 	private ItemStack[] filter = new ItemStack[NSLOTS*2];
 	private int[] threshold = new int[NSLOTS];
 	private MatchMode[] match = new MatchMode[NSLOTS];
-
-	public static enum MatchMode {
-		EXACT(0xffcc00, "Exact Match"),
-		FUZZY(0x00aaff, "Fuzzy Match"),
-		FUZZYORE(0x00ff00, "Fuzzy/Ore Match"),
-		FUZZYNBT(0xaa00ff, "Fuzzy/Ore Match, Ignore NBT");
-
-		public final int color;
-		public final String desc;
-
-		private static final MatchMode[] list = values();
-
-		private MatchMode(int c, String s) {
-			color = c;
-			desc = s;
-		}
-
-		private long countItems(MESystemReader net, ItemStack is) {
-			switch(this) {
-				case EXACT:
-					return net.getItemCount(is, true);
-				case FUZZY:
-					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, false, true);
-				case FUZZYORE:
-					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true, true);
-				case FUZZYNBT:
-					return net.getFuzzyItemCount(is, FuzzyMode.IGNORE_ALL, true, false);
-			}
-			return 0;
-		}
-
-		private long removeItems(MESystemReader net, ItemStack is, boolean simulate) {
-			switch(this) {
-				case EXACT:
-					return net.removeItem(is, simulate, true);
-				case FUZZY:
-					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, false, true);
-				case FUZZYORE:
-					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true, true);
-				case FUZZYNBT:
-					return net.removeItemFuzzy(is, simulate, FuzzyMode.IGNORE_ALL, true, false);
-			}
-			return 0;
-		}
-
-		public MatchMode next() {
-			return list[(this.ordinal()+1)%list.length];
-		}
-	}
 
 	public TileEntityMEDistributor() {
 		if (ModList.APPENG.isLoaded()) {

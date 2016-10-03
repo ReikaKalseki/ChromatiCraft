@@ -37,6 +37,7 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 	private final TileEntityChromaticBase tile;
 	protected EntityPlayer player;
 	protected static final ReikaGuiAPI api = ReikaGuiAPI.instance;
+	private int clickCooldown;
 
 	public GuiChromaBase(Container par1Container, EntityPlayer ep, TileEntityChromaticBase te) {
 		super(par1Container);
@@ -67,9 +68,27 @@ public abstract class GuiChromaBase extends GuiContainer implements CustomSoundG
 	}
 
 	@Override
+	protected void mouseClicked(int x, int y, int button) {
+		super.mouseClicked(x, y, button);
+
+		clickCooldown = 0;
+	}
+
+	@Override
 	public void setWorldAndResolution(Minecraft mc, int x, int y) {
 		super.setWorldAndResolution(mc, x, y);
 		fontRendererObj = ChromaFontRenderer.FontType.GUI.renderer;
+	}
+
+	@Override
+	public void drawScreen(int x, int y, float a) {
+		super.drawScreen(x, y, a);
+
+		clickCooldown++;
+	}
+
+	protected final int getClickCooldown() {
+		return clickCooldown;
 	}
 
 	@Override

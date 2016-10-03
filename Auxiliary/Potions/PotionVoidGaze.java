@@ -11,6 +11,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 
 
@@ -84,7 +85,7 @@ public class PotionVoidGaze extends Potion {
 				case CAVEPARTICLES:
 					return ProgressStage.RUNEUSE.isPlayerAtStage(ep);
 				case FACEFLIP:
-					return ChromaResearchManager.instance.getPlayerResearchLevel(ep).isAtLeast(ResearchLevel.MULTICRAFT) && ProgressStage.END.isPlayerAtStage(ep) && ProgressStage.CHROMA.isPlayerAtStage(ep) && ProgressionManager.instance.hasPlayerDiscoveredAGeneratedStructure(ep);
+					return ChromaResearchManager.instance.getPlayerResearchLevel(ep).isAtLeast(ResearchLevel.MULTICRAFT) && ProgressStage.END.isPlayerAtStage(ep) && ProgressStage.CHROMA.isPlayerAtStage(ep) && ProgressionManager.instance.hasPlayerDiscoveredAGeneratedStructure(ep) && ep.worldObj.provider.dimensionId != ExtraChromaIDs.DIMID.getValue();
 				default:
 					return false;
 			}

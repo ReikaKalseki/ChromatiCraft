@@ -123,9 +123,7 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 		out.stackSize *= this.getMultiplyRate(inv[0], out);
 		if (inv[1] == null)
 			return true;
-		if (!ReikaItemHelper.matchStacks(out, inv[1]) || !ItemStack.areItemStackTagsEqual(out, inv[1]))
-			return false;
-		if (out.stackSize+inv[1].stackSize > Math.min(this.getInventoryStackLimit(), out.getMaxStackSize()))
+		if (!ReikaItemHelper.areStacksCombinable(out, inv[1], this.getInventoryStackLimit()))
 			return false;
 		return true;
 	}

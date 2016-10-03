@@ -30,6 +30,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Entity.EntityMeteorShot;
@@ -50,7 +51,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 
 //Put multiaura repeater in bottom of tower?
-public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTile {
+public class TileEntityMeteorTower extends CrystalReceiverBase implements NBTTile, MultiBlockChromaTile {
 
 	private static final ElementTagCompound[] required = new ElementTagCompound[3];
 

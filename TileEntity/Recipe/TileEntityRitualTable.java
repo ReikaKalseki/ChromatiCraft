@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
@@ -44,7 +45,8 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile, OperationInterval {
+public class TileEntityRitualTable extends InventoriedCrystalReceiver implements /*GuiController, */BreakAction, TriggerableAction, OwnedTile,
+OperationInterval, MultiBlockChromaTile {
 
 	private boolean hasStructure = false;
 	private boolean hasEnhancedStructure = false;
@@ -93,7 +95,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
 		AbilityRituals.addTable(this);
-		this.validateMultiblock(world, x, y-2, z);
+		this.validateStructure();
 	}
 
 	private void onRitualTick(World world, int x, int y, int z) {
@@ -256,7 +258,11 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 		}
 	}
 
-	public void validateMultiblock(World world, int x, int y, int z) {
+	public void validateStructure() {
+		World world = worldObj;
+		int x = xCoord;
+		int y = yCoord-2;
+		int z = zCoord;
 		FilledBlockArray array = ChromaStructures.getRitualStructure(world, x, y, z, isEnhanced, false);
 		hasStructure = array.matchInWorld();
 		//ReikaJavaLibrary.pConsole(hasStructure+" / "+isEnhanced+": "+this.getSide()+" @ "+array);
@@ -307,7 +313,7 @@ public class TileEntityRitualTable extends InventoriedCrystalReceiver implements
 
 	public void initEnhancementCheck(EntityPlayer ep) {
 		this.checkEnhancement(ep);
-		this.validateMultiblock(worldObj, xCoord, yCoord-2, zCoord);
+		this.validateStructure();
 	}
 
 	public void setChosenAbility(Ability c) {

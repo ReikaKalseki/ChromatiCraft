@@ -29,6 +29,7 @@ import forestry.api.core.EnumTemperature;
 import forestry.api.core.IErrorLogic;
 
 @Strippable(value={"forestry.api.apiculture.IBeeHousing"})
+@Deprecated
 public class TileEntityCrystalApiary extends TileEntityChromaticBase implements IBeeHousing {
 
 	@Override

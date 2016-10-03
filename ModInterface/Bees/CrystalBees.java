@@ -308,6 +308,7 @@ public class CrystalBees {
 		chroma.otherChecks.add(new IridescentShardCheck());
 		lumen.addSpecialty(ChromaStacks.lumaDust, 2);
 		lumen.otherChecks.add(new AreaBlockCheck(new BlockKey(ChromaBlocks.POWERTREE.getBlockInstance()), 2, 1));
+		lumen.addProduct(new ItemStack(Items.glowstone_dust), 15);
 		aura.addSpecialty(ChromaStacks.echoCrystal, 2);
 		aura.otherChecks.add(new AuraLocusCheck());
 
@@ -500,7 +501,7 @@ public class CrystalBees {
 
 		@Override
 		public int getOutlineColor() {
-			return colorList.getColor(DragonAPICore.getSystemTimeAsInt()/30D);
+			return colorList != null ? colorList.getColor(DragonAPICore.getSystemTimeAsInt()/30D) : 0xffffff;
 		}
 
 		@Override
@@ -846,7 +847,7 @@ public class CrystalBees {
 
 		@Override
 		public int getOutlineColor() {
-			return crystalColors[color.ordinal()].getColor(DragonAPICore.getSystemTimeAsInt()/5D-color.ordinal()*32);
+			return crystalColors != null ? crystalColors[color.ordinal()].getColor(DragonAPICore.getSystemTimeAsInt()/5D-color.ordinal()*32) : color.getColor(); //because MagicBees is a dumb and calls this from server side
 		}
 
 		@Override

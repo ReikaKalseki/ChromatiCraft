@@ -42,29 +42,31 @@ public class LumaGenerator implements RetroactiveGenerator, ChromaDecorator {
 
 		if (this.generateIn(world)) {
 			BiomeGenBase b = world.getBiomeGenForCoords(chunkX, chunkZ);
-			int n = 1+rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 6 : 2);
-			for (int in = 0; in < n; in++) {
-				int x = chunkX+rand.nextInt(16);
-				int z = chunkZ+rand.nextInt(16);
-				int y = 10+rand.nextInt(39);
-				if (rand.nextBoolean())
-					y = 10+(y-10)/2;
+			if (rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 2 : 4) == 0) {
+				int n = 1+rand.nextInt(ChromatiCraft.isRainbowForest(b) ? 6 : 2);
+				for (int in = 0; in < n; in++) {
+					int x = chunkX+rand.nextInt(16);
+					int z = chunkZ+rand.nextInt(16);
+					int y = 10+rand.nextInt(39);
+					if (rand.nextBoolean())
+						y = 10+(y-10)/2;
 
-				int r = 2+rand.nextInt(5);
-				int ry = 1+rand.nextInt(3);
-				double dmax = ReikaMathLibrary.py3d(r, ry, r);
-				for (int i = -r; i <= r; i++) {
-					for (int k = -r; k <= r; k++) {
-						for (int j = -ry; j <= ry; j++) {
-							if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, ry, r)) {
-								double dd = ReikaMathLibrary.py3d(i, j, k);
-								int dx = x+i;
-								int dy = y+j;
-								int dz = z+k;
-								double c = 0.8-0.5*dd/dmax;
-								if (ReikaRandomHelper.doWithChance(c) && this.isValidLocation(world, dx, dy, dz)) {
-									world.setBlock(dx, dy, dz, ChromaBlocks.LUMA.getBlockInstance());
-									//ReikaJavaLibrary.pConsole(dx+","+dy+","+dz);
+					int r = 2+rand.nextInt(5);
+					int ry = 1+rand.nextInt(3);
+					double dmax = ReikaMathLibrary.py3d(r, ry, r);
+					for (int i = -r; i <= r; i++) {
+						for (int k = -r; k <= r; k++) {
+							for (int j = -ry; j <= ry; j++) {
+								if (ReikaMathLibrary.isPointInsideEllipse(i, j, k, r, ry, r)) {
+									double dd = ReikaMathLibrary.py3d(i, j, k);
+									int dx = x+i;
+									int dy = y+j;
+									int dz = z+k;
+									double c = 0.8-0.5*dd/dmax;
+									if (ReikaRandomHelper.doWithChance(c) && this.isValidLocation(world, dx, dy, dz)) {
+										world.setBlock(dx, dy, dz, ChromaBlocks.LUMA.getBlockInstance());
+										//ReikaJavaLibrary.pConsole(dx+","+dy+","+dz);
+									}
 								}
 							}
 						}

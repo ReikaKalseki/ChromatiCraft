@@ -299,7 +299,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case SANOBLOOM:
 					return BiomeDictionary.isBiomeOfType(b, Type.JUNGLE);
 				case VOIDREED:
-					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp;
+					return b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b instanceof BiomeGenSwamp || b.getClass().getName().contains("BiomeGenBOPSwamp");
 				case FLOWIVY:
 					return b instanceof BiomeGenHills || (b.rootHeight >= 1 && b.topBlock == Blocks.grass/* && ReikaBiomeHelper.getBiomeTemp(world, b) < 40*/);
 			}

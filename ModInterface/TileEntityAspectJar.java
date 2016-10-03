@@ -321,7 +321,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	@Override
 	@ModDependent(ModList.THAUMCRAFT)
 	public int getSuctionAmount(ForgeDirection face) {
-		return tank.getAspects() != null ? 64 : 32;
+		return tank.getAspects() != null ? 48 : 32;
 	}
 
 	@Override

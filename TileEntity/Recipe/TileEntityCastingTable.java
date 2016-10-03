@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
@@ -80,7 +81,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile, OperationInterval {
+public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
+OperationInterval, MultiBlockChromaTile {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -126,7 +128,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 			ChromaSounds.UPGRADE.playSoundAtBlock(this);
 			if (worldObj.isRemote)
 				this.particleBurst();
-			this.validateStructure(worldObj, xCoord, yCoord, zCoord);
+			this.validateStructure();
 		}
 	}
 
@@ -215,7 +217,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 	 */
 	@Override
 	protected void onFirstTick(World world, int x, int y, int z) {
-		this.validateStructure(world, x, y-1, z);
+		this.validateStructure();
 		craftingTick = 0;
 	}
 
@@ -397,7 +399,11 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		}
 	}
 
-	public void validateStructure(World world, int x, int y, int z) {
+	public void validateStructure() {
+		World world = worldObj;
+		int x = xCoord;
+		int y = yCoord-1;
+		int z = zCoord;
 		FilledBlockArray b = ChromaStructures.getCastingLevelOne(world, x, y, z);
 		FilledBlockArray b2 = ChromaStructures.getCastingLevelTwo(world, x, y, z);
 		FilledBlockArray b3 = ChromaStructures.getCastingLevelThree(world, x, y, z);
@@ -461,6 +467,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 				craftingPlayer = ep;
 				if (worldObj.isRemote)
 					return true;
+				this.syncAllData(true);
 				ChromaSounds.CAST.playSoundAtBlock(this);
 
 				if (activeRecipe.canBeStacked()) {
@@ -592,6 +599,9 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		isEnhanced = NBT.getBoolean("enhance");
 
 		craftingAmount = NBT.getInteger("crafting");
+
+		if (NBT.hasKey("crafter") && this.isInWorld())
+			craftingPlayer = worldObj.func_152378_a(UUID.fromString(NBT.getString("crafter")));
 	}
 
 	@Override
@@ -610,6 +620,10 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 		NBT.setBoolean("enhance", isEnhanced);
 
 		NBT.setInteger("crafting", craftingAmount);
+
+		if (craftingPlayer != null) {
+			NBT.setString("crafter", craftingPlayer.getUniqueID().toString());
+		}
 	}
 
 	private void craft() {
@@ -646,7 +660,21 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 					}
 				}
 				if (inv[i] != null) {
-					ReikaInventoryHelper.decrStack(i, inv);
+					ItemStack container = inv[i].getItem().getContainerItem(inv[i]);
+					if (container == null) {
+						ReikaInventoryHelper.decrStack(i, inv);
+					}
+					else {
+						container = container.copy();
+						container.stackSize = 1;
+						if (inv[i].stackSize == 1) {
+							inv[i] = container;
+						}
+						else {
+							ReikaInventoryHelper.decrStack(i, inv);
+							ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+1.25, zCoord+0.5, container);
+						}
+					}
 				}
 			}
 			count += 1;
@@ -982,7 +1010,7 @@ public class TileEntityCastingTable extends InventoriedCrystalReceiver implement
 
 	@Override
 	public boolean trigger() {
-		return this.getPlacer() != null && this.triggerCrafting(this.getPlacer());
+		return this.getPlacer() != null && !ReikaPlayerAPI.isFake(this.getPlacer()) && this.getPlacer().ticksExisted >= 20 && this.triggerCrafting(this.getPlacer());
 	}
 
 	public void giveRecipe(EntityPlayer ep, CastingRecipe cr) {

@@ -59,12 +59,12 @@ public class BridgeGenerator extends DimensionStructureGenerator {
 	private static int getSize() {
 		switch(ChromaOptions.getStructureDifficulty()) {
 			case 1:
-				return 32;
+				return 16;//32;
 			case 2:
-				return 64;
+				return 32;//64;
 			case 3:
 			default:
-				return 128;
+				return 64;//128;
 		}
 	}
 
