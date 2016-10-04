@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure;
 
 import java.awt.image.BufferedImage;
@@ -134,9 +143,12 @@ public class LightPanelGenerator extends DimensionStructureGenerator {
 					}
 				}
 			}
-			usablePatterns[tier].add(p);
+			if (!p.isEmpty())
+				usablePatterns[tier].add(p);
 			bx += sx;
 		}
+		if (usablePatterns[tier].isEmpty())
+			throw new IllegalStateException("This puzzle is unsolvable, as there are no valid patterns for tier "+tier+"!");
 	}
 
 	private LightPanelRoom[] levels;
@@ -175,7 +187,10 @@ public class LightPanelGenerator extends DimensionStructureGenerator {
 	private FixedLightPattern getPattern(int level, Random rand) {
 		int tier = PATTERN_TIERS[level];
 		int idx = rand.nextInt(patterns[tier].size());
-		return patterns[tier].remove(idx);
+		FixedLightPattern p = patterns[tier].get(idx);
+		if (patterns[tier].size() > 1)
+			patterns[tier].remove(idx);
+		return p;
 	}
 
 	private static int getSize() {

@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.LightPanel;
 
 import net.minecraft.block.Block;
@@ -70,12 +79,14 @@ public class LightPanelEntrance extends DynamicStructurePiece {
 					int dz = z+k;
 					int loctop = world.getTopSolidOrLiquidBlock(dx, dz);
 					if (y > loctop) {
-						for (int dy = loctop; dy <= y; dy++) {
+						for (int dy = loctop; dy <= y+12; dy++) {
 							Block at = world.getBlock(dx, dy, dz);
 							if (at != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
 								Block b = Blocks.stone;
 								if (y == dy)
 									b = Blocks.grass;
+								if (y > dy)
+									b = Blocks.air;
 								world.setBlock(dx, dy, dz, b);
 							}
 						}

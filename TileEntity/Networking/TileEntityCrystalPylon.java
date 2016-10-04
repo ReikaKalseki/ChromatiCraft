@@ -70,6 +70,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFloatingSeedsFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -254,7 +255,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 			}
 
 			if (!world.isRemote && rand.nextInt(80) == 0) {
-				int r = 8+rand.nextInt(8);
+				int r = this.getAttackRange();
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(x, y, z).expand(r, r, r);
 				List<EntityLivingBase> li = world.getEntitiesWithinAABB(EntityLivingBase.class, box);
 				for (EntityLivingBase e : li) {
@@ -291,6 +292,18 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 				world.spawnEntityInWorld(new EntityBallLightning(world, color, x+0.5, y+0.5, z+0.5).setPylon().setNoDrops());
 			}
 		}
+	}
+
+	private int getAttackRange() {
+		return (this.isEnhancing() ? 16 : this.isEnhanced() ? 12 : 8)+rand.nextInt(this.isEnhancing() ? 16 : 8);
+	}
+
+	private boolean isEnhancing() {
+		if (ChromaTiles.getTile(worldObj, xCoord, yCoord-8, zCoord) == ChromaTiles.PYLONTURBO) {
+			TileEntityPylonTurboCharger te = (TileEntityPylonTurboCharger)worldObj.getTileEntity(xCoord, yCoord-8, zCoord);
+			return te.getTick() > 0;
+		}
+		return false;
 	}
 
 	private void doJarRejection(World world, int x, int y, int z) {

@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Field;
@@ -206,7 +215,8 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					if (this.canQueenWork()) {
 						for (AlvearyEffect ae : effectSet) {
 							if (ae.isActive(this)) {
-								ae.tick(this);
+								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
+									ae.tick(this);
 							}
 
 							if (ModList.THAUMCRAFT.isLoaded()) {
@@ -225,7 +235,8 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 					else {
 						for (AlvearyEffect ae : continualSet) {
 							if (ae.isActive(this)) {
-								ae.tick(this);
+								if (ae.tickRate() == 1 || this.getTicksExisted()%ae.tickRate() == 0)
+									ae.tick(this);
 							}
 						}
 					}
@@ -668,6 +679,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		}
 
+		protected int tickRate() {
+			return 1;
+		}
+
 		protected void onProductionTick(TileEntityLumenAlveary te) {
 
 		}
@@ -807,6 +822,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		@Override
 		public String getDescription() {
 			return "Genetic Recycling";
+		}
+
+		@Override
+		protected int tickRate() {
+			return 4;
 		}
 	}
 
@@ -1125,6 +1145,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		}
 
 		@Override
+		protected int tickRate() {
+			return 4;
+		}
+
+		@Override
 		public String getDescription() {
 			return "Dynamic Temperature";
 		}
@@ -1174,6 +1199,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		private HumidityMatchingEffect() {
 			super(CrystalElement.CYAN, 80);
+		}
+
+		@Override
+		protected int tickRate() {
+			return 4;
 		}
 
 		@Override

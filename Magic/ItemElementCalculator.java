@@ -27,6 +27,7 @@ import net.minecraft.item.ItemShears;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -205,16 +206,17 @@ public class ItemElementCalculator {
 			tag.addValueToColor(CrystalElement.PURPLE, 2);
 		}
 		if (is.getItem() instanceof ItemSword) {
-			tag.addValueToColor(CrystalElement.PINK, 4);
+			float dmg = ((ItemSword)is.getItem()).func_150931_i();
+			tag.addValueToColor(CrystalElement.PINK, (int)(1+dmg));
 		}
 		if (is.getItem() instanceof ItemSpade || is.getItem() instanceof ItemPickaxe) {
-			tag.addValueToColor(CrystalElement.BROWN, 2);
+			tag.addValueToColor(CrystalElement.BROWN, 1+((ItemTool)is.getItem()).func_150913_i().getHarvestLevel());
 		}
 		if (is.getItem() instanceof ItemAxe || is.getItem() instanceof ItemHoe || is.getItem() instanceof ItemShears) {
 			tag.addValueToColor(CrystalElement.GREEN, 2);
 		}
 		if (is.getItem() instanceof ItemArmor) {
-			tag.addValueToColor(CrystalElement.RED, 4);
+			tag.addValueToColor(CrystalElement.RED, Math.round(((ItemArmor)is.getItem()).getArmorMaterial().getDamageReductionAmount(1)/2F));
 		}
 		FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 		if (fs != null) {

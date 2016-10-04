@@ -98,6 +98,10 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 			String title = r.getParent().getTitle()+": "+r.getTitle();
 			String s = read || has ? pre+" "+title : pre+" "+ChromaFontRenderer.FontType.OBFUSCATED.id+title;
 			li.add(s);
+			if (r == ChromaResearch.FRAGMENT) {
+				li.add(" Shift-Right-Click with");
+				li.add(" the lexicon to add");
+			}
 		}
 	}
 

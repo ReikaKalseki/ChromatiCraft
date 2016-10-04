@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.LightPanel;
 
 import java.util.Arrays;
@@ -32,6 +41,14 @@ public class FixedLightPattern {
 	@Override
 	public String toString() {
 		return Arrays.toString(connections);
+	}
+
+	public boolean isEmpty() {
+		for (int i = 0; i < connections.length; i++) {
+			if (!connections[i].isEmpty())
+				return false;
+		}
+		return true;
 	}
 
 }

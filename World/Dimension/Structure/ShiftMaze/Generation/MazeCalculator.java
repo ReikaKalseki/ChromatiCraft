@@ -555,8 +555,7 @@ public class MazeCalculator {
 	private Point getRandomPos(int xLayer) {
 		int rZOffset = seededRand.nextInt(grid.getZSize());
 		for (int zz = 0; zz < grid.getZSize(); zz++) {
-			int pZ = (rZOffset % grid.getZSize()) + zz;
-			rZOffset++;
+			int pZ = (zz + rZOffset) % grid.getZSize();
 			Point p = new Point(xLayer, pZ);
 			if(grid.isFree(xLayer, pZ) && !violatesAnchors(p, grid, this.getGenerationGoals(), this.getPlayerGoals(), 2)) return p;
 		}

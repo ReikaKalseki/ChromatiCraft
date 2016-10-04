@@ -498,7 +498,7 @@
 	</inserter>
 	<essentiarelay>
 		<desc>
-			So you have a cauldron full of water, in which you need to dump various ingredients to fabricate your desired target. As that process more often fails than not, producing copious amounts of noxious gas in the process, you created an odd construct to help automate the process. However, you need to actually transport the essentia there, and the piping you tried at first...leaves much to be desired. A longer-range and more flexible solution - ideally more consistently functional as well - would fare far better.
+			So you have a cauldron full of water, in which you need to dump various ingredients to fabricate your desired target. As that process more often fails than not, producing copious amounts of noxious gas in the process, you created an odd construct to help automate the process. However, you need to actually transport the essentia there, and the piping you tried at first...leaves much to be desired. A longer-range and more flexible solution - ideally more consistently functional as well - would fare far better. Simply attach one to each end, as well as some at regular intervals in between.
 		</desc>
 		<note>
 
@@ -608,6 +608,54 @@
 			%s
 		</note>
 	</alveary>
+	<fluidrelay>
+		<desc>
+			Fluids. Fluids EVERYWHERE. Water, lava, oil, honey, liquid nitrogen, cryotheum, and more, routed all over your base with a rat's nest of pipes and ducts. Sure, some of them can be hidden in walls or the floor, but it is still a pain to connect everything, and that time you accidentally disconnected a fluid line and half your base cratered itself remains painfully sharp in your memory. Though you obviously will still need to connect all the endpoints, there has to be a better way...
+		</desc>
+		<note>
+			Positive pressures try to push fluids, negative pressures try to pull
+		</note>
+	</fluidrelay>
+	<bookdecomp>
+		<desc>
+			So you can create world after world by scribbling in a book, but you can even do this without writing much at all, and some unseen balancing force appears to fill in the missing pieces (though sometimes it appears to take issue with your choices). And few things are more frustrating than creating a random world and seeing it has a trait you want but lack the means to manually specify. You want those symbols, and you are going to get them out of those books any way you can.
+		</desc>
+		<note>
+
+		</note>
+	</bookdecomp>
+	<routerhub>
+		<desc>
+			So you have a field of constructs, all generating or needing items. Sure, you could run a giant grid of item pipes, but that is boring, expensive, and ugly. What you want is the ability to connect them all through the aether to some central hub which would automatically pull and push items as necessary.
+		</desc>
+		<note>
+			Endpoints must be connected to the hub (by right-clicking) in order to be placed
+		</note>
+	</routerhub>
+	<avolaser>
+		<desc>
+			Avolite crystals are ancient and imbued with magical power...You think. With that in mind, you have constructed a housing to focus and project that energy in an impressive and violent display. Ancient temples might not be able to maintain a security system this deadly, but you certainly can.
+		</desc>
+		<note>
+
+		</note>
+	</avolaser>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
+	<name>
+		<desc>
+
+		</desc>
+		<note>
+
+		</note>
+	</name>
 	<name>
 		<desc>
 

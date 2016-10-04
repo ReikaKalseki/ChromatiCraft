@@ -218,7 +218,7 @@ public enum ChromaTiles implements TileEnum {
 	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0),
 	AVOLASER("chroma.avolaser",			ChromaBlocks.TILEMODELLED3,	TileEntityAvoLaser.class,			12, "RenderAvoLaser"),
 	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary"),
-	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			2, "RenderRouterHub");
+	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub");
 
 	private final Class tile;
 	private final String name;
@@ -406,6 +406,8 @@ public enum ChromaTiles implements TileEnum {
 			ChromaTiles r = TEList[i];
 			Block id = r.getBlock();
 			int meta = r.getBlockMetadata();
+			if (chromaMappings.containsKey(id, meta))
+				throw new RegistrationException(ChromatiCraft.instance, "ID/Meta conflict @ "+id+"/"+meta+": "+r+" & "+chromaMappings.get(id, meta));
 			chromaMappings.put(id, meta, r);
 		}
 	}

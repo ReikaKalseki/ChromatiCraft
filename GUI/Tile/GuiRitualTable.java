@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.GUI.GuiChromability;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.ChromatiCraft.Registry.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.Chromabilities;
@@ -39,12 +40,16 @@ public class GuiRitualTable extends GuiChromability {
 
 		ySize = 224;
 
-		if (!te.isFullyEnhanced()) {
-			Iterator<Ability> it = abilities.iterator();
-			while (it.hasNext()) {
-				Ability a = it.next();
-				if (a instanceof Chromabilities) {
-					ChromaResearch r = ChromaResearch.getPageFor((Chromabilities)a);
+		Iterator<Ability> it = abilities.iterator();
+		while (it.hasNext()) {
+			Ability a = it.next();
+			if (a instanceof Chromabilities) {
+				ChromaResearch r = ChromaResearch.getPageFor((Chromabilities)a);
+				if (!ChromaResearchManager.instance.playerHasFragment(ep, r)) {
+					it.remove();
+					break;
+				}
+				if (!te.isFullyEnhanced()) {
 					if (r.level.ordinal() >= ResearchLevel.CTM.ordinal()) {
 						it.remove();
 					}

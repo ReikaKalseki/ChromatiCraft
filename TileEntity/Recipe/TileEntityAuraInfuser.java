@@ -277,8 +277,11 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile {
 	public ItemStack onRightClickWith(ItemStack item, EntityPlayer ep) {
 		if (!this.isOwnedByPlayer(ep))
 			return item;
-		if (!hasStructure)
+		if (!hasStructure) {
+			if (inv[0] != null && item == null)
+				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
 			return item;
+		}
 		if (item != null && !this.isItemValidForSlot(0, item))
 			return item;
 		if (inv[0] != null)

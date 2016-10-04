@@ -1,3 +1,12 @@
+/*******************************************************************************
+ * @author Reika Kalseki
+ * 
+ * Copyright 2016
+ * 
+ * All rights reserved.
+ * Distribution of the software in any form is only allowed with
+ * explicit, prior permission from the owner.
+ ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Structure.LightPanel;
 
 import java.util.ArrayList;
@@ -73,6 +82,7 @@ public class LightPanelRoom extends StructurePiece {
 		key = KeySignature.keys[rand.nextInt(KeySignature.keys.length)];
 		for (Note n : key.getScale())
 			usablePitches.add(MusicKey.C5.getInterval(n.ordinal()));
+		usablePitches.add(MusicKey.C6);
 	}
 
 	public final void generatePuzzle() {

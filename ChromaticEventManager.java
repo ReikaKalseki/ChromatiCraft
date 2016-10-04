@@ -1083,12 +1083,14 @@ public class ChromaticEventManager {
 			EntityWisp e = (EntityWisp)evt.entityLiving;
 			if (evt.source.getEntity() instanceof EntityPlayer) {
 				EntityPlayer ep = (EntityPlayer)evt.source.getEntity();
-				String type = e.getType();
-				Aspect a = Aspect.getAspect(type);
-				if (a != null) {
-					int s = 4+rand.nextInt(8);
-					ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
-					PlayerElementBuffer.instance.addToPlayer(ep, tag);
+				if (!ReikaPlayerAPI.isFake(ep)) {
+					String type = e.getType();
+					Aspect a = Aspect.getAspect(type);
+					if (a != null) {
+						int s = 4+rand.nextInt(8);
+						ElementTagCompound tag = ChromaAspectManager.instance.getElementCost(a, 1+rand.nextInt(2)).scale(s);
+						PlayerElementBuffer.instance.addToPlayer(ep, tag);
+					}
 				}
 			}
 		}
