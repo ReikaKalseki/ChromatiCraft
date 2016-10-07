@@ -154,25 +154,39 @@ public class ItemTransitionWand extends ItemWandBase implements BreakerCallback 
 	}
 
 	@Override
-	public void onBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+	public void onPreBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
 		BlockReplace r = breakers.get(b.hashCode());
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
 			if (exists) {
-				this.drainPlayer(r.player);
-				ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM);
-				world.setBlock(x, y, z, r.place, r.placeM, 3);
-				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
 				ArrayList<ItemStack> li = id.getDrops(world, x, y, z, meta, 0);
-				if (r.silkTouch && ReikaBlockHelper.attemptSilkTouch(world, x, y, z)) {
-					li.clear();
+				if (r.silkTouch) {
 					ItemStack is = ReikaBlockHelper.getSilkTouch(world, x, y, z, id, meta, r.player, true);
-					if (is != null)
+					if (is != null) {
+						li.clear();
 						li.add(is);
+					}
 				}
 				for (ItemStack is : li) {
 					r.drops.add(is);
 				}
+			}
+			else {
+				b.terminate();
+			}
+		}
+	}
+
+	@Override
+	public void onPostBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+		BlockReplace r = breakers.get(b.hashCode());
+		if (r != null) {
+			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
+			if (exists) {
+				world.setBlock(x, y, z, r.place, r.placeM, 3);
+				ReikaSoundHelper.playPlaceSound(world, x, y, z, r.place);
+				this.drainPlayer(r.player);
+				ReikaPlayerAPI.findAndDecrItem(r.player, r.place, r.placeM);
 			}
 			else {
 				b.terminate();

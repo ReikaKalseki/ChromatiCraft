@@ -217,7 +217,7 @@ public enum ChromaTiles implements TileEnum {
 	HARVESTPLANT("chroma.harvestplant",	ChromaBlocks.DECOPLANT,		TileEntityHarvesterPlant.class,		5),
 	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0),
 	AVOLASER("chroma.avolaser",			ChromaBlocks.TILEMODELLED3,	TileEntityAvoLaser.class,			12, "RenderAvoLaser"),
-	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary"),
+	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary", ModList.FORESTRY),
 	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub");
 
 	private final Class tile;

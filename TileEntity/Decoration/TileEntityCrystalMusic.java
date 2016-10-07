@@ -38,7 +38,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
-import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -47,8 +46,6 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 
 	private boolean isPlaying;
 	private int playTick;
-
-	private boolean lastRedstone;
 
 	private MusicScore track = new MusicScore(16);
 
@@ -108,12 +105,12 @@ public class TileEntityCrystalMusic extends /*Inventoried*/TileEntityChromaticBa
 			if (isPlaying) {
 				this.play(world, x, y, z);
 			}
-
-			if (ReikaRedstoneHelper.isPositiveEdge(world, x, y, z, lastRedstone)) {
-				this.triggerPlay();
-			}
-			lastRedstone = world.isBlockIndirectlyGettingPowered(x, y, z);
 		}
+	}
+
+	@Override
+	protected void onPositiveRedstoneEdge() {
+		this.triggerPlay();
 	}
 
 	public void triggerPlay() {

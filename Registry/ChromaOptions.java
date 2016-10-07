@@ -51,6 +51,7 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	BIOMEPAINTER("Enable Biome Painter", true),
 	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
 	ENDERWEIGHT("Ender Forest Biome Weight", 10),
+	CLIFFWEIGHT("Luminous Cliffs Biome Weight", 4),
 	HOSTILEFOREST("Allow Danger in Rainbow Forests", false),
 	RELAYRANGE("Lumen Relay Range", 16),
 	REDRAGON("Always Respawn EnderDragon", false),
@@ -192,6 +193,11 @@ public enum ChromaOptions implements IntegerConfig, BooleanConfig, DecimalConfig
 	public static int getEnderForestWeight() {
 		int base = ENDERWEIGHT.getValue();
 		return Math.max(2, base);
+	}
+
+	public static int getGlowingCliffsWeight() {
+		int base = CLIFFWEIGHT.getValue();
+		return Math.max(1, Math.min(getRainbowForestWeight()/2, base));
 	}
 
 	public static int getStructureDifficulty() {

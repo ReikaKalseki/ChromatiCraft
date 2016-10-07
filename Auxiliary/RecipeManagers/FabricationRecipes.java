@@ -18,6 +18,7 @@ import java.util.HashSet;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.api.aspects.Aspect;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
@@ -148,14 +149,14 @@ public class FabricationRecipes {
 
 		if (ModList.THAUMICTINKER.isLoaded()) {
 			ElementTagCompound nether = new ElementTagCompound();
-			nether.addValueToColor(CrystalElement.ORANGE, 5000);
-			nether.addValueToColor(CrystalElement.PINK, 5000);
-			nether.addValueToColor(CrystalElement.BLACK, 2000);
+			nether.addValueToColor(CrystalElement.ORANGE, 25000);
+			nether.addValueToColor(CrystalElement.PINK, 25000);
+			nether.addValueToColor(CrystalElement.BLACK, 10000);
 
 			ElementTagCompound end = new ElementTagCompound();
-			end.addValueToColor(CrystalElement.LIGHTGRAY, 5000);
-			end.addValueToColor(CrystalElement.PINK, 5000);
-			end.addValueToColor(CrystalElement.BLACK, 2000);
+			end.addValueToColor(CrystalElement.LIGHTGRAY, 25000);
+			end.addValueToColor(CrystalElement.PINK, 25000);
+			end.addValueToColor(CrystalElement.BLACK, 10000);
 
 			this.addRecipe(ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 6), nether);
 			this.addRecipe(ReikaItemHelper.lookupItem(ModList.THAUMICTINKER, "kamiResource", 7), end);
@@ -172,6 +173,13 @@ public class FabricationRecipes {
 			}
 		}
 
+	}
+
+	private void addOreDictRecipe(String ore, ElementTagCompound tag) {
+		ArrayList<ItemStack> li = OreDictionary.getOres(ore);
+		for (ItemStack is : li) {
+			this.addRecipe(is, tag.copy());
+		}
 	}
 
 	public ElementTagCompound processTag(ElementTagCompound tag) {

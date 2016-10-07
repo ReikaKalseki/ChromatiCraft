@@ -136,9 +136,13 @@ public class EssentiaNetwork {
 	}
 
 	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount) {
+		return this.addEssentia(caller, aspect, amount, new WorldLocation(caller).move(callDir, 1));
+	}
+
+	public EssentiaMovement addEssentia(TileEntityEssentiaRelay caller, Aspect aspect, int amount, WorldLocation src) {
 		ArrayList<EssentiaPath> li = new ArrayList();
 
-		ArrayList<NetworkEndpoint> list = this.collectAllTiles();
+		ArrayList<NetworkEndpoint> list = this.collectAllTiles(src);
 		Collections.sort(list, pushComparator);
 		for (NetworkEndpoint p : list) {
 			for (int i = 0; i < 6; i++) {
@@ -155,7 +159,7 @@ public class EssentiaNetwork {
 
 						}
 						pt.add(p.point);
-						pt.add(0, new WorldLocation(caller).move(callDir, 1));
+						pt.add(0, src);
 						li.add(new EssentiaPath(aspect, added, pt)); //ReikaJavaLibrary.makeListFrom(new WorldLocation(caller), node, loc)
 						if (amount <= 0) {
 							break;
@@ -170,18 +174,20 @@ public class EssentiaNetwork {
 		return li.isEmpty() ? null : new EssentiaMovement(li);
 	}
 
-	private ArrayList<NetworkEndpoint> collectAllTiles() {
+	private ArrayList<NetworkEndpoint> collectAllTiles(WorldLocation exclude) {
 		ArrayList<NetworkEndpoint> li = new ArrayList();
 		for (WorldLocation node : tiles.keySet()) {
 			Iterator<WorldLocation> it = tiles.get(node).iterator();
 			while (it.hasNext()) {
 				WorldLocation loc = it.next();
-				TileEntity te = loc.getTileEntity();
-				if (te instanceof IEssentiaTransport) {
-					li.add(new NetworkEndpoint(node, loc, (IEssentiaTransport)te));
-				}
-				else {
-					it.remove();
+				if (!loc.equals(exclude)) {
+					TileEntity te = loc.getTileEntity();
+					if (te instanceof IEssentiaTransport) {
+						li.add(new NetworkEndpoint(node, loc, (IEssentiaTransport)te));
+					}
+					else {
+						it.remove();
+					}
 				}
 			}
 		}
@@ -195,7 +201,7 @@ public class EssentiaNetwork {
 	public EssentiaMovement removeEssentia(TileEntityEssentiaRelay caller, ForgeDirection callDir, Aspect aspect, int amount, WorldLocation tgt) {
 		TileEntity target = caller.getAdjacentTileEntity(callDir);
 		ArrayList<EssentiaPath> li = new ArrayList();
-		ArrayList<NetworkEndpoint> list = this.collectAllTiles();
+		ArrayList<NetworkEndpoint> list = this.collectAllTiles(tgt);
 		Collections.sort(list, pullComparator);
 		for (NetworkEndpoint p : list) {
 			for (int i = 0; i < 6; i++) {

@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Block.BlockRouterNode.RouterFilter;
 import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterExtraction;
 import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterInsertion;
 import Reika.ChromatiCraft.Block.BlockRouterNode.TileEntityRouterNode;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
@@ -89,6 +90,23 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.ROUTERHUB;
+	}
+
+	public void scanAndLink(World world, int x, int y, int z, int r) {
+		for (int i = -r; i <= r; i++) {
+			for (int k = -r; k <= r; k++) {
+				for (int j = -r/2; j <= r/2; j++) {
+					int dx = x+i;
+					int dy = y+j;
+					int dz = z+k;
+					if (world.getBlock(dx, dy, dz) == ChromaBlocks.ROUTERNODE.getBlockInstance()) {
+						TileEntityRouterNode te = (TileEntityRouterNode)world.getTileEntity(dx, dy, dz);
+						if (te.getHub() == null)
+							te.setHub(new Coordinate(this));
+					}
+				}
+			}
+		}
 	}
 
 	@Override

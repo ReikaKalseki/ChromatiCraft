@@ -25,6 +25,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -139,6 +140,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 			args = Arrays.copyOfRange(args, 1, args.length);
 		boolean set = Boolean.valueOf(args[2]);
 		boolean rerender = true;
+		ProgressionCacher.instance.clearProgressCache(ep);
 		switch(args[0]) {
 			case "color": {
 				CrystalElement e = this.getColor(args[1]);

@@ -43,6 +43,9 @@ public class LightPanelLoot extends StructurePiece {
 					else {
 						int m = j > h && j < maxh && !wall ? BlockType.CLOAK.metadata : BlockType.STONE.metadata;
 						world.setBlock(dx, dy, dz, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
+						if (j == 0) {
+							parent.addBreakable(dx, dy, dz);
+						}
 					}
 				}
 			}

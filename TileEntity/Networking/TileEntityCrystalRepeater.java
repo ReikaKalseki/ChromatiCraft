@@ -78,6 +78,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public static final int RANGE = 32;
 
+	private boolean redstoneCache;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.REPEATER;
@@ -107,6 +109,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 				this.doSurgingParticles(world, x, y, z);
 			}
 		}
+	}
+
+	@Override
+	public void onBlockUpdate() {
+		super.onBlockUpdate();
+		redstoneCache = worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -177,7 +185,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && !worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
+		return hasMultiblock && !redstoneCache;
 	}
 
 	public final void validateStructure() {
@@ -244,6 +252,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		surgeTicks = NBT.getInteger("surge");
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
+
+		redstoneCache = NBT.getBoolean("redstone");
 	}
 
 	@Override
@@ -261,6 +271,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setInteger("surge", surgeTicks);
 		if (surgeColor != null)
 			NBT.setInteger("surge_c", surgeColor.ordinal());
+
+		NBT.setBoolean("redstone", redstoneCache);
 	}
 
 	public final boolean isTurbocharged() {

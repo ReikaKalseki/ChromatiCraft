@@ -32,7 +32,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Render.Particle.EntityBlurFX;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.ASM.APIStripper.Strippable;
+import Reika.DragonAPI.ASM.InterfaceInjector.Injectable;
 import Reika.DragonAPI.Interfaces.Item.MultisheetItem;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -41,8 +41,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 import forestry.api.apiculture.IArmorApiarist;
 
 
-@Strippable(value={"forestry.api.apiculture.IArmorApiarist"})
-public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, ISpecialArmor, IArmorApiarist {
+@Injectable(value={"forestry.api.apiculture.IArmorApiarist"})
+public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, ISpecialArmor {
 
 	private final int textureIndex;
 
@@ -225,13 +225,12 @@ public class ItemFloatstoneBoots extends ItemArmor implements MultisheetItem, IS
 		}
 	}
 
-	@Override
+	//IArmorApiarist
 	public boolean protectEntity(EntityLivingBase entity, ItemStack armor, String cause, boolean doProtect) {
 		ItemStack head = entity.getEquipmentInSlot(4);
 		return head != null && head.getItem() instanceof IArmorApiarist && ((IArmorApiarist)head.getItem()).protectEntity(entity, head, cause, doProtect);
 	}
 
-	@Override
 	@Deprecated
 	public boolean protectPlayer(EntityPlayer player, ItemStack armor, String cause, boolean doProtect) {
 		return this.protectEntity(player, armor, cause, doProtect);

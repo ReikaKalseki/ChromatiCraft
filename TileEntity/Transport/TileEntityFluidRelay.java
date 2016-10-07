@@ -48,7 +48,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityFluidRelay extends TileEntityChromaticBase implements BreakAction, SidePlacedTile, CustomHitbox {
 
-	private final StepTimer cacheTimer = new StepTimer(40);
+	private final StepTimer cacheTimer = new StepTimer(100);
 
 	public static final int RELAY_RANGE = 16;
 	public static final int MAX_THROUGHPUT = 2000;

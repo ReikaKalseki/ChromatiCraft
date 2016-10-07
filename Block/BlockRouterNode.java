@@ -235,6 +235,10 @@ public class BlockRouterNode extends Block implements SidedBlock {
 			}
 		}
 
+		public Coordinate getHub() {
+			return hub;
+		}
+
 		private final void place(World world, int x, int y, int z, int side) {
 			this.side = ForgeDirection.VALID_DIRECTIONS[side];
 		}

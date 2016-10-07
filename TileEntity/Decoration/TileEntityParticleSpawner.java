@@ -41,7 +41,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote && !world.isBlockIndirectlyGettingPowered(x, y, z)) {
+		if (world.isRemote && !this.hasRedstoneSignal()) {
 			this.spawnParticles(world, x, y, z);
 		}
 	}

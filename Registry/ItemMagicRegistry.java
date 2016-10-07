@@ -220,6 +220,18 @@ public class ItemMagicRegistry {
 		this.addElement(Items.ghast_tear, CrystalElement.BLACK, 1);
 		this.addElement(Items.ghast_tear, CrystalElement.GREEN, 1);
 		this.addElement(Items.skull, CrystalElement.PINK, 4);
+
+		this.addElement("rodBlizz", CrystalElement.WHITE, 4);
+		this.addElement("rodBlizz", CrystalElement.GREEN, 1);
+		this.addElement("rodBlizz", CrystalElement.PINK, 2);
+
+		this.addElement("rodBlitz", CrystalElement.GRAY, 4);
+		this.addElement("rodBlitz", CrystalElement.GREEN, 1);
+		this.addElement("rodBlitz", CrystalElement.PINK, 2);
+
+		this.addElement("rodBasalz", CrystalElement.BROWN, 4);
+		this.addElement("rodBasalz", CrystalElement.GREEN, 1);
+		this.addElement("rodBasalz", CrystalElement.PINK, 2);
 		/*
 		this.addElement(Items.record_11, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.GREED, 4));
 		this.addElement(Items.record_13, new AspectList().add(Aspect.SENSES, 4).add(Aspect.AIR, 4).add(Aspect.WATER, 4).add(Aspect.GREED, 4));

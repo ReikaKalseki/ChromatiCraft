@@ -77,8 +77,9 @@ import forestry.api.multiblock.IMultiblockController;
 import forestry.api.multiblock.IMultiblockLogicAlveary;
 import forestry.api.multiblock.MultiblockManager;
 
-@Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent.BeeModifier",
-		"forestry.api.multiblock.IAlvearyComponent.BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
+//@SmartStrip
+@Strippable(value={"forestry.api.multiblock.IAlvearyComponent", "forestry.api.multiblock.IAlvearyComponent$BeeModifier",
+		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IAlvearyComponent, BeeModifier, BeeListener, IBeeModifier, IBeeListener {
 
 	private static final HashSet<AlvearyEffect> effectSet = new HashSet();
@@ -89,7 +90,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	private static Field tempField;
 	private static Field humidField;
 
-	private final Object logic = ModList.FORESTRY.isLoaded() ? MultiblockManager.logicFactory.createAlvearyLogic() : null;
+	private Object logic;
 
 	@ModDependent(ModList.THAUMCRAFT)
 	private AspectList aspects;
@@ -100,6 +101,8 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private int lightningTicks;
 	private String movePrincess;
+	
+	private boolean canWork;
 
 	private EntityItem renderItem;
 
@@ -163,6 +166,9 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			aspects = new AspectList();
 		}
+		if (ModList.FORESTRY.isLoaded()) {
+			logic = MultiblockManager.logicFactory.createAlvearyLogic();
+		}
 	}
 
 	@Override
@@ -207,6 +213,10 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		super.updateEntity(world, x, y, z, meta);
 
 		if (ModList.FORESTRY.isLoaded()) {
+			
+			if (this.getTicksExisted()%4 == 0)
+				canWork = this.calcCanWork();
+			
 			if (this.isAlvearyComplete()) {
 				if (world.isRemote) {
 					this.doParticles(world, x, y, z);
@@ -564,11 +574,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		return is != null ? ReikaBeeHelper.getGenome(is) : null;
 	}
 
-	@ModDependent(ModList.FORESTRY)
 	public boolean hasQueen() {
-		return this.getQueenItem() != null;
+		return ModList.FORESTRY.isLoaded() && this.getQueenItem() != null;
 	}
 
+	@ModDependent(ModList.FORESTRY)
 	public ItemStack getQueenItem() {
 		IBeeHousing ibh = this.getMultiblockLogic().getController();
 		if (ibh == null)
@@ -579,6 +589,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	@ModDependent(ModList.FORESTRY)
 	public boolean canQueenWork() {
+		return canWork;
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private boolean calcCanWork() {
 		return this.isAlvearyComplete() && this.getMultiblockLogic().getController().getBeekeepingLogic().canWork();
 	}
 
@@ -965,10 +980,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			}
 		}
 
+		@ModDependent(ModList.FORESTRY)
 		private void balanceGene(ItemStack queen, IBeeGenome ibg, EnumBeeChromosome gene) {
 			ReikaBeeHelper.setGene(queen, ibg, gene, ibg.getActiveAllele(gene), true);
 		}
 
+		@ModDependent(ModList.FORESTRY)
 		private boolean canBalance(ItemStack queen, IBeeGenome ibg, EnumBeeChromosome gene) {
 			if (gene == EnumBeeChromosome.HUMIDITY)
 				return false;
@@ -1067,6 +1084,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			}
 		}
 
+		@ModDependent(ModList.FORESTRY)
 		private void improveGene(EnumBeeChromosome gene, IBeeGenome ibg, ItemStack queen) {
 			switch(gene) {
 				case FERTILITY:
@@ -1104,6 +1122,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 			}
 		}
 
+		@ModDependent(ModList.FORESTRY)
 		private boolean canImprove(EnumBeeChromosome gene, IBeeGenome ibg) {
 			switch(gene) {
 				case FERTILITY:
@@ -1146,7 +1165,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		@Override
 		protected int tickRate() {
-			return 4;
+			return 2;
 		}
 
 		@Override
@@ -1203,7 +1222,7 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 		@Override
 		protected int tickRate() {
-			return 4;
+			return 2;
 		}
 
 		@Override

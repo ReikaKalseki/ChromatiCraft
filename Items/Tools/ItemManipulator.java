@@ -60,6 +60,7 @@ import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityRitualTable;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityItemRift;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRift;
+import Reika.ChromatiCraft.TileEntity.Transport.TileEntityRouterHub;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTeleportGate;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -180,6 +181,13 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 			TileEntityItemInserter ir = (TileEntityItemInserter)tile;
 			ir.omniMode = !ir.omniMode;
 			ChromaSounds.USE.playSoundAtBlock(ir);
+			return true;
+		}
+
+		if (t == ChromaTiles.ROUTERHUB) {
+			TileEntityRouterHub rh = (TileEntityRouterHub)tile;
+			rh.scanAndLink(world, x, y, z, 32);
+			ChromaSounds.USE.playSoundAtBlock(rh);
 			return true;
 		}
 

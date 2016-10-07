@@ -48,7 +48,7 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 
 	@Override
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
 		return this.tryDistributeEnergy(maxReceive, simulate);

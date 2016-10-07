@@ -136,7 +136,7 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 			boolean on = active;
 			switch(control) {
 				case REDSTONE:
-					on = world.isBlockIndirectlyGettingPowered(x, y, z);
+					on = this.hasRedstoneSignal();
 					break;
 				case MANUAL:
 					break;

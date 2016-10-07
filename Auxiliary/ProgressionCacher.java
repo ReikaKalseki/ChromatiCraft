@@ -25,6 +25,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.PlayerHandler.PlayerTracker;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.IO.NBTFile;
+import cpw.mods.fml.common.FMLLog;
 
 
 public class ProgressionCacher implements PlayerTracker {
@@ -101,6 +102,10 @@ public class ProgressionCacher implements PlayerTracker {
 		this.updateProgressCache(player);
 	}
 
+	public void clearProgressCache(EntityPlayer ep) {
+		progressCache.remove(ep.getUniqueID());
+	}
+
 	public void updateProgressCache(EntityPlayer ep) {
 		ProgressCache pc = progressCache.get(ep.getUniqueID());
 		if (pc == null) {
@@ -108,6 +113,11 @@ public class ProgressionCacher implements PlayerTracker {
 			progressCache.put(ep.getUniqueID(), pc);
 		}
 		else {
+			if (pc.hasMoreProgressionThan(ep)) { //progression lost?
+				pc.copyTo(ep);
+				ChromatiCraft.logger.log("Restoring progression for "+ep.getCommandSenderName()+" from cache, as it had more progression than they did!");
+				FMLLog.bigWarning("ChromatiCraft: Player %s just lost some of their progression!", ep.getCommandSenderName());
+			}
 			pc.update(ep);
 		}
 		this.savePlayer(ep);
@@ -137,6 +147,21 @@ public class ProgressionCacher implements PlayerTracker {
 		private ProgressCache(EntityPlayer ep) {
 			this(ep.getUniqueID());
 			this.update(ep);
+		}
+
+		private void copyTo(EntityPlayer ep) {
+			HashSet<ProgressStage> set = new HashSet(cache);
+			for (ProgressStage p : set) {
+				p.forceOnPlayer(ep, false);
+			}
+		}
+
+		private boolean hasMoreProgressionThan(EntityPlayer ep) {
+			for (ProgressStage p : cache) {
+				if (!p.isPlayerAtStage(ep))
+					return true;
+			}
+			return false;
 		}
 
 		private ProgressCache(UUID id) {

@@ -223,6 +223,10 @@ public class ProgressionManager implements ProgressRegistry {
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 			return this.stepPlayerTo(ep);
 		}
+
+		public void forceOnPlayer(EntityPlayer ep, boolean notify) {
+			//instance.setPlayerStage(ep, this, true, notify);
+		}
 	}
 
 	private ProgressionManager() {

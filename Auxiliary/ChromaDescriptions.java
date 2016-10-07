@@ -51,6 +51,7 @@ import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityPowerTree;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
@@ -402,7 +403,8 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
-		addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
+		if (ModList.FORESTRY.isLoaded())
+			addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
 

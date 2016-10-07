@@ -139,7 +139,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	protected abstract boolean tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime);
 
 	public boolean canRun(World world, int x, int y, int z) {
-		return !world.isBlockIndirectlyGettingPowered(x, y, z);//world.getBlockPowerInput(x, y, z) < 15;
+		return !this.hasRedstoneSignal();//world.getBlockPowerInput(x, y, z) < 15;
 	}
 
 	protected boolean ticksIndividually() {

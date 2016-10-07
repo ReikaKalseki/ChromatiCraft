@@ -54,7 +54,7 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 
 	@Override
 	public int fill(ForgeDirection from, FluidStack fs, boolean simulate) {
-		if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))
+		if (this.hasRedstoneSignal())
 			return 0;
 		this.addInput(new WorldLocation(this).move(from, 1));
 		return this.tryDistributeFluid(fs, simulate);

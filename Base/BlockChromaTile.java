@@ -212,6 +212,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block b) {
+		super.onNeighborBlockChange(world, x, y, z, b);
 		ChromaTiles t = ChromaTiles.getTile(world, x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 		if (t == ChromaTiles.WINDOW) {

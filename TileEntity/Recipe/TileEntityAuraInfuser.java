@@ -278,8 +278,10 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile {
 		if (!this.isOwnedByPlayer(ep))
 			return item;
 		if (!hasStructure) {
-			if (inv[0] != null && item == null)
+			if (inv[0] != null && item == null) {
 				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
+				inv[0] = null;
+			}
 			return item;
 		}
 		if (item != null && !this.isItemValidForSlot(0, item))

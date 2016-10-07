@@ -31,6 +31,8 @@ public class CrystalBackpack implements IBackpackDefinition {
 	}
 
 	public void register() {
+		if (BackpackManager.backpackInterface == null) //backpacks disabled
+			return;
 		item1 = BackpackManager.backpackInterface.addBackpack(this, EnumBackpackType.T1);
 		item2 = BackpackManager.backpackInterface.addBackpack(this, EnumBackpackType.T2);
 

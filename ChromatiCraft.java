@@ -110,6 +110,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.ColorTreeGenerator;
 import Reika.ChromatiCraft.World.CrystalGenerator;
@@ -240,6 +241,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 	public static BiomeRainbowForest rainbowforest;
 	public static BiomeEnderForest enderforest;
+	public static BiomeGlowingCliffs glowingcliffs;
 
 	@SidedProxy(clientSide="Reika.ChromatiCraft.ChromaClient", serverSide="Reika.ChromatiCraft.ChromaCommon")
 	public static ChromaCommon proxy;
@@ -422,6 +424,12 @@ public class ChromatiCraft extends DragonAPIMod {
 		BiomeManager.addSpawnBiome(enderforest);
 		BiomeDictionary.registerBiomeType(enderforest, BiomeDictionary.Type.FOREST, BiomeDictionary.Type.MAGICAL);
 
+		glowingcliffs = new BiomeGlowingCliffs(ExtraChromaIDs.LUMINOUSCLIFFS.getValue());
+		//BiomeManager.addBiome(BiomeType.COOL, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
+		//BiomeManager.addBiome(BiomeType.WARM, new BiomeEntry(glowingcliffs, ChromaOptions.getGlowingCliffsWeight()));
+		//BiomeManager.addSpawnBiome(glowingcliffs);
+		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL);
+
 		ChromaDimensionManager.initialize();
 
 		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
@@ -504,6 +512,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		if (ModList.ATG.isLoaded()) {
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", rainbowforest, 1.0);
 			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Forest", enderforest, 1.0);
+			ATGBiomes.addBiome(ATGBiomes.BiomeType.LAND, "Cliffs", glowingcliffs, 0.5);
 		}
 
 		if (ModList.BLUEPOWER.isLoaded()) { //prevent what is nearly an exploit by uncrafting gold apples

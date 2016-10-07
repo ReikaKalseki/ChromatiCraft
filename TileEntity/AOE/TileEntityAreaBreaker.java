@@ -140,7 +140,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	private boolean isRunning() {
-		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+		return this.hasRedstoneSignal();
 	}
 
 	private boolean isCoordValid(Coordinate c, Block b, World world, int x, int y, int z) {

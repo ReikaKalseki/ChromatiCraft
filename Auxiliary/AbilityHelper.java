@@ -1906,7 +1906,7 @@ public class AbilityHelper {
 					EnumBeeType type = ReikaBeeHelper.getBeeRoot().getType(evt.itemStack);
 					if (GuiScreen.isShiftKeyDown()) {
 						ArrayList<String> li = ReikaBeeHelper.getGenesAsStringList(evt.itemStack);
-						if (type == EnumBeeType.QUEEN)
+						if (type == EnumBeeType.QUEEN || type == EnumBeeType.PRINCESS)
 							evt.toolTip.add(evt.toolTip.size(), EnumChatFormatting.YELLOW.toString()+EnumChatFormatting.ITALIC.toString()+(ReikaBeeHelper.isPristine(evt.itemStack) ? "Pristine Stock" : "Ignoble Stock"));
 						evt.toolTip.addAll(evt.toolTip.size(), li);
 					}

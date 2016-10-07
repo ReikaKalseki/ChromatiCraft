@@ -113,7 +113,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 			//ReikaJavaLibrary.pConsole("endDist++, ="+endDist, Side.SERVER);
 		}
 
-		boolean active = world.isBlockIndirectlyGettingPowered(x, y, z) || world.isBlockIndirectlyGettingPowered(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+		boolean active = this.hasRedstoneSignal() || world.isBlockIndirectlyGettingPowered(x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
 		active &= energy.containsAtLeast(required);
 		if (active) {
 			if (endDist == 0) {

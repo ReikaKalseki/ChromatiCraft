@@ -318,7 +318,7 @@ public class CrystalBees {
 			ItemStack shard = ChromaStacks.getChargedShard(e);
 			multi.addSpecialty(shard, 4);
 			ItemStack is = ChromaItems.BERRY.getStackOfMetadata(i);
-			multi.addProduct(is, 20/16F); // /16 since one of each
+			multi.addSpecialty(is, 20/16F); // /16 since one of each
 			FlowerProviderMulti.conditions.put(is, tree);
 			FlowerProviderMulti.conditions.put(shard, new ChargedShardCheck(e));
 		}
@@ -640,7 +640,7 @@ public class CrystalBees {
 			temperature = traits.temperature;
 			humidity = traits.humidity;
 
-			this.addConditionalProduct(ChromaItems.BERRY.getStackOf(color), 25, false, new LeafCheck(color));
+			this.addConditionalProduct(ChromaItems.BERRY.getStackOf(color), 25, true, new LeafCheck(color));
 			this.addConditionalProduct(ItemColoredModInteract.ColoredModItems.COMB.getItem(color), 8, true, new CrystalPlantCheck(color));
 			this.addProduct(ForestryHandler.Combs.HONEY.getItem(), 15);
 			this.addConditionalProduct(ChromaOptions.isVanillaDyeMoreCommon() ? new ItemStack(Items.dye, 1, color.ordinal()) : ChromaItems.DYE.getStackOf(color), 20, false, new FlowerCheck(color));

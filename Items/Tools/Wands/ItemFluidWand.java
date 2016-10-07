@@ -87,7 +87,12 @@ public class ItemFluidWand extends ItemWandBase implements BreakerCallback {
 	}
 
 	@Override
-	public void onBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+	public void onPreBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
+
+	}
+
+	@Override
+	public void onPostBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
 		EntityPlayer ep = breakers.get(b.hashCode());
 		if (ep != null) {
 			boolean exists = world.getPlayerEntityByName(ep.getCommandSenderName()) != null;
