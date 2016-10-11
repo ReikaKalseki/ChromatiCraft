@@ -84,6 +84,11 @@ public class BlockRouterNode extends Block implements SidedBlock {
 	}
 
 	@Override
+	public int damageDropped(int meta) {
+		return meta;
+	}
+
+	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		for (int i = 0; i < icons.length; i++) {
 			icons[i] = ico.registerIcon("chromaticraft:basic/routernode-"+i);

@@ -82,7 +82,9 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(out);
 			Fluid f = fs != null ? fs.getFluid() : null;
 			if (f != null) {
-				tag = FabricationRecipes.recipes().processTag(ItemMagicRegistry.instance.getFluidValue(f)).scale(1/FabricationRecipes.SCALE);
+				ElementTagCompound ftag = ItemMagicRegistry.instance.getFluidValue(f);
+				if (ftag != null)
+					tag = FabricationRecipes.recipes().processTag(ftag).scale(1/FabricationRecipes.SCALE);
 			}
 			if (tag != null) {
 				recipe = f != null ? new FluidRecipe(tag, out, f) : new Recipe(tag, out);
