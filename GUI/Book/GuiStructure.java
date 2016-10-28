@@ -86,7 +86,7 @@ public class GuiStructure extends GuiBookSection {
 		if (page == ChromaResearch.MINIPYLON) {
 			array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
 		}
-		if (page == ChromaResearch.PYLON) {
+		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
 			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
 		}
 		if (page == ChromaResearch.PYLONBROADCAST) {
@@ -96,7 +96,7 @@ public class GuiStructure extends GuiBookSection {
 			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
 		}
 		render = new StructureRenderer(array);
-		if (page == ChromaResearch.PYLON) {
+		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBO) {
 			render.addOverride(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getCraftedProduct());
 		}
 		else if (page == ChromaResearch.PYLONBROADCAST) {

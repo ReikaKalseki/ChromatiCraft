@@ -447,4 +447,8 @@ public final class ChromaDescriptions {
 		}
 
 	}
+
+	public static boolean isUnfilled(String s) {
+		return s == null || s.isEmpty() || s.endsWith(XMLInterface.NULL_VALUE);
+	}
 }

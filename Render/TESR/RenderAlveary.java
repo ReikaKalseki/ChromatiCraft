@@ -56,7 +56,7 @@ public class RenderAlveary extends ChromaRenderBase {
 	@Override
 	public void renderTileEntityAt(TileEntity tile, double par2, double par4, double par6, float par8) {
 		TileEntityLumenAlveary te = (TileEntityLumenAlveary)tile;
-		if (te.isInWorld() && te.isAlvearyComplete() && MinecraftForgeClient.getRenderPass() == 1) {
+		if (te.isInWorld() && MinecraftForgeClient.getRenderPass() == 1) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
 
@@ -66,19 +66,69 @@ public class RenderAlveary extends ChromaRenderBase {
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			GL11.glDepthMask(false);
 			GL11.glTranslated(par2, par4, par6);
-
 			Coordinate c = te.getRelativeLocation();
-			GL11.glTranslated(-c.xCoord, -c.yCoord, -c.zCoord);
+			if (c != null)
+				GL11.glTranslated(-c.xCoord, -c.yCoord, -c.zCoord);
 
-			double t = te.getTicksExisted()+par8+te.xCoord+te.zCoord*0.5D+te.yCoord*1.5D;
+			if (te.isAlvearyComplete()) {
 
-			if (te.hasQueen()) {
-				this.renderBee(te, t, par8);
+				double t = te.getTicksExisted()+par8+te.xCoord+te.zCoord*0.5D+te.yCoord*1.5D;
+
+				if (te.hasQueen()) {
+					this.renderBee(te, t, par8);
+				}
+				BlendMode.ADDITIVEDARK.apply();
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				ReikaTextureHelper.bindTerrainTexture();
+				this.renderOverlay(te, t, par8);
 			}
-			BlendMode.ADDITIVEDARK.apply();
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			ReikaTextureHelper.bindTerrainTexture();
-			this.renderOverlay(te, t, par8);
+			else if (te.hasMultipleBoosters()) {
+				BlendMode.DEFAULT.apply();
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				ReikaTextureHelper.bindTerrainTexture();
+
+				double o = 0.0025;
+
+				Tessellator v5 = Tessellator.instance;
+				v5.startDrawingQuads();
+
+				IIcon ico = ChromaIcons.NOENTER.getIcon();
+				float u = ico.getMinU();
+				float v = ico.getMinV();
+				float du = ico.getMaxU();
+				float dv = ico.getMaxV();
+
+				v5.setColorOpaque_I(0xffffff);
+				v5.addVertexWithUV(0-o, 3.25, 0-o, u, dv);
+				v5.addVertexWithUV(3+o, 3.25, 0-o, du, dv);
+				v5.addVertexWithUV(3+o, 0.25, 0-o, du, v);
+				v5.addVertexWithUV(0-o, 0.25, 0-o, u, v);
+
+				v5.addVertexWithUV(0-o, 0.25, 3+o, u, v);
+				v5.addVertexWithUV(3+o, 0.25, 3+o, du, v);
+				v5.addVertexWithUV(3+o, 3.25, 3+o, du, dv);
+				v5.addVertexWithUV(0-o, 3.25, 3+o, u, dv);
+
+
+				v5.addVertexWithUV(3+o, 3.25, 0-o, u, dv);
+				v5.addVertexWithUV(3+o, 3.25, 3+o, du, dv);
+				v5.addVertexWithUV(3+o, 0.25, 3+o, du, v);
+				v5.addVertexWithUV(3+o, 0.25, 0-o, u, v);
+
+
+				v5.addVertexWithUV(0-o, 0.25, 0-o, u, v);
+				v5.addVertexWithUV(0-o, 0.25, 3+o, du, v);
+				v5.addVertexWithUV(0-o, 3.25, 3+o, du, dv);
+				v5.addVertexWithUV(0-o, 3.25, 0-o, u, dv);
+
+
+				v5.addVertexWithUV(0-o, 3.5+o, 3+o, u, dv);
+				v5.addVertexWithUV(3+o, 3.5+o, 3+o, du, dv);
+				v5.addVertexWithUV(3+o, 3.5+o, 0-o, du, v);
+				v5.addVertexWithUV(0-o, 3.5+o, 0-o, u, v);
+
+				v5.draw();
+			}
 
 			GL11.glPopAttrib();
 			GL11.glPopMatrix();
@@ -104,7 +154,7 @@ public class RenderAlveary extends ChromaRenderBase {
 			GL11.glPushMatrix();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			Tessellator v5 = Tessellator.instance;
-		
+
 			ItemStack is = ei.getEntityItem();
 			ei.age = 0;
 			ei.hoverStart = 0;//(float)Math.sin(t/8 + 0.2);

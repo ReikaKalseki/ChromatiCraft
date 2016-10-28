@@ -256,7 +256,9 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	public void incRange() {
-		range = (range+1)%(MAX_RANGE+1);
+		range++;
+		if (range > MAX_RANGE)
+			range = 1;
 		ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.NUMBERPARTICLE.ordinal(), this, range);
 		ChromaSounds.USE.playSoundAtBlock(this);
 	}

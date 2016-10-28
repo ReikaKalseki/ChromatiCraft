@@ -21,12 +21,12 @@
 	<harvestlevel>
 		Wood mines stone. Stone mines iron. Iron mines diamond. Diamond mines obsidian. This progression is indelibly set into nearly everyone's mind. Now you get to break it.
 	</harvestlevel>
+	<airminer>
+		Though you long ago achieved the ability to fly - either by strapping rockets to your back or via more magical means - the fact that your ability to mine blocks is greatly impeded while in flight is an endless annoyance. Stabilizing your tool should help fix that.
+	</airminer>
 	<boostedlevel>
 		%s is the best you have been able to achieve thus far, but you want more. With the power of liquid chroma, %s is within your reach.
 	</boostedlevel>
-	<name>
-		
-	</name>
 	<name>
 		
 	</name>

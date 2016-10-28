@@ -73,7 +73,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		if (!NEItrigger)
 			this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
 
-		if (this.getMaxSubpage() > 0) {
+		if (this.parseMaxSubpage() > 0) {
 			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));
 			buttonList.add(new CustomSoundGuiButton(14, j+xSize-27, k+52, 20, 20, "<", this));
 		}
@@ -99,7 +99,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			return;
 		}
 		else if (button.id == 13) {
-			if (subpage < this.getMaxSubpage())
+			if (subpage < this.parseMaxSubpage())
 				subpage++;
 			this.initGui();
 			return;
@@ -113,6 +113,14 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	}
 
 	protected abstract int getMaxSubpage();
+
+	private int parseMaxSubpage() {
+		int ret = this.getMaxSubpage();
+		while(ret > 0 && ChromaDescriptions.isUnfilled(page.getNotes(ret))) {
+			ret--;
+		}
+		return ret;
+	}
 
 	@Override
 	public void drawScreen(int x, int y, float f) {

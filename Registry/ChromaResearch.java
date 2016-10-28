@@ -330,6 +330,7 @@ public enum ChromaResearch implements ProgressElement {
 	GATESTRUCT(		Structures.TELEGATE,	2,	ResearchLevel.ENDGAME,			ProgressStage.END),
 	RELAYSTRUCT(	Structures.RELAY,		9,	ResearchLevel.ENDGAME,			ProgressStage.POWERCRYSTAL),
 	PYLONBROADCAST(	Structures.PYLONBROADCAST,5,ResearchLevel.ENDGAME,			ProgressStage.DIMENSION),
+	PYLONTURBORING(	Structures.PYLONTURBO,	5,	ResearchLevel.ENDGAME,			ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	;
 
 	private final ItemStack iconItem;
@@ -722,6 +723,8 @@ public enum ChromaResearch implements ProgressElement {
 		if (this == DEATHPROOF)
 			return false;
 		if (this == BEES)
+			return false;
+		if (this == BEEFRAME)
 			return false;
 		if (this == TINKERTOOLS)
 			return false;

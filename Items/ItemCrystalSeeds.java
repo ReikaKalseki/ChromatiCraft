@@ -84,7 +84,7 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 				--item.stackSize;
 			world.setBlock(x, y, z, ChromaBlocks.PLANT.getBlockInstance(), item.getItemDamage()%16, 3);
 			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
-			te.setStates(item.getItemDamage());
+			te.setStates(item);
 			ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.grass);
 			return true;
 		}
@@ -97,6 +97,9 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 			if (m.present(is.getItemDamage())) {
 				li.add(m.displayName);
 			}
+		}
+		if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("sterile")) {
+			li.add("Will plant a sterile plant, for decoration only");
 		}
 	}
 

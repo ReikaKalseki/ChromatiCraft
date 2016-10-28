@@ -101,8 +101,9 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 					int dz = z+k;
 					if (world.getBlock(dx, dy, dz) == ChromaBlocks.ROUTERNODE.getBlockInstance()) {
 						TileEntityRouterNode te = (TileEntityRouterNode)world.getTileEntity(dx, dy, dz);
-						if (te.getHub() == null)
-							te.setHub(new Coordinate(this));
+						Coordinate c = new Coordinate(this);
+						if (te.getHub() == null || te.getHub().equals(c))
+							te.setHub(c);
 					}
 				}
 			}

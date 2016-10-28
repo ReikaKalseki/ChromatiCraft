@@ -73,6 +73,7 @@ import forestry.api.multiblock.IAlvearyComponent;
 import forestry.api.multiblock.IAlvearyComponent.BeeListener;
 import forestry.api.multiblock.IAlvearyComponent.BeeModifier;
 import forestry.api.multiblock.IAlvearyController;
+import forestry.api.multiblock.IMultiblockComponent;
 import forestry.api.multiblock.IMultiblockController;
 import forestry.api.multiblock.IMultiblockLogicAlveary;
 import forestry.api.multiblock.MultiblockManager;
@@ -101,10 +102,12 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 
 	private int lightningTicks;
 	private String movePrincess;
-	
+
 	private boolean canWork;
 
 	private EntityItem renderItem;
+
+	private boolean multipleBoosters = false;
 
 	static {
 		if (ModList.FORESTRY.isLoaded()) {
@@ -205,7 +208,11 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	}
 
 	public boolean isAlvearyComplete() {
-		return relativeLocation != null;
+		return relativeLocation != null && !multipleBoosters;
+	}
+
+	public boolean hasMultipleBoosters() {
+		return multipleBoosters;
 	}
 
 	@Override
@@ -213,11 +220,17 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 		super.updateEntity(world, x, y, z, meta);
 
 		if (ModList.FORESTRY.isLoaded()) {
-			
-			if (this.getTicksExisted()%4 == 0)
-				canWork = this.calcCanWork();
-			
+
+			if (multipleBoosters) {
+				//for (IMultiblockComponent com : this.getMultiblockLogic().getController().getComponents()) {
+				//	com.onMachineBroken();
+				//}
+			}
+
 			if (this.isAlvearyComplete()) {
+				if (this.getTicksExisted()%4 == 0)
+					canWork = this.calcCanWork();
+
 				if (world.isRemote) {
 					this.doParticles(world, x, y, z);
 				}
@@ -258,6 +271,9 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 						this.drainEnergy(automation.color, automation.requiredEnergy);
 					}
 				}
+			}
+			else {
+				canWork = false;
 			}
 		}
 	}
@@ -338,10 +354,23 @@ public class TileEntityLumenAlveary extends TileEntityRelayPowered implements IA
 	@Override
 	@ModDependent(ModList.FORESTRY)
 	public void onMachineAssembled(IMultiblockController controller, ChunkCoordinates minCoord, ChunkCoordinates maxCoord) {
+		this.validateStructure(controller);
 		this.triggerBlockUpdate();
 		this.syncAllData(true);
 		relativeLocation = new Coordinate(this).offset(new Coordinate(minCoord).negate());
 		this.updateRenderItem();
+	}
+
+	@ModDependent(ModList.FORESTRY)
+	private void validateStructure(IMultiblockController controller) {
+		boolean flag = false;
+		multipleBoosters = false;
+		for (IMultiblockComponent com : controller.getComponents()) {
+			if (com instanceof TileEntityLumenAlveary && com != this) {
+				multipleBoosters = true;
+				break;
+			}
+		}
 	}
 
 	@Override

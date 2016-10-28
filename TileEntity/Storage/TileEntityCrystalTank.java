@@ -207,7 +207,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 			rnd = 1000;
 		if (rnd > 1)
 			bucket = ReikaMathLibrary.roundUpToX(rnd, bucket);
-		return bucket*1000;
+		return Math.min(bucket*1000, MAXCAPACITY);
 	}
 
 	public Fluid getFluid() {

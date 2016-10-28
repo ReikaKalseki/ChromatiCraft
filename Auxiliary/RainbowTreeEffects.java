@@ -132,6 +132,9 @@ public class RainbowTreeEffects {
 						//ReikaJavaLibrary.pConsole(dx+", "+dz, Side.CLIENT);
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null) {
+							if (natural.biomeID == id) {
+								natural = BiomeGenBase.forest;//ChromatiCraft.recoveredBiome;//BiomeGenBase.forest;
+							}
 							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
 						}
 					}

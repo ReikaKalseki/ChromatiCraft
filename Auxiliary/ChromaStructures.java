@@ -29,9 +29,13 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger.Location;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.CarpenterBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -67,7 +71,8 @@ public class ChromaStructures {
 		METEOR3(false),
 		TELEGATE(false),
 		RELAY(false),
-		PYLONBROADCAST(true);
+		PYLONBROADCAST(true),
+		PYLONTURBO(true);
 
 		public final boolean requiresColor;
 
@@ -131,6 +136,8 @@ public class ChromaStructures {
 					return getBoostedRelayStructure(world, x, y, z, false);
 				case PYLONBROADCAST:
 					return getPylonBroadcastStructure(world, x, y, z, e);
+				case PYLONTURBO:
+					return getPylonTurboStructure(world, x, y, z, e);
 			}
 			return null;
 		}
@@ -193,6 +200,8 @@ public class ChromaStructures {
 					return getBoostedRelayStructure(w, 0, 0, 0, true);
 				case PYLONBROADCAST:
 					return getPylonBroadcastStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
+				case PYLONTURBO:
+					return getPylonTurboStructure(w, 0, 0, 0, CrystalElement.elements[(int)(System.currentTimeMillis()/4000)%16]);
 			}
 			return null;
 		}
@@ -3635,6 +3644,37 @@ public class ChromaStructures {
 			array.setBlock(x, y+i, z+5, b, m);
 			array.setBlock(x, y+i, z-5, b, m);
 		}
+
+		return array;
+	}
+
+	public static FilledBlockArray getPylonTurboStructure(World world, int x, int y, int z, CrystalElement e) {
+		FilledBlockArray array = getPylonStructure(world, x, y, z, e);
+		y -= 9;
+
+		array.setBlock(x, y+9, z,  ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
+
+		Block b = ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+
+		BlockKey[] col = new BlockKey[]{
+				new BlockKey(b, StoneTypes.COLUMN.ordinal()),
+				new BlockKey(b, StoneTypes.FOCUS.ordinal()),
+				new BlockKey(ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata()),
+		};
+
+		for (int l = 0; l < Location.list.length; l++) {
+			Location loc = Location.list[l];
+			Coordinate c = loc.position;
+			for (int i = 0; i < col.length; i++) {
+				array.setBlock(x+c.xCoord, y+1+i, z+c.zCoord, col[i].blockID, col[i].metadata);
+			}
+		}
+
+		for (Coordinate c : TileEntityCrystalPylon.getPowerCrystalLocations()) {
+			array.setBlock(x+c.xCoord, y+9+c.yCoord, z+c.zCoord, ChromaTiles.CRYSTAL.getBlock(), ChromaTiles.CRYSTAL.getBlockMetadata());
+		}
+
+		array.setBlock(x, y+1, z, ChromaTiles.PYLONTURBO.getBlock(), ChromaTiles.PYLONTURBO.getBlockMetadata());
 
 		return array;
 	}

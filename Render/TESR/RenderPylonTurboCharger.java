@@ -25,6 +25,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -89,7 +90,7 @@ public class RenderPylonTurboCharger extends ChromaRenderBase {
 			GL11.glScaled(s, s, s);
 			GL11.glTranslated(0, 0.25, 0);
 		}
-		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld())
+		if (MinecraftForgeClient.getRenderPass() == 0 || !te.isInWorld() || StructureRenderer.isRenderingTiles())
 			this.renderModel(te, model);
 		GL11.glPopMatrix();
 

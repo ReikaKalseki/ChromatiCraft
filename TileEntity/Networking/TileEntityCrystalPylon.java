@@ -12,7 +12,9 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
@@ -120,7 +122,7 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 	public boolean enhancing = false;
 
-	private static final Collection<Coordinate> crystalPositions = new ArrayList();
+	private static final Collection<Coordinate> crystalPositions = new HashSet();
 
 	private static Class node;
 	private static HashMap<String, ArrayList<Integer>> nodeCache;
@@ -146,6 +148,10 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 		crystalPositions.add(new Coordinate(-1, -3, 3));
 		crystalPositions.add(new Coordinate(3, -3, 1));
 		crystalPositions.add(new Coordinate(1, -3, 3));
+	}
+
+	public static Collection<Coordinate> getPowerCrystalLocations() {
+		return Collections.unmodifiableCollection(crystalPositions);
 	}
 
 	public void markPlaced() {

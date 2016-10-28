@@ -32,6 +32,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 	private static final Random random = new Random();
 
 	private int flags;
+	private boolean sterile;
 
 	private int growthTick = 2;
 	private long lastShardTick = -1;
@@ -114,6 +115,8 @@ public class TileEntityCrystalPlant extends TileEntity {
 
 	public ArrayList<ItemStack> getDrops() {
 		ArrayList<ItemStack> li = new ArrayList();
+		if (this.isSterile())
+			return li;
 		if (this.isPure() || random.nextInt(4) == 0) {
 			int meta = this.getColor().ordinal();
 			if (this.isPure() && !this.is(Modifier.PRIMAL)) {
@@ -125,11 +128,17 @@ public class TileEntityCrystalPlant extends TileEntity {
 				else if (rand < 5) {
 					num = 1;
 				}
+				int smeta = meta+Modifier.IMPURE.flag;
+				if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
+					smeta = meta+Modifier.BOOSTED.flag;
 				for (int i = 0; i < num; i++) {
-					int smeta = meta+Modifier.IMPURE.flag;
-					if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
-						smeta = meta+Modifier.BOOSTED.flag;
 					li.add(ChromaItems.SEED.getStackOfMetadata(smeta));
+				}
+				if (random.nextInt(10) == 0) {
+					ItemStack deco = ChromaItems.SEED.getStackOfMetadata(smeta);
+					deco.stackTagCompound = new NBTTagCompound();
+					deco.stackTagCompound.setBoolean("sterile", true);
+					li.add(deco);
 				}
 			}
 			long time = worldObj.getTotalWorldTime();
@@ -154,20 +163,17 @@ public class TileEntityCrystalPlant extends TileEntity {
 	}
 
 	@Override
-	public boolean canUpdate()
-	{
+	public boolean canUpdate() {
 		return false;
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
-	{
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		this.readFromNBT(pkt.field_148860_e);
 	}
 
 	@Override
-	public Packet getDescriptionPacket()
-	{
+	public Packet getDescriptionPacket() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		this.writeToNBT(nbt);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, nbt);
@@ -179,6 +185,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 		growthTick = NBT.getInteger("growth");
 		lastShardTick = NBT.getLong("shard");
 		flags = NBT.getInteger("flags");
+		sterile = NBT.getBoolean("sterile");
 	}
 
 	@Override
@@ -188,19 +195,22 @@ public class TileEntityCrystalPlant extends TileEntity {
 		NBT.setInteger("growth", growthTick);
 		NBT.setLong("shard", lastShardTick);
 		NBT.setInteger("flags", flags);
+		NBT.setBoolean("sterile", sterile);
 	}
 
 	public int getGrowthState() {
 		return growthTick;
 	}
 
-	public void setStates(int meta) {
+	public void setStates(ItemStack item) {
+		int meta = item.getItemDamage();
 		for (int i = 0; i < Modifier.list.length; i++) {
 			Modifier m = Modifier.list[i];
 			if (m.present(meta)) {
 				flags |= m.flag;
 			}
 		}
+		sterile = item.stackTagCompound != null && item.stackTagCompound.getBoolean("sterile");
 	}
 
 	public boolean is(Modifier m) {
@@ -209,6 +219,10 @@ public class TileEntityCrystalPlant extends TileEntity {
 
 	public boolean isPure() {
 		return !this.is(Modifier.IMPURE);
+	}
+
+	public boolean isSterile() {
+		return sterile;
 	}
 
 	public static enum Modifier {

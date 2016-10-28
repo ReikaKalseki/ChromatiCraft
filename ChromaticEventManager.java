@@ -862,6 +862,7 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent
+	@ModDependent(ModList.MYSTCRAFT)
 	public void burnRainbowLeaves(BlockConsumedByFireEvent evt) {
 		if (evt.world.getBlock(evt.x, evt.y, evt.z) == ChromaBlocks.RAINBOWLEAF.getBlockInstance()) {
 			ReikaMystcraftHelper.addInstabilityForAge(evt.world, (short)4);
