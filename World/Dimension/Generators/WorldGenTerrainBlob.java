@@ -180,7 +180,7 @@ public class WorldGenTerrainBlob extends ChromaWorldGenerator {
 							bk = innerBlock;
 					}
 					//}
-					c.setBlock(world, bk.blockID, bk.metadata);
+					c.setBlock(world, bk.blockID, Math.max(0, bk.metadata));
 				}
 				else {
 					Block b = c.offset(0, 1, 0).getBlock(world);

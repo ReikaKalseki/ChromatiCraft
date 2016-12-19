@@ -146,7 +146,7 @@ public class ChromaBookData {
 			}
 			 */
 
-			Proportionality p = tag.getProportionality();
+			Proportionality<CrystalElement> p = tag.getProportionality();
 			FontRenderer f = ChromaFontRenderer.FontType.LEXICON.renderer;
 
 			int px = posX+8;
@@ -155,7 +155,22 @@ public class ChromaBookData {
 			double r = 57.5;
 			int dx = px+184;
 			int dy = py+56;
-			p.renderAsPie(dx, dy, r, System.identityHashCode(c), CrystalElement.getColorMap());
+			double zang = System.identityHashCode(c);
+			p.renderAsPie(dx, dy, r, zang, CrystalElement.getColorMap());
+
+			ReikaTextureHelper.bindTerrainTexture();
+			double ba = zang;
+			double ir = r*0.625;
+			int si = 8;
+			for (CrystalElement e : p.getElements()) {
+				double ang = 360D*p.getFraction(e);
+				double a = ba+ang/2D;
+				int ix = (int)Math.round(dx+ir*Math.cos(Math.toRadians(a)));
+				int iy = (int)Math.round(dy+ir*Math.sin(Math.toRadians(a)));
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(ix-si/2, iy-si/2, e.getOutlineRune(), si, si);
+				ba += ang;
+			}
+
 			//ReikaGuiAPI.instance.drawCircle(dx, dy, r+0.25, 0x000000);
 			int tot = tag.getTotalEnergy();
 			int h = f.FONT_HEIGHT*3/2;

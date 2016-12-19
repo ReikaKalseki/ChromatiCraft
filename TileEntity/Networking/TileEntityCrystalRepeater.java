@@ -559,4 +559,14 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return true;
 	}
 
+	@Override
+	public int getThoughputBonus() {
+		return 0;
+	}
+
+	@Override
+	public int getThoughputInsurance() {
+		return 0;
+	}
+
 }

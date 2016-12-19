@@ -46,6 +46,7 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
 import Reika.GeoStrata.Registry.RockTypes;
+import Reika.RotaryCraft.Auxiliary.ItemStacks;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
@@ -176,6 +177,8 @@ public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements
 			//ReikaItemHelper.matchStacks(out, RockTypes.getTypeFromID(Block.getBlockFromItem(in.getItem())).getItem(RockShapes.SMOOTH)))
 			return 1;
 		}
+		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStacks.ironscrap))
+			return 1;
 		else if (ReikaBlockHelper.isOre(in)) {
 			int ret = 4;
 			OreType ore = ReikaOreHelper.getEntryByOreDict(in);

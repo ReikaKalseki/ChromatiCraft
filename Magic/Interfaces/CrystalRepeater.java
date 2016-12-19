@@ -17,6 +17,10 @@ public interface CrystalRepeater extends CrystalReceiver, CrystalTransmitter {
 
 	public int getSignalDegradation();
 
+	public int getThoughputBonus();
+
+	public int getThoughputInsurance();
+
 	public int getSignalDepth(CrystalElement e);
 
 	public void setSignalDepth(CrystalElement e, int d);

@@ -116,7 +116,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	private int parseMaxSubpage() {
 		int ret = this.getMaxSubpage();
-		while(ret > 0 && ChromaDescriptions.isUnfilled(page.getNotes(ret))) {
+		while(page != null && ret > 0 && ChromaDescriptions.isUnfilled(page.getNotes(ret))) {
 			ret--;
 		}
 		return ret;

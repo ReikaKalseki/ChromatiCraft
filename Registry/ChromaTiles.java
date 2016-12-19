@@ -43,6 +43,7 @@ import Reika.ChromatiCraft.ModInterface.TileEntityPageExtractor;
 import Reika.ChromatiCraft.ModInterface.TileEntityPatternCache;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
+import Reika.ChromatiCraft.TileEntity.TileEntityDataNode;
 import Reika.ChromatiCraft.TileEntity.TileEntityDisplayPoint;
 import Reika.ChromatiCraft.TileEntity.TileEntityFarmer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire;
@@ -71,6 +72,8 @@ import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityChromaCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityPylonTurboCharger;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityAreaHologram;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
@@ -218,7 +221,9 @@ public enum ChromaTiles implements TileEnum {
 	BRIDGE("chroma.bridge",				ChromaBlocks.TILEENTITY2,	TileEntityConduitBridge.class,		0),
 	AVOLASER("chroma.avolaser",			ChromaBlocks.TILEMODELLED3,	TileEntityAvoLaser.class,			12, "RenderAvoLaser"),
 	ALVEARY("chroma.alveary",			ChromaBlocks.TILEENTITY2,	TileEntityLumenAlveary.class,		1, "RenderAlveary", ModList.FORESTRY),
-	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub");
+	ROUTERHUB("chroma.router",			ChromaBlocks.TILEMODELLED3,	TileEntityRouterHub.class,			13, "RenderRouterHub"),
+	FOCUSCRYSTAL("chroma.focuscrystal",	ChromaBlocks.TILEMODELLED3, TileEntityFocusCrystal.class,		14, "RenderFocusCrystal"),
+	DATANODE("chroma.datanode",			ChromaBlocks.TILEMODELLED3,	TileEntityDataNode.class,			15, "RenderDataNode");
 
 	private final Class tile;
 	private final String name;
@@ -317,6 +322,8 @@ public enum ChromaTiles implements TileEnum {
 			case AVOLASER:
 			case ALVEARY:
 			case ROUTERHUB:
+			case FOCUSCRYSTAL:
+			case DATANODE:
 				return true;
 			default:
 				return false;
@@ -351,6 +358,9 @@ public enum ChromaTiles implements TileEnum {
 			}
 		}
 		((TileEntityChromaticBase)renderInstance).animateItem();
+		if (this == FOCUSCRYSTAL && renderInstance != null) {
+			((TileEntityFocusCrystal)renderInstance).setDataFromItemStackTag(CrystalTier.tierList[offset].getCraftedItem());
+		}
 		return renderInstance;
 	}
 
@@ -582,6 +592,8 @@ public enum ChromaTiles implements TileEnum {
 				return 0.25;
 			case ROUTERHUB:
 				return 0.875;
+			case FOCUSCRYSTAL:
+				return 0.375;
 			default:
 				return 1;
 		}

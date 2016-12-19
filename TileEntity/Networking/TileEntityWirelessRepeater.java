@@ -125,4 +125,14 @@ public class TileEntityWirelessRepeater extends CrystalTransmitterBase implement
 		return true;
 	}
 
+	@Override
+	public int getThoughputBonus() {
+		return 0;
+	}
+
+	@Override
+	public int getThoughputInsurance() {
+		return 100;
+	}
+
 }

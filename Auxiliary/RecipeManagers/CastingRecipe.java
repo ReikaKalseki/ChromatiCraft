@@ -370,16 +370,17 @@ public class CastingRecipe implements APICastingRecipe {
 			CrystalElement e = allRunes.get(c);
 			if (e != null) {
 				if (e != color)
-					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+e+" & "+color+"; map:=\n"+this.getRuneMap());
+					throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+"); map:=\n"+this.getRuneMap(y));
 			}
-			allRunes.put(c, color);
+			else
+				allRunes.put(c, color);
 		}
 
-		private String getRuneMap() {
+		private String getRuneMap(int y) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = -5; i <= 5; i++) {
 				for (int k = -5; k <= 5; k++) {
-					Coordinate c = new Coordinate(i, 0, k);
+					Coordinate c = new Coordinate(k, y, i);
 					CrystalElement e = allRunes.get(c);
 					if (e == null && runeRing.contains(c))
 						e = CrystalElement.elements[runeRing.indexOf(c)];

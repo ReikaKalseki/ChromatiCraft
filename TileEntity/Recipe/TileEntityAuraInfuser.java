@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.MultiBlockCheck;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemCollision;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
@@ -34,6 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
@@ -51,7 +53,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv,
-IPipeConnection, OperationInterval, MultiBlockChromaTile {
+IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	private InertItem item;
 
@@ -193,7 +195,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile {
 
 		if (this.canCraft()) {
 			if (craftingTick == 0)
-				craftingTick = DURATION;
+				craftingTick = (int)(DURATION/TileEntityFocusCrystal.getSummedFocusFactor(this));
 		}
 		else {
 			if (craftingTick > 0) {

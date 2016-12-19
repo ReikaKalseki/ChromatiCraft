@@ -136,6 +136,7 @@ public class ProgressionManager implements ProgressRegistry {
 		NETHERROOF(Blocks.netherrack),
 		NETHERSTRUCT(Blocks.nether_brick),
 		VILLAGECASTING(Blocks.cobblestone),
+		FOCUSCRYSTAL(Items.emerald),
 		NEVER(Blocks.stone, false), //used as a no-trigger placeholder
 		;
 
@@ -298,6 +299,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.MULTIBLOCK);
 		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.USEENERGY);
+		progressMap.addParent(ProgressStage.REPEATER, 	ProgressStage.VILLAGECASTING);
 
 		progressMap.addParent(ProgressStage.STORAGE, 	ProgressStage.MULTIBLOCK);
 

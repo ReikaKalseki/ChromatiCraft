@@ -66,7 +66,10 @@ public class ChromaItemRenderer implements IItemRenderer {
 			machine = ChromaTiles.ADJACENCY;
 		boolean entity = type == ItemRenderType.ENTITY || type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
 		if (machine.hasRender() && !machine.hasBlockRender()) {
-			TileEntity te = machine.createTEInstanceForRender(item.getItemDamage());
+			int offset = 0;
+			if (machine == ChromaTiles.ADJACENCY)
+				offset = item.getItemDamage();
+			TileEntity te = machine.createTEInstanceForRender(offset);
 			if (machine.hasNBTVariants()) {
 				((NBTTile)te).setDataFromItemStackTag(item);
 			}

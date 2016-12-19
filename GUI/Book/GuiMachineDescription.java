@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.Libraries.IO.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
@@ -113,6 +114,9 @@ public class GuiMachineDescription extends GuiDescription {
 			if (!AdjacencyUpgrades.upgrades[offset].isImplemented())
 				return;
 		}
+		else if (m == ChromaTiles.FOCUSCRYSTAL) {
+			offset = (int)((System.currentTimeMillis()/4000)%CrystalTier.tierList.length);
+		}
 
 		GL11.glTranslated(0, 0, 32);
 		GL11.glColor4f(1, 1, 1, 1);
@@ -144,6 +148,9 @@ public class GuiMachineDescription extends GuiDescription {
 			if (m == ChromaTiles.LUMENWIRE) {
 				a = b = -1.25;
 				GL11.glTranslated(0, -0.5, 0);
+			}
+			if (m == ChromaTiles.AVOLASER) {
+				GL11.glTranslated(0, 0.5, 0);
 			}
 			if (m == ChromaTiles.TELEPORT) {
 				a = b = -0.125;

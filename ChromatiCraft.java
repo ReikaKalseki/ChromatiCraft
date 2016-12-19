@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Auxiliary.MusicLoader;
 import Reika.ChromatiCraft.Auxiliary.ProgressionCacher;
 import Reika.ChromatiCraft.Auxiliary.PylonCacheLoader;
 import Reika.ChromatiCraft.Auxiliary.PylonDamage;
+import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.Command.CrystalNetCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.DimensionGeneratorCommand;
 import Reika.ChromatiCraft.Auxiliary.Command.GuardianCommand;
@@ -184,6 +185,7 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.common.registry.VillagerRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -445,6 +447,10 @@ public class ChromatiCraft extends DragonAPIMod {
 		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
 		VillagersFailChromatiCraft.register();
+		for (int i = 0; i < 4; i++)
+			VillagerRegistry.instance().registerVillageTradeHandler(i, VillageTradeHandler.instance);
+		for (int i : VillagerRegistry.instance().getRegisteredVillagers())
+			VillagerRegistry.instance().registerVillageTradeHandler(i, VillageTradeHandler.instance);
 
 		ChromaChests.addToChests();
 

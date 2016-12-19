@@ -31,7 +31,43 @@ public class CrystalFlow extends CrystalPath {
 		super(net, e, li);
 		remainingAmount = amt+this.getSignalLoss();
 		receiver = r;
-		maxFlow = Math.min(Math.max(1, this.getMaxFlow()-this.getSignalLoss()), maxthru);
+		maxFlow = this.calcEffectiveThroughput(maxthru);
+	}
+
+	private int calcEffectiveThroughput(int maxthru) {
+		int base = this.getMinMaxFlow();
+		return Math.min(Math.max(this.getInsuredThroughput(), base-this.getSignalLoss()+this.getThoughputBonus()), Math.min(maxthru, base));
+	}
+
+	private int getInsuredThroughput() {
+		int val = 0;
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof CrystalRepeater) {
+				val = Math.max(val, ((CrystalRepeater)te).getThoughputInsurance());
+			}
+		}
+		return val;
+	}
+
+	private int getThoughputBonus() {
+		int val = 0;
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			if (te instanceof CrystalRepeater) {
+				val += ((CrystalRepeater)te).getThoughputBonus();
+			}
+		}
+		return val;
+	}
+
+	private int getMinMaxFlow() {
+		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
+		for (int i = 1; i < nodes.size()-1; i++) {
+			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
+			max = Math.min(max, te.maxThroughput());
+		}
+		return max;
 	}
 
 	CrystalFlow(CrystalNetworker net, CrystalPath p, CrystalReceiver r, int amt, int maxthru) {
@@ -101,15 +137,6 @@ public class CrystalFlow extends CrystalPath {
 				te.clearSource();
 			}*/
 		}
-	}
-
-	private int getMaxFlow() {
-		int max = Math.min(transmitter.maxThroughput(), receiver.maxThroughput());
-		for (int i = 1; i < nodes.size()-1; i++) {
-			CrystalNetworkTile te = PylonFinder.getNetTileAt(nodes.get(i), true);
-			max = Math.min(max, te.maxThroughput());
-		}
-		return max;
 	}
 
 	public boolean isComplete() {

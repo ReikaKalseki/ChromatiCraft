@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockDyeTypes;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Registry.ChromaResearchManager.ResearchLevel;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.PackModificationTracker;
@@ -187,6 +188,7 @@ public enum ChromaResearch implements ProgressElement {
 	AVOLASER(		ChromaTiles.AVOLASER,		ResearchLevel.ENDGAME),
 	ALVEARY(		ChromaTiles.ALVEARY,		ResearchLevel.PYLONCRAFT,		ProgressStage.HIVE),
 	ROUTER(			ChromaTiles.ROUTERHUB,		ResearchLevel.MULTICRAFT),
+	FOCUSCRYSTALS(	ChromaTiles.FOCUSCRYSTAL,	ResearchLevel.ENERGYEXPLORE,	ProgressStage.FOCUSCRYSTAL),
 
 	BLOCKS("Other Blocks", ""),
 	RUNES(			ChromaBlocks.RUNE,			CrystalElement.LIGHTBLUE.ordinal(),	ResearchLevel.BASICCRAFT),
@@ -720,6 +722,8 @@ public enum ChromaResearch implements ProgressElement {
 	public boolean isGating() {
 		if (this.isDummiedOut())
 			return false;
+		if (this.isMachine() && this.getMachine().isIncomplete())
+			return false;
 		if (this == DEATHPROOF)
 			return false;
 		if (this == BEES)
@@ -827,6 +831,13 @@ public enum ChromaResearch implements ProgressElement {
 			li.add(machine.getCraftedProduct());
 			li.add(ChromaBlocks.ROUTERNODE.getStackOfMetadata(0));
 			li.add(ChromaBlocks.ROUTERNODE.getStackOfMetadata(1));
+			return li;
+		}
+		if (this == FOCUSCRYSTALS) {
+			ArrayList<ItemStack> li = new ArrayList();
+			for (int i = 0; i < CrystalTier.tierList.length; i++) {
+				li.add(CrystalTier.tierList[i].getCraftedItem());
+			}
 			return li;
 		}
 		if (this.isMachine())

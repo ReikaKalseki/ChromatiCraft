@@ -139,4 +139,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		return -50;
 	}
 
+	@Override
+	public int getThoughputInsurance() {
+		return 500;
+	}
+
 }

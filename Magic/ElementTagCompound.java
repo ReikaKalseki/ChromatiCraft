@@ -97,7 +97,7 @@ public final class ElementTagCompound {
 		return Collections.unmodifiableSet(data.keySet());
 	}
 
-	public Proportionality getProportionality() {
+	public Proportionality<CrystalElement> getProportionality() {
 		Proportionality p = new Proportionality();
 		for (CrystalElement e : data.keySet()) {
 			p.addValue(e, data.get(e));

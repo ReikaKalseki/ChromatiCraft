@@ -114,6 +114,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.Fabrica
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FarmerRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidDistributorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FluidRelayRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.FocusCrystalRecipes.DefaultFocusCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GlowFireRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.GuardianStoneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tiles.HarvestPlantRecipe;
@@ -717,6 +719,12 @@ public class RecipesCastingTable {
 		this.addRecipe(new RouterNodeRecipe(ChromaBlocks.ROUTERNODE.getStackOfMetadata(1), true));
 
 		this.addRecipe(new RouterHubRecipe(ChromaTiles.ROUTERHUB.getCraftedProduct(), ChromaStacks.elementUnit));
+
+		this.addRecipe(new FocusCrystalRecipes.FlawedFocusCrystalRecipe());
+		DefaultFocusCrystalRecipe fr = new FocusCrystalRecipes.DefaultFocusCrystalRecipe();
+		this.addRecipe(fr);
+		this.addRecipe(new FocusCrystalRecipes.RefinedFocusCrystalRecipe(fr));
+		this.addRecipe(new FocusCrystalRecipes.ExquisiteFocusCrystalRecipe(fr));
 
 		this.addSpecialRecipes();
 	}

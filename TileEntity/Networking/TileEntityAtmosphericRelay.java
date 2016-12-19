@@ -157,4 +157,14 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 		return 8192;
 	}
 
+	@Override
+	public int getThoughputBonus() {
+		return 0;
+	}
+
+	@Override
+	public int getThoughputInsurance() {
+		return 1000;
+	}
+
 }

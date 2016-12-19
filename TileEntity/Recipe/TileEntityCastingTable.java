@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaStructures;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
 import Reika.ChromatiCraft.Auxiliary.ProgressionManager.ProgressStage;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
@@ -57,6 +58,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityGlobeFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.World.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
@@ -82,7 +84,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCastingTable extends InventoriedCrystalReceiver implements NBTTile, BreakAction, TriggerableAction, OwnedTile,
-OperationInterval, MultiBlockChromaTile {
+OperationInterval, MultiBlockChromaTile, FocusAcceleratable {
 
 	private CastingRecipe activeRecipe = null;
 	private int craftingTick = 0;
@@ -505,6 +507,9 @@ OperationInterval, MultiBlockChromaTile {
 			t = Math.max(t/r.getEnhancedTableAccelerationFactor(), Math.min(t, 20));
 		if (r.canBeStacked())
 			t *= r.getRecipeStackedTimeFactor(this, craftingAmount);
+		if (t > 20 && r instanceof MultiBlockCastingRecipe) {
+			t = Math.max(20, (int)(t/TileEntityFocusCrystal.getSummedFocusFactor(this)));
+		}
 		craftingTick = t;
 	}
 

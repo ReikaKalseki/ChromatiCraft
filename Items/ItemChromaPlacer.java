@@ -37,12 +37,12 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.ModInterface.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.TileEntityCrystalConsole;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityDimensionCore;
@@ -242,6 +242,14 @@ public class ItemChromaPlacer extends Item implements ISize {
 						par3List.add(item2);
 					}
 				}
+				else if (c == ChromaTiles.FOCUSCRYSTAL) {
+					for (int k = 0; k < 4; k++) {
+						ItemStack item2 = item.copy();
+						item2.stackTagCompound = new NBTTagCompound();
+						item2.stackTagCompound.setInteger("tier", k);
+						par3List.add(item2);
+					}
+				}
 				else if (c.isRepeater() && c != ChromaTiles.WEAKREPEATER) {
 					par3List.add(item);
 					ItemStack item2 = item.copy();
@@ -315,8 +323,14 @@ public class ItemChromaPlacer extends Item implements ISize {
 
 	@Override
 	public String getItemStackDisplayName(ItemStack is) {
-		ChromaItems ir = ChromaItems.getEntry(is);
-		return ir.hasMultiValuedName() ? ir.getMultiValuedName(is.getItemDamage()) : ir.getBasicName();
+		ChromaTiles r = ChromaTiles.TEList[is.getItemDamage()];
+		String s = r.getName();
+		if (r == ChromaTiles.FOCUSCRYSTAL) {
+			String tier = CrystalTier.tierList[is.stackTagCompound != null ? is.stackTagCompound.getInteger("tier") : 0].getDisplayName();
+			if (!tier.isEmpty())
+				s = tier+" "+s;
+		}
+		return s;
 	}
 
 	@Override
